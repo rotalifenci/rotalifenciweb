@@ -16,6 +16,9 @@ class SoundFX {
     if (!this.enabled) return;
     this.init();
     try {
+      if (this.ctx.state === 'suspended') {
+        this.ctx.resume();
+      }
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
       osc.type = type;
@@ -115,27 +118,38 @@ class PassaparolaGame {
   }
 
   renderWheel() {
+    // Keep existing center element
+    const center = document.getElementById('wheelCenter');
     this.wheelContainer.innerHTML = '';
-    const total = this.questions.length;
-    const radius = 200; // px
-    const centerX = 240;
-    const centerY = 240;
+    if (center) this.wheelContainer.appendChild(center);
 
+    const total = this.questions.length;
+    const size = this.wheelContainer.clientWidth || 360;
+    const centerX = size / 2;
+    const centerY = size / 2;
+
+    // Responsive node half-size
+    let nodeRadius = 19;
+    if (size <= 300) nodeRadius = 13;
+    else if (size <= 380) nodeRadius = 16;
+
+    const trackRadius = centerX - nodeRadius - 10;
     this.nodes = [];
 
     this.questions.forEach((item, index) => {
       const node = document.createElement('div');
-      node.className = 'letter-node';
+      node.className = letter-node ;
+      if (index === this.currentIndex) node.classList.add('active');
       node.innerText = item.letter;
       node.dataset.index = index;
 
-      // Calculate position around circular track
+      // Calculate circular coordinates
       const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
-      const x = centerX + radius * Math.cos(angle) - 22;
-      const y = centerY + radius * Math.sin(angle) - 22;
+      const x = centerX + trackRadius * Math.cos(angle) - nodeRadius;
+      const y = centerY + trackRadius * Math.sin(angle) - nodeRadius;
 
-      node.style.left = `${x}px`;
-      node.style.top = `${y}px`;
+      node.style.left = ${x}px;
+      node.style.top = ${y}px;
 
       node.addEventListener('click', () => {
         this.loadQuestion(index);
@@ -144,25 +158,21 @@ class PassaparolaGame {
       this.wheelContainer.appendChild(node);
       this.nodes.push(node);
     });
-
-    // Re-append center element
-    const center = document.getElementById('wheelCenter');
-    if (center) this.wheelContainer.appendChild(center);
   }
 
   loadQuestion(index) {
     this.currentIndex = index;
     const item = this.questions[index];
 
-    // Update Wheel classes
+    // Update wheel classes
     this.nodes.forEach((n, idx) => {
-      n.className = `letter-node ${this.state[idx]}`;
+      n.className = letter-node ;
       if (idx === index) n.classList.add('active');
     });
 
     // Center display
     this.centerLetter.innerText = item.letter;
-    this.qBadge.innerText = `${item.letter} Harfi (${item.category})`;
+    this.qBadge.innerText = ${item.letter} Harfi ();
     this.qGrade.innerText = item.grade;
     this.qText.innerText = item.question;
 
@@ -195,10 +205,7 @@ class PassaparolaGame {
   }
 
   moveToNextUnanswered() {
-    // Check if any unanswered or passed questions remain
-    const remainingIndices = [];
-    
-    // First pass: try to find next truly unanswered
+    // 1st pass: find next unanswered
     for (let i = 0; i < this.questions.length; i++) {
       const idx = (this.currentIndex + 1 + i) % this.questions.length;
       if (this.state[idx] === 'unanswered') {
@@ -207,7 +214,7 @@ class PassaparolaGame {
       }
     }
 
-    // Second pass: if no unanswered, check for passed
+    // 2nd pass: find passed
     for (let i = 0; i < this.questions.length; i++) {
       const idx = (this.currentIndex + 1 + i) % this.questions.length;
       if (this.state[idx] === 'passed') {
@@ -216,7 +223,7 @@ class PassaparolaGame {
       }
     }
 
-    // If all are answered (correct or wrong), end game!
+    // Game completed!
     this.endGame();
   }
 
@@ -234,10 +241,10 @@ class PassaparolaGame {
   }
 
   startTimer() {
-    if (this.initialTime === 0) return; // infinite mode
+    if (this.initialTime === 0) return;
     if (this.isTimerRunning) return;
     this.isTimerRunning = true;
-    this.btnTimerToggle.innerHTML = `<span>⏸️</span> Süreyi Durdur`;
+    this.btnTimerToggle.innerHTML = <span>⏸️</span> Durdur;
 
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
@@ -254,7 +261,7 @@ class PassaparolaGame {
   stopTimer() {
     this.isTimerRunning = false;
     clearInterval(this.timerInterval);
-    this.btnTimerToggle.innerHTML = `<span>▶️</span> Süreyi Başlat`;
+    this.btnTimerToggle.innerHTML = <span>▶️</span> Başlat;
   }
 
   toggleTimer() {
@@ -265,7 +272,7 @@ class PassaparolaGame {
   updateTimerDisplay() {
     const mins = Math.floor(this.timeLeft / 60);
     const secs = this.timeLeft % 60;
-    this.timerText.innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    this.timerText.innerText = ${mins.toString().padStart(2, '0')}:;
 
     if (this.timeLeft <= 30) {
       this.timerBox.classList.add('warning');
@@ -281,21 +288,20 @@ class PassaparolaGame {
 
     const dCount = this.state.filter(s => s === 'correct').length;
     const yCount = this.state.filter(s => s === 'wrong').length;
-    const pCount = this.state.filter(s => s === 'passed').length;
 
     document.getElementById('mStatD').innerText = dCount;
     document.getElementById('mStatY').innerText = yCount;
-    document.getElementById('mStatScore').innerText = `${this.scores[this.activeTeam]} Puan`;
+    document.getElementById('mStatScore').innerText = ${this.scores[this.activeTeam]} Puan;
 
     const title = document.getElementById('modalTitle');
     const subtitle = document.getElementById('modalSubtitle');
 
     if (isTimeOut) {
       title.innerText = "⏰ Süre Bitti!";
-      subtitle.innerText = `Harika bir performans sergilediniz! Toplam ${dCount} doğru cevapladınız.`;
+      subtitle.innerText = Harika mücadele! Toplam  doğru cevap verdiniz.;
     } else {
-      title.innerText = "🏆 Tebrikler! Çark Tamamlandı!";
-      subtitle.innerText = `Fen Bilimleri Şampiyonu! 28 soruyu tamamladınız.`;
+      title.innerText = "🏆 Tebrikler! Şampiyon!";
+      subtitle.innerText = Tüm sorular tamamlandı! Süper bir Fen başarısı.;
     }
 
     this.endModal.classList.add('open');
@@ -308,12 +314,13 @@ class PassaparolaGame {
     this.state.fill('unanswered');
     this.scores = { A: 0, B: 0 };
     this.endModal.classList.remove('open');
-    this.nodes.forEach(n => n.className = 'letter-node');
+    this.renderWheel();
     this.loadQuestion(0);
   }
 
   triggerConfetti() {
     const canvas = document.getElementById('confettiCanvas');
+    if (!canvas) return;
     const ctx = canvas.getContext('2d');
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -321,7 +328,7 @@ class PassaparolaGame {
     const particles = [];
     const colors = ['#00e5ff', '#00e676', '#ffd600', '#ff1744', '#7c4dff', '#ffffff'];
 
-    for (let i = 0; i < 150; i++) {
+    for (let i = 0; i < 120; i++) {
       particles.push({
         x: canvas.width / 2,
         y: canvas.height / 2,
@@ -339,8 +346,8 @@ class PassaparolaGame {
       particles.forEach(p => {
         p.x += p.vx;
         p.y += p.vy;
-        p.vy += 0.3; // gravity
-        p.alpha -= 0.008;
+        p.vy += 0.3;
+        p.alpha -= 0.009;
 
         ctx.fillStyle = p.color;
         ctx.globalAlpha = Math.max(0, p.alpha);
@@ -350,7 +357,7 @@ class PassaparolaGame {
       });
 
       frames++;
-      if (frames < 140) {
+      if (frames < 130) {
         requestAnimationFrame(animate);
       } else {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -360,7 +367,7 @@ class PassaparolaGame {
   }
 
   bindEvents() {
-    // Action Buttons
+    // Action buttons
     this.btnCorrect.addEventListener('click', () => this.answer('correct'));
     this.btnWrong.addEventListener('click', () => this.answer('wrong'));
     this.btnPass.addEventListener('click', () => this.answer('passed'));
@@ -376,10 +383,10 @@ class PassaparolaGame {
 
     this.btnPlayAgain.addEventListener('click', () => this.resetGame());
 
-    // Sound Toggle
+    // Sound toggle
     this.btnSound.addEventListener('click', () => {
       this.sound.enabled = !this.sound.enabled;
-      this.btnSound.innerHTML = this.sound.enabled ? `<span>🔊</span> Ses Açık` : `<span>🔇</span> Ses Kapalı`;
+      this.btnSound.innerHTML = this.sound.enabled ? <span>🔊</span> Ses Açık : <span>🔇</span> Ses Kapalı;
     });
 
     // Fullscreen
@@ -391,11 +398,11 @@ class PassaparolaGame {
       }
     });
 
-    // Team Switch
+    // Team mode toggle
     this.btnTeamMode.addEventListener('click', () => {
       this.isTwoTeams = !this.isTwoTeams;
       this.teamBar.style.display = this.isTwoTeams ? 'flex' : 'none';
-      this.btnTeamMode.innerHTML = this.isTwoTeams ? `<span>👥</span> 2 Takım Modu` : `<span>👤</span> Tekli Mod`;
+      this.btnTeamMode.innerHTML = this.isTwoTeams ? <span>👥</span> 2 Takım : <span>👤</span> Tekli;
     });
 
     this.teamACard.addEventListener('click', () => {
@@ -410,7 +417,7 @@ class PassaparolaGame {
       this.teamACard.classList.remove('active-team');
     });
 
-    // Answer text input enter check
+    // Answer enter key
     this.txtAnswer.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const val = this.txtAnswer.value.trim().toUpperCase();
@@ -423,7 +430,7 @@ class PassaparolaGame {
       }
     });
 
-    // Keyboard Hotkeys for Teacher
+    // Keyboard hotkeys
     window.addEventListener('keydown', (e) => {
       if (document.activeElement === this.txtAnswer) return;
 
@@ -439,10 +446,19 @@ class PassaparolaGame {
         this.toggleTimer();
       }
     });
+
+    // Resize listener for responsive wheel adjustment
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(() => {
+        this.renderWheel();
+      }, 100);
+    });
   }
 }
 
-// Start Game on DOM Load
+// Start Game
 window.addEventListener('DOMContentLoaded', () => {
   window.game = new PassaparolaGame(PASSAPAROLA_DATA);
 });
