@@ -1,35 +1,32 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fen Bilimleri Passaparola Oyunu (5, 6, 7. Sınıf)</title>
+  <title>Fen Bilimleri Passaparola</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="confettiCanvas"></canvas>
 
-  <!-- Header -->
   <header>
     <div class="logo-area">
-      <div class="logo-icon">м</div>
+      <div class="logo-icon">&#128300;</div>
       <div class="title-group">
-        <h1>FEN B�I��IMLERñ PASSAPAROLA</h1>
-        <span>5, 6 ve 7. Sınıf Genel Fen Bilimleri Oyunu</span>
+        <h1>FEN B&#304;L&#304;MLER&#304; PASSAPAROLA</h1>
+        <span>5, 6 ve 7. S&#305;n&#305;f Genel Fen Bilimleri</span>
       </div>
     </div>
     <div class="header-controls">
-      <button id="btnTeamMode" class="btn-ctrl"><span>📑</span> Tekli Mod</button>
-      <button id="btnTimerToggle" class="btn-ctrl"><span>▶️</span> Süreyi Baɟlat</button>
-      <button id="btnSound" class="btn-ctrl"><span>🔤</span> Ses Açı�k</button>
-      <button id="btnFullscreen" class="btn-ctrl"><span>⛶</span> Tam Ekran</button>
-      <button id="btnReset" class="btn-ctrl"><span>🔩</span> Sıfırla</button>
+      <button id="btnTeamMode" class="btn-ctrl"><span>&#128101;</span> Tekli Mod</button>
+      <button id="btnTimerToggle" class="btn-ctrl"><span>&#9654;&#65039;</span> Ba&#351;lat</button>
+      <button id="btnSound" class="btn-ctrl"><span>&#128266;</span> Ses A&#231;&#305;k</button>
+      <button id="btnFullscreen" class="btn-ctrl"><span>&#9974;</span> Tam Ekran</button>
+      <button id="btnReset" class="btn-ctrl"><span>&#128260;</span> S&#305;f&#305;rla</button>
     </div>
   </header>
 
-  <!-- Main Game Container -->
   <main class="game-container">
-    <!-- Left: Passaparola Wheel -->
     <section class="wheel-wrapper">
       <div id="wheelContainer" class="wheel-container">
         <div id="wheelCenter" class="wheel-center">
@@ -44,50 +41,49 @@
       </div>
     </section>
 
-@    <!-- Right: Question & Controls Card -->
     <section class="question-card">
       <div id="teamBar" class="team-bar" style="display: none;">
         <div id="teamACard" class="team-card active-team">
-          <span class="team-title">🔅 A Grubu:</span>
+          <span>&#128309; A Grubu:</span>
           <span id="teamAScore" class="team-score">0</span>
         </div>
         <div id="teamBCard" class="team-card">
-          <span class="team-title">🔴 B Grubu:</span>
+          <span>&#128308; B Grubu:</span>
           <span id="teamBScore" class="team-score">0</span>
         </div>
       </div>
 
       <div class="q-header">
-        <div class="q-badge" id="qBadge">A Harfi (Elektrik)</div>
-        <div class="q-grade" id="qGrade">5. Sınıf</div>
+        <div class="q-badge" id="qBadge">A Harfi</div>
+        <div class="q-grade" id="qGrade">5. S&#305;n&#305;f</div>
         <div id="timerBox" class="timer-box">
-          <span class="timer-icon">⟱️</span>
+          <span class="timer-icon">&#9201;&#65039;</span>
           <span id="timerText" class="timer-text">04:00</span>
         </div>
       </div>
 
       <div class="q-body">
-        <div class="q-text" id="qText">Soru yükleniyor...</div>
+        <div class="q-text" id="qText">Soru y&#252;kleniyor...</div>
         <div class="q-answer-reveal" id="qReveal">CEVAP</div>
       </div>
 
       <div class="input-area">
-        <input type="text" id="txtAnswer" class="txt-answer" placeholder="Cevabı yazıp Enter'a basın veya alttaki butonları kullanın.." autocomplete="off">
-        <button id="btnShowAnswer" class="btn-hint" title="Cevabı Göster (Bısayol: C)">👩 Göster</button>
+        <input type="text" id="txtAnswer" class="txt-answer" placeholder="Cevab&#305; yaz&#305;p Enter'a bas&#305;n veya butonlar&#305; kullan&#305;n..." autocomplete="off">
+        <button id="btnShowAnswer" class="btn-hint" title="Cevab&#305; G&#246;ster (K&#305;sayol: C)">&#128065;&#65039; G&#246;ster</button>
       </div>
 
       <div class="btn-action-group">
         <button id="btnCorrect" class="btn-action btn-correct">
-          <span>✔️ DOđRU</span>
-          <small style="font-size: 0.75rem; opacity: 0.85;">+10 Puan (D Uuşu)</small>
+          <span>&#10004;&#65039; DO&#286;RU</span>
+          <small>(D Tu&#351;u)</small>
         </button>
         <button id="btnPass" class="btn-action btn-pass">
-          <span>⚡ PAS</span>
-          <small style="font-size: 0.75rem; opacity: 0.85;">Sona Bırak (P / Boşluk)</small>
+          <span>&#9889; PAS</span>
+          <small>(P / Bo&#351;luk)</small>
         </button>
         <button id="btnWrong" class="btn-action btn-wrong">
-          <span>❌ �ANLİŞ</span>
-          <small style="font-size: 0.75rem; opacity: 0.85;">(Y Uuşu)</small>
+          <span>&#10060; YANLI&#350;</span>
+          <small>(Y Tu&#351;u)</small>
         </button>
       </div>
     </section>
@@ -95,16 +91,16 @@
 
   <div id="endModal" class="modal-backdrop">
     <div class="modal-card">
-      <div class="modal-trophy">���Z</div>
+      <div class="modal-trophy">&#127942;</div>
       <h2 id="modalTitle" class="modal-title">Tebrikler!</h2>
-      <p id="modalSubtitle" class="modal-subtitle">Çarkı baɟarıyla tamamladınız.</p>
+      <p id="modalSubtitle" class="modal-subtitle">&#199;ark&#305; ba&#351;ar&#305;yla tamamlad&#305;n&#305;z.</p>
       <div class="modal-results-grid">
         <div class="m-res-box">
-          <div class="m-res-title">Doğru</div>
+          <div class="m-res-title">Do&#286;ru</div>
           <div class="m-res-val" style="color: var(--accent-green);" id="mStatD">0</div>
         </div>
         <div class="m-res-box">
-          <div class="m-res-title">Yanlış</div>
+          <div class="m-res-title">Yanl&#305;&#351;</div>
           <div class="m-res-val" style="color: var(--accent-red);" id="mStatY">0</div>
         </div>
         <div class="m-res-box">
@@ -112,7 +108,7 @@
           <div class="m-res-val" style="color: var(--accent-yellow);" id="mStatScore">0 Puan</div>
         </div>
       </div>
-      <button id="btnPlayAgain" class="btn-restart">🔩 Yeniden Oyna</button>
+      <button id="btnPlayAgain" class="btn-restart">&#128260; Yeniden Oyna</button>
     </div>
   </div>
 

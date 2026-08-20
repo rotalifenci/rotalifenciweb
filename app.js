@@ -1,4 +1,4 @@
-﻿// Web Audio API Sound Generator (Zero External Dependencies)
+// Web Audio API Ses Sentezleyicisi (Sifir Harici Bagimlilik)
 class SoundFX {
   constructor() {
     this.ctx = null;
@@ -12,7 +12,7 @@ class SoundFX {
     }
   }
 
-  playTone(freq, type = 'sine', duration = 0.15, startTime = 0) {
+  playTone(freq, type, duration, startTime) {
     if (!this.enabled) return;
     this.init();
     try {
@@ -21,23 +21,23 @@ class SoundFX {
       }
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTime);
-      gain.gain.setValueAtTime(0.2, this.ctx.currentTime + startTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + startTime + duration);
+      osc.type = type || 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + (startTime || 0));
+      gain.gain.setValueAtTime(0.2, this.ctx.currentTime + (startTime || 0));
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + (startTime || 0) + (duration || 0.15));
       osc.connect(gain);
       gain.connect(this.ctx.destination);
-      osc.start(this.ctx.currentTime + startTime);
-      osc.stop(this.ctx.currentTime + startTime + duration);
+      osc.start(this.ctx.currentTime + (startTime || 0));
+      osc.stop(this.ctx.currentTime + (startTime || 0) + (duration || 0.15));
     } catch (e) {}
   }
 
   correct() {
     this.init();
-    this.playTone(523.25, 'triangle', 0.1, 0);       // C5
-    this.playTone(659.25, 'triangle', 0.1, 0.08);    // E5
-    this.playTone(783.99, 'triangle', 0.25, 0.16);   // G5
-    this.playTone(1046.50, 'triangle', 0.4, 0.24);   // C6
+    this.playTone(523.25, 'triangle', 0.1, 0);
+    this.playTone(659.25, 'triangle', 0.1, 0.08);
+    this.playTone(783.99, 'triangle', 0.25, 0.16);
+    this.playTone(1046.50, 'triangle', 0.4, 0.24);
   }
 
   wrong() {
@@ -60,23 +60,24 @@ class SoundFX {
   }
 }
 
-// Game State & Engine
+function trUpper(str) {
+  return (str || '').trim().toLocaleUpperCase('tr-TR');
+}
+
 class PassaparolaGame {
   constructor(questions) {
     this.questions = questions;
     this.currentIndex = 0;
-    this.state = new Array(questions.length).fill('unanswered'); // unanswered, correct, wrong, passed
+    this.state = new Array(questions.length).fill('unanswered');
     this.sound = new SoundFX();
 
-    // Timer Settings
-    this.initialTime = 240; // 4 minutes default
+    this.initialTime = 240;
     this.timeLeft = this.initialTime;
     this.timerInterval = null;
     this.isTimerRunning = false;
 
-    // Team Mode
     this.isTwoTeams = false;
-    this.activeTeam = 'A'; // 'A' or 'B'
+    this.activeTeam = 'A';
     this.scores = { A: 0, B: 0 };
 
     this.initDOM();
@@ -118,7 +119,6 @@ class PassaparolaGame {
   }
 
   renderWheel() {
-    // Keep existing center element
     const center = document.getElementById('wheelCenter');
     this.wheelContainer.innerHTML = '';
     if (center) this.wheelContainer.appendChild(center);
@@ -128,28 +128,26 @@ class PassaparolaGame {
     const centerX = size / 2;
     const centerY = size / 2;
 
-    // Responsive node half-size
-    let nodeRadius = 19;
-    if (size <= 300) nodeRadius = 13;
-    else if (size <= 380) nodeRadius = 16;
+    let nodeRadius = 18;
+    if (size <= 290) nodeRadius = 13;
+    else if (size <= 360) nodeRadius = 15;
 
-    const trackRadius = centerX - nodeRadius - 10;
+    const trackRadius = centerX - nodeRadius - 8;
     this.nodes = [];
 
     this.questions.forEach((item, index) => {
       const node = document.createElement('div');
-      node.className = letter-node ;
+      node.className = 'letter-node ' + this.state[index];
       if (index === this.currentIndex) node.classList.add('active');
       node.innerText = item.letter;
       node.dataset.index = index;
 
-      // Calculate circular coordinates
       const angle = (index / total) * 2 * Math.PI - Math.PI / 2;
       const x = centerX + trackRadius * Math.cos(angle) - nodeRadius;
       const y = centerY + trackRadius * Math.sin(angle) - nodeRadius;
 
-      node.style.left = ${x}px;
-      node.style.top = ${y}px;
+      node.style.left = x + 'px';
+      node.style.top = y + 'px';
 
       node.addEventListener('click', () => {
         this.loadQuestion(index);
@@ -164,19 +162,16 @@ class PassaparolaGame {
     this.currentIndex = index;
     const item = this.questions[index];
 
-    // Update wheel classes
     this.nodes.forEach((n, idx) => {
-      n.className = letter-node ;
+      n.className = 'letter-node ' + this.state[idx];
       if (idx === index) n.classList.add('active');
     });
 
-    // Center display
     this.centerLetter.innerText = item.letter;
-    this.qBadge.innerText = ${item.letter} Harfi ();
+    this.qBadge.innerText = item.letter + ' Harfi (' + item.category + ')';
     this.qGrade.innerText = item.grade;
     this.qText.innerText = item.question;
 
-    // Reset Answer Input & Reveal
     this.txtAnswer.value = '';
     this.qReveal.classList.remove('show');
     this.qReveal.innerText = item.answer;
@@ -205,7 +200,6 @@ class PassaparolaGame {
   }
 
   moveToNextUnanswered() {
-    // 1st pass: find next unanswered
     for (let i = 0; i < this.questions.length; i++) {
       const idx = (this.currentIndex + 1 + i) % this.questions.length;
       if (this.state[idx] === 'unanswered') {
@@ -214,7 +208,6 @@ class PassaparolaGame {
       }
     }
 
-    // 2nd pass: find passed
     for (let i = 0; i < this.questions.length; i++) {
       const idx = (this.currentIndex + 1 + i) % this.questions.length;
       if (this.state[idx] === 'passed') {
@@ -223,7 +216,6 @@ class PassaparolaGame {
       }
     }
 
-    // Game completed!
     this.endGame();
   }
 
@@ -244,7 +236,7 @@ class PassaparolaGame {
     if (this.initialTime === 0) return;
     if (this.isTimerRunning) return;
     this.isTimerRunning = true;
-    this.btnTimerToggle.innerHTML = <span>⏸️</span> Durdur;
+    this.btnTimerToggle.innerHTML = '<span>⏸️</span> Durdur';
 
     this.timerInterval = setInterval(() => {
       this.timeLeft--;
@@ -261,7 +253,7 @@ class PassaparolaGame {
   stopTimer() {
     this.isTimerRunning = false;
     clearInterval(this.timerInterval);
-    this.btnTimerToggle.innerHTML = <span>▶️</span> Başlat;
+    this.btnTimerToggle.innerHTML = '<span>▶️</span> Başlat';
   }
 
   toggleTimer() {
@@ -272,7 +264,7 @@ class PassaparolaGame {
   updateTimerDisplay() {
     const mins = Math.floor(this.timeLeft / 60);
     const secs = this.timeLeft % 60;
-    this.timerText.innerText = ${mins.toString().padStart(2, '0')}:;
+    this.timerText.innerText = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
 
     if (this.timeLeft <= 30) {
       this.timerBox.classList.add('warning');
@@ -281,7 +273,7 @@ class PassaparolaGame {
     }
   }
 
-  endGame(isTimeOut = false) {
+  endGame(isTimeOut) {
     this.stopTimer();
     this.sound.win();
     this.triggerConfetti();
@@ -291,17 +283,17 @@ class PassaparolaGame {
 
     document.getElementById('mStatD').innerText = dCount;
     document.getElementById('mStatY').innerText = yCount;
-    document.getElementById('mStatScore').innerText = ${this.scores[this.activeTeam]} Puan;
+    document.getElementById('mStatScore').innerText = this.scores[this.activeTeam] + ' Puan';
 
     const title = document.getElementById('modalTitle');
     const subtitle = document.getElementById('modalSubtitle');
 
     if (isTimeOut) {
-      title.innerText = "⏰ Süre Bitti!";
-      subtitle.innerText = Harika mücadele! Toplam  doğru cevap verdiniz.;
+      title.innerText = '⏰ Süre Bitti!';
+      subtitle.innerText = 'Toplam ' + dCount + ' doğru cevapladınız. Harika bir Fen performansı!';
     } else {
-      title.innerText = "🏆 Tebrikler! Şampiyon!";
-      subtitle.innerText = Tüm sorular tamamlandı! Süper bir Fen başarısı.;
+      title.innerText = '🏆 Tebrikler! Çark Tamamlandı!';
+      subtitle.innerText = 'Tüm soruları tamamladınız! Gerçek bir Fen Dehasısınız!';
     }
 
     this.endModal.classList.add('open');
@@ -367,7 +359,6 @@ class PassaparolaGame {
   }
 
   bindEvents() {
-    // Action buttons
     this.btnCorrect.addEventListener('click', () => this.answer('correct'));
     this.btnWrong.addEventListener('click', () => this.answer('wrong'));
     this.btnPass.addEventListener('click', () => this.answer('passed'));
@@ -378,18 +369,16 @@ class PassaparolaGame {
 
     this.btnTimerToggle.addEventListener('click', () => this.toggleTimer());
     this.btnReset.addEventListener('click', () => {
-      if (confirm("Oyunu sıfırlamak istediğinize emin misiniz?")) this.resetGame();
+      if (confirm('Oyunu sıfırlamak istediğinize emin misiniz?')) this.resetGame();
     });
 
     this.btnPlayAgain.addEventListener('click', () => this.resetGame());
 
-    // Sound toggle
     this.btnSound.addEventListener('click', () => {
       this.sound.enabled = !this.sound.enabled;
-      this.btnSound.innerHTML = this.sound.enabled ? <span>🔊</span> Ses Açık : <span>🔇</span> Ses Kapalı;
+      this.btnSound.innerHTML = this.sound.enabled ? '<span>🔊</span> Ses Açık' : '<span>🔇</span> Ses Kapalı';
     });
 
-    // Fullscreen
     this.btnFullscreen.addEventListener('click', () => {
       if (!document.fullscreenElement) {
         document.documentElement.requestFullscreen().catch(() => {});
@@ -398,11 +387,10 @@ class PassaparolaGame {
       }
     });
 
-    // Team mode toggle
     this.btnTeamMode.addEventListener('click', () => {
       this.isTwoTeams = !this.isTwoTeams;
       this.teamBar.style.display = this.isTwoTeams ? 'flex' : 'none';
-      this.btnTeamMode.innerHTML = this.isTwoTeams ? <span>👥</span> 2 Takım : <span>👤</span> Tekli;
+      this.btnTeamMode.innerHTML = this.isTwoTeams ? '<span>👥</span> 2 Takım' : '<span>👤</span> Tekli';
     });
 
     this.teamACard.addEventListener('click', () => {
@@ -417,12 +405,11 @@ class PassaparolaGame {
       this.teamACard.classList.remove('active-team');
     });
 
-    // Answer enter key
     this.txtAnswer.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        const val = this.txtAnswer.value.trim().toUpperCase();
-        const currentAns = this.questions[this.currentIndex].answer.toUpperCase();
-        if (val === currentAns) {
+        const val = trUpper(this.txtAnswer.value);
+        const currentAns = trUpper(this.questions[this.currentIndex].answer);
+        if (val === currentAns || (currentAns.includes(val) && val.length >= 3)) {
           this.answer('correct');
         } else if (val.length > 0) {
           this.answer('wrong');
@@ -430,11 +417,10 @@ class PassaparolaGame {
       }
     });
 
-    // Keyboard hotkeys
     window.addEventListener('keydown', (e) => {
       if (document.activeElement === this.txtAnswer) return;
 
-      const key = e.key.toUpperCase();
+      const key = trUpper(e.key);
       if (key === 'D') this.answer('correct');
       else if (key === 'Y') this.answer('wrong');
       else if (key === 'P' || e.key === ' ') {
@@ -447,7 +433,6 @@ class PassaparolaGame {
       }
     });
 
-    // Resize listener for responsive wheel adjustment
     let resizeTimeout;
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout);
@@ -458,7 +443,6 @@ class PassaparolaGame {
   }
 }
 
-// Start Game
 window.addEventListener('DOMContentLoaded', () => {
   window.game = new PassaparolaGame(PASSAPAROLA_DATA);
 });
