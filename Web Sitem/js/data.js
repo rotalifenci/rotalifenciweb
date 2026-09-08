@@ -1050,3 +1050,130 @@ function getGradeSubSectionsData(gradeNumber) {
         ]
     };
 }
+
+
+// -------------------------------------------------------------
+// DERİNLEŞTİRİLMİŞ MÜFREDAT VE ÖĞRENME İÇERİKLERİ HAVUZU
+// -------------------------------------------------------------
+const ENRICHED_GRADE_CONTENT = {
+    "5": {
+        unitSummaries: [
+            {
+                unit: "1. Ünite: Güneş, Dünya ve Ay",
+                highlights: [
+                    "☀️ **Güneş:** Orta büyüklükte bir yıldızdır, katmanlardan oluşur (Çekirdek, Işık küre, Renk küre, Taç küre). Yüzeyinde daha soğuk bölgeler olan 'Güneş Lekeleri' bulunur. Kendi ekseni etrafında saat yönünün tersine döner.",
+                    "🌕 **Ay:** Dünya'nın tek doğal uydusudur. Atmosferi yok denecek kadar incedir (bu yüzden rüzgar, yağmur olmaz; gece-gündüz sıcaklık farkı çok fazladır; kraterler bozulmaz).",
+                    "🔄 **Ay'ın Evreleri (29.5 Gün):** 1. *Yeni Ay* (Karanlık), 2. *İlk Dördün* ('D' harfi şeklinde aydınlık), 3. *Dolunay* (Tamamen parlak daire), 4. *Son Dördün* (Ters 'D' harfi).",
+                    "⏱️ **Ay'ın Dönme ve Dolanma Eşitliği:** Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresi eşit (~27.3 gün) olduğu için Dünya'dan bakıldığında daima Ay'ın aynı yüzü görülür."
+                ]
+            },
+            {
+                unit: "2. Ünite: Canlılar Dünyası",
+                highlights: [
+                    "🦠 **Mikroskobik Canlılar:** Yalnızca mikroskopla görülebilen canlılardır (Bakteriler, Amip, Öglena, Paramesyum). Yararlı bakteriler (yoğurt, peynir, sirke yapımı), zararlı bakteriler (hastalık yapıcılar) vardır.",
+                    "🍄 **Mantarlar:** Bitki DEĞİLDİR (kendi besinini üretemez, klorofili yoktur). Şapkalı mantarlar, Küf mantarları (besinleri çürütür, penisilin ilacı üretilir), Maya mantarları (hamurun kabarması), Parazit mantarlar (pamukçuk, saçkıran).",
+                    "🌱 **Bitkiler:** 1. *Çiçeksiz Bitkiler* (Karayosunu, Eğrelti otu, Atkuyruğu), 2. *Çiçekli Bitkiler* (Kök, Gövde, Yaprak, Çiçek). Yaprakta fotosentez ve terleme gerçekleşir.",
+                    "🐾 **Hayvanlar:** 1. *Omurgasızlar* (Sünger, Salyangoz, Solucan, Böcekler, Yengeç), 2. *Omurgalılar* (Balıklar, Kurbağalar, Sürüngenler, Kuşlar, Memeliler). Yarasa ve Balina memelidir!"
+                ]
+            },
+            {
+                unit: "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
+                highlights: [
+                    "⚖️ **Dinamometre:** Kuvveti ölçen alettir. Birimi Newton'dur (N). İçindeki yayın esneklik özelliğinden yararlanılır. Kalın yaylar büyük kuvvetleri, ince yaylar hassas küçük kuvvetleri ölçer.",
+                    "🛑 **Sürtünme Kuvveti:** Hareketi engelleyen veya zorlaştıran, daima hareket yönüne zıt kuvvettir. Pürüzlü yüzeylerde sürtünme fazla, kaygan yüzeylerde azdır.",
+                    "💨 **Hava ve Su Direnci:** Havanın ve suyun cisimlerin hareketine karşı gösterdiği sürtünme kuvvetidir. Uçakların ve gemilerin burunlarının 'V' şeklinde (aerodinamik) yapılması direnci azaltır."
+                ]
+            }
+        ]
+    },
+    "6": {
+        unitSummaries: [
+            {
+                unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
+                highlights: [
+                    "🪐 **Güneş'e Yakınlık Sırası:** Merkür ➔ Venüs ➔ Dünya ➔ Mars ➔ (Asteroit Kuşağı) ➔ Jüpiter ➔ Satürn ➔ Uranüs ➔ Neptün.",
+                    "🪨 **Karasal (İç) Gezegenler:** Merkür, Venüs, Dünya, Mars (Kayalık yüzeyli, halkaları yok).",
+                    "💨 **Gazsal (Dış) Gezegenler:** Jüpiter, Satürn, Uranüs, Neptün (Dev gaz kütleleri, hepsinin halkası ve çok sayıda uydusu vardır).",
+                    "🌑 **Güneş Tutulması:** Ay, Güneş ile Dünya'nın arasına girer (G-A-D). Gündüz vakti ve Yeni Ay evresinde gözlenir.",
+                    "🌕 **Ay Tutulması:** Dünya, Güneş ile Ay'ın arasına girer (G-D-A). Gece vakti ve Dolunay evresinde gözlenir."
+                ]
+            },
+            {
+                unit: "2. Ünite: Vücudumuzdaki Sistemler",
+                highlights: [
+                    "🦴 **Destek ve Hareket:** Kemikler (Uzun, Kısa, Yassı), Eklemler (Oynar, Yarı oynar, Oynamaz), Kaslar (Çizgili/İskelet, Düz, Kalp kası).",
+                    "🍔 **Sindirim Sistemi:** Ağız (tükürük ile karbonhidrat) ➔ Mide (mide özsuyu ile protein) ➔ İnce Bağırsak (pankreas özsuyu ile yağ, protein, karbonhidrat sindirimi tamamlanır ve villuslarla emilim olur). Karaciğer 'safra' salgısıyla yağların mekanik sindirimini sağlar.",
+                    "❤️ **Dolaşım Sistemi:** Kalp 4 odacıktan oluşur (2 kulakçık, 2 karıncık). *Küçük Dolaşım:* Kalp (sağ karıncık) ➔ Akciğer (kan temizlenir) ➔ Kalp (sol kulakçık). *Büyük Dolaşım:* Kalp (sol karıncık - Aort) ➔ Bütün Vücut ➔ Kalp (sağ kulakçık)."
+                ]
+            }
+        ]
+    },
+    "7": {
+        unitSummaries: [
+            {
+                unit: "1. Ünite: Güneş Sistemi ve Ötesi",
+                highlights: [
+                    "🚀 **Uzay Teknolojileri:** Yapay uydular (Haberleşme: Türksat 4A/5A/5B, Gözlem: Göktürk-1/2, Rasat). Ömrü biten uydular ve roket parçaları 'Uzay Kirliliği' oluşturur.",
+                    "🔭 **Teleskoplar:** Aynalı, Mercekli ve Radyo teleskopları. Dünyanın atmosferik olumsuzluklarından etkilenmemek için Hubble ve James Webb uzay teleskopları uzaya fırlatılmıştır.",
+                    "✨ **Yıldızların Yaşamı:** Bulutsu (Nebula) içinde doğarlar. Küçük kütleli yıldızlar ➔ Kızıl dev ➔ Gezegenimsi bulutsu ➔ Beyaz cüce olur. Büyük kütleli yıldızlar ➔ Süpernova patlaması ➔ Nötron yıldızı veya Karadelik olur."
+                ]
+            },
+            {
+                unit: "2. Ünite: Hücre ve Bölünmeler",
+                highlights: [
+                    "🔬 **Organeller:** Mitokondri (Enerji/ATP), Kloroplast (Bitkide fotosentez), Ribozom (Protein), Golgi (Salgı ve paketleme), ER (Taşıma), Lizozom (Hücre içi sindirim), Sentrozom (Hayvanda bölünme iğ iplikleri).",
+                    "🧬 **Mitoz:** Vücut hücrelerinde görülür. 2n ➔ 2n (2 yavru hücre). Kromozom sayısı ve genetik yapı değişmez. Tek hücrelilerde üreme, çok hücrelilerde büyüme, onarım ve gelişmeyi sağlar.",
+                    "🌱 **Mayoz:** Üreme ana hücrelerinde (2n) görülür, üreme hücreleri (n - sperm, yumurta, polen) oluşur. Kromozom sayısı yarıya iner (2n ➔ n, 4 yavru hücre). Parça değişimi (Crossing-over) sayesinde kalıtsal çeşitlilik oluşur."
+                ]
+            },
+            {
+                unit: "3. Ünite: Kuvvet ve Enerji",
+                highlights: [
+                    "⚖️ **Kütle vs Ağırlık:** Kütle değişmeyen madde miktarıdır (kg/g, eşit kollu terazi ile ölçülür). Ağırlık bir kuvvettir ($G = m \\cdot g$, Newton, dinamometre ile ölçülür; yerçekimine göre değişir).",
+                    "⚙️ **Fiziksel İş (W):** Bir kuvvetin iş yapabilmesi için cisme kendi doğrultusunda yol aldırması şarttır ($W = F \\cdot \\Delta x$).",
+                    "⚡ **Mekanik Enerjinin Korunumu:** Sürtünmesiz ortamda Kinetik Enerji ($E_k = \\frac{1}{2}mv^2$) ile Çekim Potansiyel Enerjisi ($E_p = mgh$) birbirine dönüşür, toplam mekanik enerji sabit kalır!"
+                ]
+            }
+        ]
+    },
+    "8": {
+        unitSummaries: [
+            {
+                unit: "1. Ünite: Mevsimler ve İklim",
+                highlights: [
+                    "🌍 **Mevsimlerin Oluşma Nedenleri:** 1. Dünya'nın Güneş etrafında dolanması, 2. Dünya'nın ekseninin $23^\\circ 27'$ eğik olması. Güneş'e olan mesafe mevsimleri ETKİLEMEZ!",
+                    "☀️ **Güneş Işınlarının Geliş Açısı:** Işınlar dik veya dike yakın gelirse (yaz), birim yüzeye düşen enerji fazla olur ve gölge boyu kısa olur. Eğik gelirse (kış), geniş alana yayılır ve gölge boyu uzun olur.",
+                    "📅 **Önemli Tarihler:** 21 Haziran (Yengeç Dönencesine dik, KYK Yaz - GYK Kış), 21 Aralık (Oğlak Dönencesine dik, GYK Yaz - KYK Kış), 21 Mart & 23 Eylül (Ekinoks, Ekvatora dik, Gece=Gündüz 12 saat).",
+                    "🌬️ **Rüzgar Oluşumu:** Yüksek Basınç Alanından (Soğuk, Alçalıcı hava, açık hava) ➔ Alçak Basınç Alanına (Sıcak, Yükselici hava, bulutlu) doğru yatay yönlü hava hareketidir."
+                ]
+            },
+            {
+                unit: "2. Ünite: DNA ve Genetik Kod",
+                highlights: [
+                    "🧬 **Karmaşıktan Basite Sıralama (KEDİGENİ):** Kromozom > DNA > Gen > Nükleotid.",
+                    "🧪 **Nükleotid Yapısı:** Fosfat + Deoksiriboz Şekeri + Organik Baz (Adenin, Timin, Guanin, Sitozin). $A = T$ ve $G = C$.",
+                    "🌿 **Kalıtım (Mendel):** Saf Döl (Homozigot: $AA$ veya $aa$), Melez Döl (Heterozigot: $Aa$). Baskın Gen ($A$), Çekinik Gen ($a$). İki melez çaprazlandığında ($Aa \\times Aa$): %25 $AA$, %50 $Aa$, %25 $aa$ (%75 Baskın Fenotip, %25 Çekinik Fenotip).",
+                    "🧬 **Kavramlar:** *Mutasyon* (Gen yapısının bozulması: Van kedisi, Down sendromu, Orak hücre), *Modifikasyon* (Çevre etkisiyle genin işleyişinin değişmesi: Çuha çiçeği, Himalaya tavşanı, Spor yapanın kaslanması - kalıtsal değildir!), *Adaptasyon* (Canlının yaşama ve üreme şansını artıran kalıtsal uyum: Kutup ayısının beyaz kürkü, Kaktüsün iğne yaprağı)."
+                ]
+            },
+            {
+                unit: "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+                highlights: [
+                    "🧱 **Katı Basıncı ($P = \\frac{G}{S}$):** Basınç, cismin ağırlığı (kuvvet) ile doğru, yere temas eden yüzey alanı ile ters orantılıdır. Yüzey küçüldükçe basınç artar (Bıçak ağzı, çivi ucu). Yüzey büyüdükçe basınç azalır (Tır tekeri, ördek ayak perdesi).",
+                    "💧 **Sıvı Basıncı ($P = h \\cdot d \\cdot g$):** Sıvı basıncı sıvının derinliği ($h$) ve sıvının yoğunluğu ($d$) ile doğru orantılıdır. Kabın şekline ve sıvı miktarına bağlı DEĞİLDİR!",
+                    "🚗 **Pascal Prensibi:** Kapalı kaplardaki sıvılar, üzerlerine uygulanan basıncı her doğrultuda ve aynı büyüklükte iletir (Hidrolik fren, berber koltuğu, su cenderesi, hidrolik liftler).",
+                    "🎈 **Açık Hava Basıncı ($P_0$):** Toriçelli deneyi deniz seviyesinde $0^\\circ\\text{C}$'de cıva ile $76\\text{ cm-Hg}$ ölçülmüştür. Denizden yükseklere çıkıldıkça açık hava basıncı AZALIR!"
+                ]
+            },
+            {
+                unit: "4. Ünite: Madde ve Endüstri",
+                highlights: [
+                    "📊 **Periyodik Sistem:** Elementler artan atom numaralarına (proton sayılarına) göre dizilmiştir (Moseley). 7 Periyot (yatay) ve 18 Grup (8 adet A, 10 adet B grubu dikey) bulunur.",
+                    "⚙️ **Element Sınıfları:** *Metaller* (Sol tarafta, parlak, elektriği iletir, tel ve levha olur), *Ametaller* (Sağ tarafta, mat, kırılgandır, $1\\text{A}$'daki Hidrojen ametaldir!), *Soygazlar* ($8\\text{A}$, kararlıdır, bağ yapmaz).",
+                    "🧪 **Kimyasal Tepkimeler:** Atom türü ve atom sayısı daima KORUNUR! Toplam kütle KORUNUR! Molekül sayısı ve hacim değişebilir.",
+                    "🍋 **Asitler ve Bazlar:** Asitler ($0-7$ arası, ekşidir, $\\text{H}^+$ iyonu verir, mavi turnusolu kırmızıya çevirir, metaller ve mermerle tepkimeye girer). Bazlar ($7-14$ arası, acıdır, kayganlık hissi verir, $\\text{OH}^-$ iyonu verir, kırmızı turnusolu maviye çevirir, cam ve porseleni matlaştırır)."
+                ]
+            }
+        ]
+    }
+};

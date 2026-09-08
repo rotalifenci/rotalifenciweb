@@ -311,7 +311,7 @@ function handleRouteChange() {
     } else if (hash === "projects") {
         renderProjectsPage(appEl);
     } else if (hash === "teachers-room") {
-        renderTeachersRoomPage(appEl);
+        renderLgsPusulasiPage(appEl);
     } else if (hash === "student-portal") {
         renderStudentPortalPage(appEl);
     } else if (hash === "teacher-dashboard" || hash.startsWith("admin")) {
@@ -490,13 +490,13 @@ function renderHomePage(container) {
                         </div>
                     </a>
 
-                    <a href="#teachers-room" class="p-5 bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
-                        <div class="w-12 h-12 rounded-xl bg-blue-700 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-blue-700/20">
-                            <i class="fa-solid fa-chalkboard-user"></i>
+                    <a href="#lgs-pusulasi" class="p-5 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-700 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-indigo-700/20">
+                            <i class="fa-solid fa-compass"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-black text-slate-900">👨‍🏫 Öğretmen Odası</h4>
-                            <p class="text-xs text-slate-500">Yıllık Planlar & Rubrikler</p>
+                            <h4 class="text-sm font-black text-slate-900">🧭 LGS Pusulası</h4>
+                            <p class="text-xs text-slate-500">Soru Taktikleri & Strateji</p>
                         </div>
                     </a>
                 </div>
