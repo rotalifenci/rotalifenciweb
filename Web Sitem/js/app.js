@@ -898,109 +898,390 @@ function renderGradesOverview(container) {
 // 1. Ders Notu, 2. Ders Sunumu, 3. Videolar, 4. Etkinlikler,
 // 5. Soru Bankası, 6. Denemeler, 7. Eğitsel Oyunlar
 // -------------------------------------------------------------
+// -------------------------------------------------------------
+// 🔭 BİLİMİN ROTASINI ÇİZENLER (HER SINIF İÇİN BİLİM İNSANLARI & BULUŞLARI)
+// -------------------------------------------------------------
+const SCIENTISTS_DATA = {
+    "5": [
+        {
+            name: "Galileo Galilei",
+            title: "Modern Fiziğin ve Teleskopik Astronominin Babası",
+            years: "1564 - 1642",
+            badge: "GÜNEŞ, DÜNYA VE AY",
+            icon: "fa-solid fa-satellite",
+            color: "from-amber-500 to-orange-600",
+            curriculumLink: "Güneş Lekeleri, Ay Yüzeyi ve Jüpiter'in Uyduları",
+            discovery: "İlk teleskoplardan birini yaparak Ay'ın kraterlerle kaplı olduğunu ve Güneş üzerindeki siyah lekeleri gözlemledi. Dünya'nın döndüğünü kanıtladı.",
+            quote: "Ve yine de dönüyor...",
+            funFact: "Güneş'e teleskopla doğrudan bakmanın gözleri kör edebileceğini fark ederek gölge izdüşümü yöntemini geliştirdi."
+        },
+        {
+            name: "Ali Kuşçu",
+            title: "Büyük Türk-İslam Astronom ve Matematik Bilgini",
+            years: "1403 - 1474",
+            badge: "GÖKBİLİM & AY HARİTASI",
+            icon: "fa-solid fa-moon",
+            color: "from-blue-600 to-indigo-700",
+            curriculumLink: "Ay'ın Evreleri, Boyutları ve İlk Ay Haritası",
+            discovery: "Ay'ın ve Güneş'in hareketlerini dakikası dakikasına hesapladı. Çizdiği detaylı Ay haritası nedeniyle NASA, Ay'daki bir kratere onun adını verdi.",
+            quote: "İlim yolunda gösterilen gayret, insanlığa bırakılan en büyük mirastır.",
+            funFact: "Fatih Sultan Mehmet'in davetiyle İstanbul'a gelmiş ve Ayasofya Medresesi'nin başmüderrisi olmuştur."
+        },
+        {
+            name: "İbn-i Heysem (Alhazen)",
+            title: "Optik ve Işık Biliminin Kurucusu",
+            years: "965 - 1040",
+            badge: "IŞIĞIN YAYILMASI",
+            icon: "fa-solid fa-sun",
+            color: "from-red-500 to-rose-700",
+            curriculumLink: "Işığın Doğrusal Yayılması ve Karanlık Oda (Camera Obscura)",
+            discovery: "Eski Yunan'ın 'Gözden ışık çıkar' yanılgısını yıktı. Görmenin, cisimlerden yansıyan ışığın göze gelmesiyle oluştuğunu ilk kez bilimsel olarak ispatladı.",
+            quote: "Işık doğrular boyunca yayılır ve tüm evreni aydınlatır.",
+            funFact: "Fotoğraf makinelerinin ve kameraların temel çalışma prensibi olan 'Karanlık Oda'yı 1000 yıl önce inşa etmiştir."
+        },
+        {
+            name: "Louis Pasteur",
+            title: "Mikrobiyolojinin ve Aşıların Öncüsü",
+            years: "1822 - 1895",
+            badge: "CANLILAR DÜNYASI",
+            icon: "fa-solid fa-bacterium",
+            color: "from-emerald-600 to-teal-700",
+            curriculumLink: "Mikroskobik Canlılar, Mantarlar ve Besinlerin Bozulması",
+            discovery: "Gözle görülmeyen mikroorganizmaların hastalıklara ve besin bozulmalarına yol açtığını keşfetti. Pastörizasyon yöntemini ve kuduz aşısını geliştirdi.",
+            quote: "Şans, ancak hazır olan zihinleri ödüllendirir.",
+            funFact: "Mikroskop altında sütün içindeki bakterileri yok etmek için ısıtıp aniden soğutma yöntemini bularak milyonlarca hayat kurtardı."
+        }
+    ],
+    "6": [
+        {
+            name: "Nicolaus Copernicus & Johannes Kepler",
+            title: "Güneş Merkezli Evren ve Gezegen Hareketleri",
+            years: "1473 - 1630",
+            badge: "GÜNEŞ SİSTEMİ VE GEZEGENLER",
+            icon: "fa-solid fa-globe",
+            color: "from-purple-600 to-indigo-800",
+            curriculumLink: "Gezegenlerin Yörüngeleri ve Güneş-Ay Tutulmaları",
+            discovery: "Dünya'nın evrenin merkezinde değil, diğer tüm gezegenler gibi Güneş'in etrafında eliptik yörüngelerde döndüğünü matematiksel kanıtlarla ortaya koydular.",
+            quote: "Evrenin mimarisi, kusursuz bir matematiksel ahenkle örülmüştür.",
+            funFact: "Kepler, gezegenlerin Güneş'e yaklaştıkça hızlandığını, uzaklaştıkça yavaşladığını 3 temel kanunla formülize etti."
+        },
+        {
+            name: "İbn-i Sina (Avicenna)",
+            title: "Tıbbın Hükümdarı ve Dolaşım Öncüsü",
+            years: "980 - 1037",
+            badge: "VÜCUDUMUZDAKİ SİSTEMLER",
+            icon: "fa-solid fa-heart-pulse",
+            color: "from-rose-600 to-red-700",
+            curriculumLink: "Kan Dolaşımı, Nabız ve İç Organların Fonksiyonları",
+            discovery: "Yazdığı 'El-Kanun fi't-Tıbb' kitabı 600 yıl boyunca Avrupa üniversitelerinde temel tıp kitabı olarak okutuldu. Nabız ölçümü ve mikrobik bulaşmayı ilk açıklayanlardandır.",
+            quote: "Bilim ve sanat takdir edilmediği yerden göç eder.",
+            funFact: "Nabzın ritmi ve damarların esnekliği üzerinden hastalıkların teşhisini gözü kapalı yapabilmekteydi."
+        },
+        {
+            name: "Michael Faraday",
+            title: "Elektromanyetizmanın ve İletkenliğin Dâhisi",
+            years: "1791 - 1867",
+            badge: "ELEKTRİĞİN İLETİMİ",
+            icon: "fa-solid fa-bolt",
+            color: "from-amber-500 to-yellow-600",
+            curriculumLink: "İletken ve Yalıtkan Maddeler, Elektrik Akımı",
+            discovery: "Elektrik motorunun ve jeneratörün temelini attı. Maddelerin elektriği ve manyetik alanları nasıl ilettiğini (Faraday Kafesi) gösterdi.",
+            quote: "Hiçbir şey gerçekleşemeyecek kadar harika değildir; eğer doğa yasalarına uygunsa.",
+            funFact: "Yoksul bir demircinin oğluydu ve ciltçi çırağıyken ciltlediği bilim kitaplarını okuyarak bilimin zirvesine çıktı."
+        },
+        {
+            name: "Sir Isaac Newton (Kuvvet)",
+            title: "Kuvvet, Hareket ve Yer Çekimi Kanunları",
+            years: "1643 - 1727",
+            badge: "KUVVET VE HAREKET",
+            icon: "fa-solid fa-apple-whole",
+            color: "from-emerald-600 to-cyan-700",
+            curriculumLink: "Kuvvetin Ölçülmesi (Newton - N), Sürtünme ve Yer Çekimi",
+            discovery: "Kuvvet birimine adını verdi (1 N). Evrensel kütle çekim yasasını ve etki-tepki ilkelerini keşfederek modern fiziğin temelini attı.",
+            quote: "Eğer daha ileriyi görebildiysem, bu devlerin omuzlarında durduğum içindir.",
+            funFact: "Ağaçtan düşen elmayı gözlemleyerek Dünya'nın Ay'ı aynı çekim kuvvetiyle yörüngesinde tuttuğunu hesapladı."
+        }
+    ],
+    "7": [
+        {
+            name: "Robert Hooke & Antonie van Leeuwenhoek",
+            title: "Hücrenin ve Mikroskobik Dünyanın Kâşifleri",
+            years: "1635 - 1723",
+            badge: "HÜCRE VE BÖLÜNMELER",
+            icon: "fa-solid fa-dna",
+            color: "from-emerald-600 to-green-700",
+            curriculumLink: "Hücre Teorisi, Organeller, Çekirdek ve Mitoz",
+            discovery: "Robert Hooke mantar meşesini inceleyerek içi boş odacıklara 'Cell' (Hücre) adını verdi. Leeuwenhoek ise tek hücreli canlıları ilk kez canlı olarak gözlemledi.",
+            quote: "Mikroskop, doğanın en gizli sırlarını gözler önüne seren büyülü bir kapıdır.",
+            funFact: "Leeuwenhoek kendi geliştirdiği tek mercekli mikroskoplarla göl suyundaki mikroorganizmaları 'küçük hayvancıklar' (animacules) olarak kaydetti."
+        },
+        {
+            name: "James Prescott Joule & Isaac Newton",
+            title: "İş, Enerji ve Kinetik-Potansiyel Dönüşümleri",
+            years: "1818 - 1889",
+            badge: "KUVVET, İŞ VE ENERJİ",
+            icon: "fa-solid fa-gauge-high",
+            color: "from-blue-600 to-indigo-700",
+            curriculumLink: "İş = Kuvvet x Yol, Joule Birimi ve Enerjinin Korunumu",
+            discovery: "Mekanik işin ısıya dönüştüğünü kanıtlayarak enerjinin yok olmadığını, sadece biçim değiştirdiğini ispatladı. Enerji birimi 'Joule' onun adını taşır.",
+            quote: "Doğadaki hiçbir enerji kaybolmaz; potansiyelden kinetiğe sonsuz bir dansla akar.",
+            funFact: "Balayında bile Alpler'deki şelalenin tepesindeki su ile tabanındaki su arasındaki sıcaklık farkını termometreyle ölçmüştür."
+        },
+        {
+            name: "Dmitri Mendeleyev & John Dalton",
+            title: "Atom Modelleri ve Saf Maddelerin Düzeni",
+            years: "1834 - 1907",
+            badge: "SAF MADDE VE KARIŞIMLAR",
+            icon: "fa-solid fa-flask-vial",
+            color: "from-amber-600 to-orange-700",
+            curriculumLink: "Atom, Molekül, Element Sembolleri ve Karışımların Ayrılması",
+            discovery: "Elementleri atom ağırlıklarına ve kimyasal benzerliklerine göre sıralayarak Periyodik Tablo'yu oluşturdu. Henüz keşfedilmemiş elementlerin özelliklerini önceden bildi.",
+            quote: "Doğa bana kartların dizilimini gösterdiğinde tek yapmam gereken onları masaya koymaktı.",
+            funFact: "Element kartlarıyla trende iskambil oynar gibi periyodik cetvelin ilk taslağını bir rüyasında tamamlamıştır."
+        },
+        {
+            name: "Edwin Hubble",
+            title: "Genişleyen Evren ve Galaksilerin Kâşifi",
+            years: "1889 - 1953",
+            badge: "GÜNEŞ SİSTEMİ VE ÖTESİ",
+            icon: "fa-solid fa-star",
+            color: "from-purple-700 to-pink-700",
+            curriculumLink: "Samanyolu, Bulutsular (Nebula), Yıldızlar ve Işık Yılı",
+            discovery: "Samanyolu galaksisinin evrendeki tek galaksi olmadığını, trilyonlarca galaksi bulunduğunu ve evrenin sürekli genişlediğini kanıtladı. Hubble Uzay Teleskobu onun adını taşır.",
+            quote: "Evren sandığımızdan sadece daha büyük değil, hayal edebileceğimizden de büyüktür.",
+            funFact: "Gençliğinde başarılı bir boksör ve avukattı, ancak gökyüzü tutkusu galip gelerek tarihin en büyük astronomlarından biri oldu."
+        }
+    ],
+    "8": [
+        {
+            name: "Prof. Dr. Aziz Sancar",
+            title: "Nobel Kimya Ödülü Sahibi Türk Bilim İnsanı",
+            years: "1946 - Günümüz",
+            badge: "DNA VE GENETİK KOD",
+            icon: "fa-solid fa-award",
+            color: "from-red-600 to-rose-700",
+            curriculumLink: "DNA Yapısı, Nükleotidler, Mutasyon ve DNA Onarımı",
+            discovery: "Hücrelerin hasar gören DNA'ları nasıl onardığını ve genetik bilgisini nasıl koruduğunu haritalandırarak 2015 Nobel Kimya Ödülü'nü kazandı.",
+            quote: "Çoğu insan zekaya inanır, ben inanmıyorum. Bizi birbirimizden ayıran emektir, çalışmaktır.",
+            funFact: "Mardin'in Savur ilçesinde okuma yazma bilmeyen 8 çocuklu bir ailenin çocuğu olarak büyümüş, Nobel madalyasını Anıtkabir'e bağışlamıştır."
+        },
+        {
+            name: "Gregor Mendel",
+            title: "Genetik ve Kalıtım Biliminin Kurucusu",
+            years: "1822 - 1884",
+            badge: "KALITIM & ÇAPRAZLAMALAR",
+            icon: "fa-solid fa-seedling",
+            color: "from-emerald-600 to-teal-700",
+            curriculumLink: "Baskın ve Çekinik Genler, Fenotip, Genotip ve Akraba Evliliği",
+            discovery: "Manastır bahçesinde binlerce bezelye bitkisini çaprazlayarak karakterlerin nesilden nesile nasıl aktarıldığını (Mendel Kanunları) ortaya koydu.",
+            quote: "Benim zamanım bir gün mutlaka gelecek.",
+            funFact: "Yaşarken keşfi anlaşılamadı; ölümünden 16 yıl sonra 3 farklı bilim insanı aynı sonuçları bularak Mendel'in hakkını teslim etti."
+        },
+        {
+            name: "Blaise Pascal & Evangelista Torricelli",
+            title: "Sıvı ve Gaz Basıncının Büyük Mimarları",
+            years: "1608 - 1662",
+            badge: "KATI, SIVI VE GAZ BASINCI",
+            icon: "fa-solid fa-vial-circle-check",
+            color: "from-blue-600 to-indigo-800",
+            curriculumLink: "P = h • d • g, Pascal Prensibi (Hidrolik Sistemler), Açık Hava Basıncı (Torriçelli)",
+            discovery: "Pascal: Kapalı kaptaki sıvıların basıncı her yöne aynen ilettiğini buldu (Hidrolik frenler, berber koltukları). Torriçelli: Cıvalı barometreyle 76 cm-Hg açık hava basıncını ölçtü.",
+            quote: "Doğa boşluktan nefret etmez; hava ağırlığıyla her şeye baskı uygular.",
+            funFact: "Pascal ilk mekanik hesap makinesini (Pascaline) vergi memuru olan babasının işlerini kolaylaştırmak için 19 yaşında icat etmiştir."
+        },
+        {
+            name: "Marie Curie",
+            title: "2 Farklı Alanda Nobel Kazanan İlk ve Tek Kadın Bilim İnsanı",
+            years: "1867 - 1934",
+            badge: "MADDE VE ENDÜSTRİ & RADYOAKTİVİTE",
+            icon: "fa-solid fa-atom",
+            color: "from-purple-600 to-pink-700",
+            curriculumLink: "Elementlerin Keşfi (Polonyum, Radyum), Kimyasal Tepkimeler ve Periyodik Sistem",
+            discovery: "Radyoaktiviteyi keşfetti. Hem Fizik (1903) hem de Kimya (1911) dallarında iki Nobel Ödülü kazanan tarihteki ilk ve tek bilim insanıdır.",
+            quote: "Hayatta hiçbir şeyden korkulmamalıdır, sadece anlaşılmalıdır. Şimdi daha çok anlama zamanıdır.",
+            funFact: "Çalışma defterleri bugün bile o kadar radyoaktiftir ki, Paris Ulusal Kütüphanesi'nde kurşun kaplı kutularda korunur ve sadece özel kıyafetlerle incelenebilir."
+        }
+    ]
+};
+
+function renderScientistsModule(gradeNumber) {
+    const list = SCIENTISTS_DATA[String(gradeNumber)] || SCIENTISTS_DATA["8"];
+
+    return `
+        <div class="mb-10 animate-in fade-in duration-300">
+            <!-- Üst Bilgi Başlığı -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3.5 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-700 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-telescope text-amber-300"></i> BİLİMİN ROTASINI ÇİZENLER
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">${gradeNumber}. Sınıf Müfredatına Yön Veren Dâhiler</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Tarihi Değiştiren Bilim İnsanları ve Büyük Keşifleri</h3>
+                </div>
+                <span class="text-xs font-bold text-red-700 bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200 self-start sm:self-auto">
+                    🏆 İlham Veren Başarı Hikayeleri
+                </span>
+            </div>
+
+            <!-- Bilim İnsanları Kartları -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${list.map(sci => `
+                    <div class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${sci.color} opacity-10 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+
+                        <div>
+                            <div class="flex items-start justify-between gap-3 mb-4">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr ${sci.color} text-white flex items-center justify-center text-2xl shadow-md group-hover:rotate-6 transition-transform flex-shrink-0">
+                                        <i class="${sci.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg sm:text-xl font-black text-slate-900 leading-tight group-hover:text-red-600 transition-colors">${sci.name}</h4>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">${sci.title} • <span class="text-slate-400 font-medium">${sci.years}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-[10px] font-black uppercase tracking-wider border border-red-100">
+                                    📌 MÜFREDAT BAĞI: ${sci.curriculumLink}
+                                </span>
+                            </div>
+
+                            <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mb-4">
+                                ${sci.discovery}
+                            </p>
+
+                            <!-- İlham Verici Söz & Eğlenceli Bilgi -->
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2 mb-4 text-xs">
+                                <div class="text-slate-800 font-bold italic flex items-center gap-2">
+                                    <i class="fa-solid fa-quote-left text-red-500 text-xs"></i>
+                                    <span>"${sci.quote}"</span>
+                                </div>
+                                <div class="text-[11px] text-slate-500 font-medium flex items-start gap-1.5 pt-1.5 border-t border-slate-200/60">
+                                    <i class="fa-solid fa-lightbulb text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                    <span><strong>Biliyor muydunuz?</strong> ${sci.funFact}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">${sci.badge}</span>
+                            <button onclick="showToast('${sci.name} hakkında detaylı araştırma notu açıldı', 'info')" class="px-4 py-2 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors shadow-sm flex items-center gap-1.5">
+                                <i class="fa-solid fa-atom"></i> Keşif Kartı
+                            </button>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
 function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
-    // Parse gradeId and subTab: e.g. "grade-5/ders-notu" or "grade-5"
+    // Parse gradeId and subTab: e.g. "grade-5/bilim-insanlari" or "grade-5"
     let parts = (gradeIdWithTab || "grade-8").split("/");
     let gradeId = parts[0] || "grade-8";
-    let subTab = parts[1] || "uniteler";
+    let subTab = parts[1] || "bilim-insanlari";
+    if (subTab === "uniteler") subTab = "bilim-insanlari";
 
     // Find grade in PORTAL_GRADES
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
     const subData = getGradeSubSectionsData(grade.number);
 
     container.innerHTML = `
-        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <!-- Hero Başlık Alanı -->
-            <div class="bg-gradient-to-r ${grade.color} text-white rounded-3xl p-8 sm:p-10 mb-8 shadow-xl relative overflow-hidden">
-                <div class="relative z-10 max-w-3xl">
-                    <div class="flex items-center gap-2 mb-3">
-                        <span class="px-3.5 py-1 rounded-full bg-white/20 text-white text-xs font-black tracking-wider uppercase inline-block">
-                            ${grade.number}. SINIF FEN BİLİMLERİ PORTALI
-                        </span>
-                        ${grade.isLGS ? '<span class="px-3 py-1 rounded-full bg-amber-400 text-slate-900 text-xs font-black">🔥 LGS MERKEZİ</span>' : ''}
+        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-10">
+            <!-- Hero Başlık & 8'li Kutu Modül Alanı (BÜYÜK BÖLÜM İÇERİSİNDE BÜTÜNLEŞİK) -->
+            <div class="bg-gradient-to-r ${grade.color} text-white rounded-3xl p-6 sm:p-10 mb-10 shadow-2xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <div class="flex items-center gap-2">
+                            <span class="px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white text-xs font-black tracking-wider uppercase inline-block shadow-sm">
+                                ${grade.number}. SINIF FEN BİLİMLERİ PORTALI
+                            </span>
+                            ${grade.isLGS ? '<span class="px-3.5 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-sm">🔥 LGS MERKEZİ</span>' : ''}
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="triggerUploadModal('${grade.number}', '${subTab}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md self-start md:self-auto">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> + Bu Sınıfa İçerik Ekle
+                            </button>
+                        </div>
                     </div>
-                    <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4">${grade.title}</h2>
-                    <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 font-medium">${grade.description}</p>
+
+                    <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight mb-3 drop-shadow-sm">${grade.title}</h2>
+                    <p class="text-sm sm:text-base text-white/95 leading-relaxed max-w-4xl font-medium drop-shadow-sm mb-6">${grade.description}</p>
                     
-                    <div class="flex flex-wrap gap-3">
-                        <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="px-5 py-2.5 bg-white text-slate-900 font-black text-xs uppercase rounded-xl shadow-md hover:bg-slate-100 transition-all flex items-center gap-2">
-                            📝 Konu Anlatımları & Notlar
-                        </button>
-                        <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2">
-                            📚 Soru Bankası & Testler
-                        </button>
-                        <button onclick="triggerUploadModal('${grade.number}', '${subTab}')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md">
-                            <i class="fa-solid fa-cloud-arrow-up"></i> + Bu Sınıfa Dosya / Not Ekle
-                        </button>
+                    <!-- 8 ALT BÖLÜM KUTULARI (BÜYÜK BÖLÜMÜN İÇİNDE TEK SIRA / DUYARLI GRID) -->
+                    <div class="pt-6 border-t border-white/25">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
+                            <!-- 1. Bilimin Rotasını Çizenler -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'bilim-insanlari' || subTab === 'uniteler' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'bilim-insanlari' || subTab === 'uniteler' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-telescope"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🔭 BİLİMİN ROTASINI ÇİZENLER</span>
+                            </button>
+
+                            <!-- 2. Ders Notu -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'ders-notu' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-file-lines"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">📝 DERS NOTU</span>
+                            </button>
+
+                            <!-- 3. Ders Sunumu -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'ders-sunumu' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'ders-sunumu' ? 'bg-orange-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-file-powerpoint"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">📊 DERS SUNUMU</span>
+                            </button>
+
+                            <!-- 4. Videolar -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'videolar')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'videolar' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'videolar' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-circle-play"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎥 VİDEOLAR</span>
+                            </button>
+
+                            <!-- 5. Etkinlikler -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'etkinlikler')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'etkinlikler' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-puzzle-piece"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🧩 ETKİNLİKLER</span>
+                            </button>
+
+                            <!-- 6. Soru Bankası -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'soru-bankasi' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'soru-bankasi' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-book-open-reader"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">📚 SORU BANKASI</span>
+                            </button>
+
+                            <!-- 7. Denemeler -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'denemeler')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'denemeler' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'denemeler' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
+                            </button>
+
+                            <!-- 8. Eğitsel Oyunlar -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-gamepad"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- 8 ALT BÖLÜM (TEK SIRA KUTU KUTU MODÜL KARTLARI) -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 sm:gap-3 mb-10">
-                <!-- 1. Müfredat Üniteleri -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'uniteler')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'uniteler' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'uniteler' ? 'bg-white/20 text-white' : 'bg-red-50 text-red-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-layer-group"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">MÜFREDAT ÜNİTELERİ</span>
-                </button>
-
-                <!-- 2. Ders Notu -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'ders-notu' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'ders-notu' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-file-lines"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">📝 DERS NOTU</span>
-                </button>
-
-                <!-- 3. Ders Sunumu -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'ders-sunumu' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'ders-sunumu' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-file-powerpoint"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">📊 DERS SUNUMU</span>
-                </button>
-
-                <!-- 4. Videolar -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'videolar')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'videolar' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'videolar' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-circle-play"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🎥 VİDEOLAR</span>
-                </button>
-
-                <!-- 5. Etkinlikler -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'etkinlikler')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'etkinlikler' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'etkinlikler' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-puzzle-piece"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🧩 ETKİNLİKLER</span>
-                </button>
-
-                <!-- 6. Soru Bankası -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'soru-bankasi' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'soru-bankasi' ? 'bg-white/20 text-white' : 'bg-indigo-50 text-indigo-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-book-open-reader"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">📚 SORU BANKASI</span>
-                </button>
-
-                <!-- 7. Denemeler -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'denemeler')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'denemeler' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'denemeler' ? 'bg-white/20 text-white' : 'bg-purple-50 text-purple-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-bullseye"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
-                </button>
-
-                <!-- 8. Eğitsel Oyunlar -->
-                <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'egitsel-oyunlar' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
-                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'egitsel-oyunlar' ? 'bg-white/20 text-white' : 'bg-fuchsia-50 text-fuchsia-600 group-hover:scale-110'} transition-transform">
-                        <i class="fa-solid fa-gamepad"></i>
-                    </div>
-                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
-                </button>
             </div>
 
             <!-- SEÇİLEN ALT BÖLÜMÜN İÇERİĞİ -->
@@ -1016,37 +1297,8 @@ function switchGradeSubTab(gradeId, tabName) {
 }
 
 function renderGradeSubTabContent(grade, subData, subTab) {
-    if (subTab === "uniteler") {
-        return `
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${grade.units.map(u => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">${u.code}</span>
-                                <span class="text-xs font-bold text-slate-400">${u.hours} Ders Saati</span>
-                            </div>
-                            <h4 class="text-lg font-black text-slate-900 mb-2 flex items-center gap-2">
-                                <i class="${u.icon} text-red-600"></i> ${u.name}
-                            </h4>
-                            <p class="text-xs text-slate-500 mb-6 font-medium">${u.topics} Temel Alt Konu ve MEB Kazanımı</p>
-
-                            <div class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-black mb-6">
-                                <span class="p-1.5 bg-indigo-50 text-indigo-700 rounded-lg">1.Öğren</span>
-                                <span class="p-1.5 bg-purple-50 text-purple-700 rounded-lg">2.Keşfet</span>
-                                <span class="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg">3.Uygula</span>
-                                <span class="p-1.5 bg-rose-50 text-rose-700 rounded-lg">4.Çöz</span>
-                                <span class="p-1.5 bg-amber-50 text-amber-700 rounded-lg">5.Analiz</span>
-                            </div>
-                        </div>
-
-                        <a href="#unit/${u.id}" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl text-center transition-colors shadow-md shadow-red-600/20">
-                            Ünite Hub'ını Aç →
-                        </a>
-                    </div>
-                `).join("")}
-            </div>
-        `;
+    if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
+        return renderScientistsModule(grade.number);
     } else if (subTab === "ders-notu") {
         const enriched = (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[String(grade.number)]) ? ENRICHED_GRADE_CONTENT[String(grade.number)] : null;
 
@@ -2554,21 +2806,18 @@ function updateAdminNavUI() {
     if (desktopContainer) {
         if (isAdmin) {
             desktopContainer.innerHTML = `
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="triggerUploadModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-500 hover:scale-105 transform" title="Yeni Materyal Ekle">
+                <div class="flex items-center gap-2 animate-in fade-in duration-200">
+                    <button type="button" onclick="triggerUploadModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-500 hover:scale-105 transform" title="Yeni Materyal Ekle">
                         <i class="fa-solid fa-cloud-arrow-up text-xs"></i> <span>İÇERİK EKLE</span>
                     </button>
-                    <button type="button" onclick="handleAdminLogout()" class="px-3 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md shadow-red-600/30 transition-all flex items-center gap-1.5 border border-red-500 hover:scale-105 transform" title="Yönetici Oturumundan Çıkış Yap">
+                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md shadow-red-600/30 transition-all flex items-center gap-1.5 border border-red-500 hover:scale-105 transform" title="Yönetici Oturumundan Çıkış Yap">
                         <i class="fa-solid fa-power-off text-xs"></i> <span>ÇIKIŞ</span>
                     </button>
                 </div>
             `;
         } else {
-            desktopContainer.innerHTML = `
-                <button type="button" onclick="triggerUploadModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-slate-700 hover:scale-105 transform">
-                    <i class="fa-solid fa-lock text-amber-400 text-xs"></i> <span>YÖNETİCİ PANELİ</span>
-                </button>
-            `;
+            // Ziyaretçilere gizli tut
+            desktopContainer.innerHTML = ``;
         }
     }
 
@@ -2577,7 +2826,7 @@ function updateAdminNavUI() {
     if (mobileContainer) {
         if (isAdmin) {
             mobileContainer.innerHTML = `
-                <div class="space-y-2">
+                <div class="space-y-2 animate-in fade-in duration-200">
                     <button type="button" onclick="triggerUploadModal(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
                         <i class="fa-solid fa-cloud-arrow-up"></i> <span>YENİ İÇERİK EKLE</span>
                     </button>
@@ -2587,15 +2836,11 @@ function updateAdminNavUI() {
                 </div>
             `;
         } else {
-            mobileContainer.innerHTML = `
-                <button type="button" onclick="triggerUploadModal(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-400"></i> <span>YÖNETİCİ PANELİ GİRİŞİ</span>
-                </button>
-            `;
+            mobileContainer.innerHTML = ``;
         }
     }
 
-    // 3. Floating Quick Admin Bar (Ekranın Altında Sabit Kısayol)
+    // 3. Floating Quick Admin Bar (Sadece giriş yapıldığında görünür)
     let floatingBar = document.getElementById("floating-admin-bar");
     if (isAdmin) {
         if (!floatingBar) {
@@ -2607,22 +2852,28 @@ function updateAdminNavUI() {
         floatingBar.innerHTML = `
             <div class="flex items-center gap-2 text-xs font-black text-amber-400 border-r border-slate-700 pr-3">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <i class="fa-solid fa-crown"></i> <span class="hidden sm:inline">YÖNETİCİ MODU</span>
+                <i class="fa-solid fa-crown"></i> <span>YÖNETİCİ</span>
             </div>
             <button type="button" onclick="triggerUploadModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Materyal</span> Ekle
+                <i class="fa-solid fa-plus"></i> Ekle
             </button>
-            <button type="button" onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Yönetici Oturumunu Kapat">
-                <i class="fa-solid fa-power-off"></i> <span>Çıkış Yap</span>
+            <button type="button" onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Çıkış Yap">
+                <i class="fa-solid fa-power-off"></i> Çıkış
             </button>
         `;
         floatingBar.style.display = "flex";
     } else {
-        if (floatingBar) {
-            floatingBar.remove();
-        }
+        if (floatingBar) floatingBar.remove();
     }
 }
+
+// Gizli Yönetici Girişi Kısayolu: Ctrl + Shift + A veya Ctrl + Alt + A
+document.addEventListener("keydown", function(e) {
+    if ((e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") || (e.ctrlKey && e.altKey && e.key.toLowerCase() === "a")) {
+        e.preventDefault();
+        openAdminLoginModal();
+    }
+});
 
 // ESC Tuşu ile Modal Kapatma
 document.addEventListener("keydown", function(e) {
