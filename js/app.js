@@ -303,7 +303,7 @@ function handleRouteChange() {
         const tab = parts[1] || "ogren";
         renderUnitHub(appEl, unitId, tab);
     } else if (hash === "lgs-pusulasi") {
-        renderLgsPusulasiPage(appEl);
+        renderGradeDetail(appEl, "grade-8");
     } else if (hash.startsWith("exams")) {
         renderExamsPage(appEl, hash);
     } else if (hash === "stem-lab") {
@@ -419,8 +419,8 @@ function renderHomePage(container) {
                 <div class="mb-14">
                     <div class="flex items-center justify-between mb-6">
                         <div>
-                            <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2.5">
-                                <span class="w-3.5 h-3.5 rounded-full bg-red-600"></span> 🚀 ROTANI SEÇ — SINIF DÜZEYLERİ
+                            <h3 class="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
+                                <span class="w-4 h-4 rounded-full bg-red-600 shadow-md"></span> 🚀 ROTANI SEÇ — SINIF DÜZEYLERİ
                             </h3>
                             <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Müfredat ünitelerine, konu özetlerine ve interaktif deneylere doğrudan bağlanın.</p>
                         </div>
