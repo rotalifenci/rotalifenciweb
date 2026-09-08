@@ -2612,74 +2612,636 @@ function downloadBackupJSON() {
 }
 
 // -------------------------------------------------------------
-// 11. 🔍 PORTAL GENEL ARAMA
+// 11. 🔍 PORTAL GENEL ARAMA (AKILLI & KAPSAMLI ARAMA MOTORU)
 // -------------------------------------------------------------
+function normalizeTurkishSearch(text) {
+    if (!text) return "";
+    return String(text)
+        .replace(/İ/g, "i")
+        .replace(/I/g, "ı")
+        .toLowerCase()
+        .replace(/ğ/g, "g")
+        .replace(/ü/g, "u")
+        .replace(/ş/g, "s")
+        .replace(/ı/g, "i")
+        .replace(/ö/g, "o")
+        .replace(/ç/g, "c")
+        .replace(/[^a-z0-9\s]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+}
+
+function getPortalSearchIndex() {
+    const index = [];
+
+    // 1. Üniteler ve Konular (PORTAL_GRADES & UNIT_HUBS)
+    if (typeof PORTAL_GRADES !== "undefined" && Array.isArray(PORTAL_GRADES)) {
+        PORTAL_GRADES.forEach(g => {
+            if (g.units && Array.isArray(g.units)) {
+                g.units.forEach(u => {
+                    index.push({
+                        id: `unit-${u.id}`,
+                        title: `${g.number}. Sınıf — ${u.name}`,
+                        category: "Ünite & Konu Hub'ı",
+                        categoryKey: "uniteler",
+                        grade: `${g.number}. Sınıf`,
+                        gradeNumber: g.number,
+                        unit: u.name,
+                        description: u.description || `${g.number}. Sınıf Fen Bilimleri ${u.name} ünitesi detaylı konu anlatımları, kazanımlar ve etkileşimli içerikler.`,
+                        keywords: `${u.code || ''} ${g.title} fen bilimleri meb mufredat unitesi konulari`,
+                        icon: u.icon || "fa-solid fa-atom",
+                        iconBg: "bg-blue-600",
+                        url: `#unit/${u.id}`
+                    });
+                });
+            }
+        });
+    }
+
+    // 2. Sınıf Alt Modülleri (Ders Notu, Sunum, Video, Etkinlik, Soru Bankası, Deneme, Eğitsel Oyun, Bilim İnsanları)
+    [5, 6, 7, 8].forEach(gNum => {
+        const gradeTitle = gNum === 8 ? "8. Sınıf (LGS)" : `${gNum}. Sınıf`;
+        const subData = (typeof getGradeSubSectionsData === "function") ? getGradeSubSectionsData(gNum) : null;
+        
+        if (subData) {
+            // Ders Notları
+            if (subData.dersNotlari && Array.isArray(subData.dersNotlari)) {
+                subData.dersNotlari.forEach((item, idx) => {
+                    index.push({
+                        id: `not-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Ders Notu",
+                        categoryKey: "ders-notu",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.unit || "",
+                        description: item.desc || `${gradeTitle} ${item.unit || ''} detaylı konu özeti, kavram haritaları ve PDF çalışma föyü.`,
+                        keywords: `ders notu pdf foy ozet konu kavrami ${item.size || ''} ${item.format || ''}`,
+                        icon: "fa-solid fa-file-lines",
+                        iconBg: "bg-blue-600",
+                        url: `#grade/grade-${gNum}/ders-notu`
+                    });
+                });
+            }
+
+            // Ders Sunumları
+            if (subData.sunumlar && Array.isArray(subData.sunumlar)) {
+                subData.sunumlar.forEach((item, idx) => {
+                    index.push({
+                        id: `sunum-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Ders Sunumu",
+                        categoryKey: "ders-sunumu",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.unit || "",
+                        description: item.desc || `${gradeTitle} ${item.unit || ''} akıllı tahta uyumlu interaktif slayt ve sunum seti.`,
+                        keywords: `slayt sunum ppt akilli tahta gorsel anlatim ${item.slides || ''}`,
+                        icon: "fa-solid fa-file-powerpoint",
+                        iconBg: "bg-orange-600",
+                        url: `#grade/grade-${gNum}/ders-sunumu`
+                    });
+                });
+            }
+
+            // Videolar
+            if (subData.videolar && Array.isArray(subData.videolar)) {
+                subData.videolar.forEach((item, idx) => {
+                    index.push({
+                        id: `video-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Video Anlatım",
+                        categoryKey: "videolar",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.unit || "",
+                        description: item.desc || `${gradeTitle} ${item.unit || ''} konu anlatım ve deney videosu.`,
+                        keywords: `video deney gorsel anlatim hoca ${item.duration || ''} ${item.teacher || ''}`,
+                        icon: "fa-solid fa-circle-play",
+                        iconBg: "bg-rose-600",
+                        url: `#grade/grade-${gNum}/videolar`
+                    });
+                });
+            }
+
+            // Etkinlikler
+            if (subData.etkinlikler && Array.isArray(subData.etkinlikler)) {
+                subData.etkinlikler.forEach((item, idx) => {
+                    index.push({
+                        id: `etkinlik-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Etkinlik & Çalışma Föyü",
+                        categoryKey: "etkinlikler",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.unit || "",
+                        description: item.desc || `${gradeTitle} ${item.unit || ''} sınıf içi istasyon çalışması ve etkinlik föyü.`,
+                        keywords: `etkinlik calisma foyi istasyon bosluk doldurma eslestirme`,
+                        icon: "fa-solid fa-puzzle-piece",
+                        iconBg: "bg-emerald-600",
+                        url: `#grade/grade-${gNum}/etkinlikler`
+                    });
+                });
+            }
+
+            // Soru Bankası
+            if (subData.soruBankasi && Array.isArray(subData.soruBankasi)) {
+                subData.soruBankasi.forEach((item, idx) => {
+                    index.push({
+                        id: `soru-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Soru Bankası & Test",
+                        categoryKey: "soru-bankasi",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.unit || "",
+                        description: item.desc || `${gradeTitle} ${item.unit || ''} MEB kazanım kavrama ve yeni nesil soru bankası testi.`,
+                        keywords: `test soru bankasi meb yeni nesil kazanim ${item.difficulty || ''} ${item.questions || ''}`,
+                        icon: "fa-solid fa-book-open-reader",
+                        iconBg: "bg-indigo-600",
+                        url: `#grade/grade-${gNum}/soru-bankasi`
+                    });
+                });
+            }
+
+            // Denemeler
+            if (subData.denemeler && Array.isArray(subData.denemeler)) {
+                subData.denemeler.forEach((item, idx) => {
+                    index.push({
+                        id: `deneme-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Deneme Sınavı",
+                        categoryKey: "denemeler",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.scope || item.unit || "",
+                        description: item.desc || `${gradeTitle} branş deneme sınavı ve ölçme değerlendirme testi.`,
+                        keywords: `deneme sinav lgs brans sinavi soru cozumu ${item.time || ''}`,
+                        icon: "fa-solid fa-bullseye",
+                        iconBg: "bg-purple-600",
+                        url: `#grade/grade-${gNum}/denemeler`
+                    });
+                });
+            }
+
+            // Eğitsel Oyunlar
+            if (subData.egitselOyunlar && Array.isArray(subData.egitselOyunlar)) {
+                subData.egitselOyunlar.forEach((item, idx) => {
+                    index.push({
+                        id: `oyun-${gNum}-${idx}`,
+                        title: item.title,
+                        category: "Eğitsel Oyun & Simülasyon",
+                        categoryKey: "egitsel-oyunlar",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: item.unit || "",
+                        description: item.desc || `${gradeTitle} ${item.unit || ''} interaktif fen oyunu, passaparola ve 3D simülasyon.`,
+                        keywords: `oyun egitsel oyun passaparola simulasyon 3d interaktif cark labirent yarisma laboratuvar`,
+                        icon: "fa-solid fa-gamepad",
+                        iconBg: "bg-amber-500",
+                        url: `#grade/grade-${gNum}/egitsel-oyunlar`
+                    });
+                });
+            }
+        }
+    });
+
+    // 3. Bilimin Rotasını Çizenler (SCIENTISTS_DATA)
+    if (typeof SCIENTISTS_DATA !== "undefined") {
+        Object.keys(SCIENTISTS_DATA).forEach(key => {
+            const sc = SCIENTISTS_DATA[key];
+            index.push({
+                id: `scientist-${key}`,
+                title: `${sc.name} (${sc.title})`,
+                category: "Bilimin Rotasını Çizenler",
+                categoryKey: "bilim-insani",
+                grade: sc.grade || "Tüm Sınıflar",
+                gradeNumber: 0,
+                unit: sc.era || "Bilim Tarihi",
+                description: `${sc.discovery || ''} — ${sc.bio ? sc.bio.substring(0, 160) + '...' : ''}`,
+                keywords: `bilim insani mucit kesif icat galileo einstein aziz sancar newton mendel arsimet tesla curie pasteur darwin ali kuscu ${sc.keywords ? sc.keywords.join(' ') : ''}`,
+                icon: "fa-solid fa-user-astronaut",
+                iconBg: "bg-violet-600",
+                url: `#grade/grade-7/bilimin-rotasini-cizenler`,
+                action: `openScientistModal('${key}')`
+            });
+        });
+    }
+
+    // 4. Kritik Konu Özetleri ve Sınav İpuçları (ENRICHED_GRADE_CONTENT)
+    if (typeof ENRICHED_GRADE_CONTENT !== "undefined") {
+        Object.keys(ENRICHED_GRADE_CONTENT).forEach(gKey => {
+            const gNum = parseInt(gKey);
+            const gradeTitle = gNum === 8 ? "8. Sınıf (LGS)" : `${gNum}. Sınıf`;
+            const content = ENRICHED_GRADE_CONTENT[gKey];
+            if (content && content.unitSummaries && Array.isArray(content.unitSummaries)) {
+                content.unitSummaries.forEach((us, uIdx) => {
+                    const cleanHighlights = us.highlights ? us.highlights.map(h => h.replace(/<[^>]*>?/gm, '').replace(/[*_#]/g, '')).join(' ') : '';
+                    index.push({
+                        id: `summary-${gKey}-${uIdx}`,
+                        title: `${gradeTitle}: ${us.unit} (Özet & Kritik Noktalar)`,
+                        category: "Kritik Konu Özeti",
+                        categoryKey: "ders-notu",
+                        grade: gradeTitle,
+                        gradeNumber: gNum,
+                        unit: us.unit,
+                        description: cleanHighlights.substring(0, 180) + '...',
+                        keywords: `ozet kritik noktalar formuller tuzak sorular puf noktalari ${cleanHighlights}`,
+                        icon: "fa-solid fa-lightbulb",
+                        iconBg: "bg-amber-600",
+                        url: `#grade/grade-${gKey}/ders-notu`
+                    });
+                });
+            }
+        });
+    }
+
+    // 5. Yazılı Sınav Merkezi (EXAM_CENTER_DATA)
+    if (typeof EXAM_CENTER_DATA !== "undefined") {
+        Object.keys(EXAM_CENTER_DATA).forEach(k => {
+            const exam = EXAM_CENTER_DATA[k];
+            index.push({
+                id: `yazili-${k}`,
+                title: exam.title || "MEB Ortak Yazılı Sınav Hazırlığı",
+                category: "Yazılı Sınav & Örnek Sorular",
+                categoryKey: "yazili",
+                grade: exam.grade || "Tüm Sınıflar",
+                gradeNumber: 0,
+                unit: exam.term || "1. ve 2. Dönem Ortak Sınavlar",
+                description: exam.desc || "Bakanlık ortak sınav senaryolarına tam uyumlu açık uçlu soru kağıtları ve cevap anahtarları.",
+                keywords: "yazili sinav meb acik uclu ortak sinav senaryolari puanlama rubrigi calisma kagidi",
+                icon: "fa-solid fa-pen-nib",
+                iconBg: "bg-red-600",
+                url: `#exam-center`
+            });
+        });
+    }
+
+    // 6. Proje ve STEM Merkezi (PROJECT_CENTER_DATA)
+    if (typeof PROJECT_CENTER_DATA !== "undefined" && Array.isArray(PROJECT_CENTER_DATA)) {
+        PROJECT_CENTER_DATA.forEach((proj, idx) => {
+            index.push({
+                id: `proj-${idx}`,
+                title: proj.title || "TÜBİTAK 2204-B Projesi",
+                category: "Proje & STEM",
+                categoryKey: "projeler",
+                grade: proj.grade || "5-8. Sınıflar",
+                gradeNumber: 0,
+                unit: proj.category || "TÜBİTAK & STEM",
+                description: proj.desc || "Ortaokul araştırma projeleri, STEM etkinlikleri ve bilim fuarı rehberi.",
+                keywords: "tubitak 2204 stem robotik kodlama bilim fuari arastirma projesi",
+                icon: "fa-solid fa-trophy",
+                iconBg: "bg-amber-500",
+                url: `#projects`
+            });
+        });
+    }
+
+    // 7. Mini Testler & Quizler (DEFAULT_QUIZZES)
+    if (typeof DEFAULT_QUIZZES !== "undefined" && Array.isArray(DEFAULT_QUIZZES)) {
+        DEFAULT_QUIZZES.forEach((q, idx) => {
+            index.push({
+                id: `quiz-${idx}`,
+                title: q.title || "İnteraktif Fen Testi",
+                category: "Mini Quiz & Test",
+                categoryKey: "quizler",
+                grade: q.grade || "Tüm Sınıflar",
+                gradeNumber: 0,
+                unit: q.unit || "Kazanım Pekiştirme",
+                description: `${q.questions ? q.questions.length : 0} soruluk anında geri bildirimli interaktif pekiştirme testi.`,
+                keywords: "quiz test mini test interaktif soru cozumu",
+                icon: "fa-solid fa-brain",
+                iconBg: "bg-purple-600",
+                url: `#quizzes`
+            });
+        });
+    }
+
+    // 8. 3D Bilgi Kartları (DEFAULT_FLASHCARDS)
+    if (typeof DEFAULT_FLASHCARDS !== "undefined" && Array.isArray(DEFAULT_FLASHCARDS)) {
+        DEFAULT_FLASHCARDS.forEach((fc, idx) => {
+            index.push({
+                id: `flashcard-${idx}`,
+                title: `${fc.unit || 'Bilgi Kartı'}: ${fc.question || ''}`,
+                category: "3D Bilgi Kartı",
+                categoryKey: "quizler",
+                grade: "Tüm Sınıflar",
+                gradeNumber: 0,
+                unit: fc.unit || "Önemli Kavramlar",
+                description: `Cevap: ${fc.answer || ''}`,
+                keywords: "bilgi karti flashcard hafiza teknikleri kavram soru cevap",
+                icon: "fa-solid fa-layer-group",
+                iconBg: "bg-teal-600",
+                url: `#flashcards`
+            });
+        });
+    }
+
+    // 9. Kullanıcı / Öğretmen Tarafından Yüklenen Materyaller (rotali_materials)
+    try {
+        const customMats = JSON.parse(localStorage.getItem("rotali_materials") || "[]");
+        if (Array.isArray(customMats)) {
+            customMats.forEach(m => {
+                index.push({
+                    id: `custom-${m.id}`,
+                    title: m.title || "Yüklenen Materyal",
+                    category: m.category || "Özel Materyal",
+                    categoryKey: "ozel",
+                    grade: m.grade ? `${m.grade}. Sınıf` : "Genel",
+                    gradeNumber: parseInt(m.grade) || 0,
+                    unit: m.unit || "",
+                    description: m.description || "Öğretmen tarafından portala yeni eklenen materyal.",
+                    keywords: `yuklenen materyal ozel dosya ogretmen ${m.title} ${m.description}`,
+                    icon: "fa-solid fa-file",
+                    iconBg: "bg-emerald-600",
+                    url: m.grade ? `#grade/grade-${m.grade}` : `#home`
+                });
+            });
+        }
+    } catch(e) {}
+
+    // Pre-calculate normalized search blob for ultra high performance
+    index.forEach(item => {
+        item._normalizedBlob = normalizeTurkishSearch(`${item.title} ${item.category} ${item.grade} ${item.unit} ${item.description} ${item.keywords}`);
+    });
+
+    return index;
+}
+
+window.portalSearchFilters = {
+    category: "all",
+    grade: "all"
+};
+
 function renderSearchPage(container) {
+    window.portalSearchFilters = { category: "all", grade: "all" };
+
     container.innerHTML = `
-        <div class="max-w-[1000px] mx-auto px-4 py-12">
+        <div class="max-w-[1200px] mx-auto px-4 sm:px-6 py-10">
+            <!-- Başlık Alanı -->
             <div class="text-center mb-8">
-                <h2 class="text-3xl font-black text-slate-900 mb-2">🔍 Portal Genel Arama</h2>
-                <p class="text-xs sm:text-sm text-slate-500">Sınıf, ünite, konu, deney veya yazılı sınav materyali arayın.</p>
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-brand-red font-black text-xs uppercase tracking-wider mb-3">
+                    <i class="fa-solid fa-magnifying-glass"></i> DİJİTAL FEN ARAMA MOTORU
+                </div>
+                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-2">🔍 Portal Genel Arama</h2>
+                <p class="text-xs sm:text-sm text-slate-500 font-medium max-w-xl mx-auto">
+                    Tüm sınıflar (5, 6, 7, 8), ders notları, sunumlar, deneyler, sorular, denemeler, eğitsel oyunlar ve bilim insanları içerisinde anında arama yapın.
+                </p>
             </div>
 
-            <div class="bg-white p-3 rounded-2xl shadow-xl border border-slate-200 flex items-center gap-3 mb-8">
-                <i class="fa-solid fa-magnifying-glass text-slate-400 ml-3 text-lg"></i>
-                <input type="text" id="portal-search-input" onkeyup="handlePortalSearch(this.value)" placeholder="Örn: 7. sınıf hücre, mevsimler, sıvı basıncı, açık uçlu sınav..." class="w-full py-3 px-2 text-sm text-slate-800 focus:outline-none placeholder-slate-400 font-bold">
+            <!-- Arama Kutusu -->
+            <div class="bg-white p-3 sm:p-4 rounded-3xl shadow-xl border-2 border-slate-200 focus-within:border-brand-red focus-within:ring-4 focus-within:ring-red-100 transition-all mb-6 relative">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-2xl bg-red-50 flex items-center justify-center text-brand-red flex-shrink-0 text-lg">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <input type="text" id="portal-search-input" oninput="handlePortalSearch(this.value)" placeholder="Örn: Hücre, Mevsimler, Sıvı Basıncı, Galileo, Slayt, Deneme Sınavı, Passaparola..." class="w-full py-2.5 px-1 text-sm sm:text-base text-slate-900 font-bold focus:outline-none placeholder-slate-400 bg-transparent" autofocus>
+                    <button type="button" onclick="clearPortalSearch()" id="clear-search-btn" class="hidden w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 items-center justify-center flex-shrink-0 text-xs transition-colors" title="Temizle">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
 
-            <div id="search-results-box" class="space-y-4">
-                <div class="p-8 text-center text-slate-400 text-xs font-semibold">
-                    Aramak istediğiniz terimi yukarıya yazın.
+            <!-- Popüler Arama Çipleri -->
+            <div class="mb-6 flex items-center gap-2 flex-wrap">
+                <span class="text-xs font-black text-slate-400 uppercase tracking-wider mr-1">🔥 Popüler:</span>
+                <button type="button" onclick="fillSearchInput('Hücre')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">🧬 Hücre</button>
+                <button type="button" onclick="fillSearchInput('Mevsimler ve İklim')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">🌍 Mevsimler</button>
+                <button type="button" onclick="fillSearchInput('Sıvı Basıncı')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">💧 Basınç</button>
+                <button type="button" onclick="fillSearchInput('Galileo Galilei')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">🔭 Galileo</button>
+                <button type="button" onclick="fillSearchInput('Aziz Sancar')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">🇹🇷 Aziz Sancar</button>
+                <button type="button" onclick="fillSearchInput('Passaparola')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">🎮 Passaparola</button>
+                <button type="button" onclick="fillSearchInput('LGS Deneme')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">🎯 LGS Denemesi</button>
+                <button type="button" onclick="fillSearchInput('Ders Sunumu')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">📊 Ders Sunumları</button>
+                <button type="button" onclick="fillSearchInput('Ortak Yazılı')" class="px-3 py-1 bg-slate-100 hover:bg-red-50 hover:text-brand-red text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all">✏️ Ortak Sınav</button>
+            </div>
+
+            <!-- Filtre Barı (Sınıf & Kategori) -->
+            <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <!-- Sınıf Filtresi -->
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="text-xs font-black text-slate-400 uppercase tracking-wider mr-1">Sınıf:</span>
+                    <button type="button" onclick="setSearchGrade('all')" class="search-grade-btn px-3 py-1.5 rounded-xl text-xs font-black transition-all bg-slate-900 text-white shadow-sm" data-grade="all">Tümü</button>
+                    <button type="button" onclick="setSearchGrade('5')" class="search-grade-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-emerald-50 hover:text-emerald-700" data-grade="5">5. Sınıf</button>
+                    <button type="button" onclick="setSearchGrade('6')" class="search-grade-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-blue-50 hover:text-blue-700" data-grade="6">6. Sınıf</button>
+                    <button type="button" onclick="setSearchGrade('7')" class="search-grade-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-amber-50 hover:text-amber-700" data-grade="7">7. Sınıf</button>
+                    <button type="button" onclick="setSearchGrade('8')" class="search-grade-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-red-50 hover:text-brand-red" data-grade="8">8. Sınıf (LGS)</button>
+                </div>
+
+                <!-- Sonuç Sayacı -->
+                <div id="search-count-badge" class="text-xs font-black text-slate-500 bg-slate-50 px-3.5 py-1.5 rounded-xl border border-slate-200">
+                    Hazır • Arama yapın
+                </div>
+            </div>
+
+            <!-- Sonuç Listesi Kutusu -->
+            <div id="search-results-box" class="space-y-3">
+                <div class="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-sm">
+                    <div class="w-16 h-16 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl mx-auto mb-3">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <h3 class="text-base font-black text-slate-800 mb-1">Aramak istediğiniz konuyu veya terimi yazın</h3>
+                    <p class="text-xs text-slate-400 font-medium">Örnek: "hücre", "lgs deneme", "galileo", "kuvvet", "ışık", "slayt"</p>
                 </div>
             </div>
         </div>
     `;
+
+    // Varsayılan tüm içerikleri bir kez derle
+    window._portalSearchCache = getPortalSearchIndex();
+}
+
+function fillSearchInput(term) {
+    const input = document.getElementById("portal-search-input");
+    if (input) {
+        input.value = term;
+        handlePortalSearch(term);
+        input.focus();
+    }
+}
+
+function clearPortalSearch() {
+    const input = document.getElementById("portal-search-input");
+    if (input) {
+        input.value = "";
+        handlePortalSearch("");
+        input.focus();
+    }
+}
+
+function setSearchGrade(grade) {
+    window.portalSearchFilters.grade = grade;
+    document.querySelectorAll(".search-grade-btn").forEach(btn => {
+        if (btn.dataset.grade === grade) {
+            btn.className = "search-grade-btn px-3 py-1.5 rounded-xl text-xs font-black transition-all bg-slate-900 text-white shadow-sm";
+        } else {
+            btn.className = "search-grade-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all bg-slate-100 text-slate-700 hover:bg-slate-200";
+        }
+    });
+
+    const input = document.getElementById("portal-search-input");
+    handlePortalSearch(input ? input.value : "");
+}
+
+function highlightSearchTerms(text, query) {
+    if (!query || !text) return text || "";
+    const words = query.trim().split(/\s+/).filter(w => w.length > 0);
+    let result = String(text);
+    words.forEach(word => {
+        const regex = new RegExp(`(${word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, "gi");
+        result = result.replace(regex, `<mark class="bg-amber-200 text-slate-900 font-bold px-1 rounded">$1</mark>`);
+    });
+    return result;
 }
 
 function handlePortalSearch(query) {
     const box = document.getElementById("search-results-box");
+    const countBadge = document.getElementById("search-count-badge");
+    const clearBtn = document.getElementById("clear-search-btn");
     if (!box) return;
 
+    if (clearBtn) {
+        if (query && query.trim().length > 0) {
+            clearBtn.classList.remove("hidden");
+            clearBtn.classList.add("flex");
+        } else {
+            clearBtn.classList.add("hidden");
+            clearBtn.classList.remove("flex");
+        }
+    }
+
     if (!query || query.trim().length < 2) {
-        box.innerHTML = `<div class="p-8 text-center text-slate-400 text-xs font-semibold">En az 2 karakter giriniz.</div>`;
+        if (countBadge) countBadge.innerHTML = `Hazır • Arama yapın`;
+        box.innerHTML = `
+            <div class="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 rounded-3xl bg-slate-100 flex items-center justify-center text-slate-400 text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <h3 class="text-base font-black text-slate-800 mb-1">Aramak istediğiniz konuyu veya terimi yazın</h3>
+                <p class="text-xs text-slate-400 font-medium">Örnek: "hücre", "lgs deneme", "galileo", "kuvvet", "ışık", "slayt"</p>
+            </div>
+        `;
         return;
     }
 
-    const q = query.toLowerCase();
-    const results = [];
+    if (!window._portalSearchCache || window._portalSearchCache.length === 0) {
+        window._portalSearchCache = getPortalSearchIndex();
+    }
 
-    PORTAL_GRADES.forEach(g => {
-        g.units.forEach(u => {
-            if (u.name.toLowerCase().includes(q) || g.title.toLowerCase().includes(q) || u.code.toLowerCase().includes(q)) {
-                results.push({
-                    type: "Ünite Hub'ı",
-                    title: `${g.number}. Sınıf — ${u.name}`,
-                    link: `#unit/${u.id}`,
-                    icon: u.icon
-                });
+    const normQuery = normalizeTurkishSearch(query);
+    const tokens = normQuery.split(" ").filter(t => t.length > 0);
+    const selectedGrade = window.portalSearchFilters.grade;
+
+    let matches = [];
+
+    window._portalSearchCache.forEach(item => {
+        // Sınıf filtre kontrolü
+        if (selectedGrade !== "all") {
+            const reqNum = parseInt(selectedGrade);
+            if (item.gradeNumber !== reqNum && item.gradeNumber !== 0) {
+                return;
+            }
+        }
+
+        // Token eşleşme puanlaması
+        let score = 0;
+        let matchedTokens = 0;
+
+        tokens.forEach(tok => {
+            if (item._normalizedBlob.includes(tok)) {
+                matchedTokens++;
+                // Başlıkta tam eşleşme
+                if (normalizeTurkishSearch(item.title).includes(tok)) score += 50;
+                // Kategori eşleşmesi
+                if (normalizeTurkishSearch(item.category).includes(tok)) score += 30;
+                // Ünite eşleşmesi
+                if (normalizeTurkishSearch(item.unit).includes(tok)) score += 25;
+                // Açıklama eşleşmesi
+                if (normalizeTurkishSearch(item.description).includes(tok)) score += 10;
+                // Anahtar kelime eşleşmesi
+                if (normalizeTurkishSearch(item.keywords).includes(tok)) score += 15;
             }
         });
+
+        // En az 1 token uyuşmalı (tüm tokenlar uyuşuyorsa ekstra bonus)
+        if (matchedTokens > 0) {
+            if (matchedTokens === tokens.length) score += 100;
+            matches.push({ item, score });
+        }
     });
 
-    if (results.length === 0) {
-        box.innerHTML = `<div class="p-8 text-center text-slate-500 text-xs font-bold">"${query}" ile eşleşen sonuç bulunamadı.</div>`;
+    // Puan sırasına göre sırala
+    matches.sort((a, b) => b.score - a.score);
+
+    if (matches.length === 0) {
+        if (countBadge) countBadge.innerHTML = `<span class="text-rose-600 font-bold">0 sonuç</span>`;
+        box.innerHTML = `
+            <div class="p-12 text-center bg-white rounded-3xl border border-slate-200 shadow-sm">
+                <div class="w-16 h-16 rounded-3xl bg-rose-50 flex items-center justify-center text-rose-500 text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                </div>
+                <h3 class="text-base font-black text-slate-800 mb-1">"${query}" ile eşleşen sonuç bulunamadı</h3>
+                <p class="text-xs text-slate-500 font-medium">Lütfen farklı kelimelerle arama yapmayı veya filtreleri sıfırlamayı deneyin.</p>
+            </div>
+        `;
         return;
     }
 
-    box.innerHTML = results.map(r => `
-        <a href="${r.link}" class="p-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-between hover:border-red-300 hover:shadow-md transition-all">
-            <div class="flex items-center gap-3">
-                <i class="${r.icon} text-red-600 text-lg"></i>
-                <div>
-                    <span class="text-xs text-slate-400 font-bold block">${r.type}</span>
-                    <span class="text-sm font-black text-slate-900">${r.title}</span>
+    if (countBadge) {
+        countBadge.innerHTML = `<span class="text-emerald-700 font-black">🎉 ${matches.length} içerik bulundu</span>`;
+    }
+
+    box.innerHTML = matches.map(({ item }) => {
+        const highlightedTitle = highlightSearchTerms(item.title, query);
+        const highlightedDesc = highlightSearchTerms(item.description, query);
+        const clickAction = item.action ? `onclick="${item.action}"` : '';
+
+        return `
+            <div class="p-4 sm:p-5 bg-white border border-slate-200 hover:border-red-400 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                <div class="flex items-start gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl ${item.iconBg || 'bg-blue-600'} text-white flex items-center justify-center text-xl flex-shrink-0 shadow-sm group-hover:scale-110 transition-transform">
+                        <i class="${item.icon || 'fa-solid fa-file'}"></i>
+                    </div>
+                    <div>
+                        <!-- Etiketler -->
+                        <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                            <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-700 font-black text-[11px] uppercase tracking-wider border border-slate-200">
+                                ${item.grade}
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-lg bg-red-50 text-brand-red font-black text-[11px] uppercase tracking-wider border border-red-100">
+                                ${item.category}
+                            </span>
+                            ${item.unit ? `
+                                <span class="px-2.5 py-0.5 rounded-lg bg-slate-50 text-slate-500 font-bold text-[11px] hidden sm:inline-block">
+                                    ${item.unit}
+                                </span>
+                            ` : ''}
+                        </div>
+                        
+                        <!-- Başlık -->
+                        <h4 class="text-base font-black text-slate-900 group-hover:text-brand-red transition-colors mb-1">
+                            ${highlightedTitle}
+                        </h4>
+
+                        <!-- Açıklama -->
+                        <p class="text-xs text-slate-600 line-clamp-2 leading-relaxed font-medium">
+                            ${highlightedDesc}
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Aksiyon Butonu -->
+                <div class="flex-shrink-0 self-end sm:self-center">
+                    <a href="${item.url}" ${clickAction} class="px-4 py-2 bg-slate-900 group-hover:bg-brand-red text-white text-xs font-black rounded-xl shadow-sm transition-all flex items-center gap-2 whitespace-nowrap">
+                        <span>İçeriği Aç</span> <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition-transform"></i>
+                    </a>
                 </div>
             </div>
-            <i class="fa-solid fa-arrow-right text-slate-400"></i>
-        </a>
-    `).join("");
+        `;
+    }).join("");
 }
 
+// -------------------------------------------------------------
 // -------------------------------------------------------------
 // 12. DİĞER MODÜLLER (QUIZ, FLASHCARD, ABOUT, CONTACT)
 // -------------------------------------------------------------
@@ -3230,69 +3792,22 @@ function updateAdminNavUI() {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     ADMIN_CONFIG.isAdmin = isAdmin;
 
-    // 1. Desktop Navbar
+    // 1. Desktop Navbar - Üst menüde içerik ekle ve çıkış butonlarını kaldırıyoruz
     const desktopContainer = document.getElementById("admin-nav-container");
     if (desktopContainer) {
-        if (isAdmin) {
-            desktopContainer.innerHTML = `
-                <div class="flex items-center gap-2 animate-in fade-in duration-200">
-                    <button type="button" onclick="triggerUploadModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-500 hover:scale-105 transform" title="Yeni Materyal Ekle">
-                        <i class="fa-solid fa-cloud-arrow-up text-xs"></i> <span>İÇERİK EKLE</span>
-                    </button>
-                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md shadow-red-600/30 transition-all flex items-center gap-1.5 border border-red-500 hover:scale-105 transform" title="Yönetici Oturumundan Çıkış Yap">
-                        <i class="fa-solid fa-power-off text-xs"></i> <span>ÇIKIŞ</span>
-                    </button>
-                </div>
-            `;
-        } else {
-            // Ziyaretçilere gizli tut
-            desktopContainer.innerHTML = ``;
-        }
+        desktopContainer.innerHTML = "";
     }
 
-    // 2. Mobile Menu Container
+    // 2. Mobile Menu Container - Mobil üst menüyü temiz tutuyoruz
     const mobileContainer = document.getElementById("admin-mobile-nav-container");
     if (mobileContainer) {
-        if (isAdmin) {
-            mobileContainer.innerHTML = `
-                <div class="space-y-2 animate-in fade-in duration-200">
-                    <button type="button" onclick="triggerUploadModal(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-cloud-arrow-up"></i> <span>YENİ İÇERİK EKLE</span>
-                    </button>
-                    <button type="button" onclick="handleAdminLogout(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-power-off"></i> <span>YÖNETİCİ ÇIKIŞI YAP</span>
-                    </button>
-                </div>
-            `;
-        } else {
-            mobileContainer.innerHTML = ``;
-        }
+        mobileContainer.innerHTML = "";
     }
 
-    // 3. Floating Quick Admin Bar (Sadece giriş yapıldığında görünür)
-    let floatingBar = document.getElementById("floating-admin-bar");
-    if (isAdmin) {
-        if (!floatingBar) {
-            floatingBar = document.createElement("div");
-            floatingBar.id = "floating-admin-bar";
-            floatingBar.className = "fixed bottom-5 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300";
-            document.body.appendChild(floatingBar);
-        }
-        floatingBar.innerHTML = `
-            <div class="flex items-center gap-2 text-xs font-black text-amber-400 border-r border-slate-700 pr-3">
-                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <i class="fa-solid fa-crown"></i> <span>YÖNETİCİ</span>
-            </div>
-            <button type="button" onclick="triggerUploadModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
-                <i class="fa-solid fa-plus"></i> Ekle
-            </button>
-            <button type="button" onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Çıkış Yap">
-                <i class="fa-solid fa-power-off"></i> Çıkış
-            </button>
-        `;
-        floatingBar.style.display = "flex";
-    } else {
-        if (floatingBar) floatingBar.remove();
+    // 3. Floating Quick Admin Bar'ı kaldırıyoruz
+    const floatingBar = document.getElementById("floating-admin-bar");
+    if (floatingBar) {
+        floatingBar.remove();
     }
 }
 
