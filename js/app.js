@@ -1120,9 +1120,16 @@ function renderScientistsModule(gradeNumber) {
                     </div>
                     <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Tarihi Değiştiren Bilim İnsanları ve Büyük Keşifleri</h3>
                 </div>
-                <span class="text-xs font-bold text-red-700 bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200 self-start sm:self-auto">
-                    🏆 İlham Veren Başarı Hikayeleri
-                </span>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold text-red-700 bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200 self-start sm:self-auto">
+                        🏆 İlham Veren Başarı Hikayeleri
+                    </span>
+                    ${localStorage.getItem("rotali_is_admin") === "true" ? `
+                        <button type="button" onclick="triggerUploadModal('${gradeNumber}', 'ders-notu')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95">
+                            <i class="fa-solid fa-plus"></i> + Bilim Notu Ekle
+                        </button>
+                    ` : ''}
+                </div>
             </div>
 
             <!-- Bilim İnsanları Kartları -->
@@ -1676,6 +1683,7 @@ function switchGradeSubTab(gradeId, tabName) {
 }
 
 function renderGradeSubTabContent(grade, subData, subTab) {
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
         return renderScientistsModule(grade.number);
     } else if (subTab === "ders-notu") {
@@ -1683,11 +1691,18 @@ function renderGradeSubTabContent(grade, subData, subTab) {
 
         return `
             <div class="mb-8">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-2xl font-black text-slate-900 flex items-center gap-2.5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2.5">
                         <i class="fa-solid fa-book-open text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri Detaylı Konu Anlatımı & Özetleri
                     </h3>
-                    <span class="text-xs font-bold px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-200">MEB 2026-2027 Müfredat Uyumlu</span>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-bold px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-200">MEB 2026-2027</span>
+                        ${isAdmin ? `
+                            <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95">
+                                <i class="fa-solid fa-plus"></i> + Not Ekle
+                            </button>
+                        ` : ''}
+                    </div>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
                     Sınavlarda ve yazılılarda en sık karşılaşılan temel kavramlar, formüller, dikkat edilmesi gereken tuzaklar ve önemli bilimsel kurallar aşağıda özetlenmiştir.
@@ -1746,11 +1761,18 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     } else if (subTab === "ders-sunumu") {
         return `
-            <div class="mb-6 flex items-center justify-between">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-file-powerpoint text-orange-600"></i> ${grade.number}. Sınıf Akıllı Tahta Ders Sunumları (PPTX / PDF)
-                </h3>
-                <span class="text-xs font-bold text-slate-500">${subData.dersSunumu.length} Sunum Dosyası</span>
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-file-powerpoint text-orange-600"></i> ${grade.number}. Sınıf Akıllı Tahta Ders Sunumları (PPTX / PDF)
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500">${subData.dersSunumu.length} Sunum Dosyası</span>
+                </div>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-sunumu')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-orange-600/20 active:scale-95 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i> + Sunum Ekle
+                    </button>
+                ` : ''}
             </div>
             ${renderCustomMaterialsSection(grade.number, "ders-sunumu")}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1774,11 +1796,18 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     } else if (subTab === "videolar") {
         return `
-            <div class="mb-6 flex items-center justify-between">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Konu Anlatımı & Deney Videoları
-                </h3>
-                <span class="text-xs font-bold text-slate-500">${subData.videolar.length} Video Ders</span>
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Konu Anlatımı & Deney Videoları
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500">${subData.videolar.length} Video Ders</span>
+                </div>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20 active:scale-95 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i> + Video Ekle
+                    </button>
+                ` : ''}
             </div>
             ${renderCustomMaterialsSection(grade.number, "videolar")}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1807,11 +1836,18 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     } else if (subTab === "etkinlikler") {
         return `
-            <div class="mb-6 flex items-center justify-between">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-puzzle-piece text-emerald-600"></i> ${grade.number}. Sınıf Çalışma Föyleri & İstasyon Etkinlikleri
-                </h3>
-                <span class="text-xs font-bold text-slate-500">${subData.etkinlikler.length} Etkinlik Föyü</span>
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-puzzle-piece text-emerald-600"></i> ${grade.number}. Sınıf Çalışma Föyleri & İstasyon Etkinlikleri
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500">${subData.etkinlikler.length} Etkinlik Föyü</span>
+                </div>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'etkinlikler')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i> + Etkinlik Ekle
+                    </button>
+                ` : ''}
             </div>
             ${renderCustomMaterialsSection(grade.number, "etkinlikler")}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1834,11 +1870,18 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     } else if (subTab === "soru-bankasi") {
         return `
-            <div class="mb-6 flex items-center justify-between">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-book-open-reader text-blue-600"></i> ${grade.number}. Sınıf Kazanım & Beceri Temelli Soru Bankası
-                </h3>
-                <span class="text-xs font-bold text-slate-500">${subData.soruBankasi.length} Ünite Soru Havuzu</span>
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-book-open-reader text-blue-600"></i> ${grade.number}. Sınıf Kazanım & Beceri Temelli Soru Bankası
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500">${subData.soruBankasi.length} Ünite Soru Havuzu</span>
+                </div>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'soru-bankasi')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i> + Soru / Test Ekle
+                    </button>
+                ` : ''}
             </div>
             ${renderCustomMaterialsSection(grade.number, "soru-bankasi")}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1862,11 +1905,18 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     } else if (subTab === "denemeler") {
         return `
-            <div class="mb-6 flex items-center justify-between">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-bullseye text-purple-600"></i> ${grade.number}. Sınıf Dönemlik Ortak Sınav & Branş Denemeleri
-                </h3>
-                <span class="text-xs font-bold text-slate-500">${subData.denemeler.length} Deneme Sınavı</span>
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-bullseye text-purple-600"></i> ${grade.number}. Sınıf Dönemlik Ortak Sınav & Branş Denemeleri
+                    </h3>
+                    <span class="text-xs font-bold text-slate-500">${subData.denemeler.length} Deneme Sınavı</span>
+                </div>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'denemeler')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-purple-600/20 active:scale-95 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i> + Deneme Ekle
+                    </button>
+                ` : ''}
             </div>
             ${renderCustomMaterialsSection(grade.number, "denemeler")}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
