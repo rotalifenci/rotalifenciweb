@@ -161,13 +161,19 @@
                     
                 </div>
 
-                <!-- Mobil Hamburger Butonu -->
-                <div class="flex items-center gap-2 lg:hidden">
-                    <a href="#search" class="p-2 text-slate-700" title="Ara">
-                        <i class="fa-solid fa-magnifying-glass text-xl"></i>
+                <!-- Mobil Üst Butonlar (Ev / Ana Sayfa, Arama, Hamburger Menü) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 lg:hidden">
+                    <!-- 🏠 Mobil Ev Butonu (Her Zaman Görünür) -->
+                    <a href="#home" class="w-10 h-10 rounded-2xl bg-red-50 text-brand-red hover:bg-brand-red hover:text-white flex items-center justify-center text-lg transition-all shadow-sm border border-red-200/60" title="Ana Sayfaya Dön">
+                        <i class="fa-solid fa-house"></i>
                     </a>
-                    <button id="mobile-menu-toggle" class="p-2 rounded-xl text-slate-700 hover:bg-slate-100 focus:outline-none" aria-label="Menüyü Aç">
-                        <i class="fa-solid fa-bars text-2xl"></i>
+                    <!-- 🔍 Mobil Arama Butonu -->
+                    <a href="#search" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center justify-center text-lg transition-all border border-slate-200/60" title="Portalda Ara">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+                    <!-- ☰ Hamburger Menü -->
+                    <button id="mobile-menu-toggle" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center justify-center text-xl transition-all border border-slate-200/60 focus:outline-none" aria-label="Menüyü Aç">
+                        <i class="fa-solid fa-bars"></i>
                     </button>
                 </div>
             </div>
