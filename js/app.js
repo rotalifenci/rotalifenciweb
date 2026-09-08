@@ -1824,3 +1824,153 @@ function renderNotFound(container) {
         </div>
     `;
 }
+
+
+// -------------------------------------------------------------
+// 🧪 İNTERAKTİF SANAL LABORATUVAR SİMÜLATÖRÜ (SIVI BASINCI & YOĞUNLUK)
+// -------------------------------------------------------------
+function renderVirtualLabSection() {
+    return `
+        <div class="bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 border border-slate-800 shadow-2xl mb-12">
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6 border-b border-slate-800 pb-4">
+                <div>
+                    <span class="px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-black tracking-wider uppercase inline-block mb-1.5">
+                        <i class="fa-solid fa-atom"></i> SANAL LABORATUVAR SİMÜLATÖRÜ
+                    </span>
+                    <h3 class="text-2xl font-black text-white">Sıvı Basıncı ve Yoğunluk Simülatörü (P = h • d • g)</h3>
+                </div>
+                <div class="text-xs font-bold text-slate-400">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse"></span> Gerçek Zamanlı Fizik Motoru
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <!-- Sol: Kontrol Paneli -->
+                <div class="lg:col-span-5 space-y-5 bg-white/5 p-6 rounded-2xl border border-white/10">
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1.5">
+                            <span class="text-slate-300">1. Sıvı Türü ve Yoğunluğu (d):</span>
+                            <span id="lab-density-val" class="text-amber-400 font-black">1.00 g/cm³ (Su)</span>
+                        </div>
+                        <select id="lab-liquid-select" onchange="updateLabSim()" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-red-500">
+                            <option value="1.00|Su">💧 Saf Su (d = 1.00 g/cm³)</option>
+                            <option value="0.90|Zeytinyağı">🫒 Zeytinyağı (d = 0.90 g/cm³)</option>
+                            <option value="1.20|Tuzlu Su">🌊 Tuzlu Su (d = 1.20 g/cm³)</option>
+                            <option value="1.26|Gliserin">🧪 Gliserin (d = 1.26 g/cm³)</option>
+                            <option value="13.60|Cıva">⚪ Cıva (d = 13.60 g/cm³)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1.5">
+                            <span class="text-slate-300">2. Sensör Derinliği (h):</span>
+                            <span id="lab-depth-val" class="text-cyan-400 font-black">50 cm</span>
+                        </div>
+                        <input type="range" id="lab-depth-range" min="5" max="100" value="50" oninput="updateLabSim()" class="w-full accent-cyan-400 cursor-pointer">
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1.5">
+                            <span class="text-slate-300">3. Ortam / Gezegen (Yerçekimi g):</span>
+                            <span id="lab-gravity-val" class="text-emerald-400 font-black">9.81 m/s² (Dünya)</span>
+                        </div>
+                        <select id="lab-gravity-select" onchange="updateLabSim()" class="w-full p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-white focus:outline-none focus:border-red-500">
+                            <option value="9.81|Dünya">🌍 Dünya (g = 9.81 m/s²)</option>
+                            <option value="1.62|Ay">🌕 Ay (g = 1.62 m/s²)</option>
+                            <option value="3.72|Mars">🪐 Mars (g = 3.72 m/s²)</option>
+                            <option value="24.79|Jüpiter">⚡ Jüpiter (g = 24.79 m/s²)</option>
+                        </select>
+                    </div>
+
+                    <div class="p-3.5 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-300">
+                        <i class="fa-solid fa-lightbulb mr-1 text-amber-400"></i>
+                        <strong>Fizik Kuralı:</strong> Sıvı basıncı kabın şekline veya sıvı miktarına bağlı DEĞİLDİR. Sadece <strong>derinlik (h)</strong>, <strong>sıvı yoğunluğu (d)</strong> ve <strong>yerçekimine (g)</strong> bağlıdır!
+                    </div>
+                </div>
+
+                <!-- Sağ: Görsel Tank & Gösterge Simülasyonu -->
+                <div class="lg:col-span-7 flex flex-col items-center">
+                    <div class="w-full max-w-md bg-slate-800/80 rounded-2xl border-2 border-slate-700 p-6 flex flex-col items-center relative overflow-hidden shadow-inner">
+                        
+                        <!-- Manometre / Dijital Basınç Göstergesi -->
+                        <div class="w-full bg-slate-900 border border-slate-700 rounded-2xl p-4 text-center mb-6 shadow-lg flex items-center justify-around">
+                            <div>
+                                <span class="text-[11px] font-black text-slate-400 tracking-wider uppercase block">HESAPLANAN BASINÇ</span>
+                                <div id="lab-pressure-pascal" class="text-3xl font-black text-amber-400 tracking-tight">4.905 Pa</div>
+                            </div>
+                            <div class="border-l border-slate-700 pl-4 text-left">
+                                <div class="text-[11px] font-bold text-slate-400">P = h • d • g</div>
+                                <div id="lab-formula-breakdown" class="text-xs font-mono text-cyan-300">0.50m × 1000 × 9.81</div>
+                            </div>
+                        </div>
+
+                        <!-- Sıvı Tankı -->
+                        <div class="w-64 h-56 bg-slate-950/60 rounded-b-2xl border-x-4 border-b-4 border-slate-600 relative overflow-hidden flex flex-col justify-end shadow-2xl">
+                            <!-- Sıvı -->
+                            <div id="lab-liquid-body" class="w-full bg-cyan-600/60 transition-all duration-300 relative border-t-2 border-cyan-300" style="height: 80%;">
+                                <!-- Sıvı İçi Sensör Probu -->
+                                <div id="lab-sensor-probe" class="absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-red-600 border-2 border-white text-white flex items-center justify-center text-xs shadow-lg transition-all duration-300" style="top: 50%;">
+                                    <i class="fa-solid fa-crosshairs animate-pulse"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-xs text-slate-400 mt-4 text-center">
+                            Sensör Probunu yukarı/aşağı kaydırarak derinlik değişimini gözlemleyin.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function updateLabSim() {
+    const liquidEl = document.getElementById("lab-liquid-select");
+    const depthEl = document.getElementById("lab-depth-range");
+    const gravityEl = document.getElementById("lab-gravity-select");
+
+    if (!liquidEl || !depthEl || !gravityEl) return;
+
+    const [dVal, dName] = liquidEl.value.split("|");
+    const [gVal, gName] = gravityEl.value.split("|");
+    const depth = parseFloat(depthEl.value);
+    const density = parseFloat(dVal);
+    const gravity = parseFloat(gVal);
+
+    // Labels
+    document.getElementById("lab-density-val").innerText = `${density.toFixed(2)} g/cm³ (${dName})`;
+    document.getElementById("lab-depth-val").innerText = `${depth} cm (${(depth/100).toFixed(2)} m)`;
+    document.getElementById("lab-gravity-val").innerText = `${gravity.toFixed(2)} m/s² (${gName})`;
+
+    // Pressure Calculation in Pascals: P = h(m) * d(kg/m^3) * g(m/s^2)
+    // 1 g/cm^3 = 1000 kg/m^3
+    const hMeter = depth / 100;
+    const dKgM3 = density * 1000;
+    const pressurePa = Math.round(hMeter * dKgM3 * gravity);
+
+    document.getElementById("lab-pressure-pascal").innerText = `${pressurePa.toLocaleString('tr-TR')} Pa`;
+    document.getElementById("lab-formula-breakdown").innerText = `${hMeter.toFixed(2)}m × ${dKgM3} × ${gravity.toFixed(2)}`;
+
+    // Update Probe Position in Tank
+    const probeEl = document.getElementById("lab-sensor-probe");
+    if (probeEl) {
+        probeEl.style.top = `${Math.min(90, Math.max(10, depth))}%`;
+    }
+
+    // Liquid Color by density
+    const liquidBody = document.getElementById("lab-liquid-body");
+    if (liquidBody) {
+        if (dName === "Zeytinyağı") {
+            liquidBody.className = "w-full bg-amber-500/60 transition-all duration-300 relative border-t-2 border-amber-300";
+        } else if (dName === "Cıva") {
+            liquidBody.className = "w-full bg-slate-400/80 transition-all duration-300 relative border-t-2 border-slate-200";
+        } else if (dName === "Tuzlu Su") {
+            liquidBody.className = "w-full bg-blue-700/60 transition-all duration-300 relative border-t-2 border-blue-400";
+        } else if (dName === "Gliserin") {
+            liquidBody.className = "w-full bg-purple-600/60 transition-all duration-300 relative border-t-2 border-purple-400";
+        } else {
+            liquidBody.className = "w-full bg-cyan-600/60 transition-all duration-300 relative border-t-2 border-cyan-300";
+        }
+    }
+}
