@@ -10,7 +10,14 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     const items = customList.filter(item => {
         const gradeMatch = (gradeNumber === "all" || item.grade === "all" || String(item.grade) === String(gradeNumber));
-        const categoryMatch = (subTab === "all" || subTab === "uniteler" || item.category === subTab);
+        let categoryMatch = false;
+        if (subTab === "all") {
+            categoryMatch = true;
+        } else if (subTab === "egitsel-oyunlar" || subTab === "oyunlar") {
+            categoryMatch = (item.category === "egitsel-oyunlar" || item.category === "oyunlar");
+        } else {
+            categoryMatch = (item.category === subTab);
+        }
         return gradeMatch && categoryMatch;
     });
 
@@ -21,12 +28,12 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
             <div class="flex items-center justify-between mb-4 pb-2 border-b border-emerald-500/20">
                 <h4 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                     <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>✨ Yönetici Tarafından Eklenen Özel Materyaller (${items.length})</span>
+                    <span>✨ Bu Bölüme Eklenen Özel Materyaller (${items.length})</span>
                 </h4>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">2026-2027 MEB Canlı</span>
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Rotalı Fenci Farkıyla</span>
                     ${isAdmin ? `
-                        <button type="button" onclick="triggerUploadModal('${gradeNumber === 'all' ? '8' : gradeNumber}', '${subTab === 'all' || subTab === 'uniteler' ? 'ders-notu' : subTab}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                        <button type="button" onclick="triggerUploadModal('${gradeNumber === 'all' ? '8' : gradeNumber}', '${subTab === 'all' ? 'ders-notu' : subTab}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 shadow-sm">
                             <i class="fa-solid fa-plus"></i> Yeni Ekle
                         </button>
                     ` : ''}
@@ -849,7 +856,6 @@ function switchGradeSubTab(gradeId, tabName) {
 function renderGradeSubTabContent(grade, subData, subTab) {
     if (subTab === "uniteler") {
         return `
-            ${renderCustomMaterialsSection(grade.number, "uniteler")}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 ${grade.units.map(u => `
                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
