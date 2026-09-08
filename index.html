@@ -113,10 +113,13 @@
 
                                                 <!-- Masaüstü Navigasyon (Büyük & Belirgin Sınıf Menüsü) -->
                 <nav class="hidden lg:flex items-center gap-2 xl:gap-3 2xl:gap-4 text-sm xl:text-base 2xl:text-lg font-black tracking-wide text-slate-800">
-                    <!-- 🏠 Ana Sayfa -->
-                    <a href="#home" class="nav-link p-3 rounded-2xl hover:text-brand-red hover:bg-red-50 transition-all flex items-center justify-center text-xl text-slate-700" title="Portal Ana Sayfası">
-                        <i class="fa-solid fa-house"></i>
-                    </a>
+                    <!-- 🏠 Ana Sayfa & Yönetici Çıkış Butonu -->
+                    <div class="flex items-center gap-1">
+                        <a href="#home" class="nav-link p-3 rounded-2xl hover:text-brand-red hover:bg-red-50 transition-all flex items-center justify-center text-xl text-slate-700" title="Portal Ana Sayfası">
+                            <i class="fa-solid fa-house"></i>
+                        </a>
+                        <div id="admin-home-logout-desktop"></div>
+                    </div>
                     
                     <!-- 🟢 5. Sınıf -->
                     <a href="#grade/grade-5" class="nav-link px-4 py-2.5 rounded-2xl hover:text-emerald-700 hover:bg-emerald-50 transition-all flex items-center gap-2.5 uppercase whitespace-nowrap text-slate-900 hover:scale-105 transform shadow-sm border border-transparent hover:border-emerald-200">
@@ -163,10 +166,11 @@
 
                 <!-- Mobil Üst Butonlar (Ev / Ana Sayfa, Arama, Hamburger Menü) -->
                 <div class="flex items-center gap-1.5 sm:gap-2 lg:hidden">
-                    <!-- 🏠 Mobil Ev Butonu (Her Zaman Görünür) -->
+                    <!-- 🏠 Mobil Ev Butonu (Her Zaman Görünür) & Yönetici Çıkış -->
                     <a href="#home" class="w-10 h-10 rounded-2xl bg-red-50 text-brand-red hover:bg-brand-red hover:text-white flex items-center justify-center text-lg transition-all shadow-sm border border-red-200/60" title="Ana Sayfaya Dön">
                         <i class="fa-solid fa-house"></i>
                     </a>
+                    <div id="admin-home-logout-mobile"></div>
                     <!-- 🔍 Mobil Arama Butonu -->
                     <a href="#search" class="w-10 h-10 rounded-2xl bg-slate-100 text-slate-700 hover:bg-slate-200 flex items-center justify-center text-lg transition-all border border-slate-200/60" title="Portalda Ara">
                         <i class="fa-solid fa-magnifying-glass"></i>
