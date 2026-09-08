@@ -1369,6 +1369,176 @@ function closeScientistModal() {
     }
 }
 
+// -------------------------------------------------------------
+// 🛠️ HATA & EKSİK BİLDİRİM SİSTEMİ (ÖĞRENCİ/ZİYARETÇİ VE YÖNETİCİ)
+// -------------------------------------------------------------
+
+function openIssueReportModal() {
+    let modal = document.getElementById("issue-report-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "issue-report-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300";
+        modal.onclick = function(e) {
+            if (e.target === this) closeIssueReportModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    const currentHash = window.location.hash || "#home";
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar" onclick="event.stopPropagation()">
+            
+            <!-- Kapat Butonu -->
+            <button type="button" onclick="closeIssueReportModal()" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-base transition-all z-20 shadow-sm" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Başlık & İkon -->
+            <div class="flex items-center gap-3.5 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                    <i class="fa-solid fa-bug"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Hata & Eksik Bildirim Paneli</h3>
+                    <p class="text-xs text-slate-500 font-medium">Sayfadaki eksikleri ve açılmayanları buraya yazınız</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleIssueReportSubmit(event)" class="space-y-4">
+                
+                <!-- İsim / Rumuz -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Adınız / Rumuz (Opsiyonel)</label>
+                    <input type="text" id="issue-reporter-name" placeholder="Örn: 8. Sınıf Öğrencisi" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <!-- Sınıf / Bölüm -->
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">İlgili Sınıf</label>
+                        <select id="issue-grade-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500">
+                            <option value="8. Sınıf (LGS)">8. Sınıf & LGS</option>
+                            <option value="7. Sınıf">7. Sınıf</option>
+                            <option value="6. Sınıf">6. Sınıf</option>
+                            <option value="5. Sınıf">5. Sınıf</option>
+                            <option value="Proje Merkezi">Proje Merkezi</option>
+                            <option value="Genel Portal">Genel / Diğer</option>
+                        </select>
+                    </div>
+
+                    <!-- Hata Türü -->
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">Sorun Türü</label>
+                        <select id="issue-type-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500">
+                            <option value="Açılmayan Dosya / Link">❌ Açılmayan Dosya / Link</option>
+                            <option value="Oyun / Simülasyon Çalışmıyor">🎮 Oyun / Simülasyon Hatası</option>
+                            <option value="Yanlış Soru / Bilgi">⚠️ Yanlış Soru / Bilgi</option>
+                            <option value="Eksik İçerik Talebi">💡 Eksik İçerik / İstek</option>
+                            <option value="Tasarım / Görüntü Bozuk">📱 Tasarım / Ekran Hatası</option>
+                            <option value="Diğer">Diğer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Detaylı Açıklama -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">
+                        Hata / Eksik Detayı <span class="text-red-500">*</span>
+                    </label>
+                    <textarea id="issue-detail-input" rows="4" required placeholder="Hangi sayfada, hangi içerikte veya hangi butonda sorun yaşadığınızı kısaca belirtiniz..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all"></textarea>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="pt-2 flex gap-3">
+                    <button type="button" onclick="closeIssueReportModal()" class="py-3 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase rounded-xl transition-all">
+                        Vazgeç
+                    </button>
+                    <button type="submit" id="submit-issue-btn" class="flex-1 py-3 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Bildirimi Gönder</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    modal.style.display = "flex";
+    modal.classList.remove("hidden");
+}
+
+function closeIssueReportModal() {
+    const modal = document.getElementById("issue-report-modal");
+    if (modal) {
+        modal.style.display = "none";
+        modal.classList.add("hidden");
+    }
+}
+
+function handleIssueReportSubmit(e) {
+    if (e && e.preventDefault) e.preventDefault();
+
+    const nameInput = document.getElementById("issue-reporter-name");
+    const gradeSelect = document.getElementById("issue-grade-select");
+    const typeSelect = document.getElementById("issue-type-select");
+    const detailInput = document.getElementById("issue-detail-input");
+    const submitBtn = document.getElementById("submit-issue-btn");
+
+    if (!detailInput || !detailInput.value.trim()) {
+        showToast("⚠️ Lütfen hata detayını yazınız!", "error");
+        return;
+    }
+
+    const newReport = {
+        id: "issue-" + Date.now(),
+        reporter: nameInput && nameInput.value.trim() ? nameInput.value.trim() : "Öğrenci / Ziyaretçi",
+        grade: gradeSelect ? gradeSelect.value : "Genel",
+        type: typeSelect ? typeSelect.value : "Genel Hata",
+        detail: detailInput.value.trim(),
+        pageUrl: window.location.hash || "#home",
+        createdAt: new Date().toLocaleString("tr-TR"),
+        status: "Beklemede"
+    };
+
+    let issueList = [];
+    try {
+        issueList = JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]");
+    } catch (err) {
+        issueList = [];
+    }
+
+    issueList.unshift(newReport);
+    localStorage.setItem("rotali_issue_reports", JSON.stringify(issueList));
+
+    closeIssueReportModal();
+    showToast("✅ Teşekkürler! Hata bildiriminiz yöneticimize iletildi.", "success");
+}
+
+function deleteIssueReport(issueId) {
+    if (!checkAdminAccess()) return;
+    if (!confirm("Bu bildirim kaydını silmek istediğinize emin misiniz?")) return;
+
+    let issueList = JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]");
+    issueList = issueList.filter(i => i.id !== issueId);
+    localStorage.setItem("rotali_issue_reports", JSON.stringify(issueList));
+    showToast("🗑️ Bildirim silindi.", "info");
+    handleRouteChange();
+}
+
+function markIssueResolved(issueId) {
+    if (!checkAdminAccess()) return;
+
+    let issueList = JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]");
+    const idx = issueList.findIndex(i => i.id === issueId);
+    if (idx !== -1) {
+        issueList[idx].status = issueList[idx].status === "Çözüldü" ? "Beklemede" : "Çözüldü";
+        localStorage.setItem("rotali_issue_reports", JSON.stringify(issueList));
+        showToast("✅ Bildirim durumu güncellendi.", "success");
+        handleRouteChange();
+    }
+}
+
 function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     // Parse gradeId and subTab: e.g. "grade-5/ders-notu" or "grade-5"
     let parts = (gradeIdWithTab || "grade-8").split("/");
@@ -1379,6 +1549,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     // Find grade in PORTAL_GRADES
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
     const subData = getGradeSubSectionsData(grade.number);
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -1392,11 +1563,13 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                             </span>
                             ${grade.isLGS ? '<span class="px-3.5 py-1 rounded-full bg-amber-400 text-slate-950 text-xs font-black shadow-sm">🔥 LGS MERKEZİ</span>' : ''}
                         </div>
+                        ${isAdmin ? `
                         <div class="flex items-center gap-2">
                             <button onclick="triggerUploadModal('${grade.number}', '${subTab}')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md self-start md:self-auto">
                                 <i class="fa-solid fa-cloud-arrow-up"></i> + Bu Sınıfa İçerik Ekle
                             </button>
                         </div>
+                    ` : ''}
                     </div>
 
                     <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight mb-3 drop-shadow-sm">${grade.title}</h2>
@@ -2215,6 +2388,72 @@ function renderTeacherDashboardPage(container) {
                     <div class="text-2xl sm:text-3xl font-black text-blue-600 mb-1">${customList.filter(i => i.grade === "6" || i.grade === "5").length}</div>
                     <div class="text-xs font-bold text-slate-500 uppercase">5 & 6. Sınıf</div>
                 </div>
+            </div>
+
+            <!-- 🛠️ GELEN HATA & EKSİK BİLDİRİMLERİ (YÖNETİCİYE ÖZEL) -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 mb-8">
+                <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-bug text-red-600"></i> Gelen Hata & Eksik Bildirimleri (${JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]").length})
+                        </h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Ziyaretçiler ve öğrenciler tarafından bildirilen eksikler, açılmayan linkler ve notlar.</p>
+                    </div>
+                </div>
+
+                ${JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]").length === 0 ? `
+                    <div class="text-center py-8 text-xs font-bold text-slate-400">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-lg mb-1 block"></i>
+                        Harika! Şu anda bildirilmiş hiçbir hata veya eksik bulunmuyor.
+                    </div>
+                ` : `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 font-black uppercase tracking-wider border-b border-slate-200">
+                                    <th class="p-3">Tarih</th>
+                                    <th class="p-3">Bildiren / Sınıf</th>
+                                    <th class="p-3">Sorun Türü</th>
+                                    <th class="p-3">Hata / Eksik Detayı</th>
+                                    <th class="p-3">Durum</th>
+                                    <th class="p-3 text-right">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                                ${JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]").map(item => `
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="p-3 text-slate-400 font-bold whitespace-nowrap">${item.createdAt}</td>
+                                        <td class="p-3">
+                                            <div class="font-bold text-slate-900">${item.reporter}</div>
+                                            <span class="text-[10px] text-slate-500">${item.grade}</span>
+                                        </td>
+                                        <td class="p-3">
+                                            <span class="px-2 py-0.5 rounded-lg bg-red-50 text-red-700 text-[10px] font-black uppercase border border-red-200">
+                                                ${item.type}
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-slate-800 text-xs leading-relaxed max-w-md">${item.detail}</td>
+                                        <td class="p-3 whitespace-nowrap">
+                                            <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${item.status === 'Çözüldü' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                                                ${item.status || 'Beklemede'}
+                                            </span>
+                                        </td>
+                                        <td class="p-3 text-right whitespace-nowrap">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <button onclick="markIssueResolved('${item.id}')" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-bold text-xs transition-all" title="Çözüldü Olarak İşaretle">
+                                                    <i class="fa-solid fa-check"></i>
+                                                </button>
+                                                <button onclick="deleteIssueReport('${item.id}')" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg font-bold text-xs transition-all" title="Sil">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                `}
             </div>
 
             <!-- Canlı Materyal Listesi -->
