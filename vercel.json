@@ -1,6 +1,8 @@
 {
   "version": 2,
   "name": "rotali-fenci",
+  "framework": null,
+  "outputDirectory": ".",
   "cleanUrls": true,
   "routes": [
     {
