@@ -676,6 +676,9 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                         <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2">
                             📚 Soru Bankası & Testler
                         </button>
+                        <button onclick="openMaterialUploadModal('${grade.number}', '${subTab}')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> + Bu Sınıfa Dosya / Not Ekle
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1934,4 +1937,160 @@ function updateLabSim() {
             liquidBody.className = "w-full bg-cyan-600/60 transition-all duration-300 relative border-t-2 border-cyan-300";
         }
     }
+}
+
+
+// -------------------------------------------------------------
+// 📤 SAYFA İÇİ İÇERİK & MATERYAL YÜKLEME ARACI (PDF, WORD, PPTX, VİDEO)
+// -------------------------------------------------------------
+function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu") {
+    let modal = document.getElementById("material-upload-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "material-upload-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300";
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <button onclick="closeMaterialUploadModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-black text-sm transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-xl shadow-md">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900">Siteye Yeni İçerik / Dosya Ekle</h3>
+                    <p class="text-xs text-slate-500 font-medium">PDF, Word (DOCX), PowerPoint (PPTX) veya Video Linki</p>
+                </div>
+            </div>
+
+            <form id="material-upload-form" onsubmit="handleMaterialSubmit(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Sınıf Düzeyi</label>
+                        <select id="upload-grade" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                            <option value="5" ${prefillGrade === "5" || prefillGrade === "grade-5" ? 'selected' : ''}>5. Sınıf</option>
+                            <option value="6" ${prefillGrade === "6" || prefillGrade === "grade-6" ? 'selected' : ''}>6. Sınıf</option>
+                            <option value="7" ${prefillGrade === "7" || prefillGrade === "grade-7" ? 'selected' : ''}>7. Sınıf</option>
+                            <option value="8" ${prefillGrade === "8" || prefillGrade === "grade-8" ? 'selected' : ''}>8. Sınıf (LGS)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Kategori / Bölüm</label>
+                        <select id="upload-category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                            <option value="ders-notu" ${prefillTab === "ders-notu" ? 'selected' : ''}>📝 Ders Notu (PDF)</option>
+                            <option value="ders-sunumu" ${prefillTab === "ders-sunumu" ? 'selected' : ''}>📊 Ders Sunumu (PPTX)</option>
+                            <option value="videolar" ${prefillTab === "videolar" ? 'selected' : ''}>🎥 Video Dersi</option>
+                            <option value="etkinlikler" ${prefillTab === "etkinlikler" ? 'selected' : ''}>🧩 Etkinlik Föyü (Word/PDF)</option>
+                            <option value="soru-bankasi" ${prefillTab === "soru-bankasi" ? 'selected' : ''}>📚 Soru Bankası Testi</option>
+                            <option value="denemeler" ${prefillTab === "denemeler" ? 'selected' : ''}>🎯 Deneme Sınavı</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Materyal Başlığı</label>
+                    <input type="text" id="upload-title" required placeholder="Örn: 8. Sınıf Basınç Ünitesi Detaylı Ders Notu" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Ünite / Konu</label>
+                    <input type="text" id="upload-unit" placeholder="Örn: 3. Ünite • Basınç" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                </div>
+
+                <!-- Dosya Yükleme veya Link Girişi -->
+                <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                    <span class="block text-xs font-black text-slate-800 uppercase">Dosya veya Bağlantı Ekle</span>
+                    
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">A) Bilgisayarınızdan Dosya Seçin (.pdf, .pptx, .docx):</label>
+                        <input type="file" id="upload-file-input" accept=".pdf,.docx,.doc,.pptx,.ppt,.png,.jpg,.jpeg" class="w-full text-xs text-slate-600 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-red-600 file:text-white hover:file:bg-red-700 cursor-pointer">
+                    </div>
+
+                    <div class="text-center text-[11px] font-bold text-slate-400">— VEYA —</div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-500 mb-1">B) Google Drive, YouTube veya Dosya Web Linki:</label>
+                        <input type="url" id="upload-url-input" placeholder="https://drive.google.com/... veya https://youtube.com/..." class="w-full p-2.5 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Açıklama / Not</label>
+                    <textarea id="upload-desc" rows="2" placeholder="Öğrenciler için kısa bilgilendirme veya kazanım açıklaması..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500"></textarea>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Siteye Yayınla & Kaydet
+                </button>
+            </form>
+        </div>
+    `;
+
+    modal.classList.remove("hidden");
+}
+
+function closeMaterialUploadModal() {
+    const modal = document.getElementById("material-upload-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function handleMaterialSubmit(e) {
+    e.preventDefault();
+
+    const grade = document.getElementById("upload-grade").value;
+    const category = document.getElementById("upload-category").value;
+    const title = document.getElementById("upload-title").value.trim();
+    const unit = document.getElementById("upload-unit").value.trim() || `${grade}. Sınıf Fen Bilimleri`;
+    const desc = document.getElementById("upload-desc").value.trim() || "Rotalı Fenci MEB müfredatı özel çalışma materyali.";
+    const fileInput = document.getElementById("upload-file-input");
+    const urlInput = document.getElementById("upload-url-input").value.trim();
+
+    let fileName = "";
+    let fileUrl = urlInput;
+
+    if (fileInput.files && fileInput.files[0]) {
+        fileName = fileInput.files[0].name;
+        // Create local object URL for instant download/view
+        fileUrl = URL.createObjectURL(fileInput.files[0]);
+    } else if (!fileUrl) {
+        fileUrl = "#";
+        fileName = `${title}.pdf`;
+    }
+
+    const newMaterial = {
+        id: `custom-mat-${Date.now()}`,
+        grade: grade,
+        category: category,
+        title: title,
+        unit: unit,
+        desc: desc,
+        fileName: fileName,
+        fileUrl: fileUrl,
+        badge: category === "ders-sunumu" ? "Akıllı Tahta (PPTX)" : (category === "videolar" ? "Video Ders" : "PDF / Föy"),
+        createdAt: new Date().toLocaleDateString("tr-TR")
+    };
+
+    // Save to LocalStorage
+    const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    customList.unshift(newMaterial);
+    localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+
+    closeMaterialUploadModal();
+    showToast(`✅ "${title}" başarıyla siteye eklendi ve yayınlandı!`, "success");
+
+    // Refresh current view if on grade page
+    if (window.location.hash.startsWith("#grade/")) {
+        handleRouteChange();
+    }
+}
+
+function getCustomMaterials(gradeNumber, category) {
+    const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    return customList.filter(item => String(item.grade) === String(gradeNumber) && item.category === category);
 }
