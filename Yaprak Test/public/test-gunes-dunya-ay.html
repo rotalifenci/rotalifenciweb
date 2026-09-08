@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5. Sınıf Fen Bilimleri - Güneş, Dünya ve Ay Yaprak Testi</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --correct-bg: #ecfdf5;
+      --wrong-bg: #fef2f2;
+      --wrong-border: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .test-wrapper {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* Web Üst Bar (Navigasyon & Aksiyonlar) */
+    .top-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fff;
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #334155;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+
+    .btn-outline {
+      background: #fff;
+      border-color: var(--border);
+      color: #334155;
+    }
+    .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; }
+
+    .btn-success {
+      background: #10b981;
+      color: white;
+    }
+    .btn-success:hover { background: #059669; }
+
+    /* Test Kağıdı Konteyneri (A4 Hissiyatı & Filigran) */
+    .sheet-paper {
+      background: #fff;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 36px 40px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    .sheet-paper::before {
+      content: "";
+      position: fixed;
+      top: 55%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 480px;
+      height: 480px;
+      background-image: url('rotali-fenci.jpg');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .sheet-header, .questions-list, .answer-key-section, .result-card {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Test Başlığı */
+    .sheet-header {
+      border: 2px solid #0f172a;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+
+    .sheet-header-top {
+      text-align: center;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
+    }
+
+    .ministry-title {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: #475569;
+    }
+
+    .main-test-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 19px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-top: 2px;
+    }
+
+    .student-info-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 12px;
+      font-size: 13px;
+      padding-bottom: 8px;
+      border-bottom: 1px dashed #cbd5e1;
+    }
+
+    .sheet-meta-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #475569;
+      margin-top: 8px;
+      font-weight: 600;
+    }
+
+    /* Sorular Listesi */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .question-block {
+      background: #fff;
+      border: 1px solid #e2e8f0;
+      border-radius: 10px;
+      padding: 20px 22px;
+      transition: all 0.2s;
+      position: relative;
+    }
+
+    .question-block:hover {
+      border-color: #cbd5e1;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .q-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .q-badge {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .q-outcome-tag {
+      font-size: 11px;
+      font-weight: 600;
+      color: #475569;
+      background: #f1f5f9;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .q-text {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.6;
+      margin-bottom: 14px;
+      white-space: pre-line;
+    }
+
+    /* Seçenekler */
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .opt-label {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 8px;
+      border: 1px solid #e2e8f0;
+      background: #fff;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .opt-label:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .opt-label input[type="radio"] {
+      display: none;
+    }
+
+    .opt-circle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      font-weight: 700;
+      font-size: 12px;
+      color: #334155;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .opt-text {
+      font-size: 13.5px;
+      color: #334155;
+      padding-top: 2px;
+    }
+
+    /* Seçili Şık */
+    .opt-label.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .opt-label.selected .opt-circle {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .opt-label.selected .opt-text {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    /* Öğretmen Modu & Çözüm Durumu */
+    .show-teacher-answers .opt-label.is-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--accent) !important;
+    }
+    .show-teacher-answers .opt-label.is-correct .opt-circle {
+      background: var(--accent) !important;
+      color: white !important;
+      border-color: var(--accent) !important;
+    }
+
+    .show-teacher-answers .opt-label.is-wrong-selected {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+    }
+
+    .solution-box {
+      margin-top: 14px;
+      padding: 12px 14px;
+      background: #f8fafc;
+      border-left: 4px solid var(--primary);
+      border-radius: 4px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .solution-box strong {
+      color: var(--primary);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    /* Test Sonuç Kartı */
+    .result-card {
+      display: none;
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: white;
+      border-radius: var(--radius);
+      padding: 24px;
+      text-align: center;
+      margin-top: 24px;
+    }
+
+    .result-score {
+      font-size: 38px;
+      font-weight: 800;
+      font-family: 'Outfit', sans-serif;
+      margin: 8px 0;
+    }
+
+    /* Cevap Anahtarı Bölümü */
+    .answer-key-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 2px dashed #cbd5e1;
+      display: none;
+    }
+
+    .answer-key-section h3 {
+      font-size: 15px;
+      font-weight: 800;
+      color: #0f172a;
+      margin-bottom: 12px;
+    }
+
+    .ak-grid {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ak-card {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .ak-card .ans {
+      background: #ecfdf5;
+      color: #047857;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Tablo Biçimlendirmesi */
+    .table-options {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 13px;
+    }
+
+    .table-options th, .table-options td {
+      border: 1px solid #cbd5e1;
+      padding: 8px 12px;
+      text-align: center;
+    }
+
+    .table-options th {
+      background: #f1f5f9;
+      font-weight: 700;
+    }
+
+    /* Baskı (Print) Stilleri */
+    @media print {
+      body {
+        background: white !important;
+        padding: 0 !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .sheet-paper {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+
+      .question-block {
+        border: 1px solid #cbd5e1 !important;
+        break-inside: avoid;
+        margin-bottom: 12px;
+      }
+
+      .opt-label {
+        border: none !important;
+        padding: 4px 0 !important;
+      }
+
+      .opt-circle {
+        border: 1px solid #000 !important;
+        background: transparent !important;
+        color: #000 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="test-wrapper">
+    
+    <!-- Üst Kontrol Barı -->
+    <div class="top-actions-bar no-print">
+      <div class="nav-links">
+        <a href="/" class="nav-btn">← Soru Üretim Portalı</a>
+        <span style="color:#94a3b8;">|</span>
+        <span style="font-weight:700; font-size:13.5px; color:#1e293b;">5. Sınıf Fen Bilimleri</span>
+      </div>
+
+      <div class="action-group">
+        <button type="button" id="toggleTeacherModeBtn" class="btn btn-outline">
+          <span>👁️</span> Öğretmen Modu (Cevaplar & Çözümler)
+        </button>
+        <button type="button" id="finishTestBtn" class="btn btn-success">
+          <span>✅</span> Testi Bitir & Puanla
+        </button>
+        <button type="button" onclick="window.print()" class="btn btn-primary">
+          <span>🖨️</span> Yazdır / PDF Yap
+        </button>
+      </div>
+    </div>
+
+    <!-- Yaprak Test Kağıdı -->
+    <div class="sheet-paper" id="testSheet">
+      
+      <!-- Test Başlığı -->
+      <div class="sheet-header">
+        <div class="sheet-header-top">
+          <div class="ministry-title">T.C. MİLLİ EĞİTİM BAKANLIĞI</div>
+          <div class="main-test-title">5. SINIF FEN BİLİMLERİ DERSİ KONU DEĞERLENDİRME TESTİ</div>
+        </div>
+
+        <div class="student-info-grid">
+          <div><strong>Adı Soyadı:</strong> ........................................................</div>
+          <div><strong>Sınıf / Şube:</strong> ......... / .........</div>
+          <div><strong>Tarih:</strong> ..... / ..... / 2026</div>
+          <div><strong>Puan:</strong> <span id="headerScoreBox">...............</span></div>
+        </div>
+
+        <div class="sheet-meta-footer">
+          <span><strong>Ünite:</strong> 1. Güneş, Dünya ve Ay</span>
+          <span><strong>Soru Sayısı:</strong> 5 Soru</span>
+          <span><strong>Süre:</strong> 15 Dakika</span>
+        </div>
+      </div>
+
+      <!-- Sorular Listesi -->
+      <div class="questions-list">
+        
+        <!-- Soru 1 -->
+        <div class="question-block" data-qid="1" data-correct="D">
+          <div class="q-top-row">
+            <span class="q-badge">Soru 1</span>
+            <span class="q-outcome-tag">Kazanım: Güneş ve Ay'ın geometrik şeklini ve temel özelliklerini açıklar.</span>
+          </div>
+          <div class="q-text">Güneş ve Ay’ın yapısal özellikleri ve geometrik şekilleri ile ilgili aşağıdaki ifadelerden hangisi <strong>yanlıştır</strong>?</div>
+          <div class="options-group">
+            <label class="opt-label" data-opt="A">
+              <input type="radio" name="q1" value="A">
+              <span class="opt-circle">A</span>
+              <span class="opt-text">Güneş ve Ay’ın her ikisi de küresel bir geometrik şekle sahiptir.</span>
+            </label>
+            <label class="opt-label" data-opt="B">
+              <input type="radio" name="q1" value="B">
+              <span class="opt-circle">B</span>
+              <span class="opt-text">Güneş, Dünya’mızın temel ısı ve ışık kaynağı olan orta büyüklükte bir yıldızdır.</span>
+            </label>
+            <label class="opt-label" data-opt="C">
+              <input type="radio" name="q1" value="C">
+              <span class="opt-circle">C</span>
+              <span class="opt-text">Ay’ın yüzeyinde meteorların çarpması sonucu oluşan çukurlara krater adı verilir.</span>
+            </label>
+            <label class="opt-label" data-opt="D">
+              <input type="radio" name="q1" value="D">
+              <span class="opt-circle">D</span>
+              <span class="opt-text">Ay’ın kalın bir atmosferi olduğu için yüzeyinde gece ve gündüz arasındaki sıcaklık farkı çok azdır.</span>
+            </label>
+          </div>
+          <div class="solution-box">
+            <strong>💡 Çözüm ve Açıklama:</strong>
+            Ay'ın yok denecek kadar ince bir atmosferi vardır. Bu nedenle rüzgâr, yağış gibi hava olayları görülmez ve gece ile gündüz arasındaki sıcaklık farkı oldukça fazladır. D seçeneğindeki ifade yanlıştır.
+          </div>
+        </div>
+
+        <!-- Soru 2 -->
+        <div class="question-block" data-qid="2" data-correct="A">
+          <div class="q-top-row">
+            <span class="q-badge">Soru 2</span>
+            <span class="q-outcome-tag">Kazanım: Ay'ın dönme ve dolanma hareketlerini ile ana/ara evrelerini model üzerinde gösterir.</span>
+          </div>
+          <div class="q-text">Ay'ın Dünya'dan bakıldığında tamamen aydınlık ve dairesel olarak görüldüğü ana evre <strong>Dolunay</strong> evresidir.
+
+Buna göre, <strong>Dolunay evresinden yaklaşık 1 hafta sonra</strong> gerçekleşen ana evre ve Ay'ın Dünya'dan görünümü aşağıdakilerin hangisinde doğru verilmiştir?</div>
+          <div class="options-group">
+            <label class="opt-label" data-opt="A">
+              <input type="radio" name="q2" value="A">
+              <span class="opt-circle">A</span>
+              <span class="opt-text"><strong>Son dördün</strong> – Ay'ın sol yarısı aydınlık görünür ("D" harfinin tersi şeklinde).</span>
+            </label>
+            <label class="opt-label" data-opt="B">
+              <input type="radio" name="q2" value="B">
+              <span class="opt-circle">B</span>
+              <span class="opt-text"><strong>İlk dördün</strong> – Ay'ın sağ yarısı aydınlık görünür ("D" harfi şeklinde).</span>
+            </label>
+            <label class="opt-label" data-opt="C">
+              <input type="radio" name="q2" value="C">
+              <span class="opt-circle">C</span>
+              <span class="opt-text"><strong>Yeni ay</strong> – Ay'ın Dünya'ya bakan yüzü tamamen karanlıktır ve Ay görünmez.</span>
+            </label>
+            <label class="opt-label" data-opt="D">
+              <input type="radio" name="q2" value="D">
+              <span class="opt-circle">D</span>
+              <span class="opt-text"><strong>Hilal</strong> – Ay gökyüzünde ince bir yay şeklinde görünür.</span>
+            </label>
+          </div>
+          <div class="solution-box">
+            <strong>💡 Çözüm ve Açıklama:</strong>
+            Ay'ın ana evre sıralaması: Yeni ay → İlk dördün → Dolunay → Son dördün. İki ana evre arasında yaklaşık 1 hafta (7 gün) geçer. Dolunaydan 1 hafta sonra <strong>Son dördün</strong> evresi gerçekleşir.
+          </div>
+        </div>
+
+        <!-- Soru 3 -->
+        <div class="question-block" data-qid="3" data-correct="C">
+          <div class="q-top-row">
+            <span class="q-badge">Soru 3</span>
+            <span class="q-outcome-tag">Kazanım: Ay'ın dönme ve dolanma hareketlerini ile ana/ara evrelerini model üzerinde gösterir.</span>
+          </div>
+          <div class="q-text">Fen bilimleri dersinde öğretmen, Güneş, Dünya ve Ay'ın birbirine göre konumlarını gösteren bir model hazırlamıştır. Bu modelde Ay, Güneş ile Dünya'nın tam arasında yer almakta ve Ay'ın Dünya'ya bakan yüzü Güneş'ten doğrudan ışık alamamaktadır.
+
+Buna göre modelde sergilenen bu durum, Ay'ın hangi <strong>ana evresini</strong> temsil etmektedir?</div>
+          <div class="options-group">
+            <label class="opt-label" data-opt="A">
+              <input type="radio" name="q3" value="A">
+              <span class="opt-circle">A</span>
+              <span class="opt-text">Dolunay</span>
+            </label>
+            <label class="opt-label" data-opt="B">
+              <input type="radio" name="q3" value="B">
+              <span class="opt-circle">B</span>
+              <span class="opt-text">İlk dördün</span>
+            </label>
+            <label class="opt-label" data-opt="C">
+              <input type="radio" name="q3" value="C">
+              <span class="opt-circle">C</span>
+              <span class="opt-text">Yeni ay</span>
+            </label>
+            <label class="opt-label" data-opt="D">
+              <input type="radio" name="q3" value="D">
+              <span class="opt-circle">D</span>
+              <span class="opt-text">Son dördün</span>
+            </label>
+          </div>
+          <div class="solution-box">
+            <strong>💡 Çözüm ve Açıklama:</strong>
+            Ay, Güneş ile Dünya arasındayken Dünya'ya bakan tarafı ışık alamaz ve karanlık kalır. Bu evre <strong>Yeni ay</strong> evresidir.
+          </div>
+        </div>
+
+        <!-- Soru 4 -->
+        <div class="question-block" data-qid="4" data-correct="A">
+          <div class="q-top-row">
+            <span class="q-badge">Soru 4</span>
+            <span class="q-outcome-tag">Kazanım: Ay'ın dönme ve dolanma hareketlerini ile ana/ara evrelerini model üzerinde gösterir.</span>
+          </div>
+          <div class="q-text">Bir öğrenci, Ay'ın evrelerini gösteren bir model tasarlarken ana evreler arasındaki ara evreleri yerleştirmek istemektedir. 
+
+Öğrencinin <strong>"Yeni Ay"</strong> ana evresi ile <strong>"İlk Dördün"</strong> ana evresi arasındaki zaman dilimine yerleştirmesi gereken <strong>ara evre</strong> aşağıdakilerden hangisidir?</div>
+          <div class="options-group">
+            <label class="opt-label" data-opt="A">
+              <input type="radio" name="q4" value="A">
+              <span class="opt-circle">A</span>
+              <span class="opt-text">Hilal</span>
+            </label>
+            <label class="opt-label" data-opt="B">
+              <input type="radio" name="q4" value="B">
+              <span class="opt-circle">B</span>
+              <span class="opt-text">Şişkin ay</span>
+            </label>
+            <label class="opt-label" data-opt="C">
+              <input type="radio" name="q4" value="C">
+              <span class="opt-circle">C</span>
+              <span class="opt-text">Son dördün</span>
+            </label>
+            <label class="opt-label" data-opt="D">
+              <input type="radio" name="q4" value="D">
+              <span class="opt-circle">D</span>
+              <span class="opt-text">Dolunay</span>
+            </label>
+          </div>
+          <div class="solution-box">
+            <strong>💡 Çözüm ve Açıklama:</strong>
+            Yeni ay ile İlk dördün arasındaki ara evre <strong>Hilal</strong>dir. İlk dördün ile Dolunay arasındaki ara evre ise Şişkin ay'dır.
+          </div>
+        </div>
+
+        <!-- Soru 5 -->
+        <div class="question-block" data-qid="5" data-correct="A">
+          <div class="q-top-row">
+            <span class="q-badge">Soru 5</span>
+            <span class="q-outcome-tag">Kazanım: Güneş, Dünya ve Ay'ın birbirlerine göre hareketlerini ve boyut ilişkilerini kavrar.</span>
+          </div>
+          <div class="q-text">Güneş, Dünya ve Ay'ın büyüklüklerini modellemek isteyen Mert; elindeki <strong>basketbol topu</strong>, <strong>nohut tanesi</strong> ve <strong>mercimek tanesini</strong> bu gök cisimleriyle eşleştirecektir.
+
+Mert'in boyut ilişkisini doğru gösterebilmesi için yapması gereken eşleştirme aşağıdakilerin hangisinde doğru verilmiştir?</div>
+          
+          <div class="options-group">
+            <label class="opt-label" data-opt="A">
+              <input type="radio" name="q5" value="A">
+              <span class="opt-circle">A</span>
+              <span class="opt-text"><strong>Güneş:</strong> Basketbol topu | <strong>Dünya:</strong> Nohut tanesi | <strong>Ay:</strong> Mercimek tanesi</span>
+            </label>
+            <label class="opt-label" data-opt="B">
+              <input type="radio" name="q5" value="B">
+              <span class="opt-circle">B</span>
+              <span class="opt-text"><strong>Güneş:</strong> Basketbol topu | <strong>Dünya:</strong> Mercimek tanesi | <strong>Ay:</strong> Nohut tanesi</span>
+            </label>
+            <label class="opt-label" data-opt="C">
+              <input type="radio" name="q5" value="C">
+              <span class="opt-circle">C</span>
+              <span class="opt-text"><strong>Güneş:</strong> Nohut tanesi | <strong>Dünya:</strong> Basketbol topu | <strong>Ay:</strong> Mercimek tanesi</span>
+            </label>
+            <label class="opt-label" data-opt="D">
+              <input type="radio" name="q5" value="D">
+              <span class="opt-circle">D</span>
+              <span class="opt-text"><strong>Güneş:</strong> Mercimek tanesi | <strong>Dünya:</strong> Nohut tanesi | <strong>Ay:</strong> Basketbol topu</span>
+            </label>
+          </div>
+          <div class="solution-box">
+            <strong>💡 Çözüm ve Açıklama:</strong>
+            Boyut sıralaması: Güneş > Dünya > Ay şeklindedir. Bu nedenle Basketbol topu (Güneş), Nohut tanesi (Dünya) ve Mercimek tanesi (Ay) doğru eşleştirmedir.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Test Sonuç Kartı -->
+      <div class="result-card" id="resultCard">
+        <h3>🎉 Testi Tamamladınız!</h3>
+        <div class="result-score" id="scoreDisplay">100 Puan</div>
+        <p id="scoreDetails">5 sorudan 5 doğru yaptınız.</p>
+      </div>
+
+      <!-- Cevap Anahtarı Bölümü -->
+      <div class="answer-key-section" id="answerKeySection">
+        <h3>🔑 Öğretmen Cevap Anahtarı</h3>
+        <div class="ak-grid">
+          <div class="ak-card"><span>1. Soru:</span> <span class="ans">D</span></div>
+          <div class="ak-card"><span>2. Soru:</span> <span class="ans">A</span></div>
+          <div class="ak-card"><span>3. Soru:</span> <span class="ans">C</span></div>
+          <div class="ak-card"><span>4. Soru:</span> <span class="ans">A</span></div>
+          <div class="ak-card"><span>5. Soru:</span> <span class="ans">A</span></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let isTeacherMode = false;
+
+      // Şık seçimi etkileşimi
+      document.querySelectorAll('.opt-label').forEach(label => {
+        label.addEventListener('click', () => {
+          const block = label.closest('.question-block');
+          block.querySelectorAll('.opt-label').forEach(l => l.classList.remove('selected'));
+          label.classList.add('selected');
+        });
+      });
+
+      // Öğretmen Modu Aç/Kapat
+      const toggleTeacherModeBtn = document.getElementById('toggleTeacherModeBtn');
+      const testSheet = document.getElementById('testSheet');
+      const answerKeySection = document.getElementById('answerKeySection');
+
+      toggleTeacherModeBtn.addEventListener('click', () => {
+        isTeacherMode = !isTeacherMode;
+        if (isTeacherMode) {
+          testSheet.classList.add('show-teacher-answers');
+          answerKeySection.style.display = 'block';
+          document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'block');
+          
+          // Doğru şıkları işaretle
+          document.querySelectorAll('.question-block').forEach(qb => {
+            const correctOpt = qb.getAttribute('data-correct');
+            const targetLabel = qb.querySelector(`.opt-label[data-opt="${correctOpt}"]`);
+            if (targetLabel) targetLabel.classList.add('is-correct');
+          });
+
+          toggleTeacherModeBtn.innerHTML = '<span>🔒</span> Öğretmen Modunu Kapat';
+          toggleTeacherModeBtn.classList.add('btn-primary');
+          toggleTeacherModeBtn.classList.remove('btn-outline');
+        } else {
+          testSheet.classList.remove('show-teacher-answers');
+          answerKeySection.style.display = 'none';
+          document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'none');
+          document.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
+
+          toggleTeacherModeBtn.innerHTML = '<span>👁️</span> Öğretmen Modu (Cevaplar & Çözümler)';
+          toggleTeacherModeBtn.classList.add('btn-outline');
+          toggleTeacherModeBtn.classList.remove('btn-primary');
+        }
+      });
+
+      // Testi Bitir & Puanla
+      const finishTestBtn = document.getElementById('finishTestBtn');
+      const resultCard = document.getElementById('resultCard');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const scoreDetails = document.getElementById('scoreDetails');
+      const headerScoreBox = document.getElementById('headerScoreBox');
+
+      finishTestBtn.addEventListener('click', () => {
+        let correctCount = 0;
+        let answeredCount = 0;
+        const total = 5;
+
+        document.querySelectorAll('.question-block').forEach(qb => {
+          const correctOpt = qb.getAttribute('data-correct');
+          const selectedLabel = qb.querySelector('.opt-label.selected');
+          
+          // Temizle
+          qb.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
+
+          if (selectedLabel) {
+            answeredCount++;
+            const userOpt = selectedLabel.getAttribute('data-opt');
+            if (userOpt === correctOpt) {
+              correctCount++;
+              selectedLabel.classList.add('is-correct');
+            } else {
+              selectedLabel.classList.add('is-wrong-selected');
+              const correctLabel = qb.querySelector(`.opt-label[data-opt="${correctOpt}"]`);
+              if (correctLabel) correctLabel.classList.add('is-correct');
+            }
+          } else {
+            const correctLabel = qb.querySelector(`.opt-label[data-opt="${correctOpt}"]`);
+            if (correctLabel) correctLabel.classList.add('is-correct');
+          }
+
+          qb.querySelector('.solution-box').style.display = 'block';
+        });
+
+        testSheet.classList.add('show-teacher-answers');
+        answerKeySection.style.display = 'block';
+
+        const score = Math.round((correctCount / total) * 100);
+        scoreDisplay.textContent = `${score} Puan`;
+        scoreDetails.textContent = `${total} sorudan ${correctCount} doğru, ${answeredCount - correctCount} yanlış, ${total - answeredCount} boş.`;
+        headerScoreBox.textContent = `${score} / 100`;
+
+        resultCard.style.display = 'block';
+        resultCard.scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+  </script>
+</body>
+</html>

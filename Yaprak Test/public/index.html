@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yaprak Test & Soru Üretim Portalı (Gemini AI)</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Üst Başlık ve Durum Çubuğu -->
+    <header class="app-header no-print">
+      <div class="brand">
+        <img src="rotali-fenci.jpg" alt="Rotalı Fenci Logo" class="brand-logo-img">
+        <div>
+          <h1>Rotalı Fenci - Yaprak Test & Soru Bankası</h1>
+          <p class="subtitle">MEB Müfredatına Dayalı Görsel ve Şekilli Akıllı Soru Üretim Sistemi</p>
+        </div>
+      </div>
+      <div class="header-badges">
+        <a href="/test-gunes-dunya-ay.html" class="badge badge-link" target="_blank">📄 Güneş, Dünya ve Ay Testi</a>
+        <span class="badge gemini-badge">⚡ Gemini 3.6 Flash</span>
+        <span class="badge status-badge" id="apiStatusBadge">● Sistem Aktif</span>
+      </div>
+    </header>
+
+    <!-- Ana Çalışma Alanı -->
+    <main class="main-layout">
+      
+      <!-- Sol Panel: Kazanım Seçimi ve Parametreler -->
+      <section class="control-panel no-print">
+        <div class="card">
+          <div class="card-header">
+            <h2>🎯 1. Kazanım ve Soru Ayarları</h2>
+            <span class="step-tag">Adım 1</span>
+          </div>
+
+          <form id="questionForm">
+            <!-- Sınıf ve Ders Seçimi -->
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="gradeInput">Sınıf</label>
+                <select id="gradeInput" class="form-control">
+                  <option value="5" selected>5. Sınıf</option>
+                  <option value="6">6. Sınıf</option>
+                  <option value="7">7. Sınıf</option>
+                  <option value="8">8. Sınıf</option>
+                </select>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="subjectInput">Ders</label>
+                <input type="text" id="subjectInput" class="form-control" value="Fen Bilimleri" required>
+              </div>
+            </div>
+
+            <!-- Ünite / Öğrenme Alanı Seçimi (Görsel Sekmeler) -->
+            <div class="form-group">
+              <label>Öğrenme Alanı / Ünite Seçimi</label>
+              <div class="unit-pills-container" id="unitPills">
+                <!-- JS ile doldurulacak -->
+              </div>
+            </div>
+
+            <!-- Kazanım Listesi (Check-box çoklu seçim alanı) -->
+            <div class="form-group">
+              <div class="label-with-action">
+                <label>Hedef Öğrenme Çıktıları (Seçiniz)</label>
+                <button type="button" id="selectAllOutcomesBtn" class="link-btn">Tümünü Seç</button>
+              </div>
+              <div class="outcomes-checklist" id="outcomesChecklist">
+                <div class="empty-hint">Lütfen yukarıdan bir ünite seçiniz...</div>
+              </div>
+            </div>
+
+            <!-- Özel Kazanım Metni (Opsiyonel) -->
+            <div class="form-group">
+              <div class="label-with-action">
+                <label for="customOutcome">Özel Kazanım / Açıklama Ekle (Opsiyonel)</label>
+              </div>
+              <textarea id="customOutcome" class="form-control outcome-textarea" rows="2" placeholder="Listeden seçmek yerine veya ek olarak kendi özel kazanımınızı buraya yazabilirsiniz..."></textarea>
+            </div>
+
+            <!-- Hedef Sayfa Sayısı Butonları (1, 2, 3, 4 Sayfa) -->
+            <div class="form-group">
+              <label>Hedef Sayfa Sayısı (Baskı & Çıktı İçin)</label>
+              <div class="page-count-btn-group" id="formPageCountButtons">
+                <button type="button" class="btn-page-count active" data-pages="1" onclick="setTargetPages(1)">📄 1 Sayfa</button>
+                <button type="button" class="btn-page-count" data-pages="2" onclick="setTargetPages(2)">📑 2 Sayfa</button>
+                <button type="button" class="btn-page-count" data-pages="3" onclick="setTargetPages(3)">📑 3 Sayfa</button>
+                <button type="button" class="btn-page-count" data-pages="4" onclick="setTargetPages(4)">📚 4 Sayfa</button>
+              </div>
+              <input type="hidden" id="targetPageCount" value="1">
+              <div id="pageCountFeedback" class="page-feedback-badge">
+                <span>⚡ <strong>1 Sayfa Seçildi:</strong> Test tek bir A4 yaprağına sığdırılacak.</span>
+              </div>
+            </div>
+
+            <!-- Soru Sayısı, Soru Tarzı ve Zorluk Seviyesi -->
+            <div class="form-group">
+              <label for="questionTypeInput">Soru Tarzı / Ölçme Formatı</label>
+              <select id="questionTypeInput" class="form-control" style="font-weight:600; color:var(--primary);">
+                <option value="multiple_choice" selected>🔘 Çoktan Seçmeli (4 Seçenekli)</option>
+                <option value="short_answer">✏️ Kısa Cevaplı / Boşluk Doldurma</option>
+                <option value="open_ended">📝 Açık Uçlu (Klasik / Deney Analizi)</option>
+                <option value="structured_grid">🔲 Yapılandırılmış Grid (9 Kutucuklu Izgara)</option>
+                <option value="concept_map">🗺️ Kavram Haritası (Eksik Kavramları Bulma)</option>
+                <option value="v_diagram">📐 V Diyagramı (Bilimsel Süreç & Raporlama)</option>
+                <option value="mixed">🎯 Karma Test (Çoklu Soru Tarzı Bütünleşik)</option>
+              </select>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group flex-1">
+                <label for="countInput">Soru Sayısı</label>
+                <select id="countInput" class="form-control">
+                  <option value="1">1 Soru / Etkinlik</option>
+                  <option value="3">3 Soru / Etkinlik</option>
+                  <option value="5" selected>5 Soru / Etkinlik</option>
+                  <option value="8">8 Soru / Etkinlik</option>
+                  <option value="10">10 Soru / Etkinlik</option>
+                </select>
+              </div>
+
+              <div class="form-group flex-1">
+                <label for="difficultyInput">Zorluk Seviyesi</label>
+                <select id="difficultyInput" class="form-control">
+                  <option value="Karma (Dengeli - Kolay/Orta/Zor)" selected>Karma (Dengeli)</option>
+                  <option value="Kolay">Kolay</option>
+                  <option value="Orta">Orta</option>
+                  <option value="Zor">Zor</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Üretim Butonu -->
+            <button type="submit" id="generateBtn" class="btn btn-primary btn-block">
+              <span class="btn-icon">✨</span>
+              <span class="btn-text">Soruları Gemini AI İle Üret</span>
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Sağ Panel: Üretilen Sorular ve Bilgisayara Kaydetme Merkezi -->
+      <section class="preview-panel">
+        
+        <!-- Üst Aksiyon Araç Çubuğu (Bilgisayara Kaydetme Düğmeleri) -->
+        <div class="toolbar no-print" id="actionToolbar" style="display: none;">
+          <div class="toolbar-title">
+            <span id="testMetaTitle">5. Sınıf Fen Bilimleri Yaprak Testi</span>
+            <span class="badge badge-count" id="questionCountBadge">5 Soru</span>
+          </div>
+
+          <div class="export-actions">
+            <!-- Sayfa Sayısı Ayar Butonları (1, 2, 3, 4 Sayfa) -->
+            <div class="page-count-quick-bar">
+              <span class="economy-label">Sayfa:</span>
+              <button type="button" class="btn-quick-page active" data-pages="1" onclick="setTargetPages(1)">1 Sayfa</button>
+              <button type="button" class="btn-quick-page" data-pages="2" onclick="setTargetPages(2)">2 Sayfa</button>
+              <button type="button" class="btn-quick-page" data-pages="3" onclick="setTargetPages(3)">3 Sayfa</button>
+              <button type="button" class="btn-quick-page" data-pages="4" onclick="setTargetPages(4)">4 Sayfa</button>
+            </div>
+
+            <!-- Bilgisayara Kaydetme Butonları -->
+            <button type="button" id="downloadDocxBtn" class="btn btn-download-word btn-sm" title="Microsoft Word (.docx) olarak indir">
+              <span class="icon">📄</span> Word (.docx)
+            </button>
+            <button type="button" id="printBtn" class="btn btn-download-pdf btn-sm" title="A4 Yaprak Test olarak yazdır veya PDF kaydet">
+              <span class="icon">🖨️</span> PDF / Yazdır
+            </button>
+            <button type="button" id="downloadJsonBtn" class="btn btn-secondary btn-sm" title="JSON formatında indir">
+              <span class="icon">💾</span> JSON
+            </button>
+            <button type="button" id="copyAllBtn" class="btn btn-secondary btn-sm" title="Metin olarak kopyala">
+              <span class="icon">📋</span> Kopyala
+            </button>
+          </div>
+        </div>
+
+        <!-- Görünüm & Sayfa Düzeni Kontrol Çubuğu -->
+        <div class="view-controls-bar no-print" id="viewControlsBar" style="display: none;">
+          <div class="column-controls">
+            <span class="ctrl-label">Mizanpaj:</span>
+            <button type="button" id="toggleColumnsBtn" class="btn-toggle active" title="2 Sütunlu MEB Kitapçık Düzeni">
+              <span>📰</span> 2 Sütunlu Düzen
+            </button>
+            <button type="button" id="fontSizeDownBtn" class="btn-toggle btn-sm" title="Yazı Boyutunu Küçült (Sayfaya Sığdır)">
+              <span>A-</span>
+            </button>
+            <button type="button" id="fontSizeUpBtn" class="btn-toggle btn-sm" title="Yazı Boyutunu Büyüt">
+              <span>A+</span>
+            </button>
+          </div>
+
+          <div class="view-switches">
+            <button type="button" id="toggleAnswersBtn" class="btn-toggle">
+              <span class="icon">👁️</span> Cevap Anahtarını Göster
+            </button>
+            <button type="button" id="toggleSolutionsBtn" class="btn-toggle">
+              <span class="icon">💡</span> Çözüm ve Açıklamalar
+            </button>
+          </div>
+        </div>
+
+        <!-- Yazdırma / PDF Çıktı Başlığı (Sadece Baskıda ve PDF'te görünür) -->
+        <div class="print-sheet-header print-only">
+          <div class="print-meta-top">
+            <div class="print-header-layout">
+              <img src="rotali-fenci.jpg" alt="Logo" class="print-logo-img">
+              <div>
+                <div class="school-name">T.C. MİLLİ EĞİTİM BAKANLIĞI</div>
+                <div class="sheet-title" id="printTitle">5. SINIF FEN BİLİMLERİ DERSİ YAPRAK TESTİ</div>
+              </div>
+              <img src="rotali-fenci.jpg" alt="Logo" class="print-logo-img">
+            </div>
+          </div>
+          <div class="student-info-box">
+            <div class="info-item"><strong>Adı Soyadı:</strong> ................................................................</div>
+            <div class="info-item"><strong>Sınıfı / No:</strong> ......... / .........</div>
+            <div class="info-item"><strong>Tarih:</strong> ..... / ..... / 2026</div>
+            <div class="info-item"><strong>Puan:</strong> ...............</div>
+          </div>
+          <div class="learning-outcome-info" id="printOutcomeBanner">
+            <strong>Kazanımlar:</strong> <span id="printOutcomeText">-</span>
+          </div>
+        </div>
+
+        <!-- Yükleniyor Ekranı -->
+        <div class="loading-state" id="loadingState" style="display: none;">
+          <div class="spinner"></div>
+          <div class="loading-text">
+            <h3>Gemini AI Soruları Hazırlıyor...</h3>
+            <p>Seçtiğiniz kazanımlara tam uygun, pedagojik çeldiricilere sahip sorular üretiliyor.</p>
+          </div>
+        </div>
+
+        <!-- Başlangıç Boş Durum Ekranı -->
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">🎯</div>
+          <h3>Kazanımları Seçin ve Testinizi Oluşturun</h3>
+          <p>Sol taraftaki panelden bir ünite seçip kazanımları işaretleyiniz. <strong>"Soruları Gemini AI İle Üret"</strong> butonuna tıkladığınızda sorularınız anında oluşturulacak ve doğrudan <strong>Word (.docx)</strong> veya <strong>PDF</strong> olarak bilgisayarınıza kaydedilebilecektir.</p>
+        </div>
+
+        <!-- Soru Kartları Listesi -->
+        <div class="questions-container" id="questionsContainer" style="display: none;"></div>
+
+        <!-- Cevap Anahtarı Kutusu (Testin Altında) -->
+        <div class="answer-key-box" id="answerKeyBox" style="display: none;">
+          <div class="answer-key-header">
+            <h3>🔑 Cevap Anahtarı</h3>
+          </div>
+          <div class="answer-key-grid" id="answerKeyGrid"></div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script src="app.js?v=4"></script>
+</body>
+</html>
