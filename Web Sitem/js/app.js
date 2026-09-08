@@ -570,20 +570,24 @@ function renderHomePage(container) {
 // -------------------------------------------------------------
 // 2. 🎒 SINIF DÜZEYLERİ GENEL HUB & SINIF ÖZEL SAYFASI
 // -------------------------------------------------------------
+
+// -------------------------------------------------------------
+// 2. 🎒 SINIF DÜZEYLERİ GENEL HUB (7 ALT BÖLÜM VİTRİNİ)
+// -------------------------------------------------------------
 function renderGradesOverview(container) {
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="mb-10 text-center max-w-3xl mx-auto">
                 <span class="px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-black tracking-wider uppercase inline-block mb-3">
-                    MÜFREDAT HUB'I
+                    MÜFREDAT VE ÖĞRENME ALANLARI
                 </span>
-                <h2 class="text-3xl font-black text-slate-900 tracking-tight mb-3">Sınıf Düzeyleri & Öğrenme Rotaları</h2>
-                <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri ünitelerine ait konu anlatımları, interaktif deneyler, çalışma föyleri ve sınav hazırlık modülleri.</p>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight mb-3">Sınıf Düzeyleri & Alt Bölüm Merkezleri</h2>
+                <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Eğitsel Oyunlar.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 ${PORTAL_GRADES.map(g => `
-                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
                         <div>
                             <div class="flex items-center justify-between mb-4">
                                 <span class="px-3 py-1 rounded-full text-xs font-black ${g.badgeBg}">
@@ -594,21 +598,39 @@ function renderGradesOverview(container) {
                             <h3 class="text-2xl font-black text-slate-900 mb-2">${g.title}</h3>
                             <p class="text-xs text-slate-600 font-medium mb-6">${g.description}</p>
 
-                            <div class="space-y-2 mb-6">
-                                ${g.units.map(u => `
-                                    <a href="#unit/${u.id}" class="p-3 bg-slate-50 hover:bg-red-50 hover:border-red-200 border border-slate-200/80 rounded-xl flex items-center justify-between text-xs font-bold text-slate-800 transition-all group">
-                                        <div class="flex items-center gap-2.5">
-                                            <i class="${u.icon} text-red-600"></i>
-                                            <span>${u.code} ${u.name}</span>
-                                        </div>
-                                        <span class="text-slate-400 group-hover:text-red-600">Hub'a Git <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                            <!-- 7 ALT BÖLÜM HIZLI ERİŞİM BUTONLARI -->
+                            <div class="mb-6">
+                                <div class="text-[11px] font-black uppercase text-slate-400 tracking-wider mb-2.5">
+                                    7 Alt Öğrenme Bölümü:
+                                </div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-bold">
+                                    <a href="#grade/${g.id}/ders-notu" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📝</span> <span>Ders Notu</span>
                                     </a>
-                                `).join("")}
+                                    <a href="#grade/${g.id}/ders-sunumu" class="p-2 bg-slate-50 hover:bg-orange-50 hover:text-orange-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📊</span> <span>Ders Sunumu</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎥</span> <span>Videolar</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/etkinlikler" class="p-2 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🧩</span> <span>Etkinlikler</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📚</span> <span>Soru Bankası</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/denemeler" class="p-2 bg-slate-50 hover:bg-purple-50 hover:text-purple-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎯</span> <span>Denemeler</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors col-span-2 sm:col-span-3 text-center justify-center">
+                                        <span>🎮</span> <span>Eğitsel Oyunlar & Turnuva</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
 
-                        <a href="#grade/${g.id}" class="w-full py-3 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl text-center transition-colors">
-                            ${g.number}. Sınıf Merkezini Aç
+                        <a href="#grade/${g.id}" class="w-full py-3 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl text-center transition-colors shadow-md">
+                            ${g.number}. Sınıf Tam Merkezini Aç →
                         </a>
                     </div>
                 `).join("")}
@@ -617,423 +639,6 @@ function renderGradesOverview(container) {
     `;
 }
 
-function renderGradeDetail(container, gradeId) {
-    const grade = PORTAL_GRADES.find(g => g.id === gradeId) || PORTAL_GRADES[0];
-
-    container.innerHTML = `
-        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="bg-gradient-to-r ${grade.color} text-white rounded-3xl p-8 sm:p-10 mb-10 shadow-xl relative overflow-hidden">
-                <div class="relative z-10 max-w-3xl">
-                    <span class="px-3.5 py-1 rounded-full bg-white/20 text-white text-xs font-black tracking-wider uppercase inline-block mb-3">
-                        FEN BİLİMLERİ EĞİTİM MERKEZİ
-                    </span>
-                    <h2 class="text-3xl sm:text-4xl font-black mb-3">${grade.title}</h2>
-                    <p class="text-sm text-white/90 leading-relaxed mb-6">${grade.description}</p>
-                    
-                    <div class="flex flex-wrap gap-3">
-                        <a href="#exams" class="px-4 py-2.5 bg-white text-slate-900 font-black text-xs rounded-xl shadow-md hover:bg-slate-100 transition-all">
-                            📝 ${grade.number}. Sınıf Yazılı Sınavları
-                        </a>
-                        <button onclick="toggleSmartboardMode(true)" class="px-4 py-2.5 bg-slate-900/80 hover:bg-slate-900 text-white font-black text-xs rounded-xl transition-all flex items-center gap-1.5">
-                            <i class="fa-solid fa-display text-amber-400"></i> Akıllı Tahta Modu
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-layer-group text-red-600"></i> Müfredat Üniteleri (5 Adımlı Hub)
-            </h3>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${grade.units.map(u => `
-                    <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
-                        <div>
-                            <div class="flex items-center justify-between mb-3">
-                                <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">${u.code}</span>
-                                <span class="text-xs font-bold text-slate-400">${u.hours} Ders Saati</span>
-                            </div>
-                            <h4 class="text-lg font-black text-slate-900 mb-2 flex items-center gap-2">
-                                <i class="${u.icon} text-red-600"></i> ${u.name}
-                            </h4>
-                            <p class="text-xs text-slate-500 mb-6">${u.topics} Temel Alt Konu ve Öğrenme Çıktısı</p>
-
-                            <div class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-black mb-6">
-                                <span class="p-1.5 bg-indigo-50 text-indigo-700 rounded-lg">1.Öğren</span>
-                                <span class="p-1.5 bg-purple-50 text-purple-700 rounded-lg">2.Keşfet</span>
-                                <span class="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg">3.Uygula</span>
-                                <span class="p-1.5 bg-rose-50 text-rose-700 rounded-lg">4.Çöz</span>
-                                <span class="p-1.5 bg-amber-50 text-amber-700 rounded-lg">5.Analiz</span>
-                            </div>
-                        </div>
-
-                        <a href="#unit/${u.id}" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl text-center transition-colors shadow-md shadow-red-600/20">
-                            Ünite Hub'ını Aç
-                        </a>
-                    </div>
-                `).join("")}
-            </div>
-        </div>
-    `;
-}
-
-// -------------------------------------------------------------
-// 3. 📚 ÜNİTE HUB (5-ADIM STANDARDI)
-// -------------------------------------------------------------
-
-function getUnitHubData(unitId) {
-    if (UNIT_HUBS[unitId]) {
-        return UNIT_HUBS[unitId];
-    }
-
-    // Find in PORTAL_GRADES
-    let foundGrade = null;
-    let foundUnit = null;
-
-    for (const g of PORTAL_GRADES) {
-        const u = g.units.find(item => item.id === unitId);
-        if (u) {
-            foundGrade = g;
-            foundUnit = u;
-            break;
-        }
-    }
-
-    if (!foundUnit) {
-        return UNIT_HUBS["7-unit-2"];
-    }
-
-    // Generate full standard 5-step Hub dynamically for this unit
-    return {
-        id: foundUnit.id,
-        grade: foundGrade.title.split(" ")[0] + ". Sınıf",
-        gradeSlug: foundGrade.id,
-        unitCode: foundUnit.code,
-        title: foundUnit.name,
-        icon: foundUnit.icon,
-        color: foundGrade.color,
-        description: `${foundGrade.title} müfredatına ait ${foundUnit.name} ünitesi konu özeti, kavram haritası, interaktif eşleştirme oyunu, çalışma föyleri, yeni nesil soru testi ve kazanım değerlendirme modülü.`,
-        
-        ogren: {
-            summaryHtml: `
-                <div class="space-y-6 text-slate-700">
-                    <div class="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-brand-red p-4 rounded-r-xl">
-                        <h4 class="font-bold text-slate-900 text-base mb-1">🎯 ${foundUnit.code} ${foundUnit.name} Kazanım Özeti:</h4>
-                        <p class="text-sm text-slate-700">Bu ünitede ${foundUnit.name} konusunun temel kavramları, doğadaki işleyişi, deney ve gözlemlere dayalı bilimsel süreç becerileri incelenir.</p>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                            <h5 class="font-black text-slate-800 flex items-center gap-2 mb-2">
-                                <i class="${foundUnit.icon} text-brand-red"></i> Temel Kavramlar & Prensipler
-                            </h5>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
-                                Konu kapsamında yer alan temel tanımlar, MEB kazanım standartlarına uygun olarak adım adım ele alınmıştır.
-                            </p>
-                            <ul class="text-xs space-y-2 text-slate-600 list-disc list-inside">
-                                <li><strong>Öğrenme Alanı:</strong> ${foundUnit.name} kuramsal temelleri</li>
-                                <li><strong>Hedef Beceriler:</strong> Bilimsel gözlem, veri analizi ve hipotez kurma</li>
-                                <li><strong>Müfredat Ağırlığı:</strong> ${foundUnit.hours} Ders Saati</li>
-                            </ul>
-                        </div>
-
-                        <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
-                            <h5 class="font-black text-slate-800 flex items-center gap-2 mb-2">
-                                <i class="fa-solid fa-lightbulb text-amber-500"></i> Dikkat Edilecek Kritik Noktalar
-                            </h5>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
-                                Yazılı sınavlarda ve denemelerde en sık karıştırılan kavramlar:
-                            </p>
-                            <ul class="text-xs space-y-2 text-slate-600 list-disc list-inside">
-                                <li>Kavram yanılgılarına dikkat edilmeli ve tanımlar ezber yerine mantıkla kavranmalıdır.</li>
-                                <li>Grafik ve tablo yorumlama sorularında eksenlerdeki değişkenler kontrol edilmelidir.</li>
-                                <li>Deney sorularında bağımlı, bağımsız ve kontrol edilen değişkenler doğru ayırt edilmelidir.</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            `,
-            glossary: [
-                { term: "Bağımsız Değişken", def: "Deneyde araştırmacının bilerek ve isteyerek değiştirdiği değişkendir." },
-                { term: "Bağımlı Değişken", def: "Bağımsız değişkene bağlı olarak değişen ve ölçülen sonuçtur." },
-                { term: "Sabit Tutulan (Kontrol) Değişken", def: "Deneyin tüm aşamalarında aynı bırakılan ve etkisi sabitlenen faktördür." }
-            ]
-        },
-
-        kesfet: {
-            title: `${foundUnit.name} Kavram Eşleştirme & Etkinlik`,
-            pairs: [
-                { organel: "Gözlem", gorev: "Duyu organları veya araçlarla yapılan veri toplama" },
-                { organel: "Hipotez", gorev: "Probleme getirilen geçici ve test edilebilir çözüm" },
-                { organel: "Deney", gorev: "Hipotezin doğruluğunu test etmek için yapılan kontrollü inceleme" },
-                { organel: "Sonuç & Rapor", gorev: "Elde edilen bulguların değerlendirilmesi" }
-            ]
-        },
-
-        uygula: {
-            worksheets: [
-                { id: `ws-${foundUnit.id}-1`, title: `${foundUnit.code} ${foundUnit.name} Kavram & Etkinlik Föyü`, pages: 2, type: "PDF / A4", downloadCount: "1.250 İndirme" },
-                { id: `ws-${foundUnit.id}-2`, title: `${foundUnit.name} Beceri Temelli Açık Uçlu Çalışma Kağıdı`, pages: 3, type: "Yazılı Hazırlık", downloadCount: "890 İndirme" }
-            ],
-            experiments: [
-                {
-                    title: `${foundUnit.name} Laboratuvar Gözlem & Deney Protokolü`,
-                    safety: ["Güvenlik gözlüğü takınız.", "Öğretmen gözetiminde çalışınız."],
-                    steps: [
-                        "Deney malzemelerini hazırlayarak çalışma alanını düzenleyiniz.",
-                        "Kontrollü deney değişkenlerini (bağımsız, bağımlı, kontrol) belirleyiniz.",
-                        "Gözlem sonuçlarınızı deney raporu tablosuna kaydediniz."
-                    ]
-                }
-            ]
-        },
-
-        coz: {
-            questions: [
-                {
-                    q: `${foundUnit.name} konusu ile ilgili kontrollü bir deney tasarlayan bir öğrenci, sadece bir özelliği değiştirip diğer tüm faktörleri sabit tutmuştur. Bu deneyde değiştirilen değişken hangisidir?`,
-                    options: [
-                        "A) Bağımsız değişken",
-                        "B) Bağımlı değişken",
-                        "C) Kontrol edilen değişken",
-                        "D) Sabit değişken"
-                    ],
-                    correct: 0,
-                    explanation: "Deneyde araştırmacının kendi isteğiyle değiştirdiği faktör 'Bağımsız Değişken'dir."
-                },
-                {
-                    q: "Bilimsel bir çalışmada hipotezin doğruluğunu test etmek için aşağıdakilerden hangisi yapılmalıdır?",
-                    options: [
-                        "A) Hipotezi doğrudan doğru kabul etmek",
-                        "B) Kontrollü deneyler ve tekrarlı gözlemler yapmak",
-                        "C) Yalnızca teorik tahminlerde bulunmak",
-                        "D) Değişkenleri rastgele değiştirmek"
-                    ],
-                    correct: 1,
-                    explanation: "Hipotezlerin geçerliliği kontrollü deneyler ve tekrarlanabilir gözlemlerle sınanır."
-                }
-            ]
-        },
-
-        analiz: {
-            checklist: [
-                { id: "c1", label: `${foundUnit.name} temel kavram ve tanımlarını tam olarak öğrendim.` },
-                { id: "c2", label: "Konuya ait deneylerde bağımlı ve bağımsız değişkenleri ayırt edebiliyorum." },
-                { id: "c3", label: "Yeni nesil grafikli ve tablolu soruları doğru analiz edebiliyorum." }
-            ],
-            recommendedVideos: [
-                { title: `${foundUnit.name} 15 Dakikada Pratik Özet`, duration: "14:20" },
-                { title: `${foundUnit.name} Yeni Nesil MEB Soru Çözümleri`, duration: "22:15" }
-            ]
-        }
-    };
-}
-
-function renderUnitHub(container, unitId, activeStep = "ogren") {
-    const hub = getUnitHubData(unitId);
-
-    container.innerHTML = `
-        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            
-            <div class="flex flex-wrap items-center justify-between gap-4 p-6 bg-white rounded-3xl border border-slate-200 shadow-sm mb-8">
-                <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr ${hub.color} text-white flex items-center justify-center text-2xl shadow-md">
-                        <i class="${hub.icon}"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-black px-2.5 py-0.5 rounded-md bg-red-50 text-red-700">${hub.unitCode}</span>
-                            <span class="text-xs font-bold text-slate-500">${hub.grade}</span>
-                        </div>
-                        <h2 class="text-2xl font-black text-slate-900">${hub.title}</h2>
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleSmartboardMode(true)" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-display text-amber-400"></i> Akıllı Tahta Modu
-                    </button>
-                    <button onclick="window.print()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-print"></i> Yazdır / PDF
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex border-b border-slate-200 bg-white rounded-t-2xl px-4 overflow-x-auto mb-6">
-                <button onclick="window.location.hash='unit/${hub.id}/ogren'" class="hub-step-tab py-4 px-5 text-xs sm:text-sm font-black flex items-center gap-2 whitespace-nowrap ${activeStep === 'ogren' ? 'active' : 'text-slate-600'}">
-                    <i class="fa-solid fa-book-open"></i> 1. ÖĞREN (Konu & Sketchnote)
-                </button>
-                <button onclick="window.location.hash='unit/${hub.id}/kesfet'" class="hub-step-tab py-4 px-5 text-xs sm:text-sm font-black flex items-center gap-2 whitespace-nowrap ${activeStep === 'kesfet' ? 'active' : 'text-slate-600'}">
-                    <i class="fa-solid fa-gamepad"></i> 2. KEŞFET (İnteraktif Turnuva)
-                </button>
-                <button onclick="window.location.hash='unit/${hub.id}/uygula'" class="hub-step-tab py-4 px-5 text-xs sm:text-sm font-black flex items-center gap-2 whitespace-nowrap ${activeStep === 'uygula' ? 'active' : 'text-slate-600'}">
-                    <i class="fa-solid fa-flask-vial"></i> 3. UYGULA (Çalışma Kağıdı & Deney)
-                </button>
-                <button onclick="window.location.hash='unit/${hub.id}/coz'" class="hub-step-tab py-4 px-5 text-xs sm:text-sm font-black flex items-center gap-2 whitespace-nowrap ${activeStep === 'coz' ? 'active' : 'text-slate-600'}">
-                    <i class="fa-solid fa-circle-check"></i> 4. ÇÖZ (Beceri Temelli Test)
-                </button>
-                <button onclick="window.location.hash='unit/${hub.id}/analiz'" class="hub-step-tab py-4 px-5 text-xs sm:text-sm font-black flex items-center gap-2 whitespace-nowrap ${activeStep === 'analiz' ? 'active' : 'text-slate-600'}">
-                    <i class="fa-solid fa-chart-pie"></i> 5. ANALİZ (Kazanım & Hata Defteri)
-                </button>
-            </div>
-
-            <div class="bg-white rounded-b-3xl p-6 sm:p-8 border border-slate-200 shadow-sm min-h-[400px]">
-                ${renderUnitStepContent(hub, activeStep)}
-            </div>
-
-        </div>
-    `;
-}
-
-function renderUnitStepContent(hub, step) {
-    if (step === "ogren") {
-        return `
-            <div class="space-y-8">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-book-open text-indigo-600"></i> Konu Anlatımı & Görsel Özet
-                    </h3>
-                    ${hub.ogren.summaryHtml}
-                </div>
-
-                ${hub.ogren.glossary ? `
-                    <div class="pt-6 border-t border-slate-200">
-                        <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-spell-check text-amber-500"></i> Ünite Terimler Sözlüğü
-                        </h4>
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            ${hub.ogren.glossary.map(g => `
-                                <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                                    <span class="font-black text-xs text-red-600 block mb-1 uppercase">${g.term}</span>
-                                    <p class="text-xs text-slate-600 leading-relaxed">${g.def}</p>
-                                </div>
-                            `).join("")}
-                        </div>
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    } else if (step === "kesfet") {
-        return `
-            <div class="space-y-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-gamepad text-purple-600"></i> ${hub.kesfet.title}
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">Eşleştirme Oyunu</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    ${hub.kesfet.pairs.map((p, idx) => `
-                        <div class="p-4 bg-purple-50/60 border border-purple-200 rounded-2xl flex items-center justify-between gap-3">
-                            <span class="font-black text-xs text-purple-900 uppercase">${p.organel}</span>
-                            <span class="text-xs text-slate-600 font-bold bg-white px-3 py-1.5 rounded-xl border border-purple-100">${p.gorev}</span>
-                        </div>
-                    `).join("")}
-                </div>
-
-                <div class="p-6 bg-slate-900 text-white rounded-2xl text-center mt-6">
-                    <h4 class="text-base font-black mb-2">🎮 İnteraktif Turnuvayı Başlat</h4>
-                    <p class="text-xs text-slate-300 mb-4">Zamana karşı yarışarak organelleri ve kavramları doğru kutulara sürükleyin!</p>
-                    <button onclick="showToast('İnteraktif turnuva modu başlatıldı! Tebrikler!', 'success')" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl shadow-lg transition-all">
-                        Turnuvaya Başla
-                    </button>
-                </div>
-            </div>
-        `;
-    } else if (step === "uygula") {
-        return `
-            <div class="space-y-8">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
-                        <i class="fa-solid fa-file-arrow-down text-emerald-600"></i> İndirilebilir Çalışma Kağıtları & Föyler
-                    </h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        ${hub.uygula.worksheets.map(ws => `
-                            <div class="p-5 bg-white border border-slate-200 rounded-2xl flex items-center justify-between shadow-sm">
-                                <div>
-                                    <h5 class="font-black text-sm text-slate-900 mb-1">${ws.title}</h5>
-                                    <span class="text-xs text-slate-500">${ws.pages} Sayfa • A4 Fotokopiye Uygun</span>
-                                </div>
-                                <button onclick="window.print()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all flex items-center gap-1.5">
-                                    <i class="fa-solid fa-download"></i> PDF İndir
-                                </button>
-                            </div>
-                        `).join("")}
-                    </div>
-                </div>
-
-                ${hub.uygula.experiments ? `
-                    <div class="pt-6 border-t border-slate-200">
-                        <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
-                            <i class="fa-solid fa-flask text-blue-600"></i> Ünite Laboratuvar Deney Protokolü
-                        </h4>
-                        ${hub.uygula.experiments.map(exp => `
-                            <div class="p-6 bg-slate-50 border border-slate-200 rounded-2xl">
-                                <h5 class="font-black text-base text-slate-900 mb-2">${exp.title}</h5>
-                                <div class="text-xs text-slate-600 mb-2"><strong>Gerekli Malzemeler:</strong> ${exp.materials.join(", ")}</div>
-                                <div class="text-xs text-amber-700 bg-amber-50 p-2.5 rounded-xl border border-amber-200 font-medium">⚠️ <strong>Güvenlik Uyarısı:</strong> ${exp.safetyNotes}</div>
-                            </div>
-                        `).join("")}
-                    </div>
-                ` : ''}
-            </div>
-        `;
-    } else if (step === "coz") {
-        return `
-            <div class="space-y-6">
-                <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-check text-rose-600"></i> Beceri Temelli Test Havuzu
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">MEB / LGS Standartları</span>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    ${hub.coz.testTypes.map(t => `
-                        <div class="p-6 bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col justify-between">
-                            <div>
-                                <span class="px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 text-xs font-bold">${t.difficulty}</span>
-                                <h4 class="text-base font-black text-slate-900 mt-2 mb-1">${t.name}</h4>
-                                <p class="text-xs text-slate-500 mb-4">${t.count} • Süre: ${t.duration}</p>
-                            </div>
-                            <a href="#quizzes" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl text-center transition-all shadow-md">
-                                Testi Başlat
-                            </a>
-                        </div>
-                    `).join("")}
-                </div>
-            </div>
-        `;
-    } else if (step === "analiz") {
-        return `
-            <div class="space-y-6">
-                <h3 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-chart-pie text-amber-500"></i> Kazanım & Kavram Yanılgısı Analizi
-                </h3>
-
-                <div class="p-5 bg-rose-50 border border-rose-200 rounded-2xl mb-6">
-                    <h4 class="font-black text-rose-900 text-sm mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Bu Ünitede En Sık Yapılan 3 Hata:
-                    </h4>
-                    <ul class="text-xs text-rose-800 space-y-2 list-disc list-inside">
-                        ${hub.analiz.commonMistakes.map(m => `<li>${m}</li>`).join("")}
-                    </ul>
-                </div>
-
-                <div class="space-y-3">
-                    <h4 class="font-black text-slate-900 text-sm">Resmi MEB Kazanımları:</h4>
-                    ${hub.analiz.learningOutcomes ? hub.analiz.learningOutcomes.map(o => `
-                        <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between text-xs">
-                            <span class="font-bold text-slate-800"><span class="text-red-600 font-black mr-2">${o.code}</span> ${o.text}</span>
-                            <i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>
-                        </div>
-                    `).join("") : ''}
-                </div>
-            </div>
-        `;
-    }
-}
 
 // -------------------------------------------------------------
 // 4. 🔴 8. SINIF + LGS PUSULASI

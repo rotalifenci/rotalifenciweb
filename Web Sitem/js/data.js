@@ -961,3 +961,92 @@ const DEFAULT_FLASHCARDS = [
 ];
 
 console.log("Rotalı Fenci Portal Data Modeli Yüklendi.");
+
+
+// -------------------------------------------------------------
+// 7 ALT BÖLÜM VERİ HAVUZU (TÜM SINIFLAR İÇİN)
+// 1. Ders Notu, 2. Ders Sunumu, 3. Videolar, 4. Etkinlikler,
+// 5. Soru Bankası, 6. Denemeler, 7. Eğitsel Oyunlar
+// -------------------------------------------------------------
+function getGradeSubSectionsData(gradeNumber) {
+    const gNum = parseInt(gradeNumber) || 8;
+    const isLGS = gNum === 8;
+
+    const unitTitles = {
+        5: ["Güneş, Dünya ve Ay", "Canlılar Dünyası", "Kuvvetin Ölçülmesi", "Madde ve Değişim", "Işığın Yayılması", "İnsan ve Çevre", "Elektrik Devreleri"],
+        6: ["Güneş Sistemi ve Tutulmalar", "Vücudumuzdaki Sistemler", "Kuvvet ve Hareket", "Madde ve Isı", "Ses ve Özellikleri", "Sistemler ve Sağlığı", "Elektriğin İletimi"],
+        7: ["Güneş Sistemi ve Ötesi", "Hücre ve Bölünmeler", "Kuvvet ve Enerji", "Saf Madde ve Karışımlar", "Işığın Madde ile Etkileşimi", "Canlılarda Üreme", "Elektrik Devreleri"],
+        8: ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç (Katı-Sıvı-Gaz)", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri", "Elektrik Yükleri"]
+    }[gNum] || ["1. Ünite", "2. Ünite", "3. Ünite", "4. Ünite", "5. Ünite", "6. Ünite", "7. Ünite"];
+
+    return {
+        // 1. DERS NOTLARI
+        dersNotu: unitTitles.map((uName, idx) => ({
+            id: `not-${gNum}-${idx+1}`,
+            title: `${gNum}. Sınıf ${idx+1}. Ünite: ${uName} Ders Notu`,
+            unit: `${idx+1}. Ünite • ${uName}`,
+            pages: "4-6 Sayfa",
+            desc: "Renkli kavram haritaları, MEB kazanım özetleri, formül tabloları ve dikkat edilmesi gereken püf noktalar.",
+            badge: "PDF / Renkli Özet",
+            downloadCount: `${1200 + idx * 85} İndirme`
+        })),
+
+        // 2. DERS SUNUMLARI
+        dersSunumu: unitTitles.map((uName, idx) => ({
+            id: `sunum-${gNum}-${idx+1}`,
+            title: `${gNum}. Sınıf ${uName} Akıllı Tahta Dersi Sunumu`,
+            unit: `${idx+1}. Ünite • ${uName}`,
+            slides: "24-38 Slayt",
+            desc: "Sınıf içi projeksiyon ve akıllı tahta uyumlu, yüksek çözünürlüklü görseller ve interaktif animasyonlar içeren PPTX/PDF sunumu.",
+            badge: "Akıllı Tahta (PPTX / PDF)",
+            format: "16:9 Geniş Ekran"
+        })),
+
+        // 3. VİDEOLAR
+        videolar: unitTitles.map((uName, idx) => ({
+            id: `video-${gNum}-${idx+1}`,
+            title: `${gNum}. Sınıf ${uName} Konu Anlatımı & Deney Videosu`,
+            unit: `${idx+1}. Ünite • ${uName}`,
+            duration: `${12 + (idx % 4) * 3}:45 Dakika`,
+            desc: "Animasyonlu kavram anlatımları, laboratuvar deney çekimleri ve MEB yeni nesil soru çözüm analizleri.",
+            channel: "Rotalı Fenci Akademi",
+            views: `${4500 + idx * 320} İzlenme`
+        })),
+
+        // 4. ETKİNLİKLER
+        etkinlikler: unitTitles.map((uName, idx) => ({
+            id: `etk-${gNum}-${idx+1}`,
+            title: `${gNum}. Sınıf ${uName} İnteraktif Çalışma Kağıdı & Bulmaca`,
+            unit: `${idx+1}. Ünite • ${uName}`,
+            type: "Eşleştirme / Boşluk Doldurma / Doğru-Yanlış",
+            desc: "Bireysel ve grup çalışmalarına uygun istasyon etkinlikleri, kavram çengelleri ve fen bulmacaları.",
+            badge: "A4 Yazdırılabilir Föy"
+        })),
+
+        // 5. SORU BANKASI
+        soruBankasi: unitTitles.map((uName, idx) => ({
+            id: `sb-${gNum}-${idx+1}`,
+            title: `${gNum}. Sınıf ${uName} Beceri Temelli Soru Bankası`,
+            unit: `${idx+1}. Ünite • ${uName}`,
+            count: isLGS ? "45 Yeni Nesil Soru" : "30 Kazanım Testi",
+            difficulty: isLGS ? "LGS Seviyesi / Zor" : "Orta - İleri Düzey",
+            desc: "Grafik, tablo ve deney düzeneği yorumlama soruları, video çözümlü kazanım pekiştirme testleri.",
+            badge: isLGS ? "🔥 LGS MEB Formatı" : "✅ MEB Kazanım Uyumlu"
+        })),
+
+        // 6. DENEMELER
+        denemeler: [
+            { id: `deneme-${gNum}-1`, title: `${gNum}. Sınıf 1. Dönem 1. Ortak Yazılı Deneme Sınavı`, type: "Açık Uçlu MEB Senaryosu", questions: "10 Açık Uçlu Soru", time: "40 Dakika" },
+            { id: `deneme-${gNum}-2`, title: `${gNum}. Sınıf 1. Dönem Genel Değerlendirme Branş Denemesi`, type: "Çoktan Seçmeli", questions: "20 Beceri Temelli Soru", time: "40 Dakika" },
+            { id: `deneme-${gNum}-3`, title: `${gNum}. Sınıf 2. Dönem 1. Ortak Yazılı Deneme Sınavı`, type: "Açık Uçlu MEB Senaryosu", questions: "10 Açık Uçlu Soru", time: "40 Dakika" },
+            { id: `deneme-${gNum}-4`, title: isLGS ? "8. Sınıf LGS Türkiye Geneli Fen Bilimleri Denemesi" : `${gNum}. Sınıf Yıl Sonu Genel Fen Denemesi`, type: "Tam Müfredat", questions: "20 Soru", time: "40 Dakika" }
+        ],
+
+        // 7. EĞİTSEL OYUNLAR
+        egitselOyunlar: [
+            { id: `oyun-${gNum}-1`, title: `${gNum}. Sınıf Fen Çarkıfeleği & Terim Yarışması`, icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, gelen kavramı tanımla veya soruyu 30 saniyede bilip puanları topla!", type: "İnteraktif Çark" },
+            { id: `oyun-${gNum}-2`, title: `${gNum}. Sınıf Kavram & Organel Eşleştirme Turnuvası`, icon: "fa-solid fa-puzzle-piece", desc: "Zamana karşı yarışarak kavramları doğru açıklamalarıyla eşleştir, liderlik tablosuna adını yazdır.", type: "Hızlı Eşleştirme" },
+            { id: `oyun-${gNum}-3`, title: `${gNum}. Sınıf Bilim Milyoneri (Fen Kim Milyoner Olmak İster?)`, icon: "fa-solid fa-trophy", desc: "15 aşamalı fen sorularını bil, jokerlerini kullan ve fen şampiyonu ol!", type: "Yarışma Formatı" }
+        ]
+    };
+}
