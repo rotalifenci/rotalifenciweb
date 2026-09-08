@@ -1,0 +1,16 @@
+{
+  "name": "Rotalı Fenci - Eğitim Portalı",
+  "short_name": "Rotalı Fenci",
+  "description": "Ortaokul Fen Bilimleri ve LGS Eğitim Platformu",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#090d16",
+  "theme_color": "#dc2626",
+  "icons": [
+    {
+      "src": "assets/logo.jpg",
+      "sizes": "192x192 512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}

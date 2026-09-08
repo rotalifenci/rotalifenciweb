@@ -1,5 +1,5 @@
 {
-  "name": "rotali-fenci-web",
+  "name": "rotalifenci",
   "version": "2.0.0",
   "description": "Rotalı Fenci - Ortaokul Fen Bilimleri ve LGS Eğitim Platformu",
   "main": "index.html",
@@ -7,7 +7,7 @@
     "fen-bilimleri",
     "lgs",
     "egitim",
-    "rotali-fenci"
+    "rotalifenci"
   ],
   "author": "Rotalı Fenci",
   "license": "MIT"
