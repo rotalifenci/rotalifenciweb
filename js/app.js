@@ -641,6 +641,7 @@ function renderGradesOverview(container) {
                 <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Eğitsel Oyunlar.</p>
             </div>
 
+            ${renderCustomMaterialsSection("all", "projeler")}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 ${PORTAL_GRADES.map(g => `
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
@@ -1267,6 +1268,7 @@ function renderProjectsPage(container) {
                 <p class="text-sm text-slate-600 font-medium">TÜBİTAK 2204-B, TÜBİTAK 4006, TEKNOFEST ve eTwinning için proje şablonları, basamakları ve örnek fikirler.</p>
             </div>
 
+            ${renderCustomMaterialsSection("all", "projeler")}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 ${PROJECT_CENTER_DATA.categories.map(cat => `
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
@@ -2006,7 +2008,7 @@ function updateLabSim() {
 // -------------------------------------------------------------
 
 // -------------------------------------------------------------
-// 🔐 GÜVENLİ YÖNETİCİ & MATERYAL YÖNETİM SİSTEMİ (TAM VE ENTEGRE)
+// 🔐 GÜVENLİ YÖNETİCİ & MATERYAL YÖNETİM SİSTEMİ (INDEXEDDB + LOCALSTORAGE)
 // -------------------------------------------------------------
 
 const ADMIN_CONFIG = {
@@ -2059,194 +2061,355 @@ const GRADE_UNITS_MAP = {
     ]
 };
 
+// -------------------------------------------------------------
+// 💾 INDEXEDDB DOSYA DEPOLAMA SİSTEMİ (KOTA HATASI OLMADAN SINIRSIZ DOSYA)
+// -------------------------------------------------------------
+const RotaliDB = {
+    dbName: "RotaliFenciDB",
+    dbVersion: 1,
+    db: null,
+
+    async getDB() {
+        if (this.db) return this.db;
+        return new Promise((resolve, reject) => {
+            if (!window.indexedDB) {
+                console.warn("IndexedDB desteklenmiyor, bellek kullanılacak.");
+                resolve(null);
+                return;
+            }
+            const request = indexedDB.open(this.dbName, this.dbVersion);
+            request.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains("files")) {
+                    db.createObjectStore("files", { keyPath: "id" });
+                }
+            };
+            request.onsuccess = (e) => {
+                this.db = e.target.result;
+                resolve(this.db);
+            };
+            request.onerror = (e) => {
+                console.error("IndexedDB açılış hatası:", e);
+                resolve(null);
+            };
+        });
+    },
+
+    async saveFile(id, fileBlob, fileName, fileType) {
+        const db = await this.getDB();
+        if (!db) return false;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction("files", "readwrite");
+                const store = tx.objectStore("files");
+                store.put({
+                    id: id,
+                    blob: fileBlob,
+                    fileName: fileName,
+                    fileType: fileType,
+                    savedAt: Date.now()
+                });
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = (err) => {
+                    console.error("IDB save error:", err);
+                    resolve(false);
+                };
+            } catch (err) {
+                console.error("IDB save catch:", err);
+                resolve(false);
+            }
+        });
+    },
+
+    async getFile(id) {
+        const db = await this.getDB();
+        if (!db) return null;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction("files", "readonly");
+                const store = tx.objectStore("files");
+                const request = store.get(id);
+                request.onsuccess = () => resolve(request.result || null);
+                request.onerror = () => resolve(null);
+            } catch (err) {
+                resolve(null);
+            }
+        });
+    },
+
+    async deleteFile(id) {
+        const db = await this.getDB();
+        if (!db) return false;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction("files", "readwrite");
+                const store = tx.objectStore("files");
+                store.delete(id);
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => resolve(false);
+            } catch (err) {
+                resolve(false);
+            }
+        });
+    }
+};
+
 let currentUploadedFile = null;
 let currentTagsList = ["MEB 2026-2027"];
 let editingMaterialId = null;
 
-// 1. Yönetici Giriş Kontrolü
-function checkAdminAccess(onSuccess) {
-    if (ADMIN_CONFIG.isAdmin) {
-        if (typeof onSuccess === "function") onSuccess();
+// Toast Bildirimi
+function showToast(message, type = "success") {
+    let toast = document.getElementById("toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast";
+        toast.className = "fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none";
+        document.body.appendChild(toast);
+    }
+    
+    const bgColors = {
+        success: "bg-emerald-600 text-white shadow-emerald-600/30",
+        error: "bg-rose-600 text-white shadow-rose-600/30",
+        info: "bg-slate-900 text-white shadow-slate-900/30"
+    };
+
+    toast.innerHTML = `
+        <div class="px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 font-black text-xs sm:text-sm ${bgColors[type] || bgColors.info} border border-white/20 animate-in slide-in-from-bottom-5">
+            <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-base' : type === 'error' ? 'fa-triangle-exclamation text-base' : 'fa-circle-info text-base'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+
+    toast.style.opacity = "1";
+    toast.style.transform = "translateY(0)";
+
+    setTimeout(() => {
+        toast.style.opacity = "0";
+        toast.style.transform = "translateY(10px)";
+    }, 4000);
+}
+
+// Güvenlik & Yetki Kontrolü
+function checkAdminAccess(callback) {
+    if (localStorage.getItem("rotali_is_admin") === "true") {
+        if (typeof callback === "function") callback();
         return true;
     }
-    openAdminLoginModal(onSuccess);
+    openAdminLoginModal(callback);
     return false;
 }
 
-function triggerUploadModal(grade, tab) {
+function triggerUploadModal(gradeNumber = "8", subTab = "ders-notu") {
     checkAdminAccess(() => {
-        openMaterialUploadModal(grade, tab);
+        openMaterialUploadModal(gradeNumber, subTab);
     });
 }
 
-function openAdminLoginModal(callbackSuccess) {
+function openAdminLoginModal(onSuccessCallback = null) {
     let modal = document.getElementById("admin-login-modal");
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "admin-login-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300";
         modal.onclick = function(e) {
             if (e.target === this) closeAdminLoginModal();
         };
         document.body.appendChild(modal);
     }
 
-    window._adminCallback = callbackSuccess;
-
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 text-center" onclick="event.stopPropagation()">
-            <button type="button" onclick="closeAdminLoginModal()" class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-sm transition-colors" title="Kapat (ESC)">
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <button type="button" onclick="closeAdminLoginModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center font-bold transition-all" title="Kapat">
                 <i class="fa-solid fa-xmark"></i>
             </button>
 
-            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-900 to-indigo-950 text-amber-400 flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg border border-slate-700">
-                <i class="fa-solid fa-lock"></i>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-red-600/30">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 tracking-tight">Yönetici Girişi</h3>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Bu alana sadece Rotalı Fenci yetkilileri erişebilir.</p>
             </div>
 
-            <h3 class="text-xl font-black text-slate-900 mb-1">Yönetici Doğrulaması</h3>
-            <p class="text-xs text-slate-500 font-medium mb-6">İçerik eklemek veya düzenlemek için yönetici şifrenizi girin.</p>
-
-            <form onsubmit="handleAdminPasswordSubmit(event)" class="space-y-4 text-left">
+            <form onsubmit="handleAdminPasswordSubmit(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Yönetici Şifresi</label>
-                    <input type="password" id="admin-password-input" required placeholder="••••••••" autofocus class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-red-500">
+                    <div class="relative">
+                        <input type="password" id="admin-pass-input" placeholder="••••••••" required autofocus
+                            class="w-full p-3.5 pl-11 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    </div>
                 </div>
 
-                <button type="submit" class="w-full py-3.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-key text-amber-400"></i> Giriş Yap & Yetkiyi Aç
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Güvenli Giriş Yap</span>
                 </button>
             </form>
-            <p class="text-[11px] text-slate-400 mt-4"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Yetkili Yönetici Girişi</p>
         </div>
     `;
 
     modal.style.display = "flex";
     modal.classList.remove("hidden");
+    window._adminLoginCallback = onSuccessCallback;
+
+    setTimeout(() => {
+        const input = document.getElementById("admin-pass-input");
+        if (input) input.focus();
+    }, 100);
 }
 
 function closeAdminLoginModal() {
     const modal = document.getElementById("admin-login-modal");
     if (modal) {
-        modal.classList.add("hidden");
         modal.style.display = "none";
+        modal.classList.add("hidden");
     }
 }
 
 function handleAdminPasswordSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
-    const passInput = document.getElementById("admin-password-input").value.trim();
+    const input = document.getElementById("admin-pass-input");
+    if (!input) return;
 
-    if (ADMIN_CONFIG.passwords.includes(passInput)) {
-        ADMIN_CONFIG.isAdmin = true;
+    const val = input.value.trim();
+    if (ADMIN_CONFIG.passwords.includes(val)) {
         localStorage.setItem("rotali_is_admin", "true");
+        ADMIN_CONFIG.isAdmin = true;
         closeAdminLoginModal();
-        showToast("👑 Yönetici Yetkisi Aktif! İçerik ekleyebilir ve silebilirsiniz.", "success");
         updateAdminNavUI();
-
-        if (typeof window._adminCallback === "function") {
-            window._adminCallback();
+        showToast("👑 Yönetici Girişi Başarılı! Hoş geldiniz.", "success");
+        if (typeof window._adminLoginCallback === "function") {
+            window._adminLoginCallback();
+            window._adminLoginCallback = null;
         } else {
             handleRouteChange();
         }
     } else {
-        showToast("❌ Hatalı Şifre! Lütfen tekrar deneyin.", "error");
+        input.classList.add("border-red-500", "ring-2", "ring-red-500/20");
+        input.value = "";
+        showToast("❌ Hatalı şifre! Lütfen tekrar deneyin.", "error");
+        input.focus();
     }
 }
 
 function handleAdminLogout() {
-    ADMIN_CONFIG.isAdmin = false;
     localStorage.removeItem("rotali_is_admin");
-    showToast("🚪 Yönetici oturumu kapatıldı.", "info");
+    ADMIN_CONFIG.isAdmin = false;
     updateAdminNavUI();
+    showToast("🚪 Yönetici oturumu güvenle kapatıldı.", "info");
     handleRouteChange();
 }
 
 function updateAdminNavUI() {
-    const adminContainer = document.getElementById("admin-nav-container");
-    if (!adminContainer) return;
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    let logoutBtn = document.getElementById("admin-logout-nav-btn");
+    let adminNavBtn = document.getElementById("admin-nav-btn");
 
-    if (ADMIN_CONFIG.isAdmin) {
-        adminContainer.innerHTML = `
-            <div class="flex items-center gap-1.5">
-                <button onclick="triggerUploadModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-amber-400/60" title="İçerik Ekle">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <i class="fa-solid fa-sliders text-amber-400 text-xs"></i>
-                    <span>YÖNETİCİ PANELİ</span>
-                </button>
-                <button onclick="handleAdminLogout()" class="px-3 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl shadow-md transition-all flex items-center gap-1" title="Yönetici Oturumunu Kapat">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span class="hidden sm:inline">ÇIKIŞ</span>
-                </button>
-            </div>
-        `;
+    if (isAdmin) {
+        if (!logoutBtn && adminNavBtn && adminNavBtn.parentElement) {
+            logoutBtn = document.createElement("button");
+            logoutBtn.id = "admin-logout-nav-btn";
+            logoutBtn.type = "button";
+            logoutBtn.onclick = handleAdminLogout;
+            logoutBtn.className = "px-3 py-1.5 rounded-xl bg-red-700/80 hover:bg-red-800 text-white text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 border border-red-500 shadow-sm ml-2";
+            logoutBtn.innerHTML = `<i class="fa-solid fa-power-off"></i> <span>Çıkış</span>`;
+            adminNavBtn.parentElement.appendChild(logoutBtn);
+        }
     } else {
-        adminContainer.innerHTML = `
-            <button onclick="triggerUploadModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-slate-700">
-                <i class="fa-solid fa-lock text-amber-400 text-xs"></i>
-                <span>YÖNETİCİ PANELİ</span>
-            </button>
-        `;
+        if (logoutBtn) logoutBtn.remove();
     }
 }
 
-// -------------------------------------------------------------
-// ❌ MODAL GÜVENLİ KAPATMA (ÇARPI, DIŞ TIKLAMA, ESC)
-// -------------------------------------------------------------
-function closeMaterialUploadModal() {
-    const modal = document.getElementById("material-upload-modal");
-    if (modal) {
-        modal.classList.add("hidden");
-        modal.style.display = "none";
-    }
-    currentUploadedFile = null;
-    editingMaterialId = null;
-}
-
-window.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
+// ESC Tuşu ile Modal Kapatma
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape" || e.keyCode === 27) {
         closeMaterialUploadModal();
         closeAdminLoginModal();
     }
 });
 
-// -------------------------------------------------------------
-// ✏️ MATERYAL DÜZENLEME & SİLME
-// -------------------------------------------------------------
-function editCustomMaterial(materialId) {
-    if (!ADMIN_CONFIG.isAdmin) {
-        checkAdminAccess(() => editCustomMaterial(materialId));
-        return;
+// Modal Kapatma
+function closeMaterialUploadModal() {
+    const modal = document.getElementById("material-upload-modal");
+    if (modal) {
+        modal.style.display = "none";
+        modal.classList.add("hidden");
     }
+    currentUploadedFile = null;
+    editingMaterialId = null;
+}
 
+// Materyal Silme
+async function deleteCustomMaterial(id) {
+    if (!checkAdminAccess()) return;
+    if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
+
+    let customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    customList = customList.filter(item => item.id !== id);
+    localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+
+    // IDB'den de sil
+    await RotaliDB.deleteFile(id);
+
+    showToast("🗑️ Materyal başarıyla silindi.", "info");
+    handleRouteChange();
+}
+
+// Materyal Düzenleme & Taşıma
+function editCustomMaterial(id) {
+    if (!checkAdminAccess()) return;
     const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    const material = customList.find(item => item.id === materialId);
-    if (!material) {
+    const mat = customList.find(item => item.id === id);
+    if (!mat) {
         showToast("Materyal bulunamadı!", "error");
         return;
     }
-
-    editingMaterialId = materialId;
-    openMaterialUploadModal(material.grade, material.category, material);
+    openMaterialUploadModal(mat.grade || "8", mat.category || "ders-notu", mat);
 }
 
-function deleteCustomMaterial(materialId) {
-    if (!ADMIN_CONFIG.isAdmin) {
-        checkAdminAccess(() => deleteCustomMaterial(materialId));
+// Materyal Açma / İndirme (IDB & Web Link Uyumlu)
+async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf") {
+    // Önce IDB'den dosyayı kontrol et
+    const fileRecord = await RotaliDB.getFile(id);
+    if (fileRecord && fileRecord.blob) {
+        const url = URL.createObjectURL(fileRecord.blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileRecord.fileName || fileName;
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => {
+            a.remove();
+            URL.revokeObjectURL(url);
+        }, 1000);
         return;
     }
 
-    if (confirm("Bu materyali silmek istediğinizden emin misiniz?")) {
-        let customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-        customList = customList.filter(item => item.id !== materialId);
-        localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
-        showToast("Materyal başarıyla silindi.", "info");
-        handleRouteChange();
+    // IDB'de yoksa veya harici link ise
+    if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "") {
+        if (fallbackUrl.startsWith("data:")) {
+            const a = document.createElement("a");
+            a.href = fallbackUrl;
+            a.download = fileName;
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => a.remove(), 500);
+        } else {
+            window.open(fallbackUrl, "_blank");
+        }
+    } else {
+        showToast("📄 Bu materyalin çevrimdışı önizlemesi veya web bağlantısı mevcut.", "info");
     }
 }
 
 // -------------------------------------------------------------
-// 📤 GELİŞMİŞ MATERYAL YÜKLEME & DÜZENLEME FORMU MODALI
+// 🚀 GELİŞMİŞ YÖNETİCİ İÇERİK & MATERYAL YÜKLEME MODALI
 // -------------------------------------------------------------
+
 function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", editMaterial = null) {
     let modal = document.getElementById("material-upload-modal");
     if (!modal) {
@@ -2263,11 +2426,12 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     currentTagsList = editMaterial && editMaterial.tags ? [...editMaterial.tags] : ["MEB 2026-2027"];
     const isEditing = !!editMaterial;
     if (editMaterial) editingMaterialId = editMaterial.id;
+    else editingMaterialId = null;
 
     modal.innerHTML = `
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar" onclick="event.stopPropagation()">
             
-            <!-- Kapatma Çarpı Butonu (Kesin Kapatır) -->
+            <!-- Kapatma Çarpı Butonu -->
             <button type="button" onclick="closeMaterialUploadModal()" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-base transition-all z-20 shadow-sm" title="Kapat (ESC)">
                 <i class="fa-solid fa-xmark"></i>
             </button>
@@ -2289,7 +2453,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
 
             <form id="adv-material-form" onsubmit="handleAdvMaterialSubmit(event)" class="space-y-6">
                 
-                <!-- 1. KATEGORİ & BAŞLIK HİYERARŞİSİ (CASCADING DROPDOWNS) -->
+                <!-- 1. KATEGORİ & BAŞLIK HİYERARŞİSİ -->
                 <div class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
@@ -2301,86 +2465,80 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <!-- Ana Kategori / Sınıf -->
                         <div>
-                            <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase">Hedef Sınıf</label>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
                             <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="5" ${(isEditing ? editMaterial.grade === "5" : (prefillGrade === "5" || prefillGrade === "grade-5")) ? 'selected' : ''}>🟢 5. Sınıf Fen Bilimleri</option>
-                                <option value="6" ${(isEditing ? editMaterial.grade === "6" : (prefillGrade === "6" || prefillGrade === "grade-6")) ? 'selected' : ''}>🔵 6. Sınıf Fen Bilimleri</option>
-                                <option value="7" ${(isEditing ? editMaterial.grade === "7" : (prefillGrade === "7" || prefillGrade === "grade-7")) ? 'selected' : ''}>🟡 7. Sınıf Fen Bilimleri</option>
-                                <option value="8" ${(isEditing ? editMaterial.grade === "8" : (prefillGrade === "8" || prefillGrade === "grade-8")) ? 'selected' : ''}>🔴 8. Sınıf + LGS</option>
-                                <option value="all" ${(isEditing && editMaterial.grade === "all") ? 'selected' : ''}>🌐 Genel / Proje Merkezi</option>
+                                <option value="8" ${(isEditing ? editMaterial.grade === '8' : prefillGrade === '8') ? 'selected' : ''}>8. Sınıf & LGS</option>
+                                <option value="7" ${(isEditing ? editMaterial.grade === '7' : prefillGrade === '7') ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
+                                <option value="6" ${(isEditing ? editMaterial.grade === '6' : prefillGrade === '6') ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
+                                <option value="5" ${(isEditing ? editMaterial.grade === '5' : prefillGrade === '5') ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
+                                <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
                             </select>
                         </div>
 
-                        <!-- Alt Kategori / Bölüm Türü -->
+                        <!-- Alt Kategori -->
                         <div>
-                            <label class="block text-xs font-black text-slate-700 mb-1.5 uppercase">Bölüm / Sekme</label>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${(isEditing ? editMaterial.category === "ders-notu" : prefillTab === "ders-notu") ? 'selected' : ''}>📝 Ders Notu (PDF / Özet)</option>
-                                <option value="ders-sunumu" ${(isEditing ? editMaterial.category === "ders-sunumu" : prefillTab === "ders-sunumu") ? 'selected' : ''}>📊 Ders Sunumu (PPTX / Slayt)</option>
-                                <option value="videolar" ${(isEditing ? editMaterial.category === "videolar" : prefillTab === "videolar") ? 'selected' : ''}>🎥 Video Dersi & Deney Kaydı</option>
-                                <option value="etkinlikler" ${(isEditing ? editMaterial.category === "etkinlikler" : prefillTab === "etkinlikler") ? 'selected' : ''}>🧩 Etkinlik & Çalışma Föyü</option>
-                                <option value="soru-bankasi" ${(isEditing ? editMaterial.category === "soru-bankasi" : prefillTab === "soru-bankasi") ? 'selected' : ''}>📚 Soru Bankası & Test</option>
-                                <option value="denemeler" ${(isEditing ? editMaterial.category === "denemeler" : prefillTab === "denemeler") ? 'selected' : ''}>🎯 Ortak Sınav / Deneme</option>
-                                <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === "egitsel-oyunlar" : prefillTab === "egitsel-oyunlar") ? 'selected' : ''}>🎮 Eğitsel Oyun & Turnuva</option>
+                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ders Notları & Konu Anlatımı</option>
+                                <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumları & PPTX</option>
+                                <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası & Testler</option>
+                                <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Deneme Sınavları & LGS</option>
+                                <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler & Çalışma Föyleri</option>
+                                <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎬 Video Dersler & Deneyler</option>
+                                <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK / TEKNOFEST Projeleri</option>
                             </select>
                         </div>
                     </div>
 
-                    <!-- Ünite / Hedef Başlık (Cascading) -->
+                    <!-- Ünite / Konu Seçimi -->
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-black text-slate-700 uppercase">Ünite / Hedef Konu</label>
-                            <button type="button" onclick="toggleCustomTopicInput()" class="text-[11px] font-black text-red-600 hover:text-red-700 flex items-center gap-1">
-                                <i class="fa-solid fa-plus text-[10px]"></i> Listede Yoksa Yeni Başlık Ekle
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-black uppercase text-slate-700">İlişkili Ünite / Başlık</label>
+                            <button type="button" onclick="toggleCustomTopicInput()" class="text-[11px] font-bold text-red-600 hover:text-red-700 underline">
+                                ➕ Listede Yoksa Yeni Başlık Ekle
                             </button>
                         </div>
                         <select id="adv-unit-select" class="w-full p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                            <!-- JS ile dinamik dolar -->
+                            <!-- JS ile dolar -->
                         </select>
-                        <input type="text" id="adv-custom-topic-input" placeholder="✨ Yeni başlık veya konu adını yazın..." class="w-full mt-2 p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 hidden shadow-sm">
+                        <input type="text" id="adv-custom-topic-input" placeholder="Yeni Özel Başlık / Alt Başlık yazın..." class="hidden w-full mt-2 p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 shadow-sm">
                     </div>
                 </div>
 
-                <!-- 2. İÇERİK BAŞLIĞI & METİNLER -->
+                <!-- 2. İÇERİK BİLGİLERİ -->
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">
                             İçerik Başlığı <span class="text-red-500">*</span>
                         </label>
-                        <input type="text" id="adv-title-input" required value="${isEditing ? (editMaterial.title || '') : ''}" placeholder="Örn: 8. Sınıf Basınç Ünitesi Akıllı Tahta Uyumlu Slayt Seti" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                        <input type="text" id="adv-title-input" required value="${isEditing ? (editMaterial.title || '') : ''}" placeholder="Örn: 8. Sınıf Basınç Ünitesi Akıllı Tahta Uyumlu Slayt Seti" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">
                     </div>
 
-                    <!-- Rich Text Açıklama -->
                     <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-black uppercase text-slate-700">Kısa Açıklama & Yönerge</label>
-                            <div class="flex items-center gap-1">
-                                <button type="button" onclick="formatEditorText('bold')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg" title="Kalın"><b>B</b></button>
-                                <button type="button" onclick="formatEditorText('italic')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg" title="İtalik"><i>I</i></button>
-                                <button type="button" onclick="formatEditorText('list')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-lg" title="Madde İmi"><i class="fa-solid fa-list-ul text-[10px]"></i></button>
-                            </div>
-                        </div>
-                        <textarea id="adv-desc-input" rows="3" placeholder="Öğrenciler için yönerge veya kazanım açıklaması..." class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 leading-relaxed shadow-sm">${isEditing ? (editMaterial.desc || '') : ''}</textarea>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">Kısa Açıklama / Yönerge</label>
+                        <textarea id="adv-desc-input" rows="2" placeholder="Öğrenciler veya öğretmenler için materyal açıklaması..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">${isEditing ? (editMaterial.desc || '') : ''}</textarea>
                     </div>
                 </div>
 
-                <!-- 3. İÇERİK & DOSYA YÜKLEME ALANI (DRAG & DROP + EMBED LINK TABS) -->
+                <!-- 3. DOSYA YÜKLEME VEYA LİNK -->
                 <div class="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span> 2. Dosya & Medya Alanı
+                            <span class="w-2 h-2 rounded-full bg-red-600"></span> 2. Dosya / Bağlantı Kaynağı
                         </span>
-                        <div class="flex bg-slate-200 p-0.5 rounded-xl text-[11px] font-black">
+                        
+                        <!-- Sekme Değiştirici -->
+                        <div class="flex items-center p-1 bg-slate-200/80 rounded-xl text-xs font-bold">
                             <button type="button" id="tab-upload-file-btn" onclick="switchUploadMethod('file')" class="px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition-all">
-                                <i class="fa-solid fa-file-arrow-up"></i> Dosya Yükle
+                                📁 Dosya Yükle
                             </button>
                             <button type="button" id="tab-upload-link-btn" onclick="switchUploadMethod('link')" class="px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all">
-                                <i class="fa-solid fa-link"></i> Web / Drive Linki
+                                🔗 Web / Drive Linki
                             </button>
                         </div>
                     </div>
 
-                    <!-- Drag & Drop -->
+                    <!-- Dosya Sürükle Bırak Alanı -->
                     <div id="upload-method-file-container">
                         <div id="drag-drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white rounded-2xl p-6 text-center transition-all cursor-pointer group">
                             <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
@@ -2388,8 +2546,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform shadow-sm">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
                                 </div>
-                                <span class="block text-xs font-black text-slate-800 mb-1">Yeni dosya sürükleyip bırakın veya <span class="text-red-600 underline">Gözatın</span></span>
-                                <span class="block text-[11px] text-slate-400 font-medium">PDF, DOCX, PPTX, XLSX, MP4, MP3, PNG, JPG, ZIP</span>
+                                <span class="block text-xs font-black text-slate-800 mb-1">Yeni dosya seçmek için <span class="text-red-600 underline">Gözatın</span> veya sürükleyin</span>
+                                <span class="block text-[11px] text-slate-400 font-medium">PDF, Word, PPTX, Video, Görsel, ZIP</span>
                             </label>
                         </div>
                     </div>
@@ -2398,7 +2556,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                     <div id="upload-method-link-container" class="hidden space-y-2">
                         <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
                         <div class="relative">
-                            <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" oninput="handleLinkInput(event)" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
                             <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         </div>
                     </div>
@@ -2419,14 +2577,13 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </div>
-                        <div id="preview-media-container" class="mt-3 hidden rounded-xl overflow-hidden bg-slate-900 max-h-48 flex items-center justify-center"></div>
                     </div>
                 </div>
 
                 <!-- 4. ETİKETLER & GÖRÜNÜRLÜK -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Etiketler & Rozetler</label>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Etiketler</label>
                         <div class="flex flex-wrap gap-1.5 p-2.5 bg-slate-50 border border-slate-200 rounded-xl min-h-[44px]" id="tags-badge-container"></div>
                         <div class="flex gap-1.5 mt-2">
                             <input type="text" id="adv-tag-input" placeholder="Etiket ekle..." class="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500">
@@ -2448,9 +2605,9 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                     <button type="button" onclick="closeMaterialUploadModal()" class="py-4 px-6 bg-slate-100 hover:bg-slate-200 text-slate-700 font-black text-xs uppercase rounded-2xl transition-all">
                         Vazgeç
                     </button>
-                    <button type="button" id="submit-material-btn" onclick="handleAdvMaterialSubmit(event)" class="flex-1 py-4 bg-gradient-to-r ${isEditing ? 'from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800'} text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 transform active:scale-98">
+                    <button type="submit" id="submit-material-btn" class="flex-1 py-4 bg-gradient-to-r ${isEditing ? 'from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800'} text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl transition-all flex items-center justify-center gap-2 transform active:scale-98">
                         <i class="fa-solid ${isEditing ? 'fa-check' : 'fa-cloud-arrow-up'} text-base"></i>
-                        <span>${isEditing ? 'Değişiklikleri Kaydet & Güncelle' : 'İçeriği Siteye Yayınla & Kaydet'}</span>
+                        <span>${isEditing ? 'Değişiklikleri Kaydet & Güncelle' : 'İçeriği Sitede Yayınla ve Kaydet'}</span>
                     </button>
                 </div>
             </form>
@@ -2531,13 +2688,13 @@ function handleFileDrop(e) {
     const zone = document.getElementById("drag-drop-zone");
     if (zone) zone.classList.remove("border-red-500", "bg-red-50/50");
 
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+    if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
         processSelectedFile(e.dataTransfer.files[0]);
     }
 }
 
 function handleFileSelected(e) {
-    if (e.target.files && e.target.files[0]) {
+    if (e.target && e.target.files && e.target.files[0]) {
         processSelectedFile(e.target.files[0]);
     }
 }
@@ -2548,9 +2705,8 @@ function processSelectedFile(file) {
     const previewName = document.getElementById("preview-file-name");
     const previewSize = document.getElementById("preview-file-size");
     const previewIcon = document.getElementById("preview-file-icon");
-    const mediaContainer = document.getElementById("preview-media-container");
 
-    if (!previewCard) return;
+    if (!previewCard || !previewName || !previewSize || !previewIcon) return;
 
     previewName.innerText = file.name;
     const sizeKB = (file.size / 1024).toFixed(1);
@@ -2558,11 +2714,7 @@ function processSelectedFile(file) {
     const displaySize = file.size > 1048576 ? `${sizeMB} MB` : `${sizeKB} KB`;
 
     const ext = file.name.split('.').pop().toLowerCase();
-    let fileTypeLabel = `${displaySize} • ${ext.toUpperCase()} Dosyası`;
-    previewSize.innerText = fileTypeLabel;
-
-    mediaContainer.innerHTML = "";
-    mediaContainer.classList.add("hidden");
+    previewSize.innerText = `${displaySize} • ${ext.toUpperCase()} Dosyası`;
 
     if (ext === "pdf") {
         previewIcon.innerHTML = `<i class="fa-solid fa-file-pdf text-red-600"></i>`;
@@ -2573,33 +2725,13 @@ function processSelectedFile(file) {
     } else if (["pptx", "ppt"].includes(ext)) {
         previewIcon.innerHTML = `<i class="fa-solid fa-file-powerpoint text-orange-600"></i>`;
         previewIcon.className = "w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg flex-shrink-0";
-    } else if (["xlsx", "xls"].includes(ext)) {
-        previewIcon.innerHTML = `<i class="fa-solid fa-file-excel text-emerald-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0";
-    } else if (["png", "jpg", "jpeg", "svg", "webp"].includes(ext)) {
-        previewIcon.innerHTML = `<i class="fa-solid fa-file-image text-purple-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center text-lg flex-shrink-0";
-        const imgUrl = URL.createObjectURL(file);
-        mediaContainer.innerHTML = `<img src="${imgUrl}" class="max-h-48 object-contain rounded-lg">`;
-        mediaContainer.classList.remove("hidden");
-    } else if (["mp4", "webm"].includes(ext)) {
-        previewIcon.innerHTML = `<i class="fa-solid fa-file-video text-rose-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-rose-100 text-rose-600 flex items-center justify-center text-lg flex-shrink-0";
-        const videoUrl = URL.createObjectURL(file);
-        mediaContainer.innerHTML = `<video controls class="max-h-48 w-full rounded-lg"><source src="${videoUrl}"></video>`;
-        mediaContainer.classList.remove("hidden");
-    } else if (["mp3", "wav"].includes(ext)) {
-        previewIcon.innerHTML = `<i class="fa-solid fa-file-audio text-amber-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg flex-shrink-0";
-        const audioUrl = URL.createObjectURL(file);
-        mediaContainer.innerHTML = `<audio controls class="w-full p-2"><source src="${audioUrl}"></audio>`;
-        mediaContainer.classList.remove("hidden");
-    } else if (ext === "zip") {
-        previewIcon.innerHTML = `<i class="fa-solid fa-file-zipper text-indigo-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-lg flex-shrink-0";
+    } else {
+        previewIcon.innerHTML = `<i class="fa-solid fa-file text-slate-600"></i>`;
+        previewIcon.className = "w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-lg flex-shrink-0";
     }
 
     previewCard.classList.remove("hidden");
+    previewCard.classList.add("block");
 }
 
 function removeSelectedFile() {
@@ -2607,86 +2739,52 @@ function removeSelectedFile() {
     const fileInput = document.getElementById("adv-file-input");
     if (fileInput) fileInput.value = "";
     const previewCard = document.getElementById("file-preview-card");
-    if (previewCard) previewCard.classList.add("hidden");
-}
-
-function handleLinkInput(e) {
-    const val = e.target.value.trim();
-    if (!val) return;
-
-    const previewCard = document.getElementById("file-preview-card");
-    const previewName = document.getElementById("preview-file-name");
-    const previewSize = document.getElementById("preview-file-size");
-    const previewIcon = document.getElementById("preview-file-icon");
-    const mediaContainer = document.getElementById("preview-media-container");
-
-    if (!previewCard) return;
-
-    previewName.innerText = val;
-    previewSize.innerText = "Web / Bulut Bağlantısı";
-    previewIcon.innerHTML = `<i class="fa-solid fa-link text-blue-600"></i>`;
-    previewIcon.className = "w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg flex-shrink-0";
-    mediaContainer.classList.add("hidden");
-
-    if (val.includes("youtube.com") || val.includes("youtu.be")) {
-        previewSize.innerText = "YouTube Video Yayını";
-        previewIcon.innerHTML = `<i class="fa-brands fa-youtube text-red-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-lg flex-shrink-0";
-    } else if (val.includes("drive.google.com")) {
-        previewSize.innerText = "Google Drive Dosyası";
-        previewIcon.innerHTML = `<i class="fa-brands fa-google-drive text-emerald-600"></i>`;
-        previewIcon.className = "w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-lg flex-shrink-0";
+    if (previewCard) {
+        previewCard.classList.add("hidden");
+        previewCard.classList.remove("block");
     }
-
-    previewCard.classList.remove("hidden");
-}
-
-function formatEditorText(type) {
-    const textarea = document.getElementById("adv-desc-input");
-    if (!textarea) return;
-
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selected = textarea.value.substring(start, end) || "örnek metin";
-    let replacement = "";
-
-    if (type === "bold") replacement = `**${selected}**`;
-    else if (type === "italic") replacement = `*${selected}*`;
-    else if (type === "list") replacement = `\n• ${selected}`;
-
-    textarea.setRangeText(replacement, start, end, "select");
-    textarea.focus();
 }
 
 function renderTagsBadges() {
     const container = document.getElementById("tags-badge-container");
     if (!container) return;
 
+    if (!currentTagsList || currentTagsList.length === 0) {
+        container.innerHTML = `<span class="text-slate-400 text-xs italic">Etiket eklenmedi</span>`;
+        return;
+    }
+
     container.innerHTML = currentTagsList.map((tag, idx) => `
-        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200 text-xs font-black animate-in fade-in duration-150">
-            <span>#${tag}</span>
-            <button type="button" onclick="removeTag(${idx})" class="hover:text-red-900 text-[10px] font-bold"><i class="fa-solid fa-xmark"></i></button>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-red-100/70 text-red-800 text-[11px] font-bold">
+            #${tag}
+            <button type="button" onclick="removeCustomTag(${idx})" class="hover:text-red-950 font-black">×</button>
         </span>
     `).join("");
 }
 
 function addCustomTag() {
-    const input = document.getElementById("adv-tag-input");
-    if (!input) return;
-    const tag = input.value.trim().replace(/^#/, "");
-    if (tag && !currentTagsList.includes(tag)) {
-        currentTagsList.push(tag);
+    const tagInput = document.getElementById("adv-tag-input");
+    if (!tagInput) return;
+    const val = tagInput.value.trim().replace(/^#/, "");
+    if (val && !currentTagsList.includes(val)) {
+        currentTagsList.push(val);
         renderTagsBadges();
-        input.value = "";
+        tagInput.value = "";
     }
 }
 
-function removeTag(idx) {
-    currentTagsList.splice(idx, 1);
-    renderTagsBadges();
+function removeCustomTag(idx) {
+    if (currentTagsList && currentTagsList.length > idx) {
+        currentTagsList.splice(idx, 1);
+        renderTagsBadges();
+    }
 }
 
-function handleAdvMaterialSubmit(e) {
+// -------------------------------------------------------------
+// 💾 FORM KAYDETME & YAYINLAMA FONKSİYONU (TAM KORUMALI)
+// -------------------------------------------------------------
+
+async function handleAdvMaterialSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
 
     const titleInput = document.getElementById("adv-title-input");
@@ -2715,7 +2813,7 @@ function handleAdvMaterialSubmit(e) {
     const category = categorySelect ? categorySelect.value : "ders-notu";
     const customTopic = customTopicInput ? customTopicInput.value.trim() : "";
     const unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${grade}. Sınıf Fen Bilimleri`);
-    const desc = descInput ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
+    const desc = descInput && descInput.value.trim() ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
     const linkVal = linkInput ? linkInput.value.trim() : "";
     const visibility = visibilitySelect ? visibilitySelect.value : "public";
 
@@ -2724,8 +2822,34 @@ function handleAdvMaterialSubmit(e) {
         submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...`;
     }
 
-    function finalizeSave(fileUrl, fileName, format) {
-        let customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    try {
+        let customList = [];
+        try {
+            customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+        } catch (err) {
+            customList = [];
+        }
+
+        const materialId = editingMaterialId || `mat-${Date.now()}`;
+        let fileFormat = "PDF";
+        let finalFileName = `${title}.pdf`;
+        let externalUrl = linkVal || "";
+        let hasBlob = false;
+
+        // Dosya veya Link İşleme
+        if (currentUploadedFile) {
+            finalFileName = currentUploadedFile.name;
+            fileFormat = finalFileName.split('.').pop().toUpperCase();
+            hasBlob = true;
+            // IDB'ye kaydet
+            await RotaliDB.saveFile(materialId, currentUploadedFile, finalFileName, fileFormat);
+        } else if (linkVal) {
+            if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) fileFormat = "YouTube Video";
+            else if (linkVal.includes("drive.google.com")) fileFormat = "Google Drive";
+            else if (linkVal.includes("canva.com")) fileFormat = "Canva";
+            else fileFormat = "Web Bağlantısı";
+            finalFileName = linkVal;
+        }
 
         if (editingMaterialId) {
             const idx = customList.findIndex(item => item.id === editingMaterialId);
@@ -2737,10 +2861,11 @@ function handleAdvMaterialSubmit(e) {
                     title: title,
                     unit: unit,
                     desc: desc,
-                    fileName: fileName || customList[idx].fileName,
-                    fileUrl: (fileUrl && fileUrl !== "#" && fileUrl !== "") ? fileUrl : customList[idx].fileUrl,
-                    format: format || customList[idx].format,
-                    tags: (typeof currentTagsList !== "undefined" && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
+                    fileName: currentUploadedFile ? finalFileName : customList[idx].fileName,
+                    fileUrl: externalUrl || customList[idx].fileUrl || "#",
+                    format: fileFormat || customList[idx].format,
+                    hasBlob: hasBlob || customList[idx].hasBlob,
+                    tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
                     visibility: visibility,
                     updatedAt: new Date().toLocaleDateString("tr-TR")
                 };
@@ -2749,27 +2874,34 @@ function handleAdvMaterialSubmit(e) {
             showToast(`✅ "${title}" başarıyla güncellendi!`, "success");
         } else {
             const newMaterial = {
-                id: `mat-${Date.now()}`,
+                id: materialId,
                 grade: grade,
                 category: category,
                 title: title,
                 unit: unit,
                 desc: desc,
-                fileName: fileName,
-                fileUrl: fileUrl,
-                format: format,
-                tags: (typeof currentTagsList !== "undefined" && currentTagsList.length > 0) ? [...currentTagsList] : ["MEB 2026-2027"],
+                fileName: finalFileName,
+                fileUrl: externalUrl || "#",
+                format: fileFormat,
+                hasBlob: hasBlob,
+                tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["MEB 2026-2027"],
                 visibility: visibility,
-                downloadCount: "Yeni Eklendi",
+                downloadCount: "Yeni",
                 createdAt: new Date().toLocaleDateString("tr-TR")
             };
             customList.unshift(newMaterial);
-            showToast(`🎉 "${title}" başarıyla siteye yüklendi ve yayınlandı!`, "success");
+            showToast(`🎉 "${title}" başarıyla yayınlandı ve kaydedildi!`, "success");
         }
 
-        localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+        try {
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+        } catch (storageErr) {
+            console.warn("LocalStorage hatası:", storageErr);
+        }
+
         closeMaterialUploadModal();
 
+        // Sayfayı hedefe yönlendir ve yenile
         if (grade === "all") {
             window.location.hash = "projects";
         } else {
@@ -2777,34 +2909,91 @@ function handleAdvMaterialSubmit(e) {
         }
 
         handleRouteChange();
-    }
 
-    if (currentUploadedFile) {
-        const fileName = currentUploadedFile.name;
-        const ext = fileName.split('.').pop().toUpperCase();
-
-        if (currentUploadedFile.size < 5 * 1024 * 1024) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                finalizeSave(event.target.result, fileName, ext);
-            };
-            reader.onerror = function() {
-                const blobUrl = URL.createObjectURL(currentUploadedFile);
-                finalizeSave(blobUrl, fileName, ext);
-            };
-            reader.readAsDataURL(currentUploadedFile);
-        } else {
-            const blobUrl = URL.createObjectURL(currentUploadedFile);
-            finalizeSave(blobUrl, fileName, ext);
+    } catch (error) {
+        console.error("Kaydetme hatası:", error);
+        showToast("⚠️ Kayıt sırasında bir hata oluştu: " + error.message, "error");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Tekrar Dene</span>`;
         }
-    } else if (linkVal) {
-        let format = "Web Bağlantısı";
-        if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) format = "YouTube Video";
-        else if (linkVal.includes("drive.google.com")) format = "Google Drive";
-        else if (linkVal.includes("canva.com")) format = "Canva";
-
-        finalizeSave(linkVal, linkVal, format);
-    } else {
-        finalizeSave("#", `${title}.pdf`, "PDF");
     }
+}
+
+// -------------------------------------------------------------
+// 🎨 ÖZEL MATERYALLERİ LİSTELEME BİLEŞENİ
+// -------------------------------------------------------------
+
+function renderCustomMaterialsSection(gradeNumber, subTab) {
+    let customList = [];
+    try {
+        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    } catch (e) {
+        customList = [];
+    }
+
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const items = customList.filter(item => {
+        const gradeMatch = (item.grade === "all" || String(item.grade) === String(gradeNumber));
+        const categoryMatch = (subTab === "uniteler" || item.category === subTab);
+        return gradeMatch && categoryMatch;
+    });
+
+    if (!items || items.length === 0) return "";
+
+    return `
+        <div class="mb-10 animate-in fade-in duration-300">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span>✨ Yönetici Tarafından Eklenen Özel Materyaller (${items.length})</span>
+                </h4>
+                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">2026-2027 MEB Yayında</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${items.map(item => `
+                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl p-6 border-2 border-emerald-500/30 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
+
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black tracking-wider uppercase inline-block">
+                                    ${item.format || 'DOKÜMAN'}
+                                </span>
+                                <span class="text-[10px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
+                            </div>
+
+                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide">${item.unit || ''}</div>
+                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-emerald-700 transition-colors">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+
+                            ${item.tags && item.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-1 mb-4">
+                                    ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                                <i class="fa-solid fa-download"></i> <span>Aç / İndir</span>
+                            </button>
+
+                            ${isAdmin ? `
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
+                                        <i class="fa-solid fa-trash-can"></i> Sil
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
 }
