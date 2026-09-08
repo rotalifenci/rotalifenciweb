@@ -1128,7 +1128,7 @@ function renderScientistsModule(gradeNumber) {
             <!-- Bilim İnsanları Kartları -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 ${list.map(sci => `
-                    <div class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                    <div onclick="openScientistModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group cursor-pointer">
                         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${sci.color} opacity-10 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform"></div>
 
                         <div>
@@ -1169,8 +1169,8 @@ function renderScientistsModule(gradeNumber) {
 
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                             <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">${sci.badge}</span>
-                            <button onclick="showToast('${sci.name} hakkında detaylı araştırma notu açıldı', 'info')" class="px-4 py-2 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors shadow-sm flex items-center gap-1.5">
-                                <i class="fa-solid fa-atom"></i> Keşif Kartı
+                            <button onclick="openScientistModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md shadow-red-600/25 flex items-center gap-1.5 hover:scale-105 transform">
+                                <i class="fa-solid fa-atom"></i> Keşif Kartını Oku →
                             </button>
                         </div>
                     </div>
@@ -1178,6 +1178,195 @@ function renderScientistsModule(gradeNumber) {
             </div>
         </div>
     `;
+}
+
+// -------------------------------------------------------------
+// 🔬 BİLİM İNSANI DETAYLI ARAŞTIRMA & KEŞİF KARTI MODALI
+// -------------------------------------------------------------
+function openScientistModal(scientistName, gradeNumber = "8") {
+    let modal = document.getElementById("scientist-detail-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "scientist-detail-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300";
+        modal.onclick = function(e) {
+            if (e.target === this) closeScientistModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    // Bilim insanını bul
+    let sci = null;
+    const allScientists = Object.values(SCIENTISTS_DATA).flat();
+    sci = allScientists.find(s => s.name.toLowerCase().includes(scientistName.toLowerCase()) || scientistName.toLowerCase().includes(s.name.toLowerCase())) || allScientists[0];
+
+    // Detaylı Bilimsel İçerik Üretimi (Bilim insanına özel zengin eğitim notu)
+    let detailedNotes = "";
+    if (sci.name.includes("Galileo")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                    <h5 class="font-black text-amber-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-telescope text-amber-600"></i> 1. Teleskopik Astronomi ve Gökyüzü Gözlemleri
+                    </h5>
+                    <p>Galileo, 1609 yılında 30 kat büyütme gücüne sahip kendi teleskobunu tasarladı. Gökyüzünü incelediğinde pürüzsüz sanılan <strong>Ay'ın dağlar, vadiler ve kraterlerle kaplı olduğunu</strong>, <strong>Güneş üzerinde koyu lekeler (Güneş Lekeleri)</strong> bulunduğunu ve Güneş'in kendi ekseni etrafında döndüğünü ilk kez ispatladı.</p>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-2xl border border-blue-200">
+                    <h5 class="font-black text-blue-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-globe text-blue-600"></i> 2. Dünya'nın Hareketi ve Jüpiter'in Uyduları
+                    </h5>
+                    <p>Jüpiter'in etrafında dönen 4 büyük uyduyu (Io, Europa, Ganymede, Callisto) keşfederek her gök cisminin Dünya etrafında dönmediğini kanıtladı. Kopernik'in <em>"Dünya ve diğer gezegenler Güneş etrafında döner"</em> teorisini somut gözlemlerle doğruladı.</p>
+                </div>
+
+                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <h5 class="font-black text-emerald-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-flask-vial text-emerald-600"></i> 3. Eğik Düzlem & Serbest Düşme Deneyleri
+                    </h5>
+                    <p>Pisa Kulesi ve eğik düzlemlerde yaptığı deneylerle; hava sürtünmesi önemsenmediğinde <strong>ağır ve hafif tüm cisimlerin aynı ivmeyle aynı anda yere düştüğünü</strong> göstererek Aristo fiziğini tarihe gömdü.</p>
+                </div>
+            </div>
+        `;
+    } else if (sci.name.includes("Aziz Sancar")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-red-50 rounded-2xl border border-red-200">
+                    <h5 class="font-black text-red-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-dna text-red-600"></i> 1. DNA Onarım Mekanizmaları (Nükleotid Kesip Çıkarma Onarımı)
+                    </h5>
+                    <p>Güneşten gelen zararlı UV ışınları ve kimyasallar DNA zincirinde mutasyonlara ve hasarlara yol açar. Prof. Dr. Aziz Sancar, hücrelerin hasarlı DNA parçasını adeta bir makas gibi kesip çıkararak yerine sağlam nükleotidleri nasıl yerleştirdiğini moleküler düzeyde haritalandırdı.</p>
+                </div>
+
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                    <h5 class="font-black text-amber-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-amber-600"></i> 2. Biyolojik Saat ve Kanser Tedavisi
+                    </h5>
+                    <p>Vücudumuzdaki 24 saatlik biyolojik saat döngüsünün (Sirkadiyen Ritim) DNA onarım hızını doğrudan kontrol ettiğini kanıtladı. Bu keşif sayesinde kanser ilaçlarının günün hangi saatinde verilirse daha etkili olacağını belirleyen tedavi yöntemleri geliştirildi.</p>
+                </div>
+            </div>
+        `;
+    } else if (sci.name.includes("Pascal") || sci.name.includes("Torricelli")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-blue-50 rounded-2xl border border-blue-200">
+                    <h5 class="font-black text-blue-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-faucet-drip text-blue-600"></i> 1. Pascal Prensibi (Sıvıların Basıncı İletmesi)
+                    </h5>
+                    <p>Sıvılar sıkıştırılamaz kabul edilir. Kapalı bir kaptaki sıvıya uygulanan basınç, sıvının temas ettiği <strong>tüm noktalara ve kabın iç yüzeyine aynen ve dik olarak</strong> iletilir. Hidrolik frenler, berber koltukları, itfaiye merdivenleri ve su cendereleri bu ilkeyle çalışır.</p>
+                </div>
+
+                <div class="p-4 bg-purple-50 rounded-2xl border border-purple-200">
+                    <h5 class="font-black text-purple-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-cloud text-purple-600"></i> 2. Torriçelli Deneyi & Açık Hava Basıncı
+                    </h5>
+                    <p>Deniz seviyesinde 0°C'de 1 metrelik cam boruyu cıvayla doldurup cıva çanağına batırdığında cıva seviyesinin <strong>76 cm (760 mm-Hg = 1 atm)</strong>'de dengede kaldığını gördü. Açık havanın ağırlığı nedeniyle yeryüzündeki tüm cisimlere basınç uyguladığını ispatladı.</p>
+                </div>
+            </div>
+        `;
+    } else if (sci.name.includes("Mendel")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <h5 class="font-black text-emerald-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-seedling text-emerald-600"></i> 1. Bezelye Çaprazlamaları & Kalıtım Kanunları
+                    </h5>
+                    <p>Mendel; kolay yetiştirilmesi, yılda çok döl vermesi ve dış tozlaşmaya kapalı olması nedeniyle bezelyeleri seçti. Sarı-yeşil tohum, düz-buruşuk şekil gibi zıt karakterleri çaprazlayarak <strong>Baskın (Dominant)</strong> ve <strong>Çekinik (Resesif)</strong> gen kavramlarını buldu.</p>
+                </div>
+            </div>
+        `;
+    } else {
+        detailedNotes = `
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <p class="mb-3">${sci.discovery}</p>
+                <p>Bu büyük bilim insanının çalışmaları, günümüz modern bilim ve teknolojisinin temel yapı taşlarını oluşturmaktadır. İlgili sınıfın sınavlarında ve MEB kazanımlarında en sık soru gelen temel teorilerin mimarıdır.</p>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar flex flex-col" onclick="event.stopPropagation()">
+            
+            <!-- Üst Kapatma Butonu -->
+            <button type="button" onclick="closeScientistModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-100/80 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-base transition-all z-20 shadow-sm" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Renkli Hero Başlık -->
+            <div class="bg-gradient-to-r ${sci.color} text-white p-6 sm:p-8 rounded-t-3xl relative overflow-hidden flex-shrink-0">
+                <div class="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-bl-full pointer-events-none"></div>
+
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-3xl sm:text-4xl shadow-lg border border-white/30 flex-shrink-0">
+                        <i class="${sci.icon}"></i>
+                    </div>
+                    <div>
+                        <div class="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-black tracking-wider uppercase mb-1.5">
+                            ${sci.badge}
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">${sci.name}</h3>
+                        <p class="text-xs sm:text-sm text-white/90 font-semibold mt-0.5">${sci.title} (${sci.years})</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İçerik Alanı -->
+            <div class="p-6 sm:p-8 space-y-6 flex-1 overflow-y-auto">
+                
+                <!-- Müfredat & Kazanım Bağı -->
+                <div class="flex items-center gap-2 p-3 bg-red-50 text-red-800 rounded-xl border border-red-200 text-xs font-bold">
+                    <i class="fa-solid fa-bookmark text-red-600 text-sm"></i>
+                    <span>MEB Müfredat İlişkisi: <strong>${sci.curriculumLink}</strong></span>
+                </div>
+
+                <!-- Detaylı Araştırma Bölümü -->
+                <div>
+                    <h4 class="text-sm font-black uppercase tracking-wider text-slate-900 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Bilimsel Keşifleri & Deneyleri
+                    </h4>
+                    ${detailedNotes}
+                </div>
+
+                <!-- İlham Veren Sözü -->
+                <div class="p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl shadow-md relative overflow-hidden">
+                    <i class="fa-solid fa-quote-left absolute -bottom-2 -right-2 text-white/10 text-6xl pointer-events-none"></i>
+                    <div class="text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">Bilimsel Vizyonu</div>
+                    <div class="text-sm sm:text-base font-bold italic leading-relaxed">"${sci.quote}"</div>
+                </div>
+
+                <!-- Biliyor muydunuz? -->
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200/80 flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-base flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-xs font-black text-amber-900 uppercase tracking-wider mb-0.5">Biliyor Muydunuz?</h5>
+                        <p class="text-xs text-slate-700 leading-relaxed font-medium">${sci.funFact}</p>
+                    </div>
+                </div>
+
+                <!-- Alt Butonlar -->
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-3">
+                    <button type="button" onclick="window.print()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> Keşif Kartını Yazdır (A4)
+                    </button>
+                    <button type="button" onclick="closeScientistModal()" class="py-3 px-6 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    modal.style.display = "flex";
+    modal.classList.remove("hidden");
+}
+
+function closeScientistModal() {
+    const modal = document.getElementById("scientist-detail-modal");
+    if (modal) {
+        modal.style.display = "none";
+        modal.classList.add("hidden");
+    }
 }
 
 function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
