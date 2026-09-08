@@ -401,14 +401,17 @@ function renderHomePage(container) {
                         5, 6, 7 ve 8. sınıf öğrencileri için interaktif ünite hub'ları, LGS yeni nesil soru çözümleri, ortak yazılı sınav merkezi ve öğretmen çalışma odası.
                     </p>
 
-                    <!-- Sayfa İçi Hızlı Giriş & Rol Butonları -->
+                    <!-- Hızlı Keşif Butonları -->
                     <div class="flex flex-wrap justify-center gap-3">
-                        <button onclick="openAuthModal('student')" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-user-graduate"></i> Öğrenci Girişi & Rotam
-                        </button>
-                        <button onclick="openAuthModal('teacher')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-chalkboard-user text-amber-400"></i> Öğretmen / Yönetici Girişi
-                        </button>
+                        <a href="#grades" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-compass"></i> Sınıf Rotalarını Keşfet
+                        </a>
+                        <a href="#stem-lab" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-flask text-amber-300"></i> Sanal Lab & Deneyler
+                        </a>
+                        <a href="#student-portal" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-book-bookmark text-amber-400"></i> Hata Defterim & Görevler
+                        </a>
                     </div>
                 </div>
 
@@ -554,9 +557,7 @@ function renderHomePage(container) {
                             <a href="#student-portal" class="flex-1 py-2.5 text-center bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md">
                                 Portalıma Git
                             </a>
-                            <button onclick="openAuthModal('student')" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all" title="Profili Değiştir">
-                                ⚙️ Profil
-                            </button>
+                            <a href="#student-portal" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all" title="Hata Defterimi Aç">📕 Hata Defterim</a>
                         </div>
                     </div>
                 </div>
