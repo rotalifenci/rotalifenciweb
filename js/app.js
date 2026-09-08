@@ -313,7 +313,7 @@ function handleRouteChange() {
     } else if (hash === "teachers-room") {
         renderLgsPusulasiPage(appEl);
     } else if (hash === "student-portal") {
-        renderStudentPortalPage(appEl);
+        renderHomePage(appEl);
     } else if (hash === "teacher-dashboard" || hash.startsWith("admin")) {
         renderTeacherDashboardPage(appEl);
     } else if (hash === "search") {
@@ -409,8 +409,8 @@ function renderHomePage(container) {
                         <a href="#stem-lab" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
                             <i class="fa-solid fa-flask text-amber-300"></i> Sanal Lab & Deneyler
                         </a>
-                        <a href="#student-portal" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-book-bookmark text-amber-400"></i> Hata Defterim & Görevler
+                        <a href="#projects" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400"></i> Proje Merkezi (TÜBİTAK)
                         </a>
                     </div>
                 </div>
