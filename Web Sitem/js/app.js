@@ -2256,7 +2256,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu") {
 
                 <!-- SUBMIT BUTONU -->
                 <div class="pt-2">
-                    <button type="submit" id="submit-material-btn" class="w-full py-4 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center justify-center gap-2 transform active:scale-98">
+                    <button type="button" id="submit-material-btn" onclick="handleAdvMaterialSubmit(event)" class="w-full py-4 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center justify-center gap-2 transform active:scale-98">
                         <i class="fa-solid fa-cloud-arrow-up text-base"></i> İçeriği Siteye Yayınla & Kaydet
                     </button>
                 </div>
@@ -2494,63 +2494,124 @@ function removeTag(idx) {
     renderTagsBadges();
 }
 
-// Form Submit Handler
+
+// Form Submit Handler (Kurşungeçirmez & Doğrulamalı)
 function handleAdvMaterialSubmit(e) {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
 
-    const grade = document.getElementById("adv-grade-select").value;
-    const category = document.getElementById("adv-category-select").value;
-    const customTopic = document.getElementById("adv-custom-topic-input").value.trim();
-    const unit = customTopic || document.getElementById("adv-unit-select").value;
-    const title = document.getElementById("adv-title-input").value.trim();
-    const desc = document.getElementById("adv-desc-input").value.trim() || "Rotalı Fenci özel eğitim materyali.";
-    const linkInput = document.getElementById("adv-link-input") ? document.getElementById("adv-link-input").value.trim() : "";
-    const visibility = document.getElementById("adv-visibility-select").value;
+    const titleInput = document.getElementById("adv-title-input");
+    const gradeSelect = document.getElementById("adv-grade-select");
+    const categorySelect = document.getElementById("adv-category-select");
+    const customTopicInput = document.getElementById("adv-custom-topic-input");
+    const unitSelect = document.getElementById("adv-unit-select");
+    const descInput = document.getElementById("adv-desc-input");
+    const linkInput = document.getElementById("adv-link-input");
+    const visibilitySelect = document.getElementById("adv-visibility-select");
+    const submitBtn = document.getElementById("submit-material-btn");
 
-    let fileName = "";
-    let fileUrl = linkInput;
-    let format = "PDF";
-
-    if (currentUploadedFile) {
-        fileName = currentUploadedFile.name;
-        format = currentUploadedFile.name.split('.').pop().toUpperCase();
-        fileUrl = URL.createObjectURL(currentUploadedFile);
-    } else if (linkInput) {
-        fileName = linkInput;
-        format = linkInput.includes("youtube") ? "YouTube Video" : (linkInput.includes("drive") ? "Google Drive" : "Web Bağlantısı");
-    } else {
-        fileName = `${title}.pdf`;
-        fileUrl = "#";
-        format = "PDF";
+    if (!titleInput) {
+        console.error("Form elementleri bulunamadı!");
+        return;
     }
 
-    const newMaterial = {
-        id: `mat-${Date.now()}`,
-        grade: grade,
-        category: category,
-        title: title,
-        unit: unit,
-        desc: desc,
-        fileName: fileName,
-        fileUrl: fileUrl,
-        format: format,
-        tags: [...currentTagsList],
-        visibility: visibility,
-        downloadCount: "Yeni Eklendi",
-        createdAt: new Date().toLocaleDateString("tr-TR")
-    };
+    const title = titleInput.value.trim();
+    if (!title) {
+        titleInput.focus();
+        titleInput.classList.add("border-red-500", "ring-2", "ring-red-500/30");
+        showToast("⚠️ Lütfen bir 'İçerik Başlığı' yazınız!", "error");
+        return;
+    }
 
-    // Save to LocalStorage
-    const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    customList.unshift(newMaterial);
-    localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+    // Reset validation styling
+    titleInput.classList.remove("border-red-500", "ring-2", "ring-red-500/30");
 
-    closeMaterialUploadModal();
-    showToast(`🎉 "${title}" başarıyla yüklendi ve yayınlandı!`, "success");
+    const grade = gradeSelect ? gradeSelect.value : "8";
+    const category = categorySelect ? categorySelect.value : "ders-notu";
+    const customTopic = customTopicInput ? customTopicInput.value.trim() : "";
+    const unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${grade}. Sınıf Fen Bilimleri`);
+    const desc = descInput ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
+    const linkVal = linkInput ? linkInput.value.trim() : "";
+    const visibility = visibilitySelect ? visibilitySelect.value : "public";
 
-    // Re-render current page
-    handleRouteChange();
+    // Disable button & show loading state
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor & Yayına Alınıyor...`;
+    }
+
+    // Helper to finish save
+    function finalizeSave(fileUrl, fileName, format) {
+        const newMaterial = {
+            id: `mat-${Date.now()}`,
+            grade: grade,
+            category: category,
+            title: title,
+            unit: unit,
+            desc: desc || "Rotalı Fenci özel eğitim materyali.",
+            fileName: fileName,
+            fileUrl: fileUrl,
+            format: format,
+            tags: (typeof currentTagsList !== "undefined" && currentTagsList.length > 0) ? [...currentTagsList] : ["MEB 2026-2027"],
+            visibility: visibility,
+            downloadCount: "Yeni Eklendi",
+            createdAt: new Date().toLocaleDateString("tr-TR")
+        };
+
+        try {
+            const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+            customList.unshift(newMaterial);
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+        } catch (err) {
+            console.warn("Storage write fallback:", err);
+        }
+
+        closeMaterialUploadModal();
+        showToast(`🎉 "${title}" başarıyla siteye eklendi ve yayınlandı!`, "success");
+
+        // Navigate to the created material's section
+        if (grade === "all") {
+            window.location.hash = "projects";
+        } else {
+            window.location.hash = `grade/grade-${grade}/${category}`;
+        }
+        
+        handleRouteChange();
+    }
+
+    // If file is selected, read as base64 or blob URL
+    if (currentUploadedFile) {
+        const fileName = currentUploadedFile.name;
+        const ext = fileName.split('.').pop().toUpperCase();
+        
+        // If file is under 5MB, store as base64 DataURL for permanent persistence across reloads
+        if (currentUploadedFile.size < 5 * 1024 * 1024) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                finalizeSave(event.target.result, fileName, ext);
+            };
+            reader.onerror = function() {
+                const blobUrl = URL.createObjectURL(currentUploadedFile);
+                finalizeSave(blobUrl, fileName, ext);
+            };
+            reader.readAsDataURL(currentUploadedFile);
+        } else {
+            const blobUrl = URL.createObjectURL(currentUploadedFile);
+            finalizeSave(blobUrl, fileName, ext);
+        }
+    } else if (linkVal) {
+        let format = "Web Bağlantısı";
+        if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) format = "YouTube Video";
+        else if (linkVal.includes("drive.google.com")) format = "Google Drive";
+        else if (linkVal.includes("canva.com")) format = "Canva Sunum";
+        
+        finalizeSave(linkVal, linkVal, format);
+    } else {
+        finalizeSave("#", `${title}.pdf`, "PDF");
+    }
 }
+
+
+
 
 
 
