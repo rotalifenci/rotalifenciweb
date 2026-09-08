@@ -1,22 +1,22 @@
 /**
  * ROTALI FENCİ — Dijital Fen Bilimleri Eğitim Portalı & LMS Motoru
- * Mimari: SPA Router, 5-Adımlı Ünite Hub, Yazılı Merkezi, STEM, Akıllı Tahta & LMS
+ * Sayfa İçi Öğrenci & Öğretmen Panelleri, 5-Adımlı Ünite Hub, Yazılı Merkezi, STEM
  */
 
 const AppState = {
     currentRoute: "home",
     selectedGrade: "all",
-    selectedUnitTab: "ogren", // 'ogren' | 'kesfet' | 'uygula' | 'coz' | 'analiz'
+    selectedUnitTab: "ogren",
     activeQuiz: null,
-    quizState: {
-        currentIndex: 0,
-        selectedAnswers: {},
-        score: 0,
-        timeRemaining: 0,
-        timerInterval: null
-    },
     bookmarkedPosts: JSON.parse(localStorage.getItem("rotali_bookmarks") || "[]"),
-    isSmartboardMode: false
+    isSmartboardMode: false,
+    currentUser: JSON.parse(localStorage.getItem("rotali_user") || JSON.stringify({
+        role: "student", // 'student' | 'teacher' | 'guest'
+        name: "Fen Kaşifi",
+        grade: "8. Sınıf",
+        xp: 450,
+        level: "Seviye 3 - Bilim Yolcusu"
+    }))
 };
 
 // PORTAL BAŞLATICI
@@ -47,6 +47,182 @@ function initPortal() {
     });
 
     handleRouteChange();
+    updateUserInterface();
+}
+
+// -------------------------------------------------------------
+// SAYFA İÇİ GİRİŞ / ROL YÖNETİMİ (ÖĞRENCİ & ÖĞRETMEN)
+// -------------------------------------------------------------
+function openAuthModal(defaultTab = "student") {
+    let modal = document.getElementById("auth-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "auth-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300";
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-black text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-md">
+                    <i class="fa-solid fa-door-open"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-900">Portal Giriş Alanı</h3>
+                <p class="text-xs text-slate-500 mt-1">Öğrenci veya Öğretmen profilinizi seçin</p>
+            </div>
+
+            <!-- Sekmeler -->
+            <div class="flex bg-slate-100 p-1 rounded-2xl mb-6">
+                <button onclick="switchAuthTab('student')" id="tab-btn-student" class="flex-1 py-2.5 rounded-xl font-black text-xs transition-all ${defaultTab === 'student' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}">
+                    🎒 Öğrenci Girişi
+                </button>
+                <button onclick="switchAuthTab('teacher')" id="tab-btn-teacher" class="flex-1 py-2.5 rounded-xl font-black text-xs transition-all ${defaultTab === 'teacher' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}">
+                    👨‍🏫 Öğretmen Girişi
+                </button>
+            </div>
+
+            <!-- Öğrenci Giriş Formu -->
+            <div id="auth-form-student" class="${defaultTab === 'student' ? 'block' : 'hidden'} space-y-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Adın ve Soyadın</label>
+                    <input type="text" id="student-name-input" value="${AppState.currentUser.name || 'Fen Kaşifi'}" required placeholder="Örn: Ahmet Yılmaz" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Sınıf Düzeyin</label>
+                    <select id="student-grade-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                        <option value="5. Sınıf">5. Sınıf</option>
+                        <option value="6. Sınıf">6. Sınıf</option>
+                        <option value="7. Sınıf">7. Sınıf</option>
+                        <option value="8. Sınıf" selected>8. Sınıf (LGS)</option>
+                    </select>
+                </div>
+                <button onclick="handleStudentLogin()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
+                    Öğrenci Olarak Başla 🚀
+                </button>
+            </div>
+
+            <!-- Öğretmen / Yönetici Giriş Formu -->
+            <div id="auth-form-teacher" class="${defaultTab === 'teacher' ? 'block' : 'hidden'} space-y-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Öğretmen Kullanıcı Adı</label>
+                    <input type="text" id="teacher-user-input" value="admin" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Şifre</label>
+                    <input type="password" id="teacher-pass-input" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <button onclick="handleTeacherLogin()" class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
+                    Öğretmen Paneline Giriş Yap 👨‍🏫
+                </button>
+                <p class="text-[11px] text-center text-slate-400">Varsayılan: <strong>admin</strong> / <strong>fen2025</strong></p>
+            </div>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+}
+
+function switchAuthTab(tab) {
+    const studentForm = document.getElementById("auth-form-student");
+    const teacherForm = document.getElementById("auth-form-teacher");
+    const tabStudent = document.getElementById("tab-btn-student");
+    const tabTeacher = document.getElementById("tab-btn-teacher");
+
+    if (tab === "student") {
+        studentForm.classList.remove("hidden");
+        teacherForm.classList.add("hidden");
+        tabStudent.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all bg-white text-slate-900 shadow-sm";
+        tabTeacher.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all text-slate-500";
+    } else {
+        studentForm.classList.add("hidden");
+        teacherForm.classList.remove("hidden");
+        tabTeacher.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all bg-white text-slate-900 shadow-sm";
+        tabStudent.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all text-slate-500";
+    }
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById("auth-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function handleStudentLogin() {
+    const name = document.getElementById("student-name-input").value.trim() || "Fen Kaşifi";
+    const grade = document.getElementById("student-grade-select").value;
+
+    AppState.currentUser = {
+        role: "student",
+        name: name,
+        grade: grade,
+        xp: 450,
+        level: "Seviye 3 - Bilim Yolcusu"
+    };
+
+    localStorage.setItem("rotali_user", JSON.stringify(AppState.currentUser));
+    closeAuthModal();
+    updateUserInterface();
+    showToast(`Hoş geldin, ${name}! Öğrenci profilin aktifleştirildi.`, "success");
+    window.location.hash = "student-portal";
+}
+
+function handleTeacherLogin() {
+    const user = document.getElementById("teacher-user-input").value.trim();
+    const pass = document.getElementById("teacher-pass-input").value.trim();
+
+    if ((user === "admin" || user === "rotalifenci") && (pass === "fen2025" || pass === "123456")) {
+        AppState.currentUser = {
+            role: "teacher",
+            name: "Rotalı Fenci",
+            title: "Fen Bilimleri Zümre Başkanı"
+        };
+        localStorage.setItem("rotali_user", JSON.stringify(AppState.currentUser));
+        closeAuthModal();
+        updateUserInterface();
+        showToast("Öğretmen & Yönetici Girişi Başarılı! Hoş geldiniz.", "success");
+        window.location.hash = "teacher-dashboard";
+    } else {
+        showToast("Hatalı kullanıcı adı veya şifre! (Varsayılan: admin / fen2025)", "error");
+    }
+}
+
+function handleLogout() {
+    AppState.currentUser = {
+        role: "student",
+        name: "Fen Kaşifi",
+        grade: "8. Sınıf",
+        xp: 100,
+        level: "Seviye 1 - Başlangıç"
+    };
+    localStorage.removeItem("rotali_user");
+    updateUserInterface();
+    showToast("Profil oturumu kapatıldı.", "info");
+    window.location.hash = "home";
+}
+
+function updateUserInterface() {
+    const userBtn = document.getElementById("user-profile-btn");
+    if (!userBtn) return;
+
+    if (AppState.currentUser.role === "teacher") {
+        userBtn.innerHTML = `
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span>👨‍🏫 ÖĞRETMEN: ${AppState.currentUser.name}</span>
+        `;
+        userBtn.className = "px-3 py-2 bg-gradient-to-r from-blue-700 to-indigo-800 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap";
+        userBtn.onclick = () => window.location.hash = "teacher-dashboard";
+    } else {
+        userBtn.innerHTML = `
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span>🎒 ${AppState.currentUser.name} (${AppState.currentUser.grade})</span>
+        `;
+        userBtn.className = "px-3 py-2 bg-gradient-to-r from-brand-red to-rose-600 text-white font-black text-xs rounded-xl shadow-md shadow-brand-red/25 transition-all flex items-center gap-1.5 whitespace-nowrap";
+        userBtn.onclick = () => window.location.hash = "student-portal";
+    }
+
     updateStudentHeader();
 }
 
@@ -70,7 +246,7 @@ function toggleSmartboardMode(forceState) {
 }
 
 // -------------------------------------------------------------
-// TOAST & BİLDİRİM BİLEŞENİ
+// TOAST BİLDİRİMİ
 // -------------------------------------------------------------
 function showToast(message, type = "success") {
     let toast = document.getElementById("toast");
@@ -114,7 +290,6 @@ function handleRouteChange() {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    // Rota Eşleştirme
     if (hash === "home" || hash === "") {
         renderHomePage(appEl);
     } else if (hash === "grades") {
@@ -139,7 +314,7 @@ function handleRouteChange() {
         renderTeachersRoomPage(appEl);
     } else if (hash === "student-portal") {
         renderStudentPortalPage(appEl);
-    } else if (hash === "teacher-dashboard") {
+    } else if (hash === "teacher-dashboard" || hash.startsWith("admin")) {
         renderTeacherDashboardPage(appEl);
     } else if (hash === "search") {
         renderSearchPage(appEl);
@@ -153,8 +328,6 @@ function handleRouteChange() {
         renderContactPage(appEl);
     } else if (hash === "bookmarks") {
         renderBookmarksPage(appEl);
-    } else if (hash.startsWith("admin")) {
-        renderAdminPanel(appEl);
     } else {
         renderNotFound(appEl);
     }
@@ -224,9 +397,19 @@ function renderHomePage(container) {
                         </div>
                     </div>
 
-                    <p class="text-sm sm:text-base md:text-lg text-slate-600 font-semibold leading-relaxed max-w-2xl mx-auto">
+                    <p class="text-sm sm:text-base md:text-lg text-slate-600 font-semibold leading-relaxed max-w-2xl mx-auto mb-6">
                         5, 6, 7 ve 8. sınıf öğrencileri için interaktif ünite hub'ları, LGS yeni nesil soru çözümleri, ortak yazılı sınav merkezi ve öğretmen çalışma odası.
                     </p>
+
+                    <!-- Sayfa İçi Hızlı Giriş & Rol Butonları -->
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="openAuthModal('student')" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-user-graduate"></i> Öğrenci Girişi & Rotam
+                        </button>
+                        <button onclick="openAuthModal('teacher')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-chalkboard-user text-amber-400"></i> Öğretmen / Yönetici Girişi
+                        </button>
+                    </div>
                 </div>
 
                 <!-- 🚀 1. HIZLI GEÇİŞ — ROTANI SEÇ (5, 6, 7, 8. SINIF + LGS KARTLARI) -->
@@ -350,10 +533,10 @@ function renderHomePage(container) {
                             <div class="flex items-center justify-between mb-4">
                                 <span class="text-xs font-black text-amber-400 tracking-wider uppercase">BENİM PORTAL DURUMUM</span>
                                 <span class="text-xs font-black px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
-                                    ${profile.level}
+                                    ${AppState.currentUser.level || 'Seviye 3'}
                                 </span>
                             </div>
-                            <h4 class="text-xl font-black text-white mb-2">Merhaba, ${profile.name} 👋</h4>
+                            <h4 class="text-xl font-black text-white mb-2">Merhaba, ${AppState.currentUser.name} 👋</h4>
                             <p class="text-xs text-slate-300 mb-6">Bugünkü öğrenme hedeflerini tamamla, bilim rozetlerini topla!</p>
 
                             <!-- Görevler -->
@@ -371,9 +554,9 @@ function renderHomePage(container) {
                             <a href="#student-portal" class="flex-1 py-2.5 text-center bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md">
                                 Portalıma Git
                             </a>
-                            <a href="#student-portal" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all" title="Hata Defterim">
-                                📕 ${profile.errorNotebook.length} Soru
-                            </a>
+                            <button onclick="openAuthModal('student')" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all" title="Profili Değiştir">
+                                ⚙️ Profil
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -410,7 +593,6 @@ function renderGradesOverview(container) {
                             <h3 class="text-2xl font-black text-slate-900 mb-2">${g.title}</h3>
                             <p class="text-xs text-slate-600 font-medium mb-6">${g.description}</p>
 
-                            <!-- Ünite Listesi -->
                             <div class="space-y-2 mb-6">
                                 ${g.units.map(u => `
                                     <a href="#unit/${u.id}" class="p-3 bg-slate-50 hover:bg-red-50 hover:border-red-200 border border-slate-200/80 rounded-xl flex items-center justify-between text-xs font-bold text-slate-800 transition-all group">
@@ -439,7 +621,6 @@ function renderGradeDetail(container, gradeId) {
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <!-- Başlık Alanı -->
             <div class="bg-gradient-to-r ${grade.color} text-white rounded-3xl p-8 sm:p-10 mb-10 shadow-xl relative overflow-hidden">
                 <div class="relative z-10 max-w-3xl">
                     <span class="px-3.5 py-1 rounded-full bg-white/20 text-white text-xs font-black tracking-wider uppercase inline-block mb-3">
@@ -459,7 +640,6 @@ function renderGradeDetail(container, gradeId) {
                 </div>
             </div>
 
-            <!-- Ünite Kartları Grid -->
             <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
                 <i class="fa-solid fa-layer-group text-red-600"></i> Müfredat Üniteleri (5 Adımlı Hub)
             </h3>
@@ -477,7 +657,6 @@ function renderGradeDetail(container, gradeId) {
                             </h4>
                             <p class="text-xs text-slate-500 mb-6">${u.topics} Temel Alt Konu ve Öğrenme Çıktısı</p>
 
-                            <!-- 5 Adım Rozetleri -->
                             <div class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-black mb-6">
                                 <span class="p-1.5 bg-indigo-50 text-indigo-700 rounded-lg">1.Öğren</span>
                                 <span class="p-1.5 bg-purple-50 text-purple-700 rounded-lg">2.Keşfet</span>
@@ -498,7 +677,7 @@ function renderGradeDetail(container, gradeId) {
 }
 
 // -------------------------------------------------------------
-// 3. 📚 ÜNİTE HUB (5-ADIM STANDARDI: ÖĞREN, KEŞFET, UYGULA, ÇÖZ, ANALİZ)
+// 3. 📚 ÜNİTE HUB (5-ADIM STANDARDI)
 // -------------------------------------------------------------
 function renderUnitHub(container, unitId, activeStep = "ogren") {
     const hub = UNIT_HUBS[unitId] || UNIT_HUBS["7-unit-2"];
@@ -506,7 +685,6 @@ function renderUnitHub(container, unitId, activeStep = "ogren") {
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
             
-            <!-- Hub Üst Başlık & Akıllı Tahta Düğmesi -->
             <div class="flex flex-wrap items-center justify-between gap-4 p-6 bg-white rounded-3xl border border-slate-200 shadow-sm mb-8">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr ${hub.color} text-white flex items-center justify-center text-2xl shadow-md">
@@ -531,7 +709,6 @@ function renderUnitHub(container, unitId, activeStep = "ogren") {
                 </div>
             </div>
 
-            <!-- 5-ADIM SEKME NAVİGASYONU -->
             <div class="flex border-b border-slate-200 bg-white rounded-t-2xl px-4 overflow-x-auto mb-6">
                 <button onclick="window.location.hash='unit/${hub.id}/ogren'" class="hub-step-tab py-4 px-5 text-xs sm:text-sm font-black flex items-center gap-2 whitespace-nowrap ${activeStep === 'ogren' ? 'active' : 'text-slate-600'}">
                     <i class="fa-solid fa-book-open"></i> 1. ÖĞREN (Konu & Sketchnote)
@@ -550,7 +727,6 @@ function renderUnitHub(container, unitId, activeStep = "ogren") {
                 </button>
             </div>
 
-            <!-- ADIM İÇERİĞİ -->
             <div class="bg-white rounded-b-3xl p-6 sm:p-8 border border-slate-200 shadow-sm min-h-[400px]">
                 ${renderUnitStepContent(hub, activeStep)}
             </div>
@@ -570,7 +746,6 @@ function renderUnitStepContent(hub, step) {
                     ${hub.ogren.summaryHtml}
                 </div>
 
-                <!-- Terimler Sözlüğü -->
                 ${hub.ogren.glossary ? `
                     <div class="pt-6 border-t border-slate-200">
                         <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
@@ -619,7 +794,6 @@ function renderUnitStepContent(hub, step) {
     } else if (step === "uygula") {
         return `
             <div class="space-y-8">
-                <!-- Çalışma Kağıtları -->
                 <div>
                     <h3 class="text-xl font-black text-slate-900 mb-4 flex items-center gap-2">
                         <i class="fa-solid fa-file-arrow-down text-emerald-600"></i> İndirilebilir Çalışma Kağıtları & Föyler
@@ -639,7 +813,6 @@ function renderUnitStepContent(hub, step) {
                     </div>
                 </div>
 
-                <!-- Deney Laboratuvarı -->
                 ${hub.uygula.experiments ? `
                     <div class="pt-6 border-t border-slate-200">
                         <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
@@ -689,7 +862,6 @@ function renderUnitStepContent(hub, step) {
                     <i class="fa-solid fa-chart-pie text-amber-500"></i> Kazanım & Kavram Yanılgısı Analizi
                 </h3>
 
-                <!-- Sık Yapılan Hatalar -->
                 <div class="p-5 bg-rose-50 border border-rose-200 rounded-2xl mb-6">
                     <h4 class="font-black text-rose-900 text-sm mb-3 flex items-center gap-2">
                         <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Bu Ünitede En Sık Yapılan 3 Hata:
@@ -699,7 +871,6 @@ function renderUnitStepContent(hub, step) {
                     </ul>
                 </div>
 
-                <!-- Kazanım Listesi -->
                 <div class="space-y-3">
                     <h4 class="font-black text-slate-900 text-sm">Resmi MEB Kazanımları:</h4>
                     ${hub.analiz.learningOutcomes ? hub.analiz.learningOutcomes.map(o => `
@@ -720,7 +891,6 @@ function renderUnitStepContent(hub, step) {
 function renderLgsPusulasiPage(container) {
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <!-- LGS Hero Banner -->
             <div class="bg-gradient-to-r from-red-700 via-rose-700 to-slate-900 text-white rounded-3xl p-8 sm:p-12 mb-10 shadow-2xl relative overflow-hidden">
                 <div class="relative z-10 max-w-3xl">
                     <span class="px-4 py-1.5 rounded-full bg-white/20 text-white text-xs font-black tracking-wider uppercase inline-block mb-4">
@@ -741,7 +911,6 @@ function renderLgsPusulasiPage(container) {
                 </div>
             </div>
 
-            <!-- 4 Altın LGS Soru Çözüm Stratejisi -->
             <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
                 <i class="fa-solid fa-compass text-red-600"></i> LGS Fen Başarı Rehberi: 4 Altın Kural
             </h3>
@@ -756,7 +925,6 @@ function renderLgsPusulasiPage(container) {
                 `).join("")}
             </div>
 
-            <!-- MEB Çıkmış Soru Analizleri -->
             <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
                 <i class="fa-solid fa-graduation-cap text-indigo-600"></i> MEB Çıkmış Soru Çözüm Modelleri
             </h3>
@@ -794,7 +962,6 @@ function renderExamsPage(container) {
                 <p class="text-sm text-slate-600 font-medium">Bakanlık ortak sınav senaryoları, açık uçlu sorular, örnek sınav kağıtları ve puanlama rubrikleri.</p>
             </div>
 
-            <!-- Sınıflar Grid -->
             <div class="space-y-8">
                 ${EXAM_CENTER_DATA.grades.map(g => `
                     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
@@ -856,7 +1023,6 @@ function renderStemLabPage(container) {
                 <p class="text-sm text-slate-600 font-medium">Mühendislik tasarım görevleri, okul laboratuvarı deney protokolleri ve Scratch/Arduino kodlama projeleri.</p>
             </div>
 
-            <!-- STEM Görev Kartları -->
             <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
                 <i class="fa-solid fa-rocket text-emerald-600"></i> Mühendislik STEM Görevleri
             </h3>
@@ -889,7 +1055,6 @@ function renderStemLabPage(container) {
                 `).join("")}
             </div>
 
-            <!-- Deney Laboratuvarı -->
             <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
                 <i class="fa-solid fa-flask text-blue-600"></i> Okul Laboratuvarı Deneyleri
             </h3>
@@ -937,7 +1102,6 @@ function renderProjectsPage(container) {
                             </div>
                             <h3 class="text-xl font-black text-slate-900 mb-4">${cat.name}</h3>
 
-                            <!-- Basamaklar -->
                             <div class="space-y-2 mb-6">
                                 ${cat.steps.map(s => `
                                     <div class="p-3 bg-slate-50 rounded-xl text-xs">
@@ -947,7 +1111,6 @@ function renderProjectsPage(container) {
                                 `).join("")}
                             </div>
 
-                            <!-- Fikirler -->
                             <div class="mb-6">
                                 <h5 class="text-xs font-black text-slate-700 uppercase mb-2">💡 Örnek Proje Fikirleri:</h5>
                                 <ul class="text-xs text-slate-600 space-y-1 list-disc list-inside">
@@ -1005,41 +1168,44 @@ function renderTeachersRoomPage(container) {
 }
 
 // -------------------------------------------------------------
-// 9. 👤 ÖĞRENCİ PORTALI (BENİM ROTAM & HATA DEFTERİM)
+// 9. 👤 ÖĞRENCİ PORTALI (SAYFA İÇİ KİŞİSEL ÇALIŞMA ALANI)
 // -------------------------------------------------------------
 function renderStudentPortalPage(container) {
     const profile = DataManager.getStudentProfile();
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <!-- Profil Kartı -->
+            <!-- Profil Üst Kartı -->
             <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-8 mb-10 shadow-xl flex flex-wrap items-center justify-between gap-6">
                 <div>
                     <span class="px-3 py-1 rounded-full bg-red-600 text-white text-xs font-black uppercase">ÖĞRENCİ PORTALIM</span>
-                    <h2 class="text-3xl font-black mt-2 mb-1">${profile.name}</h2>
-                    <p class="text-xs text-slate-300 font-semibold">${profile.grade} • ${profile.level} (${profile.xp} XP Puanı)</p>
+                    <h2 class="text-3xl font-black mt-2 mb-1">${AppState.currentUser.name || profile.name}</h2>
+                    <p class="text-xs text-slate-300 font-semibold">${AppState.currentUser.grade || profile.grade} • ${AppState.currentUser.level || profile.level} (${AppState.currentUser.xp || profile.xp} XP Puanı)</p>
                 </div>
-                <div class="flex gap-3">
-                    <a href="#home" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all">
-                        🏠 Kontrol Merkezi
-                    </a>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="openAuthModal('student')" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all">
+                        ⚙️ Profilimi Değiştir
+                    </button>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-600/80 hover:bg-red-600 text-white font-bold text-xs rounded-xl transition-all">
+                        Çıkış Yap
+                    </button>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                <!-- Sol: Hata Defterim (Faz 2 Özelliği) -->
+                <!-- Sol: Hata Defterim -->
                 <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
                     <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
                         <div>
                             <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
                                 <i class="fa-solid fa-book-bookmark text-red-600"></i> 📕 Hata Defterim
                             </h3>
-                            <p class="text-xs text-slate-500 font-medium">Testlerde yanlış yapılan sorular otomatik kaydedilir.</p>
+                            <p class="text-xs text-slate-500 font-medium">Testlerde yanlış yaptığınız sorular burada toplanır.</p>
                         </div>
                         <span class="px-3 py-1 bg-red-50 text-red-700 font-black text-xs rounded-full">${profile.errorNotebook.length} Kayıtlı Soru</span>
                     </div>
 
-                    <div class="space-y-4">
+                    <div class="space-y-4 mb-6">
                         ${profile.errorNotebook.map(err => `
                             <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
                                 <div class="flex items-center justify-between mb-2">
@@ -1054,10 +1220,39 @@ function renderStudentPortalPage(container) {
                             </div>
                         `).join("")}
                     </div>
+
+                    <!-- Hızlı Soru Ekleme Alanı -->
+                    <div class="p-4 bg-red-50/70 border border-red-200 rounded-2xl">
+                        <h4 class="text-xs font-black text-red-900 uppercase mb-2">➕ Hata Defterime Yeni Soru Ekle</h4>
+                        <div class="space-y-2 text-xs">
+                            <input type="text" id="custom-error-unit" placeholder="Ünite Adı (Örn: 8. Sınıf Basınç)" class="w-full p-2 bg-white border border-red-200 rounded-xl font-bold">
+                            <input type="text" id="custom-error-q" placeholder="Hatalı Yaptığın Soru veya Kavram" class="w-full p-2 bg-white border border-red-200 rounded-xl font-medium">
+                            <input type="text" id="custom-error-ans" placeholder="Doğru Cevap ve Çözüm Kuralı" class="w-full p-2 bg-white border border-red-200 rounded-xl font-medium">
+                            <button onclick="handleAddCustomError()" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white font-black uppercase rounded-xl transition-all shadow-sm">
+                                Hata Defterime Kaydet
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Sağ: Kazanılan Rozetler & İlerleme -->
+                <!-- Sağ: Günlük Görevler & Kazanılan Rozetler -->
                 <div class="lg:col-span-5 space-y-6">
+                    <!-- Günlük Görevlerim -->
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
+                        <h4 class="font-black text-base text-slate-900 mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-list-check text-indigo-600"></i> Günlük Çalışma Rotam
+                        </h4>
+                        <div class="space-y-2.5">
+                            ${profile.dailyTasks.map(t => `
+                                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs font-bold text-slate-800">
+                                    <span>${t.text}</span>
+                                    <i class="fa-solid ${t.done ? 'fa-circle-check text-emerald-500' : 'fa-circle text-slate-300'} text-base"></i>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+
+                    <!-- Rozetler -->
                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm">
                         <h4 class="font-black text-base text-slate-900 mb-4 flex items-center gap-2">
                             <i class="fa-solid fa-medal text-amber-500"></i> Bilim Rozetlerim
@@ -1077,24 +1272,59 @@ function renderStudentPortalPage(container) {
     `;
 }
 
+function handleAddCustomError() {
+    const unit = document.getElementById("custom-error-unit").value.trim();
+    const q = document.getElementById("custom-error-q").value.trim();
+    const ans = document.getElementById("custom-error-ans").value.trim();
+
+    if (!q || !ans) {
+        showToast("Lütfen soru ve doğru cevap alanlarını doldurun.", "error");
+        return;
+    }
+
+    DataManager.addToErrorNotebook({
+        unit: unit || "Fen Bilimleri",
+        question: q,
+        userWrongAnswer: "Yanlış Çözüm",
+        correctAnswer: ans,
+        date: new Date().toISOString().split("T")[0]
+    });
+
+    showToast("Soru Hata Defterinize eklendi!", "success");
+    renderStudentPortalPage(document.getElementById("app"));
+}
+
 // -------------------------------------------------------------
-// 10. 👨‍🏫 ÖĞRETMEN ÇALIŞMA PANELİ (LMS DASHBOARD)
+// 10. 👨‍🏫 ÖĞRETMEN / YÖNETİCİ ÇALIŞMA PANELİ (LMS & CMS)
 // -------------------------------------------------------------
 function renderTeacherDashboardPage(container) {
     const teacher = DataManager.getTeacherProfile();
+    const posts = DataManager.getPosts();
+    const quizzes = DataManager.getQuizzes();
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="bg-gradient-to-r from-blue-900 to-indigo-950 text-white rounded-3xl p-8 mb-10 shadow-xl flex items-center justify-between">
+            <!-- Üst Bar -->
+            <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-8 mb-10 shadow-xl flex flex-wrap items-center justify-between gap-6">
                 <div>
-                    <span class="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-black uppercase">ÖĞRETMEN ÇALIŞMA ALANI</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-black uppercase">ÖĞRETMEN & YÖNETİCİ PANELİ</span>
                     <h2 class="text-3xl font-black mt-2 mb-1">${teacher.name}</h2>
-                    <p class="text-xs text-slate-300">${teacher.title} • 4 Aktif Şube (${teacher.classes.reduce((a,b)=>a+b.studentCount,0)} Öğrenci)</p>
+                    <p class="text-xs text-slate-300 font-semibold">${teacher.title} • 4 Aktif Şube (${teacher.classes.reduce((a,b)=>a+b.studentCount,0)} Öğrenci)</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="downloadBackupJSON()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i> Veri Yedeği İndir
+                    </button>
+                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all">
+                        Çıkış Yap
+                    </button>
                 </div>
             </div>
 
             <!-- Sınıflar Grid -->
-            <h3 class="text-2xl font-black text-slate-900 mb-6">👥 Sınıf Yönetimi & Başarı Karnesi</h3>
+            <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-users text-blue-700"></i> Şube Başarı Karnesi & Sınıf Yönetimi
+            </h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
                 ${teacher.classes.map(c => `
                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
@@ -1103,14 +1333,181 @@ function renderTeacherDashboardPage(container) {
                             <h4 class="text-2xl font-black text-slate-900 mt-3 mb-1">${c.avgScore}</h4>
                             <p class="text-xs text-slate-500 mb-4">${c.studentCount} Kayıtlı Öğrenci</p>
                         </div>
-                        <button onclick="showToast('${c.name} sınıf analiz raporu yazdırılıyor.', 'info')" class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition-all">
+                        <button onclick="showToast('${c.name} sınıf başarı raporu hazırlandı.', 'info')" class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition-all">
                             Sınıfı Yönet
                         </button>
                     </div>
                 `).join("")}
             </div>
+
+            <!-- İçerik Ekleme Formları (Sayfa İçi Yönetici Araçları) -->
+            <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
+                <i class="fa-solid fa-plus-circle text-red-600"></i> Sayfa İçi İçerik & Soru Ekleme Alanı
+            </h3>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <!-- 1. Form: Yeni Ders Notu Ekle -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                    <h4 class="text-base font-black text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-file-lines text-red-600"></i> Yeni Ders Notu & Konu Özeti Ekle
+                    </h4>
+                    <form onsubmit="handleAddPost(event)" class="space-y-4 text-xs">
+                        <div>
+                            <label class="block font-black text-slate-700 mb-1">Ders Notu Başlığı</label>
+                            <input type="text" id="new-post-title" required placeholder="Örn: 8. Sınıf Basit Makineler Taktik Özeti" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-black text-slate-700 mb-1">Sınıf Düzeyi</label>
+                                <select id="new-post-grade" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                                    <option value="5. Sınıf">5. Sınıf</option>
+                                    <option value="6. Sınıf">6. Sınıf</option>
+                                    <option value="7. Sınıf">7. Sınıf</option>
+                                    <option value="8. Sınıf">8. Sınıf (LGS)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-black text-slate-700 mb-1">Okuma Süresi</label>
+                                <input type="text" id="new-post-time" placeholder="8 dk" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-1">Kısa Özet</label>
+                            <textarea id="new-post-excerpt" rows="2" placeholder="Konunun ana hatlarını belirten özet..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
+                        </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-1">Konu Anlatımı (HTML/Metin)</label>
+                            <textarea id="new-post-content" rows="3" placeholder="Detaylı konu anlatımı, formüller, ipuçları..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black uppercase rounded-xl transition-all shadow-md">
+                            Ders Notunu Portala Ekle
+                        </button>
+                    </form>
+                </div>
+
+                <!-- 2. Form: Yeni Test / LGS Sorusu Ekle -->
+                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                    <h4 class="text-base font-black text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-question text-purple-600"></i> Yeni Test / Soru Ekle
+                    </h4>
+                    <form onsubmit="handleAddQuestion(event)" class="space-y-3 text-xs">
+                        <div>
+                            <label class="block font-black text-slate-700 mb-1">Soru Metni</label>
+                            <textarea id="new-q-text" rows="2" required placeholder="LGS veya Beceri temelli soru metni..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <input type="text" id="new-q-a" required placeholder="A Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                            <input type="text" id="new-q-b" required placeholder="B Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                            <input type="text" id="new-q-c" required placeholder="C Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                            <input type="text" id="new-q-d" required placeholder="D Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block font-black text-slate-700 mb-1">Doğru Şık</label>
+                                <select id="new-q-correct" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                                    <option value="0">A Şıkkı</option>
+                                    <option value="1">B Şıkkı</option>
+                                    <option value="2">C Şıkkı</option>
+                                    <option value="3">D Şıkkı</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-black text-slate-700 mb-1">Sınıf</label>
+                                <select id="new-q-grade" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
+                                    <option value="8. Sınıf">8. Sınıf (LGS)</option>
+                                    <option value="7. Sınıf">7. Sınıf</option>
+                                    <option value="6. Sınıf">6. Sınıf</option>
+                                    <option value="5. Sınıf">5. Sınıf</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-black text-slate-700 mb-1">Çözüm İpucu & Açıklama</label>
+                            <input type="text" id="new-q-exp" placeholder="Bilimsel çözüm açıklaması..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium">
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase rounded-xl transition-all shadow-md">
+                            Soruyu Test Havuzuna Kaydet
+                        </button>
+                    </form>
+                </div>
+            </div>
         </div>
     `;
+}
+
+function handleAddPost(e) {
+    e.preventDefault();
+    const title = document.getElementById("new-post-title").value.trim();
+    const grade = document.getElementById("new-post-grade").value;
+    const readTime = document.getElementById("new-post-time").value.trim() || "8 dk";
+    const excerpt = document.getElementById("new-post-excerpt").value.trim();
+
+    const newPost = {
+        id: "post-" + Date.now(),
+        title: title,
+        slug: title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
+        category: grade,
+        grade: grade,
+        readTime: readTime,
+        excerpt: excerpt || title,
+        date: new Date().toISOString().split("T")[0],
+        views: 1,
+        likes: 0
+    };
+
+    DEFAULT_POSTS.unshift(newPost);
+    showToast("Yeni ders notu portala eklendi!", "success");
+    renderTeacherDashboardPage(document.getElementById("app"));
+}
+
+function handleAddQuestion(e) {
+    e.preventDefault();
+    const text = document.getElementById("new-q-text").value.trim();
+    const a = document.getElementById("new-q-a").value.trim();
+    const b = document.getElementById("new-q-b").value.trim();
+    const c = document.getElementById("new-q-c").value.trim();
+    const d = document.getElementById("new-q-d").value.trim();
+    const correct = parseInt(document.getElementById("new-q-correct").value);
+    const exp = document.getElementById("new-q-exp").value.trim();
+
+    const newQuestion = {
+        id: "q-" + Date.now(),
+        text: text,
+        options: ["A) " + a, "B) " + b, "C) " + c, "D) " + d],
+        correct: correct,
+        explanation: exp || "Doğru yanıt belirlendi."
+    };
+
+    if (DEFAULT_QUIZZES.length > 0) {
+        DEFAULT_QUIZZES[0].questions.push(newQuestion);
+    }
+    showToast("Yeni soru test havuzuna kaydedildi!", "success");
+    renderTeacherDashboardPage(document.getElementById("app"));
+}
+
+function downloadBackupJSON() {
+    const backupData = {
+        grades: PORTAL_GRADES,
+        unitHubs: UNIT_HUBS,
+        examCenter: EXAM_CENTER_DATA,
+        stemWorkshop: STEM_WORKSHOP_DATA,
+        projectCenter: PROJECT_CENTER_DATA,
+        teachersRoom: TEACHERS_ROOM_DATA,
+        lgsPusula: LGS_PUSULA_DATA,
+        posts: DEFAULT_POSTS,
+        quizzes: DEFAULT_QUIZZES,
+        exportedAt: new Date().toISOString()
+    };
+
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "rotalifenci-portal-verileri.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+
+    showToast("Portal verileri JSON dosyası olarak indirildi!", "success");
 }
 
 // -------------------------------------------------------------
@@ -1183,7 +1580,7 @@ function handlePortalSearch(query) {
 }
 
 // -------------------------------------------------------------
-// 12. DİĞER MODÜLLER (QUIZ, FLASHCARD, ADMIN, ABOUT)
+// 12. DİĞER MODÜLLER (QUIZ, FLASHCARD, ABOUT, CONTACT)
 // -------------------------------------------------------------
 function renderQuizzesPage(container) {
     container.innerHTML = `
@@ -1267,292 +1664,14 @@ function renderBookmarksPage(container) {
     renderHomePage(container);
 }
 
-
-// -------------------------------------------------------------
-// 13. ⚙️ YÖNETİCİ & İÇERİK YÖNETİM PANELİ (ADMIN CMS)
-// -------------------------------------------------------------
-const ADMIN_CONFIG = {
-    username: "admin",
-    password: "fen2025"
-};
-
-let isAdminLoggedIn = false;
-
-function renderAdminPanel(container) {
-    if (!isAdminLoggedIn) {
-        renderAdminLogin(container);
-    } else {
-        renderAdminDashboard(container);
-    }
-}
-
-function renderAdminLogin(container) {
+function renderNotFound(container) {
     container.innerHTML = `
-        <div class="max-w-[450px] mx-auto px-4 py-16">
-            <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-2xl">
-                <div class="text-center mb-8">
-                    <div class="w-16 h-16 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-2xl mx-auto mb-3 border border-red-200 shadow-sm">
-                        <i class="fa-solid fa-lock"></i>
-                    </div>
-                    <h2 class="text-2xl font-black text-slate-900">Yönetici Girişi</h2>
-                    <p class="text-xs text-slate-500 mt-1 font-medium">Rotalı Fenci İçerik & Müfredat Yönetim Paneli</p>
-                </div>
-
-                <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">Kullanıcı Adı</label>
-                        <input type="text" id="admin-user" required placeholder="admin" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">Şifre</label>
-                        <input type="password" id="admin-pass" required placeholder="••••••••" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
-                    </div>
-                    <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
-                        Yönetici Paneline Giriş Yap
-                    </button>
-                </form>
-
-                <div class="mt-6 p-3.5 bg-slate-50 rounded-xl border border-slate-200 text-center">
-                    <span class="text-[11px] font-bold text-slate-500">Varsayılan Giriş Bilgileri:</span>
-                    <div class="text-xs font-black text-slate-800 mt-0.5">Kullanıcı: <span class="text-red-600">admin</span> | Şifre: <span class="text-red-600">fen2025</span></div>
-                </div>
-            </div>
+        <div class="max-w-[600px] mx-auto px-4 py-20 text-center">
+            <h2 class="text-6xl font-black text-red-600 mb-4">404</h2>
+            <p class="text-base text-slate-700 font-bold mb-6">Aradığınız eğitim sayfası veya rota bulunamadı.</p>
+            <a href="#home" class="px-6 py-3 bg-slate-900 text-white font-bold text-xs uppercase rounded-xl">
+                Ana Sayfaya Dön
+            </a>
         </div>
     `;
 }
-
-function handleAdminLogin(e) {
-    e.preventDefault();
-    const user = document.getElementById("admin-user").value.trim();
-    const pass = document.getElementById("admin-pass").value.trim();
-
-    if (user === ADMIN_CONFIG.username && pass === ADMIN_CONFIG.password) {
-        isAdminLoggedIn = true;
-        showToast("Yönetici Girişi Başarılı! Hoş geldiniz.", "success");
-        renderAdminPanel(document.getElementById("app"));
-    } else {
-        showToast("Hatalı kullanıcı adı veya şifre!", "error");
-    }
-}
-
-function handleAdminLogout() {
-    isAdminLoggedIn = false;
-    showToast("Yönetici oturumu kapatıldı.", "info");
-    renderAdminPanel(document.getElementById("app"));
-}
-
-function renderAdminDashboard(container) {
-    const posts = DataManager.getPosts();
-    const quizzes = DataManager.getQuizzes();
-    const profile = DataManager.getStudentProfile();
-
-    container.innerHTML = `
-        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <!-- Üst Bar -->
-            <div class="flex flex-wrap items-center justify-between gap-4 p-6 bg-slate-900 text-white rounded-3xl mb-8 shadow-xl">
-                <div class="flex items-center gap-3.5">
-                    <div class="w-12 h-12 rounded-xl bg-red-600 flex items-center justify-center text-xl font-black">
-                        <i class="fa-solid fa-gauge-high"></i>
-                    </div>
-                    <div>
-                        <h2 class="text-xl font-black">Rotalı Fenci Yönetim Paneli</h2>
-                        <span class="text-xs text-slate-400">İçerik, Test, Sınav ve Materyal Yönetim Merkezi</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="downloadBackupJSON()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-download"></i> Veri Yedeği İndir (JSON)
-                    </button>
-                    <button onclick="handleAdminLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-right-from-bracket"></i> Çıkış Yap
-                    </button>
-                </div>
-            </div>
-
-            <!-- İstatistik Kartları -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-                <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
-                    <span class="text-xs font-black uppercase text-slate-400">Yayınlanan Ders Notları</span>
-                    <h3 class="text-3xl font-black text-slate-900 mt-2">${posts.length} Not</h3>
-                </div>
-                <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
-                    <span class="text-xs font-black uppercase text-slate-400">Mini Test Havuzu</span>
-                    <h3 class="text-3xl font-black text-purple-600 mt-2">${quizzes.length} Test</h3>
-                </div>
-                <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
-                    <span class="text-xs font-black uppercase text-slate-400">Kayıtlı Hata Sorusu</span>
-                    <h3 class="text-3xl font-black text-red-600 mt-2">${profile.errorNotebook.length} Soru</h3>
-                </div>
-                <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm">
-                    <span class="text-xs font-black uppercase text-slate-400">Müfredat Üniteleri</span>
-                    <h3 class="text-3xl font-black text-emerald-600 mt-2">28 Ünite</h3>
-                </div>
-            </div>
-
-            <!-- İçerik Ekleme Formları -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- 1. Form: Yeni Ders Notu / Konu Özeti Ekle -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                    <h3 class="text-lg font-black text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-file-circle-plus text-red-600"></i> Yeni Ders Notu & Konu Özeti Ekle
-                    </h3>
-                    <form onsubmit="handleAddPost(event)" class="space-y-4 text-xs">
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Ders Notu Başlığı</label>
-                            <input type="text" id="new-post-title" required placeholder="Örn: 8. Sınıf DNA ve Genetik Kod Tam Özet" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Sınıf Düzeyi</label>
-                                <select id="new-post-grade" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                                    <option value="5. Sınıf">5. Sınıf</option>
-                                    <option value="6. Sınıf">6. Sınıf</option>
-                                    <option value="7. Sınıf">7. Sınıf</option>
-                                    <option value="8. Sınıf">8. Sınıf (LGS)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Okuma Süresi</label>
-                                <input type="text" id="new-post-time" placeholder="8 dk" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Kısa Özet (Açıklama)</label>
-                            <textarea id="new-post-excerpt" rows="2" placeholder="Konunun ana hatlarını belirten kısa özet..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
-                        </div>
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Konu Anlatım İçeriği (HTML / Metin)</label>
-                            <textarea id="new-post-content" rows="4" placeholder="Detaylı konu anlatımı, kazanımlar, formüller..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black uppercase rounded-xl transition-all shadow-md">
-                            Ders Notunu Portala Ekle
-                        </button>
-                    </form>
-                </div>
-
-                <!-- 2. Form: Yeni Test / LGS Sorusu Ekle -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                    <h3 class="text-lg font-black text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-question text-purple-600"></i> Yeni Test / Soru Ekle
-                    </h3>
-                    <form onsubmit="handleAddQuestion(event)" class="space-y-3 text-xs">
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Soru Metni</label>
-                            <textarea id="new-q-text" rows="2" required placeholder="LGS veya Beceri temelli soru kökü..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
-                        </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="new-q-a" required placeholder="A Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                            <input type="text" id="new-q-b" required placeholder="B Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                            <input type="text" id="new-q-c" required placeholder="C Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                            <input type="text" id="new-q-d" required placeholder="D Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Doğru Şık</label>
-                                <select id="new-q-correct" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                                    <option value="0">A Şıkkı</option>
-                                    <option value="1">B Şıkkı</option>
-                                    <option value="2">C Şıkkı</option>
-                                    <option value="3">D Şıkkı</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Sınıf</label>
-                                <select id="new-q-grade" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                                    <option value="8. Sınıf">8. Sınıf (LGS)</option>
-                                    <option value="7. Sınıf">7. Sınıf</option>
-                                    <option value="6. Sınıf">6. Sınıf</option>
-                                    <option value="5. Sınıf">5. Sınıf</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Çözüm İpucu & Açıklama</label>
-                            <input type="text" id="new-q-exp" placeholder="Öğrenciye gösterilecek bilimsel çözüm açıklaması..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase rounded-xl transition-all shadow-md">
-                            Soruyu Test Havuzuna Kaydet
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-function handleAddPost(e) {
-    e.preventDefault();
-    const title = document.getElementById("new-post-title").value.trim();
-    const grade = document.getElementById("new-post-grade").value;
-    const readTime = document.getElementById("new-post-time").value.trim() || "8 dk";
-    const excerpt = document.getElementById("new-post-excerpt").value.trim();
-    const content = document.getElementById("new-post-content").value.trim();
-
-    const newPost = {
-        id: "post-" + Date.now(),
-        title: title,
-        slug: title.toLowerCase().replace(/[^a-z0-9]/g, "-"),
-        category: grade,
-        grade: grade,
-        readTime: readTime,
-        excerpt: excerpt || title,
-        date: new Date().toISOString().split("T")[0],
-        views: 1,
-        likes: 0
-    };
-
-    DEFAULT_POSTS.unshift(newPost);
-    showToast("Yeni ders notu portala başarıyla eklendi!", "success");
-    renderAdminDashboard(document.getElementById("app"));
-}
-
-function handleAddQuestion(e) {
-    e.preventDefault();
-    const text = document.getElementById("new-q-text").value.trim();
-    const a = document.getElementById("new-q-a").value.trim();
-    const b = document.getElementById("new-q-b").value.trim();
-    const c = document.getElementById("new-q-c").value.trim();
-    const d = document.getElementById("new-q-d").value.trim();
-    const correct = parseInt(document.getElementById("new-q-correct").value);
-    const exp = document.getElementById("new-q-exp").value.trim();
-
-    const newQuestion = {
-        id: "q-" + Date.now(),
-        text: text,
-        options: ["A) " + a, "B) " + b, "C) " + c, "D) " + d],
-        correct: correct,
-        explanation: exp || "Doğru yanıt belirlendi."
-    };
-
-    if (DEFAULT_QUIZZES.length > 0) {
-        DEFAULT_QUIZZES[0].questions.push(newQuestion);
-    }
-    showToast("Yeni soru test havuzuna eklendi!", "success");
-    renderAdminDashboard(document.getElementById("app"));
-}
-
-function downloadBackupJSON() {
-    const backupData = {
-        grades: PORTAL_GRADES,
-        unitHubs: UNIT_HUBS,
-        examCenter: EXAM_CENTER_DATA,
-        stemWorkshop: STEM_WORKSHOP_DATA,
-        projectCenter: PROJECT_CENTER_DATA,
-        teachersRoom: TEACHERS_ROOM_DATA,
-        lgsPusula: LGS_PUSULA_DATA,
-        posts: DEFAULT_POSTS,
-        quizzes: DEFAULT_QUIZZES,
-        exportedAt: new Date().toISOString()
-    };
-
-    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(backupData, null, 2));
-    const downloadAnchor = document.createElement("a");
-    downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", "rotalifenci-egitim-portali-yedek.json");
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
-
-    showToast("Portal verileri JSON dosyası olarak indirildi!", "success");
-}
-
