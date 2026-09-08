@@ -2334,6 +2334,26 @@ function handleAddCustomError() {
 // -------------------------------------------------------------
 function renderTeacherDashboardPage(container) {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    if (!isAdmin) {
+        container.innerHTML = `
+            <div class="max-w-md mx-auto px-4 py-20 text-center animate-in fade-in">
+                <div class="w-16 h-16 rounded-3xl bg-red-100 text-brand-red flex items-center justify-center text-2xl mx-auto mb-4 shadow-sm">
+                    <i class="fa-solid fa-lock"></i>
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 mb-2">Yönetici Girişi Gerekli</h3>
+                <p class="text-xs text-slate-500 font-medium mb-6">Bu alana erişmek için yönetici şifrenizle giriş yapmanız gerekmektedir.</p>
+                <div class="flex gap-3 justify-center">
+                    <button type="button" onclick="openAdminLoginModal(() => handleRouteChange())" class="px-6 py-3 bg-brand-red hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl shadow-lg transition-all">
+                        👑 Giriş Yap
+                    </button>
+                    <a href="#home" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase rounded-xl transition-all">
+                        🏠 Ana Sayfa
+                    </a>
+                </div>
+            </div>
+        `;
+        return;
+    }
     let customList = [];
     try {
         customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
@@ -3809,7 +3829,10 @@ function handleAdminLogout() {
     ADMIN_CONFIG.isAdmin = false;
     updateAdminNavUI();
     showToast("🚪 Yönetici oturumu güvenle kapatıldı.", "info");
-    handleRouteChange();
+    window.location.hash = "home";
+    setTimeout(() => {
+        handleRouteChange();
+    }, 50);
 }
 
 function updateAdminNavUI() {
@@ -3940,7 +3963,7 @@ const INTERACTIVE_GAMES_POOL = {
     "oyun-5-lab": {
         title: "🧪 5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu",
         grade: "5. Sınıf",
-        desc: "Laboratuvarda en sık kullanılan 8 temel cam ve metal malzemeyi görevleriyle eşleştirip puanları topla!",
+        desc: "Laboratuvarın 20 temel araç-gereci, güvenlik sembolleri ve deney kurallarını eğlenerek öğren!",
         questions: [
             {
                 q: "Sıvıların hacmini en hassas şekilde ölçmek için üzerinde mililitre (ml) çizgileri bulunan cam kaba ne ad verilir?",
@@ -3992,11 +4015,95 @@ const INTERACTIVE_GAMES_POOL = {
                 icon: "fa-solid fa-utensils"
             },
             {
-                q: "Sıvı maddeleri damla damla hassas miktarda aktarmak için kullanılan cam veya plastik alete ne ad verilir?",
+                q: "Sıvı maddeleri damla damla hassas miktarda aktarmak için kullanılan ucu sıkılabilir cam/plastik alete ne ad verilir?",
                 options: ["Damlalık", "Büret", "Beherglas", "Sacayak"],
                 answer: 0,
                 hint: "Sıvıyı damlatarak döker.",
                 icon: "fa-solid fa-eye-dropper"
+            },
+            {
+                q: "Laboratuvarda ısıtma deneylerinde kullanılan, içinde ispirto yanan fitilli ısı kaynağına ne ad verilir?",
+                options: ["İspirto Ocağı", "Buzdolabı", "Baget", "Termometre"],
+                answer: 0,
+                hint: "Cam gövdeli ve fitilli klasik laboratuvar ocağıdır.",
+                icon: "fa-solid fa-fire"
+            },
+            {
+                q: "Isıtma sırasında alevin cam kap tabanına eşit yayılmasını sağlayan ve sacayak üstüne konan telli levhaya ne ad verilir?",
+                options: ["Tel Amyant", "Spatül", "Saat Camı", "Piset"],
+                answer: 0,
+                hint: "Isıyı dengeli dağıtıp camın çatlamasını önler.",
+                icon: "fa-solid fa-border-all"
+            },
+            {
+                q: "Dar ağızlı kaplara sıvı aktarırken veya süzme işlemlerinde filtre kağıdıyla kullanılan koni alete ne ad verilir?",
+                options: ["Huni", "Mezür", "Damlalık", "Erlenmayer"],
+                answer: 0,
+                hint: "Üstü geniş, altı ince boru şeklindedir.",
+                icon: "fa-solid fa-filter"
+            },
+            {
+                q: "Az miktardaki katı maddeleri tartmak veya üzerini kapatmak için kullanılan içbükey yuvarlak cama ne ad verilir?",
+                options: ["Saat Camı", "Beherglas", "Lam ve Lamel", "Sacayak"],
+                answer: 0,
+                hint: "Kol saatinin camına benzer.",
+                icon: "fa-solid fa-circle-notch"
+            },
+            {
+                q: "Isıtılan sıcak deney tüplerini alev üzerinde güvenle tutmak için kullanılan alete ne ad verilir?",
+                options: ["Deney Tüpü Maşası", "Damlalık", "Baget", "Huni"],
+                answer: 0,
+                hint: "Genellikle ahşap veya metalden yapılmış maşadır.",
+                icon: "fa-solid fa-hand"
+            },
+            {
+                q: "İçinde saf su bulunan ve deney kaplarını temizlemek veya su püskürtmek için kullanılan sıkılabilir plastik şişeye ne ad verilir?",
+                options: ["Piset", "Büret", "Mezür", "Erlenmayer"],
+                answer: 0,
+                hint: "Ucu kıvrık borulu yıkama şişesidir.",
+                icon: "fa-solid fa-bottle-water"
+            },
+            {
+                q: "Deney ortamının veya sıvı çözeltilerin sıcaklığını Celsius (°C) cinsinden ölçen alete ne ad verilir?",
+                options: ["Termometre", "Dinamometre", "Barometre", "Manometre"],
+                answer: 0,
+                hint: "İçindeki sıvı genleşerek sıcaklığı gösterir.",
+                icon: "fa-solid fa-temperature-high"
+            },
+            {
+                q: "Üzerinde alev görseli bulunan laboratuvar güvenlik sembolü neyi ifade eder?",
+                options: ["Yanıcı Madde (Ateşten Uzak Tutunuz)", "Zehirli Madde", "Aşındırıcı Asit", "Radyoaktif Madde"],
+                answer: 0,
+                hint: "Kıvılcım ve alevle temasında kolayca tutuşur.",
+                icon: "fa-solid fa-fire-flame-curved"
+            },
+            {
+                q: "Üzerinde kuru kafa ve çapraz kemikler bulunan güvenlik sembolü ne anlama gelir?",
+                options: ["Toksik / Zehirli Madde", "Geri Dönüşüm", "Biyo-risk", "Patlayıcı"],
+                answer: 0,
+                hint: "Solunması, yutulması veya cilde teması ölümcül olabilir.",
+                icon: "fa-solid fa-skull-crossbones"
+            },
+            {
+                q: "Ele veya metal yüzeye döküldüğünde aşındıran/yakan asit sembolü nedir?",
+                options: ["Korozif (Aşındırıcı) Madde", "Radyoaktif", "Biyolojik Tehlike", "Oksitleyici"],
+                answer: 0,
+                hint: "Cilde ve eşyalara damlayınca delik açan maddedir.",
+                icon: "fa-solid fa-hand-dots"
+            },
+            {
+                q: "Laboratuvara girerken gözleri ve kıyafetleri kimyasal sıçramalarından korumak için ne giyilmelidir?",
+                options: ["Laboratuvar Önlüğü ve Koruyucu Gözlük", "Güneş Gözlüğü ve Şapka", "Yağmurluk", "Sadece Eldiven"],
+                answer: 0,
+                hint: "Temel kişisel koruyucu donanımlardır.",
+                icon: "fa-solid fa-glasses"
+            },
+            {
+                q: "Laboratuvarda kapağı açık bir kimyasal şişenin kokusu merak edildiğinde ne yapılmalıdır?",
+                options: ["Asla doğrudan koklanmamalı, el ile hafifçe dalgalandırılmalıdır", "Derin nefesle koklanmalıdır", "Tadına bakılmalıdır", "Göze yaklaştırılmalıdır"],
+                answer: 0,
+                hint: "Doğrudan koklamak solunum yollarına ciddi zarar verebilir.",
+                icon: "fa-solid fa-triangle-exclamation"
             }
         ]
     },
