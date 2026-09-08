@@ -295,8 +295,8 @@ function handleRouteChange() {
     } else if (hash === "grades") {
         renderGradesOverview(appEl);
     } else if (hash.startsWith("grade/")) {
-        const gradeId = hash.replace("grade/", "");
-        renderGradeDetail(appEl, gradeId);
+        const gradeParam = hash.replace("grade/", "");
+        renderGradeDetail(appEl, gradeParam);
     } else if (hash.startsWith("unit/")) {
         const parts = hash.replace("unit/", "").split("/");
         const unitId = parts[0];
@@ -638,6 +638,361 @@ function renderGradesOverview(container) {
         </div>
     `;
 }
+
+
+// -------------------------------------------------------------
+// 🎒 SINIF DETAY SAYFASI & 7 ALT BÖLÜM
+// 1. Ders Notu, 2. Ders Sunumu, 3. Videolar, 4. Etkinlikler,
+// 5. Soru Bankası, 6. Denemeler, 7. Eğitsel Oyunlar
+// -------------------------------------------------------------
+function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
+    // Parse gradeId and subTab: e.g. "grade-5/ders-notu" or "grade-5"
+    let parts = (gradeIdWithTab || "grade-8").split("/");
+    let gradeId = parts[0] || "grade-8";
+    let subTab = parts[1] || "uniteler";
+
+    // Find grade in PORTAL_GRADES
+    const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
+    const subData = getGradeSubSectionsData(grade.number);
+
+    container.innerHTML = `
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <!-- Hero Başlık Alanı -->
+            <div class="bg-gradient-to-r ${grade.color} text-white rounded-3xl p-8 sm:p-10 mb-8 shadow-xl relative overflow-hidden">
+                <div class="relative z-10 max-w-3xl">
+                    <div class="flex items-center gap-2 mb-3">
+                        <span class="px-3.5 py-1 rounded-full bg-white/20 text-white text-xs font-black tracking-wider uppercase inline-block">
+                            ${grade.number}. SINIF FEN BİLİMLERİ PORTALI
+                        </span>
+                        ${grade.isLGS ? '<span class="px-3 py-1 rounded-full bg-amber-400 text-slate-900 text-xs font-black">🔥 LGS MERKEZİ</span>' : ''}
+                    </div>
+                    <h2 class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight mb-4">${grade.title}</h2>
+                    <p class="text-sm sm:text-base text-white/90 leading-relaxed mb-6 font-medium">${grade.description}</p>
+                    
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="px-5 py-2.5 bg-white text-slate-900 font-black text-xs uppercase rounded-xl shadow-md hover:bg-slate-100 transition-all flex items-center gap-2">
+                            📝 Konu Anlatımları & Notlar
+                        </button>
+                        <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2">
+                            📚 Soru Bankası & Testler
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 7 ALT BÖLÜM SEKMELERİ (BÜYÜK & BELİRGİN SEKMELER) -->
+            <div class="flex bg-white rounded-3xl p-2 shadow-md border border-slate-200 mb-10 overflow-x-auto gap-2">
+                <button onclick="switchGradeSubTab('${grade.id}', 'uniteler')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'uniteler' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-layer-group"></i> <span>MÜFREDAT ÜNİTELERİ</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'ders-notu' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-file-lines"></i> <span>📝 DERS NOTU</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'ders-sunumu' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-file-powerpoint"></i> <span>📊 DERS SUNUMU</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'videolar')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'videolar' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-circle-play"></i> <span>🎥 VİDEOLAR</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'etkinlikler')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'etkinlikler' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-puzzle-piece"></i> <span>🧩 ETKİNLİKLER</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'soru-bankasi' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-book-open-reader"></i> <span>📚 SORU BANKASI</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'denemeler')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'denemeler' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-bullseye"></i> <span>🎯 DENEMELER</span>
+                </button>
+                <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'egitsel-oyunlar' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
+                    <i class="fa-solid fa-gamepad"></i> <span>🎮 EĞİTSEL OYUNLAR</span>
+                </button>
+            </div>
+
+            <!-- SEÇİLEN ALT BÖLÜMÜN İÇERİĞİ -->
+            <div id="grade-subtab-container" class="animate-in fade-in duration-300">
+                ${renderGradeSubTabContent(grade, subData, subTab)}
+            </div>
+        </div>
+    `;
+}
+
+function switchGradeSubTab(gradeId, tabName) {
+    window.location.hash = `grade/${gradeId}/${tabName}`;
+}
+
+function renderGradeSubTabContent(grade, subData, subTab) {
+    if (subTab === "uniteler") {
+        return `
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${grade.units.map(u => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700">${u.code}</span>
+                                <span class="text-xs font-bold text-slate-400">${u.hours} Ders Saati</span>
+                            </div>
+                            <h4 class="text-lg font-black text-slate-900 mb-2 flex items-center gap-2">
+                                <i class="${u.icon} text-red-600"></i> ${u.name}
+                            </h4>
+                            <p class="text-xs text-slate-500 mb-6 font-medium">${u.topics} Temel Alt Konu ve MEB Kazanımı</p>
+
+                            <div class="grid grid-cols-5 gap-1.5 text-center text-[10px] font-black mb-6">
+                                <span class="p-1.5 bg-indigo-50 text-indigo-700 rounded-lg">1.Öğren</span>
+                                <span class="p-1.5 bg-purple-50 text-purple-700 rounded-lg">2.Keşfet</span>
+                                <span class="p-1.5 bg-emerald-50 text-emerald-700 rounded-lg">3.Uygula</span>
+                                <span class="p-1.5 bg-rose-50 text-rose-700 rounded-lg">4.Çöz</span>
+                                <span class="p-1.5 bg-amber-50 text-amber-700 rounded-lg">5.Analiz</span>
+                            </div>
+                        </div>
+
+                        <a href="#unit/${u.id}" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl text-center transition-colors shadow-md shadow-red-600/20">
+                            Ünite Hub'ını Aç →
+                        </a>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "ders-notu") {
+        const enriched = (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[String(grade.number)]) ? ENRICHED_GRADE_CONTENT[String(grade.number)] : null;
+
+        return `
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-2xl font-black text-slate-900 flex items-center gap-2.5">
+                        <i class="fa-solid fa-book-open text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri Detaylı Konu Anlatımı & Özetleri
+                    </h3>
+                    <span class="text-xs font-bold px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-200">MEB 2024-2025 Müfredat Uyumlu</span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
+                    Sınavlarda ve yazılılarda en sık karşılaşılan temel kavramlar, formüller, dikkat edilmesi gereken tuzaklar ve önemli bilimsel kurallar aşağıda özetlenmiştir.
+                </p>
+            </div>
+
+            ${enriched && enriched.unitSummaries ? `
+                <div class="space-y-6 mb-10">
+                    ${enriched.unitSummaries.map((uSum, uIdx) => `
+                        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm">
+                            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                                <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                                    <span class="w-7 h-7 rounded-xl bg-red-600 text-white flex items-center justify-center text-xs font-black">${uIdx + 1}</span>
+                                    <span>${uSum.unit}</span>
+                                </h4>
+                                <button onclick="window.print()" class="text-xs font-black text-red-600 hover:text-red-700 flex items-center gap-1">
+                                    <i class="fa-solid fa-print"></i> Yazdır
+                                </button>
+                            </div>
+                            <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                                ${uSum.highlights.map(hl => `
+                                    <div class="p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex items-start gap-2.5">
+                                        <i class="fa-solid fa-circle-check text-emerald-600 mt-1 flex-shrink-0 text-xs"></i>
+                                        <div class="prose-sm">${hl.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900 font-black">$1</strong>')}</div>
+                                    </div>
+                                `).join("")}
+                            </div>
+                        </div>
+                    `).join("")}
+                </div>
+            ` : ''}
+
+            <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-folder-open text-blue-600"></i> ${grade.number}. Sınıf İndirilebilir PDF Ders Föyleri
+            </h4>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${subData.dersNotu.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-red-50 text-red-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
+                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
+                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
+                                <span>📄 ${item.pages}</span>
+                                <span>📥 ${item.downloadCount}</span>
+                            </div>
+                        </div>
+                        <button onclick="window.print()" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-file-pdf"></i> PDF Görüntüle / Yazdır
+                        </button>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "ders-sunumu") {
+        return `
+            <div class="mb-6 flex items-center justify-between">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-file-powerpoint text-orange-600"></i> ${grade.number}. Sınıf Akıllı Tahta Ders Sunumları (PPTX / PDF)
+                </h3>
+                <span class="text-xs font-bold text-slate-500">${subData.dersSunumu.length} Sunum Dosyası</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${subData.dersSunumu.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
+                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
+                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
+                                <span>📊 ${item.slides}</span>
+                                <span>🖥️ ${item.format}</span>
+                            </div>
+                        </div>
+                        <button onclick="toggleSmartboardMode(true)" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-chalkboard-user"></i> Akıllı Tahtada Başlat
+                        </button>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "videolar") {
+        return `
+            <div class="mb-6 flex items-center justify-between">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Konu Anlatımı & Deney Videoları
+                </h3>
+                <span class="text-xs font-bold text-slate-500">${subData.videolar.length} Video Ders</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${subData.videolar.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="relative bg-slate-900 rounded-2xl h-36 flex items-center justify-center text-white mb-4 group cursor-pointer overflow-hidden" onclick="showToast('Video oynatıcı açılıyor...', 'info')">
+                                <div class="w-12 h-12 rounded-full bg-red-600/90 text-white flex items-center justify-center text-xl shadow-lg group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play ml-1"></i>
+                                </div>
+                                <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">${item.duration}</span>
+                            </div>
+                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
+                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
+                                <span>🎬 ${item.channel}</span>
+                                <span>👁️ ${item.views}</span>
+                            </div>
+                        </div>
+                        <button onclick="showToast('${item.title} oynatılıyor', 'success')" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-play"></i> Dersi İzle
+                        </button>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "etkinlikler") {
+        return `
+            <div class="mb-6 flex items-center justify-between">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-puzzle-piece text-emerald-600"></i> ${grade.number}. Sınıf Çalışma Föyleri & İstasyon Etkinlikleri
+                </h3>
+                <span class="text-xs font-bold text-slate-500">${subData.etkinlikler.length} Etkinlik Föyü</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${subData.etkinlikler.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
+                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
+                            <div class="text-[11px] font-bold text-slate-500 bg-slate-50 p-2.5 rounded-xl mb-4">
+                                📌 ${item.type}
+                            </div>
+                        </div>
+                        <button onclick="window.print()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-print"></i> Etkinlik Föyünü Yazdır (A4)
+                        </button>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "soru-bankasi") {
+        return `
+            <div class="mb-6 flex items-center justify-between">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open-reader text-blue-600"></i> ${grade.number}. Sınıf Kazanım & Beceri Temelli Soru Bankası
+                </h3>
+                <span class="text-xs font-bold text-slate-500">${subData.soruBankasi.length} Ünite Soru Havuzu</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${subData.soruBankasi.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
+                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
+                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
+                                <span>📝 ${item.count}</span>
+                                <span>🎯 ${item.difficulty}</span>
+                            </div>
+                        </div>
+                        <a href="#quizzes" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-circle-check"></i> Testi Çözmeye Başla
+                        </a>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "denemeler") {
+        return `
+            <div class="mb-6 flex items-center justify-between">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-bullseye text-purple-600"></i> ${grade.number}. Sınıf Dönemlik Ortak Sınav & Branş Denemeleri
+                </h3>
+                <span class="text-xs font-bold text-slate-500">${subData.denemeler.length} Deneme Sınavı</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${subData.denemeler.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <span class="px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.type}</span>
+                            <h4 class="text-lg font-black text-slate-900 mb-2">${item.title}</h4>
+                            <div class="grid grid-cols-2 gap-3 my-4">
+                                <div class="p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-700">
+                                    📋 Soru Sayısı: <span class="text-purple-700">${item.questions}</span>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-700">
+                                    ⏱️ Sınav Süresi: <span class="text-purple-700">${item.time}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <a href="#exams" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl text-center transition-colors">
+                                Denemeyi Başlat
+                            </a>
+                            <button onclick="window.print()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors" title="PDF İndir">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    } else if (subTab === "egitsel-oyunlar") {
+        return `
+            <div class="mb-6 flex items-center justify-between">
+                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-gamepad text-amber-500"></i> ${grade.number}. Sınıf İnteraktif Fen Oyunları & Turnuvalar
+                </h3>
+                <span class="text-xs font-bold text-slate-500">${subData.egitselOyunlar.length} İnteraktif Oyun</span>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                ${subData.egitselOyunlar.map(item => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl shadow-md mb-4">
+                                <i class="${item.icon}"></i>
+                            </div>
+                            <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.type}</span>
+                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">${item.desc}</p>
+                        </div>
+                        <a href="#flashcards" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase rounded-xl transition-colors text-center shadow-md">
+                            🎮 Oyunu Başlat
+                        </a>
+                    </div>
+                `).join("")}
+            </div>
+        `;
+    }
+}
+
 
 
 // -------------------------------------------------------------
