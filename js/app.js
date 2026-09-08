@@ -767,31 +767,70 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                 </div>
             </div>
 
-            <!-- 7 ALT BÖLÜM SEKMELERİ (BÜYÜK & BELİRGİN SEKMELER) -->
-            <div class="flex bg-white rounded-3xl p-2 shadow-md border border-slate-200 mb-10 overflow-x-auto gap-2">
-                <button onclick="switchGradeSubTab('${grade.id}', 'uniteler')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'uniteler' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-layer-group"></i> <span>MÜFREDAT ÜNİTELERİ</span>
+            <!-- 8 ALT BÖLÜM (TEK SIRA KUTU KUTU MODÜL KARTLARI) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 sm:gap-3 mb-10">
+                <!-- 1. Müfredat Üniteleri -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'uniteler')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'uniteler' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'uniteler' ? 'bg-white/20 text-white' : 'bg-red-50 text-red-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-layer-group"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">MÜFREDAT ÜNİTELERİ</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'ders-notu' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-file-lines"></i> <span>📝 DERS NOTU</span>
+
+                <!-- 2. Ders Notu -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'ders-notu' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'ders-notu' ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">📝 DERS NOTU</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'ders-sunumu' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-file-powerpoint"></i> <span>📊 DERS SUNUMU</span>
+
+                <!-- 3. Ders Sunumu -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'ders-sunumu' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'ders-sunumu' ? 'bg-white/20 text-white' : 'bg-orange-50 text-orange-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-file-powerpoint"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">📊 DERS SUNUMU</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'videolar')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'videolar' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-circle-play"></i> <span>🎥 VİDEOLAR</span>
+
+                <!-- 4. Videolar -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'videolar')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'videolar' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'videolar' ? 'bg-white/20 text-white' : 'bg-rose-50 text-rose-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-circle-play"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🎥 VİDEOLAR</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'etkinlikler')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'etkinlikler' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-puzzle-piece"></i> <span>🧩 ETKİNLİKLER</span>
+
+                <!-- 5. Etkinlikler -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'etkinlikler')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'etkinlikler' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'etkinlikler' ? 'bg-white/20 text-white' : 'bg-emerald-50 text-emerald-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-puzzle-piece"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🧩 ETKİNLİKLER</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'soru-bankasi' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-book-open-reader"></i> <span>📚 SORU BANKASI</span>
+
+                <!-- 6. Soru Bankası -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'soru-bankasi' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'soru-bankasi' ? 'bg-white/20 text-white' : 'bg-indigo-50 text-indigo-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">📚 SORU BANKASI</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'denemeler')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'denemeler' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-bullseye"></i> <span>🎯 DENEMELER</span>
+
+                <!-- 7. Denemeler -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'denemeler')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'denemeler' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'denemeler' ? 'bg-white/20 text-white' : 'bg-purple-50 text-purple-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-bullseye"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
                 </button>
-                <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="px-5 py-3.5 rounded-2xl font-black text-xs sm:text-sm whitespace-nowrap transition-all flex items-center gap-2 ${subTab === 'egitsel-oyunlar' ? 'bg-red-600 text-white shadow-lg shadow-red-600/30 scale-[1.02]' : 'text-slate-700 hover:bg-slate-100'}">
-                    <i class="fa-solid fa-gamepad"></i> <span>🎮 EĞİTSEL OYUNLAR</span>
+
+                <!-- 8. Eğitsel Oyunlar -->
+                <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="group p-3 sm:p-3.5 rounded-2xl border-2 transition-all flex flex-col items-center justify-center text-center gap-2 ${subTab === 'egitsel-oyunlar' ? 'bg-gradient-to-b from-red-600 to-rose-700 text-white border-red-600 shadow-lg shadow-red-600/30 scale-[1.03] ring-2 ring-red-400/40' : 'bg-white hover:bg-red-50/50 text-slate-800 border-slate-200/90 hover:border-red-400 shadow-sm hover:shadow-md'}">
+                    <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg ${subTab === 'egitsel-oyunlar' ? 'bg-white/20 text-white' : 'bg-fuchsia-50 text-fuchsia-600 group-hover:scale-110'} transition-transform">
+                        <i class="fa-solid fa-gamepad"></i>
+                    </div>
+                    <span class="text-[11px] sm:text-xs font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
                 </button>
             </div>
 
