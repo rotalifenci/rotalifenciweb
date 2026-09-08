@@ -9,15 +9,24 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     const items = customList.filter(item => {
-        const gradeMatch = (gradeNumber === "all" || item.grade === "all" || String(item.grade) === String(gradeNumber));
+        // Sınıf Eşleştirmesi ("5", 5, "grade-5", "all")
+        const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+        const normTargetGrade = String(gradeNumber || "").replace(/^grade-/, "").trim().toLowerCase();
+        const gradeMatch = (normTargetGrade === "all" || normItemGrade === "all" || normItemGrade === normTargetGrade);
+
+        // Kategori / Sekme Eşleştirmesi
+        const itemCat = String(item.category || "").trim().toLowerCase();
+        const targetSubTab = String(subTab || "").trim().toLowerCase();
+
         let categoryMatch = false;
-        if (subTab === "all") {
+        if (targetSubTab === "all") {
             categoryMatch = true;
-        } else if (subTab === "egitsel-oyunlar" || subTab === "oyunlar") {
-            categoryMatch = (item.category === "egitsel-oyunlar" || item.category === "oyunlar");
+        } else if (targetSubTab === "egitsel-oyunlar" || targetSubTab === "oyunlar" || targetSubTab === "oyun") {
+            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemCat.includes("oyun") || itemCat.includes("lab") || itemCat.includes("simula"));
         } else {
-            categoryMatch = (item.category === subTab);
+            categoryMatch = (itemCat === targetSubTab);
         }
+
         return gradeMatch && categoryMatch;
     });
 
@@ -66,7 +75,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                         <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
                             <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
-                                <i class="fa-solid fa-download"></i> <span>Aç / İndir / Önizle</span>
+                                <i class="fa-solid fa-gamepad"></i> <span>Aç / Başlat / İndir</span>
                             </button>
 
                             ${isAdmin ? `
@@ -1103,15 +1112,23 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                 `).join("")}
             </div>
         `;
-    } else if (subTab === "egitsel-oyunlar") {
+    } else if (subTab === "egitsel-oyunlar" || subTab === "oyunlar") {
         return `
             <div class="mb-6 flex items-center justify-between">
-                <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-gamepad text-amber-500"></i> ${grade.number}. Sınıf İnteraktif Fen Oyunları & Turnuvalar
-                </h3>
-                <span class="text-xs font-bold text-slate-500">${subData.egitselOyunlar.length} İnteraktif Oyun</span>
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-gamepad text-fuchsia-600"></i> ${grade.number}. Sınıf Eğitsel Oyunlar & İnteraktif Etkinlikler
+                    </h3>
+                    <p class="text-xs text-slate-500 font-medium mt-1">Eğlenerek öğrenmeyi sağlayan fen laboratuvar simülasyonları, eğitsel oyunlar ve bilgi yarışmaları.</p>
+                </div>
+                <button onclick="triggerUploadModal('${grade.number}', 'egitsel-oyunlar')" class="px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-fuchsia-600/20">
+                    <i class="fa-solid fa-plus"></i> Oyun Ekle
+                </button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            ${renderCustomMaterialsSection(grade.number, "egitsel-oyunlar")}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 ${subData.egitselOyunlar.map(item => `
                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
                         <div>
