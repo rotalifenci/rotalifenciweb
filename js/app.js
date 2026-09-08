@@ -339,7 +339,7 @@ function handleRouteChange() {
 function updateActiveNav(hash) {
     document.querySelectorAll(".nav-link").forEach(link => {
         const href = link.getAttribute("href") ? link.getAttribute("href").replace("#", "") : "";
-        if (hash === href || (hash === "home" && href === "home") || (hash.startsWith("grade/") && href === "grades")) {
+        if (hash === href || (hash === "home" && href === "home") || (href.startsWith("grade/") && hash.startsWith(href))) {
             link.classList.add("text-brand-red", "bg-red-50/80");
             link.classList.remove("text-slate-700");
         } else {
