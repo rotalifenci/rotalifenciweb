@@ -119,7 +119,7 @@ function openAuthModal(defaultTab = "student") {
                 <button onclick="handleTeacherLogin()" class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
                     Öğretmen Paneline Giriş Yap 👨‍🏫
                 </button>
-                <p class="text-[11px] text-center text-slate-400">Varsayılan: <strong>admin</strong> / <strong>fen2025</strong></p>
+                <p class="text-[11px] text-center text-slate-400">Yetkili Girişi</p>
             </div>
         </div>
     `;
@@ -173,7 +173,7 @@ function handleTeacherLogin() {
     const user = document.getElementById("teacher-user-input").value.trim();
     const pass = document.getElementById("teacher-pass-input").value.trim();
 
-    if ((user === "admin" || user === "rotalifenci") && (pass === "fen2025" || pass === "123456")) {
+    if ((user === "admin" || user === "rotalifenci") && (pass === "Rotali5822." || pass === "123456")) {
         AppState.currentUser = {
             role: "teacher",
             name: "Rotalı Fenci",
@@ -185,7 +185,7 @@ function handleTeacherLogin() {
         showToast("Öğretmen & Yönetici Girişi Başarılı! Hoş geldiniz.", "success");
         window.location.hash = "teacher-dashboard";
     } else {
-        showToast("Hatalı kullanıcı adı veya şifre! (Varsayılan: admin / fen2025)", "error");
+        showToast("Hatalı kullanıcı adı veya şifre!", "error");
     }
 }
 
@@ -2101,7 +2101,7 @@ function getCustomMaterials(gradeNumber, category) {
 // Sadece siz şifrenizle içerik ekleyebilir ve silebilirsiniz
 // -------------------------------------------------------------
 const ADMIN_CONFIG = {
-    passwords: ["fen2025", "rotali2025", "admin123"],
+    passwords: ["Rotali5822."],
     isAdmin: localStorage.getItem("rotali_is_admin") === "true"
 };
 
@@ -2150,7 +2150,7 @@ function openAdminLoginModal(callbackSuccess) {
                     <i class="fa-solid fa-key text-amber-400"></i> Giriş Yap & Yetkiyi Aç
                 </button>
             </form>
-            <p class="text-[11px] text-slate-400 mt-4">Varsayılan Şifre: <strong>fen2025</strong></p>
+            <p class="text-[11px] text-slate-400 mt-4"><i class="fa-solid fa-shield-halved text-emerald-500 mr-1"></i> Yetkili Yönetici Girişi</p>
         </div>
     `;
 
