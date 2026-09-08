@@ -1,36 +1,54 @@
 
-function renderCustomMaterialsSection(gradeNumber, subTab) {
-    const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    const items = customList.filter(item => (item.grade === "all" || String(item.grade) === String(gradeNumber)) && item.category === subTab);
+function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
+    let customList = [];
+    try {
+        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    } catch (e) {
+        customList = [];
+    }
+
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const items = customList.filter(item => {
+        const gradeMatch = (gradeNumber === "all" || item.grade === "all" || String(item.grade) === String(gradeNumber));
+        const categoryMatch = (subTab === "all" || subTab === "uniteler" || item.category === subTab);
+        return gradeMatch && categoryMatch;
+    });
 
     if (!items || items.length === 0) return "";
 
     return `
         <div class="mb-10 animate-in fade-in duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-emerald-500/20">
+                <h4 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
                     <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>✨ Yönetici Tarafından Eklenen Özel Materyaller (${items.length})</span>
                 </h4>
-                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Yeni İçerikler</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">2026-2027 MEB Canlı</span>
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal('${gradeNumber === 'all' ? '8' : gradeNumber}', '${subTab === 'all' || subTab === 'uniteler' ? 'ders-notu' : subTab}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> Yeni Ekle
+                        </button>
+                    ` : ''}
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 ${items.map(item => `
-                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl p-6 border-2 border-emerald-500/30 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
+                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl p-6 border-2 border-emerald-500/40 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
 
                         <div>
                             <div class="flex items-center justify-between gap-2 mb-3">
                                 <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black tracking-wider uppercase inline-block">
-                                    ${item.format || 'DOKÜMAN'}
+                                    ${item.grade === 'all' ? 'TÜM SINIFLAR' : item.grade + '. SINIF'} • ${item.format || 'DOKÜMAN'}
                                 </span>
                                 <span class="text-[10px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
                             </div>
 
-                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide">${item.unit || ''}</div>
+                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
                             <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-emerald-700 transition-colors">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
 
                             ${item.tags && item.tags.length > 0 ? `
                                 <div class="flex flex-wrap gap-1 mb-4">
@@ -39,13 +57,21 @@ function renderCustomMaterialsSection(gradeNumber, subTab) {
                             ` : ''}
                         </div>
 
-                        <div class="pt-3 border-t border-slate-200/80 flex items-center justify-between gap-2">
-                            <a href="${item.fileUrl || '#'}" target="_blank" download="${item.fileName || 'materyal'}" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
-                                <i class="fa-solid fa-download"></i> <span>Aç / İndir</span>
-                            </a>
-                            <button onclick="deleteCustomMaterial('${item.id}')" class="p-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl transition-colors font-bold text-xs" title="Materyali Sil">
-                                <i class="fa-solid fa-trash-can"></i>
+                        <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
+                                <i class="fa-solid fa-download"></i> <span>Aç / İndir / Önizle</span>
                             </button>
+
+                            ${isAdmin ? `
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
+                                        <i class="fa-solid fa-trash-can"></i> Sil
+                                    </button>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `).join("")}
@@ -784,6 +810,7 @@ function switchGradeSubTab(gradeId, tabName) {
 function renderGradeSubTabContent(grade, subData, subTab) {
     if (subTab === "uniteler") {
         return `
+            ${renderCustomMaterialsSection(grade.number, "uniteler")}
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 ${grade.units.map(u => `
                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
@@ -1476,138 +1503,138 @@ function handleAddCustomError() {
 // 10. 👨‍🏫 ÖĞRETMEN / YÖNETİCİ ÇALIŞMA PANELİ (LMS & CMS)
 // -------------------------------------------------------------
 function renderTeacherDashboardPage(container) {
-    const teacher = DataManager.getTeacherProfile();
-    const posts = DataManager.getPosts();
-    const quizzes = DataManager.getQuizzes();
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    let customList = [];
+    try {
+        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    } catch (e) {
+        customList = [];
+    }
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <!-- Üst Bar -->
-            <div class="bg-gradient-to-r from-blue-900 via-indigo-950 to-slate-900 text-white rounded-3xl p-8 mb-10 shadow-xl flex flex-wrap items-center justify-between gap-6">
-                <div>
-                    <span class="px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-black uppercase">ÖĞRETMEN & YÖNETİCİ PANELİ</span>
-                    <h2 class="text-3xl font-black mt-2 mb-1">${teacher.name}</h2>
-                    <p class="text-xs text-slate-300 font-semibold">${teacher.title} • 4 Aktif Şube (${teacher.classes.reduce((a,b)=>a+b.studentCount,0)} Öğrenci)</p>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="downloadBackupJSON()" class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-download"></i> Veri Yedeği İndir
-                    </button>
-                    <button onclick="handleLogout()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all">
-                        Çıkış Yap
-                    </button>
-                </div>
-            </div>
-
-            <!-- Sınıflar Grid -->
-            <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-users text-blue-700"></i> Şube Başarı Karnesi & Sınıf Yönetimi
-            </h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                ${teacher.classes.map(c => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <span class="text-xs font-black px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700">${c.name}</span>
-                            <h4 class="text-2xl font-black text-slate-900 mt-3 mb-1">${c.avgScore}</h4>
-                            <p class="text-xs text-slate-500 mb-4">${c.studentCount} Kayıtlı Öğrenci</p>
+            <!-- Header -->
+            <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white rounded-3xl p-8 sm:p-10 mb-8 shadow-xl relative overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="px-3.5 py-1 rounded-full bg-red-600 text-white text-xs font-black tracking-wider uppercase inline-block">
+                                👑 YÖNETİCİ KONTROL MERKEZİ
+                            </span>
+                            <span class="px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs font-black">
+                                Aktif Oturum: Yetkili
+                            </span>
                         </div>
-                        <button onclick="showToast('${c.name} sınıf başarı raporu hazırlandı.', 'info')" class="w-full py-2 bg-slate-900 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition-all">
-                            Sınıfı Yönet
+                        <h2 class="text-3xl sm:text-4xl font-black tracking-tight mb-2">Materyal & İçerik Yönetimi</h2>
+                        <p class="text-xs sm:text-sm text-slate-300 font-medium">Sitedeki tüm sınıflara ait PDF, slayt seti, video, test ve oyunları buradan ekleyebilir, düzenleyebilir ve yönetebilirsiniz.</p>
+                    </div>
+
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="triggerUploadModal()" class="px-6 py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center gap-2 transform active:scale-95">
+                            <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>Yeni Materyal / Dosya Yükle</span>
+                        </button>
+                        <button onclick="handleAdminLogout()" class="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl border border-slate-700 transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-power-off text-xs text-red-400"></i> <span>Çıkış Yap</span>
                         </button>
                     </div>
-                `).join("")}
+                </div>
             </div>
 
-            <!-- İçerik Ekleme Formları (Sayfa İçi Yönetici Araçları) -->
-            <h3 class="text-2xl font-black text-slate-900 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-plus-circle text-red-600"></i> Sayfa İçi İçerik & Soru Ekleme Alanı
-            </h3>
+            <!-- İstatistik Kartları -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <div class="text-2xl sm:text-3xl font-black text-slate-900 mb-1">${customList.length}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase">Toplam Eklenen Materyal</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <div class="text-2xl sm:text-3xl font-black text-red-600 mb-1">${customList.filter(i => i.grade === "8").length}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase">8. Sınıf & LGS</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <div class="text-2xl sm:text-3xl font-black text-amber-500 mb-1">${customList.filter(i => i.grade === "7").length}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase">7. Sınıf</div>
+                </div>
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
+                    <div class="text-2xl sm:text-3xl font-black text-blue-600 mb-1">${customList.filter(i => i.grade === "6" || i.grade === "5").length}</div>
+                    <div class="text-xs font-bold text-slate-500 uppercase">5 & 6. Sınıf</div>
+                </div>
+            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <!-- 1. Form: Yeni Ders Notu Ekle -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                    <h4 class="text-base font-black text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-file-lines text-red-600"></i> Yeni Ders Notu & Konu Özeti Ekle
-                    </h4>
-                    <form onsubmit="handleAddPost(event)" class="space-y-4 text-xs">
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Ders Notu Başlığı</label>
-                            <input type="text" id="new-post-title" required placeholder="Örn: 8. Sınıf Basit Makineler Taktik Özeti" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Sınıf Düzeyi</label>
-                                <select id="new-post-grade" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                                    <option value="5. Sınıf">5. Sınıf</option>
-                                    <option value="6. Sınıf">6. Sınıf</option>
-                                    <option value="7. Sınıf">7. Sınıf</option>
-                                    <option value="8. Sınıf">8. Sınıf (LGS)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Okuma Süresi</label>
-                                <input type="text" id="new-post-time" placeholder="8 dk" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Kısa Özet</label>
-                            <textarea id="new-post-excerpt" rows="2" placeholder="Konunun ana hatlarını belirten özet..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
-                        </div>
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Konu Anlatımı (HTML/Metin)</label>
-                            <textarea id="new-post-content" rows="3" placeholder="Detaylı konu anlatımı, formüller, ipuçları..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black uppercase rounded-xl transition-all shadow-md">
-                            Ders Notunu Portala Ekle
-                        </button>
-                    </form>
+            <!-- Canlı Materyal Listesi -->
+            <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">Yayınlanan Materyal Envanteri</h3>
+                        <p class="text-xs text-slate-500 mt-0.5">Tüm sınıflarda ve sekmelerde canlı olarak yayında olan içerikleriniz.</p>
+                    </div>
+                    <button onclick="triggerUploadModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black uppercase rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> İçerik Ekle
+                    </button>
                 </div>
 
-                <!-- 2. Form: Yeni Test / LGS Sorusu Ekle -->
-                <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm">
-                    <h4 class="text-base font-black text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-question text-purple-600"></i> Yeni Test / Soru Ekle
-                    </h4>
-                    <form onsubmit="handleAddQuestion(event)" class="space-y-3 text-xs">
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Soru Metni</label>
-                            <textarea id="new-q-text" rows="2" required placeholder="LGS veya Beceri temelli soru metni..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"></textarea>
+                ${customList.length === 0 ? `
+                    <div class="text-center py-16 px-4">
+                        <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-4">
+                            <i class="fa-solid fa-box-open"></i>
                         </div>
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="new-q-a" required placeholder="A Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                            <input type="text" id="new-q-b" required placeholder="B Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                            <input type="text" id="new-q-c" required placeholder="C Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                            <input type="text" id="new-q-d" required placeholder="D Şıkkı" class="p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Doğru Şık</label>
-                                <select id="new-q-correct" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                                    <option value="0">A Şıkkı</option>
-                                    <option value="1">B Şıkkı</option>
-                                    <option value="2">C Şıkkı</option>
-                                    <option value="3">D Şıkkı</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block font-black text-slate-700 mb-1">Sınıf</label>
-                                <select id="new-q-grade" class="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold">
-                                    <option value="8. Sınıf">8. Sınıf (LGS)</option>
-                                    <option value="7. Sınıf">7. Sınıf</option>
-                                    <option value="6. Sınıf">6. Sınıf</option>
-                                    <option value="5. Sınıf">5. Sınıf</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div>
-                            <label class="block font-black text-slate-700 mb-1">Çözüm İpucu & Açıklama</label>
-                            <input type="text" id="new-q-exp" placeholder="Bilimsel çözüm açıklaması..." class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium">
-                        </div>
-                        <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-black uppercase rounded-xl transition-all shadow-md">
-                            Soruyu Test Havuzuna Kaydet
+                        <h4 class="text-base font-black text-slate-800 mb-1">Henüz özel materyal yüklenmedi</h4>
+                        <p class="text-xs text-slate-500 max-w-md mx-auto mb-6">Yukarıdaki "Yeni Materyal Yükle" butonuna tıklayarak ilk PDF, sunum veya video dersinizi anında siteye yükleyebilirsiniz.</p>
+                        <button onclick="triggerUploadModal()" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl shadow-md transition-all">
+                            İlk Materyali Ekle
                         </button>
-                    </form>
-                </div>
+                    </div>
+                ` : `
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead>
+                                <tr class="bg-slate-50 text-slate-500 font-black uppercase tracking-wider border-b border-slate-200">
+                                    <th class="p-3.5 rounded-l-xl">Sınıf & Kategori</th>
+                                    <th class="p-3.5">Materyal Başlığı</th>
+                                    <th class="p-3.5">İlişkili Ünite</th>
+                                    <th class="p-3.5">Format / Dosya</th>
+                                    <th class="p-3.5">Eklenme Tarihi</th>
+                                    <th class="p-3.5 text-right rounded-r-xl">İşlemler</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 font-medium text-slate-700">
+                                ${customList.map(item => `
+                                    <tr class="hover:bg-slate-50/80 transition-colors">
+                                        <td class="p-3.5 font-bold">
+                                            <span class="px-2.5 py-1 rounded-lg ${item.grade === '8' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-slate-100 text-slate-700'} font-black text-[11px]">
+                                                ${item.grade === 'all' ? 'Genel' : item.grade + '. Sınıf'}
+                                            </span>
+                                            <span class="block text-[10px] text-slate-400 mt-1 uppercase font-bold">${item.category}</span>
+                                        </td>
+                                        <td class="p-3.5">
+                                            <div class="font-black text-slate-900 text-sm leading-snug">${item.title}</div>
+                                            <div class="text-[11px] text-slate-500 line-clamp-1 mt-0.5">${item.desc || ''}</div>
+                                        </td>
+                                        <td class="p-3.5 text-slate-600 text-[11px] max-w-xs truncate">${item.unit || '-'}</td>
+                                        <td class="p-3.5 font-bold">
+                                            <span class="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 text-[10px] font-black uppercase border border-emerald-200">
+                                                ${item.format || 'PDF'}
+                                            </span>
+                                        </td>
+                                        <td class="p-3.5 text-slate-400 text-[11px]">${item.createdAt || 'Bugün'}</td>
+                                        <td class="p-3.5 text-right">
+                                            <div class="flex items-center justify-end gap-1.5">
+                                                <button onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}')" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-all" title="Görüntüle / İndir">
+                                                    <i class="fa-solid fa-eye"></i>
+                                                </button>
+                                                <button onclick="editCustomMaterial('${item.id}')" class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg transition-all" title="Düzenle">
+                                                    <i class="fa-solid fa-pen-to-square"></i>
+                                                </button>
+                                                <button onclick="deleteCustomMaterial('${item.id}')" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg transition-all" title="Sil">
+                                                    <i class="fa-solid fa-trash-can"></i>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                `}
             </div>
         </div>
     `;
