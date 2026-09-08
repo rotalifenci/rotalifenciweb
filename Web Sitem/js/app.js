@@ -648,7 +648,7 @@ function renderHomePage(container) {
                     </div>
 
                     <p class="text-sm sm:text-base md:text-lg text-slate-600 font-semibold leading-relaxed max-w-2xl mx-auto mb-6">
-                        5, 6, 7 ve 8. sınıf öğrencileri için interaktif ünite hub'ları, LGS yeni nesil soru çözümleri, ortak yazılı sınav merkezi ve öğretmen çalışma odası.
+                        <strong>Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D eğitsel oyunları ve <em>“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
                     </p>
 
                     <!-- Hızlı Keşif Butonları -->
@@ -2395,17 +2395,70 @@ function renderTeacherDashboardPage(container) {
                         <p class="text-xs sm:text-sm text-slate-300 font-medium">Sitedeki tüm sınıflara ait PDF, slayt seti, video, test ve oyunları buradan ekleyebilir, düzenleyebilir ve yönetebilirsiniz.</p>
                     </div>
 
-                    <div class="flex flex-wrap gap-3">
-                        <button onclick="triggerUploadModal()" class="px-6 py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center gap-2 transform active:scale-95">
-                            <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>Yeni Materyal / Dosya Yükle</span>
+                    <div class="flex flex-col sm:flex-row flex-wrap gap-2.5 w-full md:w-auto">
+                        <button type="button" onclick="triggerUploadModal()" class="w-full sm:w-auto px-6 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-emerald-600/30 transition-all flex items-center justify-center gap-2 transform active:scale-95">
+                            <i class="fa-solid fa-cloud-arrow-up text-base"></i> <span>+ Yeni İçerik Ekle</span>
                         </button>
-                        <a href="#home" class="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl border border-slate-700 transition-all flex items-center gap-2 shadow-sm">
+                        <a href="#home" class="w-full sm:w-auto px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl border border-slate-700 transition-all flex items-center justify-center gap-2 shadow-sm">
                             <i class="fa-solid fa-house text-amber-400"></i> <span>Ana Sayfa</span>
                         </a>
-                        <button type="button" onclick="handleAdminLogout()" class="px-5 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/30 transition-all flex items-center gap-2 active:scale-95">
+                        <button type="button" onclick="handleAdminLogout()" class="w-full sm:w-auto px-5 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-2 active:scale-95">
                             <i class="fa-solid fa-power-off text-sm"></i> <span>Çıkış Yap</span>
                         </button>
                     </div>
+                </div>
+            </div>
+
+            
+            <!-- 📥 HIZLI İÇERİK EKLEME & SINIF SEÇİM ALANI (MOBİLDE VE MASAÜSTÜNDE ÇOK BELİRGİN) -->
+            <div class="bg-gradient-to-br from-white to-slate-50 border-2 border-emerald-500/40 rounded-3xl p-6 sm:p-8 shadow-lg mb-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200">
+                    <div>
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 font-black text-[11px] uppercase tracking-wider mb-1">
+                            <i class="fa-solid fa-cloud-arrow-up text-emerald-600"></i> İÇERİK EKLEME MERKEZİ
+                        </div>
+                        <h3 class="text-xl sm:text-2xl font-black text-slate-900">Sisteme Yeni Materyal veya Dosya Ekleyin</h3>
+                        <p class="text-xs text-slate-500 font-medium mt-0.5">Aşağıdaki sınıf butonlarına tıklayarak doğrudan o sınıfın ilgili bölümüne dosya yükleyebilirsiniz.</p>
+                    </div>
+                    <button type="button" onclick="triggerUploadModal('8', 'ders-notu')" class="w-full md:w-auto px-6 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 active:scale-95">
+                        <i class="fa-solid fa-plus text-sm"></i>
+                        <span>YENİ MATERYAL YÜKLE</span>
+                    </button>
+                </div>
+
+                <!-- Hızlı Sınıf Butonları -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="p-4 bg-white hover:bg-emerald-50 border-2 border-emerald-200 hover:border-emerald-500 rounded-2xl text-left transition-all flex flex-col justify-between shadow-sm group">
+                        <span class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 font-black text-xs flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">5</span>
+                        <div>
+                            <span class="text-xs font-black text-slate-900 block leading-tight">5. Sınıf</span>
+                            <span class="text-[11px] text-emerald-700 font-bold">+ İçerik Ekle</span>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="triggerUploadModal('6', 'ders-notu')" class="p-4 bg-white hover:bg-blue-50 border-2 border-blue-200 hover:border-blue-500 rounded-2xl text-left transition-all flex flex-col justify-between shadow-sm group">
+                        <span class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 font-black text-xs flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">6</span>
+                        <div>
+                            <span class="text-xs font-black text-slate-900 block leading-tight">6. Sınıf</span>
+                            <span class="text-[11px] text-blue-700 font-bold">+ İçerik Ekle</span>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="triggerUploadModal('7', 'ders-notu')" class="p-4 bg-white hover:bg-amber-50 border-2 border-amber-200 hover:border-amber-500 rounded-2xl text-left transition-all flex flex-col justify-between shadow-sm group">
+                        <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 font-black text-xs flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">7</span>
+                        <div>
+                            <span class="text-xs font-black text-slate-900 block leading-tight">7. Sınıf</span>
+                            <span class="text-[11px] text-amber-700 font-bold">+ İçerik Ekle</span>
+                        </div>
+                    </button>
+
+                    <button type="button" onclick="triggerUploadModal('8', 'ders-notu')" class="p-4 bg-white hover:bg-red-50 border-2 border-red-200 hover:border-red-500 rounded-2xl text-left transition-all flex flex-col justify-between shadow-sm group">
+                        <span class="w-8 h-8 rounded-xl bg-red-100 text-brand-red font-black text-xs flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">8</span>
+                        <div>
+                            <span class="text-xs font-black text-slate-900 block leading-tight">8. Sınıf (LGS)</span>
+                            <span class="text-[11px] text-brand-red font-bold">+ İçerik Ekle</span>
+                        </div>
+                    </button>
                 </div>
             </div>
 
