@@ -154,7 +154,7 @@
                     </button>
 
                     <!-- 👤 Rol Seçici / Portallar -->
-                    <button onclick="openMaterialUploadModal()" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-plus-circle text-xs"></i> <span>İÇERİK EKLE</span></button>
+                    <button onclick="triggerUploadModal()" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-plus-circle text-xs"></i> <span>İÇERİK EKLE</span></button>
                     <a href="#student-portal" class="px-3.5 py-2 bg-gradient-to-r from-brand-red to-rose-600 hover:from-brand-redDark hover:to-rose-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md shadow-brand-red/25 transition-all flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-book-bookmark text-xs"></i> <span>HATA DEFTERİM</span></a>
                 </div>
 
@@ -197,7 +197,7 @@
             </a>
             
             <div class="pt-3 border-t border-slate-200">
-                <button onclick="openMaterialUploadModal()" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-plus-circle text-xs"></i> <span>İÇERİK EKLE</span></button>
+                <button onclick="triggerUploadModal()" class="px-3.5 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap"><i class="fa-solid fa-plus-circle text-xs"></i> <span>İÇERİK EKLE</span></button>
                     <a href="#student-portal" class="py-3.5 text-center bg-brand-red hover:bg-brand-redDark text-white font-black text-sm tracking-wider uppercase rounded-2xl shadow-md flex items-center justify-center gap-2">
                     <i class="fa-solid fa-book-bookmark text-base"></i> HATA DEFTERİM & GÖREVLER
                 </a>
@@ -289,9 +289,11 @@
                 <div>
                     &copy; 2026 <strong class="text-brand-red">ROTALI FENCİ</strong> | Tüm Hakları Saklıdır. <span class="text-sky-400 font-bold">ROTAMIZ FEN!</span>
                 </div>
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-3">
+                    <div id="admin-status-indicator" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300"></div>
+                    <button onclick="triggerUploadModal()" class="text-xs text-slate-600 hover:text-slate-400 transition-colors flex items-center gap-1" title="Yönetici Girişi"><i class="fa-solid fa-lock text-[10px]"></i> Yönetici Paneli</button>
                     <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Vercel & Netlify Uyumlu Dağıtım</span>
+                    <span>Vercel & Netlify Uyumlu</span>
                 </div>
             </div>
         </div>

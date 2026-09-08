@@ -676,7 +676,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                         <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2">
                             📚 Soru Bankası & Testler
                         </button>
-                        <button onclick="openMaterialUploadModal('${grade.number}', '${subTab}')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md">
+                        <button onclick="triggerUploadModal('${grade.number}', '${subTab}')" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md">
                             <i class="fa-solid fa-cloud-arrow-up"></i> + Bu Sınıfa Dosya / Not Ekle
                         </button>
                     </div>
@@ -2094,3 +2094,150 @@ function getCustomMaterials(gradeNumber, category) {
     const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
     return customList.filter(item => String(item.grade) === String(gradeNumber) && item.category === category);
 }
+
+
+// -------------------------------------------------------------
+// 🔐 GÜVENLİ YÖNETİCİ / ADMİN YETKİLENDİRME SİSTEMİ
+// Sadece siz şifrenizle içerik ekleyebilir ve silebilirsiniz
+// -------------------------------------------------------------
+const ADMIN_CONFIG = {
+    passwords: ["fen2025", "rotali2025", "admin123"],
+    isAdmin: localStorage.getItem("rotali_is_admin") === "true"
+};
+
+// 1. Yönetici Giriş Kontrolü
+function checkAdminAccess(onSuccess) {
+    if (ADMIN_CONFIG.isAdmin) {
+        if (typeof onSuccess === "function") onSuccess();
+        return true;
+    }
+
+    openAdminLoginModal(onSuccess);
+    return false;
+}
+
+function openAdminLoginModal(callbackSuccess) {
+    let modal = document.getElementById("admin-login-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "admin-login-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 transition-all duration-300";
+        document.body.appendChild(modal);
+    }
+
+    window._adminCallback = callbackSuccess;
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 text-center">
+            <button onclick="closeAdminLoginModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-black text-sm transition-colors">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-slate-900 to-indigo-950 text-amber-400 flex items-center justify-center text-2xl mx-auto mb-4 shadow-lg border border-slate-700">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-900 mb-1">Yönetici Doğrulaması</h3>
+            <p class="text-xs text-slate-500 font-medium mb-6">İçerik eklemek veya silmek için yönetici şifrenizi girin.</p>
+
+            <form onsubmit="handleAdminPasswordSubmit(event)" class="space-y-4 text-left">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Yönetici Şifresi</label>
+                    <input type="password" id="admin-password-input" required placeholder="••••••••" autofocus class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900 focus:outline-none focus:border-red-500">
+                </div>
+
+                <button type="submit" class="w-full py-3 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-key text-amber-400"></i> Giriş Yap & Yetkiyi Aç
+                </button>
+            </form>
+            <p class="text-[11px] text-slate-400 mt-4">Varsayılan Şifre: <strong>fen2025</strong></p>
+        </div>
+    `;
+
+    modal.classList.remove("hidden");
+}
+
+function closeAdminLoginModal() {
+    const modal = document.getElementById("admin-login-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function handleAdminPasswordSubmit(e) {
+    e.preventDefault();
+    const passInput = document.getElementById("admin-password-input").value.trim();
+
+    if (ADMIN_CONFIG.passwords.includes(passInput)) {
+        ADMIN_CONFIG.isAdmin = true;
+        localStorage.setItem("rotali_is_admin", "true");
+        closeAdminLoginModal();
+        showToast("👑 Yönetici Yetkisi Aktif! İçerik ekleyebilir ve silebilirsiniz.", "success");
+        updateAdminNavUI();
+
+        if (typeof window._adminCallback === "function") {
+            window._adminCallback();
+        } else {
+            handleRouteChange();
+        }
+    } else {
+        showToast("❌ Hatalı Şifre! Lütfen tekrar deneyin.", "error");
+    }
+}
+
+function handleAdminLogout() {
+    ADMIN_CONFIG.isAdmin = false;
+    localStorage.removeItem("rotali_is_admin");
+    showToast("Yönetici oturumu kapatıldı.", "info");
+    updateAdminNavUI();
+    handleRouteChange();
+}
+
+function updateAdminNavUI() {
+    const adminStatusBtn = document.getElementById("admin-status-indicator");
+    if (adminStatusBtn) {
+        if (ADMIN_CONFIG.isAdmin) {
+            adminStatusBtn.innerHTML = `
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-emerald-300 font-bold">Yönetici Modu</span>
+                <button onclick="handleAdminLogout()" class="ml-1 text-[10px] text-slate-400 hover:text-white underline">Çıkış</button>
+            `;
+            adminStatusBtn.classList.remove("hidden");
+        } else {
+            adminStatusBtn.innerHTML = "";
+            adminStatusBtn.classList.add("hidden");
+        }
+    }
+}
+
+// 2. Güvenli Materyal Silme Fonksiyonu
+function deleteCustomMaterial(materialId) {
+    if (!ADMIN_CONFIG.isAdmin) {
+        checkAdminAccess(() => deleteCustomMaterial(materialId));
+        return;
+    }
+
+    if (confirm("Bu materyali silmek istediğinizden emin misiniz?")) {
+        let customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+        customList = customList.filter(item => item.id !== materialId);
+        localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+        showToast("Materyal başarıyla silindi.", "info");
+        handleRouteChange();
+    }
+}
+
+// 3. İçerik Ekleme Tıklamasında Şifre Kontrolü
+function triggerUploadModal(grade, tab) {
+    checkAdminAccess(() => {
+        openMaterialUploadModal(grade, tab);
+    });
+}
+
+// Kısayol Tuşu: Ctrl + Shift + A ile hızlı Yönetici Girişi
+window.addEventListener("keydown", (e) => {
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
+        if (!ADMIN_CONFIG.isAdmin) {
+            openAdminLoginModal(() => showToast("Yönetici yetkisi açıldı!", "success"));
+        } else {
+            handleAdminLogout();
+        }
+    }
+});
