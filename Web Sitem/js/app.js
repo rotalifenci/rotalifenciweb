@@ -1385,8 +1385,6 @@ function openIssueReportModal() {
         document.body.appendChild(modal);
     }
 
-    const currentHash = window.location.hash || "#home";
-
     modal.innerHTML = `
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar" onclick="event.stopPropagation()">
             
@@ -1402,62 +1400,79 @@ function openIssueReportModal() {
                 </div>
                 <div>
                     <h3 class="text-xl font-black text-slate-900 tracking-tight">Hata & Eksik Bildirim Paneli</h3>
-                    <p class="text-xs text-slate-500 font-medium">Sayfadaki eksikleri ve açılmayanları buraya yazınız</p>
+                    <p class="text-xs text-slate-500 font-medium">Sayfadaki eksikleri ve açılmayanları buradan bildirebilirsiniz</p>
                 </div>
             </div>
 
             <form onsubmit="handleIssueReportSubmit(event)" class="space-y-4">
                 
-                <!-- İsim / Rumuz -->
+                <!-- 1. İlgili Bölüm -->
                 <div>
-                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Adınız / Rumuz (Opsiyonel)</label>
-                    <input type="text" id="issue-reporter-name" placeholder="Örn: 8. Sınıf Öğrencisi" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all">
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <!-- Sınıf / Bölüm -->
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">İlgili Sınıf</label>
-                        <select id="issue-grade-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500">
-                            <option value="8. Sınıf (LGS)">8. Sınıf & LGS</option>
-                            <option value="7. Sınıf">7. Sınıf</option>
-                            <option value="6. Sınıf">6. Sınıf</option>
-                            <option value="5. Sınıf">5. Sınıf</option>
-                            <option value="Proje Merkezi">Proje Merkezi</option>
-                            <option value="Genel Portal">Genel / Diğer</option>
-                        </select>
-                    </div>
-
-                    <!-- Hata Türü -->
-                    <div>
-                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">Sorun Türü</label>
-                        <select id="issue-type-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500">
-                            <option value="Açılmayan Dosya / Link">❌ Açılmayan Dosya / Link</option>
-                            <option value="Oyun / Simülasyon Çalışmıyor">🎮 Oyun / Simülasyon Hatası</option>
-                            <option value="Yanlış Soru / Bilgi">⚠️ Yanlış Soru / Bilgi</option>
-                            <option value="Eksik İçerik Talebi">💡 Eksik İçerik / İstek</option>
-                            <option value="Tasarım / Görüntü Bozuk">📱 Tasarım / Ekran Hatası</option>
-                            <option value="Diğer">Diğer</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Detaylı Açıklama -->
-                <div>
-                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">
-                        Hata / Eksik Detayı <span class="text-red-500">*</span>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-red-600"></span> İlgili Bölüm
                     </label>
-                    <textarea id="issue-detail-input" rows="4" required placeholder="Hangi sayfada, hangi içerikte veya hangi butonda sorun yaşadığınızı kısaca belirtiniz..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all"></textarea>
+                    <select id="issue-section-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all">
+                        <option value="5. Sınıf Fen Bilimleri">🟢 5. Sınıf Fen Bilimleri</option>
+                        <option value="6. Sınıf Fen Bilimleri">🔵 6. Sınıf Fen Bilimleri</option>
+                        <option value="7. Sınıf Fen Bilimleri">🟡 7. Sınıf Fen Bilimleri</option>
+                        <option value="8. Sınıf (LGS) Fen Bilimleri" selected>🔴 8. Sınıf (LGS) Fen Bilimleri</option>
+                        <option value="Proje & STEM Merkezi">🏆 Proje & STEM Merkezi</option>
+                        <option value="Bilimin Rotasını Çizenler">🔭 Bilimin Rotasını Çizenler</option>
+                        <option value="Yazılı Sınav Merkezi">✏️ Ortak Yazılı Sınav Merkezi</option>
+                        <option value="Arama Motoru">🔍 Portal Genel Arama</option>
+                        <option value="Genel Portal & Tasarım">🧭 Genel Portal / Tasarım</option>
+                    </select>
+                </div>
+
+                <!-- 2. Alt Başlık / Modül -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Sorunlu Alt Başlık / Modül
+                    </label>
+                    <select id="issue-submodule-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-all">
+                        <option value="📝 Ders Notu & PDF Föyleri">📝 Ders Notu & PDF Föyleri</option>
+                        <option value="📊 Ders Sunumu & Akıllı Tahta Slaytları">📊 Ders Sunumu & Akıllı Tahta Slaytları</option>
+                        <option value="🎥 Videolar & Deney Çekimleri">🎥 Videolar & Deney Çekimleri</option>
+                        <option value="🧩 Etkinlikler & Çalışma Kağıtları">🧩 Etkinlikler & Çalışma Kağıtları</option>
+                        <option value="📚 Soru Bankası & Testler">📚 Soru Bankası & Testler</option>
+                        <option value="🎯 Deneme Sınavları">🎯 Deneme Sınavları</option>
+                        <option value="🎮 Eğitsel Oyunlar & Simülasyonlar">🎮 Eğitsel Oyunlar & Simülasyonlar</option>
+                        <option value="🔭 Bilim İnsanı Araştırma Notu">🔭 Bilim İnsanı Araştırma Notu</option>
+                        <option value="✏️ Ortak Yazılı Sınav Kağıtları">✏️ Ortak Yazılı Sınav Kağıtları</option>
+                        <option value="🏆 Projeler & STEM Atölyesi">🏆 Projeler & STEM Atölyesi</option>
+                        <option value="🃏 3D Bilgi Kartları / Mini Quizler">🃏 3D Bilgi Kartları / Mini Quizler</option>
+                        <option value="📱 Mobil Menü & Sayfa Butonları">📱 Mobil Menü & Sayfa Butonları</option>
+                        <option value="Diğer Bölüm">Diğer</option>
+                    </select>
+                </div>
+
+                <!-- 3. Sorun Türü (Genişletilmiş Seçenekler) -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-600"></span> Sorun Türü
+                    </label>
+                    <select id="issue-type-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                        <option value="❌ Açılmayan Dosya / Kırık İndirme Linki">❌ Açılmayan Dosya / Kırık İndirme Linki</option>
+                        <option value="⚠️ Yanlış / Hatalı Bilgi veya Soru">⚠️ Yanlış / Hatalı Bilgi veya Soru</option>
+                        <option value="📭 Eksik İçerik / Yüklenmemiş Materyal">📭 Eksik İçerik / Yüklenmemiş Materyal</option>
+                        <option value="🎮 Oyunda / Simülasyonda Çalışmayan Buton veya Hata">🎮 Oyunda / Simülasyonda Çalışmayan Buton veya Hata</option>
+                        <option value="📱 Mobilde / Telefonda Görünüm veya Kayma Sorunu">📱 Mobilde / Telefonda Görünüm veya Kayma Sorunu</option>
+                        <option value="🎥 Video Oynatılamıyor / Ses Yok">🎥 Video Oynatılamıyor / Ses Yok</option>
+                        <option value="📑 Yazım / İmla veya Görsel Hatası">📑 Yazım / İmla veya Görsel Hatası</option>
+                        <option value="💡 Yeni İçerik / Materyal / Konu Talebi">💡 Yeni İçerik / Materyal / Konu Talebi</option>
+                        <option value="⏱️ Süre / Cevap Anahtarı Hatası">⏱️ Süre / Cevap Anahtarı Hatası</option>
+                        <option value="❓ Diğer Teknik Sorun">❓ Diğer Teknik Sorun</option>
+                    </select>
                 </div>
 
                 <!-- Butonlar -->
-                <div class="pt-2 flex gap-3">
-                    <button type="button" onclick="closeIssueReportModal()" class="py-3 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase rounded-xl transition-all">
+                <div class="pt-3 flex gap-3">
+                    <button type="button" onclick="closeIssueReportModal()" class="py-3.5 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase rounded-xl transition-all">
                         Vazgeç
                     </button>
-                    <button type="submit" id="submit-issue-btn" class="flex-1 py-3 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
+                    <button type="submit" id="submit-issue-btn" class="flex-1 py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
                         <i class="fa-solid fa-paper-plane"></i>
-                        <span>Bildirimi Gönder</span>
+                        <span>Bildirimi Kaydet</span>
                     </button>
                 </div>
             </form>
@@ -1479,40 +1494,41 @@ function closeIssueReportModal() {
 function handleIssueReportSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
 
-    const nameInput = document.getElementById("issue-reporter-name");
-    const gradeSelect = document.getElementById("issue-grade-select");
+    const sectionSelect = document.getElementById("issue-section-select");
+    const submoduleSelect = document.getElementById("issue-submodule-select");
     const typeSelect = document.getElementById("issue-type-select");
-    const detailInput = document.getElementById("issue-detail-input");
-    const submitBtn = document.getElementById("submit-issue-btn");
-
-    if (!detailInput || !detailInput.value.trim()) {
-        showToast("⚠️ Lütfen hata detayını yazınız!", "error");
-        return;
-    }
 
     const newReport = {
         id: "issue-" + Date.now(),
-        reporter: nameInput && nameInput.value.trim() ? nameInput.value.trim() : "Öğrenci / Ziyaretçi",
-        grade: gradeSelect ? gradeSelect.value : "Genel",
-        type: typeSelect ? typeSelect.value : "Genel Hata",
-        detail: detailInput.value.trim(),
+        reporter: "Ziyaretçi",
+        section: sectionSelect ? sectionSelect.value : "Genel Bölüm",
+        grade: sectionSelect ? sectionSelect.value : "Genel",
+        subModule: submoduleSelect ? submoduleSelect.value : "Genel Modül",
+        type: typeSelect ? typeSelect.value : "Genel Sorun",
+        detail: `${sectionSelect ? sectionSelect.value : ''} — ${submoduleSelect ? submoduleSelect.value : ''}`,
         pageUrl: window.location.hash || "#home",
         createdAt: new Date().toLocaleString("tr-TR"),
         status: "Beklemede"
     };
 
-    let issueList = [];
+    let list = [];
     try {
-        issueList = JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]");
-    } catch (err) {
-        issueList = [];
+        list = JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]");
+    } catch(err) {
+        list = [];
     }
 
-    issueList.unshift(newReport);
-    localStorage.setItem("rotali_issue_reports", JSON.stringify(issueList));
+    list.unshift(newReport);
+    localStorage.setItem("rotali_issue_reports", JSON.stringify(list));
 
     closeIssueReportModal();
-    showToast("✅ Teşekkürler! Hata bildiriminiz yöneticimize iletildi.", "success");
+    showToast("✅ Bildiriminiz başarıyla iletildi. Teşekkür ederiz!", "success");
+
+    // Yönetici paneli açıksa listeyi yenile
+    if (window.location.hash === "#teacher-dashboard" || window.location.hash === "#admin") {
+        const appEl = document.getElementById("app");
+        if (appEl) renderTeacherDashboardPage(appEl);
+    }
 }
 
 function deleteIssueReport(issueId) {
@@ -2441,7 +2457,7 @@ function renderTeacherDashboardPage(container) {
                         <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
                             <i class="fa-solid fa-bug text-red-600"></i> Gelen Hata & Eksik Bildirimleri (${JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]").length})
                         </h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Ziyaretçiler ve öğrenciler tarafından bildirilen eksikler, açılmayan linkler ve notlar.</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Ziyaretçiler tarafından bildirilen sorunlu bölümler, alt modüller ve hata türleri.</p>
                     </div>
                 </div>
 
@@ -2456,9 +2472,9 @@ function renderTeacherDashboardPage(container) {
                             <thead>
                                 <tr class="bg-slate-50 text-slate-500 font-black uppercase tracking-wider border-b border-slate-200">
                                     <th class="p-3">Tarih</th>
-                                    <th class="p-3">Bildiren / Sınıf</th>
+                                    <th class="p-3">İlgili Bölüm</th>
+                                    <th class="p-3">Sorunlu Alt Başlık</th>
                                     <th class="p-3">Sorun Türü</th>
-                                    <th class="p-3">Hata / Eksik Detayı</th>
                                     <th class="p-3">Durum</th>
                                     <th class="p-3 text-right">İşlemler</th>
                                 </tr>
@@ -2467,30 +2483,25 @@ function renderTeacherDashboardPage(container) {
                                 ${JSON.parse(localStorage.getItem("rotali_issue_reports") || "[]").map(item => `
                                     <tr class="hover:bg-slate-50/80 transition-colors">
                                         <td class="p-3 text-slate-400 font-bold whitespace-nowrap">${item.createdAt}</td>
+                                        <td class="p-3 font-bold text-slate-900">${item.section || item.grade || 'Genel'}</td>
+                                        <td class="p-3 font-semibold text-slate-700">${item.subModule || 'Genel'}</td>
                                         <td class="p-3">
-                                            <div class="font-bold text-slate-900">${item.reporter}</div>
-                                            <span class="text-[10px] text-slate-500">${item.grade}</span>
-                                        </td>
-                                        <td class="p-3">
-                                            <span class="px-2 py-0.5 rounded-lg bg-red-50 text-red-700 text-[10px] font-black uppercase border border-red-200">
+                                            <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-[10px] font-black uppercase border border-red-200 inline-block">
                                                 ${item.type}
                                             </span>
                                         </td>
-                                        <td class="p-3 text-slate-800 text-xs leading-relaxed max-w-md">${item.detail}</td>
                                         <td class="p-3 whitespace-nowrap">
                                             <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${item.status === 'Çözüldü' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
                                                 ${item.status || 'Beklemede'}
                                             </span>
                                         </td>
-                                        <td class="p-3 text-right whitespace-nowrap">
-                                            <div class="flex items-center justify-end gap-1.5">
-                                                <button onclick="markIssueResolved('${item.id}')" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg font-bold text-xs transition-all" title="Çözüldü Olarak İşaretle">
-                                                    <i class="fa-solid fa-check"></i>
-                                                </button>
-                                                <button onclick="deleteIssueReport('${item.id}')" class="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 rounded-lg font-bold text-xs transition-all" title="Sil">
-                                                    <i class="fa-solid fa-trash-can"></i>
-                                                </button>
-                                            </div>
+                                        <td class="p-3 text-right whitespace-nowrap space-x-1.5">
+                                            <button onclick="markIssueResolved('${item.id}')" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-600 text-emerald-700 hover:text-white rounded-xl text-[11px] font-bold border border-emerald-200 transition-colors" title="Çözüldü Olarak İşaretle">
+                                                <i class="fa-solid fa-check"></i>
+                                            </button>
+                                            <button onclick="deleteIssueReport('${item.id}')" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-600 text-rose-700 hover:text-white rounded-xl text-[11px] font-bold border border-rose-200 transition-colors" title="Bildirimi Sil">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
                                         </td>
                                     </tr>
                                 `).join("")}
@@ -3839,23 +3850,41 @@ function updateAdminNavUI() {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     ADMIN_CONFIG.isAdmin = isAdmin;
 
-    // 1. Desktop Navbar - Üst menüde içerik ekle ve çıkış butonlarını kaldırıyoruz
+    // 1. Desktop: Ev (Home) Butonunun Yanına Çıkış Simgesi
+    const desktopLogout = document.getElementById("admin-home-logout-desktop");
+    if (desktopLogout) {
+        if (isAdmin) {
+            desktopLogout.innerHTML = `
+                <button type="button" onclick="handleAdminLogout()" class="w-11 h-11 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-lg transition-all shadow-sm border border-rose-200 hover:scale-105 transform active:scale-95 animate-in fade-in" title="👑 Yönetici Modunu Kapat (Çıkış Yap)">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            `;
+        } else {
+            desktopLogout.innerHTML = "";
+        }
+    }
+
+    // 2. Mobil: Ev (Home) Butonunun Yanına Çıkış Simgesi
+    const mobileLogout = document.getElementById("admin-home-logout-mobile");
+    if (mobileLogout) {
+        if (isAdmin) {
+            mobileLogout.innerHTML = `
+                <button type="button" onclick="handleAdminLogout()" class="w-10 h-10 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-base transition-all shadow-sm border border-rose-200 active:scale-95 animate-in fade-in" title="👑 Yönetici Modunu Kapat">
+                    <i class="fa-solid fa-power-off"></i>
+                </button>
+            `;
+        } else {
+            mobileLogout.innerHTML = "";
+        }
+    }
+
+    // Floating Quick Admin Bar ve diğer menüleri temizle
     const desktopContainer = document.getElementById("admin-nav-container");
-    if (desktopContainer) {
-        desktopContainer.innerHTML = "";
-    }
-
-    // 2. Mobile Menu Container - Mobil üst menüyü temiz tutuyoruz
+    if (desktopContainer) desktopContainer.innerHTML = "";
     const mobileContainer = document.getElementById("admin-mobile-nav-container");
-    if (mobileContainer) {
-        mobileContainer.innerHTML = "";
-    }
-
-    // 3. Floating Quick Admin Bar'ı kaldırıyoruz
+    if (mobileContainer) mobileContainer.innerHTML = "";
     const floatingBar = document.getElementById("floating-admin-bar");
-    if (floatingBar) {
-        floatingBar.remove();
-    }
+    if (floatingBar) floatingBar.remove();
 }
 
 // Gizli Yönetici Girişi Kısayolu: Ctrl + Shift + A veya Ctrl + Alt + A
@@ -4253,14 +4282,109 @@ function renderInteractiveGameScreen(modal) {
 
     const currentQ = questions[currentQIdx];
 
+    // Helper SVG illustrations
+    let illustrationHtml = "";
+    const qLower = (currentQ.q + " " + (currentQ.hint || "")).toLowerCase();
+    if (qLower.includes("dereceli") || qLower.includes("mezür") || qLower.includes("hacmini")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <rect x="22" y="10" width="20" height="60" rx="3" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5"/>
+            <rect x="16" y="70" width="32" height="6" rx="2" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/>
+            <rect x="24" y="30" width="16" height="38" fill="#38bdf8" opacity="0.6"/>
+            <!-- lines -->
+            <line x1="32" y1="20" x2="40" y2="20" stroke="#0284c7" stroke-width="1.5"/>
+            <line x1="35" y1="28" x2="40" y2="28" stroke="#0284c7" stroke-width="1"/>
+            <line x1="32" y1="36" x2="40" y2="36" stroke="#0284c7" stroke-width="1.5"/>
+            <line x1="35" y1="44" x2="40" y2="44" stroke="#0284c7" stroke-width="1"/>
+            <line x1="32" y1="52" x2="40" y2="52" stroke="#0284c7" stroke-width="1.5"/>
+            <line x1="35" y1="60" x2="40" y2="60" stroke="#0284c7" stroke-width="1"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("beher") || qLower.includes("geniş ağızlı")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <path d="M14,14 L14,68 Q14,74 20,74 L44,74 Q50,74 50,68 L50,14" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5"/>
+            <!-- spout -->
+            <path d="M10,14 L14,14 L50,14" stroke="#0284c7" stroke-width="2.5" stroke-linecap="round"/>
+            <path d="M16,36 L48,36 L48,68 Q48,72 44,72 L20,72 Q16,72 16,68 Z" fill="#60a5fa" opacity="0.65"/>
+            <line x1="16" y1="42" x2="24" y2="42" stroke="#1d4ed8" stroke-width="1.5"/>
+            <line x1="16" y1="50" x2="28" y2="50" stroke="#1d4ed8" stroke-width="1.5"/>
+            <line x1="16" y1="58" x2="24" y2="58" stroke="#1d4ed8" stroke-width="1.5"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("erlenmayer") || qLower.includes("titrasyon") || qLower.includes("koni")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <path d="M26,10 L38,10 L38,24 L54,66 Q56,72 50,72 L14,72 Q8,72 10,66 L26,24 Z" fill="#e0f2fe" stroke="#7c3aed" stroke-width="2.5"/>
+            <rect x="24" y="8" width="16" height="4" rx="1.5" fill="#c4b5fd" stroke="#7c3aed" stroke-width="1.5"/>
+            <path d="M18,48 L46,48 L51,66 Q52,70 48,70 L16,70 Q12,70 13,66 Z" fill="#a78bfa" opacity="0.7"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("deney tüpü") || qLower.includes("tüp")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <path d="M26,10 L38,10 L38,62 Q38,72 32,72 Q26,72 26,62 Z" fill="#e0f2fe" stroke="#059669" stroke-width="2.5"/>
+            <rect x="24" y="8" width="16" height="4" rx="1.5" fill="#a7f3d0" stroke="#059669" stroke-width="1.5"/>
+            <path d="M28,38 L36,38 L36,62 Q36,70 32,70 Q28,70 28,62 Z" fill="#34d399" opacity="0.75"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("ispirto") || qLower.includes("ısı kaynağı") || qLower.includes("fitil")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <circle cx="32" cy="52" r="20" fill="#fef3c7" stroke="#d97706" stroke-width="2.5"/>
+            <rect x="28" y="26" width="8" height="8" fill="#94a3b8" stroke="#475569" stroke-width="1.5"/>
+            <!-- flame -->
+            <path d="M32,10 Q38,18 35,24 Q32,28 29,24 Q26,18 32,10 Z" fill="#f97316"/>
+            <path d="M32,14 Q35,20 33,24 Q32,26 31,24 Q29,20 32,14 Z" fill="#facc15"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("sacayak") || qLower.includes("üç ayak")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <ellipse cx="32" cy="24" rx="22" ry="8" fill="#e2e8f0" stroke="#334155" stroke-width="2.5"/>
+            <line x1="16" y1="26" x2="10" y2="72" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+            <line x1="32" y1="30" x2="32" y2="72" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+            <line x1="48" y1="26" x2="54" y2="72" stroke="#334155" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("damlalık") || qLower.includes("damla damla")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <!-- bulb -->
+            <path d="M24,18 Q24,8 32,8 Q40,8 40,18 Q40,24 35,26 L35,62 L32,70 L29,62 L29,26 Q24,24 24,18 Z" fill="#fed7aa" stroke="#ea580c" stroke-width="2"/>
+            <circle cx="32" cy="74" r="2" fill="#38bdf8"/>
+        </svg>
+    </div>`;
+    } else if (qLower.includes("sıcaklık") || qLower.includes("termometre") || qLower.includes("celsius")) {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <rect x="28" y="10" width="8" height="52" rx="4" fill="#fee2e2" stroke="#dc2626" stroke-width="2"/>
+            <circle cx="32" cy="62" r="9" fill="#ef4444" stroke="#dc2626" stroke-width="2"/>
+            <rect x="30.5" y="24" width="3" height="38" fill="#ef4444"/>
+            <!-- marks -->
+            <line x1="38" y1="16" x2="42" y2="16" stroke="#991b1b" stroke-width="1"/>
+            <line x1="38" y1="24" x2="42" y2="24" stroke="#991b1b" stroke-width="1"/>
+            <line x1="38" y1="32" x2="42" y2="32" stroke="#991b1b" stroke-width="1"/>
+            <line x1="38" y1="40" x2="42" y2="40" stroke="#991b1b" stroke-width="1"/>
+        </svg>
+    </div>`;
+    } else {
+        illustrationHtml = `<div class="w-20 h-24 mx-auto mb-2 flex items-center justify-center p-2 rounded-2xl bg-white shadow-md border border-slate-100">
+        <svg viewBox="0 0 64 80" class="w-16 h-20">
+            <polygon points="32,10 58,58 6,58" fill="#fef08a" stroke="#ca8a04" stroke-width="3"/>
+            <text x="32" y="50" font-size="28" font-weight="900" text-anchor="middle" fill="#854d0e">!</text>
+        </svg>
+    </div>`;
+    }
+
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+        <div class="bg-white rounded-3xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[94vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
             
             <!-- Üst Bar -->
             <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-sm flex-shrink-0">
-                        <i class="${currentQ.icon || 'fa-solid fa-gamepad'}"></i>
+                        <i class="${currentQ.icon || 'fa-solid fa-flask'}"></i>
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
@@ -4288,14 +4412,15 @@ function renderInteractiveGameScreen(modal) {
             </div>
 
             <!-- Oyun Gövdesi -->
-            <div class="p-5 sm:p-6 space-y-5 overflow-y-auto">
+            <div class="p-4 sm:p-6 space-y-4 overflow-y-auto">
                 <div class="flex items-center justify-between text-xs font-black text-slate-400">
                     <span>SORU ${currentQIdx + 1} / ${questions.length}</span>
                     <span class="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">+10 Puan</span>
                 </div>
 
-                <!-- Soru Kartı -->
-                <div class="p-5 bg-gradient-to-br from-amber-50/60 to-orange-50/60 rounded-2xl border-2 border-amber-200/80 shadow-sm text-center">
+                <!-- Soru Kartı & Görsel Laboratuvar İllüstrasyonu -->
+                <div class="p-4 sm:p-5 bg-gradient-to-br from-amber-50/70 to-orange-50/70 rounded-2xl border-2 border-amber-200/80 shadow-sm text-center">
+                    ${illustrationHtml}
                     <p class="text-base sm:text-lg font-black text-slate-900 leading-snug">
                         ${currentQ.q}
                     </p>
@@ -4307,10 +4432,10 @@ function renderInteractiveGameScreen(modal) {
                 </div>
 
                 <!-- Şıklar / Seçenekler (Büyük Dokunmatik Butonlar) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="game-options-container">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5" id="game-options-container">
                     ${currentQ.options.map((opt, idx) => `
-                        <button type="button" onclick="handleGameAnswer(${idx})" id="opt-btn-${idx}" class="p-4 bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl text-left font-black text-sm text-slate-800 transition-all flex items-center gap-3 shadow-sm hover:scale-[1.02] active:scale-95">
-                            <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-black flex-shrink-0">
+                        <button type="button" onclick="handleGameAnswer(${idx})" id="opt-btn-${idx}" class="p-3.5 sm:p-4 bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl text-left font-black text-xs sm:text-sm text-slate-800 transition-all flex items-center gap-3 shadow-sm hover:scale-[1.02] active:scale-95">
+                            <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-black flex-shrink-0">
                                 ${['A', 'B', 'C', 'D'][idx]}
                             </span>
                             <span class="leading-tight">${opt}</span>
