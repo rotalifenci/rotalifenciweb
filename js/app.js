@@ -464,6 +464,155 @@ function updateStudentHeader() {
 // -------------------------------------------------------------
 // 1. 🏠 PORTAL KONTROL MERKEZİ (ANA SAYFA)
 // -------------------------------------------------------------
+function renderHomeRecentMaterialsSection() {
+    let customList = [];
+    try {
+        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    } catch (e) {
+        customList = [];
+    }
+
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    // Örnek varsayılan son eklenen içerikler (Kullanıcı henüz eklemediyse veya azsa vitrin dolu görünür)
+    const defaultRecent = [
+        {
+            id: "default-rec-1",
+            grade: "5",
+            category: "egitsel-oyunlar",
+            format: "EĞİTSEL OYUN",
+            unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
+            title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
+            desc: "Beherglas, erlenmayer, dereceli silindir ve deney tüplerini eğlenerek eşleştirin ve tanıyın.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#interactive/crossword",
+            tags: ["5. Sınıf", "Oyun", "Laboratuvar"]
+        },
+        {
+            id: "default-rec-2",
+            grade: "8",
+            category: "ders-sunumu",
+            format: "PPTX / SUNUM",
+            unit: "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+            title: "8. Sınıf LGS Basınç Ünitesi Akıllı Tahta Uyumlu Tam Kapsamlı Slayt Seti",
+            desc: "Animasyonlu deney düzenekleri, formül çıkarımları ve MEB çıkmış soru çözümleri içeren sunum.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#grade/grade-8/ders-sunumu",
+            tags: ["8. Sınıf", "LGS 2026", "Sunum"]
+        },
+        {
+            id: "default-rec-3",
+            grade: "7",
+            category: "ders-notu",
+            format: "PDF NOT",
+            unit: "2. Ünite: Hücre ve Bölünmeler",
+            title: "7. Sınıf Hücre, Mitoz ve Mayoz Bölünme Karşılaştırma Tablolu Ders Notu",
+            desc: "Görsel hafıza teknikleriyle hazırlanmış renkli konu özetleri ve sınavda çıkabilecek tuzak noktalar.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#grade/grade-7/ders-notu",
+            tags: ["7. Sınıf", "Ders Notu", "Mitoz-Mayoz"]
+        },
+        {
+            id: "default-rec-4",
+            grade: "6",
+            category: "soru-bankasi",
+            format: "TEST / SORU",
+            unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
+            title: "6. Sınıf Gezegenler ve Güneş-Ay Tutulmaları Yeni Nesil Beceri Temelli Test",
+            desc: "Açık uçlu ve çoktan seçmeli yeni nesil MEB kazanım test föyü ve video çözümleri.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#grade/grade-6/soru-bankasi",
+            tags: ["6. Sınıf", "Soru Bankası", "MEB Uyumlu"]
+        }
+    ];
+
+    // Özel yüklenenleri en başa al, yoksa varsayılanlarla birleştir
+    let displayItems = [...customList];
+    if (displayItems.length < 4) {
+        for (let def of defaultRecent) {
+            if (!displayItems.some(i => i.title === def.title)) {
+                displayItems.push(def);
+            }
+            if (displayItems.length >= 6) break;
+        }
+    }
+
+    return `
+        <!-- 🔥 SON EKLENENLER & GÜNCEL MATERYAL VİTRİNİ -->
+        <div class="mb-14 animate-in fade-in duration-300">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-600 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-fire text-amber-300"></i> SON EKLENENLER
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">Rotalı Fenci Farkıyla Güncel Materyal Akışı</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Yeni Yayınlanan Eğitim Materyalleri</h3>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span>Yeni Materyal Ekle</span>
+                        </button>
+                    ` : ''}
+                    <a href="#grades" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
+                        Tüm Sınıflar →
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${displayItems.slice(0, 6).map(item => `
+                    <div class="bg-white rounded-3xl p-6 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-500/10 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-3 py-1 rounded-full ${item.grade === '8' ? 'bg-red-100 text-red-800' : item.grade === '7' ? 'bg-amber-100 text-amber-800' : item.grade === '6' ? 'bg-blue-100 text-blue-800' : item.grade === '5' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'} text-[11px] font-black uppercase tracking-wider">
+                                    ${item.grade === 'all' ? 'TÜM SINIFLAR' : item.grade + '. SINIF'} • ${item.format || 'DOKÜMAN'}
+                                </span>
+                                <span class="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                                    <i class="fa-regular fa-clock"></i> ${item.createdAt || 'Yeni'}
+                                </span>
+                            </div>
+
+                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
+                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+
+                            ${item.tags && item.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-1 mb-4">
+                                    ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
+                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-download'}"></i>
+                                <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Başlat / Oyna' : item.category === 'videolar' ? 'Dersi İzle' : 'Materyali Aç / İndir'}</span>
+                            </button>
+
+                            ${isAdmin && !item.id.startsWith('default-rec-') ? `
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold rounded-lg border border-amber-200 transition-all flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold rounded-lg border border-rose-200 transition-all flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-trash-can"></i> Sil
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
 function renderHomePage(container) {
     const profile = DataManager.getStudentProfile();
 
@@ -476,11 +625,13 @@ function renderHomePage(container) {
                 
                 <!-- Üst Rozet & Başlık -->
                 <div class="text-center max-w-4xl mx-auto mb-10">
-                    <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-red-50 via-white to-blue-50 border border-red-200 text-red-700 text-xs sm:text-sm font-black tracking-widest uppercase hero-glow-badge shadow-sm mb-5">
-                        <i class="fa-solid fa-dharmachakra text-red-600 animate-spin" style="animation-duration: 15s;"></i>
-                        <span>ROTALI FENCİ</span>
-                        <span class="text-slate-300">•</span>
-                        <span class="text-blue-900">DİJİTAL EĞİTİM PORTALI</span>
+                    <div class="flex flex-col items-center justify-center mb-5">
+                        <img src="assets/logo.jpg" alt="Rotalı Fenci Logo" class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover shadow-2xl border-4 border-white ring-4 ring-red-500/20 hover:scale-105 transition-all mb-4">
+                        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-red-50 via-white to-blue-50 border border-red-200 text-red-700 text-xs sm:text-sm font-black tracking-widest uppercase hero-glow-badge shadow-sm">
+                            <span>ROTALI FENCİ</span>
+                            <span class="text-slate-300">•</span>
+                            <span class="text-blue-900">DİJİTAL EĞİTİM PORTALI</span>
+                        </div>
                     </div>
 
                     <!-- 3 Satırlı Sanatsal Başlık -->
@@ -513,6 +664,8 @@ function renderHomePage(container) {
                         </a>
                     </div>
                 </div>
+
+                ${renderHomeRecentMaterialsSection()}
 
                 <!-- 🚀 1. HIZLI GEÇİŞ — ROTANI SEÇ (5, 6, 7, 8. SINIF + LGS KARTLARI) -->
                 <div class="mb-14">
