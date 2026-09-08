@@ -1181,11 +1181,11 @@ function renderScientistsModule(gradeNumber) {
 }
 
 function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
-    // Parse gradeId and subTab: e.g. "grade-5/bilim-insanlari" or "grade-5"
+    // Parse gradeId and subTab: e.g. "grade-5/ders-notu" or "grade-5"
     let parts = (gradeIdWithTab || "grade-8").split("/");
     let gradeId = parts[0] || "grade-8";
-    let subTab = parts[1] || "bilim-insanlari";
-    if (subTab === "uniteler") subTab = "bilim-insanlari";
+    let subTab = parts[1] || "ders-notu";
+    if (subTab === "uniteler") subTab = "ders-notu";
 
     // Find grade in PORTAL_GRADES
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
@@ -1216,15 +1216,8 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     <!-- 8 ALT BÖLÜM KUTULARI (BÜYÜK BÖLÜMÜN İÇİNDE TEK SIRA / DUYARLI GRID) -->
                     <div class="pt-6 border-t border-white/25">
                         <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
-                            <!-- 1. Bilimin Rotasını Çizenler -->
-                            <button onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'bilim-insanlari' || subTab === 'uniteler' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
-                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'bilim-insanlari' || subTab === 'uniteler' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
-                                    <i class="fa-solid fa-telescope"></i>
-                                </div>
-                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🔭 BİLİMİN ROTASINI ÇİZENLER</span>
-                            </button>
-
-                            <!-- 2. Ders Notu -->
+                            
+                            <!-- 1. Ders Notu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'ders-notu' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-file-lines"></i>
@@ -1232,7 +1225,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">📝 DERS NOTU</span>
                             </button>
 
-                            <!-- 3. Ders Sunumu -->
+                            <!-- 2. Ders Sunumu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'ders-sunumu' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'ders-sunumu' ? 'bg-orange-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-file-powerpoint"></i>
@@ -1240,7 +1233,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">📊 DERS SUNUMU</span>
                             </button>
 
-                            <!-- 4. Videolar -->
+                            <!-- 3. Videolar -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'videolar')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'videolar' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'videolar' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-circle-play"></i>
@@ -1248,7 +1241,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎥 VİDEOLAR</span>
                             </button>
 
-                            <!-- 5. Etkinlikler -->
+                            <!-- 4. Etkinlikler -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'etkinlikler')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'etkinlikler' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-puzzle-piece"></i>
@@ -1256,7 +1249,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🧩 ETKİNLİKLER</span>
                             </button>
 
-                            <!-- 6. Soru Bankası -->
+                            <!-- 5. Soru Bankası -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'soru-bankasi' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'soru-bankasi' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-book-open-reader"></i>
@@ -1264,7 +1257,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">📚 SORU BANKASI</span>
                             </button>
 
-                            <!-- 7. Denemeler -->
+                            <!-- 6. Denemeler -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'denemeler')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'denemeler' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'denemeler' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-bullseye"></i>
@@ -1272,12 +1265,20 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
                             </button>
 
-                            <!-- 8. Eğitsel Oyunlar -->
+                            <!-- 7. Eğitsel Oyunlar -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-gamepad"></i>
                                 </div>
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
+                            </button>
+
+                            <!-- 8. Bilimin Rotasını Çizenler (EN SONDA) -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'bilim-insanlari' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-telescope"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🔭 BİLİMİN ROTASINI ÇİZENLER</span>
                             </button>
                         </div>
                     </div>
