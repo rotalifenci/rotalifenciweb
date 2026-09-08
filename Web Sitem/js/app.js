@@ -764,7 +764,7 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                     <h3 class="text-2xl font-black text-slate-900 flex items-center gap-2.5">
                         <i class="fa-solid fa-book-open text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri Detaylı Konu Anlatımı & Özetleri
                     </h3>
-                    <span class="text-xs font-bold px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-200">MEB 2024-2025 Müfredat Uyumlu</span>
+                    <span class="text-xs font-bold px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-200">MEB 2026-2027 Müfredat Uyumlu</span>
                 </div>
                 <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
                     Sınavlarda ve yazılılarda en sık karşılaşılan temel kavramlar, formüller, dikkat edilmesi gereken tuzaklar ve önemli bilimsel kurallar aşağıda özetlenmiştir.

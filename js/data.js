@@ -7,7 +7,7 @@ const PORTAL_CONFIG = {
     brandName: "ROTALI FENCİ",
     portalTitle: "Dijital Fen Bilimleri Eğitim Portalı",
     tagline: "Öğrenci için öğrenme platformu, öğretmen için çalışma alanı, okul için dijital eğitim merkezi.",
-    academicYear: "2024-2025 MEB Müfredat Sürümü",
+    academicYear: "2026-2027 MEB Müfredat Sürümü",
     activeRole: "student", // 'student' | 'teacher'
     stats: [
         { label: "Aktif Öğrenci & Öğretmen", value: "24.500+", icon: "fa-solid fa-users" },
@@ -673,10 +673,10 @@ const TEACHERS_ROOM_DATA = {
             id: "docs-plans",
             name: "📂 Yıllık & Ders Planları",
             items: [
-                { title: "2024-2025 5. Sınıf Fen Bilimleri Ünitelendirilmiş Yıllık Planı (MEB)", format: "DOCX / PDF", updated: "Eylül 2024" },
-                { title: "2024-2025 6. Sınıf Fen Bilimleri Ünitelendirilmiş Yıllık Planı (MEB)", format: "DOCX / PDF", updated: "Eylül 2024" },
-                { title: "2024-2025 7. Sınıf Fen Bilimleri Ünitelendirilmiş Yıllık Planı (MEB)", format: "DOCX / PDF", updated: "Eylül 2024" },
-                { title: "2024-2025 8. Sınıf LGS Fen Bilimleri Ünitelendirilmiş Yıllık Planı", format: "DOCX / PDF", updated: "Eylül 2024" },
+                { title: "2026-2027 5. Sınıf Fen Bilimleri Ünitelendirilmiş Yıllık Planı (MEB)", format: "DOCX / PDF", updated: "Eylül 2024" },
+                { title: "2026-2027 6. Sınıf Fen Bilimleri Ünitelendirilmiş Yıllık Planı (MEB)", format: "DOCX / PDF", updated: "Eylül 2024" },
+                { title: "2026-2027 7. Sınıf Fen Bilimleri Ünitelendirilmiş Yıllık Planı (MEB)", format: "DOCX / PDF", updated: "Eylül 2024" },
+                { title: "2026-2027 8. Sınıf LGS Fen Bilimleri Ünitelendirilmiş Yıllık Planı", format: "DOCX / PDF", updated: "Eylül 2024" },
                 { title: "Giriş-Gelişme-Sonuç Odaklı 5E Modeli Günlük Ders Akış Şablonu", format: "DOCX", updated: "Güncel" }
             ]
         },
