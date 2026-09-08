@@ -339,6 +339,7 @@ function showToast(message, type = "success") {
 // DİNAMİK PORTAL ROUTER
 // -------------------------------------------------------------
 function handleRouteChange() {
+    updateAdminNavUI();
     const rawHash = window.location.hash.slice(1);
     const hash = rawHash || "home";
     const appEl = document.getElementById("app");
@@ -2304,21 +2305,80 @@ function handleAdminLogout() {
 
 function updateAdminNavUI() {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    let logoutBtn = document.getElementById("admin-logout-nav-btn");
-    let adminNavBtn = document.getElementById("admin-nav-btn");
+    ADMIN_CONFIG.isAdmin = isAdmin;
 
-    if (isAdmin) {
-        if (!logoutBtn && adminNavBtn && adminNavBtn.parentElement) {
-            logoutBtn = document.createElement("button");
-            logoutBtn.id = "admin-logout-nav-btn";
-            logoutBtn.type = "button";
-            logoutBtn.onclick = handleAdminLogout;
-            logoutBtn.className = "px-3 py-1.5 rounded-xl bg-red-700/80 hover:bg-red-800 text-white text-xs font-black uppercase tracking-wider transition-all flex items-center gap-1.5 border border-red-500 shadow-sm ml-2";
-            logoutBtn.innerHTML = `<i class="fa-solid fa-power-off"></i> <span>Çıkış</span>`;
-            adminNavBtn.parentElement.appendChild(logoutBtn);
+    // 1. Desktop Navbar
+    const desktopContainer = document.getElementById("admin-nav-container");
+    if (desktopContainer) {
+        if (isAdmin) {
+            desktopContainer.innerHTML = `
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="triggerUploadModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-emerald-500 hover:scale-105 transform" title="Yeni Materyal Ekle">
+                        <i class="fa-solid fa-cloud-arrow-up text-xs"></i> <span>İÇERİK EKLE</span>
+                    </button>
+                    <button type="button" onclick="handleAdminLogout()" class="px-3 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md shadow-red-600/30 transition-all flex items-center gap-1.5 border border-red-500 hover:scale-105 transform" title="Yönetici Oturumundan Çıkış Yap">
+                        <i class="fa-solid fa-power-off text-xs"></i> <span>ÇIKIŞ</span>
+                    </button>
+                </div>
+            `;
+        } else {
+            desktopContainer.innerHTML = `
+                <button type="button" onclick="triggerUploadModal()" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs tracking-wider uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 border border-slate-700 hover:scale-105 transform">
+                    <i class="fa-solid fa-lock text-amber-400 text-xs"></i> <span>YÖNETİCİ PANELİ</span>
+                </button>
+            `;
         }
+    }
+
+    // 2. Mobile Menu Container
+    const mobileContainer = document.getElementById("admin-mobile-nav-container");
+    if (mobileContainer) {
+        if (isAdmin) {
+            mobileContainer.innerHTML = `
+                <div class="space-y-2">
+                    <button type="button" onclick="triggerUploadModal(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-cloud-arrow-up"></i> <span>YENİ İÇERİK EKLE</span>
+                    </button>
+                    <button type="button" onclick="handleAdminLogout(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-power-off"></i> <span>YÖNETİCİ ÇIKIŞI YAP</span>
+                    </button>
+                </div>
+            `;
+        } else {
+            mobileContainer.innerHTML = `
+                <button type="button" onclick="triggerUploadModal(); const m = document.getElementById('mobile-menu'); if(m) m.classList.add('hidden');" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-lock text-amber-400"></i> <span>YÖNETİCİ PANELİ GİRİŞİ</span>
+                </button>
+            `;
+        }
+    }
+
+    // 3. Floating Quick Admin Bar (Ekranın Altında Sabit Kısayol)
+    let floatingBar = document.getElementById("floating-admin-bar");
+    if (isAdmin) {
+        if (!floatingBar) {
+            floatingBar = document.createElement("div");
+            floatingBar.id = "floating-admin-bar";
+            floatingBar.className = "fixed bottom-5 left-1/2 -translate-x-1/2 z-40 bg-slate-900/95 backdrop-blur-md text-white border border-slate-700/80 px-4 py-2.5 rounded-2xl shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300";
+            document.body.appendChild(floatingBar);
+        }
+        floatingBar.innerHTML = `
+            <div class="flex items-center gap-2 text-xs font-black text-amber-400 border-r border-slate-700 pr-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <i class="fa-solid fa-crown"></i> <span class="hidden sm:inline">YÖNETİCİ MODU</span>
+            </div>
+            <button type="button" onclick="triggerUploadModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Materyal</span> Ekle
+            </button>
+            <button type="button" onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-black rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Yönetici Oturumunu Kapat">
+                <i class="fa-solid fa-power-off"></i> <span>Çıkış Yap</span>
+            </button>
+        `;
+        floatingBar.style.display = "flex";
     } else {
-        if (logoutBtn) logoutBtn.remove();
+        if (floatingBar) {
+            floatingBar.remove();
+        }
     }
 }
 
