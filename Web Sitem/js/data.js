@@ -1042,11 +1042,25 @@ function getGradeSubSectionsData(gradeNumber) {
             { id: `deneme-${gNum}-4`, title: isLGS ? "8. Sınıf LGS Türkiye Geneli Fen Bilimleri Denemesi" : `${gNum}. Sınıf Yıl Sonu Genel Fen Denemesi`, type: "Tam Müfredat", questions: "20 Soru", time: "40 Dakika" }
         ],
 
-        // 7. EĞİTSEL OYUNLAR
-        egitselOyunlar: [
-            { id: `oyun-${gNum}-1`, title: `${gNum}. Sınıf Fen Çarkıfeleği & Terim Yarışması`, icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, gelen kavramı tanımla veya soruyu 30 saniyede bilip puanları topla!", type: "İnteraktif Çark" },
-            { id: `oyun-${gNum}-2`, title: `${gNum}. Sınıf Kavram & Organel Eşleştirme Turnuvası`, icon: "fa-solid fa-puzzle-piece", desc: "Zamana karşı yarışarak kavramları doğru açıklamalarıyla eşleştir, liderlik tablosuna adını yazdır.", type: "Hızlı Eşleştirme" },
-            { id: `oyun-${gNum}-3`, title: `${gNum}. Sınıf Bilim Milyoneri (Fen Kim Milyoner Olmak İster?)`, icon: "fa-solid fa-trophy", desc: "15 aşamalı fen sorularını bil, jokerlerini kullan ve fen şampiyonu ol!", type: "Yarışma Formatı" }
+                // 7. EĞİTSEL OYUNLAR (HER SINIF İÇİN TAM ENTEGRE & İNTERAKTİF)
+        egitselOyunlar: gNum === 5 ? [
+            { id: "oyun-5-lab", title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu", icon: "fa-solid fa-flask", desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eğlenerek eşleştirin ve tanıyın.", type: "İnteraktif Laboratuvar Oyunu", badge: "Popüler Oyun" },
+            { id: "oyun-5-gunes", title: "5. Sınıf Güneş, Dünya ve Ay 3D Yörünge Simülatörü", icon: "fa-solid fa-earth-americas", desc: "Ay'ın evrelerini ve Dünya etrafındaki dolanmasını 3D simülasyonda deneyimleyin.", type: "3D Uzay Simülatörü", badge: "Simülasyon" },
+            { id: "oyun-5-canlilar", title: "5. Sınıf Canlılar Dünyası ve Mantarlar Sınıflandırma Oyunu", icon: "fa-solid fa-paw", desc: "Omurgalı/omurgasız hayvanları ve bitkileri doğru kutulara sürükleyip puanları toplayın.", type: "Sürükle-Bırak Oyunu", badge: "Kavram Oyunu" },
+            { id: "oyun-5-cark", title: "5. Sınıf Fen Çarkıfeleği & Terim Yarışması", icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, 5. sınıf fen sorularını 30 saniyede bilip puanları topla!", type: "İnteraktif Çark", badge: "Yarışma" }
+        ] : gNum === 6 ? [
+            { id: "oyun-6-organ", title: "6. Sınıf Vücudumuzdaki Sistemler & Organ Eşleştirme Turnuvası", icon: "fa-solid fa-heart-pulse", desc: "Dolaşım, solunum, sindirim ve boşaltım organlarını görevleriyle eşleştir, rekor kır.", type: "Organel & Sistem Eşleştirme", badge: "Turnuva" },
+            { id: "oyun-6-gezegen", title: "6. Sınıf Güneş Sistemi & Tutulmalar 3D Uzay Keşfi", icon: "fa-solid fa-meteor", desc: "İç ve dış gezegenleri sırala, Güneş ve Ay tutulması modellerini oluştur.", type: "3D Uzay Simülatörü", badge: "3D Model" },
+            { id: "oyun-6-cark", title: "6. Sınıf Fen Çarkıfeleği & Terim Yarışması", icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, 6. sınıf fen sorularını bilip puanları topla!", type: "İnteraktif Çark", badge: "Yarışma" }
+        ] : gNum === 7 ? [
+            { id: "oyun-7-hucre", title: "7. Sınıf Hücre ve Organeller 3D Eşleştirme Oyunu", icon: "fa-solid fa-dna", desc: "Mitokondri, kloroplast, ribozom ve çekirdeği görevleriyle eşleştirerek hücreyi tamamla.", type: "Hücre Simülatörü", badge: "3D Biyoloji" },
+            { id: "oyun-7-galileo", title: "7. Sınıf Bilimin Rotası: Galileo ve Teleskop Keşif Oyunu", icon: "fa-solid fa-user-astronaut", desc: "Galileo ile gökyüzünü tara, Jüpiter uydularını ve Ay kraterlerini keşfet.", type: "Bilim Oyunu", badge: "Astronomi" },
+            { id: "oyun-7-cark", title: "7. Sınıf Fen Çarkıfeleği & Terim Yarışması", icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, 7. sınıf fen terimlerini bilip şampiyon ol!", type: "İnteraktif Çark", badge: "Yarışma" }
+        ] : [
+            { id: "oyun-8-passaparola", title: "8. Sınıf LGS Fen Passaparola Terim Yarışması (A'dan Z'ye)", icon: "fa-solid fa-bullseye", desc: "LGS Fen Bilimleri kavramlarını A'dan Z'ye 24 soruda bil, LGS şampiyonu ol!", type: "LGS Passaparola", badge: "🔥 LGS Özel" },
+            { id: "oyun-8-basinc", title: "8. Sınıf Sıvı ve Gaz Basıncı Sanal Deney Simülatörü", icon: "fa-solid fa-atom", desc: "Yoğunluğu ve derinliği değiştirerek barometre ve manometre basınçlarını canlı gözlemle.", type: "Sanal Laboratuvar", badge: "Deney Simülatörü" },
+            { id: "oyun-8-dna", title: "8. Sınıf DNA Çift Sarmal & Nükleotid Eşleştirme Oyunu", icon: "fa-solid fa-puzzle-piece", desc: "Adenin-Timin, Guanin-Sitozin eşleşmelerini hatasız yap ve DNA zincirini onar.", type: "Genetik Eşleştirme", badge: "Yeni Nesil Oyun" },
+            { id: "oyun-8-cark", title: "8. Sınıf LGS Fen Çarkıfeleği & Hızlı Soru Çözümü", icon: "fa-solid fa-dharmachakra", desc: "LGS çıkmış soru tiplerini çarkıfelek formatında çöz!", type: "LGS Çarkıfelek", badge: "LGS Pratik" }
         ]
     };
 }

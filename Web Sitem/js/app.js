@@ -1907,9 +1907,9 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                             <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
                             <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">${item.desc}</p>
                         </div>
-                        <a href="#flashcards" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase rounded-xl transition-colors text-center shadow-md">
-                            🎮 Oyunu Başlat
-                        </a>
+                        <button type="button" onclick="openInteractiveGameModal('${item.id}', '${item.title.replace(/'/g, "\'")}')" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs uppercase rounded-xl transition-all text-center shadow-md flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95">
+                            <i class="fa-solid fa-gamepad text-sm"></i> <span>Oyunu Başlat (Oyna)</span>
+                        </button>
                     </div>
                 `).join("")}
             </div>
@@ -2363,8 +2363,11 @@ function renderTeacherDashboardPage(container) {
                         <button onclick="triggerUploadModal()" class="px-6 py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center gap-2 transform active:scale-95">
                             <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>Yeni Materyal / Dosya Yükle</span>
                         </button>
-                        <button onclick="handleAdminLogout()" class="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl border border-slate-700 transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-power-off text-xs text-red-400"></i> <span>Çıkış Yap</span>
+                        <a href="#home" class="px-5 py-3.5 bg-slate-800 hover:bg-slate-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl border border-slate-700 transition-all flex items-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-house text-amber-400"></i> <span>Ana Sayfa</span>
+                        </a>
+                        <button type="button" onclick="handleAdminLogout()" class="px-5 py-3.5 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-rose-600/30 transition-all flex items-center gap-2 active:scale-95">
+                            <i class="fa-solid fa-power-off text-sm"></i> <span>Çıkış Yap</span>
                         </button>
                     </div>
                 </div>
@@ -2387,6 +2390,27 @@ function renderTeacherDashboardPage(container) {
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm text-center">
                     <div class="text-2xl sm:text-3xl font-black text-blue-600 mb-1">${customList.filter(i => i.grade === "6" || i.grade === "5").length}</div>
                     <div class="text-xs font-bold text-slate-500 uppercase">5 & 6. Sınıf</div>
+                </div>
+            </div>
+
+            <!-- Yönetici Hızlı Çıkış ve Ana Sayfa Butonları -->
+            <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-xl font-black">
+                        <i class="fa-solid fa-user-shield"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-base font-black text-slate-900">Yönetici Oturumu</h4>
+                        <p class="text-xs text-slate-500">İşiniz bittiğinde oturumu kapatmayı unutmayınız.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <a href="#home" class="flex-1 sm:flex-none px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase tracking-wider rounded-2xl transition-all text-center">
+                        <i class="fa-solid fa-house mr-1"></i> Ana Sayfaya Dön
+                    </a>
+                    <button type="button" onclick="handleAdminLogout()" class="flex-1 sm:flex-none px-6 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/30 transition-all text-center">
+                        <i class="fa-solid fa-power-off mr-1"></i> Yönetici Çıkışı Yap
+                    </button>
                 </div>
             </div>
 
@@ -3906,6 +3930,337 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
 // -------------------------------------------------------------
 // 🚀 GELİŞMİŞ YÖNETİCİ İÇERİK & MATERYAL YÜKLEME MODALI
 // -------------------------------------------------------------
+
+
+// -------------------------------------------------------------
+// 🎮 İNTERAKTİF SAYFA İÇİ OYUN MOTORU & SİMÜLATÖRÜ (MODAL)
+// -------------------------------------------------------------
+
+const INTERACTIVE_GAMES_POOL = {
+    "oyun-5-lab": {
+        title: "🧪 5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu",
+        grade: "5. Sınıf",
+        desc: "Laboratuvarda en sık kullanılan 8 temel cam ve metal malzemeyi görevleriyle eşleştirip puanları topla!",
+        questions: [
+            {
+                q: "Sıvıların hacmini en hassas şekilde ölçmek için üzerinde mililitre (ml) çizgileri bulunan cam kaba ne ad verilir?",
+                options: ["Dereceli Silindir (Mezür)", "Beherglas", "Deney Tüpü", "Erlenmayer"],
+                answer: 0,
+                hint: "Üzerinde ölçü çizgileri (derecelendirme) bulunur.",
+                icon: "fa-solid fa-flask-vial"
+            },
+            {
+                q: "Çözelti hazırlama, sıvıları karıştırma ve ısıtma işlemlerinde kullanılan geniş ağızlı silindirik cam kaba ne ad verilir?",
+                options: ["Beherglas", "Büret", "Saat Camı", "Huni"],
+                answer: 0,
+                hint: "Laboratuvarın en temel bardak biçimli cam kabıdır.",
+                icon: "fa-solid fa-mug-hot"
+            },
+            {
+                q: "Titrasyon ve çözelti saklamada kullanılan, koni şeklinde tabanı geniş ve dar boyunlu cam kaba ne ad verilir?",
+                options: ["Erlenmayer", "Deney Tüpü", "Piset", "Baget"],
+                answer: 0,
+                hint: "Üçgenimsi koni gövdesiyle çalkalamaya çok uygundur.",
+                icon: "fa-solid fa-flask"
+            },
+            {
+                q: "Küçük miktardaki sıvıları test etmek, ısıtmak veya karıştırmak için kullanılan ince uzun cam kaba ne ad verilir?",
+                options: ["Deney Tüpü", "Mezür", "Sacayak", "İspirto Ocağı"],
+                answer: 0,
+                hint: "Tüp standında (spor) yan yana dizilir.",
+                icon: "fa-solid fa-vial"
+            },
+            {
+                q: "Cam kapları ısıtma işleminde üzerine koymak için kullanılan üç ayaklı metal düzeneğe ne ad verilir?",
+                options: ["Sacayak", "Baget", "Spatül", "Damlalık"],
+                answer: 0,
+                hint: "Adı üzerinde 3 adet metal ayağı vardır.",
+                icon: "fa-solid fa-shapes"
+            },
+            {
+                q: "Çözeltileri homojen bir şekilde karıştırmak için kullanılan cam çubuğa ne ad verilir?",
+                options: ["Baget", "Spatül", "Huni", "Saat Camı"],
+                answer: 0,
+                hint: "Çay kaşığı gibi sıvıları karıştırmaya yarayan cam çubuktur.",
+                icon: "fa-solid fa-wand-magic-sparkles"
+            },
+            {
+                q: "Toz veya katı kimyasalları kaptan almak için kullanılan küçük metal veya porselen kaşığa ne ad verilir?",
+                options: ["Spatül", "Damlalık", "Piset", "Erlenmayer"],
+                answer: 0,
+                hint: "Küçük bir kimya kaşığıdır.",
+                icon: "fa-solid fa-utensils"
+            },
+            {
+                q: "Sıvı maddeleri damla damla hassas miktarda aktarmak için kullanılan cam veya plastik alete ne ad verilir?",
+                options: ["Damlalık", "Büret", "Beherglas", "Sacayak"],
+                answer: 0,
+                hint: "Sıvıyı damlatarak döker.",
+                icon: "fa-solid fa-eye-dropper"
+            }
+        ]
+    },
+    "oyun-8-passaparola": {
+        title: "🎯 8. Sınıf LGS Fen Passaparola Terim Yarışması",
+        grade: "8. Sınıf (LGS)",
+        desc: "LGS Fen Bilimleri kavramlarını A'dan Z'ye sorularda bil, LGS şampiyonu ol!",
+        questions: [
+            { letter: "A", q: "Maddenin en küçük kimyasal yapı birimi?", options: ["Atom", "Anot", "Alaşım", "Asit"], answer: 0 },
+            { letter: "B", q: "Birim yüzeye dik etki eden kuvvetin adı?", options: ["Basınç", "Bileşke", "Bağ", "Buharlaşma"], answer: 0 },
+            { letter: "Ç", q: "Hücrenin yönetim ve kalıtım merkezi?", options: ["Çekirdek", "Çeper", "Çözelti", "Çözünürlük"], answer: 0 },
+            { letter: "D", q: "Kuvvetin büyüklüğünü ölçen yaylı alet?", options: ["Dinamometre", "Diyot", "Direnç", "Damlalık"], answer: 0 },
+            { letter: "F", q: "Bitkilerin güneş ışığıyla besin ve oksijen üretmesi?", options: ["Fotosentez", "Fermantasyon", "Filtreleme", "Füzyon"], answer: 0 },
+            { letter: "G", q: "Canlının genetik yapısının tamamına verilen ad?", options: ["Genotip", "Gamet", "Genom", "Glukoz"], answer: 0 },
+            { letter: "M", q: "Hücrede oksijenli solunumla enerji (ATP) üreten organel?", options: ["Mitokondri", "Mezofit", "Miyelin", "Maya"], answer: 0 },
+            { letter: "P", q: "Elementlerin artan atom numaralarına göre sıralandığı çizelge?", options: ["Periyodik Sistem", "Proton Tablosu", "Plazma Cetveli", "Polimer"], answer: 0 }
+        ]
+    },
+    "oyun-7-hucre": {
+        title: "🧬 7. Sınıf Hücre ve Organeller Eşleştirme Oyunu",
+        grade: "7. Sınıf",
+        desc: "Hücre organellerini görevleriyle hatasız eşleştir!",
+        questions: [
+            { q: "Hücrenin enerji santralidir. Besin ve oksijeni yakarak enerji üretir.", options: ["Mitokondri", "Ribozom", "Koful", "Lizozom"], answer: 0, icon: "fa-solid fa-bolt" },
+            { q: "Tüm canlı hücrelerde bulunur. Protein sentezinden sorumludur.", options: ["Ribozom", "Golgi", "Sentrozom", "Kloroplast"], answer: 0, icon: "fa-solid fa-cubes" },
+            { q: "Bitki hücrelerinde fotosentez yaparak besin ve oksijen üretir, yeşil renklidir.", options: ["Kloroplast", "Lökoplast", "Mitokondri", "Lizozom"], answer: 0, icon: "fa-solid fa-leaf" },
+            { q: "Salgı maddelerinin (tükürük, ter, süt) üretilmesini ve paketlenmesini sağlar.", options: ["Golgi Cisimciği", "Endoplazmik Retikulum", "Sentrioller", "Koful"], answer: 0, icon: "fa-solid fa-box" },
+            { q: "Hücre içi sindirimden sorumludur. Yaşlanmış organelleri ve mikropları parçalar.", options: ["Lizozom", "Ribozom", "Plastid", "Çekirdekçik"], answer: 0, icon: "fa-solid fa-scissors" }
+        ]
+    }
+};
+
+let currentActiveGame = {
+    gameKey: null,
+    score: 0,
+    currentQIdx: 0,
+    streak: 0,
+    answered: false
+};
+
+function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu") {
+    let modal = document.getElementById("interactive-game-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "interactive-game-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 transition-all duration-300";
+        modal.onclick = function(e) {
+            if (e.target === this) closeInteractiveGameModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    // Determine if it's a built-in interactive game or external URL
+    const gameData = INTERACTIVE_GAMES_POOL[gameKeyOrUrl] || (gameKeyOrUrl && gameKeyOrUrl.includes("lab") ? INTERACTIVE_GAMES_POOL["oyun-5-lab"] : (gameKeyOrUrl && gameKeyOrUrl.includes("passaparola") ? INTERACTIVE_GAMES_POOL["oyun-8-passaparola"] : (gameKeyOrUrl && gameKeyOrUrl.includes("hucre") ? INTERACTIVE_GAMES_POOL["oyun-7-hucre"] : null)));
+
+    if (gameData) {
+        currentActiveGame = {
+            gameKey: gameKeyOrUrl,
+            data: gameData,
+            score: 0,
+            currentQIdx: 0,
+            streak: 0,
+            answered: false
+        };
+        renderInteractiveGameScreen(modal);
+    } else {
+        // Fallback or Iframe web game player (in-page iframe)
+        const embedUrl = (gameKeyOrUrl && gameKeyOrUrl.startsWith("http")) ? gameKeyOrUrl : "#";
+        modal.innerHTML = `
+            <div class="bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between text-white">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-base font-black">${gameTitle}</h3>
+                            <span class="text-xs text-slate-400">Rotalı Fenci İnteraktif Oyun Alanı</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+                <div class="p-6 text-center text-white space-y-4">
+                    ${embedUrl !== '#' ? `
+                        <div class="w-full h-[65vh] rounded-2xl overflow-hidden bg-white">
+                            <iframe src="${embedUrl}" class="w-full h-full border-0" allowfullscreen></iframe>
+                        </div>
+                    ` : `
+                        <div class="py-12 bg-slate-800/60 rounded-2xl border border-slate-700 max-w-lg mx-auto">
+                            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl mx-auto mb-3">
+                                <i class="fa-solid fa-flask"></i>
+                            </div>
+                            <h4 class="text-lg font-black mb-2">${gameTitle}</h4>
+                            <p class="text-xs text-slate-300 mb-6 px-4">Bu interaktif oyun doğrudan Rotalı Fenci platformu üzerinde çalışmak üzere hazırlandı.</p>
+                            <button type="button" onclick="openInteractiveGameModal('oyun-5-lab')" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all">
+                                🎮 Laboratuvar Oyununu Hemen Oyna
+                            </button>
+                        </div>
+                    `}
+                </div>
+            </div>
+        `;
+    }
+
+    modal.classList.remove("hidden");
+}
+
+function closeInteractiveGameModal() {
+    const modal = document.getElementById("interactive-game-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function renderInteractiveGameScreen(modal) {
+    const { data, score, currentQIdx, streak, answered } = currentActiveGame;
+    const questions = data.questions;
+    const isFinished = currentQIdx >= questions.length;
+
+    if (isFinished) {
+        modal.innerHTML = `
+            <div class="bg-white rounded-3xl max-w-lg w-full border border-slate-200 shadow-2xl overflow-hidden p-6 sm:p-8 text-center animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="w-20 h-20 rounded-3xl bg-amber-100 text-amber-600 flex items-center justify-center text-4xl mx-auto mb-4 shadow-inner">
+                    🏆
+                </div>
+                <h3 class="text-2xl font-black text-slate-900 mb-1">Tebrikler Şampiyon!</h3>
+                <p class="text-xs text-slate-500 font-semibold mb-6">${data.title} tamamlandı.</p>
+                
+                <div class="p-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-2xl shadow-lg mb-6">
+                    <div class="text-xs text-amber-400 font-black uppercase tracking-wider mb-1">Toplam Kazanılan Puan</div>
+                    <div class="text-4xl font-black text-white">${score} <span class="text-lg text-amber-400">/ ${questions.length * 10}</span></div>
+                    <div class="text-[11px] text-slate-300 mt-2">Doğruluk Oranı: %${Math.round((score / (questions.length * 10)) * 100)}</div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="openInteractiveGameModal('${currentActiveGame.gameKey}')" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md">
+                        🔄 Yeniden Oyna
+                    </button>
+                    <button type="button" onclick="closeInteractiveGameModal()" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md">
+                        ✅ Kapat
+                    </button>
+                </div>
+            </div>
+        `;
+        return;
+    }
+
+    const currentQ = questions[currentQIdx];
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl max-w-xl w-full border border-slate-200 shadow-2xl overflow-hidden flex flex-col max-h-[92vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            
+            <!-- Üst Bar -->
+            <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-sm flex-shrink-0">
+                        <i class="${currentQ.icon || 'fa-solid fa-gamepad'}"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2 py-0.5 rounded bg-white/20 text-[10px] font-black uppercase">${data.grade}</span>
+                            <span class="text-xs text-amber-400 font-black">🔥 Seri: ${streak}</span>
+                        </div>
+                        <h3 class="text-sm font-black text-white truncate max-w-[240px] sm:max-w-xs">${data.title}</h3>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <div class="text-right">
+                        <span class="text-[10px] text-slate-400 block font-bold">PUAN</span>
+                        <span class="text-sm font-black text-amber-400">${score}</span>
+                    </div>
+                    <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-600 text-white flex items-center justify-center text-sm transition-all ml-2" title="Kapat (ESC)">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- İlerleme Çubuğu -->
+            <div class="w-full bg-slate-100 h-1.5">
+                <div class="bg-gradient-to-r from-amber-500 to-emerald-500 h-full transition-all duration-300" style="width: ${(currentQIdx / questions.length) * 100}%"></div>
+            </div>
+
+            <!-- Oyun Gövdesi -->
+            <div class="p-5 sm:p-6 space-y-5 overflow-y-auto">
+                <div class="flex items-center justify-between text-xs font-black text-slate-400">
+                    <span>SORU ${currentQIdx + 1} / ${questions.length}</span>
+                    <span class="text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">+10 Puan</span>
+                </div>
+
+                <!-- Soru Kartı -->
+                <div class="p-5 bg-gradient-to-br from-amber-50/60 to-orange-50/60 rounded-2xl border-2 border-amber-200/80 shadow-sm text-center">
+                    <p class="text-base sm:text-lg font-black text-slate-900 leading-snug">
+                        ${currentQ.q}
+                    </p>
+                    ${currentQ.hint ? `
+                        <div class="mt-2 text-[11px] font-bold text-amber-800 bg-amber-100/70 py-1 px-3 rounded-lg inline-block">
+                            💡 İpucu: ${currentQ.hint}
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Şıklar / Seçenekler (Büyük Dokunmatik Butonlar) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="game-options-container">
+                    ${currentQ.options.map((opt, idx) => `
+                        <button type="button" onclick="handleGameAnswer(${idx})" id="opt-btn-${idx}" class="p-4 bg-white hover:bg-slate-50 border-2 border-slate-200 hover:border-amber-400 rounded-2xl text-left font-black text-sm text-slate-800 transition-all flex items-center gap-3 shadow-sm hover:scale-[1.02] active:scale-95">
+                            <span class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xs font-black flex-shrink-0">
+                                ${['A', 'B', 'C', 'D'][idx]}
+                            </span>
+                            <span class="leading-tight">${opt}</span>
+                        </button>
+                    `).join("")}
+                </div>
+
+                <div id="game-feedback-box" class="hidden text-center p-3 rounded-xl font-bold text-xs"></div>
+            </div>
+        </div>
+    `;
+}
+
+function handleGameAnswer(selectedIdx) {
+    if (currentActiveGame.answered) return;
+    currentActiveGame.answered = true;
+
+    const { data, currentQIdx } = currentActiveGame;
+    const currentQ = data.questions[currentQIdx];
+    const isCorrect = (selectedIdx === currentQ.answer);
+
+    const selectedBtn = document.getElementById(`opt-btn-${selectedIdx}`);
+    const correctBtn = document.getElementById(`opt-btn-${currentQ.answer}`);
+    const feedbackBox = document.getElementById("game-feedback-box");
+
+    if (isCorrect) {
+        currentActiveGame.score += 10;
+        currentActiveGame.streak += 1;
+        if (selectedBtn) {
+            selectedBtn.className = "p-4 bg-emerald-50 border-2 border-emerald-500 rounded-2xl text-left font-black text-sm text-emerald-900 flex items-center gap-3 shadow-md scale-105 transition-all";
+        }
+        if (feedbackBox) {
+            feedbackBox.className = "text-center p-3 rounded-xl font-black text-xs bg-emerald-100 text-emerald-800 border border-emerald-300 block animate-in fade-in";
+            feedbackBox.innerHTML = `🎉 Harika! Doğru Cevap! (+10 Puan)`;
+        }
+    } else {
+        currentActiveGame.streak = 0;
+        if (selectedBtn) {
+            selectedBtn.className = "p-4 bg-rose-50 border-2 border-rose-500 rounded-2xl text-left font-black text-sm text-rose-900 flex items-center gap-3 shadow-md transition-all";
+        }
+        if (correctBtn) {
+            correctBtn.className = "p-4 bg-emerald-50 border-2 border-emerald-500 rounded-2xl text-left font-black text-sm text-emerald-900 flex items-center gap-3 shadow-md transition-all";
+        }
+        if (feedbackBox) {
+            feedbackBox.className = "text-center p-3 rounded-xl font-black text-xs bg-rose-100 text-rose-800 border border-rose-300 block animate-in fade-in";
+            feedbackBox.innerHTML = `❌ Yanlış Cevap. Doğrusu: <strong>${currentQ.options[currentQ.answer]}</strong>`;
+        }
+    }
+
+    setTimeout(() => {
+        currentActiveGame.currentQIdx++;
+        currentActiveGame.answered = false;
+        const modal = document.getElementById("interactive-game-modal");
+        if (modal) renderInteractiveGameScreen(modal);
+    }, 1200);
+}
+
 
 function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", editMaterial = null) {
     let modal = document.getElementById("material-upload-modal");
