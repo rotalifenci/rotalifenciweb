@@ -80,7 +80,7 @@ const PASSAPAROLA_DATA = [
   {
     "letter": "J",
     "question": "Fen bilimlerinde iş ve enerji birimi olarak kullanılan temel ölçü birimi.",
-    "answer": "JOULE (JUL)",
+    "answer": "JOULE",
     "grade": "7. Sınıf",
     "category": "Kuvvet ve Enerji"
   },
@@ -122,7 +122,7 @@ const PASSAPAROLA_DATA = [
   {
     "letter": "Ö",
     "question": "Bir maddenin kütlesinin hacmine bölünmesiyle (Kütle / Hacim) hesaplanan ayırt edici özelliği.",
-    "answer": "ÖZKÜTLE (YOĞUNLUK)",
+    "answer": "ÖZKÜTLE",
     "grade": "6. Sınıf",
     "category": "Madde ve Isı"
   },
@@ -150,7 +150,7 @@ const PASSAPAROLA_DATA = [
   {
     "letter": "Ş",
     "question": "Üzerine düşen ışığı tamamen geçiren ve arkasını net olarak gösteren maddeler (Örn: Pencere camı).",
-    "answer": "ŞEFFAF (SAYDAM)",
+    "answer": "ŞEFFAF",
     "grade": "5. Sınıf",
     "category": "Işık"
   },

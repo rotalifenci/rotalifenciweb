@@ -1,17 +1,29 @@
-/* Fen Bilimleri Passaparola - Modern Sifir Kaydirma ve Tam Ortalama Temasi */
+/* ============================================================
+   FEN BILIMLERI PASSAPAROLA - RESPONSIVE & MOBILE-FIRST DESIGN
+   ============================================================ */
+
 :root {
-  --bg-primary: #0b0f19;
-  --bg-secondary: #131c2e;
-  --bg-card: rgba(23, 34, 56, 0.95);
+  --bg-primary: #0a0f1d;
+  --bg-secondary: #121a2d;
+  --bg-card: rgba(18, 26, 45, 0.92);
+  --accent-blue: #2563eb;
   --accent-cyan: #00e5ff;
-  --accent-green: #00e676;
-  --accent-red: #ff1744;
-  --accent-yellow: #ffd600;
+  --accent-green: #16a34a;
+  --accent-green-glow: rgba(22, 163, 74, 0.4);
+  --accent-red: #dc2626;
+  --accent-red-glow: rgba(220, 38, 38, 0.4);
+  --accent-yellow: #f59e0b;
+  --accent-yellow-glow: rgba(245, 158, 11, 0.4);
   --accent-purple: #7c4dff;
+  
   --text-main: #ffffff;
   --text-muted: #94a3b8;
-  --border-color: rgba(255, 255, 255, 0.15);
-  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --text-dim: #64748b;
+  
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-active: rgba(0, 229, 255, 0.5);
+  
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -23,30 +35,34 @@
 }
 
 html, body {
-  width: 100vw;
-  height: 100vh;
-  max-height: 100vh;
-  overflow: hidden; /* Kesinlikle sayfa kaydirmasi olmaz */
+  width: 100%;
+  height: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
   font-family: var(--font-family);
-  background: radial-gradient(circle at 50% 15%, #172847 0%, #0b0f19 80%);
+  background: radial-gradient(circle at 50% 10%, #1e2c4f 0%, #0a0f1d 75%);
   color: var(--text-main);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 }
 
-/* Header */
+/* ============================================================
+   1. HEADER & TOP NAV
+   ============================================================ */
 header {
   flex-shrink: 0;
-  height: 52px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px 20px;
-  background: rgba(11, 15, 25, 0.95);
-  border-bottom: 2px solid rgba(0, 229, 255, 0.25);
-  backdrop-filter: blur(10px);
+  padding: 8px 18px;
+  background: rgba(10, 15, 29, 0.95);
+  border-bottom: 1px solid var(--border-glass);
+  backdrop-filter: blur(12px);
   z-index: 100;
+  gap: 10px;
 }
 
 .logo-area {
@@ -56,54 +72,155 @@ header {
 }
 
 .logo-icon {
-  font-size: 1.5rem;
-  filter: drop-shadow(0 0 6px var(--accent-cyan));
+  font-size: 1.6rem;
+  filter: drop-shadow(0 0 8px var(--accent-cyan));
 }
 
 .title-group h1 {
   font-size: 1.15rem;
-  font-weight: 800;
+  font-weight: 900;
   letter-spacing: 0.5px;
-  background: linear-gradient(90deg, #00e5ff, #7c4dff);
+  background: linear-gradient(90deg, #00e5ff, #60a5fa, #a78bfa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  line-height: 1.1;
+  line-height: 1.2;
 }
 
 .title-group span {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   color: var(--accent-yellow);
-  font-weight: 600;
-  display: block;
+  font-weight: 700;
+  letter-spacing: 0.4px;
 }
 
 .header-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .btn-ctrl {
   background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--border-glass);
   color: var(--text-main);
-  padding: 5px 10px;
-  border-radius: 7px;
+  padding: 6px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-size: 0.8rem;
-  font-weight: 600;
-  display: flex;
+  font-weight: 700;
+  display: inline-flex;
   align-items: center;
   gap: 5px;
   transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 .btn-ctrl:hover {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+  background: rgba(0, 229, 255, 0.1);
 }
 
-/* Ana Oyun Alani - Yatayda ve Dikeyde Tam Ortalanmis */
+.btn-ctrl:active {
+  transform: scale(0.96);
+}
+
+/* ============================================================
+   2. SCOREBOARD & STATUS BAR (KOMPAKT & NET BILGI PANELI)
+   ============================================================ */
+.scoreboard-bar {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: clamp(8px, 1.8vw, 18px);
+  padding: 6px 14px;
+  background: rgba(14, 21, 37, 0.85);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  width: 100%;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-glass);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.stat-chip-label {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.stat-chip-val {
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.stat-chip.puan .stat-chip-val { color: var(--accent-cyan); }
+.stat-chip.sure {
+  background: rgba(245, 158, 11, 0.1);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+.stat-chip.sure .stat-chip-val {
+  color: var(--accent-yellow);
+  font-family: 'Courier New', monospace;
+  font-size: 1.15rem;
+}
+.stat-chip.sure.warn-orange {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: #f59e0b;
+}
+.stat-chip.sure.warn-red {
+  background: rgba(220, 38, 38, 0.3);
+  border-color: #dc2626;
+  animation: pulse-danger 0.8s infinite alternate;
+}
+.stat-chip.sure.warn-red .stat-chip-val { color: #ff4d4d; }
+
+@keyframes pulse-danger {
+  0% { transform: scale(1); box-shadow: 0 0 4px #dc2626; }
+  100% { transform: scale(1.04); box-shadow: 0 0 15px #dc2626; }
+}
+
+.stat-chip.dogru { border-color: rgba(22, 163, 74, 0.4); }
+.stat-chip.dogru .stat-chip-val { color: #4ade80; }
+
+.stat-chip.yanlis { border-color: rgba(220, 38, 38, 0.4); }
+.stat-chip.yanlis .stat-chip-val { color: #f87171; }
+
+.stat-chip.pas { border-color: rgba(245, 158, 11, 0.4); }
+.stat-chip.pas .stat-chip-val { color: #fbbf24; }
+
+/* 2 Takım Çubuğu (Opsiyonel) */
+.team-bar {
+  display: flex;
+  gap: 8px;
+}
+.team-pill {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+  border: 1px solid var(--border-glass);
+}
+.team-pill.active {
+  background: rgba(0, 229, 255, 0.25);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.4);
+}
+
+/* ============================================================
+   3. MAIN GAME ARENA (MASAÜSTÜ: YAN YANA / MOBİL: KOMPAKT)
+   ============================================================ */
 .game-container {
   flex: 1;
   min-height: 0;
@@ -112,13 +229,13 @@ header {
   justify-content: center;
   align-items: center;
   gap: clamp(16px, 2.5vw, 36px);
-  padding: 8px 20px;
-  max-width: 1250px;
+  padding: 10px 20px;
+  max-width: 1200px;
   margin: 0 auto;
   width: 100%;
 }
 
-/* Sol Alan: Passaparola Carki */
+/* Sol Alan: Passaparola Çarkı */
 .wheel-wrapper {
   display: flex;
   justify-content: center;
@@ -128,8 +245,8 @@ header {
 
 .wheel-container {
   position: relative;
-  width: min(calc(100vh - 80px), min(42vw, 420px));
-  height: min(calc(100vh - 80px), min(42vw, 420px));
+  width: min(calc(100vh - 140px), min(42vw, 400px));
+  height: min(calc(100vh - 140px), min(42vw, 400px));
   border-radius: 50%;
   border: 2px dashed rgba(0, 229, 255, 0.25);
   display: flex;
@@ -140,21 +257,20 @@ header {
 
 .letter-node {
   position: absolute;
-  width: clamp(26px, 3.6vh, 36px);
-  height: clamp(26px, 3.6vh, 36px);
+  width: clamp(26px, 3.8vh, 36px);
+  height: clamp(26px, 3.8vh, 36px);
   border-radius: 50%;
   background: #1e293b;
   border: 2px solid #475569;
-  color: #e2e8f0;
+  color: #f1f5f9;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-weight: 800;
-  font-size: clamp(0.75rem, 1.3vh, 0.95rem);
+  font-weight: 900;
+  font-size: clamp(0.75rem, 1.4vh, 0.95rem);
   transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
   box-shadow: 0 2px 6px rgba(0,0,0,0.5);
   cursor: pointer;
-  touch-action: manipulation;
 }
 
 .letter-node:hover {
@@ -166,24 +282,24 @@ header {
   background: #facc15 !important;
   color: #0f172a !important;
   border-color: #ffffff !important;
-  box-shadow: 0 0 18px #facc15, 0 0 5px #ffffff;
-  transform: scale(1.25);
+  box-shadow: 0 0 18px #facc15, 0 0 6px #ffffff;
+  transform: scale(1.28);
   z-index: 20;
   animation: pulse-glow 1.4s infinite alternate;
 }
 
 .letter-node.correct {
-  background: #10b981 !important;
+  background: #16a34a !important;
   color: #ffffff !important;
-  border-color: #a7f3d0 !important;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.7);
+  border-color: #86efac !important;
+  box-shadow: 0 0 10px rgba(22, 163, 74, 0.7);
 }
 
 .letter-node.wrong {
-  background: #ef4444 !important;
+  background: #dc2626 !important;
   color: #ffffff !important;
-  border-color: #fecaca !important;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);
+  border-color: #fca5a5 !important;
+  box-shadow: 0 0 10px rgba(220, 38, 38, 0.7);
 }
 
 .letter-node.passed {
@@ -199,8 +315,8 @@ header {
 }
 
 .wheel-center {
-  width: 48%;
-  height: 48%;
+  width: 46%;
+  height: 46%;
   border-radius: 50%;
   background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
   border: 3px solid rgba(0, 229, 255, 0.4);
@@ -209,165 +325,105 @@ header {
   justify-content: center;
   align-items: center;
   text-align: center;
-  box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.2);
   position: relative;
   z-index: 5;
   pointer-events: none;
 }
 
 .center-letter {
-  font-size: clamp(1.8rem, 5vh, 3rem);
+  font-size: clamp(2rem, 5.5vh, 3.2rem);
   font-weight: 900;
   color: var(--accent-cyan);
-  text-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+  text-shadow: 0 0 14px rgba(0, 229, 255, 0.8);
   line-height: 1;
 }
 
 .center-info {
-  font-size: clamp(0.65rem, 1.1vh, 0.78rem);
+  font-size: clamp(0.65rem, 1.2vh, 0.78rem);
   color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
   margin-top: 2px;
 }
 
-.center-stats {
-  display: flex;
-  gap: 8px;
-  margin-top: 3px;
-  font-weight: 800;
-  font-size: clamp(0.7rem, 1.3vh, 0.85rem);
-}
-
-.stat-d { color: var(--accent-green); }
-.stat-y { color: var(--accent-red); }
-.stat-p { color: var(--accent-yellow); }
-
-/* Sag Alan: Soru & Buton Kartı (Kesinlikle alta kaymaz) */
+/* ============================================================
+   4. QUESTION CARD & ACTION BUTTONS (TAM ENTEGRE & ERGONOMIK)
+   ============================================================ */
 .question-card {
   flex: 1;
   max-width: 580px;
-  height: min(calc(100vh - 76px), 430px);
+  height: min(calc(100vh - 130px), 440px);
   background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 16px;
-  padding: 14px 18px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-  backdrop-filter: blur(12px);
+  border: 1px solid var(--border-glass);
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+  backdrop-filter: blur(14px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 8px;
-}
-
-.team-bar {
-  display: flex;
-  justify-content: space-around;
-  background: rgba(15, 23, 42, 0.8);
-  border-radius: 8px;
-  padding: 4px;
-  border: 1px solid var(--border-color);
-}
-
-.team-card {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 3px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 0.82rem;
-  font-weight: 700;
-}
-
-.team-card.active-team {
-  background: rgba(0, 229, 255, 0.2);
-  border: 1px solid var(--accent-cyan);
-}
-
-.team-score {
-  font-size: 1.05rem;
-  font-weight: 900;
-  color: var(--accent-cyan);
+  gap: 10px;
 }
 
 .q-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+}
+
+.q-badge-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .q-badge {
-  background: linear-gradient(135deg, #7c4dff, #00e5ff);
+  background: linear-gradient(135deg, #2563eb, #7c4dff);
   color: white;
-  font-weight: 800;
-  font-size: 0.88rem;
-  padding: 4px 10px;
-  border-radius: 16px;
+  font-weight: 900;
+  font-size: 0.9rem;
+  padding: 5px 12px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
 }
 
 .q-grade {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.78rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
+  padding: 5px 10px;
+  border-radius: 14px;
+  font-size: 0.8rem;
   color: var(--accent-yellow);
-  font-weight: 700;
-}
-
-.timer-box {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  background: #0f172a;
-  padding: 4px 10px;
-  border-radius: 8px;
-  border: 1px solid rgba(255, 214, 0, 0.4);
-}
-
-.timer-box .timer-icon {
-  font-size: 1rem;
-}
-
-.timer-box .timer-text {
-  font-size: 1.15rem;
-  font-weight: 900;
-  color: var(--accent-yellow);
-  font-family: 'Courier New', monospace;
-}
-
-.timer-box.warning .timer-text {
-  color: var(--accent-red);
-  animation: blink 0.8s infinite;
-}
-
-@keyframes blink {
-  50% { opacity: 0.3; }
+  font-weight: 800;
 }
 
 .q-body {
+  flex: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex: 1;
-  min-height: 75px;
+  min-height: 80px;
 }
 
 .q-text {
-  font-size: clamp(1.02rem, 1.8vh, 1.25rem);
-  line-height: 1.4;
+  font-size: clamp(1.05rem, 1.9vh, 1.35rem);
+  line-height: 1.45;
   font-weight: 600;
   color: #f8fafc;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.4);
 }
 
 .q-answer-reveal {
   margin-top: 6px;
-  background: rgba(0, 230, 118, 0.15);
+  background: rgba(22, 163, 74, 0.18);
   border: 1px solid var(--accent-green);
-  color: var(--accent-green);
-  padding: 6px 10px;
-  border-radius: 6px;
-  font-weight: 800;
-  font-size: 1rem;
+  color: #4ade80;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-weight: 900;
+  font-size: 1.1rem;
   display: none;
   text-align: center;
   letter-spacing: 1px;
@@ -379,7 +435,7 @@ header {
 
 .input-area {
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .txt-answer {
@@ -387,44 +443,57 @@ header {
   background: #0f172a;
   border: 2px solid #334155;
   color: #fff;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 0.95rem;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 1rem;
   font-weight: 700;
   outline: none;
   min-width: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .txt-answer:focus {
   border-color: var(--accent-cyan);
-  box-shadow: 0 0 8px rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.txt-answer::placeholder {
+  color: #64748b;
+  font-weight: 500;
 }
 
 .btn-hint {
   background: #334155;
-  color: #e2e8f0;
-  padding: 0 12px;
-  border-radius: 8px;
+  color: #f1f5f9;
+  padding: 0 14px;
+  border-radius: 10px;
   border: 1px solid #475569;
-  font-weight: 700;
-  font-size: 0.85rem;
+  font-weight: 800;
+  font-size: 0.9rem;
   cursor: pointer;
   white-space: nowrap;
+  transition: all 0.2s ease;
 }
 
-/* DOGRU - PAS - YANLIS Buton Grubu (Yan Yana & Buyuk) */
+.btn-hint:hover {
+  background: #475569;
+}
+
+/* ============================================================
+   5. PASSAPAROLA, DOĞRU & YANLIŞ BUTONLARI (BÜYÜK & DOKUNMATİK)
+   ============================================================ */
 .btn-action-group {
   display: grid;
-  grid-template-columns: 1.1fr 0.9fr 1fr;
+  grid-template-columns: 1.1fr 1fr 1fr;
   gap: 8px;
 }
 
 .btn-action {
-  padding: 10px 4px;
-  border-radius: 10px;
+  height: clamp(48px, 6.5vh, 58px);
+  border-radius: 12px;
   border: none;
-  font-size: clamp(0.88rem, 1.6vh, 1.05rem);
-  font-weight: 800;
+  font-size: clamp(0.92rem, 1.6vh, 1.1rem);
+  font-weight: 900;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -433,7 +502,8 @@ header {
   gap: 2px;
   color: white;
   touch-action: manipulation;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .btn-action:active {
@@ -441,16 +511,35 @@ header {
 }
 
 .btn-action small {
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   opacity: 0.85;
-  font-weight: 600;
+  font-weight: 700;
 }
 
-.btn-correct { background: linear-gradient(135deg, #10b981, #059669); }
-.btn-pass { background: linear-gradient(135deg, #f59e0b, #d97706); }
-.btn-wrong { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.btn-correct {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+}
+.btn-correct:hover {
+  box-shadow: 0 0 16px var(--accent-green-glow);
+}
 
-/* Modal */
+.btn-pass {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+.btn-pass:hover {
+  box-shadow: 0 0 16px var(--accent-yellow-glow);
+}
+
+.btn-wrong {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+.btn-wrong:hover {
+  box-shadow: 0 0 16px var(--accent-red-glow);
+}
+
+/* ============================================================
+   6. END GAME MODAL (SONUÇ EKRANI)
+   ============================================================ */
 .modal-backdrop {
   position: fixed;
   top: 0;
@@ -462,54 +551,93 @@ header {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  backdrop-filter: blur(8px);
-  padding: 14px;
+  backdrop-filter: blur(10px);
+  padding: 16px;
 }
 
-.modal-backdrop.open { display: flex; }
+.modal-backdrop.open {
+  display: flex;
+}
 
 .modal-card {
-  background: #131c2e;
+  background: #121a2d;
   border: 2px solid var(--accent-cyan);
-  border-radius: 18px;
-  padding: 22px;
-  max-width: 440px;
+  border-radius: 20px;
+  padding: 24px;
+  max-width: 460px;
   width: 100%;
   text-align: center;
-  box-shadow: 0 0 35px rgba(0, 229, 255, 0.3);
+  box-shadow: 0 0 45px rgba(0, 229, 255, 0.35);
+  animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.modal-trophy { font-size: 3rem; margin-bottom: 4px; }
-.modal-title { font-size: 1.5rem; font-weight: 900; color: var(--accent-yellow); margin-bottom: 4px; }
-.modal-subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px; }
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.modal-trophy {
+  font-size: 3.6rem;
+  margin-bottom: 6px;
+  animation: bounce 1s infinite alternate;
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-8px); }
+}
+
+.modal-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--accent-yellow);
+  margin-bottom: 4px;
+}
+
+.modal-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin-bottom: 18px;
+}
 
 .modal-results-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .m-res-box {
   background: #0f172a;
-  padding: 8px 4px;
-  border-radius: 8px;
-  border: 1px solid var(--border-color);
+  padding: 10px 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border-glass);
 }
 
-.m-res-title { font-size: 0.72rem; color: var(--text-muted); }
-.m-res-val { font-size: 1.3rem; font-weight: 900; margin-top: 2px; }
+.m-res-title {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.m-res-val {
+  font-size: 1.4rem;
+  font-weight: 900;
+  margin-top: 3px;
+}
 
 .btn-restart {
-  background: linear-gradient(135deg, #00e5ff, #7c4dff);
+  background: linear-gradient(135deg, #2563eb, #00e5ff);
   color: white;
-  font-size: 1rem;
-  font-weight: 800;
-  padding: 10px 20px;
-  border-radius: 8px;
+  font-size: 1.05rem;
+  font-weight: 900;
+  padding: 12px 24px;
+  border-radius: 12px;
   border: none;
   cursor: pointer;
   width: 100%;
+  box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
 }
 
 #confettiCanvas {
@@ -522,25 +650,50 @@ header {
   z-index: 999;
 }
 
-/* Kucuk Ekranlar ve Telefonlar */
-@media (max-width: 768px) {
+/* ============================================================
+   7. RESPONSIVE BREAKPOINTS (MOBIL / TABLET / LANDSCAPE)
+   ============================================================ */
+
+/* Tablet & Mobile Screens (<= 840px) */
+@media (max-width: 840px) {
   html, body {
     overflow-y: auto;
     height: auto;
     min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: env(safe-area-inset-bottom, 10px);
   }
-  
+
   header {
     height: auto;
-    padding: 6px 10px;
+    padding: 6px 12px;
     flex-wrap: wrap;
     justify-content: center;
+  }
+
+  .title-group h1 {
+    font-size: 1.05rem;
+  }
+
+  .scoreboard-bar {
+    padding: 4px 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .stat-chip {
+    padding: 3px 8px;
+    font-size: 0.78rem;
+  }
+
+  .stat-chip-val {
+    font-size: 0.95rem;
   }
 
   .game-container {
     flex-direction: column;
     height: auto;
-    padding: 8px;
+    padding: 8px 10px;
     gap: 12px;
   }
 
@@ -550,18 +703,86 @@ header {
   }
 
   .letter-node {
-    width: 26px;
-    height: 26px;
-    font-size: 0.72rem;
+    width: 28px;
+    height: 28px;
+    font-size: 0.8rem;
   }
 
   .question-card {
     height: auto;
     max-height: none;
     width: 100%;
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .btn-action {
+    height: 52px;
+    font-size: 0.92rem;
   }
 
   .btn-action small {
     display: none;
+  }
+}
+
+/* Small Phones (<= 420px) */
+@media (max-width: 420px) {
+  .wheel-container {
+    width: 250px;
+    height: 250px;
+  }
+
+  .letter-node {
+    width: 24px;
+    height: 24px;
+    font-size: 0.72rem;
+  }
+
+  .q-text {
+    font-size: 1rem;
+    min-height: 60px;
+  }
+
+  .btn-action {
+    height: 50px;
+    font-size: 0.85rem;
+    padding: 6px 2px;
+  }
+
+  .txt-answer {
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+}
+
+/* Phone Landscape Mode */
+@media (max-height: 520px) and (orientation: landscape) {
+  header {
+    display: none; /* Hide header in landscape phone to maximize vertical room */
+  }
+
+  .scoreboard-bar {
+    padding: 2px 8px;
+  }
+
+  .game-container {
+    flex-direction: row;
+    padding: 4px 10px;
+    gap: 12px;
+  }
+
+  .wheel-container {
+    width: calc(100vh - 50px);
+    height: calc(100vh - 50px);
+  }
+
+  .question-card {
+    height: calc(100vh - 50px);
+    padding: 10px;
+  }
+
+  .btn-action {
+    height: 42px;
   }
 }

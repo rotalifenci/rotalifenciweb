@@ -1,4 +1,7 @@
-// Web Audio API Ses Sentezleyicisi (Sifir Harici Bagimlilik)
+// ============================================================
+// FEN BILIMLERI PASSAPAROLA - OYUN MOTORU & SESLER (UTF-8)
+// ============================================================
+
 class SoundFX {
   constructor() {
     this.ctx = null;
@@ -34,16 +37,16 @@ class SoundFX {
 
   correct() {
     this.init();
-    this.playTone(523.25, 'triangle', 0.1, 0);
-    this.playTone(659.25, 'triangle', 0.1, 0.08);
-    this.playTone(783.99, 'triangle', 0.25, 0.16);
-    this.playTone(1046.50, 'triangle', 0.4, 0.24);
+    this.playTone(523.25, 'triangle', 0.1, 0);     // C5
+    this.playTone(659.25, 'triangle', 0.1, 0.08);  // E5
+    this.playTone(783.99, 'triangle', 0.2, 0.16);  // G5
+    this.playTone(1046.50, 'triangle', 0.35, 0.24); // C6
   }
 
   wrong() {
     this.init();
-    this.playTone(180, 'sawtooth', 0.2, 0);
-    this.playTone(140, 'sawtooth', 0.35, 0.15);
+    this.playTone(180, 'sawtooth', 0.18, 0);
+    this.playTone(130, 'sawtooth', 0.32, 0.14);
   }
 
   pass() {
@@ -60,6 +63,7 @@ class SoundFX {
   }
 }
 
+// Turkce Karakter Buyutme ve Karsilastirma Yardimcisi
 function trUpper(str) {
   return (str || '').trim().toLocaleUpperCase('tr-TR');
 }
@@ -71,7 +75,7 @@ class PassaparolaGame {
     this.state = new Array(questions.length).fill('unanswered');
     this.sound = new SoundFX();
 
-    this.initialTime = 240;
+    this.initialTime = 240; // 4 dakika
     this.timeLeft = this.initialTime;
     this.timerInterval = null;
     this.isTimerRunning = false;
@@ -89,14 +93,18 @@ class PassaparolaGame {
   initDOM() {
     this.wheelContainer = document.getElementById('wheelContainer');
     this.centerLetter = document.getElementById('centerLetter');
-    this.centerStats = document.getElementById('centerStats');
     this.qBadge = document.getElementById('qBadge');
     this.qGrade = document.getElementById('qGrade');
     this.qText = document.getElementById('qText');
     this.qReveal = document.getElementById('qReveal');
     this.txtAnswer = document.getElementById('txtAnswer');
     this.timerText = document.getElementById('timerText');
-    this.timerBox = document.getElementById('timerBox');
+    this.timerChip = document.getElementById('timerChip');
+
+    this.statPuan = document.getElementById('statPuan');
+    this.statDogru = document.getElementById('statDogru');
+    this.statYanlis = document.getElementById('statYanlis');
+    this.statPas = document.getElementById('statPas');
 
     this.btnCorrect = document.getElementById('btnCorrect');
     this.btnWrong = document.getElementById('btnWrong');
@@ -109,8 +117,8 @@ class PassaparolaGame {
     this.btnTeamMode = document.getElementById('btnTeamMode');
 
     this.teamBar = document.getElementById('teamBar');
-    this.teamACard = document.getElementById('teamACard');
-    this.teamBCard = document.getElementById('teamBCard');
+    this.teamAPill = document.getElementById('teamAPill');
+    this.teamBPill = document.getElementById('teamBPill');
     this.teamAScore = document.getElementById('teamAScore');
     this.teamBScore = document.getElementById('teamBScore');
 
@@ -129,8 +137,8 @@ class PassaparolaGame {
     const centerY = size / 2;
 
     let nodeRadius = 18;
-    if (size <= 290) nodeRadius = 13;
-    else if (size <= 360) nodeRadius = 15;
+    if (size <= 260) nodeRadius = 12;
+    else if (size <= 320) nodeRadius = 14;
 
     const trackRadius = centerX - nodeRadius - 8;
     this.nodes = [];
@@ -168,13 +176,13 @@ class PassaparolaGame {
     });
 
     this.centerLetter.innerText = item.letter;
-    this.qBadge.innerText = item.letter + ' Harfi (' + item.category + ')';
+    this.qBadge.innerText = item.letter + ' HARFİ (' + item.category + ')';
     this.qGrade.innerText = item.grade;
     this.qText.innerText = item.question;
 
     this.txtAnswer.value = '';
     this.qReveal.classList.remove('show');
-    this.qReveal.innerText = item.answer;
+    this.qReveal.innerText = 'DOĞRU CEVAP: ' + item.answer;
 
     this.updateStats();
   }
@@ -200,6 +208,7 @@ class PassaparolaGame {
   }
 
   moveToNextUnanswered() {
+    // 1. Tur: Yanıtlanmamış soruları ara
     for (let i = 0; i < this.questions.length; i++) {
       const idx = (this.currentIndex + 1 + i) % this.questions.length;
       if (this.state[idx] === 'unanswered') {
@@ -208,6 +217,7 @@ class PassaparolaGame {
       }
     }
 
+    // 2. Tur: Pas geçilen sorulara geri dön (Passaparola mantığı)
     for (let i = 0; i < this.questions.length; i++) {
       const idx = (this.currentIndex + 1 + i) % this.questions.length;
       if (this.state[idx] === 'passed') {
@@ -216,6 +226,7 @@ class PassaparolaGame {
       }
     }
 
+    // Tüm sorular tamamlandı!
     this.endGame();
   }
 
@@ -224,9 +235,10 @@ class PassaparolaGame {
     const yCount = this.state.filter(s => s === 'wrong').length;
     const pCount = this.state.filter(s => s === 'passed').length;
 
-    document.getElementById('statD').innerText = dCount;
-    document.getElementById('statY').innerText = yCount;
-    document.getElementById('statP').innerText = pCount;
+    this.statDogru.innerText = dCount;
+    this.statYanlis.innerText = yCount;
+    this.statPas.innerText = pCount;
+    this.statPuan.innerText = this.scores[this.activeTeam];
 
     this.teamAScore.innerText = this.scores.A;
     this.teamBScore.innerText = this.scores.B;
@@ -266,10 +278,12 @@ class PassaparolaGame {
     const secs = this.timeLeft % 60;
     this.timerText.innerText = (mins < 10 ? '0' : '') + mins + ':' + (secs < 10 ? '0' : '') + secs;
 
-    if (this.timeLeft <= 30) {
-      this.timerBox.classList.add('warning');
-    } else {
-      this.timerBox.classList.remove('warning');
+    // Süre Uyarıları
+    this.timerChip.classList.remove('warn-orange', 'warn-red');
+    if (this.timeLeft <= 10) {
+      this.timerChip.classList.add('warn-red');
+    } else if (this.timeLeft <= 30) {
+      this.timerChip.classList.add('warn-orange');
     }
   }
 
@@ -280,9 +294,11 @@ class PassaparolaGame {
 
     const dCount = this.state.filter(s => s === 'correct').length;
     const yCount = this.state.filter(s => s === 'wrong').length;
+    const pCount = this.state.filter(s => s === 'passed').length;
 
     document.getElementById('mStatD').innerText = dCount;
     document.getElementById('mStatY').innerText = yCount;
+    document.getElementById('mStatP').innerText = pCount;
     document.getElementById('mStatScore').innerText = this.scores[this.activeTeam] + ' Puan';
 
     const title = document.getElementById('modalTitle');
@@ -290,10 +306,10 @@ class PassaparolaGame {
 
     if (isTimeOut) {
       title.innerText = '⏰ Süre Bitti!';
-      subtitle.innerText = 'Toplam ' + dCount + ' doğru cevapladınız. Harika bir Fen performansı!';
+      subtitle.innerText = 'Tebrikler! Toplam ' + dCount + ' doğru ile harika bir Fen performansı sergilediniz.';
     } else {
-      title.innerText = '🏆 Tebrikler! Çark Tamamlandı!';
-      subtitle.innerText = 'Tüm soruları tamamladınız! Gerçek bir Fen Dehasısınız!';
+      title.innerText = '🎉 TEBRİKLER!';
+      subtitle.innerText = 'Tüm Passaparola çarkını tamamladınız! Harika bir Fen Şampiyonu!';
     }
 
     this.endModal.classList.add('open');
@@ -318,9 +334,9 @@ class PassaparolaGame {
     canvas.height = window.innerHeight;
 
     const particles = [];
-    const colors = ['#00e5ff', '#00e676', '#ffd600', '#ff1744', '#7c4dff', '#ffffff'];
+    const colors = ['#00e5ff', '#16a34a', '#ffd600', '#dc2626', '#7c4dff', '#ffffff'];
 
-    for (let i = 0; i < 120; i++) {
+    for (let i = 0; i < 140; i++) {
       particles.push({
         x: canvas.width / 2,
         y: canvas.height / 2,
@@ -393,18 +409,21 @@ class PassaparolaGame {
       this.btnTeamMode.innerHTML = this.isTwoTeams ? '<span>👥</span> 2 Takım' : '<span>👤</span> Tekli';
     });
 
-    this.teamACard.addEventListener('click', () => {
+    this.teamAPill.addEventListener('click', () => {
       this.activeTeam = 'A';
-      this.teamACard.classList.add('active-team');
-      this.teamBCard.classList.remove('active-team');
+      this.teamAPill.classList.add('active');
+      this.teamBPill.classList.remove('active');
+      this.updateStats();
     });
 
-    this.teamBCard.addEventListener('click', () => {
+    this.teamBPill.addEventListener('click', () => {
       this.activeTeam = 'B';
-      this.teamBCard.classList.add('active-team');
-      this.teamACard.classList.remove('active-team');
+      this.teamBPill.classList.add('active');
+      this.teamAPill.classList.remove('active');
+      this.updateStats();
     });
 
+    // Turkce Karakter Destekli Enter Kontrolu
     this.txtAnswer.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         const val = trUpper(this.txtAnswer.value);
@@ -417,6 +436,7 @@ class PassaparolaGame {
       }
     });
 
+    // Klavye Kısayolları (D, Y, P, C, T)
     window.addEventListener('keydown', (e) => {
       if (document.activeElement === this.txtAnswer) return;
 

@@ -1,118 +1,567 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fen Bilimleri Passaparola</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Rotalı Fenci | 5, 6, 7 ve 8. Sınıf Fen Bilimleri</title>
+  <meta name="description" content="Rotalı Fenci ile 5, 6, 7 ve 8. sınıf Fen Bilimleri konularını keşfet, konu anlatımlarından yararlan, test çöz, etkinlik yap ve eğitici oyunlarla öğren. ROTAMIZ FEN!">
+  <meta name="theme-color" content="#2563EB">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="platform.css">
 </head>
 <body>
-  <canvas id="confettiCanvas"></canvas>
 
-  <header>
-    <div class="logo-area">
-      <div class="logo-icon">&#128300;</div>
-      <div class="title-group">
-        <h1>FEN B&#304;L&#304;MLER&#304; PASSAPAROLA</h1>
-        <span>5, 6 ve 7. S&#305;n&#305;f Genel Fen Bilimleri</span>
-      </div>
-    </div>
-    <div class="header-controls">
-      <button id="btnTeamMode" class="btn-ctrl"><span>&#128101;</span> Tekli Mod</button>
-      <button id="btnTimerToggle" class="btn-ctrl"><span>&#9654;&#65039;</span> Ba&#351;lat</button>
-      <button id="btnSound" class="btn-ctrl"><span>&#128266;</span> Ses A&#231;&#305;k</button>
-      <button id="btnFullscreen" class="btn-ctrl"><span>&#9974;</span> Tam Ekran</button>
-      <button id="btnReset" class="btn-ctrl"><span>&#128260;</span> S&#305;f&#305;rla</button>
-    </div>
-  </header>
+<!-- ═══════════════════════════════════════════════
+     NAVBAR
+═══════════════════════════════════════════════ -->
+<header class="navbar" role="banner">
+  <div class="container navbar__inner">
 
-  <main class="game-container">
-    <section class="wheel-wrapper">
-      <div id="wheelContainer" class="wheel-container">
-        <div id="wheelCenter" class="wheel-center">
-          <div id="centerLetter" class="center-letter">A</div>
-          <div class="center-info">Aktif Harf</div>
-          <div class="center-stats">
-            <span class="stat-d">D: <span id="statD">0</span></span>
-            <span class="stat-y">Y: <span id="statY">0</span></span>
-            <span class="stat-p">P: <span id="statP">0</span></span>
-          </div>
-        </div>
+    <!-- Logo -->
+    <a href="index.html" class="navbar__logo" aria-label="Rotalı Fenci Ana Sayfa">
+      <div class="navbar__logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2a10 10 0 0 1 7.07 17.07M12 2A10 10 0 0 0 4.93 19.07"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)" opacity=".6"/>
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-60 12 12)" opacity=".6"/>
+        </svg>
       </div>
-    </section>
+      <div class="navbar__logo-text">
+        <div class="navbar__logo-name">Rotalı Fenci</div>
+        <div class="navbar__logo-slogan">ROTAMIZ FEN!</div>
+      </div>
+    </a>
 
-    <section class="question-card">
-      <div id="teamBar" class="team-bar" style="display: none;">
-        <div id="teamACard" class="team-card active-team">
-          <span>&#128309; A Grubu:</span>
-          <span id="teamAScore" class="team-score">0</span>
-        </div>
-        <div id="teamBCard" class="team-card">
-          <span>&#128308; B Grubu:</span>
-          <span id="teamBScore" class="team-score">0</span>
-        </div>
-      </div>
+    <!-- Desktop Nav -->
+    <nav class="navbar__links" aria-label="Ana Menü">
+      <a href="index.html"       class="navbar__link active">Ana Sayfa</a>
+      <a href="5-sinif.html"     class="navbar__link">5. Sınıf</a>
+      <a href="6-sinif.html"     class="navbar__link">6. Sınıf</a>
+      <a href="7-sinif.html"     class="navbar__link">7. Sınıf</a>
+      <a href="8-sinif.html"     class="navbar__link">8. Sınıf</a>
+      <a href="etkinlikler.html" class="navbar__link">Etkinlikler</a>
+      <a href="blog.html"        class="navbar__link">Blog</a>
+      <a href="oyunlar.html"     class="navbar__link navbar__link--game">🎮 Oyunlar</a>
+    </nav>
 
-      <div class="q-header">
-        <div class="q-badge" id="qBadge">A Harfi</div>
-        <div class="q-grade" id="qGrade">5. S&#305;n&#305;f</div>
-        <div id="timerBox" class="timer-box">
-          <span class="timer-icon">&#9201;&#65039;</span>
-          <span id="timerText" class="timer-text">04:00</span>
-        </div>
-      </div>
-
-      <div class="q-body">
-        <div class="q-text" id="qText">Soru y&#252;kleniyor...</div>
-        <div class="q-answer-reveal" id="qReveal">CEVAP</div>
-      </div>
-
-      <div class="input-area">
-        <input type="text" id="txtAnswer" class="txt-answer" placeholder="Cevab&#305; yaz&#305;p Enter'a bas&#305;n veya butonlar&#305; kullan&#305;n..." autocomplete="off">
-        <button id="btnShowAnswer" class="btn-hint" title="Cevab&#305; G&#246;ster (K&#305;sayol: C)">&#128065;&#65039; G&#246;ster</button>
-      </div>
-
-      <div class="btn-action-group">
-        <button id="btnCorrect" class="btn-action btn-correct">
-          <span>&#10004;&#65039; DO&#286;RU</span>
-          <small>(D Tu&#351;u)</small>
-        </button>
-        <button id="btnPass" class="btn-action btn-pass">
-          <span>&#9889; PAS</span>
-          <small>(P / Bo&#351;luk)</small>
-        </button>
-        <button id="btnWrong" class="btn-action btn-wrong">
-          <span>&#10060; YANLI&#350;</span>
-          <small>(Y Tu&#351;u)</small>
-        </button>
-      </div>
-    </section>
-  </main>
-
-  <div id="endModal" class="modal-backdrop">
-    <div class="modal-card">
-      <div class="modal-trophy">&#127942;</div>
-      <h2 id="modalTitle" class="modal-title">Tebrikler!</h2>
-      <p id="modalSubtitle" class="modal-subtitle">&#199;ark&#305; ba&#351;ar&#305;yla tamamlad&#305;n&#305;z.</p>
-      <div class="modal-results-grid">
-        <div class="m-res-box">
-          <div class="m-res-title">Do&#286;ru</div>
-          <div class="m-res-val" style="color: var(--accent-green);" id="mStatD">0</div>
-        </div>
-        <div class="m-res-box">
-          <div class="m-res-title">Yanl&#305;&#351;</div>
-          <div class="m-res-val" style="color: var(--accent-red);" id="mStatY">0</div>
-        </div>
-        <div class="m-res-box">
-          <div class="m-res-title">Toplam Puan</div>
-          <div class="m-res-val" style="color: var(--accent-yellow);" id="mStatScore">0 Puan</div>
-        </div>
-      </div>
-      <button id="btnPlayAgain" class="btn-restart">&#128260; Yeniden Oyna</button>
+    <!-- Right actions -->
+    <div class="navbar__actions">
+      <button class="navbar__search-btn" data-search-open aria-label="Ara">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+      </button>
+      <button class="navbar__hamburger" id="navHamburger" aria-label="Menüyü Aç/Kapat" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
     </div>
   </div>
+</header>
 
-  <script src="questions.js"></script>
-  <script src="app.js"></script>
+<!-- Mobile Menu -->
+<nav class="navbar__mobile" id="navMobile" aria-label="Mobil Menü">
+  <div class="navbar__mobile-inner">
+    <a href="index.html"       class="navbar__mobile-link">🏠 Ana Sayfa</a>
+    <div class="navbar__mobile-divider"></div>
+    <a href="5-sinif.html"     class="navbar__mobile-link">📘 5. Sınıf</a>
+    <a href="6-sinif.html"     class="navbar__mobile-link">📗 6. Sınıf</a>
+    <a href="7-sinif.html"     class="navbar__mobile-link">📙 7. Sınıf</a>
+    <a href="8-sinif.html"     class="navbar__mobile-link">📕 8. Sınıf</a>
+    <div class="navbar__mobile-divider"></div>
+    <a href="etkinlikler.html" class="navbar__mobile-link">🧪 Etkinlikler</a>
+    <a href="blog.html"        class="navbar__mobile-link">📰 Blog</a>
+    <a href="hakkinda.html"    class="navbar__mobile-link">ℹ️ Hakkında</a>
+    <a href="iletisim.html"    class="navbar__mobile-link">✉️ İletişim</a>
+    <div class="navbar__mobile-divider"></div>
+    <a href="oyunlar.html"     class="navbar__mobile-link navbar__mobile-link--game">🎮 Oyunlar</a>
+  </div>
+</nav>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Arama">
+  <div class="search-box">
+    <div class="search-box__input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input type="text" id="searchInput" class="search-box__input" placeholder="Konu, ders, oyun ara..." autocomplete="off" autocorrect="off">
+      <button class="search-box__close" id="searchClose">ESC</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     HERO
+═══════════════════════════════════════════════ -->
+<main id="main-content">
+<section class="hero" aria-label="Ana Alan">
+  <div class="hero__bg-pattern" aria-hidden="true"></div>
+  <div class="hero__dots" aria-hidden="true">
+    <div class="hero__dot" style="width:80px;height:80px;background:#3B82F6;top:15%;left:8%;animation-duration:7s;animation-delay:0s;"></div>
+    <div class="hero__dot" style="width:50px;height:50px;background:#8B5CF6;top:60%;left:3%;animation-duration:9s;animation-delay:1s;"></div>
+    <div class="hero__dot" style="width:100px;height:100px;background:#06B6D4;top:30%;right:5%;animation-duration:11s;animation-delay:2s;"></div>
+    <div class="hero__dot" style="width:40px;height:40px;background:#10B981;bottom:20%;right:12%;animation-duration:6s;animation-delay:.5s;"></div>
+    <div class="hero__dot" style="width:60px;height:60px;background:#F59E0B;bottom:10%;left:25%;animation-duration:8s;animation-delay:1.5s;"></div>
+  </div>
+
+  <div class="container hero__inner">
+    <div class="hero__content">
+      <div class="hero__eyebrow" aria-label="Platform türü">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+        Fen Bilimleri Eğitim Platformu
+      </div>
+      <h1 class="hero__title">Rotalı Fenci</h1>
+      <p class="hero__slogan">ROTAMIZ FEN!</p>
+      <p class="hero__desc">5, 6, 7 ve 8. sınıf Fen Bilimleri'ni keşfet, öğren, eğlen ve bilgini geliştir!</p>
+      <div class="hero__cta">
+        <a href="5-sinif.html" class="btn btn--primary btn--lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Derslere Başla
+        </a>
+        <a href="oyunlar.html" class="btn btn--outline btn--lg">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="11" width="4" height="6"/><rect x="14" y="7" width="4" height="10"/><rect x="2" y="15" width="4" height="2"/><rect x="18" y="13" width="4" height="4"/></svg>
+          Oyunları Keşfet
+        </a>
+      </div>
+    </div>
+
+    <!-- Hero Visual: Animated Atom -->
+    <div class="hero__visual" aria-hidden="true">
+      <div class="hero__illustration">
+        <div class="atom-wrap">
+          <!-- Orbits -->
+          <div class="orbit orbit-1"><div class="electron e1"></div></div>
+          <div class="orbit orbit-2"><div class="electron e2"></div></div>
+          <div class="orbit orbit-3"><div class="electron e3"></div></div>
+          <!-- Core -->
+          <div class="atom-core"></div>
+          <!-- Floating science icons -->
+          <div class="sci-icon" style="top:5%;left:5%;">🧪</div>
+          <div class="sci-icon" style="top:5%;right:5%;">🔭</div>
+          <div class="sci-icon" style="bottom:5%;left:5%;">🌍</div>
+          <div class="sci-icon" style="bottom:5%;right:5%;">⚡</div>
+          <div class="sci-icon" style="top:50%;right:-2%;transform:translateY(-50%);">🧬</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SINIFINI SEÇ
+═══════════════════════════════════════════════ -->
+<section class="section grade-section" id="siniflar">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>Hangi Sınıftasın?</h2>
+      <p>Sınıfını seç, Fen Bilimleri yolculuğuna hemen başla!</p>
+    </div>
+
+    <div class="grade-grid">
+      <a href="5-sinif.html" class="grade-card grade-card--5" data-reveal>
+        <div class="grade-card__icon">🌱</div>
+        <div class="grade-card__num">5.</div>
+        <div class="grade-card__label">Sınıf</div>
+        <p class="grade-card__desc">Fen Bilimleri dünyasını keşfetmeye başla.</p>
+        <span class="grade-card__btn">Keşfet →</span>
+      </a>
+      <a href="6-sinif.html" class="grade-card grade-card--6" data-reveal>
+        <div class="grade-card__icon">🔬</div>
+        <div class="grade-card__num">6.</div>
+        <div class="grade-card__label">Sınıf</div>
+        <p class="grade-card__desc">Yeni konularla bilim dünyasını keşfet.</p>
+        <span class="grade-card__btn">Keşfet →</span>
+      </a>
+      <a href="7-sinif.html" class="grade-card grade-card--7" data-reveal>
+        <div class="grade-card__icon">⚡</div>
+        <div class="grade-card__num">7.</div>
+        <div class="grade-card__label">Sınıf</div>
+        <p class="grade-card__desc">Bilimsel düşünme becerilerini geliştir.</p>
+        <span class="grade-card__btn">Keşfet →</span>
+      </a>
+      <a href="8-sinif.html" class="grade-card grade-card--8" data-reveal>
+        <div class="grade-card__icon">🎯</div>
+        <div class="grade-card__num">8.</div>
+        <div class="grade-card__label">Sınıf</div>
+        <p class="grade-card__desc">LGS Fen Bilimleri hazırlığını güçlendir.</p>
+        <span class="grade-card__btn">Keşfet →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     FEN BİLİMLERİNİ KEŞFET (Kategoriler)
+═══════════════════════════════════════════════ -->
+<section class="section categories-section" id="konular">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>Fen Bilimlerini Keşfet</h2>
+      <p>Öğrenmek, pekiştirmek, eğlenmek için her şey burada!</p>
+    </div>
+
+    <div class="cat-grid">
+      <a href="6-sinif.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#DBEAFE;">🔬</div>
+        <div class="cat-card__title">Konu Anlatımları</div>
+        <p class="cat-card__desc">Konuları kolay ve anlaşılır şekilde öğren.</p>
+      </a>
+      <a href="7-sinif.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#DCFCE7;">🧠</div>
+        <div class="cat-card__title">Ders Notları</div>
+        <p class="cat-card__desc">Önemli bilgileri kısa ve düzenli şekilde tekrar et.</p>
+      </a>
+      <a href="8-sinif.html#testler" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#FEF3C7;">📝</div>
+        <div class="cat-card__title">Testler</div>
+        <p class="cat-card__desc">Bilgilerini test et, puanını gör.</p>
+      </a>
+      <a href="oyunlar.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#FFEDD5;">🎮</div>
+        <div class="cat-card__title">Eğitici Oyunlar</div>
+        <p class="cat-card__desc">Oynarken öğren, eğlenerek pekiştir.</p>
+      </a>
+      <a href="etkinlikler.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#EDE9FE;">🧪</div>
+        <div class="cat-card__title">Deneyler</div>
+        <p class="cat-card__desc">Bilimi uygulamalı olarak keşfet.</p>
+      </a>
+      <a href="blog.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#CFFAFE;">💡</div>
+        <div class="cat-card__title">Bilimsel Bilgiler</div>
+        <p class="cat-card__desc">İlginç bilimsel gerçekleri öğren.</p>
+      </a>
+      <a href="blog.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#FEE2E2;">🤖</div>
+        <div class="cat-card__title">Yapay Zekâ</div>
+        <p class="cat-card__desc">Eğitimde yapay zekânın sunduğu fırsatları keşfet.</p>
+      </a>
+      <a href="8-sinif.html" class="cat-card" data-reveal>
+        <div class="cat-card__icon" style="background:#FEF3C7;">🎯</div>
+        <div class="cat-card__title">LGS</div>
+        <p class="cat-card__desc">8. sınıf öğrencileri için sınav odaklı içerikler.</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     OYUNLAR
+═══════════════════════════════════════════════ -->
+<section class="section games-section" id="oyunlar" aria-label="Oyunlar">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>🎮 Fen Bilimleri Oyunları</h2>
+      <p>Oynarken öğren, eğlenerek Fen Bilimleri'nde ustalaş!</p>
+    </div>
+
+    <div class="games-grid">
+      <!-- Passaparola -->
+      <a href="passaparola.html" class="game-card" data-reveal>
+        <span class="game-card__badge" style="background:rgba(251,191,36,.2);color:#FBBF24;">⭐ Öne Çıkan</span>
+        <span class="game-card__icon">🎯</span>
+        <div class="game-card__title">Fen Bilimleri Passaparola</div>
+        <p class="game-card__desc">Soruları cevapla, harfleri tamamla! 5, 6, 7. sınıf sorularıyla heyecan dolu bir yarışma.</p>
+        <span class="game-card__btn">
+          Oyuna Başla
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
+      <!-- Quiz -->
+      <a href="oyunlar.html" class="game-card" data-reveal>
+        <span class="game-card__badge" style="background:rgba(52,211,153,.2);color:#34D399;">🧠 Bilgi Testi</span>
+        <span class="game-card__icon">🧠</span>
+        <div class="game-card__title">Fen Bilimleri Quiz</div>
+        <p class="game-card__desc">Bilgilerini eğlenceli sorularla test et. Kaç soruyu doğru cevaplayabilirsin?</p>
+        <span class="game-card__btn">
+          Oyuna Başla
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
+      <!-- Hızlı Soru -->
+      <a href="oyunlar.html" class="game-card" data-reveal>
+        <span class="game-card__badge" style="background:rgba(248,113,113,.2);color:#F87171;">⚡ Hızlı</span>
+        <span class="game-card__icon">⚡</span>
+        <div class="game-card__title">Hızlı Soru</div>
+        <p class="game-card__desc">Süre bitmeden doğru cevabı bul! Hız ve bilgi seni bekliyor.</p>
+        <span class="game-card__btn">
+          Oyuna Başla
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </a>
+    </div>
+
+    <div class="view-all-wrap" style="margin-top:2rem;">
+      <a href="oyunlar.html" class="btn btn--outline btn--lg" style="color:#fff;border-color:rgba(255,255,255,.3);">Tüm Oyunları Gör →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     BUGÜN NE ÖĞRENELİM?
+═══════════════════════════════════════════════ -->
+<section class="section today-section" id="bugun" aria-label="Bugün Ne Öğrenelim?">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>🔎 Bugün Ne Öğrenelim?</h2>
+      <p>Her gün yeni bir konu seni bekliyor!</p>
+    </div>
+
+    <div class="today-card" data-reveal>
+      <div>
+        <div class="today-card__label">📌 Öne Çıkan Konu</div>
+        <div class="today-card__title">Elektrik Devreleri</div>
+        <p class="today-card__desc">Elektrik devresindeki elemanların görevlerini keşfet! Seri ve paralel devreler arasındaki farkı öğren.</p>
+        <a href="7-sinif.html" class="btn btn--primary" style="margin-top:1.25rem;">Konuya Git →</a>
+      </div>
+      <div class="today-card__icon" aria-hidden="true">⚡</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     ETKİNLİKLER
+═══════════════════════════════════════════════ -->
+<section class="section activities-section" id="etkinlikler" aria-label="Etkinlikler">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>🧪 Etkinlikler</h2>
+      <p>Deneyle, keşfet, üret! Fen Bilimlerini yaşayarak öğren.</p>
+    </div>
+
+    <div class="act-grid">
+      <a href="etkinlikler.html" class="act-card" data-reveal>
+        <div class="act-card__img" style="background:linear-gradient(135deg,#DBEAFE,#EDE9FE);">🧪</div>
+        <div class="act-card__body">
+          <div class="act-card__meta">
+            <span class="badge badge--blue">5. Sınıf</span>
+            <span class="badge badge--purple">Deney</span>
+          </div>
+          <div class="act-card__title">Evde Yapabileceğin Basit Kimya Deneyleri</div>
+          <p class="act-card__desc">Mutfak malzemeleriyle yapabileceğin 5 güvenli ve eğlenceli deney.</p>
+          <span class="act-card__link">Etkinliği İncele →</span>
+        </div>
+      </a>
+      <a href="etkinlikler.html" class="act-card" data-reveal>
+        <div class="act-card__img" style="background:linear-gradient(135deg,#DCFCE7,#CFFAFE);">🌱</div>
+        <div class="act-card__body">
+          <div class="act-card__meta">
+            <span class="badge badge--green">6. Sınıf</span>
+            <span class="badge badge--green">STEM</span>
+          </div>
+          <div class="act-card__title">Kendi Mini Ekosistemini Oluştur</div>
+          <p class="act-card__desc">Bir kavanozda canlı ekosistem oluştur ve doğanın döngüsünü gözlemle.</p>
+          <span class="act-card__link">Etkinliği İncele →</span>
+        </div>
+      </a>
+      <a href="etkinlikler.html" class="act-card" data-reveal>
+        <div class="act-card__img" style="background:linear-gradient(135deg,#FEF3C7,#FFEDD5);">🚀</div>
+        <div class="act-card__body">
+          <div class="act-card__meta">
+            <span class="badge badge--orange">7. Sınıf</span>
+            <span class="badge badge--orange">Proje</span>
+          </div>
+          <div class="act-card__title">Su Roketi Yapımı</div>
+          <p class="act-card__desc">Plastik şişe ve su kullanarak çalışan bir roket yap! Fizik kanunlarını keşfet.</p>
+          <span class="act-card__link">Etkinliği İncele →</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="view-all-wrap">
+      <a href="etkinlikler.html" class="btn--view-all">Tüm Etkinlikleri Gör →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     LGS FEN BİLİMLERİ
+═══════════════════════════════════════════════ -->
+<section class="section lgs-section" id="lgs" aria-label="LGS Fen Bilimleri">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>🎯 LGS Fen Bilimleri</h2>
+      <p>8. sınıf öğrencileri için LGS'ye özel içerikler</p>
+    </div>
+
+    <div class="lgs-grid" data-reveal>
+      <a href="8-sinif.html#konu" class="lgs-item">
+        <span class="lgs-item__icon">📖</span>
+        <span class="lgs-item__label">Konu Anlatımları</span>
+      </a>
+      <a href="8-sinif.html#test" class="lgs-item">
+        <span class="lgs-item__icon">📝</span>
+        <span class="lgs-item__label">LGS Testleri</span>
+      </a>
+      <a href="8-sinif.html#soru" class="lgs-item">
+        <span class="lgs-item__icon">🧩</span>
+        <span class="lgs-item__label">Yeni Nesil Sorular</span>
+      </a>
+      <a href="8-sinif.html#deneme" class="lgs-item">
+        <span class="lgs-item__icon">📊</span>
+        <span class="lgs-item__label">Deneme Önerileri</span>
+      </a>
+      <a href="8-sinif.html#calisma" class="lgs-item">
+        <span class="lgs-item__icon">💡</span>
+        <span class="lgs-item__label">Çalışma Önerileri</span>
+      </a>
+      <a href="8-sinif.html#hatalar" class="lgs-item">
+        <span class="lgs-item__icon">⚠️</span>
+        <span class="lgs-item__label">Sık Yapılan Hatalar</span>
+      </a>
+    </div>
+
+    <div class="view-all-wrap" style="margin-top:2rem;">
+      <a href="8-sinif.html" class="btn btn--outline btn--lg" style="color:#fff;border-color:rgba(255,255,255,.3);">8. Sınıf LGS Sayfasına Git →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     BİLİYOR MUYDUN?
+═══════════════════════════════════════════════ -->
+<section class="section facts-section" id="bilgiler" aria-label="Biliyor muydun?">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>🤯 Biliyor muydun?</h2>
+      <p>Şaşırtıcı bilimsel gerçekleri keşfet!</p>
+    </div>
+
+    <div class="facts-grid">
+      <div class="fact-card" data-reveal>
+        <span class="fact-card__emoji">❤️</span>
+        <p class="fact-card__text">Bir insan kalbi günde yaklaşık 100.000 kez atar. Bu, yılda 35 milyon atış demek!</p>
+        <a href="blog.html" class="fact-card__link">Daha Fazla Bilgi →</a>
+      </div>
+      <div class="fact-card" data-reveal>
+        <span class="fact-card__emoji">⚡</span>
+        <p class="fact-card__text">Işık, saniyede yaklaşık 300.000 kilometre hızla hareket eder. Güneş'ten Dünya'ya 8 dakikada ulaşır!</p>
+        <a href="blog.html" class="fact-card__link">Daha Fazla Bilgi →</a>
+      </div>
+      <div class="fact-card" data-reveal>
+        <span class="fact-card__emoji">🌊</span>
+        <p class="fact-card__text">Dünya'nın yüzeyinin yaklaşık %71'i su ile kaplıdır. Ancak tatlı suyun oranı sadece %3'tür!</p>
+        <a href="blog.html" class="fact-card__link">Daha Fazla Bilgi →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SON İÇERİKLER (Blog)
+═══════════════════════════════════════════════ -->
+<section class="section blog-section" id="blog" aria-label="Son İçerikler">
+  <div class="container">
+    <div class="section-header" data-reveal>
+      <h2>📚 Fen Bilimleri Dünyasından</h2>
+      <p>Bilim ve eğitim dünyasından güncel içerikler</p>
+    </div>
+
+    <div class="blog-grid">
+      <a href="blog.html" class="blog-card" data-reveal>
+        <div class="blog-card__cover" style="background:linear-gradient(135deg,#DBEAFE,#EDE9FE);">⚡</div>
+        <div class="blog-card__body">
+          <div class="blog-card__meta">
+            <span class="badge badge--blue">Fizik</span>
+            <span class="blog-card__date">20 Ağustos 2026</span>
+          </div>
+          <div class="blog-card__title">Elektrik Devrelerini Kolayca Öğren!</div>
+          <p class="blog-card__excerpt">Seri ve paralel devreler nedir? Elektrik devresi elemanları nelerdir? Adım adım anlıyoruz.</p>
+          <span class="blog-card__read">Devamını Oku →</span>
+        </div>
+      </a>
+      <a href="blog.html" class="blog-card" data-reveal>
+        <div class="blog-card__cover" style="background:linear-gradient(135deg,#DCFCE7,#CFFAFE);">🧬</div>
+        <div class="blog-card__body">
+          <div class="blog-card__meta">
+            <span class="badge badge--green">Biyoloji</span>
+            <span class="blog-card__date">18 Ağustos 2026</span>
+          </div>
+          <div class="blog-card__title">DNA Nedir? Nasıl Çalışır?</div>
+          <p class="blog-card__excerpt">Hayatın şifresini taşıyan DNA molekülünü kolay bir dille anlıyoruz. Kalıtım nasıl işler?</p>
+          <span class="blog-card__read">Devamını Oku →</span>
+        </div>
+      </a>
+      <a href="blog.html" class="blog-card" data-reveal>
+        <div class="blog-card__cover" style="background:linear-gradient(135deg,#FEF3C7,#FFEDD5);">🚀</div>
+        <div class="blog-card__body">
+          <div class="blog-card__meta">
+            <span class="badge badge--yellow">Astronomi</span>
+            <span class="blog-card__date">15 Ağustos 2026</span>
+          </div>
+          <div class="blog-card__title">Güneş Sistemi Hakkında 10 İlginç Bilgi</div>
+          <p class="blog-card__excerpt">Gezegenlerden asteroitlere, uzayın gizemli dünyasını keşfediyoruz. Hangi gezegen en büyük?</p>
+          <span class="blog-card__read">Devamını Oku →</span>
+        </div>
+      </a>
+    </div>
+
+    <div class="view-all-wrap">
+      <a href="blog.html" class="btn--view-all">Tüm İçerikleri Gör →</a>
+    </div>
+  </div>
+</section>
+</main>
+
+<!-- ═══════════════════════════════════════════════
+     FOOTER
+═══════════════════════════════════════════════ -->
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer__grid">
+      <!-- Brand -->
+      <div>
+        <div class="footer__brand-name">Rotalı Fenci</div>
+        <div class="footer__brand-slogan">ROTAMIZ FEN!</div>
+        <p class="footer__brand-desc">5, 6, 7 ve 8. sınıf Fen Bilimleri için öğren, keşfet ve eğlen!</p>
+      </div>
+      <!-- Sınıflar -->
+      <div>
+        <div class="footer__col-title">Sınıflar</div>
+        <ul class="footer__links">
+          <li><a href="5-sinif.html" class="footer__link">5. Sınıf</a></li>
+          <li><a href="6-sinif.html" class="footer__link">6. Sınıf</a></li>
+          <li><a href="7-sinif.html" class="footer__link">7. Sınıf</a></li>
+          <li><a href="8-sinif.html" class="footer__link">8. Sınıf</a></li>
+        </ul>
+      </div>
+      <!-- İçerikler -->
+      <div>
+        <div class="footer__col-title">İçerikler</div>
+        <ul class="footer__links">
+          <li><a href="oyunlar.html"     class="footer__link">Oyunlar</a></li>
+          <li><a href="etkinlikler.html" class="footer__link">Etkinlikler</a></li>
+          <li><a href="blog.html"        class="footer__link">Blog</a></li>
+          <li><a href="8-sinif.html"     class="footer__link">LGS</a></li>
+        </ul>
+      </div>
+      <!-- Platform -->
+      <div>
+        <div class="footer__col-title">Platform</div>
+        <ul class="footer__links">
+          <li><a href="hakkinda.html"  class="footer__link">Hakkında</a></li>
+          <li><a href="iletisim.html"  class="footer__link">İletişim</a></li>
+          <li><a href="index.html"     class="footer__link">Ana Sayfa</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <p>© 2026 Rotalı Fenci. Tüm hakları saklıdır. | <strong style="color:rgba(255,255,255,.5);">ROTAMIZ FEN!</strong></p>
+    </div>
+  </div>
+</footer>
+
+<!-- Scroll to Top -->
+<button class="scroll-top" id="scrollTop" aria-label="Yukarı Çık">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/>
+  </svg>
+</button>
+
+<script src="platform.js"></script>
 </body>
 </html>
