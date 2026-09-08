@@ -679,8 +679,157 @@ function renderGradeDetail(container, gradeId) {
 // -------------------------------------------------------------
 // 3. 📚 ÜNİTE HUB (5-ADIM STANDARDI)
 // -------------------------------------------------------------
+
+function getUnitHubData(unitId) {
+    if (UNIT_HUBS[unitId]) {
+        return UNIT_HUBS[unitId];
+    }
+
+    // Find in PORTAL_GRADES
+    let foundGrade = null;
+    let foundUnit = null;
+
+    for (const g of PORTAL_GRADES) {
+        const u = g.units.find(item => item.id === unitId);
+        if (u) {
+            foundGrade = g;
+            foundUnit = u;
+            break;
+        }
+    }
+
+    if (!foundUnit) {
+        return UNIT_HUBS["7-unit-2"];
+    }
+
+    // Generate full standard 5-step Hub dynamically for this unit
+    return {
+        id: foundUnit.id,
+        grade: foundGrade.title.split(" ")[0] + ". Sınıf",
+        gradeSlug: foundGrade.id,
+        unitCode: foundUnit.code,
+        title: foundUnit.name,
+        icon: foundUnit.icon,
+        color: foundGrade.color,
+        description: `${foundGrade.title} müfredatına ait ${foundUnit.name} ünitesi konu özeti, kavram haritası, interaktif eşleştirme oyunu, çalışma föyleri, yeni nesil soru testi ve kazanım değerlendirme modülü.`,
+        
+        ogren: {
+            summaryHtml: `
+                <div class="space-y-6 text-slate-700">
+                    <div class="bg-gradient-to-r from-red-50 to-orange-50 border-l-4 border-brand-red p-4 rounded-r-xl">
+                        <h4 class="font-bold text-slate-900 text-base mb-1">🎯 ${foundUnit.code} ${foundUnit.name} Kazanım Özeti:</h4>
+                        <p class="text-sm text-slate-700">Bu ünitede ${foundUnit.name} konusunun temel kavramları, doğadaki işleyişi, deney ve gözlemlere dayalı bilimsel süreç becerileri incelenir.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                            <h5 class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                                <i class="${foundUnit.icon} text-brand-red"></i> Temel Kavramlar & Prensipler
+                            </h5>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                                Konu kapsamında yer alan temel tanımlar, MEB kazanım standartlarına uygun olarak adım adım ele alınmıştır.
+                            </p>
+                            <ul class="text-xs space-y-2 text-slate-600 list-disc list-inside">
+                                <li><strong>Öğrenme Alanı:</strong> ${foundUnit.name} kuramsal temelleri</li>
+                                <li><strong>Hedef Beceriler:</strong> Bilimsel gözlem, veri analizi ve hipotez kurma</li>
+                                <li><strong>Müfredat Ağırlığı:</strong> ${foundUnit.hours} Ders Saati</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-5 bg-white border border-slate-200 rounded-2xl shadow-sm">
+                            <h5 class="font-black text-slate-800 flex items-center gap-2 mb-2">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i> Dikkat Edilecek Kritik Noktalar
+                            </h5>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-3">
+                                Yazılı sınavlarda ve denemelerde en sık karıştırılan kavramlar:
+                            </p>
+                            <ul class="text-xs space-y-2 text-slate-600 list-disc list-inside">
+                                <li>Kavram yanılgılarına dikkat edilmeli ve tanımlar ezber yerine mantıkla kavranmalıdır.</li>
+                                <li>Grafik ve tablo yorumlama sorularında eksenlerdeki değişkenler kontrol edilmelidir.</li>
+                                <li>Deney sorularında bağımlı, bağımsız ve kontrol edilen değişkenler doğru ayırt edilmelidir.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `,
+            glossary: [
+                { term: "Bağımsız Değişken", def: "Deneyde araştırmacının bilerek ve isteyerek değiştirdiği değişkendir." },
+                { term: "Bağımlı Değişken", def: "Bağımsız değişkene bağlı olarak değişen ve ölçülen sonuçtur." },
+                { term: "Sabit Tutulan (Kontrol) Değişken", def: "Deneyin tüm aşamalarında aynı bırakılan ve etkisi sabitlenen faktördür." }
+            ]
+        },
+
+        kesfet: {
+            title: `${foundUnit.name} Kavram Eşleştirme & Etkinlik`,
+            pairs: [
+                { organel: "Gözlem", gorev: "Duyu organları veya araçlarla yapılan veri toplama" },
+                { organel: "Hipotez", gorev: "Probleme getirilen geçici ve test edilebilir çözüm" },
+                { organel: "Deney", gorev: "Hipotezin doğruluğunu test etmek için yapılan kontrollü inceleme" },
+                { organel: "Sonuç & Rapor", gorev: "Elde edilen bulguların değerlendirilmesi" }
+            ]
+        },
+
+        uygula: {
+            worksheets: [
+                { id: `ws-${foundUnit.id}-1`, title: `${foundUnit.code} ${foundUnit.name} Kavram & Etkinlik Föyü`, pages: 2, type: "PDF / A4", downloadCount: "1.250 İndirme" },
+                { id: `ws-${foundUnit.id}-2`, title: `${foundUnit.name} Beceri Temelli Açık Uçlu Çalışma Kağıdı`, pages: 3, type: "Yazılı Hazırlık", downloadCount: "890 İndirme" }
+            ],
+            experiments: [
+                {
+                    title: `${foundUnit.name} Laboratuvar Gözlem & Deney Protokolü`,
+                    safety: ["Güvenlik gözlüğü takınız.", "Öğretmen gözetiminde çalışınız."],
+                    steps: [
+                        "Deney malzemelerini hazırlayarak çalışma alanını düzenleyiniz.",
+                        "Kontrollü deney değişkenlerini (bağımsız, bağımlı, kontrol) belirleyiniz.",
+                        "Gözlem sonuçlarınızı deney raporu tablosuna kaydediniz."
+                    ]
+                }
+            ]
+        },
+
+        coz: {
+            questions: [
+                {
+                    q: `${foundUnit.name} konusu ile ilgili kontrollü bir deney tasarlayan bir öğrenci, sadece bir özelliği değiştirip diğer tüm faktörleri sabit tutmuştur. Bu deneyde değiştirilen değişken hangisidir?`,
+                    options: [
+                        "A) Bağımsız değişken",
+                        "B) Bağımlı değişken",
+                        "C) Kontrol edilen değişken",
+                        "D) Sabit değişken"
+                    ],
+                    correct: 0,
+                    explanation: "Deneyde araştırmacının kendi isteğiyle değiştirdiği faktör 'Bağımsız Değişken'dir."
+                },
+                {
+                    q: "Bilimsel bir çalışmada hipotezin doğruluğunu test etmek için aşağıdakilerden hangisi yapılmalıdır?",
+                    options: [
+                        "A) Hipotezi doğrudan doğru kabul etmek",
+                        "B) Kontrollü deneyler ve tekrarlı gözlemler yapmak",
+                        "C) Yalnızca teorik tahminlerde bulunmak",
+                        "D) Değişkenleri rastgele değiştirmek"
+                    ],
+                    correct: 1,
+                    explanation: "Hipotezlerin geçerliliği kontrollü deneyler ve tekrarlanabilir gözlemlerle sınanır."
+                }
+            ]
+        },
+
+        analiz: {
+            checklist: [
+                { id: "c1", label: `${foundUnit.name} temel kavram ve tanımlarını tam olarak öğrendim.` },
+                { id: "c2", label: "Konuya ait deneylerde bağımlı ve bağımsız değişkenleri ayırt edebiliyorum." },
+                { id: "c3", label: "Yeni nesil grafikli ve tablolu soruları doğru analiz edebiliyorum." }
+            ],
+            recommendedVideos: [
+                { title: `${foundUnit.name} 15 Dakikada Pratik Özet`, duration: "14:20" },
+                { title: `${foundUnit.name} Yeni Nesil MEB Soru Çözümleri`, duration: "22:15" }
+            ]
+        }
+    };
+}
+
 function renderUnitHub(container, unitId, activeStep = "ogren") {
-    const hub = UNIT_HUBS[unitId] || UNIT_HUBS["7-unit-2"];
+    const hub = getUnitHubData(unitId);
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
