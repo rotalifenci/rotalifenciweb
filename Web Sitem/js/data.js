@@ -981,37 +981,70 @@ function getGradeSubSectionsData(gradeNumber) {
 
     return {
         // 1. DERS NOTLARI
-        dersNotu: unitTitles.map((uName, idx) => ({
-            id: `not-${gNum}-${idx+1}`,
-            title: `${gNum}. Sınıf ${idx+1}. Ünite: ${uName} Ders Notu`,
-            unit: `${idx+1}. Ünite • ${uName}`,
-            pages: "4-6 Sayfa",
-            desc: "Renkli kavram haritaları, MEB kazanım özetleri, formül tabloları ve dikkat edilmesi gereken püf noktalar.",
-            badge: "PDF / Renkli Özet",
-            downloadCount: `${1200 + idx * 85} İndirme`
-        })),
+        dersNotu: [
+            ...(gNum === 5 ? [{
+                id: "not-5-unite-bilgilendirmeleri",
+                title: "5. Sınıf Ünite Bilgilendirmeleri & Kazanım Rehberi",
+                unit: "Genel • Ünite Bilgilendirmeleri",
+                pages: "6 Sayfa",
+                desc: "5. sınıf tüm ünitelerin kazanım dağılımı, kavram yanılgıları ve veli/öğrenci rehberlik bilgilendirme dokümanı.",
+                badge: "PDF / Kazanım Föyü",
+                downloadCount: "2.450 İndirme"
+            }] : []),
+            ...unitTitles.map((uName, idx) => ({
+                id: `not-${gNum}-${idx+1}`,
+                title: `${gNum}. Sınıf ${idx+1}. Ünite: ${uName} Ders Notu`,
+                unit: `${idx+1}. Ünite • ${uName}`,
+                pages: "4-6 Sayfa",
+                desc: "Renkli kavram haritaları, MEB kazanım özetleri, formül tabloları ve dikkat edilmesi gereken püf noktalar.",
+                badge: "PDF / Renkli Özet",
+                downloadCount: `${1200 + idx * 85} İndirme`
+            }))
+        ],
 
         // 2. DERS SUNUMLARI
-        dersSunumu: unitTitles.map((uName, idx) => ({
-            id: `sunum-${gNum}-${idx+1}`,
-            title: `${gNum}. Sınıf ${uName} Akıllı Tahta Dersi Sunumu`,
-            unit: `${idx+1}. Ünite • ${uName}`,
-            slides: "24-38 Slayt",
-            desc: "Sınıf içi projeksiyon ve akıllı tahta uyumlu, yüksek çözünürlüklü görseller ve interaktif animasyonlar içeren PPTX/PDF sunumu.",
-            badge: "Akıllı Tahta (PPTX / PDF)",
-            format: "16:9 Geniş Ekran"
-        })),
+        dersSunumu: [
+            ...(gNum === 5 ? [{
+                id: "sunum-5-lab-guvenligi",
+                title: "5. Sınıf Laboratuvar Güvenliği & Malzemeleri Renkli İnfografik Görseli",
+                unit: "1. Ünite • Güvenlik & Kurallar",
+                slides: "İnfografik / Yüksek Kalite",
+                desc: "Laboratuvar kuralları, güvenlik piktogramları ve 30 temel laboratuvar malzemesini içeren yüksek çözünürlüklü görsel sunum.",
+                badge: "Görsel / Sunum (HD)",
+                format: "Afiş & Sunum"
+            }] : []),
+            ...unitTitles.map((uName, idx) => ({
+                id: `sunum-${gNum}-${idx+1}`,
+                title: `${gNum}. Sınıf ${uName} Akıllı Tahta Dersi Sunumu`,
+                unit: `${idx+1}. Ünite • ${uName}`,
+                slides: "24-38 Slayt",
+                desc: "Sınıf içi projeksiyon ve akıllı tahta uyumlu, yüksek çözünürlüklü görseller ve interaktif animasyonlar içeren PPTX/PDF sunumu.",
+                badge: "Akıllı Tahta (PPTX / PDF)",
+                format: "16:9 Geniş Ekran"
+            }))
+        ],
 
         // 3. VİDEOLAR
-        videolar: unitTitles.map((uName, idx) => ({
-            id: `video-${gNum}-${idx+1}`,
-            title: `${gNum}. Sınıf ${uName} Konu Anlatımı & Deney Videosu`,
-            unit: `${idx+1}. Ünite • ${uName}`,
-            duration: `${12 + (idx % 4) * 3}:45 Dakika`,
-            desc: "Animasyonlu kavram anlatımları, laboratuvar deney çekimleri ve MEB yeni nesil soru çözüm analizleri.",
-            channel: "Rotalı Fenci Akademi",
-            views: `${4500 + idx * 320} İzlenme`
-        })),
+        videolar: [
+            ...(gNum === 5 ? [{
+                id: "video-5-semboller",
+                title: "5. Sınıf Fen Laboratuvar Güvenlik Sembolleri ve Uyarı İşaretleri Videosu",
+                unit: "1. Ünite • Güvenlik Sembolleri",
+                duration: "08:45 Dakika",
+                desc: "Tahriş edici, yanıcı, yakıcı, korozif ve çevreye zararlı güvenlik sembollerinin anlamları ve deney güvenliği video anlatımı.",
+                channel: "Rotalı Fenci Akademi",
+                views: "3.850 İzlenme"
+            }] : []),
+            ...unitTitles.map((uName, idx) => ({
+                id: `video-${gNum}-${idx+1}`,
+                title: `${gNum}. Sınıf ${uName} Konu Anlatımı & Deney Videosu`,
+                unit: `${idx+1}. Ünite • ${uName}`,
+                duration: `${12 + (idx % 4) * 3}:45 Dakika`,
+                desc: "Animasyonlu kavram anlatımları, laboratuvar deney çekimleri ve MEB yeni nesil soru çözüm analizleri.",
+                channel: "Rotalı Fenci Akademi",
+                views: `${4500 + idx * 320} İzlenme`
+            }))
+        ],
 
         // 4. ETKİNLİKLER
         etkinlikler: unitTitles.map((uName, idx) => ({
