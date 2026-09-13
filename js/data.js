@@ -194,8 +194,8 @@ const UNIT_HUBS = {
         // 3. ADIM: UYGULA (ÇALIŞMA KAĞITLARI & DENEYLER)
         uygula: {
             worksheets: [
-                { id: "ws-7-1", title: "7.2 Hücre ve Organelleri Kavram Çalışma Kağıdı", pages: 2, type: "PDF / A4", downloadCount: "1.420 İndirme" },
-                { id: "ws-7-2", title: "Mitoz ve Mayoz Bölünme Karşılaştırma İstasyon Föyü", pages: 3, type: "Grup Etkinliği", downloadCount: "980 İndirme" }
+                { id: "ws-7-1", title: "7.2 Hücre ve Organelleri Kavram Çalışma Kağıdı", pages: 2, type: "PDF / A4", downloadCount: "1.420 Görüntüleme" },
+                { id: "ws-7-2", title: "Mitoz ve Mayoz Bölünme Karşılaştırma İstasyon Föyü", pages: 3, type: "Grup Etkinliği", downloadCount: "980 Görüntüleme" }
             ],
             experiments: [
                 {
@@ -295,7 +295,7 @@ const UNIT_HUBS = {
         },
         uygula: {
             worksheets: [
-                { id: "ws-8-1", title: "LGS Mevsimler & İklim Grafik Yorumlama Föyü", pages: 3, type: "PDF", downloadCount: "3.200 İndirme" }
+                { id: "ws-8-1", title: "LGS Mevsimler & İklim Grafik Yorumlama Föyü", pages: 3, type: "PDF", downloadCount: "3.200 Görüntüleme" }
             ],
             experiments: [
                 { id: "exp-8-1", title: "Farklı Açılarla Aydınlatılan Termometrelerin Sıcaklık Artışı Deneyi" }
@@ -989,7 +989,7 @@ function getGradeSubSectionsData(gradeNumber) {
                 pages: "6 Sayfa",
                 desc: "5. sınıf tüm ünitelerin kazanım dağılımı, kavram yanılgıları ve veli/öğrenci rehberlik bilgilendirme dokümanı.",
                 badge: "PDF / Kazanım Föyü",
-                downloadCount: "2.450 İndirme"
+                downloadCount: "2.450 Görüntüleme"
             }] : []),
             ...unitTitles.map((uName, idx) => ({
                 id: `not-${gNum}-${idx+1}`,
@@ -998,7 +998,7 @@ function getGradeSubSectionsData(gradeNumber) {
                 pages: "4-6 Sayfa",
                 desc: "Renkli kavram haritaları, MEB kazanım özetleri, formül tabloları ve dikkat edilmesi gereken püf noktalar.",
                 badge: "PDF / Renkli Özet",
-                downloadCount: `${1200 + idx * 85} İndirme`
+                downloadCount: `${1200 + idx * 85} Görüntüleme`
             }))
         ],
 
@@ -1029,6 +1029,7 @@ function getGradeSubSectionsData(gradeNumber) {
             ...(gNum === 5 ? [{
                 id: "video-5-semboller",
                 title: "5. Sınıf Fen Laboratuvar Güvenlik Sembolleri ve Uyarı İşaretleri Videosu",
+                videoUrl: "https://www.youtube.com/watch?v=HhXVz4JzwJ4",
                 unit: "1. Ünite • Güvenlik Sembolleri",
                 duration: "08:45 Dakika",
                 desc: "Tahriş edici, yanıcı, yakıcı, korozif ve çevreye zararlı güvenlik sembollerinin anlamları ve deney güvenliği video anlatımı.",

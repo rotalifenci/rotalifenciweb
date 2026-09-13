@@ -59,7 +59,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         unit: "1. Ünite",
         desc: "Laboratuvar güvenlik sembolleri ve anlamlarını içeren eğitici video anlatımı.",
         fileName: "Semboller_Videosu.mp4",
-        fileUrl: "#",
+        fileUrl: "https://www.youtube.com/watch?v=HhXVz4JzwJ4",
         format: "VİDEO",
         hasBlob: false,
         tags: ["Semboller", "Video", "Laboratuvar"],
@@ -121,8 +121,12 @@ function getCustomMaterialsList() {
         // Eksik varsayılanları listeye ekle
         let changed = false;
         DEFAULT_CUSTOM_MATERIALS.forEach(seed => {
-            if (!customList.some(item => item.id === seed.id || item.title === seed.title)) {
+            const existing = customList.find(item => item.id === seed.id || item.title === seed.title);
+            if (!existing) {
                 customList.push(seed);
+                changed = true;
+            } else if (seed.fileUrl && seed.fileUrl !== "#" && (!existing.fileUrl || existing.fileUrl === "#" || existing.fileUrl.includes("kR1eZq9Q2n4"))) {
+                existing.fileUrl = seed.fileUrl;
                 changed = true;
             }
         });
@@ -237,10 +241,9 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                             ` : ''}
                         </div>
 
-                        <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-gradient-to-r ${item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : 'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
-                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'fa-gamepad' : (item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) || (item.title && item.title.toLowerCase().includes('video')) ? 'fa-play' : 'fa-download')}"></i>
-                                <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'Oyunu Başlat / Oyna' : (item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) || (item.title && item.title.toLowerCase().includes('video')) ? 'Videoyu İzle' : (item.fileUrl && item.fileUrl.startsWith('http') ? 'Bağlantıyı Aç' : 'Aç / İndir'))}</span>
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}')" class="w-full py-2.5 bg-gradient-to-r ${item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : 'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
+                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'fa-gamepad' : (item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) || (item.title && item.title.toLowerCase().includes('video')) ? 'fa-play' : 'fa-eye')}"></i>
+                                <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'Oyunu Oynat' : (item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) || (item.title && item.title.toLowerCase().includes('video')) ? 'Videoyu Oynat' : 'Görüntüle')}</span>
                             </button>
 
                             ${isAdmin ? `
@@ -747,8 +750,8 @@ function renderHomeRecentMaterialsSection() {
 
                         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
                             <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
-                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-download'}"></i>
-                                <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Başlat / Oyna' : item.category === 'videolar' ? 'Dersi İzle' : 'Materyali Aç / İndir'}</span>
+                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i>
+                                <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Oynat' : item.category === 'videolar' ? 'Videoyu Oynat' : 'Materyali Görüntüle'}</span>
                             </button>
 
                             ${isAdmin && !item.id.startsWith('default-rec-') ? `
@@ -1615,7 +1618,7 @@ function openIssueReportModal() {
                         <span class="w-2 h-2 rounded-full bg-blue-600"></span> Sorun Türü
                     </label>
                     <select id="issue-type-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
-                        <option value="❌ Açılmayan Dosya / Kırık İndirme Linki">❌ Açılmayan Dosya / Kırık İndirme Linki</option>
+                        <option value="❌ Açılmayan Dosya / Görüntüleme Sorunu">❌ Açılmayan Dosya / Görüntüleme Sorunu</option>
                         <option value="⚠️ Yanlış / Hatalı Bilgi veya Soru">⚠️ Yanlış / Hatalı Bilgi veya Soru</option>
                         <option value="📭 Eksik İçerik / Yüklenmemiş Materyal">📭 Eksik İçerik / Yüklenmemiş Materyal</option>
                         <option value="🎮 Oyunda / Simülasyonda Çalışmayan Buton veya Hata">🎮 Oyunda / Simülasyonda Çalışmayan Buton veya Hata</option>
@@ -1991,7 +1994,7 @@ function renderGradeSubTabContent(grade, subData, subTab) {
 
             ${renderCustomMaterialsSection(grade.number, "ders-notu")}
             <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-folder-open text-blue-600"></i> ${grade.number}. Sınıf İndirilebilir PDF Ders Föyleri
+                <i class="fa-solid fa-folder-open text-blue-600"></i> ${grade.number}. Sınıf PDF Ders Föyleri
             </h4>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -2003,7 +2006,7 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                             <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
                             <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
                                 <span>📄 ${item.pages}</span>
-                                <span>📥 ${item.downloadCount}</span>
+                                <span>👁️ ${item.downloadCount}</span>
                             </div>
                         </div>
                         <button onclick="window.print()" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
@@ -2081,8 +2084,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                                 <span>👁️ ${item.views}</span>
                             </div>
                         </div>
-                        <button onclick="openInPageVideoModal('', '${(item.title || 'Ders Videosu').replace(/'/g, "\'")}', false)" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-play"></i> Dersi İzle
+                        <button onclick="openInPageVideoModal('${item.videoUrl || 'https://www.youtube.com/watch?v=HhXVz4JzwJ4'}', '${(item.title || 'Ders Videosu').replace(/'/g, "\'")}', false)" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+                            <i class="fa-solid fa-play"></i> Videoyu Oynat
                         </button>
                     </div>
                 `).join("")}
@@ -2116,7 +2119,7 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                             </div>
                         </div>
                         <button onclick="window.print()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-print"></i> Etkinlik Föyünü Yazdır (A4)
+                            <i class="fa-solid fa-eye"></i> Etkinlik Föyünü Görüntüle / Yazdır
                         </button>
                     </div>
                 `).join("")}
@@ -2192,8 +2195,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                             <a href="#exams" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl text-center transition-colors">
                                 Denemeyi Başlat
                             </a>
-                            <button onclick="window.print()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors" title="PDF İndir">
-                                <i class="fa-solid fa-download"></i>
+                            <button onclick="window.print()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors" title="PDF Görüntüle / Yazdır">
+                                <i class="fa-solid fa-print"></i>
                             </button>
                         </div>
                     </div>
@@ -2344,7 +2347,7 @@ function renderExamsPage(container) {
 
                                                 <div class="flex gap-2">
                                                     <button onclick="window.print()" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-xl transition-colors shadow-sm flex items-center justify-center gap-1.5">
-                                                        <i class="fa-solid fa-file-pdf"></i> Sınavı İndir / Yazdır
+                                                        <i class="fa-solid fa-file-pdf"></i> Sınavı Görüntüle / Yazdır
                                                     </button>
                                                     <button onclick="showToast('${e.name} cevap anahtarı ve puanlama rubriği hazırlandı.', 'info')" class="px-3 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-xl" title="Cevap Anahtarı">
                                                         <i class="fa-solid fa-key"></i>
@@ -2403,7 +2406,7 @@ function renderStemLabPage(container) {
                         </div>
 
                         <button onclick="window.print()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md">
-                            Görev Föyünü İndir (A4)
+                            Görev Föyünü Görüntüle (A4)
                         </button>
                     </div>
                 `).join("")}
@@ -2475,7 +2478,7 @@ function renderProjectsPage(container) {
                         </div>
 
                         <button onclick="window.print()" class="w-full py-3 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase rounded-xl transition-colors">
-                            Proje Rapor Şablonunu İndir (DOCX/PDF)
+                            Proje Rapor Şablonunu Görüntüle (DOCX/PDF)
                         </button>
                     </div>
                 `).join("")}
@@ -2509,8 +2512,8 @@ function renderTeachersRoomPage(container) {
                                         <span class="font-bold text-slate-800 block">${item.title}</span>
                                         <span class="text-[11px] text-slate-400">${item.format} • ${item.updated || '2024'}</span>
                                     </div>
-                                    <button onclick="window.print()" class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm" title="İndir / Yazdır">
-                                        <i class="fa-solid fa-download text-xs"></i>
+                                    <button onclick="window.print()" class="p-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm" title="Görüntüle / Yazdır">
+                                        <i class="fa-solid fa-eye text-xs"></i>
                                     </button>
                                 </div>
                             `).join("")}
@@ -2926,7 +2929,7 @@ function renderTeacherDashboardPage(container) {
                                         <td class="p-3.5 text-slate-400 text-[11px]">${item.createdAt || 'Bugün'}</td>
                                         <td class="p-3.5 text-right">
                                             <div class="flex items-center justify-end gap-1.5">
-                                                <button onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}')" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-all" title="Görüntüle / İndir">
+                                                <button onclick="openOrDownloadMaterial('${item.id}')" class="p-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg transition-all" title="Görüntüle / Oynat">
                                                     <i class="fa-solid fa-eye"></i>
                                                 </button>
                                                 <button onclick="editCustomMaterial('${item.id}')" class="p-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-lg transition-all" title="Düzenle">
@@ -3020,7 +3023,7 @@ function downloadBackupJSON() {
     downloadAnchor.click();
     downloadAnchor.remove();
 
-    showToast("Portal verileri JSON dosyası olarak indirildi!", "success");
+    showToast("Portal verileri başarıyla dışa aktarıldı!", "success");
 }
 
 // -------------------------------------------------------------
@@ -4276,8 +4279,21 @@ function editCustomMaterial(id) {
     openMaterialUploadModal(mat.grade || "8", mat.category || "ders-notu", mat);
 }
 
-// Materyal Açma / İndirme (IDB & Web Link & İnteraktif Oyun & Video Oynatıcı Uyumlu)
+// Materyal Açma / Görüntüleme & Oynatma (İndirme Olmadan Sayfa İçi Önizleme & Oynatıcı)
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
+    if (id) {
+        try {
+            const allCustom = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+            const found = allCustom.find(m => m.id === id);
+            if (found) {
+                if (!category) category = found.category || "";
+                if (!title) title = found.title || "";
+                if (!fileName || fileName === "materyal.pdf") fileName = found.fileName || "materyal.pdf";
+                if (!fallbackUrl || fallbackUrl === "#") fallbackUrl = found.fileUrl || "#";
+            }
+        } catch(e) {}
+    }
+
     const isVideo = category === "videolar" || (title && title.toLowerCase().includes("video")) || (fileName && (fileName.endsWith(".mp4") || fileName.endsWith(".webm") || fileName.toLowerCase().includes("video")));
 
     // 1. Video ise sayfayı terketmeden veya indirmeden site içinde video oynatıcıda aç
@@ -4295,8 +4311,8 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false);
             return;
         } else {
-            // Varsayılan eğitici fen video simülasyonu / modalı
-            openInPageVideoModal("", title || "5. Sınıf Fen Semboller Videosu", false);
+            // Canlı oynatılabilir fen laboratuvar güvenlik videosu
+            openInPageVideoModal("https://www.youtube.com/watch?v=HhXVz4JzwJ4", title || "5. Sınıf Fen Semboller Videosu", false);
             return;
         }
     }
@@ -4309,149 +4325,392 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 3. IDB'den dosyayı kontrol et
+    // 3. IDB'den dosyayı al ve sayfa içi belge görüntüleyicide göster (İndirme yapmaz!)
     try {
         const fileRecord = await RotaliDB.getFile(id);
         if (fileRecord && fileRecord.blob) {
             const url = URL.createObjectURL(fileRecord.blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = fileRecord.fileName || fileName;
-            a.target = "_blank";
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-                a.remove();
-                URL.revokeObjectURL(url);
-            }, 1000);
+            openInPageDocumentModal(url, title || fileRecord.fileName || fileName, fileName);
             return;
         }
     } catch(err) {
         console.warn("IDB getFile error:", err);
     }
 
-    // 4. Web Bağlantısı veya Data URL
+    // 4. Web Bağlantısı veya Data URL ise sayfa içi modalda göster
     if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null") {
-        if (fallbackUrl.startsWith("data:")) {
-            const a = document.createElement("a");
-            a.href = fallbackUrl;
-            a.download = fileName;
-            a.target = "_blank";
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => a.remove(), 500);
-        } else {
-            window.open(fallbackUrl, "_blank");
-        }
+        openInPageDocumentModal(fallbackUrl, title || fileName, fileName);
     } else {
-        if (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("lab"))) {
-            openInteractiveGameModal('oyun-5-lab', title);
-        } else {
-            showToast("📄 Bu materyalin çevrimdışı önizlemesi veya web bağlantısı mevcut.", "info");
-        }
+        openInPageDocumentModal("", title || "Fen Bilimleri Ders Dokümanı", fileName);
     }
 }
 
-// 🎬 SAYFA İÇİ VİDEO İZLEME MODAL MOTORU (İNDİRMEDEN SİTE İÇİNDE İZLEME)
-function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = false) {
-    let modal = document.getElementById("inpage-video-modal");
+// 📄 SAYFA İÇİ DOKÜMAN / PDF GÖRÜNTÜLEYİCİ (İNDİRME OLMADAN GÖRÜNTÜLEME)
+function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf") {
+    let modal = document.getElementById("inpage-document-modal");
     if (!modal) {
         modal = document.createElement("div");
-        modal.id = "inpage-video-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all";
+        modal.id = "inpage-document-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 transition-all";
         modal.onclick = function(e) {
-            if (e.target === this) closeInPageVideoModal();
+            if (e.target === this) closeInPageDocumentModal();
         };
         document.body.appendChild(modal);
     }
 
-    let videoContentHtml = "";
-    if (videoSrc && (videoSrc.includes("youtube.com") || videoSrc.includes("youtu.be"))) {
-        let ytId = "";
-        if (videoSrc.includes("v=")) ytId = videoSrc.split("v=")[1].split("&")[0];
-        else if (videoSrc.includes("youtu.be/")) ytId = videoSrc.split("youtu.be/")[1].split("?")[0];
-        videoContentHtml = `
-            <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl">
-                <iframe src="https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    let docHtml = "";
+    if (docUrl && docUrl.startsWith("blob:")) {
+        docHtml = `
+            <div class="w-full h-[75vh] rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
+                <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
             </div>
         `;
-    } else if (videoSrc && (videoSrc.startsWith("blob:") || videoSrc.endsWith(".mp4") || videoSrc.endsWith(".webm") || videoSrc.startsWith("http"))) {
-        videoContentHtml = `
-            <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl flex items-center justify-center">
-                <video src="${videoSrc}" controls autoplay class="w-full h-full rounded-2xl max-h-[70vh]"></video>
+    } else if (docUrl && (docUrl.startsWith("http") || docUrl.endsWith(".pdf"))) {
+        docHtml = `
+            <div class="w-full h-[75vh] rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
+                <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
             </div>
         `;
     } else {
-        // İndirmeden gösterilen interaktif semboller video oynatıcı animasyonu
-        videoContentHtml = `
-            <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 shadow-2xl flex flex-col justify-between p-6 sm:p-8 text-white border border-slate-700">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <span class="px-3 py-1 bg-red-600/30 text-red-400 border border-red-500/40 rounded-full text-xs font-black uppercase tracking-wider flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-red-500 animate-ping"></span> CANLI DERS ANLATIMI
-                    </span>
-                    <span class="text-xs font-bold text-slate-400">MEB 2026-2027 Müfredatı</span>
+        // Zengin İnteraktif Ders Özeti & Okuma Görünümü (İndirmeden ekranda oku!)
+        docHtml = `
+            <div class="w-full max-h-[75vh] overflow-y-auto p-6 sm:p-8 bg-white rounded-2xl text-slate-800 space-y-6 shadow-inner">
+                <div class="border-b border-slate-200 pb-4">
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-black uppercase">Ders Föyü & Konu Özeti</span>
+                        <span class="text-xs font-bold text-slate-400">MEB 2026-2027 Müfredatına Uygun</span>
+                    </div>
+                    <h3 class="text-2xl font-black text-slate-900">${docTitle}</h3>
                 </div>
 
-                <div class="my-auto text-center max-w-lg mx-auto py-4">
-                    <div class="w-20 h-20 rounded-3xl bg-red-600/20 text-red-500 border border-red-500/40 flex items-center justify-center text-4xl mx-auto mb-4 shadow-xl animate-pulse">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
+                <div class="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
+                    <div class="p-4 bg-blue-50/70 border border-blue-200 rounded-xl">
+                        <h4 class="font-black text-blue-900 mb-1 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-info text-blue-600"></i> Kazanım & Önemli Hatırlatma:
+                        </h4>
+                        <p class="text-xs sm:text-sm text-blue-800 leading-relaxed">
+                            Bu ders materyali öğrencilerin derste, evde veya akıllı tahtada indirme yapmadan doğrudan inceleyip çalışabilmesi için özel olarak hazırlanmıştır.
+                        </p>
                     </div>
-                    <h3 class="text-xl sm:text-2xl font-black mb-2 text-white">${videoTitle}</h3>
-                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6 font-medium">
-                        Laboratuvar güvenlik sembolleri (Yanıcı, Yakıcı, Korozif, Zehirli, Çevreye Zararlı) ve güvenlik kurallarının video sunumu.
-                    </p>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-                        <div class="p-2.5 bg-white/10 rounded-xl border border-white/10 flex flex-col items-center gap-1">
-                            <i class="fa-solid fa-fire text-amber-400 text-lg"></i>
-                            <span class="font-bold">Yanıcı Madde</span>
+
+                    <div class="space-y-3">
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <h5 class="font-black text-slate-900 mb-1">📌 1. Temel Bilimsel Kavramlar ve Tanımlar</h5>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                Fen bilimleri deney ve gözleme dayalı dinamik bir süreçtir. Doğru ölçme aletleri, güvenlik işaretlerine uyum ve hipotez kurma becerisi fen başarısının temelini oluşturur.
+                            </p>
                         </div>
-                        <div class="p-2.5 bg-white/10 rounded-xl border border-white/10 flex flex-col items-center gap-1">
-                            <i class="fa-solid fa-skull-crossbones text-red-400 text-lg"></i>
-                            <span class="font-bold">Zehirli (Toksik)</span>
-                        </div>
-                        <div class="p-2.5 bg-white/10 rounded-xl border border-white/10 flex flex-col items-center gap-1">
-                            <i class="fa-solid fa-hand-dots text-orange-400 text-lg"></i>
-                            <span class="font-bold">Tahriş Edici</span>
-                        </div>
-                        <div class="p-2.5 bg-white/10 rounded-xl border border-white/10 flex flex-col items-center gap-1">
-                            <i class="fa-solid fa-fish text-emerald-400 text-lg"></i>
-                            <span class="font-bold">Çevreye Zararlı</span>
+                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                            <h5 class="font-black text-slate-900 mb-1">📌 2. Sınav ve Yazılılarda Çıkabilecek Püf Noktalar</h5>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                                Deney düzeneği sorularında bağımlı değişken (sonuç), bağımsız değişken (bizim değiştirdiğimiz) ve kontrol edilen değişken (sabit tutulan) analizlerini dikkatle yapınız.
+                            </p>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-slate-950/70 p-3 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-400">
-                    <span class="flex items-center gap-2"><i class="fa-solid fa-circle-check text-emerald-400"></i> Video siteye tam entegre edildi</span>
-                    <span class="font-bold text-slate-200">Süre: 08:45 dk</span>
+                <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
+                    <span>Sayfa 1 / 1 • Çevrimdışı Görüntüleyici</span>
+                    <button onclick="window.print()" class="px-4 py-2 bg-slate-900 hover:bg-red-600 text-white font-bold rounded-xl transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-print"></i> Yazdır
+                    </button>
                 </div>
             </div>
         `;
     }
 
     modal.innerHTML = `
-        <div class="bg-slate-900 rounded-3xl max-w-3xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+        <div class="bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
             <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between text-white">
                 <div class="flex items-center gap-3">
-                    <span class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center text-lg font-black shadow-md">
-                        <i class="fa-solid fa-play"></i>
+                    <span class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg font-black shadow-md">
+                        <i class="fa-solid fa-book-open"></i>
                     </span>
                     <div>
-                        <h3 class="text-sm sm:text-base font-black">${videoTitle}</h3>
-                        <span class="text-xs text-slate-400">Rotalı Fenci Video Oynatıcı</span>
+                        <h3 class="text-sm sm:text-base font-black truncate max-w-sm sm:max-w-md">${docTitle}</h3>
+                        <span class="text-xs text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
                     </div>
                 </div>
-                <button type="button" onclick="closeInPageVideoModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all">
+                <button type="button" onclick="closeInPageDocumentModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-            <div class="p-4 sm:p-6 bg-slate-950">
-                ${videoContentHtml}
+            <div class="p-3 sm:p-6 bg-slate-950">
+                ${docHtml}
             </div>
         </div>
     `;
 }
 
+function closeInPageDocumentModal() {
+    const modal = document.getElementById("inpage-document-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+}
+
+// -------------------------------------------------------------
+// 🎬 SAYFA İÇİ VİDEO İZLEME & OYNATICI MODAL MOTORU (İNDİRMEDEN SİTE İÇİNDE OYNATMA)
+// -------------------------------------------------------------
+let activeLabSymbolIndex = 0;
+const LAB_SAFETY_SYMBOLS = [
+    {
+        name: "🔥 Yanıcı Madde",
+        desc: "Kolayca alev alabilen ve yangına sebep olabilecek maddelerdir. Isı, kıvılcım ve açık alevden kesinlikle uzak tutulmalıdır.",
+        rule: "Ateşe ve güneş ışığına doğrudan maruz bırakmayınız. Çeker ocak altında çalışınız.",
+        color: "from-amber-500 to-red-600",
+        icon: "fa-fire-flame-curved"
+    },
+    {
+        name: "🧪 Korozif (Aşındırıcı) Madde",
+        desc: "Cildi yakan, metalleri ve kumaşları aşındıran kuvvetli asit ve bazlardır (örn: Zaç yağı / H2SO4, Tuz ruhu / HCl).",
+        rule: "Asla çıplak elle dokunulmaz. Koruyucu gözlük, asit eldiveni ve önlük mutlaka takılmalıdır.",
+        color: "from-blue-600 to-cyan-600",
+        icon: "fa-flask-vial"
+    },
+    {
+        name: "☠️ Toksik (Zehirli) Madde",
+        desc: "Ağız, solunum ya da deri yoluyla vücuda girdiğinde zehirlenmelere ve ağır sağlık sorunlarına yol açar.",
+        rule: "Asla koklanmaz, tadına bakılmaz. Çeker ocakta solunmadan kullanılır.",
+        color: "from-purple-600 to-slate-900",
+        icon: "fa-skull-crossbones"
+    },
+    {
+        name: "💥 Patlayıcı Madde",
+        desc: "Sürtünme, darbe, kıvılcım veya ısı etkisiyle aniden şiddetli patlama riski taşıyan maddelerdir.",
+        rule: "Darbe ve sarsıntıdan korunmalı, belirlenen güvenli dolaplarda saklanmalıdır.",
+        color: "from-rose-600 to-amber-600",
+        icon: "fa-bomb"
+    },
+    {
+        name: "☢️ Radyoaktif Madde",
+        desc: "Çevreye zararlı ve canlı hücrelerin genetik yapısını bozan görünmez ışınlar (radyasyon) yayan maddelerdir.",
+        rule: "Özel koruyucu kurşun zırhlı odalarda tutulmalı ve özel kıyafet olmadan yaklaşılmamalıdır.",
+        color: "from-yellow-500 to-amber-600",
+        icon: "fa-radiation"
+    },
+    {
+        name: "☣️ Biyolojik Tehlike",
+        desc: "Mikroorganizmalar, virüsler, bakteriler ve enfeksiyon yapıcı biyolojik atıklardır.",
+        rule: "Tıbbi atık kutularına atılmalı ve temas halinde derhal dezenfekte edilmelidir.",
+        color: "from-emerald-600 to-teal-800",
+        icon: "fa-biohazard"
+    },
+    {
+        name: "🐟 Çevreye Zararlı (Ekotoksik) Madde",
+        desc: "Doğaya, sulara ve toprağa karıştığında suda yaşayan canlıları ve ekosistemi zehirleyen maddelerdir.",
+        rule: "Lavaboya kesinlikle dökülmez! Kimyasal atık toplama bidonlarına boşaltılır.",
+        color: "from-teal-600 to-cyan-700",
+        icon: "fa-tree"
+    },
+    {
+        name: "🥽 Kişisel Koruyucu Donanım",
+        desc: "Laboratuvara giren her araştırmacının can güvenliğini koruyan önlük, koruyucu gözlük ve nitril eldivendir.",
+        rule: "Deney başlamadan önce takılır, deney bitip eller yıkanana kadar çıkarılmaz.",
+        color: "from-indigo-600 to-blue-700",
+        icon: "fa-glasses"
+    }
+];
+
+function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = false) {
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
+
+    let modal = document.getElementById("inpage-video-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "inpage-video-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all";
+        modal.onclick = function(e) {
+            if (e.target === this) closeInPageVideoModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    let ytSrc = "";
+    if (videoSrc && (videoSrc.includes("youtube") || videoSrc.includes("youtu.be"))) {
+        let ytId = "";
+        let match = videoSrc.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+        if (match && match[1]) {
+            ytId = match[1];
+        } else if (videoSrc.includes("v=")) {
+            ytId = videoSrc.split("v=")[1].split("&")[0];
+        } else if (videoSrc.includes("youtu.be/")) {
+            ytId = videoSrc.split("youtu.be/")[1].split("?")[0];
+        }
+        if (!ytId) ytId = "HhXVz4JzwJ4";
+        ytSrc = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+    } else if (videoSrc && (videoSrc.startsWith("blob:") || videoSrc.endsWith(".mp4") || videoSrc.endsWith(".webm") || videoSrc.startsWith("http"))) {
+        ytSrc = videoSrc;
+    } else {
+        ytSrc = "https://www.youtube-nocookie.com/embed/HhXVz4JzwJ4?autoplay=1&rel=0";
+    }
+
+    modal.innerHTML = `
+        <div class="bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <!-- Üst Başlık Barı -->
+            <div class="p-4 bg-slate-800/90 border-b border-slate-700 flex items-center justify-between text-white flex-wrap gap-2">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center text-lg font-black shadow-md">
+                        <i class="fa-solid fa-circle-play"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black truncate max-w-xs sm:max-w-md">${videoTitle}</h3>
+                        <span class="text-xs text-slate-400">Rotalı Fenci Canlı Video & Konu Anlatımı</span>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <div class="flex bg-slate-900/80 rounded-xl p-1 border border-slate-700">
+                        <button type="button" id="tab-yt-btn" onclick="switchVideoModalTab('yt')" class="px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-red-600 text-white shadow-sm flex items-center gap-1.5">
+                            <i class="fa-solid fa-play"></i> Video Yayını
+                        </button>
+                        <button type="button" id="tab-interactive-btn" onclick="switchVideoModalTab('interactive')" class="px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-300 hover:text-white flex items-center gap-1.5">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> İnteraktif Anlatım
+                        </button>
+                    </div>
+                    <button type="button" onclick="closeInPageVideoModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all" title="Kapat">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Alanı 1: Canlı Video / YouTube -->
+            <div id="video-tab-yt" class="p-3 sm:p-5 bg-slate-950">
+                ${ytSrc.startsWith("blob:") || ytSrc.endsWith(".mp4") ? `
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl flex items-center justify-center">
+                        <video src="${ytSrc}" controls autoplay class="w-full h-full rounded-2xl max-h-[70vh]"></video>
+                    </div>
+                ` : `
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl border border-slate-800">
+                        <iframe src="${ytSrc}" class="w-full h-full border-0" title="${videoTitle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                    </div>
+                `}
+                <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+                    <span class="flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>Site İçi Kesintisiz Oynatma • İndirme Gerekmez</span>
+                    </span>
+                    <button type="button" onclick="switchVideoModalTab('interactive')" class="text-rose-400 hover:text-rose-300 font-bold flex items-center gap-1">
+                        Sesli & Görsel Sembol Kartlarına Geç <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Video Alanı 2: İnteraktif Görsel & Sesli Semboller Dersi (Çevrimdışı ve Garantili) -->
+            <div id="video-tab-interactive" class="p-4 sm:p-6 bg-slate-950 hidden">
+                <div id="interactive-symbol-container" class="space-y-6">
+                    <!-- Dinamik olarak render edilir -->
+                </div>
+            </div>
+        </div>
+    `;
+
+    activeLabSymbolIndex = 0;
+    renderInteractiveSymbolSlide();
+}
+
+function switchVideoModalTab(tab) {
+    const ytTab = document.getElementById("video-tab-yt");
+    const intTab = document.getElementById("video-tab-interactive");
+    const ytBtn = document.getElementById("tab-yt-btn");
+    const intBtn = document.getElementById("tab-interactive-btn");
+
+    if (!ytTab || !intTab) return;
+
+    if (tab === "interactive") {
+        ytTab.classList.add("hidden");
+        intTab.classList.remove("hidden");
+        ytBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-300 hover:text-white flex items-center gap-1.5";
+        intBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-emerald-600 text-white shadow-sm flex items-center gap-1.5";
+        renderInteractiveSymbolSlide();
+    } else {
+        intTab.classList.add("hidden");
+        ytTab.classList.remove("hidden");
+        ytBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all bg-red-600 text-white shadow-sm flex items-center gap-1.5";
+        intBtn.className = "px-3 py-1.5 rounded-lg text-xs font-black transition-all text-slate-300 hover:text-white flex items-center gap-1.5";
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+    }
+}
+
+function renderInteractiveSymbolSlide() {
+    const container = document.getElementById("interactive-symbol-container");
+    if (!container) return;
+
+    const sym = LAB_SAFETY_SYMBOLS[activeLabSymbolIndex];
+    container.innerHTML = `
+        <div class="relative bg-gradient-to-br ${sym.color} p-6 sm:p-8 rounded-3xl text-white shadow-2xl border border-white/20 flex flex-col justify-between min-h-[360px]">
+            <div class="flex items-center justify-between mb-4">
+                <span class="px-3 py-1 rounded-full bg-black/30 backdrop-blur-md text-xs font-black uppercase tracking-wider">
+                    Sembol ${activeLabSymbolIndex + 1} / ${LAB_SAFETY_SYMBOLS.length}
+                </span>
+                <button type="button" onclick="speakCurrentSymbol()" class="px-3 py-1.5 rounded-xl bg-white text-slate-900 hover:bg-slate-100 text-xs font-black flex items-center gap-1.5 shadow-md active:scale-95 transition-transform">
+                    <i class="fa-solid fa-volume-high text-emerald-600"></i> Sesli Dinle
+                </button>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-6 my-4">
+                <div class="w-28 h-28 sm:w-36 sm:h-36 rounded-2xl bg-black/30 border-2 border-white/40 flex items-center justify-center text-5xl sm:text-6xl shadow-xl flex-shrink-0">
+                    <i class="fa-solid ${sym.icon}"></i>
+                </div>
+                <div class="text-center sm:text-left space-y-2">
+                    <h4 class="text-2xl sm:text-3xl font-black tracking-tight">${sym.name}</h4>
+                    <p class="text-sm sm:text-base text-white/90 leading-relaxed font-medium">${sym.desc}</p>
+                    <div class="p-3 bg-black/30 backdrop-blur-md rounded-xl border border-white/10 text-xs sm:text-sm font-bold text-amber-200">
+                        ⚠️ <strong>Güvenlik Kuralı:</strong> ${sym.rule}
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-white/20 flex items-center justify-between gap-3">
+                <button type="button" onclick="prevSymbolSlide()" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-2 transition-all active:scale-95">
+                    <i class="fa-solid fa-chevron-left"></i> Önceki
+                </button>
+                <div class="flex gap-1.5">
+                    ${LAB_SAFETY_SYMBOLS.map((_, i) => `
+                        <span onclick="goToSymbolSlide(${i})" class="w-2.5 h-2.5 rounded-full cursor-pointer transition-all ${i === activeLabSymbolIndex ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/70'}"></span>
+                    `).join("")}
+                </div>
+                <button type="button" onclick="nextSymbolSlide()" class="px-4 py-2 rounded-xl bg-white/20 hover:bg-white/30 text-white font-bold text-xs flex items-center gap-2 transition-all active:scale-95">
+                    Sonraki <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    `;
+}
+
+function nextSymbolSlide() {
+    activeLabSymbolIndex = (activeLabSymbolIndex + 1) % LAB_SAFETY_SYMBOLS.length;
+    renderInteractiveSymbolSlide();
+}
+
+function prevSymbolSlide() {
+    activeLabSymbolIndex = (activeLabSymbolIndex - 1 + LAB_SAFETY_SYMBOLS.length) % LAB_SAFETY_SYMBOLS.length;
+    renderInteractiveSymbolSlide();
+}
+
+function goToSymbolSlide(index) {
+    activeLabSymbolIndex = index;
+    renderInteractiveSymbolSlide();
+}
+
+function speakCurrentSymbol() {
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const sym = LAB_SAFETY_SYMBOLS[activeLabSymbolIndex];
+    const text = `${sym.name}. ${sym.desc}. Güvenlik Kuralı: ${sym.rule}`;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "tr-TR";
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+}
+
 function closeInPageVideoModal() {
+    if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+    }
     const modal = document.getElementById("inpage-video-modal");
     if (modal) {
         modal.innerHTML = "";
