@@ -401,8 +401,8 @@ function handleRouteChange() {
         const unitId = parts[0];
         const tab = parts[1] || "ogren";
         renderUnitHub(appEl, unitId, tab);
-    } else if (hash === "lgs-pusulasi") {
-        renderGradeDetail(appEl, "grade-8");
+    } else if (hash === "lgs-pusulasi" || hash === "lgs") {
+        renderGradeDetail(appEl, "grade-8/lgs");
     } else if (hash.startsWith("exams")) {
         renderExamsPage(appEl, hash);
     } else if (hash === "stem-lab") {
@@ -1600,7 +1600,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     
                     <!-- 8 ALT BÖLÜM KUTULARI (BÜYÜK BÖLÜMÜN İÇİNDE TEK SIRA / DUYARLI GRID) -->
                     <div class="pt-6 border-t border-white/25">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-9" : "lg:grid-cols-8"} gap-2 sm:gap-2.5">
                             
                             <!-- 1. Ders Notu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
@@ -1650,7 +1650,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
                             </button>
 
-                            <!-- 7. Eğitsel Oyunlar -->
+                                                        <!-- 7. Eğitsel Oyunlar -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-gamepad"></i>
@@ -1658,7 +1658,17 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
                             </button>
 
-                            <!-- 8. Bilimin Rotasını Çizenler (EN SONDA) -->
+                            ${grade.number === 8 || grade.isLGS ? `
+                            <!-- 8. LGS Pusulası (8. Sınıfa Özel) -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'lgs')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎯 LGS</span>
+                            </button>
+                            ` : ''}
+
+                            <!-- Bilimin Rotasını Çizenler (EN SONDA) -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'bilim-insanlari' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-telescope"></i>
@@ -1684,7 +1694,95 @@ function switchGradeSubTab(gradeId, tabName) {
 
 function renderGradeSubTabContent(grade, subData, subTab) {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
+    if (subTab === "lgs" || subTab === "lgs-pusulasi") {
+        return `
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-200">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-3.5 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-700 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-bullseye text-amber-300"></i> HEDEF 20/20 LGS FEN
+                            </span>
+                            <span class="text-xs font-bold text-slate-500">8. Sınıf LGS Hazırlık & Başarı Merkezi</span>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">8. Sınıf LGS Pusulası & Çıkmış Soru Analizleri</h3>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-bold text-red-700 bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200 self-start sm:self-auto">
+                            🔥 MEB Yeni Nesil Standartları
+                        </span>
+                        ${isAdmin ? `
+                            <button type="button" onclick="triggerUploadModal('8', 'lgs')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95">
+                                <i class="fa-solid fa-plus"></i> + LGS Materyali Ekle
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${renderCustomMaterialsSection("8", "lgs")}
+
+                <!-- 4 Altın Kural Strateji Kartları -->
+                <div class="mb-10">
+                    <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-red-600"></i> LGS Fen Başarı Rehberi: 4 Altın Kural
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        ${LGS_PUSULA_DATA.strategyCards.map(s => `
+                            <div class="p-6 bg-white border-2 border-slate-200/90 hover:border-red-400 rounded-3xl shadow-sm hover:shadow-md transition-all">
+                                <div class="text-3xl font-black text-red-600 mb-2">${s.number}</div>
+                                <h5 class="font-black text-base text-slate-900 mb-2">${s.title}</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed font-medium">${s.text}</p>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <!-- MEB Çıkmış Soru Çözüm Modelleri -->
+                <div class="mb-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-indigo-600"></i> MEB Çıkmış Soru & Çözüm Modelleri
+                        </h4>
+                        <span class="text-xs font-bold text-slate-400">Yıllara Göre Analiz</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        ${LGS_PUSULA_DATA.mebQuestions.map(q => `
+                            <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-black text-xs border border-indigo-100">${q.year} LGS</span>
+                                        <span class="text-xs font-bold text-slate-500">${q.unit}</span>
+                                    </div>
+                                    <p class="text-xs sm:text-sm font-bold text-slate-800 mb-4 leading-relaxed">${q.questionText}</p>
+                                </div>
+                                <div class="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl text-xs">
+                                    <span class="font-black text-emerald-800 block mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Doğru Cevap: ${q.answer}
+                                    </span>
+                                    <p class="text-slate-700 leading-relaxed font-medium">${q.solution}</p>
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <!-- LGS Hızlı Deneme ve Branş Sınavı Aksiyon Kartı -->
+                <div class="p-6 sm:p-8 bg-gradient-to-r from-red-700 via-rose-700 to-slate-900 text-white rounded-3xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-white/20 text-white text-[11px] font-black uppercase tracking-wider inline-block mb-2">
+                            TÜRKİYE GENELİ BRANŞ DENEMELERİ
+                        </span>
+                        <h4 class="text-xl sm:text-2xl font-black mb-1">LGS Tam Kapsamlı Fen Denemesi Çöz</h4>
+                        <p class="text-xs sm:text-sm text-slate-200 font-medium">20 soruluk yeni nesil MEB formatında süreli denemeyi başlatın.</p>
+                    </div>
+                    <a href="#exams" class="px-6 py-3.5 bg-white text-red-700 hover:bg-slate-100 font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg transition-all flex items-center gap-2 whitespace-nowrap self-stretch sm:self-auto justify-center">
+                        <i class="fa-solid fa-play"></i> Denemeyi Başlat
+                    </a>
+                </div>
+            </div>
+        `;
+    } else if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
         return renderScientistsModule(grade.number);
     } else if (subTab === "ders-notu") {
         const enriched = (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[String(grade.number)]) ? ENRICHED_GRADE_CONTENT[String(grade.number)] : null;
