@@ -1024,28 +1024,8 @@ function getGradeSubSectionsData(gradeNumber) {
             }))
         ],
 
-        // 3. VİDEOLAR
-        videolar: [
-            ...(gNum === 5 ? [{
-                id: "video-5-semboller",
-                title: "5. Sınıf Fen Laboratuvar Güvenlik Sembolleri ve Uyarı İşaretleri Videosu",
-                videoUrl: "https://www.youtube.com/watch?v=HhXVz4JzwJ4",
-                unit: "1. Ünite • Güvenlik Sembolleri",
-                duration: "08:45 Dakika",
-                desc: "Tahriş edici, yanıcı, yakıcı, korozif ve çevreye zararlı güvenlik sembollerinin anlamları ve deney güvenliği video anlatımı.",
-                channel: "Rotalı Fenci Akademi",
-                views: "3.850 İzlenme"
-            }] : []),
-            ...unitTitles.map((uName, idx) => ({
-                id: `video-${gNum}-${idx+1}`,
-                title: `${gNum}. Sınıf ${uName} Konu Anlatımı & Deney Videosu`,
-                unit: `${idx+1}. Ünite • ${uName}`,
-                duration: `${12 + (idx % 4) * 3}:45 Dakika`,
-                desc: "Animasyonlu kavram anlatımları, laboratuvar deney çekimleri ve MEB yeni nesil soru çözüm analizleri.",
-                channel: "Rotalı Fenci Akademi",
-                views: `${4500 + idx * 320} İzlenme`
-            }))
-        ],
+        // 3. VİDEOLAR (Sadece kullanıcının/öğretmenin eklediği videolar listelenir)
+        videolar: [],
 
         // 4. ETKİNLİKLER
         etkinlikler: unitTitles.map((uName, idx) => ({

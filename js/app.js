@@ -2052,13 +2052,19 @@ function renderGradeSubTabContent(grade, subData, subTab) {
             </div>
         `;
     } else if (subTab === "videolar") {
+        const customVideos = getCustomMaterialsList().filter(m => {
+            const gMatch = (m.grade === String(grade.number) || m.grade === "all");
+            const cMatch = (m.category === "videolar" || m.category === "video" || (m.format && m.format.includes("VİDEO")) || (m.title && m.title.toLowerCase().includes("video")));
+            return gMatch && cMatch;
+        });
+
         return `
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
                         <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Konu Anlatımı & Deney Videoları
                     </h3>
-                    <span class="text-xs font-bold text-slate-500">${subData.videolar.length} Video Ders</span>
+                    <span class="text-xs font-bold text-slate-500">${customVideos.length} Video</span>
                 </div>
                 ${isAdmin ? `
                     <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20 active:scale-95 self-start sm:self-auto">
@@ -2066,30 +2072,23 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                     </button>
                 ` : ''}
             </div>
+
             ${renderCustomMaterialsSection(grade.number, "videolar")}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${subData.videolar.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <div class="relative bg-slate-900 rounded-2xl h-36 flex items-center justify-center text-white mb-4 group cursor-pointer overflow-hidden" onclick="openInPageVideoModal('', '${(item.title || 'Ders Videosu').replace(/'/g, "\'")}', false)">
-                                <div class="w-12 h-12 rounded-full bg-red-600/90 text-white flex items-center justify-center text-xl shadow-lg group-hover:scale-110 transition-transform">
-                                    <i class="fa-solid fa-play ml-1"></i>
-                                </div>
-                                <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">${item.duration}</span>
-                            </div>
-                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
-                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
-                                <span>🎬 ${item.channel}</span>
-                                <span>👁️ ${item.views}</span>
-                            </div>
-                        </div>
-                        <button onclick="openInPageVideoModal('${item.videoUrl || 'https://www.youtube.com/watch?v=HhXVz4JzwJ4'}', '${(item.title || 'Ders Videosu').replace(/'/g, "\'")}', false)" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-play"></i> Videoyu Oynat
-                        </button>
+
+            ${customVideos.length === 0 ? `
+                <div class="p-8 sm:p-12 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 shadow-sm">
+                    <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
+                        <i class="fa-solid fa-video"></i>
                     </div>
-                `).join("")}
-            </div>
+                    <h4 class="text-base font-black text-slate-800 mb-1">Bu sınıfta henüz video bulunmuyor</h4>
+                    <p class="text-xs text-slate-500 mb-4 max-w-sm mx-auto">Yönetici panelinden yeni video bağlantısı ekleyerek bu alanda sadece kendi videolarınızı yayınlayabilirsiniz.</p>
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> Hemen Video Ekle
+                        </button>
+                    ` : ''}
+                </div>
+            ` : ''}
         `;
     } else if (subTab === "etkinlikler") {
         return `
