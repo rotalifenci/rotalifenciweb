@@ -1,13 +1,157 @@
+// -------------------------------------------------------------
+// 📚 ROTALI FENCİ — ÖZEL MATERYAL HAVUZU & VERİ SENKRONİZASYONU
+// -------------------------------------------------------------
 
-function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
+const DEFAULT_CUSTOM_MATERIALS = [
+    {
+        id: "mat-5-lab-oyun-1",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        title: "Laboratuvar Malzemeleri Eşleştirme",
+        unit: "1. Ünite: Güneş, Dünya ve Ay",
+        desc: "Bu interaktif eşleştirme oyunu, ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirerek eğlenceli ve kalıcı bir şekilde öğrenmeyi sağlar.",
+        fileName: "Laboratuvar Malzemeleri Eşleştirme",
+        fileUrl: "#",
+        format: "Web Bağlantısı",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "Laboratuvar", "Eşleştirme", "İnteraktif Oyun"],
+        visibility: "public",
+        downloadCount: "1.450+",
+        createdAt: "08.09.2026"
+    },
+    {
+        id: "mat-5-lab-oyun-2",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
+        unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
+        desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eğlenerek eşleştirin ve tanıyın.",
+        fileName: "5. Sınıf Laboratuvar Oyunu",
+        fileUrl: "#",
+        format: "EĞİTSEL OYUN",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "Laboratuvar", "Güvenlik Kuralları", "Fen Dünyası"],
+        visibility: "public",
+        downloadCount: "2.120+",
+        createdAt: "Yeni Yayınlandı"
+    },
+    {
+        id: "mat-8-lgs-deneme-1",
+        grade: "8",
+        category: "lgs",
+        title: "8. Sınıf LGS Fen Bilimleri Branş Denemesi (20 Yeni Nesil Soru)",
+        unit: "1. ve 2. Ünite: Mevsimler, İklim ve DNA",
+        desc: "LGS formatında tam kapsamlı fen branş denemesi, detaylı çözümlü ve optik formlu.",
+        fileName: "8_Sinif_LGS_Deneme.pdf",
+        fileUrl: "#",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "LGS 2027", "Branş Denemesi", "Yeni Nesil"],
+        visibility: "public",
+        downloadCount: "3.480+",
+        createdAt: "Yeni Yayınlandı"
+    },
+    {
+        id: "mat-5-semboller-video",
+        grade: "5",
+        category: "videolar",
+        title: "Semboller Videosu",
+        unit: "1. Ünite",
+        desc: "Laboratuvar güvenlik sembolleri ve anlamlarını içeren eğitici video anlatımı.",
+        fileName: "Semboller_Videosu.mp4",
+        fileUrl: "#",
+        format: "VİDEO",
+        hasBlob: false,
+        tags: ["Semboller", "Video", "Laboratuvar"],
+        visibility: "public",
+        downloadCount: "540+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-5-unite-bilgi",
+        grade: "5",
+        category: "ders-notu",
+        title: "Ünite Bilgilendirmeleri",
+        unit: "Genel",
+        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.",
+        fileName: "Unite_Bilgilendirmeleri.pdf",
+        fileUrl: "#",
+        format: "DERS NOTU",
+        hasBlob: false,
+        tags: ["Bilgilendirme", "Kazanım"],
+        visibility: "public",
+        downloadCount: "890+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-5-lab-guvenlik-gorsel",
+        grade: "5",
+        category: "ders-sunumu",
+        title: "Laboratuvar Güvenliği Görseli",
+        unit: "1. Ünite",
+        desc: "Laboratuvar kuralları ve güvenlik işaretlerini gösteren detaylı, renkli infografik görseli.",
+        fileName: "Lab_Guvenligi.jpg",
+        fileUrl: "#",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["Güvenlik", "Görsel", "Laboratuvar"],
+        visibility: "public",
+        downloadCount: "1.200+",
+        createdAt: "Bugün"
+    }
+];
+
+function getCustomMaterialsList() {
     let customList = [];
     try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+        const stored = localStorage.getItem("rotali_custom_materials");
+        if (stored) {
+            customList = JSON.parse(stored);
+        }
     } catch (e) {
         customList = [];
     }
 
+    if (!Array.isArray(customList) || customList.length === 0) {
+        customList = [...DEFAULT_CUSTOM_MATERIALS];
+        try {
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+        } catch (e) {}
+    } else {
+        // Eksik varsayılanları listeye ekle
+        let changed = false;
+        DEFAULT_CUSTOM_MATERIALS.forEach(seed => {
+            if (!customList.some(item => item.id === seed.id || item.title === seed.title)) {
+                customList.push(seed);
+                changed = true;
+            }
+        });
+        if (changed) {
+            try {
+                localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+            } catch (e) {}
+        }
+    }
+
+    // Legacy rotali_materials verilerini de harmanla
+    try {
+        const legacy = JSON.parse(localStorage.getItem("rotali_materials") || "[]");
+        if (Array.isArray(legacy) && legacy.length > 0) {
+            legacy.forEach(leg => {
+                if (!customList.some(item => item.id === leg.id || item.title === leg.title)) {
+                    customList.push(leg);
+                }
+            });
+        }
+    } catch (e) {}
+
+    return customList;
+}
+
+function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
+    const customList = getCustomMaterialsList();
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
     const items = customList.filter(item => {
         // Sınıf Eşleştirmesi ("5", 5, "grade-5", "all")
         const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
@@ -17,12 +161,32 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
         // Kategori / Sekme Eşleştirmesi
         const itemCat = String(item.category || "").trim().toLowerCase();
         const targetSubTab = String(subTab || "").trim().toLowerCase();
+        const itemFormat = String(item.format || "").trim().toLowerCase();
+        const itemTitle = String(item.title || "").trim().toLowerCase();
 
         let categoryMatch = false;
-        if (targetSubTab === "all") {
+        if (targetSubTab === "all" || targetSubTab === "uniteler") {
             categoryMatch = true;
         } else if (targetSubTab === "egitsel-oyunlar" || targetSubTab === "oyunlar" || targetSubTab === "oyun") {
-            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemCat.includes("oyun") || itemCat.includes("lab") || itemCat.includes("simula"));
+            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemCat.includes("oyun") || itemCat.includes("lab") || itemCat.includes("simula") || itemFormat.includes("oyun") || itemTitle.includes("oyun") || itemTitle.includes("eşleştirme") || itemTitle.includes("laboratuvar"));
+        } else if (targetSubTab === "ders-notu") {
+            categoryMatch = (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")));
+        } else if (targetSubTab === "ders-sunumu") {
+            categoryMatch = (itemCat === "ders-sunumu" || itemCat === "sunum" || itemFormat.includes("ppt") || itemFormat.includes("slayt"));
+        } else if (targetSubTab === "videolar") {
+            categoryMatch = (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video"));
+        } else if (targetSubTab === "etkinlikler") {
+            categoryMatch = (itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy");
+        } else if (targetSubTab === "soru-bankasi") {
+            categoryMatch = (itemCat === "soru-bankasi" || itemCat === "soru" || itemCat === "test");
+        } else if (targetSubTab === "denemeler") {
+            categoryMatch = (itemCat === "denemeler" || itemCat === "deneme");
+        } else if (targetSubTab === "lgs" || targetSubTab === "lgs-pusulasi") {
+            categoryMatch = (itemCat === "lgs" || itemCat === "lgs-pusulasi" || itemTitle.includes("lgs"));
+        } else if (targetSubTab === "bilim-insanlari" || targetSubTab === "bilimin-rotasi") {
+            categoryMatch = (itemCat === "bilim-insanlari" || itemCat === "bilimin-rotasi");
+        } else if (targetSubTab === "projeler") {
+            categoryMatch = (itemCat === "projeler" || itemCat === "proje" || itemCat === "stem");
         } else {
             categoryMatch = (itemCat === targetSubTab);
         }
@@ -74,8 +238,9 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                         </div>
 
                         <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
-                                <i class="fa-solid fa-gamepad"></i> <span>Aç / Başlat / İndir</span>
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
+                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'fa-gamepad' : (item.format && item.format.includes('Video') ? 'fa-play' : 'fa-download')}"></i>
+                                <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'Oyunu Başlat / Oyna' : (item.fileUrl && item.fileUrl.startsWith('http') ? 'Bağlantıyı Aç' : 'Aç / İndir')}</span>
                             </button>
 
                             ${isAdmin ? `
@@ -401,8 +566,8 @@ function handleRouteChange() {
         const unitId = parts[0];
         const tab = parts[1] || "ogren";
         renderUnitHub(appEl, unitId, tab);
-    } else if (hash === "lgs-pusulasi") {
-        renderGradeDetail(appEl, "grade-8");
+    } else if (hash === "lgs-pusulasi" || hash === "lgs") {
+        renderGradeDetail(appEl, "grade-8/lgs");
     } else if (hash.startsWith("exams")) {
         renderExamsPage(appEl, hash);
     } else if (hash === "stem-lab") {
@@ -465,16 +630,10 @@ function updateStudentHeader() {
 // 1. 🏠 PORTAL KONTROL MERKEZİ (ANA SAYFA)
 // -------------------------------------------------------------
 function renderHomeRecentMaterialsSection() {
-    let customList = [];
-    try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    } catch (e) {
-        customList = [];
-    }
-
+    const customList = getCustomMaterialsList();
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
-    // Örnek varsayılan son eklenen içerikler (Kullanıcı henüz eklemediyse veya azsa vitrin dolu görünür)
+    // Örnek varsayılan son eklenen içerikler
     const defaultRecent = [
         {
             id: "default-rec-1",
@@ -485,23 +644,35 @@ function renderHomeRecentMaterialsSection() {
             title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
             desc: "Beherglas, erlenmayer, dereceli silindir ve deney tüplerini eğlenerek eşleştirin ve tanıyın.",
             createdAt: "Yeni Yayınlandı",
-            fileUrl: "#interactive/crossword",
+            fileUrl: "#",
             tags: ["5. Sınıf", "Oyun", "Laboratuvar"]
         },
         {
             id: "default-rec-2",
-            grade: "8",
-            category: "ders-sunumu",
-            format: "PPTX / SUNUM",
-            unit: "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
-            title: "8. Sınıf LGS Basınç Ünitesi Akıllı Tahta Uyumlu Tam Kapsamlı Slayt Seti",
-            desc: "Animasyonlu deney düzenekleri, formül çıkarımları ve MEB çıkmış soru çözümleri içeren sunum.",
-            createdAt: "Yeni Yayınlandı",
-            fileUrl: "#grade/grade-8/ders-sunumu",
-            tags: ["8. Sınıf", "LGS 2026", "Sunum"]
+            grade: "5",
+            category: "egitsel-oyunlar",
+            format: "Web Bağlantısı",
+            unit: "1. Ünite: Güneş, Dünya ve Ay",
+            title: "Laboratuvar Malzemeleri Eşleştirme",
+            desc: "Ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirme oyunu.",
+            createdAt: "08.09.2026",
+            fileUrl: "#",
+            tags: ["5. Sınıf", "Laboratuvar", "Eşleştirme"]
         },
         {
             id: "default-rec-3",
+            grade: "8",
+            category: "lgs",
+            format: "PDF DENEME",
+            unit: "1. ve 2. Ünite: Mevsimler, İklim ve DNA",
+            title: "8. Sınıf LGS Fen Bilimleri Branş Denemesi (20 Yeni Nesil Soru)",
+            desc: "Animasyonlu deney düzenekleri, formül çıkarımları ve MEB çıkmış soru çözümleri içeren deneme.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#",
+            tags: ["8. Sınıf", "LGS 2027", "Deneme"]
+        },
+        {
+            id: "default-rec-4",
             grade: "7",
             category: "ders-notu",
             format: "PDF NOT",
@@ -509,31 +680,16 @@ function renderHomeRecentMaterialsSection() {
             title: "7. Sınıf Hücre, Mitoz ve Mayoz Bölünme Karşılaştırma Tablolu Ders Notu",
             desc: "Görsel hafıza teknikleriyle hazırlanmış renkli konu özetleri ve sınavda çıkabilecek tuzak noktalar.",
             createdAt: "Yeni Yayınlandı",
-            fileUrl: "#grade/grade-7/ders-notu",
+            fileUrl: "#",
             tags: ["7. Sınıf", "Ders Notu", "Mitoz-Mayoz"]
-        },
-        {
-            id: "default-rec-4",
-            grade: "6",
-            category: "soru-bankasi",
-            format: "TEST / SORU",
-            unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
-            title: "6. Sınıf Gezegenler ve Güneş-Ay Tutulmaları Yeni Nesil Beceri Temelli Test",
-            desc: "Açık uçlu ve çoktan seçmeli yeni nesil MEB kazanım test föyü ve video çözümleri.",
-            createdAt: "Yeni Yayınlandı",
-            fileUrl: "#grade/grade-6/soru-bankasi",
-            tags: ["6. Sınıf", "Soru Bankası", "MEB Uyumlu"]
         }
     ];
 
     // Özel yüklenenleri en başa al, yoksa varsayılanlarla birleştir
     let displayItems = [...customList];
-    if (displayItems.length < 4) {
-        for (let def of defaultRecent) {
-            if (!displayItems.some(i => i.title === def.title)) {
-                displayItems.push(def);
-            }
-            if (displayItems.length >= 6) break;
+    for (let def of defaultRecent) {
+        if (!displayItems.some(i => i.title === def.title)) {
+            displayItems.push(def);
         }
     }
 
@@ -590,7 +746,7 @@ function renderHomeRecentMaterialsSection() {
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
                                 <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-download'}"></i>
                                 <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Başlat / Oyna' : item.category === 'videolar' ? 'Dersi İzle' : 'Materyali Aç / İndir'}</span>
                             </button>
@@ -1600,7 +1756,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     
                     <!-- 8 ALT BÖLÜM KUTULARI (BÜYÜK BÖLÜMÜN İÇİNDE TEK SIRA / DUYARLI GRID) -->
                     <div class="pt-6 border-t border-white/25">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 sm:gap-2.5">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-9" : "lg:grid-cols-8"} gap-2 sm:gap-2.5">
                             
                             <!-- 1. Ders Notu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
@@ -1650,7 +1806,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
                             </button>
 
-                            <!-- 7. Eğitsel Oyunlar -->
+                                                        <!-- 7. Eğitsel Oyunlar -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-gamepad"></i>
@@ -1658,7 +1814,17 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
                             </button>
 
-                            <!-- 8. Bilimin Rotasını Çizenler (EN SONDA) -->
+                            ${grade.number === 8 || grade.isLGS ? `
+                            <!-- 8. LGS Pusulası (8. Sınıfa Özel) -->
+                            <button onclick="switchGradeSubTab('${grade.id}', 'lgs')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
+                                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
+                                    <i class="fa-solid fa-graduation-cap"></i>
+                                </div>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🧭 LGS PUSULASI</span>
+                            </button>
+                            ` : ''}
+
+                            <!-- Bilimin Rotasını Çizenler (EN SONDA) -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari')" class="group p-2.5 sm:p-3 rounded-2xl transition-all flex flex-col items-center justify-center text-center gap-1.5 ${subTab === 'bilim-insanlari' ? 'bg-white text-slate-900 shadow-xl scale-[1.04] ring-4 ring-white/40' : 'bg-white/15 hover:bg-white/30 backdrop-blur-md text-white border border-white/20 hover:scale-[1.02]'}">
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-telescope"></i>
@@ -1684,7 +1850,95 @@ function switchGradeSubTab(gradeId, tabName) {
 
 function renderGradeSubTabContent(grade, subData, subTab) {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
+    if (subTab === "lgs" || subTab === "lgs-pusulasi") {
+        return `
+            <div class="mb-8">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-200">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="px-3.5 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-700 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-bullseye text-amber-300"></i> HEDEF 20/20 LGS FEN
+                            </span>
+                            <span class="text-xs font-bold text-slate-500">8. Sınıf LGS Hazırlık & Başarı Merkezi</span>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">8. Sınıf LGS Pusulası & Çıkmış Soru Analizleri</h3>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <span class="text-xs font-bold text-red-700 bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200 self-start sm:self-auto">
+                            🔥 MEB Yeni Nesil Standartları
+                        </span>
+                        ${isAdmin ? `
+                            <button type="button" onclick="triggerUploadModal('8', 'lgs')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95">
+                                <i class="fa-solid fa-plus"></i> + LGS Materyali Ekle
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+
+                ${renderCustomMaterialsSection("8", "lgs")}
+
+                <!-- 4 Altın Kural Strateji Kartları -->
+                <div class="mb-10">
+                    <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-red-600"></i> LGS Fen Başarı Rehberi: 4 Altın Kural
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                        ${LGS_PUSULA_DATA.strategyCards.map(s => `
+                            <div class="p-6 bg-white border-2 border-slate-200/90 hover:border-red-400 rounded-3xl shadow-sm hover:shadow-md transition-all">
+                                <div class="text-3xl font-black text-red-600 mb-2">${s.number}</div>
+                                <h5 class="font-black text-base text-slate-900 mb-2">${s.title}</h5>
+                                <p class="text-xs text-slate-600 leading-relaxed font-medium">${s.text}</p>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <!-- MEB Çıkmış Soru Çözüm Modelleri -->
+                <div class="mb-10">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-graduation-cap text-indigo-600"></i> MEB Çıkmış Soru & Çözüm Modelleri
+                        </h4>
+                        <span class="text-xs font-bold text-slate-400">Yıllara Göre Analiz</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        ${LGS_PUSULA_DATA.mebQuestions.map(q => `
+                            <div class="p-6 bg-white border border-slate-200 rounded-3xl shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-3">
+                                        <span class="px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 font-black text-xs border border-indigo-100">${q.year} LGS</span>
+                                        <span class="text-xs font-bold text-slate-500">${q.unit}</span>
+                                    </div>
+                                    <p class="text-xs sm:text-sm font-bold text-slate-800 mb-4 leading-relaxed">${q.questionText}</p>
+                                </div>
+                                <div class="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl text-xs">
+                                    <span class="font-black text-emerald-800 block mb-1 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-circle-check text-emerald-600"></i> Doğru Cevap: ${q.answer}
+                                    </span>
+                                    <p class="text-slate-700 leading-relaxed font-medium">${q.solution}</p>
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <!-- LGS Hızlı Deneme ve Branş Sınavı Aksiyon Kartı -->
+                <div class="p-6 sm:p-8 bg-gradient-to-r from-red-700 via-rose-700 to-slate-900 text-white rounded-3xl shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+                    <div>
+                        <span class="px-3 py-1 rounded-full bg-white/20 text-white text-[11px] font-black uppercase tracking-wider inline-block mb-2">
+                            TÜRKİYE GENELİ BRANŞ DENEMELERİ
+                        </span>
+                        <h4 class="text-xl sm:text-2xl font-black mb-1">LGS Tam Kapsamlı Fen Denemesi Çöz</h4>
+                        <p class="text-xs sm:text-sm text-slate-200 font-medium">20 soruluk yeni nesil MEB formatında süreli denemeyi başlatın.</p>
+                    </div>
+                    <a href="#exams" class="px-6 py-3.5 bg-white text-red-700 hover:bg-slate-100 font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg transition-all flex items-center gap-2 whitespace-nowrap self-stretch sm:self-auto justify-center">
+                        <i class="fa-solid fa-play"></i> Denemeyi Başlat
+                    </a>
+                </div>
+            </div>
+        `;
+    } else if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
         return renderScientistsModule(grade.number);
     } else if (subTab === "ders-notu") {
         const enriched = (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[String(grade.number)]) ? ENRICHED_GRADE_CONTENT[String(grade.number)] : null;
@@ -3095,28 +3349,35 @@ function getPortalSearchIndex() {
         });
     }
 
-    // 9. Kullanıcı / Öğretmen Tarafından Yüklenen Materyaller (rotali_materials)
+        // 9. Kullanıcı / Yönetici Tarafından Yüklenen Materyaller (rotali_custom_materials & rotali_materials)
     try {
-        const customMats = JSON.parse(localStorage.getItem("rotali_materials") || "[]");
+        const customMats = getCustomMaterialsList();
         if (Array.isArray(customMats)) {
             customMats.forEach(m => {
+                const gNum = parseInt(m.grade) || 0;
+                const gradeTitle = gNum === 8 ? "8. Sınıf (LGS)" : (gNum > 0 ? `${gNum}. Sınıf` : "Tüm Sınıflar");
+                const isGame = (m.category === "egitsel-oyunlar" || (m.format && m.format.includes("OYUN")) || (m.title && (m.title.toLowerCase().includes("oyun") || m.title.toLowerCase().includes("eşleştirme") || m.title.toLowerCase().includes("laboratuvar"))));
+                
                 index.push({
                     id: `custom-${m.id}`,
-                    title: m.title || "Yüklenen Materyal",
-                    category: m.category || "Özel Materyal",
-                    categoryKey: "ozel",
-                    grade: m.grade ? `${m.grade}. Sınıf` : "Genel",
-                    gradeNumber: parseInt(m.grade) || 0,
+                    title: m.title || "Özel Materyal",
+                    category: isGame ? "Eğitsel Oyun & İnteraktif" : (m.format || m.category || "Özel Materyal"),
+                    categoryKey: m.category || (isGame ? "egitsel-oyunlar" : "ders-notu"),
+                    grade: gradeTitle,
+                    gradeNumber: gNum,
                     unit: m.unit || "",
-                    description: m.description || "Öğretmen tarafından portala yeni eklenen materyal.",
-                    keywords: `yuklenen materyal ozel dosya ogretmen ${m.title} ${m.description}`,
-                    icon: "fa-solid fa-file",
-                    iconBg: "bg-emerald-600",
-                    url: m.grade ? `#grade/grade-${m.grade}` : `#home`
+                    description: m.desc || "Yönetici tarafından portala eklenen zenginleştirilmiş fen materyali.",
+                    keywords: `laboratuvar malzemeleri eşleştirme interaktif oyun guvenlik kurallari deney meb ${m.tags ? m.tags.join(' ') : ''} ${m.title} ${m.desc || ''}`,
+                    icon: isGame ? "fa-solid fa-gamepad" : "fa-solid fa-file-circle-check",
+                    iconBg: isGame ? "bg-fuchsia-600" : "bg-emerald-600",
+                    url: gNum > 0 ? `#grade/grade-${gNum}/${m.category || (isGame ? 'egitsel-oyunlar' : 'ders-notu')}` : `#home`,
+                    action: isGame ? `openInteractiveGameModal('oyun-5-lab', '${(m.title || '').replace(/'/g, "\'")}')` : null
                 });
             });
         }
-    } catch(e) {}
+    } catch(e) {
+        console.warn("Search custom materials indexing error:", e);
+    }
 
     // Pre-calculate normalized search blob for ultra high performance
     index.forEach(item => {
@@ -3802,37 +4063,7 @@ let currentUploadedFile = null;
 let currentTagsList = ["MEB 2026-2027"];
 let editingMaterialId = null;
 
-// Toast Bildirimi
-function showToast(message, type = "success") {
-    let toast = document.getElementById("toast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "toast";
-        toast.className = "fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none";
-        document.body.appendChild(toast);
-    }
-    
-    const bgColors = {
-        success: "bg-emerald-600 text-white shadow-emerald-600/30",
-        error: "bg-rose-600 text-white shadow-rose-600/30",
-        info: "bg-slate-900 text-white shadow-slate-900/30"
-    };
-
-    toast.innerHTML = `
-        <div class="px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 font-black text-xs sm:text-sm ${bgColors[type] || bgColors.info} border border-white/20 animate-in slide-in-from-bottom-5">
-            <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-base' : type === 'error' ? 'fa-triangle-exclamation text-base' : 'fa-circle-info text-base'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    toast.style.opacity = "1";
-    toast.style.transform = "translateY(0)";
-
-    setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(10px)";
-    }, 4000);
-}
+// Toast Bildirimi (En başta tanımlandı)
 
 // Güvenlik & Yetki Kontrolü
 function checkAdminAccess(callback) {
@@ -4045,27 +4276,39 @@ function editCustomMaterial(id) {
     openMaterialUploadModal(mat.grade || "8", mat.category || "ders-notu", mat);
 }
 
-// Materyal Açma / İndirme (IDB & Web Link Uyumlu)
-async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf") {
-    // Önce IDB'den dosyayı kontrol et
-    const fileRecord = await RotaliDB.getFile(id);
-    if (fileRecord && fileRecord.blob) {
-        const url = URL.createObjectURL(fileRecord.blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileRecord.fileName || fileName;
-        a.target = "_blank";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            a.remove();
-            URL.revokeObjectURL(url);
-        }, 1000);
-        return;
+// Materyal Açma / İndirme (IDB & Web Link & İnteraktif Oyun Uyumlu)
+async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
+    // 1. Eğitsel Oyun veya Eşleştirme ise sayfa içi oyun motorunu çalıştır
+    if (category === "egitsel-oyunlar" || category.includes("oyun") || (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("laboratuvar")))) {
+        if (!fallbackUrl || fallbackUrl === "#" || fallbackUrl === "" || fallbackUrl === "null") {
+            openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
+            return;
+        }
     }
 
-    // IDB'de yoksa veya harici link ise
-    if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "") {
+    // 2. IDB'den dosyayı kontrol et
+    try {
+        const fileRecord = await RotaliDB.getFile(id);
+        if (fileRecord && fileRecord.blob) {
+            const url = URL.createObjectURL(fileRecord.blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileRecord.fileName || fileName;
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                a.remove();
+                URL.revokeObjectURL(url);
+            }, 1000);
+            return;
+        }
+    } catch(err) {
+        console.warn("IDB getFile error:", err);
+    }
+
+    // 3. Web Bağlantısı veya Data URL
+    if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null") {
         if (fallbackUrl.startsWith("data:")) {
             const a = document.createElement("a");
             a.href = fallbackUrl;
@@ -4078,7 +4321,11 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             window.open(fallbackUrl, "_blank");
         }
     } else {
-        showToast("📄 Bu materyalin çevrimdışı önizlemesi veya web bağlantısı mevcut.", "info");
+        if (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("lab"))) {
+            openInteractiveGameModal('oyun-5-lab', title);
+        } else {
+            showToast("📄 Bu materyalin çevrimdışı önizlemesi veya web bağlantısı mevcut.", "info");
+        }
     }
 }
 
@@ -4673,6 +4920,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
                                 <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
                                 <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
+                                <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
+                                <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
                                 <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
                             </select>
                         </div>
@@ -5108,80 +5357,3 @@ async function handleAdvMaterialSubmit(e) {
     }
 }
 
-// -------------------------------------------------------------
-// 🎨 ÖZEL MATERYALLERİ LİSTELEME BİLEŞENİ
-// -------------------------------------------------------------
-
-function renderCustomMaterialsSection(gradeNumber, subTab) {
-    let customList = [];
-    try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    } catch (e) {
-        customList = [];
-    }
-
-    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    const items = customList.filter(item => {
-        const gradeMatch = (item.grade === "all" || String(item.grade) === String(gradeNumber));
-        const categoryMatch = (subTab === "uniteler" || item.category === subTab);
-        return gradeMatch && categoryMatch;
-    });
-
-    if (!items || items.length === 0) return "";
-
-    return `
-        <div class="mb-10 animate-in fade-in duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>✨ Yönetici Tarafından Eklenen Özel Materyaller (${items.length})</span>
-                </h4>
-                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">2026-2027 MEB Yayında</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${items.map(item => `
-                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl p-6 border-2 border-emerald-500/30 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
-
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black tracking-wider uppercase inline-block">
-                                    ${item.format || 'DOKÜMAN'}
-                                </span>
-                                <span class="text-[10px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
-                            </div>
-
-                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide">${item.unit || ''}</div>
-                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-emerald-700 transition-colors">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
-
-                            ${item.tags && item.tags.length > 0 ? `
-                                <div class="flex flex-wrap gap-1 mb-4">
-                                    ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
-                                </div>
-                            ` : ''}
-                        </div>
-
-                        <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
-                                <i class="fa-solid fa-download"></i> <span>Aç / İndir</span>
-                            </button>
-
-                            ${isAdmin ? `
-                                <div class="flex items-center gap-2 mt-1">
-                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
-                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                    </button>
-                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
-                                        <i class="fa-solid fa-trash-can"></i> Sil
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join("")}
-            </div>
-        </div>
-    `;
-}
