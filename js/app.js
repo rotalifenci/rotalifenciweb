@@ -4,72 +4,36 @@
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
+        id: "mat-5-semboller-video",
+        grade: "5",
+        category: "videolar",
+        title: "Semboller Videosu",
+        unit: "1. Ünite",
+        desc: "Laboratuvar güvenlik sembolleri ve anlamlarını içeren eğitici video anlatımı.",
+        fileName: "Semboller_Videosu.mp4",
+        fileUrl: "#",
+        format: "VİDEO",
+        hasBlob: false,
+        tags: ["Semboller", "Video", "Laboratuvar"],
+        visibility: "public",
+        downloadCount: "540+",
+        createdAt: "Bugün"
+    },
+    {
         id: "mat-5-unite-bilgi",
         grade: "5",
         category: "ders-notu",
-        title: "5. Sınıf Üniteler Bilgilendirme",
-        unit: "Tüm Üniteler",
-        desc: "5. Sınıf Fen Bilimleri MEB Maarif Modeli tüm ünite kazanımları, konuların işleniş sırası ve veli/öğrenci rehberi.",
-        fileName: "unite-bilgilendirmeleri-5.svg",
-        fileUrl: "assets/unite-bilgilendirmeleri-5.svg",
-        imageUrl: "assets/unite-bilgilendirmeleri-5.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
+        title: "Ünite Bilgilendirmeleri",
+        unit: "Genel",
+        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.",
+        fileName: "Unite_Bilgilendirmeleri.png",
+        fileUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
+        imageUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
+        format: "DERS NOTU",
         hasBlob: false,
-        tags: ["5. Sınıf", "Üniteler", "Kazanımlar", "Görsel Rehber"],
+        tags: ["Bilgilendirme", "Kazanım"],
         visibility: "public",
-        downloadCount: "2.850+",
-        createdAt: "Bugün"
-    },
-    {
-        id: "mat-6-unite-bilgi",
-        grade: "6",
-        category: "ders-notu",
-        title: "6. Sınıf Üniteler Bilgilendirme",
-        unit: "Tüm Üniteler",
-        desc: "6. Sınıf Fen Bilimleri MEB Maarif Modeli tüm ünite kazanımları, konuların işleniş sırası ve veli/öğrenci rehberi.",
-        fileName: "unite-bilgilendirmeleri-6.svg",
-        fileUrl: "assets/unite-bilgilendirmeleri-6.svg",
-        imageUrl: "assets/unite-bilgilendirmeleri-6.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
-        hasBlob: false,
-        tags: ["6. Sınıf", "Üniteler", "Kazanımlar", "Görsel Rehber"],
-        visibility: "public",
-        downloadCount: "2.420+",
-        createdAt: "Bugün"
-    },
-    {
-        id: "mat-7-unite-bilgi",
-        grade: "7",
-        category: "ders-notu",
-        title: "7. Sınıf Üniteler Bilgilendirme",
-        unit: "Tüm Üniteler",
-        desc: "7. Sınıf Fen Bilimleri MEB Maarif Modeli tüm ünite kazanımları, konuların işleniş sırası ve veli/öğrenci rehberi.",
-        fileName: "unite-bilgilendirmeleri-7.svg",
-        fileUrl: "assets/unite-bilgilendirmeleri-7.svg",
-        imageUrl: "assets/unite-bilgilendirmeleri-7.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
-        hasBlob: false,
-        tags: ["7. Sınıf", "Üniteler", "Kazanımlar", "Görsel Rehber"],
-        visibility: "public",
-        downloadCount: "2.190+",
-        createdAt: "Bugün"
-    },
-    {
-        id: "mat-8-unite-bilgi",
-        grade: "8",
-        category: "ders-notu",
-        categoryAlt: "lgs",
-        title: "8. Sınıf LGS Üniteler Bilgilendirme",
-        unit: "Tüm Üniteler & LGS",
-        desc: "8. Sınıf LGS Fen Bilimleri tüm ünite konu haritası, soru dağılımı ve başarı pusulası görsel rehberi.",
-        fileName: "unite-bilgilendirmeleri-8.svg",
-        fileUrl: "assets/unite-bilgilendirmeleri-8.svg",
-        imageUrl: "assets/unite-bilgilendirmeleri-8.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
-        hasBlob: false,
-        tags: ["8. Sınıf", "LGS", "Üniteler", "Pusula"],
-        visibility: "public",
-        downloadCount: "3.940+",
+        downloadCount: "890+",
         createdAt: "Bugün"
     },
     {
@@ -151,12 +115,13 @@ function getCustomMaterialsList() {
         customList = [];
     }
 
-    // Kullanıcının eklemediği YouTube / Semboller Videosunu localStorage'dan da tamamen temizle
+    // Kullanıcının eklemediği sahte ünite bilgilendirmelerini temizle (6, 7, 8. sınıfta eklenmedi)
     const beforeLen = customList.length;
     customList = customList.filter(item => 
-        item.id !== "mat-5-semboller-video" && 
-        !(item.title && item.title.includes("Semboller Videosu")) &&
-        !(item.fileUrl && item.fileUrl.includes("youtube"))
+        item.id !== "mat-6-unite-bilgi" &&
+        item.id !== "mat-7-unite-bilgi" &&
+        item.id !== "mat-8-unite-bilgi" &&
+        !(item.title && item.title.includes("Üniteler Bilgilendirme") && item.grade !== "5")
     );
 
     if (!Array.isArray(customList) || customList.length === 0) {
@@ -178,6 +143,16 @@ function getCustomMaterialsList() {
                 }
                 if (seed.fileUrl && seed.fileUrl !== "#" && (!existing.fileUrl || existing.fileUrl === "#" || existing.fileUrl.includes("kR1eZq9Q2n4"))) {
                     existing.fileUrl = seed.fileUrl;
+                    changed = true;
+                }
+                if (seed.title === "Ünite Bilgilendirmeleri") {
+                    existing.title = "Ünite Bilgilendirmeleri";
+                    existing.unit = "Genel";
+                    existing.desc = "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.";
+                    existing.imageUrl = "assets/unite-bilgilendirmeleri-gorsel.png";
+                    existing.fileUrl = "assets/unite-bilgilendirmeleri-gorsel.png";
+                    existing.format = "DERS NOTU";
+                    existing.tags = ["Bilgilendirme", "Kazanım"];
                     changed = true;
                 }
                 if (seed.format && existing.format !== seed.format) {
@@ -618,7 +593,9 @@ function handleRouteChange() {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    if (hash === "home" || hash === "") {
+    if (hash === "yeni-eklenenler" || hash === "recent") {
+        renderYeniEklenenlerPage(appEl);
+    } else if (hash === "home" || hash === "") {
         renderHomePage(appEl);
     } else if (hash === "grades") {
         renderGradesOverview(appEl);
@@ -1820,7 +1797,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     
                     <!-- 8 ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
                     <div class="pt-3 border-t border-white/20">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-9" : "lg:grid-cols-8"} gap-1.5 sm:gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-10" : "lg:grid-cols-9"} gap-1.5 sm:gap-2">
                             
                             <!-- 1. Ders Notu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
@@ -4356,23 +4333,22 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
 
     const isVideo = category === "videolar" || (title && title.toLowerCase().includes("video")) || (fileName && (fileName.endsWith(".mp4") || fileName.endsWith(".webm") || fileName.toLowerCase().includes("video")));
 
-    // 1. Video ise sayfayı terketmeden veya indirmeden site içinde video oynatıcıda aç
+        // 1. Video ise sayfayı terketmeden veya indirmeden site içinde video oynatıcıda aç
     if (isVideo) {
         try {
             const fileRecord = await RotaliDB.getFile(id);
             if (fileRecord && fileRecord.blob) {
                 const blobUrl = URL.createObjectURL(fileRecord.blob);
-                openInPageVideoModal(blobUrl, title || "Ders Videosu", true);
+                openInPageVideoModal(blobUrl, title || "Semboller Videosu", true);
                 return;
             }
         } catch(e) {}
 
-        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null") {
-            openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false);
+        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("youtube") && !fallbackUrl.includes("kR1eZq9Q2n4")) {
+            openInPageVideoModal(fallbackUrl, title || "Semboller Videosu", false);
             return;
         } else {
-            // Canlı oynatılabilir fen laboratuvar güvenlik videosu
-            openInPageVideoModal("https://www.youtube.com/watch?v=HhXVz4JzwJ4", title || "5. Sınıf Fen Semboller Videosu", false);
+            openInPageVideoModal("", title || "Semboller Videosu", false);
             return;
         }
     }
@@ -5797,3 +5773,61 @@ async function handleAdvMaterialSubmit(e) {
     }
 }
 
+
+
+// -------------------------------------------------------------
+// ✨ YENİ EKLENENLER SAYFASI BİLEŞENİ
+// -------------------------------------------------------------
+function renderYeniEklenenlerPage(container) {
+    const customList = getCustomMaterialsList();
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    container.innerHTML = `
+        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
+            <!-- Hero Başlık -->
+            <div class="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-600 text-white rounded-3xl p-6 sm:p-10 mb-8 shadow-xl relative overflow-hidden">
+                <div class="relative z-10">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                        <span class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-black tracking-widest uppercase inline-flex items-center gap-2 shadow-sm self-start">
+                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span> GÜNCEL İÇERİK MERKEZİ
+                        </span>
+                        ${isAdmin ? `
+                            <button onclick="triggerUploadModal('8', 'ders-notu')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md self-start sm:self-auto">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> + Yeni İçerik Yükle
+                            </button>
+                        ` : ''}
+                    </div>
+                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-2">✨ Yeni Eklenenler</h2>
+                    <p class="text-sm sm:text-base text-purple-100 max-w-2xl font-medium">Portalımıza eklenen ders notları, görsel infografikler, eğitici videolar ve interaktif materyaller.</p>
+                </div>
+            </div>
+
+            <!-- Sınıflara Göre Filtre Butonları -->
+            <div class="flex flex-wrap items-center gap-2 mb-8">
+                <button onclick="filterYeniEklenenler('all')" id="filter-btn-all" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-purple-600 text-white shadow-md">TÜMÜ (${customList.length})</button>
+                <button onclick="filterYeniEklenenler('5')" id="filter-btn-5" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">5. SINIF</button>
+                <button onclick="filterYeniEklenenler('6')" id="filter-btn-6" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">6. SINIF</button>
+                <button onclick="filterYeniEklenenler('7')" id="filter-btn-7" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">7. SINIF</button>
+                <button onclick="filterYeniEklenenler('8')" id="filter-btn-8" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">8. SINIF (LGS)</button>
+            </div>
+
+            <div id="yeni-eklenenler-grid-container">
+                ${renderCustomMaterialsSection("all", "all")}
+            </div>
+        </div>
+    `;
+}
+
+function filterYeniEklenenler(grade) {
+    document.querySelectorAll('.yeni-ekle-filter-btn').forEach(btn => {
+        btn.className = "yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100";
+    });
+    const activeBtn = document.getElementById('filter-btn-' + grade);
+    if (activeBtn) {
+        activeBtn.className = "yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-purple-600 text-white shadow-md";
+    }
+    const container = document.getElementById("yeni-eklenenler-grid-container");
+    if (container) {
+        container.innerHTML = renderCustomMaterialsSection(grade, "all");
+    }
+}
