@@ -4,6 +4,93 @@
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
+        id: "mat-5-unite-bilgi",
+        grade: "5",
+        category: "ders-notu",
+        title: "5. Sınıf Üniteler Bilgilendirme",
+        unit: "Tüm Üniteler",
+        desc: "5. Sınıf Fen Bilimleri MEB Maarif Modeli tüm ünite kazanımları, konuların işleniş sırası ve veli/öğrenci rehberi.",
+        fileName: "unite-bilgilendirmeleri-5.svg",
+        fileUrl: "assets/unite-bilgilendirmeleri-5.svg",
+        imageUrl: "assets/unite-bilgilendirmeleri-5.svg",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["5. Sınıf", "Üniteler", "Kazanımlar", "Görsel Rehber"],
+        visibility: "public",
+        downloadCount: "2.850+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-6-unite-bilgi",
+        grade: "6",
+        category: "ders-notu",
+        title: "6. Sınıf Üniteler Bilgilendirme",
+        unit: "Tüm Üniteler",
+        desc: "6. Sınıf Fen Bilimleri MEB Maarif Modeli tüm ünite kazanımları, konuların işleniş sırası ve veli/öğrenci rehberi.",
+        fileName: "unite-bilgilendirmeleri-6.svg",
+        fileUrl: "assets/unite-bilgilendirmeleri-6.svg",
+        imageUrl: "assets/unite-bilgilendirmeleri-6.svg",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["6. Sınıf", "Üniteler", "Kazanımlar", "Görsel Rehber"],
+        visibility: "public",
+        downloadCount: "2.420+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-7-unite-bilgi",
+        grade: "7",
+        category: "ders-notu",
+        title: "7. Sınıf Üniteler Bilgilendirme",
+        unit: "Tüm Üniteler",
+        desc: "7. Sınıf Fen Bilimleri MEB Maarif Modeli tüm ünite kazanımları, konuların işleniş sırası ve veli/öğrenci rehberi.",
+        fileName: "unite-bilgilendirmeleri-7.svg",
+        fileUrl: "assets/unite-bilgilendirmeleri-7.svg",
+        imageUrl: "assets/unite-bilgilendirmeleri-7.svg",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["7. Sınıf", "Üniteler", "Kazanımlar", "Görsel Rehber"],
+        visibility: "public",
+        downloadCount: "2.190+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-8-unite-bilgi",
+        grade: "8",
+        category: "ders-notu",
+        categoryAlt: "lgs",
+        title: "8. Sınıf LGS Üniteler Bilgilendirme",
+        unit: "Tüm Üniteler & LGS",
+        desc: "8. Sınıf LGS Fen Bilimleri tüm ünite konu haritası, soru dağılımı ve başarı pusulası görsel rehberi.",
+        fileName: "unite-bilgilendirmeleri-8.svg",
+        fileUrl: "assets/unite-bilgilendirmeleri-8.svg",
+        imageUrl: "assets/unite-bilgilendirmeleri-8.svg",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["8. Sınıf", "LGS", "Üniteler", "Pusula"],
+        visibility: "public",
+        downloadCount: "3.940+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-5-lab-guvenlik-gorsel",
+        grade: "5",
+        category: "ders-notu",
+        categoryAlt: "ders-sunumu",
+        title: "Laboratuvar Güvenliği Görseli",
+        unit: "1. Ünite",
+        desc: "Laboratuvar kuralları ve 8 temel güvenlik işaretini gösteren detaylı, renkli infografik görseli.",
+        fileName: "lab-guvenligi.svg",
+        fileUrl: "assets/lab-guvenligi.svg",
+        imageUrl: "assets/lab-guvenligi.svg",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["Güvenlik", "Görsel", "Laboratuvar", "Semboller"],
+        visibility: "public",
+        downloadCount: "1.850+",
+        createdAt: "Bugün"
+    },
+    {
         id: "mat-5-lab-oyun-1",
         grade: "5",
         category: "egitsel-oyunlar",
@@ -50,57 +137,6 @@ const DEFAULT_CUSTOM_MATERIALS = [
         visibility: "public",
         downloadCount: "3.480+",
         createdAt: "Yeni Yayınlandı"
-    },
-    {
-        id: "mat-5-semboller-video",
-        grade: "5",
-        category: "videolar",
-        title: "Semboller Videosu",
-        unit: "1. Ünite",
-        desc: "Laboratuvar güvenlik sembolleri ve anlamlarını içeren eğitici video anlatımı.",
-        fileName: "Semboller_Videosu.mp4",
-        fileUrl: "https://www.youtube.com/watch?v=HhXVz4JzwJ4",
-        format: "VİDEO",
-        hasBlob: false,
-        tags: ["Semboller", "Video", "Laboratuvar"],
-        visibility: "public",
-        downloadCount: "540+",
-        createdAt: "Bugün"
-    },
-    {
-        id: "mat-5-unite-bilgi",
-        grade: "5",
-        category: "ders-notu",
-        title: "Ünite Bilgilendirmeleri",
-        unit: "Genel",
-        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri görsel rehberi.",
-        fileName: "unite-bilgilendirmeleri.svg",
-        fileUrl: "assets/unite-bilgilendirmeleri.svg",
-        imageUrl: "assets/unite-bilgilendirmeleri.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
-        hasBlob: false,
-        tags: ["Bilgilendirme", "Kazanım", "Görsel Rehber"],
-        visibility: "public",
-        downloadCount: "890+",
-        createdAt: "Bugün"
-    },
-    {
-        id: "mat-5-lab-guvenlik-gorsel",
-        grade: "5",
-        category: "ders-notu",
-        categoryAlt: "ders-sunumu",
-        title: "Laboratuvar Güvenliği Görseli",
-        unit: "1. Ünite",
-        desc: "Laboratuvar kuralları ve güvenlik işaretlerini gösteren detaylı, renkli infografik görseli.",
-        fileName: "lab-guvenligi.svg",
-        fileUrl: "assets/lab-guvenligi.svg",
-        imageUrl: "assets/lab-guvenligi.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
-        hasBlob: false,
-        tags: ["Güvenlik", "Görsel", "Laboratuvar", "Semboller"],
-        visibility: "public",
-        downloadCount: "1.200+",
-        createdAt: "Bugün"
     }
 ];
 
@@ -115,14 +151,21 @@ function getCustomMaterialsList() {
         customList = [];
     }
 
+    // Kullanıcının eklemediği YouTube / Semboller Videosunu localStorage'dan da tamamen temizle
+    const beforeLen = customList.length;
+    customList = customList.filter(item => 
+        item.id !== "mat-5-semboller-video" && 
+        !(item.title && item.title.includes("Semboller Videosu")) &&
+        !(item.fileUrl && item.fileUrl.includes("youtube"))
+    );
+
     if (!Array.isArray(customList) || customList.length === 0) {
         customList = [...DEFAULT_CUSTOM_MATERIALS];
         try {
             localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
         } catch (e) {}
     } else {
-        // Eksik varsayılanları listeye ekle
-        let changed = false;
+        let changed = (customList.length !== beforeLen);
         DEFAULT_CUSTOM_MATERIALS.forEach(seed => {
             const existing = customList.find(item => item.id === seed.id || item.title === seed.title);
             if (!existing) {
@@ -145,6 +188,10 @@ function getCustomMaterialsList() {
                     existing.categoryAlt = seed.categoryAlt;
                     changed = true;
                 }
+                if (seed.fileName && existing.fileName !== seed.fileName) {
+                    existing.fileName = seed.fileName;
+                    changed = true;
+                }
             }
         });
         if (changed) {
@@ -153,18 +200,6 @@ function getCustomMaterialsList() {
             } catch (e) {}
         }
     }
-
-    // Legacy rotali_materials verilerini de harmanla
-    try {
-        const legacy = JSON.parse(localStorage.getItem("rotali_materials") || "[]");
-        if (Array.isArray(legacy) && legacy.length > 0) {
-            legacy.forEach(leg => {
-                if (!customList.some(item => item.id === leg.id || item.title === leg.title)) {
-                    customList.push(leg);
-                }
-            });
-        }
-    } catch (e) {}
 
     return customList;
 }
@@ -2077,14 +2112,20 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                 `).join("")}
             </div>
         `;
-    } else if (subTab === "videolar") {
+        } else if (subTab === "videolar") {
+        const customVideos = getCustomMaterialsList().filter(m => {
+            const gMatch = (m.grade === String(grade.number) || m.grade === "all");
+            const cMatch = (m.category === "videolar" || m.category === "video");
+            return gMatch && cMatch;
+        });
+
         return `
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Konu Anlatımı & Deney Videoları
+                        <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Videoları
                     </h3>
-                    <span class="text-xs font-bold text-slate-500">${(subData.videolar || []).length} Video Ders</span>
+                    <span class="text-xs font-bold text-slate-500">${customVideos.length} Video</span>
                 </div>
                 ${isAdmin ? `
                     <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20 active:scale-95 self-start sm:self-auto">
@@ -2093,33 +2134,20 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                 ` : ''}
             </div>
 
-            <!-- Sizin Eklediğiniz Özel Videolar -->
             ${renderCustomMaterialsSection(grade.number, "videolar")}
 
-            <!-- Müfredat Ünite Videoları -->
-            ${subData.videolar && subData.videolar.length > 0 ? `
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    ${subData.videolar.map(item => `
-                        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                            <div>
-                                <div class="relative bg-slate-900 rounded-2xl h-36 flex items-center justify-center text-white mb-4 group cursor-pointer overflow-hidden" onclick="openInPageVideoModal('${item.videoUrl || 'https://www.youtube.com/watch?v=HhXVz4JzwJ4'}', '${(item.title || 'Ders Videosu').replace(/'/g, "\\'")}', false)">
-                                    <div class="w-12 h-12 rounded-full bg-red-600/90 text-white flex items-center justify-center text-xl shadow-lg group-hover:scale-110 transition-transform">
-                                        <i class="fa-solid fa-play ml-1"></i>
-                                    </div>
-                                    <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">${item.duration || '10:00'}</span>
-                                </div>
-                                <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
-                                <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
-                                    <span>🎬 ${item.channel || 'Rotalı Fenci Akademi'}</span>
-                                    <span>👁️ ${item.views || '1.000+ Görüntüleme'}</span>
-                                </div>
-                            </div>
-                            <button onclick="openInPageVideoModal('${item.videoUrl || 'https://www.youtube.com/watch?v=HhXVz4JzwJ4'}', '${(item.title || 'Ders Videosu').replace(/'/g, "\\'")}', false)" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                                <i class="fa-solid fa-play"></i> Videoyu Oynat
-                            </button>
-                        </div>
-                    `).join("")}
+            ${customVideos.length === 0 ? `
+                <div class="p-8 sm:p-12 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 shadow-sm">
+                    <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                    <h4 class="text-base font-black text-slate-800 mb-1">Bu sınıfta henüz video bulunmuyor</h4>
+                    <p class="text-xs text-slate-500 mb-4 max-w-sm mx-auto">Yönetici panelinden video yükleyerek sadece kendi videolarınızı burada yayınlayabilirsiniz.</p>
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> Hemen Video Ekle
+                        </button>
+                    ` : ''}
                 </div>
             ` : ''}
         `;
@@ -4383,7 +4411,7 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "inpage-document-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 transition-all";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/95 flex flex-col items-center justify-center p-0 sm:p-2 transition-all";
         modal.onclick = function(e) {
             if (e.target === this) closeInPageDocumentModal();
         };
@@ -4394,96 +4422,71 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     const isImageDoc = docUrl && (docUrl.endsWith(".svg") || docUrl.endsWith(".jpg") || docUrl.endsWith(".jpeg") || docUrl.endsWith(".png") || docUrl.endsWith(".webp") || docUrl.includes("data:image"));
     if (isImageDoc) {
         docHtml = `
-            <div class="w-full max-h-[75vh] overflow-auto flex items-center justify-center p-2 sm:p-4 bg-slate-950 rounded-2xl border border-slate-800">
-                <img src="${docUrl}" alt="${docTitle}" class="max-w-full max-h-[72vh] rounded-xl object-contain shadow-2xl">
-            </div>
-            <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
-                <span class="flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Yüksek Çözünürlüklü Eğitim İnfografiği • İndirme Gerekmez</span>
-                </span>
-                <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg flex items-center gap-1.5 transition-colors">
-                    <i class="fa-solid fa-print"></i> Görseli Yazdır
-                </button>
+            <div class="w-full h-full overflow-y-auto flex flex-col items-center justify-start py-2 px-1 sm:px-4">
+                <img src="${docUrl}" alt="${docTitle}" class="w-full max-w-4xl h-auto rounded-2xl shadow-2xl bg-white border border-slate-700 object-contain my-auto">
             </div>
         `;
     } else if (docUrl && docUrl.startsWith("blob:")) {
         docHtml = `
-            <div class="w-full h-[75vh] rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
+            <div class="w-full h-full rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
                 <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
             </div>
         `;
     } else if (docUrl && (docUrl.startsWith("http") || docUrl.endsWith(".pdf"))) {
         docHtml = `
-            <div class="w-full h-[75vh] rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
+            <div class="w-full h-full rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
                 <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
             </div>
         `;
     } else {
-        // Zengin İnteraktif Ders Özeti & Okuma Görünümü (İndirmeden ekranda oku!)
         docHtml = `
-            <div class="w-full max-h-[75vh] overflow-y-auto p-6 sm:p-8 bg-white rounded-2xl text-slate-800 space-y-6 shadow-inner">
+            <div class="w-full h-full overflow-y-auto p-6 sm:p-10 bg-white rounded-2xl text-slate-800 space-y-6 shadow-inner max-w-4xl mx-auto">
                 <div class="border-b border-slate-200 pb-4">
                     <div class="flex items-center justify-between gap-2 mb-2">
                         <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-black uppercase">Ders Föyü & Konu Özeti</span>
                         <span class="text-xs font-bold text-slate-400">MEB 2026-2027 Müfredatına Uygun</span>
                     </div>
-                    <h3 class="text-2xl font-black text-slate-900">${docTitle}</h3>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900">${docTitle}</h3>
                 </div>
-
                 <div class="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
                     <div class="p-4 bg-blue-50/70 border border-blue-200 rounded-xl">
                         <h4 class="font-black text-blue-900 mb-1 flex items-center gap-2">
                             <i class="fa-solid fa-circle-info text-blue-600"></i> Kazanım & Önemli Hatırlatma:
                         </h4>
                         <p class="text-xs sm:text-sm text-blue-800 leading-relaxed">
-                            Bu ders materyali öğrencilerin derste, evde veya akıllı tahtada indirme yapmadan doğrudan inceleyip çalışabilmesi için özel olarak hazırlanmıştır.
+                            Bu ders materyali öğrencilerin derste, evde veya akıllı tahtada indirme yapmadan tam sayfada doğrudan inceleyip çalışabilmesi için hazırlanmıştır.
                         </p>
                     </div>
-
-                    <div class="space-y-3">
-                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                            <h5 class="font-black text-slate-900 mb-1">📌 1. Temel Bilimsel Kavramlar ve Tanımlar</h5>
-                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                Fen bilimleri deney ve gözleme dayalı dinamik bir süreçtir. Doğru ölçme aletleri, güvenlik işaretlerine uyum ve hipotez kurma becerisi fen başarısının temelini oluşturur.
-                            </p>
-                        </div>
-                        <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-                            <h5 class="font-black text-slate-900 mb-1">📌 2. Sınav ve Yazılılarda Çıkabilecek Püf Noktalar</h5>
-                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                                Deney düzeneği sorularında bağımlı değişken (sonuç), bağımsız değişken (bizim değiştirdiğimiz) ve kontrol edilen değişken (sabit tutulan) analizlerini dikkatle yapınız.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-slate-200 flex items-center justify-between text-xs text-slate-500">
-                    <span>Sayfa 1 / 1 • Çevrimdışı Görüntüleyici</span>
-                    <button onclick="window.print()" class="px-4 py-2 bg-slate-900 hover:bg-red-600 text-white font-bold rounded-xl transition-colors flex items-center gap-1.5">
-                        <i class="fa-solid fa-print"></i> Yazdır
-                    </button>
                 </div>
             </div>
         `;
     }
 
     modal.innerHTML = `
-        <div class="bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-            <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between text-white">
+        <div class="bg-slate-900 w-full h-full sm:h-[98vh] max-w-[1440px] border border-slate-700/80 shadow-2xl rounded-none sm:rounded-3xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <!-- Üst Bar -->
+            <div class="px-4 sm:px-6 py-3.5 bg-slate-800/95 border-b border-slate-700 flex items-center justify-between text-white flex-shrink-0">
                 <div class="flex items-center gap-3">
                     <span class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg font-black shadow-md">
                         <i class="fa-solid fa-book-open"></i>
                     </span>
                     <div>
-                        <h3 class="text-sm sm:text-base font-black truncate max-w-sm sm:max-w-md">${docTitle}</h3>
-                        <span class="text-xs text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
+                        <h3 class="text-sm sm:text-base font-black truncate max-w-xs sm:max-w-xl">${docTitle}</h3>
+                        <span class="text-xs text-slate-400">Rotalı Fenci Belge Görüntüleyici • Tam Sayfa Görünüm</span>
                     </div>
                 </div>
-                <button type="button" onclick="closeInPageDocumentModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-print"></i> Yazdır
+                    </button>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all" title="Kapat">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
             </div>
-            <div class="p-3 sm:p-6 bg-slate-950">
+
+            <!-- Tam Sayfa İçerik Alanı -->
+            <div class="flex-1 w-full overflow-y-auto p-2 sm:p-4 bg-slate-950 flex flex-col items-center justify-start">
                 ${docHtml}
             </div>
         </div>
