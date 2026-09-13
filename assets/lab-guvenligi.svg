@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="labBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#090d16" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <linearGradient id="labHeader" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e11d48" />
+      <stop offset="100%" stop-color="#f59e0b" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#labBg)" rx="24" />
+
+  <!-- HEADER -->
+  <rect x="40" y="30" width="1120" height="110" rx="20" fill="url(#labHeader)" />
+  <text x="70" y="75" font-family="system-ui, -apple-system, sans-serif" font-weight="900" font-size="28" fill="#ffffff">FEN BİLİMLERİ LABORATUVAR GÜVENLİĞİ VE SEMBOLLERİ</text>
+  <text x="70" y="110" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="16" fill="#fef08a">5. Sınıf MEB Kazanımları • 8 Temel Güvenlik Uyarı İşareti ve Deney Kuralları</text>
+
+  <!-- 8 GÜVENLİK SEMBOLÜ KUTULARI -->
+  <g transform="translate(40, 165)">
+    <!-- 1. Yanıcı -->
+    <rect x="0" y="0" width="265" height="175" rx="16" fill="#1e293b" stroke="#f59e0b" stroke-width="2" />
+    <circle cx="50" cy="45" r="26" fill="#f59e0b" />
+    <text x="50" y="53" font-size="24" text-anchor="middle">🔥</text>
+    <text x="90" y="45" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#fef08a">YANICI MADDE</text>
+    <text x="90" y="65" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Ateşten uzak tutunuz</text>
+    <text x="15" y="105" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Kolay alev alır.</text>
+    <text x="15" y="125" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Isı ve kıvılcımdan sakının.</text>
+    <text x="15" y="145" font-family="system-ui, sans-serif" font-size="11" fill="#f59e0b">• Alkol, eter, tiner vb.</text>
+
+    <!-- 2. Aşındırıcı / Korozif -->
+    <rect x="285" y="0" width="265" height="175" rx="16" fill="#1e293b" stroke="#3b82f6" stroke-width="2" />
+    <circle cx="335" cy="45" r="26" fill="#3b82f6" />
+    <text x="335" y="53" font-size="24" text-anchor="middle">🧪</text>
+    <text x="375" y="45" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#bfdbfe">AŞINDIRICI (KOROZİF)</text>
+    <text x="375" y="65" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Cildi ve metalleri yakar</text>
+    <text x="300" y="105" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Asla çıplak elle dokunulmaz.</text>
+    <text x="300" y="125" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Asit eldiveni ve önlük şarttır.</text>
+    <text x="300" y="145" font-family="system-ui, sans-serif" font-size="11" fill="#60a5fa">• Zaç yağı, tuz ruhu vb.</text>
+
+    <!-- 3. Zehirli / Toksik -->
+    <rect x="570" y="0" width="265" height="175" rx="16" fill="#1e293b" stroke="#a855f7" stroke-width="2" />
+    <circle cx="620" cy="45" r="26" fill="#a855f7" />
+    <text x="620" y="53" font-size="24" text-anchor="middle">☠️</text>
+    <text x="660" y="45" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#e9d5ff">ZEHİRLİ (TOKSİK)</text>
+    <text x="660" y="65" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Ağız ve solunumla zehirler</text>
+    <text x="585" y="105" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Kesinlikle tadına bakılmaz.</text>
+    <text x="585" y="125" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Çeker ocakta kullanılmalıdır.</text>
+    <text x="585" y="145" font-family="system-ui, sans-serif" font-size="11" fill="#c084fc">• Cıva, siyanür, klor gazı vb.</text>
+
+    <!-- 4. Patlayıcı -->
+    <rect x="855" y="0" width="265" height="175" rx="16" fill="#1e293b" stroke="#ef4444" stroke-width="2" />
+    <circle cx="905" cy="45" r="26" fill="#ef4444" />
+    <text x="905" y="53" font-size="24" text-anchor="middle">💥</text>
+    <text x="945" y="45" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#fecdd3">PATLAYICI MADDE</text>
+    <text x="945" y="65" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Sürtünme ve şoktan patlar</text>
+    <text x="870" y="105" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Isı ve darbeden sakının.</text>
+    <text x="870" y="125" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Emniyet mesafesi korunmalı.</text>
+    <text x="870" y="145" font-family="system-ui, sans-serif" font-size="11" fill="#f87171">• Dinamit, gaz tüpleri vb.</text>
+
+    <!-- 5. Radyoaktif -->
+    <rect x="0" y="195" width="265" height="175" rx="16" fill="#1e293b" stroke="#eab308" stroke-width="2" />
+    <circle cx="50" cy="240" r="26" fill="#eab308" />
+    <text x="50" y="248" font-size="24" text-anchor="middle">☢️</text>
+    <text x="90" y="240" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#fef08a">RADYOAKTİF</text>
+    <text x="90" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Zararlı ışın (radyasyon) yayar</text>
+    <text x="15" y="300" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Hücre yapısını bozar.</text>
+    <text x="15" y="320" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Kurşun zırhlı alanda saklanır.</text>
+    <text x="15" y="340" font-family="system-ui, sans-serif" font-size="11" fill="#facc15">• Uranyum, Röntgen üniteleri vb.</text>
+
+    <!-- 6. Biyolojik Tehlike -->
+    <rect x="285" y="195" width="265" height="175" rx="16" fill="#1e293b" stroke="#10b981" stroke-width="2" />
+    <circle cx="335" cy="240" r="26" fill="#10b981" />
+    <text x="335" y="248" font-size="24" text-anchor="middle">☣️</text>
+    <text x="375" y="240" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#a7f3d0">BİYOLOJİK TEHLİKE</text>
+    <text x="375" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Mikroorganizma ve virüsler</text>
+    <text x="300" y="300" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Enfeksiyon riski taşır.</text>
+    <text x="300" y="320" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Tıbbi atık bidonuna atılır.</text>
+    <text x="300" y="340" font-family="system-ui, sans-serif" font-size="11" fill="#34d399">• Kültür bakterileri, kan vb.</text>
+
+    <!-- 7. Çevreye Zararlı -->
+    <rect x="570" y="195" width="265" height="175" rx="16" fill="#1e293b" stroke="#06b6d4" stroke-width="2" />
+    <circle cx="620" cy="240" r="26" fill="#06b6d4" />
+    <text x="620" y="248" font-size="24" text-anchor="middle">🐟</text>
+    <text x="660" y="240" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#a5f3fc">ÇEVREYE ZARARLI</text>
+    <text x="660" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Suda yaşayan canlıları zehirler</text>
+    <text x="585" y="300" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Asla lavaboya dökülmez!</text>
+    <text x="585" y="320" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Atık şişelerinde toplanır.</text>
+    <text x="585" y="340" font-family="system-ui, sans-serif" font-size="11" fill="#22d3ee">• Ağır metaller, piller vb.</text>
+
+    <!-- 8. Koruyucu Donanım -->
+    <rect x="855" y="195" width="265" height="175" rx="16" fill="#1e293b" stroke="#6366f1" stroke-width="2" />
+    <circle cx="905" cy="240" r="26" fill="#6366f1" />
+    <text x="905" y="248" font-size="24" text-anchor="middle">🥽</text>
+    <text x="945" y="240" font-family="system-ui, sans-serif" font-weight="800" font-size="15" fill="#c7d2fe">KORUYUCU DONANIM</text>
+    <text x="945" y="260" font-family="system-ui, sans-serif" font-size="11" fill="#94a3b8">Önlük, gözlük ve eldiven</text>
+    <text x="870" y="300" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Deneye başlamadan takılır.</text>
+    <text x="870" y="320" font-family="system-ui, sans-serif" font-size="11" fill="#cbd5e1">• Saçlar toplanır, el yıkanır.</text>
+    <text x="870" y="340" font-family="system-ui, sans-serif" font-size="11" fill="#818cf8">• Güvenlik can kurtarır!</text>
+  </g>
+
+  <!-- ALT BİLGİ KUTUSU -->
+  <rect x="40" y="570" width="1120" height="195" rx="18" fill="#1e293b" stroke="#475569" stroke-width="1.5" />
+  <text x="70" y="605" font-family="system-ui, sans-serif" font-weight="800" font-size="16" fill="#f8fafc">🚨 LABORATUVARDA ACİL DURUM VE GÜVENLİK PROTOKOLÜ</text>
+
+  <text x="70" y="640" font-family="system-ui, sans-serif" font-size="13" fill="#cbd5e1">• <strong>Göz veya Cilde Kimyasal Teması:</strong> Vakit kaybetmeden en az 15 dakika bol suyla yıkayınız ve öğretmeninize bildiriniz.</text>
+  <text x="70" y="665" font-family="system-ui, sans-serif" font-size="13" fill="#cbd5e1">• <strong>Kırılan Cam Eşyalar:</strong> Asla çıplak elle toplanmaz; faraş ve süpürge yardımıyla cam atık kutusuna atılır.</text>
+  <text x="70" y="690" font-family="system-ui, sans-serif" font-size="13" fill="#cbd5e1">• <strong>Yangın Durumu:</strong> Yangın söndürme tüpü P.A.S.S. (Pimi çek, Ateşe yönelt, Sık, Süpür) yöntemiyle kullanılır.</text>
+  <text x="70" y="715" font-family="system-ui, sans-serif" font-size="13" fill="#cbd5e1">• <strong>Deney Sonu:</strong> Kullanılan tüm malzemeler temizlenir, gaz vanaları kapatılır ve eller sabunla yıkanır.</text>
+
+  <rect x="910" y="595" width="220" height="145" rx="12" fill="#0f172a" />
+  <text x="1020" y="635" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#ef4444" text-anchor="middle">ACİL ÇAĞRI</text>
+  <text x="1020" y="680" font-family="system-ui, sans-serif" font-weight="900" font-size="36" fill="#ffffff" text-anchor="middle">112</text>
+  <text x="1020" y="710" font-family="system-ui, sans-serif" font-weight="700" font-size="11" fill="#94a3b8" text-anchor="middle">AMBULANS • İTFAİYE</text>
+</svg>

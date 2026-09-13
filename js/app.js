@@ -73,12 +73,13 @@ const DEFAULT_CUSTOM_MATERIALS = [
         category: "ders-notu",
         title: "Ünite Bilgilendirmeleri",
         unit: "Genel",
-        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.",
-        fileName: "Unite_Bilgilendirmeleri.pdf",
-        fileUrl: "#",
-        format: "DERS NOTU",
+        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri görsel rehberi.",
+        fileName: "unite-bilgilendirmeleri.svg",
+        fileUrl: "assets/unite-bilgilendirmeleri.svg",
+        imageUrl: "assets/unite-bilgilendirmeleri.svg",
+        format: "GÖRSEL / İNFOGRAFİK",
         hasBlob: false,
-        tags: ["Bilgilendirme", "Kazanım"],
+        tags: ["Bilgilendirme", "Kazanım", "Görsel Rehber"],
         visibility: "public",
         downloadCount: "890+",
         createdAt: "Bugün"
@@ -86,15 +87,17 @@ const DEFAULT_CUSTOM_MATERIALS = [
     {
         id: "mat-5-lab-guvenlik-gorsel",
         grade: "5",
-        category: "ders-sunumu",
+        category: "ders-notu",
+        categoryAlt: "ders-sunumu",
         title: "Laboratuvar Güvenliği Görseli",
         unit: "1. Ünite",
         desc: "Laboratuvar kuralları ve güvenlik işaretlerini gösteren detaylı, renkli infografik görseli.",
-        fileName: "Lab_Guvenligi.jpg",
-        fileUrl: "#",
+        fileName: "lab-guvenligi.svg",
+        fileUrl: "assets/lab-guvenligi.svg",
+        imageUrl: "assets/lab-guvenligi.svg",
         format: "GÖRSEL / İNFOGRAFİK",
         hasBlob: false,
-        tags: ["Güvenlik", "Görsel", "Laboratuvar"],
+        tags: ["Güvenlik", "Görsel", "Laboratuvar", "Semboller"],
         visibility: "public",
         downloadCount: "1.200+",
         createdAt: "Bugün"
@@ -125,9 +128,23 @@ function getCustomMaterialsList() {
             if (!existing) {
                 customList.push(seed);
                 changed = true;
-            } else if (seed.fileUrl && seed.fileUrl !== "#" && (!existing.fileUrl || existing.fileUrl === "#" || existing.fileUrl.includes("kR1eZq9Q2n4"))) {
-                existing.fileUrl = seed.fileUrl;
-                changed = true;
+            } else {
+                if (seed.imageUrl && existing.imageUrl !== seed.imageUrl) {
+                    existing.imageUrl = seed.imageUrl;
+                    changed = true;
+                }
+                if (seed.fileUrl && seed.fileUrl !== "#" && (!existing.fileUrl || existing.fileUrl === "#" || existing.fileUrl.includes("kR1eZq9Q2n4"))) {
+                    existing.fileUrl = seed.fileUrl;
+                    changed = true;
+                }
+                if (seed.format && existing.format !== seed.format) {
+                    existing.format = seed.format;
+                    changed = true;
+                }
+                if (seed.categoryAlt && existing.categoryAlt !== seed.categoryAlt) {
+                    existing.categoryAlt = seed.categoryAlt;
+                    changed = true;
+                }
             }
         });
         if (changed) {
@@ -231,6 +248,15 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                             </div>
 
                             <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
+                            ${item.imageUrl || (item.format && item.format.includes('GÖRSEL')) ? `
+                                <div class="relative w-full h-48 sm:h-52 rounded-2xl overflow-hidden mb-3 bg-slate-900 border border-slate-200 group-hover:border-emerald-500/50 cursor-pointer shadow-sm transition-all" onclick="openOrDownloadMaterial('${item.id}')">
+                                    <img src="${item.imageUrl || item.fileUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex items-end justify-between p-3">
+                                        <span class="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider">İnfografik Görsel</span>
+                                        <span class="text-white text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass-plus"></i> Görseli Aç</span>
+                                    </div>
+                                </div>
+                            ` : ''}
                             <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-emerald-700 transition-colors">${item.title}</h4>
                             <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
 
@@ -2052,19 +2078,13 @@ function renderGradeSubTabContent(grade, subData, subTab) {
             </div>
         `;
     } else if (subTab === "videolar") {
-        const customVideos = getCustomMaterialsList().filter(m => {
-            const gMatch = (m.grade === String(grade.number) || m.grade === "all");
-            const cMatch = (m.category === "videolar" || m.category === "video" || (m.format && m.format.includes("VİDEO")) || (m.title && m.title.toLowerCase().includes("video")));
-            return gMatch && cMatch;
-        });
-
         return `
             <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                     <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
                         <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Konu Anlatımı & Deney Videoları
                     </h3>
-                    <span class="text-xs font-bold text-slate-500">${customVideos.length} Video</span>
+                    <span class="text-xs font-bold text-slate-500">${(subData.videolar || []).length} Video Ders</span>
                 </div>
                 ${isAdmin ? `
                     <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20 active:scale-95 self-start sm:self-auto">
@@ -2073,20 +2093,33 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                 ` : ''}
             </div>
 
+            <!-- Sizin Eklediğiniz Özel Videolar -->
             ${renderCustomMaterialsSection(grade.number, "videolar")}
 
-            ${customVideos.length === 0 ? `
-                <div class="p-8 sm:p-12 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 shadow-sm">
-                    <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
-                        <i class="fa-solid fa-video"></i>
-                    </div>
-                    <h4 class="text-base font-black text-slate-800 mb-1">Bu sınıfta henüz video bulunmuyor</h4>
-                    <p class="text-xs text-slate-500 mb-4 max-w-sm mx-auto">Yönetici panelinden yeni video bağlantısı ekleyerek bu alanda sadece kendi videolarınızı yayınlayabilirsiniz.</p>
-                    ${isAdmin ? `
-                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-plus"></i> Hemen Video Ekle
-                        </button>
-                    ` : ''}
+            <!-- Müfredat Ünite Videoları -->
+            ${subData.videolar && subData.videolar.length > 0 ? `
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    ${subData.videolar.map(item => `
+                        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="relative bg-slate-900 rounded-2xl h-36 flex items-center justify-center text-white mb-4 group cursor-pointer overflow-hidden" onclick="openInPageVideoModal('${item.videoUrl || 'https://www.youtube.com/watch?v=HhXVz4JzwJ4'}', '${(item.title || 'Ders Videosu').replace(/'/g, "\\'")}', false)">
+                                    <div class="w-12 h-12 rounded-full bg-red-600/90 text-white flex items-center justify-center text-xl shadow-lg group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-play ml-1"></i>
+                                    </div>
+                                    <span class="absolute bottom-2 right-2 px-2 py-0.5 rounded bg-black/70 text-[10px] font-bold text-white">${item.duration || '10:00'}</span>
+                                </div>
+                                <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
+                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
+                                <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
+                                    <span>🎬 ${item.channel || 'Rotalı Fenci Akademi'}</span>
+                                    <span>👁️ ${item.views || '1.000+ Görüntüleme'}</span>
+                                </div>
+                            </div>
+                            <button onclick="openInPageVideoModal('${item.videoUrl || 'https://www.youtube.com/watch?v=HhXVz4JzwJ4'}', '${(item.title || 'Ders Videosu').replace(/'/g, "\\'")}', false)" class="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
+                                <i class="fa-solid fa-play"></i> Videoyu Oynat
+                            </button>
+                        </div>
+                    `).join("")}
                 </div>
             ` : ''}
         `;
@@ -4358,7 +4391,23 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     }
 
     let docHtml = "";
-    if (docUrl && docUrl.startsWith("blob:")) {
+    const isImageDoc = docUrl && (docUrl.endsWith(".svg") || docUrl.endsWith(".jpg") || docUrl.endsWith(".jpeg") || docUrl.endsWith(".png") || docUrl.endsWith(".webp") || docUrl.includes("data:image"));
+    if (isImageDoc) {
+        docHtml = `
+            <div class="w-full max-h-[75vh] overflow-auto flex items-center justify-center p-2 sm:p-4 bg-slate-950 rounded-2xl border border-slate-800">
+                <img src="${docUrl}" alt="${docTitle}" class="max-w-full max-h-[72vh] rounded-xl object-contain shadow-2xl">
+            </div>
+            <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
+                <span class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span>Yüksek Çözünürlüklü Eğitim İnfografiği • İndirme Gerekmez</span>
+                </span>
+                <button onclick="window.print()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-lg flex items-center gap-1.5 transition-colors">
+                    <i class="fa-solid fa-print"></i> Görseli Yazdır
+                </button>
+            </div>
+        `;
+    } else if (docUrl && docUrl.startsWith("blob:")) {
         docHtml = `
             <div class="w-full h-[75vh] rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
                 <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
