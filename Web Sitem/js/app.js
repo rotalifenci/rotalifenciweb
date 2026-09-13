@@ -50,6 +50,54 @@ const DEFAULT_CUSTOM_MATERIALS = [
         visibility: "public",
         downloadCount: "3.480+",
         createdAt: "Yeni Yayınlandı"
+    },
+    {
+        id: "mat-5-semboller-video",
+        grade: "5",
+        category: "videolar",
+        title: "Semboller Videosu",
+        unit: "1. Ünite",
+        desc: "Laboratuvar güvenlik sembolleri ve anlamlarını içeren eğitici video anlatımı.",
+        fileName: "Semboller_Videosu.mp4",
+        fileUrl: "#",
+        format: "VİDEO",
+        hasBlob: false,
+        tags: ["Semboller", "Video", "Laboratuvar"],
+        visibility: "public",
+        downloadCount: "540+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-5-unite-bilgi",
+        grade: "5",
+        category: "ders-notu",
+        title: "Ünite Bilgilendirmeleri",
+        unit: "Genel",
+        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.",
+        fileName: "Unite_Bilgilendirmeleri.pdf",
+        fileUrl: "#",
+        format: "DERS NOTU",
+        hasBlob: false,
+        tags: ["Bilgilendirme", "Kazanım"],
+        visibility: "public",
+        downloadCount: "890+",
+        createdAt: "Bugün"
+    },
+    {
+        id: "mat-5-lab-guvenlik-gorsel",
+        grade: "5",
+        category: "ders-sunumu",
+        title: "Laboratuvar Güvenliği Görseli",
+        unit: "1. Ünite",
+        desc: "Laboratuvar kuralları ve güvenlik işaretlerini gösteren detaylı, renkli infografik görseli.",
+        fileName: "Lab_Guvenligi.jpg",
+        fileUrl: "#",
+        format: "GÖRSEL / İNFOGRAFİK",
+        hasBlob: false,
+        tags: ["Güvenlik", "Görsel", "Laboratuvar"],
+        visibility: "public",
+        downloadCount: "1.200+",
+        createdAt: "Bugün"
     }
 ];
 
