@@ -582,16 +582,10 @@ function updateStudentHeader() {
 // 1. 🏠 PORTAL KONTROL MERKEZİ (ANA SAYFA)
 // -------------------------------------------------------------
 function renderHomeRecentMaterialsSection() {
-    let customList = [];
-    try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    } catch (e) {
-        customList = [];
-    }
-
+    const customList = getCustomMaterialsList();
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
-    // Örnek varsayılan son eklenen içerikler (Kullanıcı henüz eklemediyse veya azsa vitrin dolu görünür)
+    // Örnek varsayılan son eklenen içerikler
     const defaultRecent = [
         {
             id: "default-rec-1",
@@ -602,23 +596,35 @@ function renderHomeRecentMaterialsSection() {
             title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
             desc: "Beherglas, erlenmayer, dereceli silindir ve deney tüplerini eğlenerek eşleştirin ve tanıyın.",
             createdAt: "Yeni Yayınlandı",
-            fileUrl: "#interactive/crossword",
+            fileUrl: "#",
             tags: ["5. Sınıf", "Oyun", "Laboratuvar"]
         },
         {
             id: "default-rec-2",
-            grade: "8",
-            category: "ders-sunumu",
-            format: "PPTX / SUNUM",
-            unit: "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
-            title: "8. Sınıf LGS Basınç Ünitesi Akıllı Tahta Uyumlu Tam Kapsamlı Slayt Seti",
-            desc: "Animasyonlu deney düzenekleri, formül çıkarımları ve MEB çıkmış soru çözümleri içeren sunum.",
-            createdAt: "Yeni Yayınlandı",
-            fileUrl: "#grade/grade-8/ders-sunumu",
-            tags: ["8. Sınıf", "LGS 2026", "Sunum"]
+            grade: "5",
+            category: "egitsel-oyunlar",
+            format: "Web Bağlantısı",
+            unit: "1. Ünite: Güneş, Dünya ve Ay",
+            title: "Laboratuvar Malzemeleri Eşleştirme",
+            desc: "Ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirme oyunu.",
+            createdAt: "08.09.2026",
+            fileUrl: "#",
+            tags: ["5. Sınıf", "Laboratuvar", "Eşleştirme"]
         },
         {
             id: "default-rec-3",
+            grade: "8",
+            category: "lgs",
+            format: "PDF DENEME",
+            unit: "1. ve 2. Ünite: Mevsimler, İklim ve DNA",
+            title: "8. Sınıf LGS Fen Bilimleri Branş Denemesi (20 Yeni Nesil Soru)",
+            desc: "Animasyonlu deney düzenekleri, formül çıkarımları ve MEB çıkmış soru çözümleri içeren deneme.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#",
+            tags: ["8. Sınıf", "LGS 2027", "Deneme"]
+        },
+        {
+            id: "default-rec-4",
             grade: "7",
             category: "ders-notu",
             format: "PDF NOT",
@@ -626,31 +632,16 @@ function renderHomeRecentMaterialsSection() {
             title: "7. Sınıf Hücre, Mitoz ve Mayoz Bölünme Karşılaştırma Tablolu Ders Notu",
             desc: "Görsel hafıza teknikleriyle hazırlanmış renkli konu özetleri ve sınavda çıkabilecek tuzak noktalar.",
             createdAt: "Yeni Yayınlandı",
-            fileUrl: "#grade/grade-7/ders-notu",
+            fileUrl: "#",
             tags: ["7. Sınıf", "Ders Notu", "Mitoz-Mayoz"]
-        },
-        {
-            id: "default-rec-4",
-            grade: "6",
-            category: "soru-bankasi",
-            format: "TEST / SORU",
-            unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
-            title: "6. Sınıf Gezegenler ve Güneş-Ay Tutulmaları Yeni Nesil Beceri Temelli Test",
-            desc: "Açık uçlu ve çoktan seçmeli yeni nesil MEB kazanım test föyü ve video çözümleri.",
-            createdAt: "Yeni Yayınlandı",
-            fileUrl: "#grade/grade-6/soru-bankasi",
-            tags: ["6. Sınıf", "Soru Bankası", "MEB Uyumlu"]
         }
     ];
 
     // Özel yüklenenleri en başa al, yoksa varsayılanlarla birleştir
     let displayItems = [...customList];
-    if (displayItems.length < 4) {
-        for (let def of defaultRecent) {
-            if (!displayItems.some(i => i.title === def.title)) {
-                displayItems.push(def);
-            }
-            if (displayItems.length >= 6) break;
+    for (let def of defaultRecent) {
+        if (!displayItems.some(i => i.title === def.title)) {
+            displayItems.push(def);
         }
     }
 
@@ -707,7 +698,7 @@ function renderHomeRecentMaterialsSection() {
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
                                 <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-download'}"></i>
                                 <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Başlat / Oyna' : item.category === 'videolar' ? 'Dersi İzle' : 'Materyali Aç / İndir'}</span>
                             </button>
