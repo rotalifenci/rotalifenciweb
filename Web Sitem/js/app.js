@@ -1772,7 +1772,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-base sm:text-lg ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white group-hover:scale-110'} transition-transform">
                                     <i class="fa-solid fa-graduation-cap"></i>
                                 </div>
-                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🎯 LGS</span>
+                                <span class="text-[10px] sm:text-[11px] font-black tracking-tight uppercase leading-tight">🧭 LGS PUSULASI</span>
                             </button>
                             ` : ''}
 
