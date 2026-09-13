@@ -1,13 +1,109 @@
+// -------------------------------------------------------------
+// 📚 ROTALI FENCİ — ÖZEL MATERYAL HAVUZU & VERİ SENKRONİZASYONU
+// -------------------------------------------------------------
 
-function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
+const DEFAULT_CUSTOM_MATERIALS = [
+    {
+        id: "mat-5-lab-oyun-1",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        title: "Laboratuvar Malzemeleri Eşleştirme",
+        unit: "1. Ünite: Güneş, Dünya ve Ay",
+        desc: "Bu interaktif eşleştirme oyunu, ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirerek eğlenceli ve kalıcı bir şekilde öğrenmeyi sağlar.",
+        fileName: "Laboratuvar Malzemeleri Eşleştirme",
+        fileUrl: "#",
+        format: "Web Bağlantısı",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "Laboratuvar", "Eşleştirme", "İnteraktif Oyun"],
+        visibility: "public",
+        downloadCount: "1.450+",
+        createdAt: "08.09.2026"
+    },
+    {
+        id: "mat-5-lab-oyun-2",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
+        unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
+        desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eğlenerek eşleştirin ve tanıyın.",
+        fileName: "5. Sınıf Laboratuvar Oyunu",
+        fileUrl: "#",
+        format: "EĞİTSEL OYUN",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "Laboratuvar", "Güvenlik Kuralları", "Fen Dünyası"],
+        visibility: "public",
+        downloadCount: "2.120+",
+        createdAt: "Yeni Yayınlandı"
+    },
+    {
+        id: "mat-8-lgs-deneme-1",
+        grade: "8",
+        category: "lgs",
+        title: "8. Sınıf LGS Fen Bilimleri Branş Denemesi (20 Yeni Nesil Soru)",
+        unit: "1. ve 2. Ünite: Mevsimler, İklim ve DNA",
+        desc: "LGS formatında tam kapsamlı fen branş denemesi, detaylı çözümlü ve optik formlu.",
+        fileName: "8_Sinif_LGS_Deneme.pdf",
+        fileUrl: "#",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "LGS 2027", "Branş Denemesi", "Yeni Nesil"],
+        visibility: "public",
+        downloadCount: "3.480+",
+        createdAt: "Yeni Yayınlandı"
+    }
+];
+
+function getCustomMaterialsList() {
     let customList = [];
     try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+        const stored = localStorage.getItem("rotali_custom_materials");
+        if (stored) {
+            customList = JSON.parse(stored);
+        }
     } catch (e) {
         customList = [];
     }
 
+    if (!Array.isArray(customList) || customList.length === 0) {
+        customList = [...DEFAULT_CUSTOM_MATERIALS];
+        try {
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+        } catch (e) {}
+    } else {
+        // Eksik varsayılanları listeye ekle
+        let changed = false;
+        DEFAULT_CUSTOM_MATERIALS.forEach(seed => {
+            if (!customList.some(item => item.id === seed.id || item.title === seed.title)) {
+                customList.push(seed);
+                changed = true;
+            }
+        });
+        if (changed) {
+            try {
+                localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+            } catch (e) {}
+        }
+    }
+
+    // Legacy rotali_materials verilerini de harmanla
+    try {
+        const legacy = JSON.parse(localStorage.getItem("rotali_materials") || "[]");
+        if (Array.isArray(legacy) && legacy.length > 0) {
+            legacy.forEach(leg => {
+                if (!customList.some(item => item.id === leg.id || item.title === leg.title)) {
+                    customList.push(leg);
+                }
+            });
+        }
+    } catch (e) {}
+
+    return customList;
+}
+
+function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
+    const customList = getCustomMaterialsList();
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
     const items = customList.filter(item => {
         // Sınıf Eşleştirmesi ("5", 5, "grade-5", "all")
         const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
@@ -17,12 +113,32 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
         // Kategori / Sekme Eşleştirmesi
         const itemCat = String(item.category || "").trim().toLowerCase();
         const targetSubTab = String(subTab || "").trim().toLowerCase();
+        const itemFormat = String(item.format || "").trim().toLowerCase();
+        const itemTitle = String(item.title || "").trim().toLowerCase();
 
         let categoryMatch = false;
-        if (targetSubTab === "all") {
+        if (targetSubTab === "all" || targetSubTab === "uniteler") {
             categoryMatch = true;
         } else if (targetSubTab === "egitsel-oyunlar" || targetSubTab === "oyunlar" || targetSubTab === "oyun") {
-            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemCat.includes("oyun") || itemCat.includes("lab") || itemCat.includes("simula"));
+            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemCat.includes("oyun") || itemCat.includes("lab") || itemCat.includes("simula") || itemFormat.includes("oyun") || itemTitle.includes("oyun") || itemTitle.includes("eşleştirme") || itemTitle.includes("laboratuvar"));
+        } else if (targetSubTab === "ders-notu") {
+            categoryMatch = (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")));
+        } else if (targetSubTab === "ders-sunumu") {
+            categoryMatch = (itemCat === "ders-sunumu" || itemCat === "sunum" || itemFormat.includes("ppt") || itemFormat.includes("slayt"));
+        } else if (targetSubTab === "videolar") {
+            categoryMatch = (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video"));
+        } else if (targetSubTab === "etkinlikler") {
+            categoryMatch = (itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy");
+        } else if (targetSubTab === "soru-bankasi") {
+            categoryMatch = (itemCat === "soru-bankasi" || itemCat === "soru" || itemCat === "test");
+        } else if (targetSubTab === "denemeler") {
+            categoryMatch = (itemCat === "denemeler" || itemCat === "deneme");
+        } else if (targetSubTab === "lgs" || targetSubTab === "lgs-pusulasi") {
+            categoryMatch = (itemCat === "lgs" || itemCat === "lgs-pusulasi" || itemTitle.includes("lgs"));
+        } else if (targetSubTab === "bilim-insanlari" || targetSubTab === "bilimin-rotasi") {
+            categoryMatch = (itemCat === "bilim-insanlari" || itemCat === "bilimin-rotasi");
+        } else if (targetSubTab === "projeler") {
+            categoryMatch = (itemCat === "projeler" || itemCat === "proje" || itemCat === "stem");
         } else {
             categoryMatch = (itemCat === targetSubTab);
         }
@@ -74,8 +190,9 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                         </div>
 
                         <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
-                                <i class="fa-solid fa-gamepad"></i> <span>Aç / Başlat / İndir</span>
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\'")}')" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
+                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'fa-gamepad' : (item.format && item.format.includes('Video') ? 'fa-play' : 'fa-download')}"></i>
+                                <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'Oyunu Başlat / Oyna' : (item.fileUrl && item.fileUrl.startsWith('http') ? 'Bağlantıyı Aç' : 'Aç / İndir')}</span>
                             </button>
 
                             ${isAdmin ? `
@@ -3193,28 +3310,35 @@ function getPortalSearchIndex() {
         });
     }
 
-    // 9. Kullanıcı / Öğretmen Tarafından Yüklenen Materyaller (rotali_materials)
+        // 9. Kullanıcı / Yönetici Tarafından Yüklenen Materyaller (rotali_custom_materials & rotali_materials)
     try {
-        const customMats = JSON.parse(localStorage.getItem("rotali_materials") || "[]");
+        const customMats = getCustomMaterialsList();
         if (Array.isArray(customMats)) {
             customMats.forEach(m => {
+                const gNum = parseInt(m.grade) || 0;
+                const gradeTitle = gNum === 8 ? "8. Sınıf (LGS)" : (gNum > 0 ? `${gNum}. Sınıf` : "Tüm Sınıflar");
+                const isGame = (m.category === "egitsel-oyunlar" || (m.format && m.format.includes("OYUN")) || (m.title && (m.title.toLowerCase().includes("oyun") || m.title.toLowerCase().includes("eşleştirme") || m.title.toLowerCase().includes("laboratuvar"))));
+                
                 index.push({
                     id: `custom-${m.id}`,
-                    title: m.title || "Yüklenen Materyal",
-                    category: m.category || "Özel Materyal",
-                    categoryKey: "ozel",
-                    grade: m.grade ? `${m.grade}. Sınıf` : "Genel",
-                    gradeNumber: parseInt(m.grade) || 0,
+                    title: m.title || "Özel Materyal",
+                    category: isGame ? "Eğitsel Oyun & İnteraktif" : (m.format || m.category || "Özel Materyal"),
+                    categoryKey: m.category || (isGame ? "egitsel-oyunlar" : "ders-notu"),
+                    grade: gradeTitle,
+                    gradeNumber: gNum,
                     unit: m.unit || "",
-                    description: m.description || "Öğretmen tarafından portala yeni eklenen materyal.",
-                    keywords: `yuklenen materyal ozel dosya ogretmen ${m.title} ${m.description}`,
-                    icon: "fa-solid fa-file",
-                    iconBg: "bg-emerald-600",
-                    url: m.grade ? `#grade/grade-${m.grade}` : `#home`
+                    description: m.desc || "Yönetici tarafından portala eklenen zenginleştirilmiş fen materyali.",
+                    keywords: `laboratuvar malzemeleri eşleştirme interaktif oyun guvenlik kurallari deney meb ${m.tags ? m.tags.join(' ') : ''} ${m.title} ${m.desc || ''}`,
+                    icon: isGame ? "fa-solid fa-gamepad" : "fa-solid fa-file-circle-check",
+                    iconBg: isGame ? "bg-fuchsia-600" : "bg-emerald-600",
+                    url: gNum > 0 ? `#grade/grade-${gNum}/${m.category || (isGame ? 'egitsel-oyunlar' : 'ders-notu')}` : `#home`,
+                    action: isGame ? `openInteractiveGameModal('oyun-5-lab', '${(m.title || '').replace(/'/g, "\'")}')` : null
                 });
             });
         }
-    } catch(e) {}
+    } catch(e) {
+        console.warn("Search custom materials indexing error:", e);
+    }
 
     // Pre-calculate normalized search blob for ultra high performance
     index.forEach(item => {
@@ -3900,37 +4024,7 @@ let currentUploadedFile = null;
 let currentTagsList = ["MEB 2026-2027"];
 let editingMaterialId = null;
 
-// Toast Bildirimi
-function showToast(message, type = "success") {
-    let toast = document.getElementById("toast");
-    if (!toast) {
-        toast = document.createElement("div");
-        toast.id = "toast";
-        toast.className = "fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none";
-        document.body.appendChild(toast);
-    }
-    
-    const bgColors = {
-        success: "bg-emerald-600 text-white shadow-emerald-600/30",
-        error: "bg-rose-600 text-white shadow-rose-600/30",
-        info: "bg-slate-900 text-white shadow-slate-900/30"
-    };
-
-    toast.innerHTML = `
-        <div class="px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 font-black text-xs sm:text-sm ${bgColors[type] || bgColors.info} border border-white/20 animate-in slide-in-from-bottom-5">
-            <i class="fa-solid ${type === 'success' ? 'fa-circle-check text-base' : type === 'error' ? 'fa-triangle-exclamation text-base' : 'fa-circle-info text-base'}"></i>
-            <span>${message}</span>
-        </div>
-    `;
-
-    toast.style.opacity = "1";
-    toast.style.transform = "translateY(0)";
-
-    setTimeout(() => {
-        toast.style.opacity = "0";
-        toast.style.transform = "translateY(10px)";
-    }, 4000);
-}
+// Toast Bildirimi (En başta tanımlandı)
 
 // Güvenlik & Yetki Kontrolü
 function checkAdminAccess(callback) {
@@ -4143,27 +4237,39 @@ function editCustomMaterial(id) {
     openMaterialUploadModal(mat.grade || "8", mat.category || "ders-notu", mat);
 }
 
-// Materyal Açma / İndirme (IDB & Web Link Uyumlu)
-async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf") {
-    // Önce IDB'den dosyayı kontrol et
-    const fileRecord = await RotaliDB.getFile(id);
-    if (fileRecord && fileRecord.blob) {
-        const url = URL.createObjectURL(fileRecord.blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = fileRecord.fileName || fileName;
-        a.target = "_blank";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => {
-            a.remove();
-            URL.revokeObjectURL(url);
-        }, 1000);
-        return;
+// Materyal Açma / İndirme (IDB & Web Link & İnteraktif Oyun Uyumlu)
+async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
+    // 1. Eğitsel Oyun veya Eşleştirme ise sayfa içi oyun motorunu çalıştır
+    if (category === "egitsel-oyunlar" || category.includes("oyun") || (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("laboratuvar")))) {
+        if (!fallbackUrl || fallbackUrl === "#" || fallbackUrl === "" || fallbackUrl === "null") {
+            openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
+            return;
+        }
     }
 
-    // IDB'de yoksa veya harici link ise
-    if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "") {
+    // 2. IDB'den dosyayı kontrol et
+    try {
+        const fileRecord = await RotaliDB.getFile(id);
+        if (fileRecord && fileRecord.blob) {
+            const url = URL.createObjectURL(fileRecord.blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileRecord.fileName || fileName;
+            a.target = "_blank";
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+                a.remove();
+                URL.revokeObjectURL(url);
+            }, 1000);
+            return;
+        }
+    } catch(err) {
+        console.warn("IDB getFile error:", err);
+    }
+
+    // 3. Web Bağlantısı veya Data URL
+    if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null") {
         if (fallbackUrl.startsWith("data:")) {
             const a = document.createElement("a");
             a.href = fallbackUrl;
@@ -4176,7 +4282,11 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             window.open(fallbackUrl, "_blank");
         }
     } else {
-        showToast("📄 Bu materyalin çevrimdışı önizlemesi veya web bağlantısı mevcut.", "info");
+        if (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("lab"))) {
+            openInteractiveGameModal('oyun-5-lab', title);
+        } else {
+            showToast("📄 Bu materyalin çevrimdışı önizlemesi veya web bağlantısı mevcut.", "info");
+        }
     }
 }
 
@@ -4771,6 +4881,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
                                 <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
                                 <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
+                                <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
+                                <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
                                 <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
                             </select>
                         </div>
@@ -5206,80 +5318,3 @@ async function handleAdvMaterialSubmit(e) {
     }
 }
 
-// -------------------------------------------------------------
-// 🎨 ÖZEL MATERYALLERİ LİSTELEME BİLEŞENİ
-// -------------------------------------------------------------
-
-function renderCustomMaterialsSection(gradeNumber, subTab) {
-    let customList = [];
-    try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    } catch (e) {
-        customList = [];
-    }
-
-    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    const items = customList.filter(item => {
-        const gradeMatch = (item.grade === "all" || String(item.grade) === String(gradeNumber));
-        const categoryMatch = (subTab === "uniteler" || item.category === subTab);
-        return gradeMatch && categoryMatch;
-    });
-
-    if (!items || items.length === 0) return "";
-
-    return `
-        <div class="mb-10 animate-in fade-in duration-300">
-            <div class="flex items-center justify-between mb-4">
-                <h4 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>✨ Yönetici Tarafından Eklenen Özel Materyaller (${items.length})</span>
-                </h4>
-                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">2026-2027 MEB Yayında</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${items.map(item => `
-                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl p-6 border-2 border-emerald-500/30 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-20 h-20 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
-
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black tracking-wider uppercase inline-block">
-                                    ${item.format || 'DOKÜMAN'}
-                                </span>
-                                <span class="text-[10px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
-                            </div>
-
-                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide">${item.unit || ''}</div>
-                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-emerald-700 transition-colors">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
-
-                            ${item.tags && item.tags.length > 0 ? `
-                                <div class="flex flex-wrap gap-1 mb-4">
-                                    ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
-                                </div>
-                            ` : ''}
-                        </div>
-
-                        <div class="pt-3 border-t border-slate-200/80 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20">
-                                <i class="fa-solid fa-download"></i> <span>Aç / İndir</span>
-                            </button>
-
-                            ${isAdmin ? `
-                                <div class="flex items-center gap-2 mt-1">
-                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
-                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                    </button>
-                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
-                                        <i class="fa-solid fa-trash-can"></i> Sil
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join("")}
-            </div>
-        </div>
-    `;
-}
