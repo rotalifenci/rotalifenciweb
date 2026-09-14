@@ -10,9 +10,30 @@ function readFileAsDataURL(file) {
 
 
 // =============================================================
-// ☁️ ROTALI FENCİ — BULUT EŞİTLEME MOTORU (CROSS-DEVICE SYNC)
+// ☁️ ROTALI FENCİ — BULUT EŞİTLEME MOTORU & KALICI SİLME YÖNETİMİ
 // Telefon, Bilgisayar, Tablet ve Akıllı Tahta Arası Tam Eşitleme
 // =============================================================
+
+function getDeletedMaterialIds() {
+    try {
+        const stored = localStorage.getItem("rotali_deleted_materials");
+        const list = stored ? JSON.parse(stored) : [];
+        return Array.isArray(list) ? list : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function addDeletedMaterialId(id) {
+    if (!id) return;
+    const list = getDeletedMaterialIds();
+    if (!list.includes(id)) {
+        list.push(id);
+        try {
+            localStorage.setItem("rotali_deleted_materials", JSON.stringify(list));
+        } catch(e) {}
+    }
+}
 
 const CloudSyncManager = {
     apiEndpoint: "/api/sync",
@@ -36,8 +57,12 @@ const CloudSyncManager = {
         }
 
         try {
+            const deletedIds = new Set(getDeletedMaterialIds());
+            deletedIds.add("mat-5-unite-bilgi");
+
             // 1. Buluttaki en güncel materyalleri çek
             let cloudMaterials = [];
+            let cloudDeletedIds = [];
             let fetchSuccess = false;
 
             try {
@@ -48,6 +73,7 @@ const CloudSyncManager = {
                     const data = await res.json();
                     if (data && Array.isArray(data.materials)) {
                         cloudMaterials = data.materials;
+                        cloudDeletedIds = Array.isArray(data.deletedIds) ? data.deletedIds : [];
                         fetchSuccess = true;
                     }
                 }
@@ -65,6 +91,7 @@ const CloudSyncManager = {
                         const gistData = await gistRes.json();
                         if (gistData && Array.isArray(gistData.materials)) {
                             cloudMaterials = gistData.materials;
+                            cloudDeletedIds = Array.isArray(gistData.deletedIds) ? gistData.deletedIds : [];
                             fetchSuccess = true;
                         }
                     }
@@ -72,6 +99,11 @@ const CloudSyncManager = {
                     console.warn("Fallback Gist error:", gistErr);
                 }
             }
+
+            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle
+            cloudDeletedIds.forEach(id => addDeletedMaterialId(id));
+            const activeDeletedSet = new Set(getDeletedMaterialIds());
+            activeDeletedSet.add("mat-5-unite-bilgi");
 
             // 2. Cihazdaki yerel materyalleri al
             let localMaterials = [];
@@ -102,29 +134,25 @@ const CloudSyncManager = {
                 }
             }
 
-            // 3. İki listeyi birleştir (Bulut + Yerel)
+            // 3. Birleştir: Silinmiş olanları kesinlikle hariç tut
             const mergedMap = new Map();
 
-            // Önce varsayılanları koy
-            DEFAULT_CUSTOM_MATERIALS.forEach(item => mergedMap.set(item.id || item.title, item));
-
-            // Sonra buluttan gelenleri koy
+            // Sadece silinmemiş bulut materyalleri
             cloudMaterials.forEach(item => {
-                if (item && (item.id || item.title)) {
-                    mergedMap.set(item.id || item.title, item);
+                if (item && item.id && !activeDeletedSet.has(item.id) && !activeDeletedSet.has(item.title)) {
+                    mergedMap.set(item.id, item);
                 }
             });
 
-            // Sonra bu cihazda eklenmiş yerelleri birleştir (telefondaki eklemeleri kaybetme!)
+            // Yerel cihazdaki materyaller (silinmemiş olanlar)
             let hasNewLocalToUpload = false;
             localMaterials.forEach(item => {
-                if (item && (item.id || item.title)) {
-                    const key = item.id || item.title;
-                    const inCloud = mergedMap.get(key);
+                if (item && item.id && !activeDeletedSet.has(item.id) && !activeDeletedSet.has(item.title)) {
+                    const inCloud = mergedMap.get(item.id);
                     if (!inCloud) {
                         hasNewLocalToUpload = true;
                     }
-                    mergedMap.set(key, { ...(inCloud || {}), ...item });
+                    mergedMap.set(item.id, { ...(inCloud || {}), ...item });
                 }
             });
 
@@ -137,9 +165,9 @@ const CloudSyncManager = {
                 console.warn("localStorage quota or error:", e);
             }
 
-            // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder (telefondan girildiğinde PC'ye aktarır!)
-            if (hasNewLocalToUpload || hasExtractedBlobs || (finalMergedList.length > cloudMaterials.length)) {
-                await this.uploadToCloud(finalMergedList);
+            // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder
+            if (hasNewLocalToUpload || hasExtractedBlobs) {
+                await this.uploadToCloud(finalMergedList, false);
             }
 
             this.lastSyncedAt = new Date();
@@ -167,10 +195,15 @@ const CloudSyncManager = {
         }
     },
 
-    // Buluta liste yükle
-    async uploadToCloud(materialsList) {
+    // Buluta liste yükle / silme senkronizasyonu yap
+    async uploadToCloud(materialsList, isReplace = false) {
         try {
-            const payload = { materials: materialsList };
+            const deletedIds = getDeletedMaterialIds();
+            const payload = {
+                materials: materialsList,
+                deletedIds: deletedIds,
+                replace: isReplace
+            };
             const res = await fetch(this.apiEndpoint, {
                 method: "POST",
                 headers: {
@@ -178,85 +211,25 @@ const CloudSyncManager = {
                 },
                 body: JSON.stringify(payload)
             });
-
             if (res.ok) {
-                console.log("✅ Materyaller buluta başarıyla yüklendi!");
-                return true;
+                console.log("☁️ Bulut veritabanı güncellendi (Kalıcı Silme & Eşitleme Yapıldı)");
             }
-        } catch(e) {
-            console.warn("Buluta yükleme başarısız:", e);
+        } catch(err) {
+            console.warn("Buluta yükleme yapılamadı:", err);
         }
-        return false;
     },
 
-    // Kullanıcı butona bastığında manuel tetikleme
-    async forceSync() {
-        await this.syncWithCloud(true);
-    },
-
-    // Yedek JSON Kodu Al (Tüm Cihazlara Anında Kopyalama)
-    exportSyncCode() {
-        const list = getCustomMaterialsList();
-        return btoa(unescape(encodeURIComponent(JSON.stringify(list))));
-    },
-
-    // Kod ile Başka Cihazdan İçeri Aktar
-    importSyncCode(encodedStr) {
-        try {
-            const jsonStr = decodeURIComponent(escape(atob(encodedStr.trim())));
-            const items = JSON.parse(jsonStr);
-            if (Array.isArray(items)) {
-                localStorage.setItem("rotali_custom_materials", JSON.stringify(items));
-                this.uploadToCloud(items);
-                showToast(`✅ ${items.length} materyal başarıyla içe aktarıldı ve buluta gönderildi!`, "success");
-                setTimeout(() => window.location.reload(), 1000);
-                return true;
-            }
-        } catch(e) {
-            showToast("❌ Geçersiz senkronizasyon kodu!", "error");
-        }
-        return false;
+    async deleteMaterial(id, updatedList) {
+        addDeletedMaterialId(id);
+        await this.uploadToCloud(updatedList, true);
     }
 };
 
 // -------------------------------------------------------------
-// 📚 ROTALI FENCİ — ÖZEL MATERYAL HAVUZU & VERİ SENKRONİZASYONU
+// 📚 ROTALI FENCİ — ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
 
 const DEFAULT_CUSTOM_MATERIALS = [
-    {
-        id: "mat-5-semboller-video",
-        grade: "5",
-        category: "videolar",
-        title: "Semboller Videosu",
-        unit: "1. Ünite",
-        desc: "Laboratuvar güvenlik sembolleri ve anlamlarını içeren eğitici video anlatımı.",
-        fileName: "Semboller_Videosu.mp4",
-        fileUrl: "#",
-        format: "VİDEO",
-        hasBlob: false,
-        tags: ["Semboller", "Video", "Laboratuvar"],
-        visibility: "public",
-        downloadCount: "540+",
-        createdAt: "Bugün"
-    },
-    {
-        id: "mat-5-unite-bilgi",
-        grade: "5",
-        category: "ders-notu",
-        title: "Ünite Bilgilendirmeleri",
-        unit: "Genel",
-        desc: "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.",
-        fileName: "Unite_Bilgilendirmeleri.png",
-        fileUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
-        imageUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
-        format: "DERS NOTU",
-        hasBlob: false,
-        tags: ["Bilgilendirme", "Kazanım"],
-        visibility: "public",
-        downloadCount: "890+",
-        createdAt: "Bugün"
-    },
     {
         id: "mat-5-lab-guvenlik-gorsel",
         grade: "5",
@@ -327,6 +300,9 @@ const DEFAULT_CUSTOM_MATERIALS = [
 
 function getCustomMaterialsList() {
     let customList = [];
+    const deletedIds = new Set(getDeletedMaterialIds());
+    deletedIds.add("mat-5-unite-bilgi");
+
     try {
         const stored = localStorage.getItem("rotali_custom_materials");
         if (stored) {
@@ -336,61 +312,15 @@ function getCustomMaterialsList() {
         customList = [];
     }
 
-    // Kullanıcının eklemediği sahte ünite bilgilendirmelerini temizle (6, 7, 8. sınıfta eklenmedi)
-    const beforeLen = customList.length;
-    customList = customList.filter(item => 
-        item.id !== "mat-6-unite-bilgi" &&
-        item.id !== "mat-7-unite-bilgi" &&
-        item.id !== "mat-8-unite-bilgi" &&
-        !(item.title && item.title.includes("Üniteler Bilgilendirme") && item.grade !== "5")
-    );
-
     if (!Array.isArray(customList) || customList.length === 0) {
-        customList = [...DEFAULT_CUSTOM_MATERIALS];
+        customList = DEFAULT_CUSTOM_MATERIALS.filter(item => !deletedIds.has(item.id) && !deletedIds.has(item.title));
         try {
             localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
         } catch (e) {}
     } else {
-        let changed = (customList.length !== beforeLen);
-        DEFAULT_CUSTOM_MATERIALS.forEach(seed => {
-            const existing = customList.find(item => item.id === seed.id || item.title === seed.title);
-            if (!existing) {
-                customList.push(seed);
-                changed = true;
-            } else {
-                if (seed.imageUrl && existing.imageUrl !== seed.imageUrl) {
-                    existing.imageUrl = seed.imageUrl;
-                    changed = true;
-                }
-                if (seed.fileUrl && seed.fileUrl !== "#" && (!existing.fileUrl || existing.fileUrl === "#" || existing.fileUrl.includes("kR1eZq9Q2n4"))) {
-                    existing.fileUrl = seed.fileUrl;
-                    changed = true;
-                }
-                if (seed.title === "Ünite Bilgilendirmeleri") {
-                    existing.title = "Ünite Bilgilendirmeleri";
-                    existing.unit = "Genel";
-                    existing.desc = "Ünite kazanımları, konuların işleniş sırası ve veli/öğrenci bilgilendirmeleri.";
-                    existing.imageUrl = "assets/unite-bilgilendirmeleri-gorsel.png";
-                    existing.fileUrl = "assets/unite-bilgilendirmeleri-gorsel.png";
-                    existing.format = "DERS NOTU";
-                    existing.tags = ["Bilgilendirme", "Kazanım"];
-                    changed = true;
-                }
-                if (seed.format && existing.format !== seed.format) {
-                    existing.format = seed.format;
-                    changed = true;
-                }
-                if (seed.categoryAlt && existing.categoryAlt !== seed.categoryAlt) {
-                    existing.categoryAlt = seed.categoryAlt;
-                    changed = true;
-                }
-                if (seed.fileName && existing.fileName !== seed.fileName) {
-                    existing.fileName = seed.fileName;
-                    changed = true;
-                }
-            }
-        });
-        if (changed) {
+        const cleanList = customList.filter(item => item && !deletedIds.has(item.id) && !deletedIds.has(item.title));
+        if (cleanList.length !== customList.length) {
+            customList = cleanList;
             try {
                 localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
             } catch (e) {}
@@ -4557,17 +4487,36 @@ async function deleteCustomMaterial(id) {
     if (!checkAdminAccess()) return;
     if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
 
-    let customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    customList = customList.filter(item => item.id !== id);
-    localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+    let customList = [];
+    try {
+        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    } catch(e) { customList = []; }
 
-    // IDB'den de sil
-    await RotaliDB.deleteFile(id);
+    const targetItem = customList.find(item => item.id === id);
+    addDeletedMaterialId(id);
+    if (targetItem && targetItem.title) {
+        addDeletedMaterialId(targetItem.title);
+    }
+
+    customList = customList.filter(item => item.id !== id && (!targetItem || item.title !== targetItem.title));
+    try {
+        localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
+    } catch(e) {}
+
+    if (typeof RotaliDB !== "undefined" && RotaliDB.deleteFile) {
+        try {
+            await RotaliDB.deleteFile(id);
+        } catch(e) {}
+    }
 
     showToast("🗑️ Materyal başarıyla silindi.", "info");
-    if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-        CloudSyncManager.uploadToCloud(customList);
+
+    if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.deleteMaterial) {
+        await CloudSyncManager.deleteMaterial(id, customList);
+    } else if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+        await CloudSyncManager.uploadToCloud(customList, true);
     }
+
     handleRouteChange();
 }
 
