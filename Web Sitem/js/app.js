@@ -318,12 +318,12 @@ function getCustomMaterialsList() {
     }
 
     if (!Array.isArray(customList) || customList.length === 0) {
-        customList = DEFAULT_CUSTOM_MATERIALS.filter(item => !deletedIds.has(item.id) && !deletedIds.has(item.title));
+        customList = DEFAULT_CUSTOM_MATERIALS.filter(item => !deletedIds.has(item.id));
         try {
             localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
         } catch (e) {}
     } else {
-        const cleanList = customList.filter(item => item && !deletedIds.has(item.id) && !deletedIds.has(item.title));
+        const cleanList = customList.filter(item => item && !deletedIds.has(item.id));
         if (cleanList.length !== customList.length) {
             customList = cleanList;
             try {
@@ -331,6 +331,13 @@ function getCustomMaterialsList() {
             } catch (e) {}
         }
     }
+
+    // Görsel URL güvencesi (fileUrl dataURL ise imageUrl olarak da kullan)
+    customList.forEach(item => {
+        if (item && !item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
+            item.imageUrl = item.fileUrl;
+        }
+    });
 
     return customList;
 }
@@ -541,6 +548,18 @@ function initPortal() {
             toggleSmartboardMode(false);
         }
     });
+
+    // Geçmişteki hatalı başlık filtrelerini localStorage'dan temizle
+    try {
+        const storedDel = localStorage.getItem("rotali_deleted_materials");
+        if (storedDel) {
+            let list = JSON.parse(storedDel);
+            if (Array.isArray(list)) {
+                const cleaned = list.filter(id => typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441");
+                localStorage.setItem("rotali_deleted_materials", JSON.stringify(cleaned));
+            }
+        }
+    } catch(e) {}
 
     handleRouteChange();
     updateUserInterface();
