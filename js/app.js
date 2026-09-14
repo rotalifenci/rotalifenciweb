@@ -555,196 +555,1553 @@ function openAuthModal(defaultTab = "student") {
     }
 
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] h-auto flex flex-col overflow-hidden" onclick="event.stopPropagation()">
-            
-            <!-- Modal Header (Sabit Üst) -->
-            <div class="flex items-center justify-between p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 bg-white shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr ${isEditing ? 'from-amber-500 to-orange-600' : 'from-red-600 to-rose-700'} text-white flex items-center justify-center text-lg sm:text-xl shadow-md shrink-0">
-                        <i class="fa-solid ${isEditing ? 'fa-pen-to-square' : 'fa-cloud-arrow-up'}"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base sm:text-xl font-black text-slate-900 tracking-tight leading-tight">
-                            ${isEditing ? 'Materyali Düzenle & Taşı' : 'Yeni İçerik & Materyal Ekle'}
-                        </h3>
-                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[220px] sm:max-w-md">
-                            ${isEditing ? 'Başlığı, sınıfı, konumu veya dosyayı güncelleyin' : 'PDF, Word, PPTX, Video, Ses, Görsel veya Web Linki'}
-                        </p>
-                    </div>
-                </div>
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200">
+            <button onclick="closeAuthModal()" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-black text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-                <!-- Kapatma Çarpı Butonu -->
-                <button type="button" onclick="closeMaterialUploadModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-sm sm:text-base transition-all shrink-0 shadow-sm" title="Kapat (ESC)">
-                    <i class="fa-solid fa-xmark"></i>
+            <div class="text-center mb-6">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-md">
+                    <i class="fa-solid fa-door-open"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-900">Portal Giriş Alanı</h3>
+                <p class="text-xs text-slate-500 mt-1">Öğrenci veya Öğretmen profilinizi seçin</p>
+            </div>
+
+            <!-- Sekmeler -->
+            <div class="flex bg-slate-100 p-1 rounded-2xl mb-6">
+                <button onclick="switchAuthTab('student')" id="tab-btn-student" class="flex-1 py-2.5 rounded-xl font-black text-xs transition-all ${defaultTab === 'student' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}">
+                    🎒 Öğrenci Girişi
+                </button>
+                <button onclick="switchAuthTab('teacher')" id="tab-btn-teacher" class="flex-1 py-2.5 rounded-xl font-black text-xs transition-all ${defaultTab === 'teacher' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'}">
+                    👨‍🏫 Öğretmen Girişi
                 </button>
             </div>
 
-            <!-- Form & Scrollable Body -->
-            <form id="adv-material-form" onsubmit="handleAdvMaterialSubmit(event)" class="flex flex-col flex-1 overflow-hidden min-h-0">
-                
-                <!-- Scroll Edilebilir İçerik Alanı -->
-                <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 custom-scrollbar">
-                    
-                    <!-- 1. KATEGORİ & BAŞLIK HİYERARŞİSİ -->
-                    <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> 1. Kategori & Konum Hiyerarşisi
-                            </span>
-                            <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">İstediğiniz Sınıfa / Bölüme Taşıyın</span>
-                        </div>
+            <!-- Öğrenci Giriş Formu -->
+            <div id="auth-form-student" class="${defaultTab === 'student' ? 'block' : 'hidden'} space-y-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Adın ve Soyadın</label>
+                    <input type="text" id="student-name-input" value="${AppState.currentUser.name || 'Fen Kaşifi'}" required placeholder="Örn: Ahmet Yılmaz" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Sınıf Düzeyin</label>
+                    <select id="student-grade-select" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                        <option value="5. Sınıf">5. Sınıf</option>
+                        <option value="6. Sınıf">6. Sınıf</option>
+                        <option value="7. Sınıf">7. Sınıf</option>
+                        <option value="8. Sınıf" selected>8. Sınıf (LGS)</option>
+                    </select>
+                </div>
+                <button onclick="handleStudentLogin()" class="w-full py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
+                    Öğrenci Olarak Başla 🚀
+                </button>
+            </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <!-- Ana Kategori / Sınıf -->
-                            <div>
-                                <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
-                                <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                    <option value="8" ${(isEditing ? editMaterial.grade === '8' : prefillGrade === '8') ? 'selected' : ''}>8. Sınıf & LGS</option>
-                                    <option value="7" ${(isEditing ? editMaterial.grade === '7' : prefillGrade === '7') ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
-                                    <option value="6" ${(isEditing ? editMaterial.grade === '6' : prefillGrade === '6') ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
-                                    <option value="5" ${(isEditing ? editMaterial.grade === '5' : prefillGrade === '5') ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
-                                    <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
-                                </select>
-                            </div>
+            <!-- Öğretmen / Yönetici Giriş Formu -->
+            <div id="auth-form-teacher" class="${defaultTab === 'teacher' ? 'block' : 'hidden'} space-y-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Öğretmen Kullanıcı Adı</label>
+                    <input type="text" id="teacher-user-input" value="admin" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1">Şifre</label>
+                    <input type="password" id="teacher-pass-input" placeholder="••••••••" required class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500">
+                </div>
+                <button onclick="handleTeacherLogin()" class="w-full py-3 bg-blue-700 hover:bg-blue-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all">
+                    Öğretmen Paneline Giriş Yap 👨‍🏫
+                </button>
+                <p class="text-[11px] text-center text-slate-400">Yetkili Girişi</p>
+            </div>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+}
 
-                            <!-- Alt Kategori -->
-                            <div>
-                                <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
-                                <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                    <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ders Notu</option>
-                                    <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
-                                    <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
-                                    <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
-                                    <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
-                                    <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
-                                    <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
-                                    <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
-                                    <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
-                                    <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
-                                </select>
-                            </div>
-                        </div>
+function switchAuthTab(tab) {
+    const studentForm = document.getElementById("auth-form-student");
+    const teacherForm = document.getElementById("auth-form-teacher");
+    const tabStudent = document.getElementById("tab-btn-student");
+    const tabTeacher = document.getElementById("tab-btn-teacher");
 
-                        <!-- Ünite / Konu Seçimi -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-xs font-black uppercase text-slate-700">İlişkili Ünite / Başlık</label>
-                                <button type="button" onclick="toggleCustomTopicInput()" class="text-[11px] font-bold text-red-600 hover:text-red-700 underline">
-                                    ➕ Listede Yoksa Yeni Başlık Ekle
-                                </button>
-                            </div>
-                            <select id="adv-unit-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <!-- JS ile dolar -->
-                            </select>
-                            <input type="text" id="adv-custom-topic-input" placeholder="Yeni Özel Başlık / Alt Başlık yazın..." class="hidden w-full mt-2 p-2.5 sm:p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 shadow-sm">
-                        </div>
+    if (tab === "student") {
+        studentForm.classList.remove("hidden");
+        teacherForm.classList.add("hidden");
+        tabStudent.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all bg-white text-slate-900 shadow-sm";
+        tabTeacher.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all text-slate-500";
+    } else {
+        studentForm.classList.add("hidden");
+        teacherForm.classList.remove("hidden");
+        tabTeacher.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all bg-white text-slate-900 shadow-sm";
+        tabStudent.className = "flex-1 py-2.5 rounded-xl font-black text-xs transition-all text-slate-500";
+    }
+}
+
+function closeAuthModal() {
+    const modal = document.getElementById("auth-modal");
+    if (modal) modal.classList.add("hidden");
+}
+
+function handleStudentLogin() {
+    const name = document.getElementById("student-name-input").value.trim() || "Fen Kaşifi";
+    const grade = document.getElementById("student-grade-select").value;
+
+    AppState.currentUser = {
+        role: "student",
+        name: name,
+        grade: grade,
+        xp: 450,
+        level: "Seviye 3 - Bilim Yolcusu"
+    };
+
+    localStorage.setItem("rotali_user", JSON.stringify(AppState.currentUser));
+    closeAuthModal();
+    updateUserInterface();
+    showToast(`Hoş geldin, ${name}! Öğrenci profilin aktifleştirildi.`, "success");
+    window.location.hash = "student-portal";
+}
+
+function handleTeacherLogin() {
+    const user = document.getElementById("teacher-user-input").value.trim();
+    const pass = document.getElementById("teacher-pass-input").value.trim();
+
+    if ((user === "admin" || user === "rotalifenci") && (pass === "Rotali5822." || pass === "123456")) {
+        AppState.currentUser = {
+            role: "teacher",
+            name: "Rotalı Fenci",
+            title: "Fen Bilimleri Zümre Başkanı"
+        };
+        localStorage.setItem("rotali_user", JSON.stringify(AppState.currentUser));
+        closeAuthModal();
+        updateUserInterface();
+        showToast("Öğretmen & Yönetici Girişi Başarılı! Hoş geldiniz.", "success");
+        window.location.hash = "teacher-dashboard";
+    } else {
+        showToast("Hatalı kullanıcı adı veya şifre!", "error");
+    }
+}
+
+function handleLogout() {
+    AppState.currentUser = {
+        role: "student",
+        name: "Fen Kaşifi",
+        grade: "8. Sınıf",
+        xp: 100,
+        level: "Seviye 1 - Başlangıç"
+    };
+    localStorage.removeItem("rotali_user");
+    updateUserInterface();
+    showToast("Profil oturumu kapatıldı.", "info");
+    window.location.hash = "home";
+}
+
+function updateUserInterface() {
+    const userBtn = document.getElementById("user-profile-btn");
+    if (!userBtn) return;
+
+    if (AppState.currentUser.role === "teacher") {
+        userBtn.innerHTML = `
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span>👨‍🏫 ÖĞRETMEN: ${AppState.currentUser.name}</span>
+        `;
+        userBtn.className = "px-3 py-2 bg-gradient-to-r from-blue-700 to-indigo-800 text-white font-black text-xs rounded-xl shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap";
+        userBtn.onclick = () => window.location.hash = "teacher-dashboard";
+    } else {
+        userBtn.innerHTML = `
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-400"></span>
+            <span>🎒 ${AppState.currentUser.name} (${AppState.currentUser.grade})</span>
+        `;
+        userBtn.className = "px-3 py-2 bg-gradient-to-r from-brand-red to-rose-600 text-white font-black text-xs rounded-xl shadow-md shadow-brand-red/25 transition-all flex items-center gap-1.5 whitespace-nowrap";
+        userBtn.onclick = () => window.location.hash = "student-portal";
+    }
+
+    updateStudentHeader();
+}
+
+// -------------------------------------------------------------
+// AKILLI TAHTA / DERS MODU YÖNETİCİSİ
+// -------------------------------------------------------------
+function toggleSmartboardMode(forceState) {
+    if (typeof forceState === "boolean") {
+        AppState.isSmartboardMode = forceState;
+    } else {
+        AppState.isSmartboardMode = !AppState.isSmartboardMode;
+    }
+
+    if (AppState.isSmartboardMode) {
+        document.body.classList.add("smartboard-mode");
+        showToast("🖥️ Akıllı Tahta Modu Aktif (Çıkış için ESC veya sağ üstteki butona basın)", "info");
+    } else {
+        document.body.classList.remove("smartboard-mode");
+        showToast("Akıllı Tahta Modundan çıkıldı.", "info");
+    }
+}
+
+// -------------------------------------------------------------
+// TOAST BİLDİRİMİ
+// -------------------------------------------------------------
+function showToast(message, type = "success") {
+    let toast = document.getElementById("toast");
+    if (!toast) {
+        toast = document.createElement("div");
+        toast.id = "toast";
+        toast.className = "fixed bottom-6 right-6 z-50 transform transition-all duration-300 pointer-events-none";
+        document.body.appendChild(toast);
+    }
+    
+    const bgColors = {
+        success: "bg-emerald-600 text-white shadow-emerald-600/30",
+        error: "bg-rose-600 text-white shadow-rose-600/30",
+        info: "bg-slate-900 text-white shadow-slate-900/30"
+    };
+
+    toast.innerHTML = `
+        <div class="px-5 py-3 rounded-2xl shadow-xl flex items-center gap-3 font-bold text-sm ${bgColors[type] || bgColors.info}">
+            <i class="fa-solid ${type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-triangle-exclamation' : 'fa-circle-info')}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+
+    toast.classList.remove("translate-y-20", "opacity-0");
+    toast.classList.add("translate-y-0", "opacity-100");
+
+    setTimeout(() => {
+        toast.classList.add("translate-y-20", "opacity-0");
+        toast.classList.remove("translate-y-0", "opacity-100");
+    }, 3200);
+}
+
+// -------------------------------------------------------------
+// DİNAMİK PORTAL ROUTER
+// -------------------------------------------------------------
+function handleRouteChange() {
+    updateAdminNavUI();
+    const rawHash = window.location.hash.slice(1);
+    const hash = rawHash || "home";
+    const appEl = document.getElementById("app");
+    if (!appEl) return;
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    if (hash === "home" || hash === "") {
+        renderHomePage(appEl);
+    } else if (hash === "recent" || hash === "yeni-eklenenler") {
+        renderRecentMaterialsPage(appEl);
+    } else if (hash === "grades") {
+        renderGradesOverview(appEl);
+    } else if (hash.startsWith("grade/")) {
+        const gradeParam = hash.replace("grade/", "");
+        renderGradeDetail(appEl, gradeParam);
+    } else if (hash.startsWith("unit/")) {
+        const parts = hash.replace("unit/", "").split("/");
+        const unitId = parts[0];
+        const gradeNum = unitId.split("-")[0] || "5";
+        renderGradeDetail(appEl, `grade-${gradeNum}`);
+    } else if (hash === "lgs-pusulasi" || hash === "lgs") {
+        renderGradeDetail(appEl, "grade-8/lgs");
+    } else if (hash.startsWith("exams")) {
+        renderExamsPage(appEl, hash);
+    } else if (hash === "stem-lab") {
+        renderStemLabPage(appEl);
+    } else if (hash === "projects") {
+        renderProjectsPage(appEl);
+    } else if (hash === "teachers-room") {
+        renderLgsPusulasiPage(appEl);
+    } else if (hash === "student-portal") {
+        renderHomePage(appEl);
+    } else if (hash === "teacher-dashboard" || hash.startsWith("admin")) {
+        renderTeacherDashboardPage(appEl);
+    } else if (hash === "search") {
+        renderSearchPage(appEl);
+    } else if (hash.startsWith("quizzes")) {
+        renderQuizzesPage(appEl, hash);
+    } else if (hash === "flashcards") {
+        renderFlashcardsPage(appEl);
+    } else if (hash === "about") {
+        renderAboutPage(appEl);
+    } else if (hash === "contact") {
+        renderContactPage(appEl);
+    } else if (hash === "bookmarks") {
+        renderBookmarksPage(appEl);
+    } else {
+        renderNotFound(appEl);
+    }
+
+    updateActiveNav(hash);
+    updateStudentHeader();
+}
+
+function updateActiveNav(hash) {
+    document.querySelectorAll(".nav-link").forEach(link => {
+        const href = link.getAttribute("href") ? link.getAttribute("href").replace("#", "") : "";
+        if (hash === href || (hash === "home" && href === "home") || (href.startsWith("grade/") && hash.startsWith(href))) {
+            link.classList.add("text-brand-red", "bg-red-50/80");
+            link.classList.remove("text-slate-700");
+        } else {
+            link.classList.remove("text-brand-red", "bg-red-50/80");
+            link.classList.add("text-slate-700");
+        }
+    });
+
+    // Mobil Alt Bar (iOS & Android) Aktiflik Durumu
+    document.querySelectorAll(".mobile-bottom-tab").forEach(tab => {
+        const href = tab.getAttribute("href") ? tab.getAttribute("href").replace("#", "") : "";
+        if (hash === href || (hash === "home" && href === "home") || (href.startsWith("grade/") && hash.startsWith(href))) {
+            tab.classList.add("text-brand-red", "font-black");
+            tab.classList.remove("text-slate-600");
+        } else {
+            tab.classList.remove("text-brand-red", "font-black");
+            tab.classList.add("text-slate-600");
+        }
+    });
+}
+
+function updateStudentHeader() {
+    const profile = DataManager.getStudentProfile();
+    const progressFill = document.getElementById("student-progress-fill");
+    const progressText = document.getElementById("student-progress-text");
+
+    const totalUnits = 28;
+    const completed = profile.completedUnits ? profile.completedUnits.length : 0;
+    const percent = Math.min(100, Math.round((completed / totalUnits) * 100));
+
+    if (progressFill && progressFill.style) progressFill.style.width = `${percent}%`;
+    if (progressText) progressText.innerText = `%${percent} TAMAMLANDI`;
+}
+
+// -------------------------------------------------------------
+// 1. 🏠 PORTAL KONTROL MERKEZİ (ANA SAYFA)
+// -------------------------------------------------------------
+function renderHomeRecentMaterialsSection() {
+    const customList = getCustomMaterialsList();
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    // Örnek varsayılan son eklenen içerikler
+    const defaultRecent = [
+        {
+            id: "default-rec-1",
+            grade: "5",
+            category: "egitsel-oyunlar",
+            format: "EĞİTSEL OYUN",
+            unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
+            title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
+            desc: "Beherglas, erlenmayer, dereceli silindir ve deney tüplerini eğlenerek eşleştirin ve tanıyın.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#",
+            tags: ["5. Sınıf", "Oyun", "Laboratuvar"]
+        },
+        {
+            id: "default-rec-2",
+            grade: "5",
+            category: "egitsel-oyunlar",
+            format: "Web Bağlantısı",
+            unit: "1. Ünite: Güneş, Dünya ve Ay",
+            title: "Laboratuvar Malzemeleri Eşleştirme",
+            desc: "Ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirme oyunu.",
+            createdAt: "08.09.2026",
+            fileUrl: "#",
+            tags: ["5. Sınıf", "Laboratuvar", "Eşleştirme"]
+        },
+        {
+            id: "default-rec-3",
+            grade: "8",
+            category: "lgs",
+            format: "PDF DENEME",
+            unit: "1. ve 2. Ünite: Mevsimler, İklim ve DNA",
+            title: "8. Sınıf LGS Fen Bilimleri Branş Denemesi (20 Yeni Nesil Soru)",
+            desc: "Animasyonlu deney düzenekleri, formül çıkarımları ve MEB çıkmış soru çözümleri içeren deneme.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#",
+            tags: ["8. Sınıf", "LGS 2027", "Deneme"]
+        },
+        {
+            id: "default-rec-4",
+            grade: "7",
+            category: "ders-notu",
+            format: "PDF NOT",
+            unit: "2. Ünite: Hücre ve Bölünmeler",
+            title: "7. Sınıf Hücre, Mitoz ve Mayoz Bölünme Karşılaştırma Tablolu Ders Notu",
+            desc: "Görsel hafıza teknikleriyle hazırlanmış renkli konu özetleri ve sınavda çıkabilecek tuzak noktalar.",
+            createdAt: "Yeni Yayınlandı",
+            fileUrl: "#",
+            tags: ["7. Sınıf", "Ders Notu", "Mitoz-Mayoz"]
+        }
+    ];
+
+    // Özel yüklenenleri en başa al, yoksa varsayılanlarla birleştir
+    let displayItems = [...customList];
+    for (let def of defaultRecent) {
+        if (!displayItems.some(i => i.title === def.title)) {
+            displayItems.push(def);
+        }
+    }
+
+    return `
+        <!-- 🔥 SON EKLENENLER & GÜNCEL MATERYAL VİTRİNİ -->
+        <div class="mb-14 animate-in fade-in duration-300">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-600 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-fire text-amber-300"></i> SON EKLENENLER
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">Rotalı Fenci Farkıyla Güncel Materyal Akışı</span>
                     </div>
-
-                    <!-- 2. İÇERİK BİLGİLERİ -->
-                    <div class="space-y-3 sm:space-y-4">
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">
-                                İçerik Başlığı <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="adv-title-input" required value="${isEditing ? (editMaterial.title || '') : ''}" placeholder="Örn: 8. Sınıf Basınç Ünitesi Akıllı Tahta Uyumlu Slayt Seti" class="w-full p-3 sm:p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Kısa Açıklama / Yönerge</label>
-                            <textarea id="adv-desc-input" rows="2" placeholder="Öğrenciler veya öğretmenler için materyal açıklaması..." class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">${isEditing ? (editMaterial.desc || '') : ''}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- 3. DOSYA YÜKLEME VEYA LİNK -->
-                    <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> 2. Dosya / Bağlantı Kaynağı
-                            </span>
-                            
-                            <!-- Sekme Değiştirici -->
-                            <div class="flex items-center p-1 bg-slate-200/80 rounded-xl text-xs font-bold">
-                                <button type="button" id="tab-upload-file-btn" onclick="switchUploadMethod('file')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition-all text-xs">
-                                    📁 Dosya Yükle
-                                </button>
-                                <button type="button" id="tab-upload-link-btn" onclick="switchUploadMethod('link')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all text-xs">
-                                    🔗 Web / Drive Linki
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Dosya Sürükle Bırak Alanı -->
-                        <div id="upload-method-file-container">
-                            <div id="drag-drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white rounded-2xl p-4 sm:p-6 text-center transition-all cursor-pointer group">
-                                <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept="*/*,image/*,application/pdf,.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
-                                <label for="adv-file-input" class="cursor-pointer block">
-                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl sm:text-2xl mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                                    </div>
-                                    <span class="block text-xs font-black text-slate-800 mb-0.5 sm:mb-1">Yeni dosya seçmek için <span class="text-red-600 underline">Gözatın</span> veya sürükleyin</span>
-                                    <span class="block text-[10px] sm:text-[11px] text-slate-400 font-medium">PDF, Word, PPTX, Video, Görsel, ZIP</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Embed Link -->
-                        <div id="upload-method-link-container" class="hidden space-y-2">
-                            <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
-                            <div class="relative">
-                                <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-
-                        <!-- Önizleme Kartı -->
-                        <div id="file-preview-card" class="${isEditing && editMaterial.fileName ? 'block' : 'hidden'} bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm animate-in fade-in duration-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3 overflow-hidden">
-                                    <div id="preview-file-icon" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-base sm:text-lg shrink-0">
-                                        <i class="fa-solid fa-file"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div id="preview-file-name" class="text-xs font-black text-slate-900 truncate">${isEditing ? (editMaterial.fileName || 'Mevcut Dosya') : 'dosya.pdf'}</div>
-                                        <div id="preview-file-size" class="text-[10px] text-slate-400 font-bold">${isEditing ? (editMaterial.format || 'Yüklü') : 'Hazır'}</div>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="removeSelectedFile()" class="p-2 text-slate-400 hover:text-red-600 text-xs font-bold" title="Dosyayı Kaldır">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. ETİKETLER & GÖRÜNÜRLÜK -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Etiketler</label>
-                            <div class="flex flex-wrap gap-1.5 p-2 sm:p-2.5 bg-slate-50 border border-slate-200 rounded-xl min-h-[40px]" id="tags-badge-container"></div>
-                            <div class="flex gap-1.5 mt-2">
-                                <input type="text" id="adv-tag-input" placeholder="Etiket ekle..." class="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500">
-                                <button type="button" onclick="addCustomTag()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg">Ekle</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Görünürlük Durumu</label>
-                            <select id="adv-visibility-select" class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
-                                <option value="public" ${isEditing && editMaterial.visibility === 'public' ? 'selected' : ''}>🌐 Herkese Açık (Yayında)</option>
-                                <option value="draft" ${isEditing && editMaterial.visibility === 'draft' ? 'selected' : ''}>🔒 Taslak (Gizli)</option>
-                            </select>
-                        </div>
-                    </div>
-
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Yeni Yayınlanan Eğitim Materyalleri</h3>
                 </div>
 
-                <!-- 3. SABİT ALTLIK / FOOTER (Sticky / Fixed Bottom Action Bar) -->
-                <div class="p-3 sm:p-4 bg-white border-t border-slate-200/90 shadow-[0_-8px_20px_rgba(0,0,0,0.06)] shrink-0 flex items-center gap-2 sm:gap-3 z-30" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
-                    <button type="button" onclick="closeMaterialUploadModal()" class="py-3 sm:py-3.5 px-4 sm:px-6 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-black text-xs uppercase rounded-xl sm:rounded-2xl transition-all shrink-0">
+                <div class="flex items-center gap-2">
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal()" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> <span>Yeni Materyal Ekle</span>
+                        </button>
+                    ` : ''}
+                    <a href="#grades" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors">
+                        Tüm Sınıflar →
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                ${displayItems.slice(0, 6).map(item => `
+                    <div class="bg-white rounded-3xl p-6 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-500/10 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+
+                        <div>
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="px-3 py-1 rounded-full ${item.grade === '8' ? 'bg-red-100 text-red-800' : item.grade === '7' ? 'bg-amber-100 text-amber-800' : item.grade === '6' ? 'bg-blue-100 text-blue-800' : item.grade === '5' ? 'bg-emerald-100 text-emerald-800' : 'bg-purple-100 text-purple-800'} text-[11px] font-black uppercase tracking-wider">
+                                    ${item.grade === 'all' ? 'TÜM SINIFLAR' : item.grade + '. SINIF'} • ${item.format || 'DOKÜMAN'}
+                                </span>
+                                <span class="text-[10px] font-bold text-slate-400 flex items-center gap-1">
+                                    <i class="fa-regular fa-clock"></i> ${item.createdAt || 'Yeni'}
+                                </span>
+                            </div>
+
+                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
+                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">${item.title}</h4>
+                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
+
+                            ${item.tags && item.tags.length > 0 ? `
+                                <div class="flex flex-wrap gap-1 mb-4">
+                                    ${((item && item.tags) || []).map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
+                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i>
+                                <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Oynat' : item.category === 'videolar' ? 'Videoyu Oynat' : 'Materyali Görüntüle'}</span>
+                            </button>
+
+                            ${isAdmin && !item.id.startsWith('default-rec-') ? `
+                                <div class="flex items-center gap-2 mt-1">
+                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold rounded-lg border border-amber-200 transition-all flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold rounded-lg border border-rose-200 transition-all flex items-center justify-center gap-1">
+                                        <i class="fa-solid fa-trash-can"></i> Sil
+                                    </button>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
+
+// -------------------------------------------------------------
+// ✨ YENİ EKLENEN MATERYALLER SAYFASI (EĞİTİM AĞI DİNAMİK VİTRİN)
+// -------------------------------------------------------------
+function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "all") {
+    const customList = getCustomMaterialsList();
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    let filtered = [...customList];
+    if (filterGrade !== "all") {
+        filtered = filtered.filter(m => String(m.grade) === String(filterGrade));
+    }
+    if (filterCat !== "all") {
+        filtered = filtered.filter(m => (m.category === filterCat || (m.format && m.format.toLowerCase().includes(filterCat.toLowerCase()))));
+    }
+
+    // Tarihe göre sırala (en son eklenen en başta)
+    filtered.sort((a, b) => {
+        const timeA = a.id && a.id.startsWith("mat-17") ? parseInt(a.id.replace("mat-", "")) : 0;
+        const timeB = b.id && b.id.startsWith("mat-17") ? parseInt(b.id.replace("mat-", "")) : 0;
+        return timeB - timeA;
+    });
+
+    container.innerHTML = `
+        <div class="py-8 sm:py-12 bg-slate-50 min-h-[85vh]">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Başlık Alanı -->
+                <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 rounded-3xl p-6 sm:p-10 text-white shadow-xl mb-8 relative overflow-hidden">
+                    <div class="relative z-10 max-w-3xl">
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-black uppercase tracking-wider mb-3">
+                            <i class="fa-solid fa-sparkles text-amber-300 animate-pulse"></i> CANLI BULUT ARŞİVİ
+                        </span>
+                        <h2 class="text-2xl sm:text-4xl font-black mb-2 tracking-tight">✨ Yeni Eklenen Fen Materyalleri</h2>
+                        <p class="text-xs sm:text-sm text-amber-50 font-medium leading-relaxed">
+                            Öğretmen ve öğrencilerimiz için telefon ve bilgisayardan sisteme yüklenen en güncel ders notları, akıllı tahta sunumları, deney videoları ve eğitsel oyunlar.
+                        </p>
+                    </div>
+                    ${isAdmin ? `
+                        <div class="mt-6 relative z-10">
+                            <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-5 py-2.5 bg-white text-orange-700 hover:bg-amber-50 font-black text-xs uppercase rounded-xl transition-all shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-sm"></i> Yeni Materyal Yükle
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Filtreleme Butonları (Eğitim Ağı Kapsül Formatı) -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-8 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <!-- Sınıf Filtreleri -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), 'all', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+                            Tüm Sınıflar (${customList.length})
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '5', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '5' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}">
+                            🟢 5. Sınıf
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '6', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '6' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50 text-blue-800 hover:bg-blue-100'}">
+                            🔵 6. Sınıf
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '7', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '7' ? 'bg-amber-600 text-white shadow-sm' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}">
+                            🟡 7. Sınıf
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '8', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '8' ? 'bg-red-600 text-white shadow-sm' : 'bg-red-50 text-red-800 hover:bg-red-100'}">
+                            🔴 8. Sınıf (LGS)
+                        </button>
+                    </div>
+
+                    <!-- Kategori Filtreleri -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'all')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'all' ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            Tüm Türler
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'ders-notu')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'ders-notu' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            📝 Ders Notu
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'videolar')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'videolar' ? 'bg-red-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            🎥 Video
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'oyun')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'oyun' ? 'bg-purple-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            🎮 Oyun
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kartlar Listesi -->
+                ${filtered.length === 0 ? `
+                    <div class="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm max-w-xl mx-auto">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-4">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <h4 class="text-lg font-black text-slate-900 mb-1">Henüz Materyal Bulunamadı</h4>
+                        <p class="text-xs text-slate-500 mb-6">Seçtiğiniz filtreye ait içerik henüz yüklenmemiş veya güncelleniyor.</p>
+                        <a href="#home" class="px-5 py-2.5 bg-slate-900 text-white text-xs font-black rounded-xl hover:bg-red-600 transition-colors">
+                            Ana Sayfaya Dön
+                        </a>
+                    </div>
+                ` : `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${filtered.map(item => `
+                            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                                <div>
+                                    <!-- Üst Rozet & Sınıf -->
+                                    <div class="p-5 pb-3 flex items-center justify-between border-b border-slate-100">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-3 py-1 rounded-full ${item.grade === '5' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : item.grade === '6' ? 'bg-blue-50 text-blue-700 border-blue-200' : item.grade === '7' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-red-50 text-red-700 border-red-200'} border text-[11px] font-black uppercase">
+                                                ${item.grade}. Sınıf
+                                            </span>
+                                            <span class="text-[11px] font-bold text-slate-400">• ${item.unit || 'Müfredat'}</span>
+                                        </div>
+                                        <span class="text-[11px] font-bold text-slate-400">${item.createdAt || 'Yeni'}</span>
+                                    </div>
+
+                                    <!-- Görsel Önizleme (Varsa) -->
+                                    ${item.imageUrl && item.imageUrl !== '#' && !item.imageUrl.includes('placeholder') ? `
+                                        <div class="relative w-full aspect-[16/9] bg-slate-50 border-b border-slate-100 overflow-hidden flex items-center justify-center p-2">
+                                            <img src="${item.imageUrl}" alt="${item.title}" class="max-h-full max-w-full object-contain rounded-xl group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- İçerik Başlığı & Açıklaması -->
+                                    <div class="p-5">
+                                        <div class="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider mb-2">
+                                            ${item.format || 'FEN MATERYALİ'}
+                                        </div>
+                                        <h3 class="text-base font-black text-slate-900 leading-snug group-hover:text-red-600 transition-colors mb-2 line-clamp-2">
+                                            ${item.title}
+                                        </h3>
+                                        <p class="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3 mb-4">
+                                            ${item.desc || 'MEB müfredatına uygun fen bilimleri materyali.'}
+                                        </p>
+                                        
+                                        <!-- Etiketler -->
+                                        ${item.tags && Array.isArray(item.tags) && item.tags.length > 0 ? `
+                                            <div class="flex flex-wrap gap-1.5 pt-2">
+                                                ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                <!-- Alt Butonlar -->
+                                <div class="p-5 pt-0 border-t border-slate-100/80 mt-2 space-y-2">
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.fileName || 'materyal'}', '${item.category || ''}', '${item.title || ''}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                                        <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i>
+                                        <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) ? 'Oyunu Oynat' : item.category === 'videolar' ? 'Videoyu Oynat' : 'Materyali Görüntüle'}</span>
+                                    </button>
+
+                                    ${isAdmin ? `
+                                        <div class="flex items-center gap-2 pt-1">
+                                            <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold rounded-lg border border-amber-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </button>
+                                            <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold rounded-lg border border-rose-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="fa-solid fa-trash-can"></i> Sil
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                `}
+
+            </div>
+        </div>
+    `;
+}
+
+function renderHomePage(container) {
+    const profile = DataManager.getStudentProfile();
+
+    container.innerHTML = `
+        <!-- Hero Portal Giriş Alanı (Eğitim Ağı Formatı & Zenginleştirilmiş Başlık) -->
+        <section class="relative bg-gradient-to-b from-slate-50 via-white to-slate-100/70 border-b border-slate-200 py-10 lg:py-14 overflow-hidden select-none">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative w-full">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-8">
+                    <!-- Sol Metin & Slogan -->
+                    <div class="lg:col-span-7 flex flex-col items-start text-left">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-black tracking-wider uppercase mb-4 shadow-2xs">
+                            <i class="fa-solid fa-sparkles text-red-600 animate-pulse"></i>
+                            <span>TÜRKİYE'NİN DİJİTAL FEN EĞİTİM PORTALI</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.15] mb-4">
+                            Bilimi Keşfet, <br class="hidden sm:inline"/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-indigo-900">Rotanı Çiz!</span>
+                        </h1>
+
+                        <!-- Kullanıcının İstediği Tam Metin (Eğitim Ağı Formatında Vurgulu & Akıcı Sunum) -->
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-medium mb-6 max-w-2xl">
+                            <strong class="text-slate-900 font-extrabold">Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D eğitsel oyunları ve <em class="text-indigo-900 font-bold not-italic">“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
+                        </p>
+
+                        <!-- Hızlı Eylem Butonları -->
+                        <div class="flex flex-wrap items-center gap-3 mb-6">
+                            <a href="#recent" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-md hover:-translate-y-0.5 flex items-center gap-2">
+                                <i class="fa-solid fa-sparkles text-amber-300"></i> Yeni Eklenenleri Gör
+                            </a>
+                            <a href="#grade/grade-8" class="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 text-xs sm:text-sm font-black uppercase tracking-wider transition-all border border-slate-300 shadow-2xs flex items-center gap-2">
+                                🔴 8. Sınıf LGS Rehberi
+                            </a>
+                        </div>
+
+                        <!-- Özellik Rozetleri (Checkmark Listesi) -->
+                        <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-200/80 text-slate-600 text-xs font-bold">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center gap-1.5">✓ PDF Ders Föyleri</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200/80 flex items-center gap-1.5">✓ Akıllı Tahta PPTX</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200/80 flex items-center gap-1.5">✓ 3D Eğitsel Oyunlar</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-800 border border-red-200/80 flex items-center gap-1.5">✓ LGS Branş Denemeleri</span>
+                        </div>
+                    </div>
+
+                    <!-- Sağ Görsel Kart (Günün Vitrini) -->
+                    <div class="lg:col-span-5 relative w-full aspect-[16/11] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex flex-col justify-between p-6 sm:p-8 text-white group">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3.5 py-1 rounded-full bg-red-600 text-white text-xs font-black uppercase tracking-wider shadow-md">
+                                🚀 Rotalı Fenci Hub
+                            </span>
+                            <span class="text-xs font-bold text-slate-300">MEB 2026-2027</span>
+                        </div>
+
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-black mb-2 text-white group-hover:text-amber-300 transition-colors">
+                                Fen Bilimlerini Eğlenerek Keşfet
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                                Deneyler, simülatörler ve etkileşimli dijital içeriklerle fen dersini her cihazda yaşayın.
+                            </p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-bold text-slate-300">
+                            <span>📱 Mobil & Akıllı Tahta Uyumlu</span>
+                            <a href="#stem-lab" class="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                                STEM Keşfet →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- 📊 EĞİTİM AĞI & ROTALI FENCİ PORTAL İSTATİSTİKLERİ (İSTENEN SAYILAR) -->
+        <section class="w-full py-6 md:py-8 text-white shadow-md border-y border-red-900/30" style="background: linear-gradient(100deg, #991b1b 0%, #dc2626 45%, #1e1b4b 100%);">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 text-center">
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-white tracking-tight">4</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Sınıf Düzeyi (5-8)</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">120+</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Paylaşılan Kaynak</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-emerald-300 tracking-tight">45+</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Deney & Video</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-sky-300 tracking-tight">30+</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Eğitsel Oyun & Simülatör</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-orange-300 tracking-tight">28</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Müfredat Ünitesi</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-teal-300 tracking-tight">%100</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Yeni Müfredat Uyumlu</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+
+                <!-- 🚀 1. HIZLI GEÇİŞ — ROTANI SEÇ (5, 6, 7, 8. SINIF + LGS KARTLARI) -->
+                <div class="mb-14">
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <h3 class="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 flex items-center gap-3 tracking-tight">
+                                <span class="w-4 h-4 rounded-full bg-red-600 shadow-md"></span> 🚀 ROTANI SEÇ — SINIF DÜZEYLERİ
+                            </h3>
+                            <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Müfredat ünitelerine, konu özetlerine ve interaktif deneylere doğrudan bağlanın.</p>
+                        </div>
+                        <a href="#grades" class="hidden sm:inline-flex items-center gap-1.5 text-xs font-black text-red-600 hover:text-red-700">
+                            Tüm Rotalar <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                        ${PORTAL_GRADES.map(g => `
+                            <a href="#grade/${g.id}" class="group bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden flex flex-col justify-between">
+                                <div class="absolute top-0 right-0 w-28 h-28 bg-gradient-to-br ${g.color} opacity-10 rounded-bl-full group-hover:scale-125 transition-transform"></div>
+                                
+                                <div>
+                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr ${g.color} text-white flex items-center justify-center text-2xl font-black shadow-md mb-4 group-hover:rotate-6 transition-transform">
+                                        ${g.number}
+                                    </div>
+                                    <span class="inline-block px-3 py-1 rounded-full text-[11px] font-black tracking-wider uppercase mb-2 ${g.badgeBg}">
+                                        ${g.isLGS ? 'LGS + FEN BİLİMLERİ' : 'FEN BİLİMLERİ ROTASI'}
+                                    </span>
+                                    <h4 class="text-lg font-black text-slate-900 group-hover:text-red-600 transition-colors mb-2">
+                                        ${g.title}
+                                    </h4>
+                                    <p class="text-xs text-slate-500 font-medium line-clamp-2 leading-relaxed mb-4">
+                                        ${g.description}
+                                    </p>
+                                </div>
+
+                                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-black text-slate-700 group-hover:text-red-600">
+                                    <span>${g.unitCount} Müfredat Ünitesi</span>
+                                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1.5 transition-transform"></i>
+                                </div>
+                            </a>
+                        `).join("")}
+                    </div>
+                </div>
+
+                <!-- ⚡ 2. HIZLI ERİŞİM HUB'LARI (YAZILI, STEM, PROJE, ÖĞRETMEN) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+                    <a href="#exams" class="p-5 bg-gradient-to-br from-rose-50 to-red-50 border border-rose-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-red-600/20">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-900">📝 Yazılı Merkezi</h4>
+                            <p class="text-xs text-slate-500">MEB Açık Uçlu Ortak Sınavlar</p>
+                        </div>
+                    </a>
+
+                    <a href="#stem-lab" class="p-5 bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-emerald-600/20">
+                            <i class="fa-solid fa-flask-vial"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-900">🧪 STEM & Deney</h4>
+                            <p class="text-xs text-slate-500">Görev Kartları & Simülatör</p>
+                        </div>
+                    </a>
+
+                    <a href="#projects" class="p-5 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-amber-500/20">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-900">🏆 Proje Merkezi</h4>
+                            <p class="text-xs text-slate-500">TÜBİTAK 2204-B / TEKNOFEST</p>
+                        </div>
+                    </a>
+
+                    <a href="#lgs-pusulasi" class="p-5 bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-700 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-indigo-700/20">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-900">🧭 LGS Pusulası</h4>
+                            <p class="text-xs text-slate-500">Soru Taktikleri & Strateji</p>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- 🎯 3. GÜNÜN FEN GÖREVLERİ & KİŞİSEL ROTA VİTRİNİ -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+                    <!-- Sol: Günün Sorusu & Çözüm -->
+                    <div class="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200 text-xs font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-fire text-red-600"></i> GÜNÜN LGS FEN SORUSU
+                                </span>
+                                <span class="text-xs text-slate-400 font-bold">8. Sınıf • Basınç</span>
+                            </div>
+                            <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug mb-3">
+                                Sıvı dolu bir kabın tabanına etki eden sıvı basıncı, sıvının derinliği ve yoğunluğu ile doğru orantılıdır.
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-600 leading-relaxed mb-6">
+                                Ağzına kadar su dolu özdeş iki kaptan birincisi deniz seviyesinde, ikincisi ise yüksek bir dağın zirvesinde bulunmaktadır. Kap tabanlarındaki sıvı basınçları hakkında hangisi söylenebilir?
+                            </p>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-xs font-bold text-slate-500">
+                                <i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> İpucu: Sıvı basıncı formülü P = h • d • g'dir.
+                            </div>
+                            <button onclick="showToast('Cevap: İki kapta da derinlik ve yoğunluk aynı olduğu için kap tabanlarındaki sıvı basınçları eşittir (Açık hava basıncı sıvı basıncını değil, toplam basıncı etkiler).', 'info')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-colors shadow-sm">
+                                Çözümü Gör
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Öğrenci İlerleme & Hata Defteri Önizlemesi -->
+                    <div class="lg:col-span-5 bg-gradient-to-br from-slate-900 to-indigo-950 text-white rounded-3xl p-6 sm:p-8 shadow-xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="text-xs font-black text-amber-400 tracking-wider uppercase">BENİM PORTAL DURUMUM</span>
+                                <span class="text-xs font-black px-2.5 py-1 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                                    ${AppState.currentUser.level || 'Seviye 3'}
+                                </span>
+                            </div>
+                            <h4 class="text-xl font-black text-white mb-2">Merhaba, ${AppState.currentUser.name} 👋</h4>
+                            <p class="text-xs text-slate-300 mb-6">Bugünkü öğrenme hedeflerini tamamla, bilim rozetlerini topla!</p>
+
+                            <!-- Görevler -->
+                            <div class="space-y-2.5 mb-6">
+                                ${(profile?.dailyTasks || []).map(t => `
+                                    <div class="p-2.5 rounded-xl bg-white/10 border border-white/10 flex items-center justify-between text-xs">
+                                        <span class="text-slate-200 font-medium">${t.text}</span>
+                                        <i class="fa-solid ${t.done ? 'fa-circle-check text-emerald-400' : 'fa-circle text-slate-500'}"></i>
+                                    </div>
+                                `).join("")}
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            <a href="#student-portal" class="flex-1 py-2.5 text-center bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md">
+                                Portalıma Git
+                            </a>
+                            <a href="#student-portal" class="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all" title="Hata Defterimi Aç">📕 Hata Defterim</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    `;
+}
+
+// -------------------------------------------------------------
+// 2. 🎒 SINIF DÜZEYLERİ GENEL HUB & SINIF ÖZEL SAYFASI
+// -------------------------------------------------------------
+
+// -------------------------------------------------------------
+// 2. 🎒 SINIF DÜZEYLERİ GENEL HUB (7 ALT BÖLÜM VİTRİNİ)
+// -------------------------------------------------------------
+function renderGradesOverview(container) {
+    container.innerHTML = `
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+            <div class="mb-10 text-center max-w-3xl mx-auto">
+                <span class="px-4 py-1.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-xs font-black tracking-wider uppercase inline-block mb-3">
+                    MÜFREDAT VE ÖĞRENME ALANLARI
+                </span>
+                <h2 class="text-3xl font-black text-slate-900 tracking-tight mb-3">Sınıf Düzeyleri & Alt Bölüm Merkezleri</h2>
+                <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Eğitsel Oyunlar.</p>
+            </div>
+
+            ${renderCustomMaterialsSection("all", "projeler")}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                ${PORTAL_GRADES.map(g => `
+                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-3 py-1 rounded-full text-xs font-black ${g.badgeBg}">
+                                    ${g.isLGS ? 'LGS + 8. Sınıf' : `${g.number}. Sınıf`}
+                                </span>
+                                <span class="text-xs font-bold text-slate-400">${g.unitCount} Ünite Havuzu</span>
+                            </div>
+                            <h3 class="text-2xl font-black text-slate-900 mb-2">${g.title}</h3>
+                            <p class="text-xs text-slate-600 font-medium mb-6">${g.description}</p>
+
+                            <!-- 7 ALT BÖLÜM HIZLI ERİŞİM BUTONLARI -->
+                            <div class="mb-6">
+                                <div class="text-[11px] font-black uppercase text-slate-400 tracking-wider mb-2.5">
+                                    7 Alt Öğrenme Bölümü:
+                                </div>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-bold">
+                                    <a href="#grade/${g.id}/ders-notu" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📝</span> <span>Ders Notu</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/ders-sunumu" class="p-2 bg-slate-50 hover:bg-orange-50 hover:text-orange-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📊</span> <span>Ders Sunumu</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎥</span> <span>Videolar</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/etkinlikler" class="p-2 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🧩</span> <span>Etkinlikler</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📚</span> <span>Soru Bankası</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/denemeler" class="p-2 bg-slate-50 hover:bg-purple-50 hover:text-purple-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎯</span> <span>Denemeler</span>
+                                    </a>
+                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors col-span-2 sm:col-span-3 text-center justify-center">
+                                        <span>🎮</span> <span>Eğitsel Oyunlar & Turnuva</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <a href="#grade/${g.id}" class="w-full py-3 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl text-center transition-colors shadow-md">
+                            ${g.number}. Sınıf Tam Merkezini Aç →
+                        </a>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
+
+// -------------------------------------------------------------
+// 🎒 SINIF DETAY SAYFASI & 7 ALT BÖLÜM
+// 1. Ders Notu, 2. Ders Sunumu, 3. Videolar, 4. Etkinlikler,
+// 5. Soru Bankası, 6. Denemeler, 7. Eğitsel Oyunlar
+// -------------------------------------------------------------
+// -------------------------------------------------------------
+// 🔭 BİLİMİN ROTASINI ÇİZENLER (HER SINIF İÇİN BİLİM İNSANLARI & BULUŞLARI)
+// -------------------------------------------------------------
+const SCIENTISTS_DATA = {
+    "5": [
+        {
+            name: "Galileo Galilei",
+            title: "Modern Fiziğin ve Teleskopik Astronominin Babası",
+            years: "1564 - 1642",
+            badge: "GÜNEŞ, DÜNYA VE AY",
+            icon: "fa-solid fa-satellite",
+            color: "from-amber-500 to-orange-600",
+            curriculumLink: "Güneş Lekeleri, Ay Yüzeyi ve Jüpiter'in Uyduları",
+            discovery: "İlk teleskoplardan birini yaparak Ay'ın kraterlerle kaplı olduğunu ve Güneş üzerindeki siyah lekeleri gözlemledi. Dünya'nın döndüğünü kanıtladı.",
+            quote: "Ve yine de dönüyor...",
+            funFact: "Güneş'e teleskopla doğrudan bakmanın gözleri kör edebileceğini fark ederek gölge izdüşümü yöntemini geliştirdi."
+        },
+        {
+            name: "Ali Kuşçu",
+            title: "Büyük Türk-İslam Astronom ve Matematik Bilgini",
+            years: "1403 - 1474",
+            badge: "GÖKBİLİM & AY HARİTASI",
+            icon: "fa-solid fa-moon",
+            color: "from-blue-600 to-indigo-700",
+            curriculumLink: "Ay'ın Evreleri, Boyutları ve İlk Ay Haritası",
+            discovery: "Ay'ın ve Güneş'in hareketlerini dakikası dakikasına hesapladı. Çizdiği detaylı Ay haritası nedeniyle NASA, Ay'daki bir kratere onun adını verdi.",
+            quote: "İlim yolunda gösterilen gayret, insanlığa bırakılan en büyük mirastır.",
+            funFact: "Fatih Sultan Mehmet'in davetiyle İstanbul'a gelmiş ve Ayasofya Medresesi'nin başmüderrisi olmuştur."
+        },
+        {
+            name: "İbn-i Heysem (Alhazen)",
+            title: "Optik ve Işık Biliminin Kurucusu",
+            years: "965 - 1040",
+            badge: "IŞIĞIN YAYILMASI",
+            icon: "fa-solid fa-sun",
+            color: "from-red-500 to-rose-700",
+            curriculumLink: "Işığın Doğrusal Yayılması ve Karanlık Oda (Camera Obscura)",
+            discovery: "Eski Yunan'ın 'Gözden ışık çıkar' yanılgısını yıktı. Görmenin, cisimlerden yansıyan ışığın göze gelmesiyle oluştuğunu ilk kez bilimsel olarak ispatladı.",
+            quote: "Işık doğrular boyunca yayılır ve tüm evreni aydınlatır.",
+            funFact: "Fotoğraf makinelerinin ve kameraların temel çalışma prensibi olan 'Karanlık Oda'yı 1000 yıl önce inşa etmiştir."
+        },
+        {
+            name: "Louis Pasteur",
+            title: "Mikrobiyolojinin ve Aşıların Öncüsü",
+            years: "1822 - 1895",
+            badge: "CANLILAR DÜNYASI",
+            icon: "fa-solid fa-bacterium",
+            color: "from-emerald-600 to-teal-700",
+            curriculumLink: "Mikroskobik Canlılar, Mantarlar ve Besinlerin Bozulması",
+            discovery: "Gözle görülmeyen mikroorganizmaların hastalıklara ve besin bozulmalarına yol açtığını keşfetti. Pastörizasyon yöntemini ve kuduz aşısını geliştirdi.",
+            quote: "Şans, ancak hazır olan zihinleri ödüllendirir.",
+            funFact: "Mikroskop altında sütün içindeki bakterileri yok etmek için ısıtıp aniden soğutma yöntemini bularak milyonlarca hayat kurtardı."
+        }
+    ],
+    "6": [
+        {
+            name: "Nicolaus Copernicus & Johannes Kepler",
+            title: "Güneş Merkezli Evren ve Gezegen Hareketleri",
+            years: "1473 - 1630",
+            badge: "GÜNEŞ SİSTEMİ VE GEZEGENLER",
+            icon: "fa-solid fa-globe",
+            color: "from-purple-600 to-indigo-800",
+            curriculumLink: "Gezegenlerin Yörüngeleri ve Güneş-Ay Tutulmaları",
+            discovery: "Dünya'nın evrenin merkezinde değil, diğer tüm gezegenler gibi Güneş'in etrafında eliptik yörüngelerde döndüğünü matematiksel kanıtlarla ortaya koydular.",
+            quote: "Evrenin mimarisi, kusursuz bir matematiksel ahenkle örülmüştür.",
+            funFact: "Kepler, gezegenlerin Güneş'e yaklaştıkça hızlandığını, uzaklaştıkça yavaşladığını 3 temel kanunla formülize etti."
+        },
+        {
+            name: "İbn-i Sina (Avicenna)",
+            title: "Tıbbın Hükümdarı ve Dolaşım Öncüsü",
+            years: "980 - 1037",
+            badge: "VÜCUDUMUZDAKİ SİSTEMLER",
+            icon: "fa-solid fa-heart-pulse",
+            color: "from-rose-600 to-red-700",
+            curriculumLink: "Kan Dolaşımı, Nabız ve İç Organların Fonksiyonları",
+            discovery: "Yazdığı 'El-Kanun fi't-Tıbb' kitabı 600 yıl boyunca Avrupa üniversitelerinde temel tıp kitabı olarak okutuldu. Nabız ölçümü ve mikrobik bulaşmayı ilk açıklayanlardandır.",
+            quote: "Bilim ve sanat takdir edilmediği yerden göç eder.",
+            funFact: "Nabzın ritmi ve damarların esnekliği üzerinden hastalıkların teşhisini gözü kapalı yapabilmekteydi."
+        },
+        {
+            name: "Michael Faraday",
+            title: "Elektromanyetizmanın ve İletkenliğin Dâhisi",
+            years: "1791 - 1867",
+            badge: "ELEKTRİĞİN İLETİMİ",
+            icon: "fa-solid fa-bolt",
+            color: "from-amber-500 to-yellow-600",
+            curriculumLink: "İletken ve Yalıtkan Maddeler, Elektrik Akımı",
+            discovery: "Elektrik motorunun ve jeneratörün temelini attı. Maddelerin elektriği ve manyetik alanları nasıl ilettiğini (Faraday Kafesi) gösterdi.",
+            quote: "Hiçbir şey gerçekleşemeyecek kadar harika değildir; eğer doğa yasalarına uygunsa.",
+            funFact: "Yoksul bir demircinin oğluydu ve ciltçi çırağıyken ciltlediği bilim kitaplarını okuyarak bilimin zirvesine çıktı."
+        },
+        {
+            name: "Sir Isaac Newton (Kuvvet)",
+            title: "Kuvvet, Hareket ve Yer Çekimi Kanunları",
+            years: "1643 - 1727",
+            badge: "KUVVET VE HAREKET",
+            icon: "fa-solid fa-apple-whole",
+            color: "from-emerald-600 to-cyan-700",
+            curriculumLink: "Kuvvetin Ölçülmesi (Newton - N), Sürtünme ve Yer Çekimi",
+            discovery: "Kuvvet birimine adını verdi (1 N). Evrensel kütle çekim yasasını ve etki-tepki ilkelerini keşfederek modern fiziğin temelini attı.",
+            quote: "Eğer daha ileriyi görebildiysem, bu devlerin omuzlarında durduğum içindir.",
+            funFact: "Ağaçtan düşen elmayı gözlemleyerek Dünya'nın Ay'ı aynı çekim kuvvetiyle yörüngesinde tuttuğunu hesapladı."
+        }
+    ],
+    "7": [
+        {
+            name: "Robert Hooke & Antonie van Leeuwenhoek",
+            title: "Hücrenin ve Mikroskobik Dünyanın Kâşifleri",
+            years: "1635 - 1723",
+            badge: "HÜCRE VE BÖLÜNMELER",
+            icon: "fa-solid fa-dna",
+            color: "from-emerald-600 to-green-700",
+            curriculumLink: "Hücre Teorisi, Organeller, Çekirdek ve Mitoz",
+            discovery: "Robert Hooke mantar meşesini inceleyerek içi boş odacıklara 'Cell' (Hücre) adını verdi. Leeuwenhoek ise tek hücreli canlıları ilk kez canlı olarak gözlemledi.",
+            quote: "Mikroskop, doğanın en gizli sırlarını gözler önüne seren büyülü bir kapıdır.",
+            funFact: "Leeuwenhoek kendi geliştirdiği tek mercekli mikroskoplarla göl suyundaki mikroorganizmaları 'küçük hayvancıklar' (animacules) olarak kaydetti."
+        },
+        {
+            name: "James Prescott Joule & Isaac Newton",
+            title: "İş, Enerji ve Kinetik-Potansiyel Dönüşümleri",
+            years: "1818 - 1889",
+            badge: "KUVVET, İŞ VE ENERJİ",
+            icon: "fa-solid fa-gauge-high",
+            color: "from-blue-600 to-indigo-700",
+            curriculumLink: "İş = Kuvvet x Yol, Joule Birimi ve Enerjinin Korunumu",
+            discovery: "Mekanik işin ısıya dönüştüğünü kanıtlayarak enerjinin yok olmadığını, sadece biçim değiştirdiğini ispatladı. Enerji birimi 'Joule' onun adını taşır.",
+            quote: "Doğadaki hiçbir enerji kaybolmaz; potansiyelden kinetiğe sonsuz bir dansla akar.",
+            funFact: "Balayında bile Alpler'deki şelalenin tepesindeki su ile tabanındaki su arasındaki sıcaklık farkını termometreyle ölçmüştür."
+        },
+        {
+            name: "Dmitri Mendeleyev & John Dalton",
+            title: "Atom Modelleri ve Saf Maddelerin Düzeni",
+            years: "1834 - 1907",
+            badge: "SAF MADDE VE KARIŞIMLAR",
+            icon: "fa-solid fa-flask-vial",
+            color: "from-amber-600 to-orange-700",
+            curriculumLink: "Atom, Molekül, Element Sembolleri ve Karışımların Ayrılması",
+            discovery: "Elementleri atom ağırlıklarına ve kimyasal benzerliklerine göre sıralayarak Periyodik Tablo'yu oluşturdu. Henüz keşfedilmemiş elementlerin özelliklerini önceden bildi.",
+            quote: "Doğa bana kartların dizilimini gösterdiğinde tek yapmam gereken onları masaya koymaktı.",
+            funFact: "Element kartlarıyla trende iskambil oynar gibi periyodik cetvelin ilk taslağını bir rüyasında tamamlamıştır."
+        },
+        {
+            name: "Edwin Hubble",
+            title: "Genişleyen Evren ve Galaksilerin Kâşifi",
+            years: "1889 - 1953",
+            badge: "GÜNEŞ SİSTEMİ VE ÖTESİ",
+            icon: "fa-solid fa-star",
+            color: "from-purple-700 to-pink-700",
+            curriculumLink: "Samanyolu, Bulutsular (Nebula), Yıldızlar ve Işık Yılı",
+            discovery: "Samanyolu galaksisinin evrendeki tek galaksi olmadığını, trilyonlarca galaksi bulunduğunu ve evrenin sürekli genişlediğini kanıtladı. Hubble Uzay Teleskobu onun adını taşır.",
+            quote: "Evren sandığımızdan sadece daha büyük değil, hayal edebileceğimizden de büyüktür.",
+            funFact: "Gençliğinde başarılı bir boksör ve avukattı, ancak gökyüzü tutkusu galip gelerek tarihin en büyük astronomlarından biri oldu."
+        }
+    ],
+    "8": [
+        {
+            name: "Prof. Dr. Aziz Sancar",
+            title: "Nobel Kimya Ödülü Sahibi Türk Bilim İnsanı",
+            years: "1946 - Günümüz",
+            badge: "DNA VE GENETİK KOD",
+            icon: "fa-solid fa-award",
+            color: "from-red-600 to-rose-700",
+            curriculumLink: "DNA Yapısı, Nükleotidler, Mutasyon ve DNA Onarımı",
+            discovery: "Hücrelerin hasar gören DNA'ları nasıl onardığını ve genetik bilgisini nasıl koruduğunu haritalandırarak 2015 Nobel Kimya Ödülü'nü kazandı.",
+            quote: "Çoğu insan zekaya inanır, ben inanmıyorum. Bizi birbirimizden ayıran emektir, çalışmaktır.",
+            funFact: "Mardin'in Savur ilçesinde okuma yazma bilmeyen 8 çocuklu bir ailenin çocuğu olarak büyümüş, Nobel madalyasını Anıtkabir'e bağışlamıştır."
+        },
+        {
+            name: "Gregor Mendel",
+            title: "Genetik ve Kalıtım Biliminin Kurucusu",
+            years: "1822 - 1884",
+            badge: "KALITIM & ÇAPRAZLAMALAR",
+            icon: "fa-solid fa-seedling",
+            color: "from-emerald-600 to-teal-700",
+            curriculumLink: "Baskın ve Çekinik Genler, Fenotip, Genotip ve Akraba Evliliği",
+            discovery: "Manastır bahçesinde binlerce bezelye bitkisini çaprazlayarak karakterlerin nesilden nesile nasıl aktarıldığını (Mendel Kanunları) ortaya koydu.",
+            quote: "Benim zamanım bir gün mutlaka gelecek.",
+            funFact: "Yaşarken keşfi anlaşılamadı; ölümünden 16 yıl sonra 3 farklı bilim insanı aynı sonuçları bularak Mendel'in hakkını teslim etti."
+        },
+        {
+            name: "Blaise Pascal & Evangelista Torricelli",
+            title: "Sıvı ve Gaz Basıncının Büyük Mimarları",
+            years: "1608 - 1662",
+            badge: "KATI, SIVI VE GAZ BASINCI",
+            icon: "fa-solid fa-vial-circle-check",
+            color: "from-blue-600 to-indigo-800",
+            curriculumLink: "P = h • d • g, Pascal Prensibi (Hidrolik Sistemler), Açık Hava Basıncı (Torriçelli)",
+            discovery: "Pascal: Kapalı kaptaki sıvıların basıncı her yöne aynen ilettiğini buldu (Hidrolik frenler, berber koltukları). Torriçelli: Cıvalı barometreyle 76 cm-Hg açık hava basıncını ölçtü.",
+            quote: "Doğa boşluktan nefret etmez; hava ağırlığıyla her şeye baskı uygular.",
+            funFact: "Pascal ilk mekanik hesap makinesini (Pascaline) vergi memuru olan babasının işlerini kolaylaştırmak için 19 yaşında icat etmiştir."
+        },
+        {
+            name: "Marie Curie",
+            title: "2 Farklı Alanda Nobel Kazanan İlk ve Tek Kadın Bilim İnsanı",
+            years: "1867 - 1934",
+            badge: "MADDE VE ENDÜSTRİ & RADYOAKTİVİTE",
+            icon: "fa-solid fa-atom",
+            color: "from-purple-600 to-pink-700",
+            curriculumLink: "Elementlerin Keşfi (Polonyum, Radyum), Kimyasal Tepkimeler ve Periyodik Sistem",
+            discovery: "Radyoaktiviteyi keşfetti. Hem Fizik (1903) hem de Kimya (1911) dallarında iki Nobel Ödülü kazanan tarihteki ilk ve tek bilim insanıdır.",
+            quote: "Hayatta hiçbir şeyden korkulmamalıdır, sadece anlaşılmalıdır. Şimdi daha çok anlama zamanıdır.",
+            funFact: "Çalışma defterleri bugün bile o kadar radyoaktiftir ki, Paris Ulusal Kütüphanesi'nde kurşun kaplı kutularda korunur ve sadece özel kıyafetlerle incelenebilir."
+        }
+    ]
+};
+
+function renderScientistsModule(gradeNumber) {
+    const list = SCIENTISTS_DATA[String(gradeNumber)] || SCIENTISTS_DATA["8"];
+
+    return `
+        <div class="mb-10 animate-in fade-in duration-300">
+            <!-- Üst Bilgi Başlığı -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3.5 py-1 rounded-full bg-gradient-to-r from-red-600 to-rose-700 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-telescope text-amber-300"></i> BİLİMİN ROTASINI ÇİZENLER
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">${gradeNumber}. Sınıf Müfredatına Yön Veren Dâhiler</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Tarihi Değiştiren Bilim İnsanları ve Büyük Keşifleri</h3>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold text-red-700 bg-red-50 px-3.5 py-1.5 rounded-full border border-red-200 self-start sm:self-auto">
+                        🏆 İlham Veren Başarı Hikayeleri
+                    </span>
+                    ${localStorage.getItem("rotali_is_admin") === "true" ? `
+                        <button type="button" onclick="triggerUploadModal('${gradeNumber}', 'ders-notu')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95">
+                            <i class="fa-solid fa-plus"></i> + Bilim Notu Ekle
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+
+            <!-- Bilim İnsanları Kartları -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                ${list.map(sci => `
+                    <div onclick="openScientistModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group cursor-pointer">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${sci.color} opacity-10 rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform"></div>
+
+                        <div>
+                            <div class="flex items-start justify-between gap-3 mb-4">
+                                <div class="flex items-center gap-3.5">
+                                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-tr ${sci.color} text-white flex items-center justify-center text-2xl shadow-md group-hover:rotate-6 transition-transform flex-shrink-0">
+                                        <i class="${sci.icon}"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg sm:text-xl font-black text-slate-900 leading-tight group-hover:text-red-600 transition-colors">${sci.name}</h4>
+                                        <p class="text-xs text-slate-500 font-bold mt-0.5">${sci.title} • <span class="text-slate-400 font-medium">${sci.years}</span></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-700 text-[10px] font-black uppercase tracking-wider border border-red-100">
+                                    📌 MÜFREDAT BAĞI: ${sci.curriculumLink}
+                                </span>
+                            </div>
+
+                            <p class="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed mb-4">
+                                ${sci.discovery}
+                            </p>
+
+                            <!-- İlham Verici Söz & Eğlenceli Bilgi -->
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2 mb-4 text-xs">
+                                <div class="text-slate-800 font-bold italic flex items-center gap-2">
+                                    <i class="fa-solid fa-quote-left text-red-500 text-xs"></i>
+                                    <span>"${sci.quote}"</span>
+                                </div>
+                                <div class="text-[11px] text-slate-500 font-medium flex items-start gap-1.5 pt-1.5 border-t border-slate-200/60">
+                                    <i class="fa-solid fa-lightbulb text-amber-500 mt-0.5 flex-shrink-0"></i>
+                                    <span><strong>Biliyor muydunuz?</strong> ${sci.funFact}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">${sci.badge}</span>
+                            <button onclick="openScientistModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md shadow-red-600/25 flex items-center gap-1.5 hover:scale-105 transform">
+                                <i class="fa-solid fa-atom"></i> Keşif Kartını Oku →
+                            </button>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
+// -------------------------------------------------------------
+// 🔬 BİLİM İNSANI DETAYLI ARAŞTIRMA & KEŞİF KARTI MODALI
+// -------------------------------------------------------------
+function openScientistModal(scientistName, gradeNumber = "8") {
+    let modal = document.getElementById("scientist-detail-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "scientist-detail-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300";
+        modal.onclick = function(e) {
+            if (e.target === this) closeScientistModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    // Bilim insanını bul
+    let sci = null;
+    const allScientists = Object.values(SCIENTISTS_DATA).flat();
+    sci = allScientists.find(s => s.name.toLowerCase().includes(scientistName.toLowerCase()) || scientistName.toLowerCase().includes(s.name.toLowerCase())) || allScientists[0];
+
+    // Detaylı Bilimsel İçerik Üretimi (Bilim insanına özel zengin eğitim notu)
+    let detailedNotes = "";
+    if (sci.name.includes("Galileo")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                    <h5 class="font-black text-amber-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-telescope text-amber-600"></i> 1. Teleskopik Astronomi ve Gökyüzü Gözlemleri
+                    </h5>
+                    <p>Galileo, 1609 yılında 30 kat büyütme gücüne sahip kendi teleskobunu tasarladı. Gökyüzünü incelediğinde pürüzsüz sanılan <strong>Ay'ın dağlar, vadiler ve kraterlerle kaplı olduğunu</strong>, <strong>Güneş üzerinde koyu lekeler (Güneş Lekeleri)</strong> bulunduğunu ve Güneş'in kendi ekseni etrafında döndüğünü ilk kez ispatladı.</p>
+                </div>
+
+                <div class="p-4 bg-blue-50 rounded-2xl border border-blue-200">
+                    <h5 class="font-black text-blue-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-globe text-blue-600"></i> 2. Dünya'nın Hareketi ve Jüpiter'in Uyduları
+                    </h5>
+                    <p>Jüpiter'in etrafında dönen 4 büyük uyduyu (Io, Europa, Ganymede, Callisto) keşfederek her gök cisminin Dünya etrafında dönmediğini kanıtladı. Kopernik'in <em>"Dünya ve diğer gezegenler Güneş etrafında döner"</em> teorisini somut gözlemlerle doğruladı.</p>
+                </div>
+
+                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <h5 class="font-black text-emerald-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-flask-vial text-emerald-600"></i> 3. Eğik Düzlem & Serbest Düşme Deneyleri
+                    </h5>
+                    <p>Pisa Kulesi ve eğik düzlemlerde yaptığı deneylerle; hava sürtünmesi önemsenmediğinde <strong>ağır ve hafif tüm cisimlerin aynı ivmeyle aynı anda yere düştüğünü</strong> göstererek Aristo fiziğini tarihe gömdü.</p>
+                </div>
+            </div>
+        `;
+    } else if (sci.name.includes("Aziz Sancar")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-red-50 rounded-2xl border border-red-200">
+                    <h5 class="font-black text-red-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-dna text-red-600"></i> 1. DNA Onarım Mekanizmaları (Nükleotid Kesip Çıkarma Onarımı)
+                    </h5>
+                    <p>Güneşten gelen zararlı UV ışınları ve kimyasallar DNA zincirinde mutasyonlara ve hasarlara yol açar. Prof. Dr. Aziz Sancar, hücrelerin hasarlı DNA parçasını adeta bir makas gibi kesip çıkararak yerine sağlam nükleotidleri nasıl yerleştirdiğini moleküler düzeyde haritalandırdı.</p>
+                </div>
+
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                    <h5 class="font-black text-amber-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-clock text-amber-600"></i> 2. Biyolojik Saat ve Kanser Tedavisi
+                    </h5>
+                    <p>Vücudumuzdaki 24 saatlik biyolojik saat döngüsünün (Sirkadiyen Ritim) DNA onarım hızını doğrudan kontrol ettiğini kanıtladı. Bu keşif sayesinde kanser ilaçlarının günün hangi saatinde verilirse daha etkili olacağını belirleyen tedavi yöntemleri geliştirildi.</p>
+                </div>
+            </div>
+        `;
+    } else if (sci.name.includes("Pascal") || sci.name.includes("Torricelli")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-blue-50 rounded-2xl border border-blue-200">
+                    <h5 class="font-black text-blue-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-faucet-drip text-blue-600"></i> 1. Pascal Prensibi (Sıvıların Basıncı İletmesi)
+                    </h5>
+                    <p>Sıvılar sıkıştırılamaz kabul edilir. Kapalı bir kaptaki sıvıya uygulanan basınç, sıvının temas ettiği <strong>tüm noktalara ve kabın iç yüzeyine aynen ve dik olarak</strong> iletilir. Hidrolik frenler, berber koltukları, itfaiye merdivenleri ve su cendereleri bu ilkeyle çalışır.</p>
+                </div>
+
+                <div class="p-4 bg-purple-50 rounded-2xl border border-purple-200">
+                    <h5 class="font-black text-purple-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-cloud text-purple-600"></i> 2. Torriçelli Deneyi & Açık Hava Basıncı
+                    </h5>
+                    <p>Deniz seviyesinde 0°C'de 1 metrelik cam boruyu cıvayla doldurup cıva çanağına batırdığında cıva seviyesinin <strong>76 cm (760 mm-Hg = 1 atm)</strong>'de dengede kaldığını gördü. Açık havanın ağırlığı nedeniyle yeryüzündeki tüm cisimlere basınç uyguladığını ispatladı.</p>
+                </div>
+            </div>
+        `;
+    } else if (sci.name.includes("Mendel")) {
+        detailedNotes = `
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                    <h5 class="font-black text-emerald-900 text-sm mb-1.5 flex items-center gap-2">
+                        <i class="fa-solid fa-seedling text-emerald-600"></i> 1. Bezelye Çaprazlamaları & Kalıtım Kanunları
+                    </h5>
+                    <p>Mendel; kolay yetiştirilmesi, yılda çok döl vermesi ve dış tozlaşmaya kapalı olması nedeniyle bezelyeleri seçti. Sarı-yeşil tohum, düz-buruşuk şekil gibi zıt karakterleri çaprazlayarak <strong>Baskın (Dominant)</strong> ve <strong>Çekinik (Resesif)</strong> gen kavramlarını buldu.</p>
+                </div>
+            </div>
+        `;
+    } else {
+        detailedNotes = `
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <p class="mb-3">${sci.discovery}</p>
+                <p>Bu büyük bilim insanının çalışmaları, günümüz modern bilim ve teknolojisinin temel yapı taşlarını oluşturmaktadır. İlgili sınıfın sınavlarında ve MEB kazanımlarında en sık soru gelen temel teorilerin mimarıdır.</p>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar flex flex-col" onclick="event.stopPropagation()">
+            
+            <!-- Üst Kapatma Butonu -->
+            <button type="button" onclick="closeScientistModal()" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-slate-100/80 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-base transition-all z-20 shadow-sm" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Renkli Hero Başlık -->
+            <div class="bg-gradient-to-r ${sci.color} text-white p-6 sm:p-8 rounded-t-3xl relative overflow-hidden flex-shrink-0">
+                <div class="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-bl-full pointer-events-none"></div>
+
+                <div class="flex items-center gap-4 relative z-10">
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-white/20 backdrop-blur-md text-white flex items-center justify-center text-3xl sm:text-4xl shadow-lg border border-white/30 flex-shrink-0">
+                        <i class="${sci.icon}"></i>
+                    </div>
+                    <div>
+                        <div class="inline-block px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm text-[11px] font-black tracking-wider uppercase mb-1.5">
+                            ${sci.badge}
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black tracking-tight leading-tight">${sci.name}</h3>
+                        <p class="text-xs sm:text-sm text-white/90 font-semibold mt-0.5">${sci.title} (${sci.years})</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İçerik Alanı -->
+            <div class="p-6 sm:p-8 space-y-6 flex-1 overflow-y-auto">
+                
+                <!-- Müfredat & Kazanım Bağı -->
+                <div class="flex items-center gap-2 p-3 bg-red-50 text-red-800 rounded-xl border border-red-200 text-xs font-bold">
+                    <i class="fa-solid fa-bookmark text-red-600 text-sm"></i>
+                    <span>MEB Müfredat İlişkisi: <strong>${sci.curriculumLink}</strong></span>
+                </div>
+
+                <!-- Detaylı Araştırma Bölümü -->
+                <div>
+                    <h4 class="text-sm font-black uppercase tracking-wider text-slate-900 mb-3 flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-red-600"></span> Bilimsel Keşifleri & Deneyleri
+                    </h4>
+                    ${detailedNotes}
+                </div>
+
+                <!-- İlham Veren Sözü -->
+                <div class="p-4 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-2xl shadow-md relative overflow-hidden">
+                    <i class="fa-solid fa-quote-left absolute -bottom-2 -right-2 text-white/10 text-6xl pointer-events-none"></i>
+                    <div class="text-xs text-amber-400 font-bold uppercase tracking-wider mb-1">Bilimsel Vizyonu</div>
+                    <div class="text-sm sm:text-base font-bold italic leading-relaxed">"${sci.quote}"</div>
+                </div>
+
+                <!-- Biliyor muydunuz? -->
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200/80 flex items-start gap-3">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-base flex-shrink-0 mt-0.5">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h5 class="text-xs font-black text-amber-900 uppercase tracking-wider mb-0.5">Biliyor Muydunuz?</h5>
+                        <p class="text-xs text-slate-700 leading-relaxed font-medium">${sci.funFact}</p>
+                    </div>
+                </div>
+
+                <!-- Alt Butonlar -->
+                <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-3">
+                    <button type="button" onclick="window.print()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-print"></i> Keşif Kartını Yazdır (A4)
+                    </button>
+                    <button type="button" onclick="closeScientistModal()" class="py-3 px-6 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    modal.style.display = "flex";
+    modal.classList.remove("hidden");
+}
+
+function closeScientistModal() {
+    const modal = document.getElementById("scientist-detail-modal");
+    if (modal) {
+        modal.style.display = "none";
+        modal.classList.add("hidden");
+    }
+}
+
+// -------------------------------------------------------------
+// 🛠️ HATA & EKSİK BİLDİRİM SİSTEMİ (ÖĞRENCİ/ZİYARETÇİ VE YÖNETİCİ)
+// -------------------------------------------------------------
+
+function openIssueReportModal() {
+    let modal = document.getElementById("issue-report-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "issue-report-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300";
+        modal.onclick = function(e) {
+            if (e.target === this) closeIssueReportModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar" onclick="event.stopPropagation()">
+            
+            <!-- Kapat Butonu -->
+            <button type="button" onclick="closeIssueReportModal()" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-base transition-all z-20 shadow-sm" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <!-- Başlık & İkon -->
+            <div class="flex items-center gap-3.5 mb-6 pb-4 border-b border-slate-100">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-xl shadow-md flex-shrink-0">
+                    <i class="fa-solid fa-bug"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-black text-slate-900 tracking-tight">Hata & Eksik Bildirim Paneli</h3>
+                    <p class="text-xs text-slate-500 font-medium">Sayfadaki eksikleri ve açılmayanları buradan bildirebilirsiniz</p>
+                </div>
+            </div>
+
+            <form onsubmit="handleIssueReportSubmit(event)" class="space-y-4">
+                
+                <!-- 1. İlgili Bölüm -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-red-600"></span> İlgili Bölüm
+                    </label>
+                    <select id="issue-section-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all">
+                        <option value="5. Sınıf Fen Bilimleri">🟢 5. Sınıf Fen Bilimleri</option>
+                        <option value="6. Sınıf Fen Bilimleri">🔵 6. Sınıf Fen Bilimleri</option>
+                        <option value="7. Sınıf Fen Bilimleri">🟡 7. Sınıf Fen Bilimleri</option>
+                        <option value="8. Sınıf (LGS) Fen Bilimleri" selected>🔴 8. Sınıf (LGS) Fen Bilimleri</option>
+                        <option value="Proje & STEM Merkezi">🏆 Proje & STEM Merkezi</option>
+                        <option value="Bilimin Rotasını Çizenler">🔭 Bilimin Rotasını Çizenler</option>
+                        <option value="Yazılı Sınav Merkezi">✏️ Ortak Yazılı Sınav Merkezi</option>
+                        <option value="Arama Motoru">🔍 Portal Genel Arama</option>
+                        <option value="Genel Portal & Tasarım">🧭 Genel Portal / Tasarım</option>
+                    </select>
+                </div>
+
+                <!-- 2. Alt Başlık / Modül -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Sorunlu Alt Başlık / Modül
+                    </label>
+                    <select id="issue-submodule-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-all">
+                        <option value="📝 Ders Notu & PDF Föyleri">📝 Ders Notu & PDF Föyleri</option>
+                        <option value="📊 Ders Sunumu & Akıllı Tahta Slaytları">📊 Ders Sunumu & Akıllı Tahta Slaytları</option>
+                        <option value="🎥 Videolar & Deney Çekimleri">🎥 Videolar & Deney Çekimleri</option>
+                        <option value="🧩 Etkinlikler & Çalışma Kağıtları">🧩 Etkinlikler & Çalışma Kağıtları</option>
+                        <option value="📚 Soru Bankası & Testler">📚 Soru Bankası & Testler</option>
+                        <option value="🎯 Deneme Sınavları">🎯 Deneme Sınavları</option>
+                        <option value="🎮 Eğitsel Oyunlar & Simülasyonlar">🎮 Eğitsel Oyunlar & Simülasyonlar</option>
+                        <option value="🔭 Bilim İnsanı Araştırma Notu">🔭 Bilim İnsanı Araştırma Notu</option>
+                        <option value="✏️ Ortak Yazılı Sınav Kağıtları">✏️ Ortak Yazılı Sınav Kağıtları</option>
+                        <option value="🏆 Projeler & STEM Atölyesi">🏆 Projeler & STEM Atölyesi</option>
+                        <option value="🃏 3D Bilgi Kartları / Mini Quizler">🃏 3D Bilgi Kartları / Mini Quizler</option>
+                        <option value="📱 Mobil Menü & Sayfa Butonları">📱 Mobil Menü & Sayfa Butonları</option>
+                        <option value="Diğer Bölüm">Diğer</option>
+                    </select>
+                </div>
+
+                <!-- 3. Sorun Türü (Genişletilmiş Seçenekler) -->
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-blue-600"></span> Sorun Türü
+                    </label>
+                    <select id="issue-type-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-blue-500 focus:bg-white transition-all">
+                        <option value="❌ Açılmayan Dosya / Görüntüleme Sorunu">❌ Açılmayan Dosya / Görüntüleme Sorunu</option>
+                        <option value="⚠️ Yanlış / Hatalı Bilgi veya Soru">⚠️ Yanlış / Hatalı Bilgi veya Soru</option>
+                        <option value="📭 Eksik İçerik / Yüklenmemiş Materyal">📭 Eksik İçerik / Yüklenmemiş Materyal</option>
+                        <option value="🎮 Oyunda / Simülasyonda Çalışmayan Buton veya Hata">🎮 Oyunda / Simülasyonda Çalışmayan Buton veya Hata</option>
+                        <option value="📱 Mobilde / Telefonda Görünüm veya Kayma Sorunu">📱 Mobilde / Telefonda Görünüm veya Kayma Sorunu</option>
+                        <option value="🎥 Video Oynatılamıyor / Ses Yok">🎥 Video Oynatılamıyor / Ses Yok</option>
+                        <option value="📑 Yazım / İmla veya Görsel Hatası">📑 Yazım / İmla veya Görsel Hatası</option>
+                        <option value="💡 Yeni İçerik / Materyal / Konu Talebi">💡 Yeni İçerik / Materyal / Konu Talebi</option>
+                        <option value="⏱️ Süre / Cevap Anahtarı Hatası">⏱️ Süre / Cevap Anahtarı Hatası</option>
+                        <option value="❓ Diğer Teknik Sorun">❓ Diğer Teknik Sorun</option>
+                    </select>
+                </div>
+
+                <!-- Butonlar -->
+                <div class="pt-3 flex gap-3">
+                    <button type="button" onclick="closeIssueReportModal()" class="py-3.5 px-5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase rounded-xl transition-all">
                         Vazgeç
                     </button>
-                    <button type="submit" id="submit-material-btn" class="flex-1 py-3 sm:py-3.5 bg-gradient-to-r ${isEditing ? 'from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800'} text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl sm:rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 transform active:scale-98">
-                        <i class="fa-solid ${isEditing ? 'fa-check' : 'fa-cloud-arrow-up'} text-sm sm:text-base"></i>
-                        <span>${isEditing ? 'Değişiklikleri Kaydet & Güncelle' : 'İçeriği Sitede Yayınla ve Kaydet'}</span>
+                    <button type="submit" id="submit-issue-btn" class="flex-1 py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>Bildirimi Kaydet</span>
                     </button>
                 </div>
             </form>
@@ -3169,198 +4526,33 @@ function openAdminLoginModal(onSuccessCallback = null) {
     }
 
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] h-auto flex flex-col overflow-hidden" onclick="event.stopPropagation()">
-            
-            <!-- Modal Header (Sabit Üst) -->
-            <div class="flex items-center justify-between p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 bg-white shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr ${isEditing ? 'from-amber-500 to-orange-600' : 'from-red-600 to-rose-700'} text-white flex items-center justify-center text-lg sm:text-xl shadow-md shrink-0">
-                        <i class="fa-solid ${isEditing ? 'fa-pen-to-square' : 'fa-cloud-arrow-up'}"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base sm:text-xl font-black text-slate-900 tracking-tight leading-tight">
-                            ${isEditing ? 'Materyali Düzenle & Taşı' : 'Yeni İçerik & Materyal Ekle'}
-                        </h3>
-                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[220px] sm:max-w-md">
-                            ${isEditing ? 'Başlığı, sınıfı, konumu veya dosyayı güncelleyin' : 'PDF, Word, PPTX, Video, Ses, Görsel veya Web Linki'}
-                        </p>
-                    </div>
-                </div>
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <button type="button" onclick="closeAdminLoginModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center font-bold transition-all" title="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-                <!-- Kapatma Çarpı Butonu -->
-                <button type="button" onclick="closeMaterialUploadModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-sm sm:text-base transition-all shrink-0 shadow-sm" title="Kapat (ESC)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg shadow-red-600/30">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <h3 class="text-xl font-black text-slate-900 tracking-tight">Yönetici Girişi</h3>
+                <p class="text-xs text-slate-500 mt-1 font-medium">Bu alana sadece Rotalı Fenci yetkilileri erişebilir.</p>
             </div>
 
-            <!-- Form & Scrollable Body -->
-            <form id="adv-material-form" onsubmit="handleAdvMaterialSubmit(event)" class="flex flex-col flex-1 overflow-hidden min-h-0">
-                
-                <!-- Scroll Edilebilir İçerik Alanı -->
-                <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 custom-scrollbar">
-                    
-                    <!-- 1. KATEGORİ & BAŞLIK HİYERARŞİSİ -->
-                    <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> 1. Kategori & Konum Hiyerarşisi
-                            </span>
-                            <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">İstediğiniz Sınıfa / Bölüme Taşıyın</span>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <!-- Ana Kategori / Sınıf -->
-                            <div>
-                                <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
-                                <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                    <option value="8" ${(isEditing ? editMaterial.grade === '8' : prefillGrade === '8') ? 'selected' : ''}>8. Sınıf & LGS</option>
-                                    <option value="7" ${(isEditing ? editMaterial.grade === '7' : prefillGrade === '7') ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
-                                    <option value="6" ${(isEditing ? editMaterial.grade === '6' : prefillGrade === '6') ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
-                                    <option value="5" ${(isEditing ? editMaterial.grade === '5' : prefillGrade === '5') ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
-                                    <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
-                                </select>
-                            </div>
-
-                            <!-- Alt Kategori -->
-                            <div>
-                                <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
-                                <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                    <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ders Notu</option>
-                                    <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
-                                    <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
-                                    <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
-                                    <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
-                                    <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
-                                    <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
-                                    <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
-                                    <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
-                                    <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Ünite / Konu Seçimi -->
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-xs font-black uppercase text-slate-700">İlişkili Ünite / Başlık</label>
-                                <button type="button" onclick="toggleCustomTopicInput()" class="text-[11px] font-bold text-red-600 hover:text-red-700 underline">
-                                    ➕ Listede Yoksa Yeni Başlık Ekle
-                                </button>
-                            </div>
-                            <select id="adv-unit-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <!-- JS ile dolar -->
-                            </select>
-                            <input type="text" id="adv-custom-topic-input" placeholder="Yeni Özel Başlık / Alt Başlık yazın..." class="hidden w-full mt-2 p-2.5 sm:p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 shadow-sm">
-                        </div>
+            <form onsubmit="handleAdminPasswordSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5">Yönetici Şifresi</label>
+                    <div class="relative">
+                        <input type="password" id="admin-pass-input" placeholder="••••••••" required autofocus
+                            class="w-full p-3.5 pl-11 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all">
+                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                     </div>
-
-                    <!-- 2. İÇERİK BİLGİLERİ -->
-                    <div class="space-y-3 sm:space-y-4">
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">
-                                İçerik Başlığı <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="adv-title-input" required value="${isEditing ? (editMaterial.title || '') : ''}" placeholder="Örn: 8. Sınıf Basınç Ünitesi Akıllı Tahta Uyumlu Slayt Seti" class="w-full p-3 sm:p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Kısa Açıklama / Yönerge</label>
-                            <textarea id="adv-desc-input" rows="2" placeholder="Öğrenciler veya öğretmenler için materyal açıklaması..." class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">${isEditing ? (editMaterial.desc || '') : ''}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- 3. DOSYA YÜKLEME VEYA LİNK -->
-                    <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> 2. Dosya / Bağlantı Kaynağı
-                            </span>
-                            
-                            <!-- Sekme Değiştirici -->
-                            <div class="flex items-center p-1 bg-slate-200/80 rounded-xl text-xs font-bold">
-                                <button type="button" id="tab-upload-file-btn" onclick="switchUploadMethod('file')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition-all text-xs">
-                                    📁 Dosya Yükle
-                                </button>
-                                <button type="button" id="tab-upload-link-btn" onclick="switchUploadMethod('link')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all text-xs">
-                                    🔗 Web / Drive Linki
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Dosya Sürükle Bırak Alanı -->
-                        <div id="upload-method-file-container">
-                            <div id="drag-drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white rounded-2xl p-4 sm:p-6 text-center transition-all cursor-pointer group">
-                                <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept="*/*,image/*,application/pdf,.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
-                                <label for="adv-file-input" class="cursor-pointer block">
-                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl sm:text-2xl mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                                    </div>
-                                    <span class="block text-xs font-black text-slate-800 mb-0.5 sm:mb-1">Yeni dosya seçmek için <span class="text-red-600 underline">Gözatın</span> veya sürükleyin</span>
-                                    <span class="block text-[10px] sm:text-[11px] text-slate-400 font-medium">PDF, Word, PPTX, Video, Görsel, ZIP</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Embed Link -->
-                        <div id="upload-method-link-container" class="hidden space-y-2">
-                            <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
-                            <div class="relative">
-                                <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-
-                        <!-- Önizleme Kartı -->
-                        <div id="file-preview-card" class="${isEditing && editMaterial.fileName ? 'block' : 'hidden'} bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm animate-in fade-in duration-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3 overflow-hidden">
-                                    <div id="preview-file-icon" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-base sm:text-lg shrink-0">
-                                        <i class="fa-solid fa-file"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div id="preview-file-name" class="text-xs font-black text-slate-900 truncate">${isEditing ? (editMaterial.fileName || 'Mevcut Dosya') : 'dosya.pdf'}</div>
-                                        <div id="preview-file-size" class="text-[10px] text-slate-400 font-bold">${isEditing ? (editMaterial.format || 'Yüklü') : 'Hazır'}</div>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="removeSelectedFile()" class="p-2 text-slate-400 hover:text-red-600 text-xs font-bold" title="Dosyayı Kaldır">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. ETİKETLER & GÖRÜNÜRLÜK -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Etiketler</label>
-                            <div class="flex flex-wrap gap-1.5 p-2 sm:p-2.5 bg-slate-50 border border-slate-200 rounded-xl min-h-[40px]" id="tags-badge-container"></div>
-                            <div class="flex gap-1.5 mt-2">
-                                <input type="text" id="adv-tag-input" placeholder="Etiket ekle..." class="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500">
-                                <button type="button" onclick="addCustomTag()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg">Ekle</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Görünürlük Durumu</label>
-                            <select id="adv-visibility-select" class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
-                                <option value="public" ${isEditing && editMaterial.visibility === 'public' ? 'selected' : ''}>🌐 Herkese Açık (Yayında)</option>
-                                <option value="draft" ${isEditing && editMaterial.visibility === 'draft' ? 'selected' : ''}>🔒 Taslak (Gizli)</option>
-                            </select>
-                        </div>
-                    </div>
-
                 </div>
 
-                <!-- 3. SABİT ALTLIK / FOOTER (Sticky / Fixed Bottom Action Bar) -->
-                <div class="p-3 sm:p-4 bg-white border-t border-slate-200/90 shadow-[0_-8px_20px_rgba(0,0,0,0.06)] shrink-0 flex items-center gap-2 sm:gap-3 z-30" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
-                    <button type="button" onclick="closeMaterialUploadModal()" class="py-3 sm:py-3.5 px-4 sm:px-6 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-black text-xs uppercase rounded-xl sm:rounded-2xl transition-all shrink-0">
-                        Vazgeç
-                    </button>
-                    <button type="submit" id="submit-material-btn" class="flex-1 py-3 sm:py-3.5 bg-gradient-to-r ${isEditing ? 'from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800'} text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl sm:rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 transform active:scale-98">
-                        <i class="fa-solid ${isEditing ? 'fa-check' : 'fa-cloud-arrow-up'} text-sm sm:text-base"></i>
-                        <span>${isEditing ? 'Değişiklikleri Kaydet & Güncelle' : 'İçeriği Sitede Yayınla ve Kaydet'}</span>
-                    </button>
-                </div>
+                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-red-600/25 transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i>
+                    <span>Güvenli Giriş Yap</span>
+                </button>
             </form>
         </div>
     `;
