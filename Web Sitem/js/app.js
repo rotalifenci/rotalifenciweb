@@ -1,3 +1,203 @@
+
+function readFileAsDataURL(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+
+
+// =============================================================
+// ☁️ ROTALI FENCİ — BULUT EŞİTLEME MOTORU (CROSS-DEVICE SYNC)
+// Telefon, Bilgisayar, Tablet ve Akıllı Tahta Arası Tam Eşitleme
+// =============================================================
+
+const CloudSyncManager = {
+    apiEndpoint: "/api/sync",
+    fallbackGistUrl: "https://gist.githubusercontent.com/rotalifenci/a1bd259d8d4d9e04e93e4e038ef2b0c7/raw/materials.json",
+    isSyncing: false,
+    lastSyncedAt: null,
+
+    // Uygulama açılışında otomatik çalışır
+    async init() {
+        console.log("☁️ CloudSyncManager başlatılıyor...");
+        await this.syncWithCloud(false);
+    },
+
+    // Bulut ile iki yönlü akıllı eşitleme
+    async syncWithCloud(notify = false) {
+        if (this.isSyncing) return;
+        this.isSyncing = true;
+
+        if (notify) {
+            showToast("☁️ Bulut ile eşitleniyor, lütfen bekleyin...", "info");
+        }
+
+        try {
+            // 1. Buluttaki en güncel materyalleri çek
+            let cloudMaterials = [];
+            let fetchSuccess = false;
+
+            try {
+                const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}`, {
+                    headers: { "Cache-Control": "no-cache" }
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && Array.isArray(data.materials)) {
+                        cloudMaterials = data.materials;
+                        fetchSuccess = true;
+                    }
+                }
+            } catch(apiErr) {
+                console.warn("api/sync fetch error, trying fallback Gist:", apiErr);
+            }
+
+            // Fallback Gist Raw
+            if (!fetchSuccess) {
+                try {
+                    const gistRes = await fetch(`${this.fallbackGistUrl}?t=${Date.now()}`, {
+                        headers: { "Cache-Control": "no-cache" }
+                    });
+                    if (gistRes.ok) {
+                        const gistData = await gistRes.json();
+                        if (gistData && Array.isArray(gistData.materials)) {
+                            cloudMaterials = gistData.materials;
+                            fetchSuccess = true;
+                        }
+                    }
+                } catch(gistErr) {
+                    console.warn("Fallback Gist error:", gistErr);
+                }
+            }
+
+            // 2. Cihazdaki yerel materyalleri al
+            let localMaterials = [];
+            try {
+                localMaterials = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+            } catch(e) {
+                localMaterials = [];
+            }
+
+            // 3. İki listeyi birleştir (Bulut + Yerel)
+            const mergedMap = new Map();
+
+            // Önce varsayılanları koy
+            DEFAULT_CUSTOM_MATERIALS.forEach(item => mergedMap.set(item.id || item.title, item));
+
+            // Sonra buluttan gelenleri koy
+            cloudMaterials.forEach(item => {
+                if (item && (item.id || item.title)) {
+                    mergedMap.set(item.id || item.title, item);
+                }
+            });
+
+            // Sonra bu cihazda eklenmiş yerelleri birleştir (telefondaki eklemeleri kaybetme!)
+            let hasNewLocalToUpload = false;
+            localMaterials.forEach(item => {
+                if (item && (item.id || item.title)) {
+                    const key = item.id || item.title;
+                    const inCloud = mergedMap.get(key);
+                    if (!inCloud) {
+                        hasNewLocalToUpload = true;
+                    }
+                    mergedMap.set(key, { ...(inCloud || {}), ...item });
+                }
+            });
+
+            const finalMergedList = Array.from(mergedMap.values());
+
+            // 4. Yerel hafızaya kaydet
+            try {
+                localStorage.setItem("rotali_custom_materials", JSON.stringify(finalMergedList));
+            } catch(e) {
+                console.warn("localStorage quota or error:", e);
+            }
+
+            // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder (telefondan girildiğinde PC'ye aktarır!)
+            if (hasNewLocalToUpload || (finalMergedList.length > cloudMaterials.length)) {
+                await this.uploadToCloud(finalMergedList);
+            }
+
+            this.lastSyncedAt = new Date();
+
+            if (notify) {
+                showToast(`✅ Eşitleme başarılı! ${finalMergedList.length} materyal tüm cihazlarda aktif.`, "success");
+            }
+
+            // Sayfadaki ilgili bölümü yenile
+            const hash = window.location.hash.slice(1);
+            if (hash.startsWith("grade/")) {
+                const gradeParam = hash.replace("grade/", "");
+                const appEl = document.getElementById("app");
+                if (appEl && typeof renderGradeDetail === "function") {
+                    renderGradeDetail(appEl, gradeParam);
+                }
+            }
+        } catch(err) {
+            console.error("Cloud sync general error:", err);
+            if (notify) {
+                showToast("⚠️ Eşitleme sırasında bir bağlantı sorunu oluştu.", "error");
+            }
+        } finally {
+            this.isSyncing = false;
+        }
+    },
+
+    // Buluta liste yükle
+    async uploadToCloud(materialsList) {
+        try {
+            const payload = { materials: materialsList };
+            const res = await fetch(this.apiEndpoint, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                console.log("✅ Materyaller buluta başarıyla yüklendi!");
+                return true;
+            }
+        } catch(e) {
+            console.warn("Buluta yükleme başarısız:", e);
+        }
+        return false;
+    },
+
+    // Kullanıcı butona bastığında manuel tetikleme
+    async forceSync() {
+        await this.syncWithCloud(true);
+    },
+
+    // Yedek JSON Kodu Al (Tüm Cihazlara Anında Kopyalama)
+    exportSyncCode() {
+        const list = getCustomMaterialsList();
+        return btoa(unescape(encodeURIComponent(JSON.stringify(list))));
+    },
+
+    // Kod ile Başka Cihazdan İçeri Aktar
+    importSyncCode(encodedStr) {
+        try {
+            const jsonStr = decodeURIComponent(escape(atob(encodedStr.trim())));
+            const items = JSON.parse(jsonStr);
+            if (Array.isArray(items)) {
+                localStorage.setItem("rotali_custom_materials", JSON.stringify(items));
+                this.uploadToCloud(items);
+                showToast(`✅ ${items.length} materyal başarıyla içe aktarıldı ve buluta gönderildi!`, "success");
+                setTimeout(() => window.location.reload(), 1000);
+                return true;
+            }
+        } catch(e) {
+            showToast("❌ Geçersiz senkronizasyon kodu!", "error");
+        }
+        return false;
+    }
+};
+
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ÖZEL MATERYAL HAVUZU & VERİ SENKRONİZASYONU
 // -------------------------------------------------------------
@@ -350,6 +550,7 @@ function initPortal() {
 
     handleRouteChange();
     updateUserInterface();
+    CloudSyncManager.init();
 }
 
 // -------------------------------------------------------------
@@ -593,9 +794,7 @@ function handleRouteChange() {
 
     window.scrollTo({ top: 0, behavior: "smooth" });
 
-    if (hash === "yeni-eklenenler" || hash === "recent") {
-        renderYeniEklenenlerPage(appEl);
-    } else if (hash === "home" || hash === "") {
+    if (hash === "home" || hash === "") {
         renderHomePage(appEl);
     } else if (hash === "grades") {
         renderGradesOverview(appEl);
@@ -1797,7 +1996,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     
                     <!-- 8 ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
                     <div class="pt-3 border-t border-white/20">
-                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-10" : "lg:grid-cols-9"} gap-1.5 sm:gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-9" : "lg:grid-cols-8"} gap-1.5 sm:gap-2">
                             
                             <!-- 1. Ders Notu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
@@ -4229,6 +4428,9 @@ function updateAdminNavUI() {
     if (desktopLogout) {
         if (isAdmin) {
             desktopLogout.innerHTML = `
+                <button type="button" onclick="CloudSyncManager.forceSync()" class="h-11 px-3.5 rounded-2xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center gap-2 text-xs font-black transition-all shadow-sm border border-blue-200 hover:scale-105 transform active:scale-95" title="☁️ Bulut ile Eşitle (Telefon ve Bilgisayarı Senkronize Et)">
+                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span class="hidden xl:inline">Bulutla Eşitle</span>
+                </button>
                 <button type="button" onclick="handleAdminLogout()" class="w-11 h-11 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-lg transition-all shadow-sm border border-rose-200 hover:scale-105 transform active:scale-95 animate-in fade-in" title="👑 Yönetici Modunu Kapat (Çıkış Yap)">
                     <i class="fa-solid fa-power-off"></i>
                 </button>
@@ -4243,6 +4445,9 @@ function updateAdminNavUI() {
     if (mobileLogout) {
         if (isAdmin) {
             mobileLogout.innerHTML = `
+                <button type="button" onclick="CloudSyncManager.forceSync()" class="w-10 h-10 rounded-2xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center text-base transition-all shadow-sm border border-blue-200 active:scale-95 animate-in fade-in" title="☁️ Bulutla Eşitle (Tüm Cihazlara Aktar)">
+                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                </button>
                 <button type="button" onclick="handleAdminLogout()" class="w-10 h-10 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-base transition-all shadow-sm border border-rose-200 active:scale-95 animate-in fade-in" title="👑 Yönetici Modunu Kapat">
                     <i class="fa-solid fa-power-off"></i>
                 </button>
@@ -4301,6 +4506,9 @@ async function deleteCustomMaterial(id) {
     await RotaliDB.deleteFile(id);
 
     showToast("🗑️ Materyal başarıyla silindi.", "info");
+    if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+        CloudSyncManager.uploadToCloud(customList);
+    }
     handleRouteChange();
 }
 
@@ -5689,13 +5897,23 @@ async function handleAdvMaterialSubmit(e) {
         let externalUrl = linkVal || "";
         let hasBlob = false;
 
-        // Dosya veya Link İşleme
+        // Dosya veya Link İşleme (Tüm cihazlarda görünmesi için Data URL ve IDB)
+        let fileDataUrl = "";
         if (currentUploadedFile) {
             finalFileName = currentUploadedFile.name;
             fileFormat = finalFileName.split('.').pop().toUpperCase();
             hasBlob = true;
             // IDB'ye kaydet
             await RotaliDB.saveFile(materialId, currentUploadedFile, finalFileName, fileFormat);
+
+            // Tüm cihazlarda ve bilgisayarda açılabilmesi için Data URL'e dönüştür (özellikle görseller ve belgeler)
+            try {
+                if (currentUploadedFile.size <= 8 * 1024 * 1024) { // 8MB altı tüm dosyalar
+                    fileDataUrl = await readFileAsDataURL(currentUploadedFile);
+                }
+            } catch(e) {
+                console.warn("DataURL conversion error:", e);
+            }
         } else if (linkVal) {
             if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) fileFormat = "YouTube Video";
             else if (linkVal.includes("drive.google.com")) fileFormat = "Google Drive";
@@ -5734,7 +5952,8 @@ async function handleAdvMaterialSubmit(e) {
                 unit: unit,
                 desc: desc,
                 fileName: finalFileName,
-                fileUrl: externalUrl || "#",
+                fileUrl: fileDataUrl || externalUrl || "#",
+                imageUrl: (fileFormat && ["JPG","JPEG","PNG","SVG","WEBP"].includes(fileFormat.toUpperCase())) ? fileDataUrl : (externalUrl || ""), 
                 format: fileFormat,
                 hasBlob: hasBlob,
                 tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["MEB 2026-2027"],
@@ -5775,59 +5994,3 @@ async function handleAdvMaterialSubmit(e) {
 
 
 
-// -------------------------------------------------------------
-// ✨ YENİ EKLENENLER SAYFASI BİLEŞENİ
-// -------------------------------------------------------------
-function renderYeniEklenenlerPage(container) {
-    const customList = getCustomMaterialsList();
-    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-
-    container.innerHTML = `
-        <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12">
-            <!-- Hero Başlık -->
-            <div class="bg-gradient-to-r from-purple-700 via-indigo-600 to-blue-600 text-white rounded-3xl p-6 sm:p-10 mb-8 shadow-xl relative overflow-hidden">
-                <div class="relative z-10">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-                        <span class="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-black tracking-widest uppercase inline-flex items-center gap-2 shadow-sm self-start">
-                            <span class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span> GÜNCEL İÇERİK MERKEZİ
-                        </span>
-                        ${isAdmin ? `
-                            <button onclick="triggerUploadModal('8', 'ders-notu')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md self-start sm:self-auto">
-                                <i class="fa-solid fa-cloud-arrow-up"></i> + Yeni İçerik Yükle
-                            </button>
-                        ` : ''}
-                    </div>
-                    <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight mb-2">✨ Yeni Eklenenler</h2>
-                    <p class="text-sm sm:text-base text-purple-100 max-w-2xl font-medium">Portalımıza eklenen ders notları, görsel infografikler, eğitici videolar ve interaktif materyaller.</p>
-                </div>
-            </div>
-
-            <!-- Sınıflara Göre Filtre Butonları -->
-            <div class="flex flex-wrap items-center gap-2 mb-8">
-                <button onclick="filterYeniEklenenler('all')" id="filter-btn-all" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-purple-600 text-white shadow-md">TÜMÜ (${customList.length})</button>
-                <button onclick="filterYeniEklenenler('5')" id="filter-btn-5" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">5. SINIF</button>
-                <button onclick="filterYeniEklenenler('6')" id="filter-btn-6" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">6. SINIF</button>
-                <button onclick="filterYeniEklenenler('7')" id="filter-btn-7" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">7. SINIF</button>
-                <button onclick="filterYeniEklenenler('8')" id="filter-btn-8" class="yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100">8. SINIF (LGS)</button>
-            </div>
-
-            <div id="yeni-eklenenler-grid-container">
-                ${renderCustomMaterialsSection("all", "all")}
-            </div>
-        </div>
-    `;
-}
-
-function filterYeniEklenenler(grade) {
-    document.querySelectorAll('.yeni-ekle-filter-btn').forEach(btn => {
-        btn.className = "yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-white text-slate-700 border border-slate-200 hover:bg-slate-100";
-    });
-    const activeBtn = document.getElementById('filter-btn-' + grade);
-    if (activeBtn) {
-        activeBtn.className = "yeni-ekle-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase transition-all bg-purple-600 text-white shadow-md";
-    }
-    const container = document.getElementById("yeni-eklenenler-grid-container");
-    if (container) {
-        container.innerHTML = renderCustomMaterialsSection(grade, "all");
-    }
-}
