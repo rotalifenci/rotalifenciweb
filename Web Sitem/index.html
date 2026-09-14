@@ -57,7 +57,7 @@
 
     <!-- Font Awesome & Custom Style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=20260914_07">
+    <link rel="stylesheet" href="css/style.css?v=20260914_08">
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
 
@@ -131,62 +131,52 @@
                 </div>
             </div>
 
-            <!-- 2. Alt Bar: Ana Başlıklar & Sınıf Menüsü (Eğitim Ağı Kapsül Formatı - Tek Sıraya Sığan Kompakt Tasarım) -->
-            <div class="flex items-center justify-between h-13 py-1.5 gap-2">
-                <nav class="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-[13px] font-black tracking-tight text-slate-800 overflow-x-auto no-scrollbar py-0.5 w-full">
-                    <!-- 🏠 Ana Sayfa -->
-                    <a href="#home" class="nav-link px-3 py-1.5 rounded-xl hover:text-red-600 hover:bg-red-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <i class="fa-solid fa-house text-sm"></i> <span>Ana Sayfa</span>
+            <!-- 2. Alt Bar: Ana Başlıklar & Sınıf Menüsü (Büyük ve Belirgin Yazı Boyutu, Sadece Ev Simgesi, STEM ve Yazılı Kaldırıldı) -->
+            <div class="flex items-center justify-between py-2 gap-3">
+                <nav class="flex items-center gap-2 sm:gap-3 text-sm sm:text-base lg:text-lg font-black tracking-normal text-slate-800 overflow-x-auto no-scrollbar py-1 w-full">
+                    <!-- 🏠 Ev Butonu (Sadece Simge, Yazısız) -->
+                    <a href="#home" class="nav-link p-2.5 sm:p-3 rounded-2xl hover:text-red-600 hover:bg-red-50 text-slate-800 transition-all flex items-center justify-center text-lg sm:text-xl shrink-0 shadow-2xs border border-transparent hover:border-red-200" title="Ana Sayfa">
+                        <i class="fa-solid fa-house"></i>
                     </a>
 
-                    <!-- ✨ Yeni Eklenenler -->
-                    <a href="#recent" class="nav-link px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 hover:from-amber-100 hover:to-orange-100 text-amber-900 border border-amber-200/80 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 shadow-2xs">
-                        <i class="fa-solid fa-sparkles text-amber-500 animate-pulse"></i> <span>Yeni Eklenenler</span>
+                    <!-- ✨ Yeni Eklenenler (Büyük & Belirgin) -->
+                    <a href="#recent" class="nav-link px-4 py-2 sm:py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-white hover:opacity-95 shadow-md transition-all flex items-center gap-2 whitespace-nowrap shrink-0 hover:scale-105 transform">
+                        <i class="fa-solid fa-sparkles text-amber-200 animate-pulse text-base"></i> <span>Yeni Eklenenler</span>
                     </a>
 
                     <!-- 🟢 5. Sınıf -->
-                    <a href="#grade/grade-5" class="nav-link px-3 py-1.5 rounded-xl hover:text-emerald-700 hover:bg-emerald-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-300/40"></span> <span>5. Sınıf</span>
+                    <a href="#grade/grade-5" class="nav-link px-4 py-2 sm:py-2.5 rounded-2xl hover:text-emerald-700 hover:bg-emerald-50 transition-all flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-105 transform shadow-2xs border border-transparent hover:border-emerald-200">
+                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-300/40"></span> <span>5. Sınıf</span>
                     </a>
 
                     <!-- 🔵 6. Sınıf -->
-                    <a href="#grade/grade-6" class="nav-link px-3 py-1.5 rounded-xl hover:text-blue-700 hover:bg-blue-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500 ring-2 ring-blue-300/40"></span> <span>6. Sınıf</span>
+                    <a href="#grade/grade-6" class="nav-link px-4 py-2 sm:py-2.5 rounded-2xl hover:text-blue-700 hover:bg-blue-50 transition-all flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-105 transform shadow-2xs border border-transparent hover:border-blue-200">
+                        <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-300/40"></span> <span>6. Sınıf</span>
                     </a>
 
                     <!-- 🟡 7. Sınıf -->
-                    <a href="#grade/grade-7" class="nav-link px-3 py-1.5 rounded-xl hover:text-amber-700 hover:bg-amber-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <span class="w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-amber-300/40"></span> <span>7. Sınıf</span>
+                    <a href="#grade/grade-7" class="nav-link px-4 py-2 sm:py-2.5 rounded-2xl hover:text-amber-700 hover:bg-amber-50 transition-all flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-105 transform shadow-2xs border border-transparent hover:border-amber-200">
+                        <span class="w-3.5 h-3.5 rounded-full bg-amber-500 ring-2 ring-amber-300/40"></span> <span>7. Sınıf</span>
                     </a>
 
                     <!-- 🔴 8. Sınıf (LGS) -->
-                    <a href="#grade/grade-8" class="nav-link px-3 py-1.5 rounded-xl hover:text-red-700 hover:bg-red-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <span class="w-2.5 h-2.5 rounded-full bg-red-600 ring-2 ring-red-300/40"></span> <span>8. Sınıf (LGS)</span>
+                    <a href="#grade/grade-8" class="nav-link px-4 py-2 sm:py-2.5 rounded-2xl hover:text-red-700 hover:bg-red-50 transition-all flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-105 transform shadow-2xs border border-transparent hover:border-red-200">
+                        <span class="w-3.5 h-3.5 rounded-full bg-red-600 ring-2 ring-red-300/40"></span> <span>8. Sınıf (LGS)</span>
                     </a>
 
-                    <!-- 🧪 STEM & Deney -->
-                    <a href="#stem-lab" class="nav-link px-3 py-1.5 rounded-xl hover:text-teal-700 hover:bg-teal-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <i class="fa-solid fa-flask-vial text-teal-600"></i> <span>STEM & Deney</span>
-                    </a>
-
-                    <!-- 🏆 Proje Merkezi -->
-                    <a href="#projects" class="nav-link px-3 py-1.5 rounded-xl hover:text-amber-600 hover:bg-amber-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <i class="fa-solid fa-trophy text-amber-500"></i> <span>Projeler</span>
-                    </a>
-
-                    <!-- 📝 Yazılı Merkezi -->
-                    <a href="#exams" class="nav-link px-3 py-1.5 rounded-xl hover:text-indigo-700 hover:bg-indigo-50 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0">
-                        <i class="fa-solid fa-pen-to-square text-indigo-600"></i> <span>Yazılı Merkezi</span>
+                    <!-- 🏆 Projeler -->
+                    <a href="#projects" class="nav-link px-4 py-2 sm:py-2.5 rounded-2xl hover:text-amber-600 hover:bg-amber-50 transition-all flex items-center gap-2 whitespace-nowrap shrink-0 hover:scale-105 transform shadow-2xs border border-transparent hover:border-amber-200">
+                        <i class="fa-solid fa-trophy text-amber-500 text-base"></i> <span>Projeler</span>
                     </a>
                 </nav>
 
                 <!-- Sağ: Hızlı Arama & Akıllı Tahta Butonu -->
-                <div class="flex items-center gap-1.5 shrink-0 pl-1 border-l border-slate-200">
-                    <a href="#search" class="p-2 text-slate-600 hover:text-red-600 hover:bg-slate-100 rounded-xl transition-colors shrink-0" title="Portalda Ara">
-                        <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                <div class="flex items-center gap-2 shrink-0 pl-2 border-l border-slate-200">
+                    <a href="#search" class="p-2.5 text-slate-600 hover:text-red-600 hover:bg-slate-100 rounded-xl transition-colors shrink-0" title="Portalda Ara">
+                        <i class="fa-solid fa-magnifying-glass text-base"></i>
                     </a>
-                    <button onclick="toggleSmartboardMode()" class="px-2.5 py-1.5 bg-slate-900 hover:bg-red-600 text-white font-bold text-xs rounded-xl shadow-xs transition-all flex items-center gap-1 shrink-0" title="Akıllı Tahta Modu">
-                        <i class="fa-solid fa-display text-amber-400 text-xs"></i> <span class="hidden xl:inline">Tahta</span>
+                    <button onclick="toggleSmartboardMode()" class="px-3.5 py-2 bg-slate-900 hover:bg-red-600 text-white font-black text-xs sm:text-sm rounded-xl shadow-sm transition-all flex items-center gap-1.5 shrink-0" title="Akıllı Tahta Modu">
+                        <i class="fa-solid fa-display text-amber-400 text-sm"></i> <span class="hidden xl:inline">Tahta</span>
                     </button>
                 </div>
             </div>
@@ -327,8 +317,8 @@
     </div>
 
     <!-- Scriptler -->
-    <script src="js/data.js?v=20260914_07"></script>
-    <script src="js/app.js?v=20260914_07"></script>
+    <script src="js/data.js?v=20260914_08"></script>
+    <script src="js/app.js?v=20260914_08"></script>
     <!-- 🐞 Sabit Hata & Eksik Bildir Butonu (Tüm Sayfalarda Sağ Altta) -->
     <button type="button" onclick="openIssueReportModal()" class="fixed bottom-5 right-5 z-40 px-4 py-2.5 bg-slate-900/90 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-2xl backdrop-blur-md border border-slate-700/80 hover:border-red-500 transition-all flex items-center gap-2 group hover:scale-105 transform cursor-pointer" title="Sayfadaki eksikleri veya açılmayanları bildirin">
         <i class="fa-solid fa-bug text-red-500 group-hover:text-white transition-colors text-sm"></i>
