@@ -4783,8 +4783,46 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 }
 
-// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (TELEFON VE BİLGİSAYARDA NORMAL DOĞAL BOYUTTA, KESİNLİKLE KAYDIRMASIZ)
+// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (BÜYÜTME & KÜÇÜLTME KONTROLLÜ)
+let inPageModalZoom = 1.0;
+
+function changeImageModalZoom(delta) {
+    inPageModalZoom = Math.min(3.0, Math.max(0.5, parseFloat((inPageModalZoom + delta).toFixed(2))));
+    const img = document.getElementById("inpage-modal-zoom-img");
+    const zoomText = document.getElementById("inpage-zoom-level-text");
+    const container = document.getElementById("inpage-modal-zoom-container");
+    if (img) {
+        img.style.transform = `scale(${inPageModalZoom})`;
+    }
+    if (zoomText) {
+        zoomText.innerText = `%${Math.round(inPageModalZoom * 100)}`;
+    }
+    if (container) {
+        if (inPageModalZoom > 1.0) {
+            container.classList.add("overflow-auto");
+            container.classList.remove("overflow-hidden");
+        } else {
+            container.classList.remove("overflow-auto");
+            container.classList.add("overflow-hidden");
+        }
+    }
+}
+
+function resetImageModalZoom() {
+    inPageModalZoom = 1.0;
+    const img = document.getElementById("inpage-modal-zoom-img");
+    const zoomText = document.getElementById("inpage-zoom-level-text");
+    const container = document.getElementById("inpage-modal-zoom-container");
+    if (img) img.style.transform = "scale(1)";
+    if (zoomText) zoomText.innerText = "%100";
+    if (container) {
+        container.classList.remove("overflow-auto");
+        container.classList.add("overflow-hidden");
+    }
+}
+
 function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false) {
+    inPageModalZoom = 1.0;
     let modal = document.getElementById("inpage-document-modal");
     if (!modal) {
         modal = document.createElement("div");
@@ -4808,26 +4846,46 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     let contentHtml = "";
     if (isImageDoc) {
         contentHtml = `
-            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl sm:max-w-3xl w-auto max-h-[88vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto" onclick="event.stopPropagation()">
-                <!-- Üst Başlık & Kapat Butonu -->
-                <div class="px-4 py-2 sm:px-5 sm:py-2.5 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-3 border-b border-slate-800">
+            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-3xl sm:max-w-4xl w-auto max-h-[90vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto" onclick="event.stopPropagation()">
+                <!-- Üst Başlık & Büyüt/Küçült ve Kapat Butonları -->
+                <div class="px-3 py-2 sm:px-5 sm:py-2.5 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-2 sm:gap-3 border-b border-slate-800">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-black shrink-0">
                             <i class="fa-solid fa-image"></i>
                         </span>
                         <div class="min-w-0">
-                            <h3 class="text-xs sm:text-sm font-black truncate">${docTitle}</h3>
+                            <h3 class="text-xs sm:text-sm font-black truncate max-w-[140px] sm:max-w-xs">${docTitle}</h3>
                             <span class="text-[10px] text-slate-400 hidden sm:inline">Rotalı Fenci Görsel Önizleme</span>
                         </div>
                     </div>
+
+                    <!-- 🔍 Büyüt / Küçült / Sıfırla Toolbar -->
+                    <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
+                        <button type="button" onclick="changeImageModalZoom(-0.25)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black transition-all" title="Küçült (-)">
+                            <i class="fa-solid fa-magnifying-glass-minus"></i>
+                        </button>
+                        <button type="button" onclick="resetImageModalZoom()" id="inpage-zoom-level-text" class="px-2 py-0.5 sm:py-1 rounded-lg bg-slate-900 hover:bg-slate-700 text-amber-400 font-black text-[10px] sm:text-xs tracking-wide transition-all select-none" title="Yakınlaştırmayı Sıfırla (%100)">
+                            %100
+                        </button>
+                        <button type="button" onclick="changeImageModalZoom(0.25)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black transition-all" title="Büyüt (+)">
+                            <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                    </div>
+
                     <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
                         <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
                 </div>
 
-                <!-- Görsel Alanı: Tamamen ekrana sığan, dikey veya yatay kaydırma gerektirmeyen, doğal ve net görünüm -->
-                <div class="p-2 sm:p-4 bg-slate-100/90 flex items-center justify-center overflow-hidden">
-                    <img src="${docUrl}" alt="${docTitle}" class="max-h-[58vh] sm:max-h-[68vh] max-w-[86vw] sm:max-w-[70vw] w-auto h-auto object-contain rounded-xl shadow-md border border-slate-200 bg-white block mx-auto select-none" loading="lazy">
+                <!-- Görsel Alanı: Tamamen ekrana sığan, dikey veya yatay kaydırma gerektirmeyen, zoom yapılabilen görünüm -->
+                <div id="inpage-modal-zoom-container" class="p-2 sm:p-4 bg-slate-100/90 flex items-center justify-center overflow-hidden max-h-[72vh] relative">
+                    <img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" class="max-h-[56vh] sm:max-h-[66vh] max-w-[84vw] sm:max-w-[70vw] w-auto h-auto object-contain rounded-xl shadow-md border border-slate-200 bg-white block mx-auto select-none transition-transform duration-200 cursor-zoom-in" style="transform: scale(1); transform-origin: center center;" loading="lazy">
+                </div>
+
+                <!-- Alt İpucu Barı -->
+                <div class="px-3 py-1.5 bg-slate-50 border-t border-slate-200 text-center text-[10px] sm:text-[11px] font-bold text-slate-500 flex items-center justify-center gap-1.5 shrink-0">
+                    <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                    <span>Detayları incelemek için <strong>(+) / (-)</strong> butonlarını kullanabilir veya görsele <strong>çift tıklayabilirsiniz</strong>.</span>
                 </div>
             </div>
         `;
