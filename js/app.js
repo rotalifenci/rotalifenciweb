@@ -527,7 +527,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                 <!-- Etiketler -->
                                 ${item.tags && item.tags.length > 0 ? `
                                     <div class="flex flex-wrap gap-1 mb-4">
-                                        ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                        ${((item && item.tags) || []).map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
                                     </div>
                                 ` : ''}
                             </div>
@@ -558,6 +558,32 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
     `;
 }
 
+
+/**
+ * ROTALI FENCİ — Dijital Fen Bilimleri Eğitim Portalı & LMS Motoru
+ * Sayfa İçi Öğrenci & Öğretmen Panelleri, 5-Adımlı Ünite Hub, Yazılı Merkezi, STEM
+ */
+
+const AppState = {
+    currentRoute: "home",
+    selectedGrade: "all",
+    selectedUnitTab: "ogren",
+    activeQuiz: null,
+    bookmarkedPosts: JSON.parse(localStorage.getItem("rotali_bookmarks") || "[]"),
+    isSmartboardMode: false,
+    currentUser: JSON.parse(localStorage.getItem("rotali_user") || JSON.stringify({
+        role: "student", // 'student' | 'teacher' | 'guest'
+        name: "Fen Kaşifi",
+        grade: "8. Sınıf",
+        xp: 450,
+        level: "Seviye 3 - Bilim Yolcusu"
+    }))
+};
+
+// PORTAL BAŞLATICI
+document.addEventListener("DOMContentLoaded", () => {
+    initPortal();
+});
 
 function initPortal() {
     window.addEventListener("hashchange", handleRouteChange);
@@ -837,8 +863,8 @@ function handleRouteChange() {
     } else if (hash.startsWith("unit/")) {
         const parts = hash.replace("unit/", "").split("/");
         const unitId = parts[0];
-        const tab = parts[1] || "ogren";
-        renderUnitHub(appEl, unitId, tab);
+        const gradeNum = unitId.split("-")[0] || "5";
+        renderGradeDetail(appEl, `grade-${gradeNum}`);
     } else if (hash === "lgs-pusulasi" || hash === "lgs") {
         renderGradeDetail(appEl, "grade-8/lgs");
     } else if (hash.startsWith("exams")) {
@@ -1013,7 +1039,7 @@ function renderHomeRecentMaterialsSection() {
 
                             ${item.tags && item.tags.length > 0 ? `
                                 <div class="flex flex-wrap gap-1 mb-4">
-                                    ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                    ${((item && item.tags) || []).map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
                                 </div>
                             ` : ''}
                         </div>
@@ -1225,7 +1251,7 @@ function renderHomePage(container) {
 
                             <!-- Görevler -->
                             <div class="space-y-2.5 mb-6">
-                                ${profile.dailyTasks.map(t => `
+                                ${(profile?.dailyTasks || []).map(t => `
                                     <div class="p-2.5 rounded-xl bg-white/10 border border-white/10 flex items-center justify-between text-xs">
                                         <span class="text-slate-200 font-medium">${t.text}</span>
                                         <i class="fa-solid ${t.done ? 'fa-circle-check text-emerald-400' : 'fa-circle text-slate-500'}"></i>
@@ -2833,7 +2859,7 @@ function renderStudentPortalPage(container) {
                     </div>
 
                     <div class="space-y-4 mb-6">
-                        ${profile.errorNotebook.map(err => `
+                        ${(profile?.errorNotebook || []).map(err => `
                             <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
                                 <div class="flex items-center justify-between mb-2">
                                     <span class="text-xs font-black text-indigo-700">${err.unit}</span>
@@ -2870,7 +2896,7 @@ function renderStudentPortalPage(container) {
                             <i class="fa-solid fa-list-check text-indigo-600"></i> Günlük Çalışma Rotam
                         </h4>
                         <div class="space-y-2.5">
-                            ${profile.dailyTasks.map(t => `
+                            ${(profile?.dailyTasks || []).map(t => `
                                 <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs font-bold text-slate-800">
                                     <span>${t.text}</span>
                                     <i class="fa-solid ${t.done ? 'fa-circle-check text-emerald-500' : 'fa-circle text-slate-300'} text-base"></i>
@@ -2885,7 +2911,7 @@ function renderStudentPortalPage(container) {
                             <i class="fa-solid fa-medal text-amber-500"></i> Bilim Rozetlerim
                         </h4>
                         <div class="grid grid-cols-3 gap-3 text-center">
-                            ${profile.badges.map(b => `
+                            ${(profile?.badges || []).map(b => `
                                 <div class="p-4 rounded-2xl border ${b.unlocked ? 'bg-amber-50/60 border-amber-200' : 'bg-slate-50 border-slate-200 opacity-40'}">
                                     <i class="${b.icon} text-2xl ${b.unlocked ? 'text-amber-600' : 'text-slate-400'} mb-2"></i>
                                     <span class="text-xs font-black text-slate-800 block">${b.title}</span>

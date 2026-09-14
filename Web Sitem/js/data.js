@@ -758,11 +758,7 @@ const LGS_PUSULA_DATA = {
 // 8. DATA MANAGER (LOCALSTORAGE & LMS İLERLEME YÖNETİCİSİ)
 const DataManager = {
     getStudentProfile: function() {
-        const stored = localStorage.getItem("rotali_student_profile");
-        if (stored) {
-            try { return JSON.parse(stored); } catch(e) {}
-        }
-        return {
+        const defaultProfile = {
             name: "Fen Kaşifi",
             grade: "8. Sınıf",
             level: "Seviye 3 - Bilim Yolcusu",
@@ -796,6 +792,24 @@ const DataManager = {
                 { id: "b-3", title: "LGS Canavarı", desc: "LGS denemesinde 18+ net yaptı", icon: "fa-solid fa-crown", unlocked: false }
             ]
         };
+        const stored = localStorage.getItem("rotali_student_profile");
+        if (stored) {
+            try {
+                const parsed = JSON.parse(stored);
+                if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                    return {
+                        ...defaultProfile,
+                        ...parsed,
+                        dailyTasks: Array.isArray(parsed.dailyTasks) ? parsed.dailyTasks : defaultProfile.dailyTasks,
+                        badges: Array.isArray(parsed.badges) ? parsed.badges : defaultProfile.badges,
+                        errorNotebook: Array.isArray(parsed.errorNotebook) ? parsed.errorNotebook : defaultProfile.errorNotebook,
+                        completedUnits: Array.isArray(parsed.completedUnits) ? parsed.completedUnits : defaultProfile.completedUnits,
+                        completedQuizzes: Array.isArray(parsed.completedQuizzes) ? parsed.completedQuizzes : defaultProfile.completedQuizzes
+                    };
+                }
+            } catch(e) {}
+        }
+        return defaultProfile;
     },
 
     saveStudentProfile: function(profile) {
