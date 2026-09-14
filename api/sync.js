@@ -34,7 +34,7 @@ module.exports = async function handler(req, res) {
                     if (rawResp.ok) {
                         const rawData = await rawResp.json();
                         const deletedIds = Array.isArray(rawData.deletedIds) ? rawData.deletedIds : [];
-                        const cleanMats = (rawData.materials || []).filter(m => !deletedIds.includes(m.id) && !deletedIds.includes(m.title));
+                        const cleanMats = (rawData.materials || []).filter(m => !deletedIds.includes(m.id));
                         return res.status(200).json({
                             success: true,
                             updatedAt: rawData.updatedAt || new Date().toISOString(),
@@ -48,10 +48,29 @@ module.exports = async function handler(req, res) {
             }
 
             const data = await response.json();
-            const fileContent = data.files && data.files["materials.json"] ? data.files["materials.json"].content : "{}";
-            const parsed = JSON.parse(fileContent);
+            const fileObj = data.files && data.files["materials.json"];
+            let parsed = null;
+
+            if (fileObj) {
+                if (fileObj.truncated || !fileObj.content) {
+                    const rawUrl = fileObj.raw_url || ("https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now());
+                    const rawResp = await fetch(rawUrl);
+                    parsed = await rawResp.json();
+                } else {
+                    try {
+                        parsed = JSON.parse(fileObj.content);
+                    } catch (parseErr) {
+                        const rawUrl = fileObj.raw_url || ("https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now());
+                        const rawResp = await fetch(rawUrl);
+                        parsed = await rawResp.json();
+                    }
+                }
+            } else {
+                parsed = {};
+            }
+
             const deletedIds = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
-            const cleanMats = (parsed.materials || []).filter(m => !deletedIds.includes(m.id) && !deletedIds.includes(m.title));
+            const cleanMats = (parsed.materials || []).filter(m => !deletedIds.includes(m.id));
 
             return res.status(200).json({
                 success: true,
@@ -88,25 +107,25 @@ module.exports = async function handler(req, res) {
                 }
             } catch(e) {}
 
-            // Combine deleted IDs
-            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds]);
+            // Combine deleted IDs (strictly material IDs, never titles)
+            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441"));
             const allDeletedIds = Array.from(allDeletedSet);
 
             let finalMaterials = [];
             if (isReplace) {
                 // Exact replacement requested by client (e.g. after a deletion)
-                finalMaterials = incomingMaterials.filter(item => !allDeletedSet.has(item.id) && !allDeletedSet.has(item.title));
+                finalMaterials = incomingMaterials.filter(item => !allDeletedSet.has(item.id));
             } else {
                 // Two-way merge
                 const mergedMap = new Map();
                 existingMaterials.forEach(item => {
-                    if (item && !allDeletedSet.has(item.id) && !allDeletedSet.has(item.title)) {
-                        mergedMap.set(item.id || item.title, item);
+                    if (item && item.id && !allDeletedSet.has(item.id)) {
+                        mergedMap.set(item.id, item);
                     }
                 });
                 incomingMaterials.forEach(item => {
-                    if (item && !allDeletedSet.has(item.id) && !allDeletedSet.has(item.title)) {
-                        mergedMap.set(item.id || item.title, item);
+                    if (item && item.id && !allDeletedSet.has(item.id)) {
+                        mergedMap.set(item.id, item);
                     }
                 });
                 finalMaterials = Array.from(mergedMap.values());
@@ -120,7 +139,7 @@ module.exports = async function handler(req, res) {
                             updatedAt: new Date().toISOString(),
                             deletedIds: allDeletedIds,
                             materials: finalMaterials
-                        }, null, 2)
+                        })
                     }
                 }
             };

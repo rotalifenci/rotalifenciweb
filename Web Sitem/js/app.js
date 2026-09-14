@@ -46,11 +46,34 @@ const CloudSyncManager = {
     fallbackGistUrl: "https://gist.githubusercontent.com/rotalifenci/a1bd259d8d4d9e04e93e4e038ef2b0c7/raw/materials.json",
     isSyncing: false,
     lastSyncedAt: null,
+    heartbeatStarted: false,
 
-    // Uygulama açılışında otomatik çalışır
+    // Uygulama açılışında otomatik çalışır ve canlı senkronizasyon döngüsünü başlatır
     async init() {
         console.log("☁️ CloudSyncManager başlatılıyor...");
         await this.syncWithCloud(false);
+        this.startLiveSync();
+    },
+
+    // ⚡ Anlık Canlı Senkronizasyon (Kullanıcı sekmeye dönünce veya 15 saniyede bir)
+    startLiveSync() {
+        if (this.heartbeatStarted) return;
+        this.heartbeatStarted = true;
+
+        window.addEventListener("focus", () => {
+            this.syncWithCloud(false);
+        });
+
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
+                this.syncWithCloud(false);
+            }
+        });
+
+        // Sayfa açıkken her 20 saniyede bir sessiz arka plan kontrolü
+        setInterval(() => {
+            this.syncWithCloud(false);
+        }, 20000);
     },
 
     // Bulut ile iki yönlü akıllı eşitleme
@@ -71,6 +94,7 @@ const CloudSyncManager = {
             let cloudDeletedIds = [];
             let fetchSuccess = false;
 
+            // Önce API endpoint dene
             try {
                 const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}`, {
                     headers: { "Cache-Control": "no-cache" }
@@ -84,7 +108,24 @@ const CloudSyncManager = {
                     }
                 }
             } catch(apiErr) {
-                console.warn("api/sync fetch error, trying fallback Gist:", apiErr);
+                console.warn("api/sync fetch error, trying fallback:", apiErr);
+            }
+
+            // Fallback: Canlı rotalifenci.vercel.app/api/sync
+            if (!fetchSuccess && this.apiEndpoint !== "https://rotalifenci.vercel.app/api/sync") {
+                try {
+                    const vRes = await fetch(`https://rotalifenci.vercel.app/api/sync?t=${Date.now()}`, {
+                        headers: { "Cache-Control": "no-cache" }
+                    });
+                    if (vRes.ok) {
+                        const vData = await vRes.json();
+                        if (vData && Array.isArray(vData.materials)) {
+                            cloudMaterials = vData.materials;
+                            cloudDeletedIds = Array.isArray(vData.deletedIds) ? vData.deletedIds : [];
+                            fetchSuccess = true;
+                        }
+                    }
+                } catch(e) {}
             }
 
             // Fallback Gist Raw
@@ -106,7 +147,7 @@ const CloudSyncManager = {
                 }
             }
 
-            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle (Sadece geçerli ID'ler)
+            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle (Sadece geçerli ID'ler, başlıklar ASLA eklenmez)
             cloudDeletedIds.forEach(id => {
                 if (typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441") {
                     addDeletedMaterialId(id);
@@ -121,27 +162,6 @@ const CloudSyncManager = {
                 localMaterials = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
             } catch(e) {
                 localMaterials = [];
-            }
-
-            // Telefondaki yerel IndexedDB dosyalarını DataURL'e çevirip buluta aktarılabilir hale getir
-            let hasExtractedBlobs = false;
-            if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
-                for (const item of localMaterials) {
-                    if (item && item.hasBlob && (!item.fileUrl || item.fileUrl === "#" || !item.imageUrl)) {
-                        try {
-                            const fileRec = await RotaliDB.getFile(item.id);
-                            if (fileRec && fileRec.blob && fileRec.blob.size <= 8 * 1024 * 1024) {
-                                const dUrl = await readFileAsDataURL(fileRec.blob);
-                                item.fileUrl = dUrl;
-                                const fmt = (fileRec.fileFormat || item.format || "").toUpperCase();
-                                if (["JPG","JPEG","PNG","SVG","WEBP"].includes(fmt)) {
-                                    item.imageUrl = dUrl;
-                                }
-                                hasExtractedBlobs = true;
-                            }
-                        } catch(e) {}
-                    }
-                }
             }
 
             // 3. Birleştir: Sadece gerçekten silinmiş ID'leri hariç tut (Başlıklar asla engellenmez)
@@ -168,6 +188,13 @@ const CloudSyncManager = {
 
             const finalMergedList = Array.from(mergedMap.values());
 
+            // Görsel URL referanslarını güvene al (fileUrl dataURL ise imageUrl olarak da kullanılabilsin)
+            finalMergedList.forEach(item => {
+                if (item && !item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
+                    item.imageUrl = item.fileUrl;
+                }
+            });
+
             // 4. Yerel hafızaya kaydet
             try {
                 localStorage.setItem("rotali_custom_materials", JSON.stringify(finalMergedList));
@@ -176,7 +203,7 @@ const CloudSyncManager = {
             }
 
             // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder
-            if (hasNewLocalToUpload || hasExtractedBlobs) {
+            if (hasNewLocalToUpload) {
                 await this.uploadToCloud(finalMergedList, false);
             }
 
@@ -204,29 +231,64 @@ const CloudSyncManager = {
     async uploadToCloud(materialsList, isReplace = false) {
         try {
             const deletedIds = getDeletedMaterialIds();
+            // Payload'ı gereksiz duplicate base64'lerden arındırarak gönder (Kota dostu)
+            const cleanMaterials = materialsList.map(item => {
+                const copy = { ...item };
+                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.imageUrl && copy.imageUrl === copy.fileUrl) {
+                    copy.imageUrl = ""; // Bulutta çift depolamayı önle
+                }
+                return copy;
+            });
+
             const payload = {
-                materials: materialsList,
+                materials: cleanMaterials,
                 deletedIds: deletedIds,
                 replace: isReplace
             };
-            const res = await fetch(this.apiEndpoint, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-            if (res.ok) {
+
+            let res = null;
+            try {
+                res = await fetch(this.apiEndpoint, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+            } catch(e) {
+                console.warn("Primary endpoint upload error:", e);
+            }
+
+            // Fallback endpoint dene
+            if (!res || !res.ok) {
+                const fallbackUrl = "https://rotalifenci.vercel.app/api/sync";
+                if (this.apiEndpoint !== fallbackUrl) {
+                    try {
+                        res = await fetch(fallbackUrl, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify(payload)
+                        });
+                    } catch(fbErr) {
+                        console.warn("Fallback upload error:", fbErr);
+                    }
+                }
+            }
+
+            if (res && res.ok) {
                 console.log("☁️ Bulut veritabanı güncellendi (Kalıcı Silme & Eşitleme Yapıldı)");
+                return true;
+            } else {
+                console.warn("Buluta yükleme başarısız:", res ? res.status : "Bağlantı hatası");
+                return false;
             }
         } catch(err) {
             console.warn("Buluta yükleme yapılamadı:", err);
+            return false;
         }
     },
 
     async deleteMaterial(id, updatedList) {
         addDeletedMaterialId(id);
-        await this.uploadToCloud(updatedList, true);
+        return await this.uploadToCloud(updatedList, true);
     }
 };
 
@@ -6265,7 +6327,7 @@ async function compressImageIfNeeded(file) {
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-                const maxDim = 1600;
+                const maxDim = 1200; // Mobilde ve webde kristal netliğinde, kota dostu
                 let w = img.width;
                 let h = img.height;
                 if (w > maxDim || h > maxDim) {
@@ -6282,7 +6344,18 @@ async function compressImageIfNeeded(file) {
                 canvas.height = h;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, w, h);
-                const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                let dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+                
+                // Eğer dataUrl 250KB üzerindeyse, biraz daha optimize ederek 150KB altına indir
+                if (dataUrl.length > 300000) {
+                    const canvas2 = document.createElement("canvas");
+                    canvas2.width = Math.round(w * 0.8);
+                    canvas2.height = Math.round(h * 0.8);
+                    const ctx2 = canvas2.getContext("2d");
+                    ctx2.drawImage(img, 0, 0, canvas2.width, canvas2.height);
+                    dataUrl = canvas2.toDataURL("image/jpeg", 0.72);
+                }
+                
                 resolve(dataUrl);
             };
             img.onerror = () => resolve(e.target.result);
@@ -6328,7 +6401,7 @@ async function handleAdvMaterialSubmit(e) {
 
     if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Kaydediliyor...`;
+        submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> İşleniyor ve Kaydediliyor...`;
     }
 
     try {
@@ -6352,7 +6425,7 @@ async function handleAdvMaterialSubmit(e) {
             fileFormat = finalFileName.split('.').pop().toUpperCase();
             hasBlob = true;
 
-            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda anında açılır)
+            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda kota aşmadan anında açılır)
             try {
                 const compressed = await compressImageIfNeeded(currentUploadedFile);
                 if (compressed) {
@@ -6367,7 +6440,7 @@ async function handleAdvMaterialSubmit(e) {
                 } catch(err2) {}
             }
 
-            // IDB'ye de kaydet
+            // IndexedDB'ye de kaydet
             try {
                 await RotaliDB.saveFile(materialId, currentUploadedFile, finalFileName, fileFormat);
             } catch(idbErr) {
@@ -6393,6 +6466,7 @@ async function handleAdvMaterialSubmit(e) {
                     desc: desc,
                     fileName: currentUploadedFile ? finalFileName : customList[idx].fileName,
                     fileUrl: externalUrl || customList[idx].fileUrl || "#",
+                    imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : "",
                     format: fileFormat || customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
@@ -6401,7 +6475,6 @@ async function handleAdvMaterialSubmit(e) {
                 };
             }
             editingMaterialId = null;
-            showToast(`✅ "${title}" başarıyla güncellendi!`, "success");
         } else {
             const newMaterial = {
                 id: materialId,
@@ -6412,7 +6485,7 @@ async function handleAdvMaterialSubmit(e) {
                 desc: desc,
                 fileName: finalFileName,
                 fileUrl: fileDataUrl || externalUrl || "#",
-                imageUrl: (fileFormat && ["JPG","JPEG","PNG","SVG","WEBP"].includes(fileFormat.toUpperCase())) ? fileDataUrl : (externalUrl || ""), 
+                imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : "", // Çift base64 depolamayı önle
                 format: fileFormat,
                 hasBlob: hasBlob,
                 tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["MEB 2026-2027"],
@@ -6421,9 +6494,9 @@ async function handleAdvMaterialSubmit(e) {
                 createdAt: new Date().toLocaleDateString("tr-TR")
             };
             customList.unshift(newMaterial);
-            showToast(`🎉 "${title}" başarıyla yayınlandı ve kaydedildi!`, "success");
         }
 
+        // Yerel hafızaya kaydet
         try {
             localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
         } catch (storageErr) {
@@ -6431,13 +6504,18 @@ async function handleAdvMaterialSubmit(e) {
         }
 
         // ☁️ Buluta Anında Senkronize Et (Telefondan yüklenen içerik bilgisayarda ve tüm ziyaretçilerde anında görünsün)
-        if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-            CloudSyncManager.uploadToCloud(customList, false).catch(err => console.warn("Cloud sync error:", err));
+        if (submitBtn) {
+            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up fa-spin"></i> Buluta Senkronize Ediliyor...`;
         }
 
+        if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+            await CloudSyncManager.uploadToCloud(customList, false);
+        }
+
+        showToast(`🎉 "${title}" başarıyla kaydedildi ve tüm cihazlara yayınlandı!`, "success");
         closeMaterialUploadModal();
 
-        // Sayfayı hedefe yönlendir ve yenile
+        // Sayfayı hedefe yönlendir ve anında yenile
         if (grade === "all") {
             window.location.hash = "projects";
         } else {

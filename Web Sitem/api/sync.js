@@ -139,7 +139,7 @@ module.exports = async function handler(req, res) {
                             updatedAt: new Date().toISOString(),
                             deletedIds: allDeletedIds,
                             materials: finalMaterials
-                        }, null, 2)
+                        })
                     }
                 }
             };
