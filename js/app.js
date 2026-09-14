@@ -785,6 +785,8 @@ function handleRouteChange() {
 
     if (hash === "home" || hash === "") {
         renderHomePage(appEl);
+    } else if (hash === "recent" || hash === "yeni-eklenenler") {
+        renderRecentMaterialsPage(appEl);
     } else if (hash === "grades") {
         renderGradesOverview(appEl);
     } else if (hash.startsWith("grade/")) {
@@ -851,7 +853,7 @@ function updateStudentHeader() {
     const completed = profile.completedUnits ? profile.completedUnits.length : 0;
     const percent = Math.min(100, Math.round((completed / totalUnits) * 100));
 
-    if (progressFill) progressFill.style.width = `${percent}%`;
+    if (progressFill && progressFill.style) progressFill.style.width = `${percent}%`;
     if (progressText) progressText.innerText = `%${percent} TAMAMLANDI`;
 }
 
@@ -998,59 +1000,282 @@ function renderHomeRecentMaterialsSection() {
     `;
 }
 
+
+// -------------------------------------------------------------
+// ✨ YENİ EKLENEN MATERYALLER SAYFASI (EĞİTİM AĞI DİNAMİK VİTRİN)
+// -------------------------------------------------------------
+function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "all") {
+    const customList = getCustomMaterialsList();
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    let filtered = [...customList];
+    if (filterGrade !== "all") {
+        filtered = filtered.filter(m => String(m.grade) === String(filterGrade));
+    }
+    if (filterCat !== "all") {
+        filtered = filtered.filter(m => (m.category === filterCat || (m.format && m.format.toLowerCase().includes(filterCat.toLowerCase()))));
+    }
+
+    // Tarihe göre sırala (en son eklenen en başta)
+    filtered.sort((a, b) => {
+        const timeA = a.id && a.id.startsWith("mat-17") ? parseInt(a.id.replace("mat-", "")) : 0;
+        const timeB = b.id && b.id.startsWith("mat-17") ? parseInt(b.id.replace("mat-", "")) : 0;
+        return timeB - timeA;
+    });
+
+    container.innerHTML = `
+        <div class="py-8 sm:py-12 bg-slate-50 min-h-[85vh]">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+                
+                <!-- Başlık Alanı -->
+                <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 rounded-3xl p-6 sm:p-10 text-white shadow-xl mb-8 relative overflow-hidden">
+                    <div class="relative z-10 max-w-3xl">
+                        <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white text-xs font-black uppercase tracking-wider mb-3">
+                            <i class="fa-solid fa-sparkles text-amber-300 animate-pulse"></i> CANLI BULUT ARŞİVİ
+                        </span>
+                        <h2 class="text-2xl sm:text-4xl font-black mb-2 tracking-tight">✨ Yeni Eklenen Fen Materyalleri</h2>
+                        <p class="text-xs sm:text-sm text-amber-50 font-medium leading-relaxed">
+                            Öğretmen ve öğrencilerimiz için telefon ve bilgisayardan sisteme yüklenen en güncel ders notları, akıllı tahta sunumları, deney videoları ve eğitsel oyunlar.
+                        </p>
+                    </div>
+                    ${isAdmin ? `
+                        <div class="mt-6 relative z-10">
+                            <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-5 py-2.5 bg-white text-orange-700 hover:bg-amber-50 font-black text-xs uppercase rounded-xl transition-all shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-plus text-sm"></i> Yeni Materyal Yükle
+                            </button>
+                        </div>
+                    ` : ''}
+                </div>
+
+                <!-- Filtreleme Butonları (Eğitim Ağı Kapsül Formatı) -->
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-8 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
+                    <!-- Sınıf Filtreleri -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), 'all', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === 'all' ? 'bg-slate-900 text-white shadow-sm' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}">
+                            Tüm Sınıflar (${customList.length})
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '5', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '5' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100'}">
+                            🟢 5. Sınıf
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '6', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '6' ? 'bg-blue-600 text-white shadow-sm' : 'bg-blue-50 text-blue-800 hover:bg-blue-100'}">
+                            🔵 6. Sınıf
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '7', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '7' ? 'bg-amber-600 text-white shadow-sm' : 'bg-amber-50 text-amber-800 hover:bg-amber-100'}">
+                            🟡 7. Sınıf
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '8', '${filterCat}')" class="px-3.5 py-1.5 rounded-xl text-xs font-black transition-all ${filterGrade === '8' ? 'bg-red-600 text-white shadow-sm' : 'bg-red-50 text-red-800 hover:bg-red-100'}">
+                            🔴 8. Sınıf (LGS)
+                        </button>
+                    </div>
+
+                    <!-- Kategori Filtreleri -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'all')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'all' ? 'bg-slate-800 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            Tüm Türler
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'ders-notu')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'ders-notu' ? 'bg-blue-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            📝 Ders Notu
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'videolar')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'videolar' ? 'bg-red-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            🎥 Video
+                        </button>
+                        <button onclick="renderRecentMaterialsPage(document.getElementById('app'), '${filterGrade}', 'oyun')" class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${filterCat === 'oyun' ? 'bg-purple-600 text-white' : 'text-slate-600 hover:bg-slate-100'}">
+                            🎮 Oyun
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Kartlar Listesi -->
+                ${filtered.length === 0 ? `
+                    <div class="bg-white rounded-3xl p-12 text-center border border-slate-200 shadow-sm max-w-xl mx-auto">
+                        <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-4">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <h4 class="text-lg font-black text-slate-900 mb-1">Henüz Materyal Bulunamadı</h4>
+                        <p class="text-xs text-slate-500 mb-6">Seçtiğiniz filtreye ait içerik henüz yüklenmemiş veya güncelleniyor.</p>
+                        <a href="#home" class="px-5 py-2.5 bg-slate-900 text-white text-xs font-black rounded-xl hover:bg-red-600 transition-colors">
+                            Ana Sayfaya Dön
+                        </a>
+                    </div>
+                ` : `
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${filtered.map(item => `
+                            <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
+                                <div>
+                                    <!-- Üst Rozet & Sınıf -->
+                                    <div class="p-5 pb-3 flex items-center justify-between border-b border-slate-100">
+                                        <div class="flex items-center gap-2">
+                                            <span class="px-3 py-1 rounded-full ${item.grade === '5' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : item.grade === '6' ? 'bg-blue-50 text-blue-700 border-blue-200' : item.grade === '7' ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-red-50 text-red-700 border-red-200'} border text-[11px] font-black uppercase">
+                                                ${item.grade}. Sınıf
+                                            </span>
+                                            <span class="text-[11px] font-bold text-slate-400">• ${item.unit || 'Müfredat'}</span>
+                                        </div>
+                                        <span class="text-[11px] font-bold text-slate-400">${item.createdAt || 'Yeni'}</span>
+                                    </div>
+
+                                    <!-- Görsel Önizleme (Varsa) -->
+                                    ${item.imageUrl && item.imageUrl !== '#' && !item.imageUrl.includes('placeholder') ? `
+                                        <div class="relative w-full aspect-[16/9] bg-slate-50 border-b border-slate-100 overflow-hidden flex items-center justify-center p-2">
+                                            <img src="${item.imageUrl}" alt="${item.title}" class="max-h-full max-w-full object-contain rounded-xl group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                                        </div>
+                                    ` : ''}
+
+                                    <!-- İçerik Başlığı & Açıklaması -->
+                                    <div class="p-5">
+                                        <div class="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider mb-2">
+                                            ${item.format || 'FEN MATERYALİ'}
+                                        </div>
+                                        <h3 class="text-base font-black text-slate-900 leading-snug group-hover:text-red-600 transition-colors mb-2 line-clamp-2">
+                                            ${item.title}
+                                        </h3>
+                                        <p class="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3 mb-4">
+                                            ${item.desc || 'MEB müfredatına uygun fen bilimleri materyali.'}
+                                        </p>
+                                        
+                                        <!-- Etiketler -->
+                                        ${item.tags && Array.isArray(item.tags) && item.tags.length > 0 ? `
+                                            <div class="flex flex-wrap gap-1.5 pt-2">
+                                                ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                            </div>
+                                        ` : ''}
+                                    </div>
+                                </div>
+
+                                <!-- Alt Butonlar -->
+                                <div class="p-5 pt-0 border-t border-slate-100/80 mt-2 space-y-2">
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.fileName || 'materyal'}', '${item.category || ''}', '${item.title || ''}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
+                                        <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i>
+                                        <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) ? 'Oyunu Oynat' : item.category === 'videolar' ? 'Videoyu Oynat' : 'Materyali Görüntüle'}</span>
+                                    </button>
+
+                                    ${isAdmin ? `
+                                        <div class="flex items-center gap-2 pt-1">
+                                            <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold rounded-lg border border-amber-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </button>
+                                            <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold rounded-lg border border-rose-200 transition-all flex items-center justify-center gap-1">
+                                                <i class="fa-solid fa-trash-can"></i> Sil
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        `).join("")}
+                    </div>
+                `}
+
+            </div>
+        </div>
+    `;
+}
+
 function renderHomePage(container) {
     const profile = DataManager.getStudentProfile();
 
     container.innerHTML = `
-        <!-- Hero Portal Giriş Alanı -->
-        <section class="relative bg-gradient-to-b from-white via-slate-50 to-slate-100/70 border-b border-slate-200 py-12 lg:py-16 overflow-hidden">
-            <div class="absolute inset-0 bg-[radial-gradient(#dc2626_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
-
+        <!-- Hero Portal Giriş Alanı (Eğitim Ağı Formatı & Zenginleştirilmiş Başlık) -->
+        <section class="relative bg-gradient-to-b from-slate-50 via-white to-slate-100/70 border-b border-slate-200 py-10 lg:py-14 overflow-hidden select-none">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative w-full">
                 
-                <!-- Üst Rozet & Başlık -->
-                <div class="text-center max-w-4xl mx-auto mb-10">
-                    <div class="flex flex-col items-center justify-center mb-5">
-                        <img src="assets/logo.jpg" alt="Rotalı Fenci Logo" class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl object-cover shadow-2xl border-4 border-white ring-4 ring-red-500/20 hover:scale-105 transition-all mb-4">
-                        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-gradient-to-r from-red-50 via-white to-blue-50 border border-red-200 text-red-700 text-xs sm:text-sm font-black tracking-widest uppercase hero-glow-badge shadow-sm">
-                            <span>ROTALI FENCİ</span>
-                            <span class="text-slate-300">•</span>
-                            <span class="text-blue-900">DİJİTAL EĞİTİM PORTALI</span>
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-8">
+                    <!-- Sol Metin & Slogan -->
+                    <div class="lg:col-span-7 flex flex-col items-start text-left">
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-black tracking-wider uppercase mb-4 shadow-2xs">
+                            <i class="fa-solid fa-sparkles text-red-600 animate-pulse"></i>
+                            <span>TÜRKİYE'NİN DİJİTAL FEN EĞİTİM PORTALI</span>
+                        </div>
+
+                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.15] mb-4">
+                            Bilimi Keşfet, <br class="hidden sm:inline"/>
+                            <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-indigo-900">Rotanı Çiz!</span>
+                        </h1>
+
+                        <!-- Kullanıcının İstediği Tam Metin (Eğitim Ağı Formatında Vurgulu & Akıcı Sunum) -->
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-medium mb-6 max-w-2xl">
+                            <strong class="text-slate-900 font-extrabold">Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D eğitsel oyunları ve <em class="text-indigo-900 font-bold not-italic">“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
+                        </p>
+
+                        <!-- Hızlı Eylem Butonları -->
+                        <div class="flex flex-wrap items-center gap-3 mb-6">
+                            <a href="#recent" class="px-5 py-3 rounded-2xl bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-700 hover:to-orange-600 text-white text-xs sm:text-sm font-black uppercase tracking-wider transition-all shadow-md hover:-translate-y-0.5 flex items-center gap-2">
+                                <i class="fa-solid fa-sparkles text-amber-300"></i> Yeni Eklenenleri Gör
+                            </a>
+                            <a href="#grade/grade-8" class="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-900 text-xs sm:text-sm font-black uppercase tracking-wider transition-all border border-slate-300 shadow-2xs flex items-center gap-2">
+                                🔴 8. Sınıf LGS Rehberi
+                            </a>
+                        </div>
+
+                        <!-- Özellik Rozetleri (Checkmark Listesi) -->
+                        <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-200/80 text-slate-600 text-xs font-bold">
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center gap-1.5">✓ PDF Ders Föyleri</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200/80 flex items-center gap-1.5">✓ Akıllı Tahta PPTX</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200/80 flex items-center gap-1.5">✓ 3D Eğitsel Oyunlar</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-800 border border-red-200/80 flex items-center gap-1.5">✓ LGS Branş Denemeleri</span>
                         </div>
                     </div>
 
-                    <!-- 3 Satırlı Sanatsal Başlık -->
-                    <div class="hero-title-artistic mb-5 select-none flex flex-col items-center justify-center space-y-1">
-                        <div class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-red-600 uppercase drop-shadow-sm">
-                            BİLİMİ KEŞFET
+                    <!-- Sağ Görsel Kart (Günün Vitrini) -->
+                    <div class="lg:col-span-5 relative w-full aspect-[16/11] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex flex-col justify-between p-6 sm:p-8 text-white group">
+                        <div class="flex items-center justify-between">
+                            <span class="px-3.5 py-1 rounded-full bg-red-600 text-white text-xs font-black uppercase tracking-wider shadow-md">
+                                🚀 Rotalı Fenci Hub
+                            </span>
+                            <span class="text-xs font-bold text-slate-300">MEB 2026-2027</span>
                         </div>
-                        <div class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-orange-500 uppercase drop-shadow-sm">
-                            ROTANI ÇİZ
-                        </div>
-                        <div class="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-[#1e3a8a] uppercase drop-shadow-sm">
-                            FEN İLE ZİRVEYE ULAŞ!
-                        </div>
-                    </div>
 
-                    <p class="text-sm sm:text-base md:text-lg text-slate-600 font-semibold leading-relaxed max-w-2xl mx-auto mb-6">
-                        <strong>Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D eğitsel oyunları ve <em>“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
-                    </p>
+                        <div>
+                            <div class="text-2xl sm:text-3xl font-black mb-2 text-white group-hover:text-amber-300 transition-colors">
+                                Fen Bilimlerini Eğlenerek Keşfet
+                            </div>
+                            <p class="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                                Deneyler, simülatörler ve etkileşimli dijital içeriklerle fen dersini her cihazda yaşayın.
+                            </p>
+                        </div>
 
-                    <!-- Hızlı Keşif Butonları -->
-                    <div class="flex flex-wrap justify-center gap-3">
-                        <a href="#grades" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-compass"></i> Sınıf Rotalarını Keşfet
-                        </a>
-                        <a href="#stem-lab" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-flask text-amber-300"></i> Sanal Lab & Deneyler
-                        </a>
-                        <a href="#projects" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-2xl shadow-md transition-all flex items-center gap-2">
-                            <i class="fa-solid fa-trophy text-amber-400"></i> Proje Merkezi (TÜBİTAK)
-                        </a>
+                        <div class="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-bold text-slate-300">
+                            <span>📱 Mobil & Akıllı Tahta Uyumlu</span>
+                            <a href="#stem-lab" class="text-amber-400 hover:text-amber-300 flex items-center gap-1">
+                                STEM Keşfet →
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                ${renderHomeRecentMaterialsSection()}
+            </div>
+        </section>
+
+        <!-- 📊 EĞİTİM AĞI & ROTALI FENCİ PORTAL İSTATİSTİKLERİ (İSTENEN SAYILAR) -->
+        <section class="w-full py-6 md:py-8 text-white shadow-md border-y border-red-900/30" style="background: linear-gradient(100deg, #991b1b 0%, #dc2626 45%, #1e1b4b 100%);">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 sm:gap-4 text-center">
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-white tracking-tight">4</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Sınıf Düzeyi (5-8)</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-amber-300 tracking-tight">120+</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Paylaşılan Kaynak</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-emerald-300 tracking-tight">45+</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Deney & Video</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-sky-300 tracking-tight">30+</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Eğitsel Oyun & Simülatör</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-orange-300 tracking-tight">28</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Müfredat Ünitesi</span>
+                </div>
+                <div class="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-xs hover:bg-white/15 transition-all">
+                    <span class="text-2xl sm:text-3xl font-black text-teal-300 tracking-tight">%100</span>
+                    <span class="text-white/90 text-xs font-bold mt-1">Yeni Müfredat Uyumlu</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-12 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
 
                 <!-- 🚀 1. HIZLI GEÇİŞ — ROTANI SEÇ (5, 6, 7, 8. SINIF + LGS KARTLARI) -->
                 <div class="mb-14">
@@ -2170,53 +2395,20 @@ function renderGradeSubTabContent(grade, subData, subTab) {
     } else if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
         return renderScientistsModule(grade.number);
     } else if (subTab === "ders-notu") {
-        const enriched = (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[String(grade.number)]) ? ENRICHED_GRADE_CONTENT[String(grade.number)] : null;
-
         return `
-            <div class="mb-8">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2.5">
-                        <i class="fa-solid fa-book-open text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri Detaylı Konu Anlatımı & Özetleri
+            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-file-pdf text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri PDF Ders Föyleri
                     </h3>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <span class="text-xs font-bold px-3 py-1 bg-red-50 text-red-700 rounded-full border border-red-200">MEB 2026-2027</span>
-                        ${isAdmin ? `
-                            <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95">
-                                <i class="fa-solid fa-plus"></i> + Not Ekle
-                            </button>
-                        ` : ''}
-                    </div>
+                    <span class="text-xs font-bold text-slate-500">MEB 2026-2027 Müfredatına Uygun Ders Notları & Föyler</span>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed">
-                    Sınavlarda ve yazılılarda en sık karşılaşılan temel kavramlar, formüller, dikkat edilmesi gereken tuzaklar ve önemli bilimsel kurallar aşağıda özetlenmiştir.
-                </p>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95 self-start sm:self-auto">
+                        <i class="fa-solid fa-plus"></i> + Not / Föy Ekle
+                    </button>
+                ` : ''}
             </div>
-
-            ${enriched && enriched.unitSummaries ? `
-                <div class="space-y-6 mb-10">
-                    ${enriched.unitSummaries.map((uSum, uIdx) => `
-                        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/90 shadow-sm">
-                            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
-                                <h4 class="text-lg font-black text-slate-900 flex items-center gap-2">
-                                    <span class="w-7 h-7 rounded-xl bg-red-600 text-white flex items-center justify-center text-xs font-black">${uIdx + 1}</span>
-                                    <span>${uSum.unit}</span>
-                                </h4>
-                                <button onclick="window.print()" class="text-xs font-black text-red-600 hover:text-red-700 flex items-center gap-1">
-                                    <i class="fa-solid fa-print"></i> Yazdır
-                                </button>
-                            </div>
-                            <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
-                                ${uSum.highlights.map(hl => `
-                                    <div class="p-3 bg-slate-50 border border-slate-200/60 rounded-xl flex items-start gap-2.5">
-                                        <i class="fa-solid fa-circle-check text-emerald-600 mt-1 flex-shrink-0 text-xs"></i>
-                                        <div class="prose-sm">${hl.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900 font-black">$1</strong>')}</div>
-                                    </div>
-                                `).join("")}
-                            </div>
-                        </div>
-                    `).join("")}
-                </div>
-            ` : ''}
 
             ${renderCustomMaterialsSection(grade.number, "ders-notu")}
             <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
@@ -2235,8 +2427,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                                 <span>👁️ ${item.downloadCount}</span>
                             </div>
                         </div>
-                        <button onclick="window.print()" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fa-solid fa-file-pdf"></i> PDF Görüntüle / Yazdır
+                        <button type="button" onclick="openOrDownloadMaterial(null, '${item.fileUrl || '#'}', '${item.title}.pdf', 'ders-notu', '${item.title}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
+                            <i class="fa-solid fa-eye"></i> Materyali Görüntüle
                         </button>
                     </div>
                 `).join("")}
@@ -4452,7 +4644,7 @@ function updateAdminNavUI() {
     const mobileContainer = document.getElementById("admin-mobile-nav-container");
     if (mobileContainer) mobileContainer.innerHTML = "";
     const floatingBar = document.getElementById("floating-admin-bar");
-    if (floatingBar) floatingBar.remove();
+    if (floatingBar && typeof floatingBar.remove === "function") floatingBar.remove();
 }
 
 // Gizli Yönetici Girişi Kısayolu: Ctrl + Shift + A veya Ctrl + Alt + A
@@ -4597,92 +4789,77 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 }
 
-// 📄 SAYFA İÇİ DOKÜMAN / PDF GÖRÜNTÜLEYİCİ (İNDİRME OLMADAN GÖRÜNTÜLEME)
+// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (NORMAL BOYUTTA & YAZDIR SEÇENEĞİ OLMADAN)
 function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf") {
     let modal = document.getElementById("inpage-document-modal");
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "inpage-document-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/95 flex flex-col items-center justify-center p-0 sm:p-2 transition-all";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-3 sm:p-6 transition-all";
         modal.onclick = function(e) {
             if (e.target === this) closeInPageDocumentModal();
         };
         document.body.appendChild(modal);
     }
 
-    let docHtml = "";
     const isImageDoc = docUrl && (docUrl.endsWith(".svg") || docUrl.endsWith(".jpg") || docUrl.endsWith(".jpeg") || docUrl.endsWith(".png") || docUrl.endsWith(".webp") || docUrl.includes("data:image"));
+    
+    let contentHtml = "";
     if (isImageDoc) {
-        docHtml = `
-            <div class="w-full h-full overflow-y-auto flex flex-col items-center justify-start py-2 px-1 sm:px-4">
-                <img src="${docUrl}" alt="${docTitle}" class="w-full max-w-4xl h-auto rounded-2xl shadow-2xl bg-white border border-slate-700 object-contain my-auto">
-            </div>
-        `;
-    } else if (docUrl && docUrl.startsWith("blob:")) {
-        docHtml = `
-            <div class="w-full h-full rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
-                <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
-            </div>
-        `;
-    } else if (docUrl && (docUrl.startsWith("http") || docUrl.endsWith(".pdf"))) {
-        docHtml = `
-            <div class="w-full h-full rounded-2xl overflow-hidden bg-slate-800 border border-slate-700">
-                <iframe src="${docUrl}" class="w-full h-full border-0"></iframe>
+        contentHtml = `
+            <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl border border-slate-200 flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <!-- Üst Başlık & Kapat Barı -->
+                <div class="px-5 py-3.5 bg-slate-900 text-white flex items-center justify-between shrink-0">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center text-sm font-black">
+                            <i class="fa-solid fa-image"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black truncate max-w-xs sm:max-w-md">${docTitle}</h3>
+                            <span class="text-[11px] text-slate-400">Görsel / İnfografik Önizleme</span>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all" title="Kapat">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Görsel Alanı (Normal Doğal Boyutta, Ekranı Boğmayan Ölçeklendirme) -->
+                <div class="p-4 sm:p-6 bg-slate-100/70 overflow-y-auto flex items-center justify-center min-h-[300px] max-h-[75vh]">
+                    <img src="${docUrl}" alt="${docTitle}" class="max-h-[68vh] max-w-full object-contain rounded-2xl shadow-md border border-slate-200 bg-white" loading="lazy">
+                </div>
             </div>
         `;
     } else {
-        docHtml = `
-            <div class="w-full h-full overflow-y-auto p-6 sm:p-10 bg-white rounded-2xl text-slate-800 space-y-6 shadow-inner max-w-4xl mx-auto">
-                <div class="border-b border-slate-200 pb-4">
-                    <div class="flex items-center justify-between gap-2 mb-2">
-                        <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-black uppercase">Ders Föyü & Konu Özeti</span>
-                        <span class="text-xs font-bold text-slate-400">MEB 2026-2027 Müfredatına Uygun</span>
+        contentHtml = `
+            <div class="bg-slate-900 rounded-3xl max-w-5xl w-full h-[88vh] overflow-hidden shadow-2xl border border-slate-700 flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <!-- Üst Başlık & Kapat Barı (Yazdır butonu yok, sadece temiz görüntüleme) -->
+                <div class="px-5 py-3.5 bg-slate-800 text-white flex items-center justify-between shrink-0 border-b border-slate-700">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm font-black">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black truncate max-w-xs sm:max-w-md">${docTitle}</h3>
+                            <span class="text-[11px] text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
+                        </div>
                     </div>
-                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900">${docTitle}</h3>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all" title="Kapat">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
                 </div>
-                <div class="space-y-4 text-sm sm:text-base text-slate-700 leading-relaxed font-medium">
-                    <div class="p-4 bg-blue-50/70 border border-blue-200 rounded-xl">
-                        <h4 class="font-black text-blue-900 mb-1 flex items-center gap-2">
-                            <i class="fa-solid fa-circle-info text-blue-600"></i> Kazanım & Önemli Hatırlatma:
-                        </h4>
-                        <p class="text-xs sm:text-sm text-blue-800 leading-relaxed">
-                            Bu ders materyali öğrencilerin derste, evde veya akıllı tahtada indirme yapmadan tam sayfada doğrudan inceleyip çalışabilmesi için hazırlanmıştır.
-                        </p>
-                    </div>
+
+                <!-- Belge Alanı -->
+                <div class="flex-1 bg-slate-950 p-2 overflow-hidden">
+                    <iframe src="${docUrl}" class="w-full h-full rounded-2xl border-0 bg-white"></iframe>
                 </div>
             </div>
         `;
     }
 
-    modal.innerHTML = `
-        <div class="bg-slate-900 w-full h-full sm:h-[98vh] max-w-[1440px] border border-slate-700/80 shadow-2xl rounded-none sm:rounded-3xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-            <!-- Üst Bar -->
-            <div class="px-4 sm:px-6 py-3.5 bg-slate-800/95 border-b border-slate-700 flex items-center justify-between text-white flex-shrink-0">
-                <div class="flex items-center gap-3">
-                    <span class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg font-black shadow-md">
-                        <i class="fa-solid fa-book-open"></i>
-                    </span>
-                    <div>
-                        <h3 class="text-sm sm:text-base font-black truncate max-w-xs sm:max-w-xl">${docTitle}</h3>
-                        <span class="text-xs text-slate-400">Rotalı Fenci Belge Görüntüleyici • Tam Sayfa Görünüm</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button type="button" onclick="window.print()" class="px-3.5 py-2 bg-slate-700 hover:bg-slate-600 text-white text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-print"></i> Yazdır
-                    </button>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all" title="Kapat">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Tam Sayfa İçerik Alanı -->
-            <div class="flex-1 w-full overflow-y-auto p-2 sm:p-4 bg-slate-950 flex flex-col items-center justify-start">
-                ${docHtml}
-            </div>
-        </div>
-    `;
+    modal.innerHTML = contentHtml;
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
 }
 
 function closeInPageDocumentModal() {
