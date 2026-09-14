@@ -16,15 +16,31 @@ module.exports = async function handler(req, res) {
     if (req.method === "GET") {
         try {
             const url = "https://api.github.com/gists/" + GIST_ID;
-            const response = await fetch(url, {
-                headers: {
-                    "User-Agent": "RotaliFenci-App",
-                    "Authorization": "Bearer " + GITHUB_TOKEN,
-                    "Accept": "application/vnd.github+json"
-                }
-            });
+            const headers = {
+                "User-Agent": "RotaliFenci-App",
+                "Accept": "application/vnd.github+json"
+            };
+            if (GITHUB_TOKEN && GITHUB_TOKEN.trim().length > 5) {
+                headers["Authorization"] = "Bearer " + GITHUB_TOKEN.trim();
+            }
+
+            const response = await fetch(url, { headers });
 
             if (!response.ok) {
+                // Fallback to raw gist URL if API rate-limited
+                try {
+                    const rawUrl = "https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now();
+                    const rawResp = await fetch(rawUrl);
+                    if (rawResp.ok) {
+                        const rawData = await rawResp.json();
+                        return res.status(200).json({
+                            success: true,
+                            updatedAt: rawData.updatedAt || new Date().toISOString(),
+                            materials: rawData.materials || []
+                        });
+                    }
+                } catch(re) {}
+
                 return res.status(500).json({ error: "Failed to fetch cloud materials" });
             }
 
@@ -54,18 +70,10 @@ module.exports = async function handler(req, res) {
 
             let existingMaterials = [];
             try {
-                const url = "https://api.github.com/gists/" + GIST_ID;
-                const getResp = await fetch(url, {
-                    headers: {
-                        "User-Agent": "RotaliFenci-App",
-                        "Authorization": "Bearer " + GITHUB_TOKEN,
-                        "Accept": "application/vnd.github+json"
-                    }
-                });
-                if (getResp.ok) {
-                    const data = await getResp.json();
-                    const fileContent = data.files && data.files["materials.json"] ? data.files["materials.json"].content : "{}";
-                    const parsed = JSON.parse(fileContent);
+                const rawUrl = "https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now();
+                const rawResp = await fetch(rawUrl);
+                if (rawResp.ok) {
+                    const parsed = await rawResp.json();
                     existingMaterials = Array.isArray(parsed.materials) ? parsed.materials : [];
                 }
             } catch(e) {}
@@ -89,14 +97,18 @@ module.exports = async function handler(req, res) {
             };
 
             const patchUrl = "https://api.github.com/gists/" + GIST_ID;
+            const headers = {
+                "User-Agent": "RotaliFenci-App",
+                "Accept": "application/vnd.github+json",
+                "Content-Type": "application/json"
+            };
+            if (GITHUB_TOKEN && GITHUB_TOKEN.trim().length > 5) {
+                headers["Authorization"] = "Bearer " + GITHUB_TOKEN.trim();
+            }
+
             const patchResp = await fetch(patchUrl, {
                 method: "PATCH",
-                headers: {
-                    "User-Agent": "RotaliFenci-App",
-                    "Authorization": "Bearer " + GITHUB_TOKEN,
-                    "Accept": "application/vnd.github+json",
-                    "Content-Type": "application/json"
-                },
+                headers: headers,
                 body: JSON.stringify(patchPayload)
             });
 
