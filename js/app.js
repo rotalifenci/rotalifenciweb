@@ -81,6 +81,27 @@ const CloudSyncManager = {
                 localMaterials = [];
             }
 
+            // Telefondaki yerel IndexedDB dosyalarını DataURL'e çevirip buluta aktarılabilir hale getir
+            let hasExtractedBlobs = false;
+            if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
+                for (const item of localMaterials) {
+                    if (item && item.hasBlob && (!item.fileUrl || item.fileUrl === "#" || !item.imageUrl)) {
+                        try {
+                            const fileRec = await RotaliDB.getFile(item.id);
+                            if (fileRec && fileRec.blob && fileRec.blob.size <= 8 * 1024 * 1024) {
+                                const dUrl = await readFileAsDataURL(fileRec.blob);
+                                item.fileUrl = dUrl;
+                                const fmt = (fileRec.fileFormat || item.format || "").toUpperCase();
+                                if (["JPG","JPEG","PNG","SVG","WEBP"].includes(fmt)) {
+                                    item.imageUrl = dUrl;
+                                }
+                                hasExtractedBlobs = true;
+                            }
+                        } catch(e) {}
+                    }
+                }
+            }
+
             // 3. İki listeyi birleştir (Bulut + Yerel)
             const mergedMap = new Map();
 
@@ -117,7 +138,7 @@ const CloudSyncManager = {
             }
 
             // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder (telefondan girildiğinde PC'ye aktarır!)
-            if (hasNewLocalToUpload || (finalMergedList.length > cloudMaterials.length)) {
+            if (hasNewLocalToUpload || hasExtractedBlobs || (finalMergedList.length > cloudMaterials.length)) {
                 await this.uploadToCloud(finalMergedList);
             }
 
@@ -429,15 +450,15 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
     return `
         <div class="mb-10 animate-in fade-in duration-300">
-            <div class="flex items-center justify-between mb-4 pb-2 border-b border-emerald-500/20">
+            <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-200">
                 <h4 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
-                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>✨ Bu Bölüme Eklenen Özel Materyaller (${items.length})</span>
+                    <span class="w-3 h-3 rounded-full bg-red-600 animate-pulse"></span>
+                    <span>✨ Bu Bölüme Eklenen Materyaller (${items.length})</span>
                 </h4>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">Rotalı Fenci Farkıyla</span>
+                    <span class="text-xs font-bold text-red-700 bg-red-50 px-3 py-1 rounded-full border border-red-200">Rotalı Fenci</span>
                     ${isAdmin ? `
-                        <button type="button" onclick="triggerUploadModal('${gradeNumber === 'all' ? '8' : gradeNumber}', '${subTab === 'all' ? 'ders-notu' : subTab}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                        <button type="button" onclick="triggerUploadModal('${gradeNumber === 'all' ? '8' : gradeNumber}', '${subTab === 'all' ? 'ders-notu' : subTab}')" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white text-xs font-bold rounded-lg transition-all flex items-center gap-1 shadow-sm">
                             <i class="fa-solid fa-plus"></i> Yeni Ekle
                         </button>
                     ` : ''}
@@ -445,86 +466,98 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${items.map(item => `
-                    <div class="bg-gradient-to-br from-white to-slate-50 rounded-3xl p-6 border-2 border-emerald-500/40 shadow-md hover:shadow-xl transition-all flex flex-col justify-between relative overflow-hidden group">
-                        <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full pointer-events-none"></div>
+                ${items.map(item => {
+                    // Görsel URL çözümleme
+                    let validImgUrl = "";
+                    const rawImg = item.imageUrl || "";
+                    const rawFile = item.fileUrl || "";
 
-                        <div>
-                            <div class="flex items-center justify-between gap-2 mb-3">
-                                <span class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black tracking-wider uppercase inline-block">
-                                    ${item.grade === 'all' ? 'TÜM SINIFLAR' : item.grade + '. SINIF'} • ${item.format || 'DOKÜMAN'}
-                                </span>
-                                <span class="text-[10px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
+                    if (rawImg && rawImg !== "#" && rawImg !== "null") {
+                        validImgUrl = rawImg;
+                    } else if (rawFile && rawFile !== "#" && rawFile !== "null" && (rawFile.startsWith("data:image") || rawFile.startsWith("http") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp") || rawFile.startsWith("assets/"))) {
+                        validImgUrl = rawFile;
+                    } else if (item.title && (item.title.toLowerCase().includes("ünite") || item.title.toLowerCase().includes("üniteler")) && (item.title.toLowerCase().includes("bilgi") || item.title.toLowerCase().includes("işlenecek"))) {
+                        validImgUrl = "assets/unite-bilgilendirmeleri-gorsel.png";
+                    } else if (item.title && item.title.toLowerCase().includes("laboratuvar") && (item.title.toLowerCase().includes("güvenli") || item.title.toLowerCase().includes("kural")) && !item.title.toLowerCase().includes("video") && !item.title.toLowerCase().includes("oyun")) {
+                        validImgUrl = "assets/lab-guvenligi.svg";
+                    }
+
+                    const isVideo = item.category === "videolar" || (item.format && item.format.toUpperCase().includes("VİDEO")) || (item.format && item.format.toUpperCase() === "MP4");
+
+                    return `
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                            <div>
+                                <!-- Üst Bilgi ve Format -->
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-[11px] font-black tracking-wider uppercase inline-block border border-slate-200">
+                                        ${item.grade === 'all' ? 'TÜM SINIFLAR' : item.grade + '. SINIF'} • ${item.format || 'DOKÜMAN'}
+                                    </span>
+                                    <span class="text-[11px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
+                                </div>
+
+                                <!-- Ünite / Konu -->
+                                ${item.unit ? `
+                                    <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide truncate">
+                                        <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${item.unit}
+                                    </div>
+                                ` : ''}
+
+                                <!-- Başlık -->
+                                <h4 class="text-base sm:text-lg font-black text-slate-900 mb-2.5 leading-snug group-hover:text-red-600 transition-colors">
+                                    ${item.title}
+                                </h4>
+
+                                <!-- Görsel Varsa: Orantılı, Kırpılmayan Net Önizleme Kutusu -->
+                                ${validImgUrl ? `
+                                    <div class="mat-preview-box relative w-full h-52 sm:h-60 rounded-2xl overflow-hidden mb-3.5 bg-slate-50 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl}')">
+                                        <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105">
+                                        <div class="absolute bottom-2.5 right-2.5">
+                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                <i class="fa-solid fa-magnifying-glass-plus"></i> Tam Sayfa Aç
+                                            </span>
+                                        </div>
+                                    </div>
+                                ` : ''}
+
+                                <!-- Açıklama -->
+                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
+                                    ${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+                                </p>
+
+                                <!-- Etiketler -->
+                                ${item.tags && item.tags.length > 0 ? `
+                                    <div class="flex flex-wrap gap-1 mb-4">
+                                        ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
+                                    </div>
+                                ` : ''}
                             </div>
 
-                            <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
-                            ${item.imageUrl || (item.format && item.format.includes('GÖRSEL')) ? `
-                                <div class="relative w-full h-48 sm:h-52 rounded-2xl overflow-hidden mb-3 bg-slate-900 border border-slate-200 group-hover:border-emerald-500/50 cursor-pointer shadow-sm transition-all" onclick="openOrDownloadMaterial('${item.id}')">
-                                    <img src="${item.imageUrl || item.fileUrl}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent flex items-end justify-between p-3">
-                                        <span class="px-2 py-0.5 rounded-md bg-emerald-600 text-white text-[10px] font-black uppercase tracking-wider">İnfografik Görsel</span>
-                                        <span class="text-white text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-magnifying-glass-plus"></i> Görseli Aç</span>
+                            <!-- Butonlar -->
+                            <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
+                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl || item.fileUrl || '#'}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
+                                    <i class="fa-solid ${isVideo ? 'fa-play' : (validImgUrl ? 'fa-eye' : 'fa-file-lines')}"></i>
+                                    <span>${isVideo ? 'Oynat' : 'Görüntüle'}</span>
+                                </button>
+
+                                ${isAdmin ? `
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5">
+                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                        </button>
+                                        <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5">
+                                            <i class="fa-solid fa-trash-can"></i> Sil
+                                        </button>
                                     </div>
-                                </div>
-                            ` : ''}
-                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-emerald-700 transition-colors">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
-
-                            ${item.tags && item.tags.length > 0 ? `
-                                <div class="flex flex-wrap gap-1 mb-4">
-                                    ${item.tags.map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
-                                </div>
-                            ` : ''}
+                                ` : ''}
+                            </div>
                         </div>
-
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}')" class="w-full py-2.5 bg-gradient-to-r ${item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : 'from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-98">
-                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'fa-gamepad' : (item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) || (item.title && item.title.toLowerCase().includes('video')) ? 'fa-play' : 'fa-eye')}"></i>
-                                <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) || (item.title && item.title.includes('Oyun')) || (item.title && item.title.includes('Eşleştirme')) ? 'Oyunu Oynat' : (item.category === 'videolar' || (item.format && item.format.includes('VİDEO')) || (item.title && item.title.toLowerCase().includes('video')) ? 'Videoyu Oynat' : 'Görüntüle')}</span>
-                            </button>
-
-                            ${isAdmin ? `
-                                <div class="flex items-center gap-2 mt-1">
-                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
-                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                    </button>
-                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
-                                        <i class="fa-solid fa-trash-can"></i> Sil
-                                    </button>
-                                </div>
-                            ` : ''}
-                        </div>
-                    </div>
-                `).join("")}
+                    `;
+                }).join("")}
             </div>
         </div>
     `;
 }
 
-/**
- * ROTALI FENCİ — Dijital Fen Bilimleri Eğitim Portalı & LMS Motoru
- * Sayfa İçi Öğrenci & Öğretmen Panelleri, 5-Adımlı Ünite Hub, Yazılı Merkezi, STEM
- */
-
-const AppState = {
-    currentRoute: "home",
-    selectedGrade: "all",
-    selectedUnitTab: "ogren",
-    activeQuiz: null,
-    bookmarkedPosts: JSON.parse(localStorage.getItem("rotali_bookmarks") || "[]"),
-    isSmartboardMode: false,
-    currentUser: JSON.parse(localStorage.getItem("rotali_user") || JSON.stringify({
-        role: "student", // 'student' | 'teacher' | 'guest'
-        name: "Fen Kaşifi",
-        grade: "8. Sınıf",
-        xp: 450,
-        level: "Seviye 3 - Bilim Yolcusu"
-    }))
-};
-
-// PORTAL BAŞLATICI
-document.addEventListener("DOMContentLoaded", () => {
-    initPortal();
-});
 
 function initPortal() {
     window.addEventListener("hashchange", handleRouteChange);
