@@ -4601,7 +4601,7 @@ function updateAdminNavUI() {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     ADMIN_CONFIG.isAdmin = isAdmin;
 
-    // 1. Üst Bar Yönetici / Çıkış Butonu
+    // 1. Üst Bar: Sadece Giriş Yapıldığında Çıkış Butonu Göster (Giriş yapılmamışsa buton görünmez)
     const topContainer = document.getElementById("admin-nav-container");
     if (topContainer) {
         if (isAdmin) {
@@ -4610,18 +4610,14 @@ function updateAdminNavUI() {
                     <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all" title="Hızlı Materyal Ekle">
                         <i class="fa-solid fa-plus text-xs"></i> <span class="hidden md:inline">Ekle</span>
                     </button>
-                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer border border-rose-500" title="👑 Yönetici Oturumunu Kapat (Çıkış Yap)">
+                    <button type="button" onclick="handleAdminLogout()" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer border border-rose-500" title="👑 Yönetici Oturumunu Kapat">
                         <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
                         <span>Çıkış Yap</span>
                     </button>
                 </div>
             `;
         } else {
-            topContainer.innerHTML = `
-                <button type="button" onclick="openAdminLoginModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 border border-slate-200 transition-colors" title="Yönetici Girişi">
-                    <i class="fa-solid fa-lock text-[11px]"></i> <span class="hidden md:inline">Yönetici</span>
-                </button>
-            `;
+            topContainer.innerHTML = "";
         }
     }
 
