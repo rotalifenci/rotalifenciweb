@@ -5879,196 +5879,188 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     else editingMaterialId = null;
 
     modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] h-auto flex flex-col overflow-hidden" onclick="event.stopPropagation()">
+        <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar" onclick="event.stopPropagation()">
             
-            <!-- Modal Header (Sabit Üst) -->
-            <div class="flex items-center justify-between p-4 sm:p-6 pb-3 sm:pb-4 border-b border-slate-100 bg-white shrink-0">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr ${isEditing ? 'from-amber-500 to-orange-600' : 'from-red-600 to-rose-700'} text-white flex items-center justify-center text-lg sm:text-xl shadow-md shrink-0">
-                        <i class="fa-solid ${isEditing ? 'fa-pen-to-square' : 'fa-cloud-arrow-up'}"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-base sm:text-xl font-black text-slate-900 tracking-tight leading-tight">
-                            ${isEditing ? 'Materyali Düzenle & Taşı' : 'Yeni İçerik & Materyal Ekle'}
-                        </h3>
-                        <p class="text-[11px] sm:text-xs text-slate-500 font-medium truncate max-w-[220px] sm:max-w-md">
-                            ${isEditing ? 'Başlığı, sınıfı, konumu veya dosyayı güncelleyin' : 'PDF, Word, PPTX, Video, Ses, Görsel veya Web Linki'}
-                        </p>
-                    </div>
-                </div>
+            <!-- Kapatma Çarpı Butonu -->
+            <button type="button" onclick="closeMaterialUploadModal()" class="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-sm sm:text-base transition-all z-20 shadow-sm" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
 
-                <!-- Kapatma Çarpı Butonu -->
-                <button type="button" onclick="closeMaterialUploadModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black text-sm sm:text-base transition-all shrink-0 shadow-sm" title="Kapat (ESC)">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+            <!-- Başlık & İkon -->
+            <div class="flex items-center gap-3 sm:gap-3.5 mb-5 sm:mb-6 pb-3 sm:pb-4 border-b border-slate-100">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr ${isEditing ? 'from-amber-500 to-orange-600' : 'from-red-600 to-rose-700'} text-white flex items-center justify-center text-lg sm:text-xl shadow-md shrink-0">
+                    <i class="fa-solid ${isEditing ? 'fa-pen-to-square' : 'fa-cloud-arrow-up'}"></i>
+                </div>
+                <div>
+                    <h3 class="text-base sm:text-2xl font-black text-slate-900 tracking-tight">
+                        ${isEditing ? 'Materyali Düzenle & Taşı' : 'Yeni İçerik & Materyal Ekle'}
+                    </h3>
+                    <p class="text-[11px] sm:text-xs text-slate-500 font-medium">
+                        ${isEditing ? 'Başlığı, sınıfı, konumu veya dosyayı güncelleyin' : 'PDF, Word, PPTX, Video, Ses, Görsel veya Web Bağlantısı'}
+                    </p>
+                </div>
             </div>
 
-            <!-- Form & Scrollable Body -->
-            <form id="adv-material-form" onsubmit="handleAdvMaterialSubmit(event)" class="flex flex-col flex-1 overflow-hidden min-h-0">
+            <form id="adv-material-form" onsubmit="handleAdvMaterialSubmit(event)" class="space-y-5 sm:space-y-6">
                 
-                <!-- Scroll Edilebilir İçerik Alanı -->
-                <div class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-5 custom-scrollbar">
-                    
-                    <!-- 1. KATEGORİ & BAŞLIK HİYERARŞİSİ -->
-                    <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> 1. Kategori & Konum Hiyerarşisi
-                            </span>
-                            <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">İstediğiniz Sınıfa / Bölüme Taşıyın</span>
-                        </div>
+                <!-- 1. KATEGORİ & BAŞLIK HİYERARŞİSİ -->
+                <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-600"></span> 1. Kategori & Konum Hiyerarşisi
+                        </span>
+                        <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">İstediğiniz Sınıfa / Bölüme Taşıyın</span>
+                    </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <!-- Ana Kategori / Sınıf -->
-                            <div>
-                                <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
-                                <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                    <option value="8" ${(isEditing ? editMaterial.grade === '8' : prefillGrade === '8') ? 'selected' : ''}>8. Sınıf & LGS</option>
-                                    <option value="7" ${(isEditing ? editMaterial.grade === '7' : prefillGrade === '7') ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
-                                    <option value="6" ${(isEditing ? editMaterial.grade === '6' : prefillGrade === '6') ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
-                                    <option value="5" ${(isEditing ? editMaterial.grade === '5' : prefillGrade === '5') ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
-                                    <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
-                                </select>
-                            </div>
-
-                            <!-- Alt Kategori -->
-                            <div>
-                                <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
-                                <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                    <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ders Notu</option>
-                                    <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
-                                    <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
-                                    <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
-                                    <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
-                                    <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
-                                    <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
-                                    <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
-                                    <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
-                                    <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <!-- Ünite / Konu Seçimi -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Ana Kategori / Sınıf -->
                         <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-xs font-black uppercase text-slate-700">İlişkili Ünite / Başlık</label>
-                                <button type="button" onclick="toggleCustomTopicInput()" class="text-[11px] font-bold text-red-600 hover:text-red-700 underline">
-                                    ➕ Listede Yoksa Yeni Başlık Ekle
-                                </button>
-                            </div>
-                            <select id="adv-unit-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <!-- JS ile dolar -->
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
+                            <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                                <option value="8" ${(isEditing ? editMaterial.grade === '8' : prefillGrade === '8') ? 'selected' : ''}>8. Sınıf & LGS</option>
+                                <option value="7" ${(isEditing ? editMaterial.grade === '7' : prefillGrade === '7') ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
+                                <option value="6" ${(isEditing ? editMaterial.grade === '6' : prefillGrade === '6') ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
+                                <option value="5" ${(isEditing ? editMaterial.grade === '5' : prefillGrade === '5') ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
+                                <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
                             </select>
-                            <input type="text" id="adv-custom-topic-input" placeholder="Yeni Özel Başlık / Alt Başlık yazın..." class="hidden w-full mt-2 p-2.5 sm:p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 shadow-sm">
                         </div>
-                    </div>
 
-                    <!-- 2. İÇERİK BİLGİLERİ -->
-                    <div class="space-y-3 sm:space-y-4">
+                        <!-- Alt Kategori -->
                         <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">
-                                İçerik Başlığı <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" id="adv-title-input" required value="${isEditing ? (editMaterial.title || '') : ''}" placeholder="Örn: 8. Sınıf Basınç Ünitesi Akıllı Tahta Uyumlu Slayt Seti" class="w-full p-3 sm:p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Kısa Açıklama / Yönerge</label>
-                            <textarea id="adv-desc-input" rows="2" placeholder="Öğrenciler veya öğretmenler için materyal açıklaması..." class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">${isEditing ? (editMaterial.desc || '') : ''}</textarea>
-                        </div>
-                    </div>
-
-                    <!-- 3. DOSYA YÜKLEME VEYA LİNK -->
-                    <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
-                        <div class="flex items-center justify-between">
-                            <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> 2. Dosya / Bağlantı Kaynağı
-                            </span>
-                            
-                            <!-- Sekme Değiştirici -->
-                            <div class="flex items-center p-1 bg-slate-200/80 rounded-xl text-xs font-bold">
-                                <button type="button" id="tab-upload-file-btn" onclick="switchUploadMethod('file')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition-all text-xs">
-                                    📁 Dosya Yükle
-                                </button>
-                                <button type="button" id="tab-upload-link-btn" onclick="switchUploadMethod('link')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all text-xs">
-                                    🔗 Web / Drive Linki
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Dosya Sürükle Bırak Alanı -->
-                        <div id="upload-method-file-container">
-                            <div id="drag-drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white rounded-2xl p-4 sm:p-6 text-center transition-all cursor-pointer group">
-                                <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept="*/*,image/*,application/pdf,.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
-                                <label for="adv-file-input" class="cursor-pointer block">
-                                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl sm:text-2xl mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i>
-                                    </div>
-                                    <span class="block text-xs font-black text-slate-800 mb-0.5 sm:mb-1">Yeni dosya seçmek için <span class="text-red-600 underline">Gözatın</span> veya sürükleyin</span>
-                                    <span class="block text-[10px] sm:text-[11px] text-slate-400 font-medium">PDF, Word, PPTX, Video, Görsel, ZIP</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <!-- Embed Link -->
-                        <div id="upload-method-link-container" class="hidden space-y-2">
-                            <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
-                            <div class="relative">
-                                <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            </div>
-                        </div>
-
-                        <!-- Önizleme Kartı -->
-                        <div id="file-preview-card" class="${isEditing && editMaterial.fileName ? 'block' : 'hidden'} bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm animate-in fade-in duration-200">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3 overflow-hidden">
-                                    <div id="preview-file-icon" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-base sm:text-lg shrink-0">
-                                        <i class="fa-solid fa-file"></i>
-                                    </div>
-                                    <div class="truncate">
-                                        <div id="preview-file-name" class="text-xs font-black text-slate-900 truncate">${isEditing ? (editMaterial.fileName || 'Mevcut Dosya') : 'dosya.pdf'}</div>
-                                        <div id="preview-file-size" class="text-[10px] text-slate-400 font-bold">${isEditing ? (editMaterial.format || 'Yüklü') : 'Hazır'}</div>
-                                    </div>
-                                </div>
-                                <button type="button" onclick="removeSelectedFile()" class="p-2 text-slate-400 hover:text-red-600 text-xs font-bold" title="Dosyayı Kaldır">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 4. ETİKETLER & GÖRÜNÜRLÜK -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Etiketler</label>
-                            <div class="flex flex-wrap gap-1.5 p-2 sm:p-2.5 bg-slate-50 border border-slate-200 rounded-xl min-h-[40px]" id="tags-badge-container"></div>
-                            <div class="flex gap-1.5 mt-2">
-                                <input type="text" id="adv-tag-input" placeholder="Etiket ekle..." class="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500">
-                                <button type="button" onclick="addCustomTag()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg">Ekle</button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Görünürlük Durumu</label>
-                            <select id="adv-visibility-select" class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
-                                <option value="public" ${isEditing && editMaterial.visibility === 'public' ? 'selected' : ''}>🌐 Herkese Açık (Yayında)</option>
-                                <option value="draft" ${isEditing && editMaterial.visibility === 'draft' ? 'selected' : ''}>🔒 Taslak (Gizli)</option>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
+                            <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ders Notu</option>
+                                <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
+                                <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
+                                <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
+                                <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
+                                <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
+                                <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
+                                <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
+                                <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
+                                <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
                             </select>
                         </div>
                     </div>
 
+                    <!-- Ünite / Konu Seçimi -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-black uppercase text-slate-700">İlişkili Ünite / Başlık</label>
+                            <button type="button" onclick="toggleCustomTopicInput()" class="text-[11px] font-bold text-red-600 hover:text-red-700 underline">
+                                ➕ Listede Yoksa Yeni Başlık Ekle
+                            </button>
+                        </div>
+                        <select id="adv-unit-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <!-- JS ile dolar -->
+                        </select>
+                        <input type="text" id="adv-custom-topic-input" placeholder="Yeni Özel Başlık / Alt Başlık yazın..." class="hidden w-full mt-2 p-2.5 sm:p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 shadow-sm">
+                    </div>
                 </div>
 
-                <!-- 3. SABİT ALTLIK / FOOTER (Sticky / Fixed Bottom Action Bar) -->
-                <div class="p-3 sm:p-4 bg-white border-t border-slate-200/90 shadow-[0_-8px_20px_rgba(0,0,0,0.06)] shrink-0 flex items-center gap-2 sm:gap-3 z-30" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
-                    <button type="button" onclick="closeMaterialUploadModal()" class="py-3 sm:py-3.5 px-4 sm:px-6 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-black text-xs uppercase rounded-xl sm:rounded-2xl transition-all shrink-0">
-                        Vazgeç
-                    </button>
-                    <button type="submit" id="submit-material-btn" class="flex-1 py-3 sm:py-3.5 bg-gradient-to-r ${isEditing ? 'from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800'} text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-xl sm:rounded-2xl shadow-lg transition-all flex items-center justify-center gap-2 transform active:scale-98">
-                        <i class="fa-solid ${isEditing ? 'fa-check' : 'fa-cloud-arrow-up'} text-sm sm:text-base"></i>
+                <!-- 2. İÇERİK BİLGİLERİ -->
+                <div class="space-y-3 sm:space-y-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">
+                            İçerik Başlığı <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" id="adv-title-input" required value="${isEditing ? (editMaterial.title || '') : ''}" placeholder="Örn: 8. Sınıf Basınç Ünitesi Akıllı Tahta Uyumlu Slayt Seti" class="w-full p-3 sm:p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1">Kısa Açıklama / Yönerge</label>
+                        <textarea id="adv-desc-input" rows="2" placeholder="Öğrenciler veya öğretmenler için materyal açıklaması..." class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-sm">${isEditing ? (editMaterial.desc || '') : ''}</textarea>
+                    </div>
+                </div>
+
+                <!-- 3. DOSYA YÜKLEME VEYA LİNK -->
+                <div class="p-4 sm:p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-3 sm:space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-red-600"></span> 2. Dosya / Bağlantı Kaynağı
+                        </span>
+                        
+                        <!-- Sekme Değiştirici -->
+                        <div class="flex items-center p-1 bg-slate-200/80 rounded-xl text-xs font-bold">
+                            <button type="button" id="tab-upload-file-btn" onclick="switchUploadMethod('file')" class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition-all text-xs">
+                                📁 Dosya Yükle
+                            </button>
+                            <button type="button" id="tab-upload-link-btn" onclick="switchUploadMethod('link')" class="px-2.5 sm:px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition-all text-xs">
+                                🔗 Web / Drive Linki
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dosya Sürükle Bırak Alanı -->
+                    <div id="upload-method-file-container">
+                        <div id="drag-drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white rounded-2xl p-4 sm:p-6 text-center transition-all cursor-pointer group">
+                            <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept="*/*,image/*,application/pdf,.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
+                            <label for="adv-file-input" class="cursor-pointer block">
+                                <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-xl sm:text-2xl mx-auto mb-2 sm:mb-3 group-hover:scale-110 transition-transform shadow-sm">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                </div>
+                                <span class="block text-xs font-black text-slate-800 mb-0.5 sm:mb-1">Yeni dosya seçmek için <span class="text-red-600 underline">Gözatın</span> veya sürükleyin</span>
+                                <span class="block text-[10px] sm:text-[11px] text-slate-400 font-medium">PDF, Word, PPTX, Video, Görsel, ZIP</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Embed Link -->
+                    <div id="upload-method-link-container" class="hidden space-y-2">
+                        <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
+                        <div class="relative">
+                            <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        </div>
+                    </div>
+
+                    <!-- Önizleme Kartı -->
+                    <div id="file-preview-card" class="${isEditing && editMaterial.fileName ? 'block' : 'hidden'} bg-white p-3 sm:p-4 rounded-2xl border border-slate-200 shadow-sm animate-in fade-in duration-200">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-3 overflow-hidden">
+                                <div id="preview-file-icon" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-base sm:text-lg shrink-0">
+                                    <i class="fa-solid fa-file"></i>
+                                </div>
+                                <div class="truncate">
+                                    <div id="preview-file-name" class="text-xs font-black text-slate-900 truncate">${isEditing ? (editMaterial.fileName || 'Mevcut Dosya') : 'dosya.pdf'}</div>
+                                    <div id="preview-file-size" class="text-[10px] text-slate-400 font-bold">${isEditing ? (editMaterial.format || 'Yüklü') : 'Hazır'}</div>
+                                </div>
+                            </div>
+                            <button type="button" onclick="removeSelectedFile()" class="p-2 text-slate-400 hover:text-red-600 text-xs font-bold" title="Dosyayı Kaldır">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. ETİKETLER & GÖRÜNÜRLÜK -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Etiketler</label>
+                        <div class="flex flex-wrap gap-1.5 p-2 sm:p-2.5 bg-slate-50 border border-slate-200 rounded-xl min-h-[40px]" id="tags-badge-container"></div>
+                        <div class="flex gap-1.5 mt-2">
+                            <input type="text" id="adv-tag-input" placeholder="Etiket ekle..." class="flex-1 p-2 bg-white border border-slate-200 rounded-lg text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500">
+                            <button type="button" onclick="addCustomTag()" class="px-3 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg">Ekle</button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase text-slate-700 mb-1 sm:mb-1.5">Görünürlük Durumu</label>
+                        <select id="adv-visibility-select" class="w-full p-2.5 sm:p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500">
+                            <option value="public" ${isEditing && editMaterial.visibility === 'public' ? 'selected' : ''}>🌐 Herkese Açık (Yayında)</option>
+                            <option value="draft" ${isEditing && editMaterial.visibility === 'draft' ? 'selected' : ''}>🔒 Taslak (Gizli)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5. KAYDET VE YAYINLA BUTONLARI (Görünürlük Durumunun Hemen Altında) -->
+                <div class="pt-4 mt-2 border-t border-slate-200 flex flex-col sm:flex-row gap-3">
+                    <button type="submit" id="submit-material-btn" class="w-full sm:flex-1 py-3.5 sm:py-4 px-6 bg-gradient-to-r ${isEditing ? 'from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700' : 'from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800'} text-white font-black text-xs sm:text-sm uppercase tracking-wider rounded-2xl shadow-xl hover:shadow-2xl transition-all flex items-center justify-center gap-2.5 transform active:scale-98 cursor-pointer">
+                        <i class="fa-solid ${isEditing ? 'fa-check' : 'fa-cloud-arrow-up'} text-base"></i>
                         <span>${isEditing ? 'Değişiklikleri Kaydet & Güncelle' : 'İçeriği Sitede Yayınla ve Kaydet'}</span>
+                    </button>
+                    <button type="button" onclick="closeMaterialUploadModal()" class="w-full sm:w-auto py-3 sm:py-4 px-6 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-black text-xs uppercase rounded-2xl transition-all text-center">
+                        Vazgeç
                     </button>
                 </div>
             </form>
