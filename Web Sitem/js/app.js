@@ -5994,7 +5994,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                     <!-- Dosya Sürükle Bırak Alanı -->
                     <div id="upload-method-file-container">
                         <div id="drag-drop-zone" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)" class="border-2 border-dashed border-slate-300 hover:border-red-500 bg-white rounded-2xl p-6 text-center transition-all cursor-pointer group">
-                            <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept=".pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
+                            <input type="file" id="adv-file-input" onchange="handleFileSelected(event)" accept="*/*,image/*,application/pdf,.pdf,.docx,.doc,.pptx,.ppt,.xlsx,.xls,.mp4,.webm,.mp3,.wav,.png,.jpg,.jpeg,.svg,.webp,.zip" class="hidden">
                             <label for="adv-file-input" class="cursor-pointer block">
                                 <div class="w-14 h-14 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition-transform shadow-sm">
                                     <i class="fa-solid fa-cloud-arrow-up"></i>
@@ -6234,8 +6234,45 @@ function removeCustomTag(idx) {
 }
 
 // -------------------------------------------------------------
-// 💾 FORM KAYDETME & YAYINLAMA FONKSİYONU (TAM KORUMALI)
+// 💾 FORM KAYDETME & YAYINLAMA FONKSİYONU (TAM KORUMALI & MOBİL UYUMLU)
 // -------------------------------------------------------------
+
+async function compressImageIfNeeded(file) {
+    if (!file || (!file.type.startsWith("image/") && !/\.(jpg|jpeg|png|webp)$/i.test(file.name))) {
+        return null;
+    }
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                const maxDim = 1600;
+                let w = img.width;
+                let h = img.height;
+                if (w > maxDim || h > maxDim) {
+                    if (w > h) {
+                        h = Math.round((h * maxDim) / w);
+                        w = maxDim;
+                    } else {
+                        w = Math.round((w * maxDim) / h);
+                        h = maxDim;
+                    }
+                }
+                const canvas = document.createElement("canvas");
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, w, h);
+                const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                resolve(dataUrl);
+            };
+            img.onerror = () => resolve(e.target.result);
+            img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+    });
+}
 
 async function handleAdvMaterialSubmit(e) {
     if (e && e.preventDefault) e.preventDefault();
@@ -6289,22 +6326,33 @@ async function handleAdvMaterialSubmit(e) {
         let externalUrl = linkVal || "";
         let hasBlob = false;
 
-        // Dosya veya Link İşleme (Tüm cihazlarda görünmesi için Data URL ve IDB)
+        // Dosya veya Link İşleme (Tüm cihazlarda ve mobilde görünmesi için Data URL ve IDB)
         let fileDataUrl = "";
         if (currentUploadedFile) {
             finalFileName = currentUploadedFile.name;
             fileFormat = finalFileName.split('.').pop().toUpperCase();
             hasBlob = true;
-            // IDB'ye kaydet
-            await RotaliDB.saveFile(materialId, currentUploadedFile, finalFileName, fileFormat);
 
-            // Tüm cihazlarda ve bilgisayarda açılabilmesi için Data URL'e dönüştür (özellikle görseller ve belgeler)
+            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda anında açılır)
             try {
-                if (currentUploadedFile.size <= 8 * 1024 * 1024) { // 8MB altı tüm dosyalar
+                const compressed = await compressImageIfNeeded(currentUploadedFile);
+                if (compressed) {
+                    fileDataUrl = compressed;
+                } else if (currentUploadedFile.size <= 10 * 1024 * 1024) {
                     fileDataUrl = await readFileAsDataURL(currentUploadedFile);
                 }
             } catch(e) {
                 console.warn("DataURL conversion error:", e);
+                try {
+                    fileDataUrl = await readFileAsDataURL(currentUploadedFile);
+                } catch(err2) {}
+            }
+
+            // IDB'ye de kaydet
+            try {
+                await RotaliDB.saveFile(materialId, currentUploadedFile, finalFileName, fileFormat);
+            } catch(idbErr) {
+                console.warn("IDB Save error:", idbErr);
             }
         } else if (linkVal) {
             if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) fileFormat = "YouTube Video";
@@ -6361,6 +6409,11 @@ async function handleAdvMaterialSubmit(e) {
             localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
         } catch (storageErr) {
             console.warn("LocalStorage hatası:", storageErr);
+        }
+
+        // ☁️ Buluta Anında Senkronize Et (Telefondan yüklenen içerik bilgisayarda ve tüm ziyaretçilerde anında görünsün)
+        if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+            CloudSyncManager.uploadToCloud(customList, false).catch(err => console.warn("Cloud sync error:", err));
         }
 
         closeMaterialUploadModal();
