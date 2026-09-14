@@ -48,8 +48,27 @@ module.exports = async function handler(req, res) {
             }
 
             const data = await response.json();
-            const fileContent = data.files && data.files["materials.json"] ? data.files["materials.json"].content : "{}";
-            const parsed = JSON.parse(fileContent);
+            const fileObj = data.files && data.files["materials.json"];
+            let parsed = null;
+
+            if (fileObj) {
+                if (fileObj.truncated || !fileObj.content) {
+                    const rawUrl = fileObj.raw_url || ("https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now());
+                    const rawResp = await fetch(rawUrl);
+                    parsed = await rawResp.json();
+                } else {
+                    try {
+                        parsed = JSON.parse(fileObj.content);
+                    } catch (parseErr) {
+                        const rawUrl = fileObj.raw_url || ("https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now());
+                        const rawResp = await fetch(rawUrl);
+                        parsed = await rawResp.json();
+                    }
+                }
+            } else {
+                parsed = {};
+            }
+
             const deletedIds = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
             const cleanMats = (parsed.materials || []).filter(m => !deletedIds.includes(m.id));
 

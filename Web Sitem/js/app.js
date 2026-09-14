@@ -42,7 +42,7 @@ const CloudSyncManager = {
     // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder
     apiEndpoint: (typeof window !== "undefined" && window.location && window.location.hostname.includes("vercel.app")) 
         ? "/api/sync" 
-        : "https://rotali-fenci.vercel.app/api/sync",
+        : "https://rotalifenci.vercel.app/api/sync",
     fallbackGistUrl: "https://gist.githubusercontent.com/rotalifenci/a1bd259d8d4d9e04e93e4e038ef2b0c7/raw/materials.json",
     isSyncing: false,
     lastSyncedAt: null,
