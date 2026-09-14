@@ -17,15 +17,18 @@ function readFileAsDataURL(file) {
 function getDeletedMaterialIds() {
     try {
         const stored = localStorage.getItem("rotali_deleted_materials");
-        const list = stored ? JSON.parse(stored) : [];
-        return Array.isArray(list) ? list : [];
+        let list = stored ? JSON.parse(stored) : [];
+        if (!Array.isArray(list)) list = [];
+        // Başlık bazlı silmeleri temizle - Sadece 'mat-' ile başlayan ID'ler tutulur
+        list = list.filter(id => typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441");
+        return list;
     } catch(e) {
         return [];
     }
 }
 
 function addDeletedMaterialId(id) {
-    if (!id) return;
+    if (!id || typeof id !== "string" || !id.startsWith("mat-")) return; // Başlıkları asla ekleme!
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -36,7 +39,10 @@ function addDeletedMaterialId(id) {
 }
 
 const CloudSyncManager = {
-    apiEndpoint: "/api/sync",
+    // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder
+    apiEndpoint: (typeof window !== "undefined" && window.location && window.location.hostname.includes("vercel.app")) 
+        ? "/api/sync" 
+        : "https://rotali-fenci.vercel.app/api/sync",
     fallbackGistUrl: "https://gist.githubusercontent.com/rotalifenci/a1bd259d8d4d9e04e93e4e038ef2b0c7/raw/materials.json",
     isSyncing: false,
     lastSyncedAt: null,
@@ -100,8 +106,12 @@ const CloudSyncManager = {
                 }
             }
 
-            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle
-            cloudDeletedIds.forEach(id => addDeletedMaterialId(id));
+            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle (Sadece geçerli ID'ler)
+            cloudDeletedIds.forEach(id => {
+                if (typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441") {
+                    addDeletedMaterialId(id);
+                }
+            });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
             activeDeletedSet.add("mat-5-unite-bilgi");
 
@@ -134,12 +144,12 @@ const CloudSyncManager = {
                 }
             }
 
-            // 3. Birleştir: Silinmiş olanları kesinlikle hariç tut
+            // 3. Birleştir: Sadece gerçekten silinmiş ID'leri hariç tut (Başlıklar asla engellenmez)
             const mergedMap = new Map();
 
             // Sadece silinmemiş bulut materyalleri
             cloudMaterials.forEach(item => {
-                if (item && item.id && !activeDeletedSet.has(item.id) && !activeDeletedSet.has(item.title)) {
+                if (item && item.id && !activeDeletedSet.has(item.id)) {
                     mergedMap.set(item.id, item);
                 }
             });
@@ -147,7 +157,7 @@ const CloudSyncManager = {
             // Yerel cihazdaki materyaller (silinmemiş olanlar)
             let hasNewLocalToUpload = false;
             localMaterials.forEach(item => {
-                if (item && item.id && !activeDeletedSet.has(item.id) && !activeDeletedSet.has(item.title)) {
+                if (item && item.id && !activeDeletedSet.has(item.id)) {
                     const inCloud = mergedMap.get(item.id);
                     if (!inCloud) {
                         hasNewLocalToUpload = true;
@@ -176,14 +186,9 @@ const CloudSyncManager = {
                 showToast(`✅ Eşitleme başarılı! ${finalMergedList.length} materyal tüm cihazlarda aktif.`, "success");
             }
 
-            // Sayfadaki ilgili bölümü yenile
-            const hash = window.location.hash.slice(1);
-            if (hash.startsWith("grade/")) {
-                const gradeParam = hash.replace("grade/", "");
-                const appEl = document.getElementById("app");
-                if (appEl && typeof renderGradeDetail === "function") {
-                    renderGradeDetail(appEl, gradeParam);
-                }
+            // Sayfadaki arayüzü anında güncelle (Telefondan yüklenenler masaüstünde anında belirir)
+            if (typeof handleRouteChange === "function") {
+                handleRouteChange();
             }
         } catch(err) {
             console.error("Cloud sync general error:", err);
@@ -4687,13 +4692,8 @@ async function deleteCustomMaterial(id) {
         customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
     } catch(e) { customList = []; }
 
-    const targetItem = customList.find(item => item.id === id);
     addDeletedMaterialId(id);
-    if (targetItem && targetItem.title) {
-        addDeletedMaterialId(targetItem.title);
-    }
-
-    customList = customList.filter(item => item.id !== id && (!targetItem || item.title !== targetItem.title));
+    customList = customList.filter(item => item.id !== id);
     try {
         localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
     } catch(e) {}
