@@ -344,3 +344,54 @@ body.smartboard-mode #smartboard-exit-bar {
         color: #000000 !important;
     }
 }
+
+
+/* 📱 iOS Safari & Android Chrome/WebView Gelişmiş Mobil Uyum Stilleri */
+:root {
+    --sat: env(safe-area-inset-top, 0px);
+    --sar: env(safe-area-inset-right, 0px);
+    --sab: env(safe-area-inset-bottom, 0px);
+    --sal: env(safe-area-inset-left, 0px);
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    overflow-x: hidden;
+    padding-left: var(--sal);
+    padding-right: var(--sar);
+}
+
+/* Dokunmatik pürüzsüz yatay kaydırma */
+.no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+}
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* iOS & Android Buton ve Kart Dokunma Efektleri */
+button, a, input, select {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* Mobil Kart ve Tipografi Uyumları */
+@media (max-width: 640px) {
+    .hero-title-artistic {
+        font-size: 1.85rem !important;
+        line-height: 1.2 !important;
+    }
+    .mat-preview-box {
+        height: 180px !important;
+    }
+}

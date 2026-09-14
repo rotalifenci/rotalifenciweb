@@ -842,6 +842,18 @@ function updateActiveNav(hash) {
             link.classList.add("text-slate-700");
         }
     });
+
+    // Mobil Alt Bar (iOS & Android) Aktiflik Durumu
+    document.querySelectorAll(".mobile-bottom-tab").forEach(tab => {
+        const href = tab.getAttribute("href") ? tab.getAttribute("href").replace("#", "") : "";
+        if (hash === href || (hash === "home" && href === "home") || (href.startsWith("grade/") && hash.startsWith(href))) {
+            tab.classList.add("text-brand-red", "font-black");
+            tab.classList.remove("text-slate-600");
+        } else {
+            tab.classList.remove("text-brand-red", "font-black");
+            tab.classList.add("text-slate-600");
+        }
+    });
 }
 
 function updateStudentHeader() {
