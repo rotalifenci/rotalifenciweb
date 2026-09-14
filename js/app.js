@@ -5336,9 +5336,34 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
     // Determine if it's a built-in interactive game or external URL
-    const gameData = INTERACTIVE_GAMES_POOL[gameKeyOrUrl] || (gameKeyOrUrl && gameKeyOrUrl.includes("lab") ? INTERACTIVE_GAMES_POOL["oyun-5-lab"] : (gameKeyOrUrl && gameKeyOrUrl.includes("passaparola") ? INTERACTIVE_GAMES_POOL["oyun-8-passaparola"] : (gameKeyOrUrl && gameKeyOrUrl.includes("hucre") ? INTERACTIVE_GAMES_POOL["oyun-7-hucre"] : null)));
+    const rawGameData = INTERACTIVE_GAMES_POOL[gameKeyOrUrl] || (gameKeyOrUrl && gameKeyOrUrl.includes("lab") ? INTERACTIVE_GAMES_POOL["oyun-5-lab"] : (gameKeyOrUrl && gameKeyOrUrl.includes("passaparola") ? INTERACTIVE_GAMES_POOL["oyun-8-passaparola"] : (gameKeyOrUrl && gameKeyOrUrl.includes("hucre") ? INTERACTIVE_GAMES_POOL["oyun-7-hucre"] : null)));
 
-    if (gameData) {
+    if (rawGameData) {
+        // Rastgele şık dizilimi ve soru sıralaması (Cevapların sürekli A şıkkı çıkmasını engeller)
+        const shuffledQuestions = rawGameData.questions.map(origQ => {
+            const q = { ...origQ };
+            const correctText = origQ.options[origQ.answer !== undefined ? origQ.answer : 0];
+            const opts = [...origQ.options];
+            for (let i = opts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [opts[i], opts[j]] = [opts[j], opts[i]];
+            }
+            q.options = opts;
+            q.answer = opts.indexOf(correctText);
+            return q;
+        });
+
+        // Soru sırasını da karıştır
+        for (let i = shuffledQuestions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffledQuestions[i], shuffledQuestions[j]] = [shuffledQuestions[j], shuffledQuestions[i]];
+        }
+
+        const gameData = {
+            ...rawGameData,
+            questions: shuffledQuestions
+        };
+
         currentActiveGame = {
             gameKey: gameKeyOrUrl,
             data: gameData,
