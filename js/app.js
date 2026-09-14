@@ -4960,46 +4960,39 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     let contentHtml = "";
     if (isImageDoc) {
         contentHtml = `
-            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-3xl sm:max-w-4xl w-auto max-h-[92vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto select-none" onclick="event.stopPropagation()">
+            <div class="bg-slate-950 rounded-2xl sm:rounded-3xl w-fit max-w-[96vw] max-h-[96vh] shadow-2xl border border-slate-800 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto select-none" onclick="event.stopPropagation()">
                 <!-- Üst Başlık & Büyüt/Küçült ve Kapat Butonları -->
-                <div class="px-3 py-2 sm:px-5 sm:py-2.5 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-2 sm:gap-3 border-b border-slate-800">
+                <div class="px-3.5 py-2 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-2 sm:gap-4 border-b border-slate-800">
                     <div class="flex items-center gap-2 min-w-0">
-                        <span class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-black shrink-0">
+                        <span class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-black shrink-0">
                             <i class="fa-solid fa-image"></i>
                         </span>
                         <div class="min-w-0">
-                            <h3 class="text-xs sm:text-sm font-black truncate max-w-[130px] sm:max-w-xs">${docTitle}</h3>
-                            <span class="text-[10px] text-slate-400 hidden sm:inline">Rotalı Fenci Görsel Önizleme</span>
+                            <h3 class="text-xs sm:text-sm font-black truncate max-w-[140px] sm:max-w-xs">${docTitle}</h3>
                         </div>
                     </div>
 
                     <!-- 🔍 Büyüt / Küçült / Sıfırla Toolbar -->
-                    <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-slate-800/90 p-1 rounded-xl border border-slate-700">
-                        <button type="button" onclick="changeImageModalZoom(-0.25)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Küçült (-)">
+                    <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-slate-800 p-0.5 sm:p-1 rounded-xl border border-slate-700">
+                        <button type="button" onclick="changeImageModalZoom(-0.25)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Küçült (-)">
                             <i class="fa-solid fa-magnifying-glass-minus"></i>
                         </button>
-                        <button type="button" onclick="resetImageModalZoom()" id="inpage-zoom-level-text" class="px-2 py-0.5 sm:py-1 rounded-lg bg-slate-900 hover:bg-slate-700 text-amber-400 font-black text-[10px] sm:text-xs tracking-wide transition-all select-none cursor-pointer" title="Yakınlaştırmayı Sıfırla (%100)">
+                        <button type="button" onclick="resetImageModalZoom()" id="inpage-zoom-level-text" class="px-2 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-700 text-amber-400 font-black text-[10px] sm:text-xs tracking-wide transition-all select-none cursor-pointer" title="Yakınlaştırmayı Sıfırla (%100)">
                             %100
                         </button>
-                        <button type="button" onclick="changeImageModalZoom(0.25)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Büyüt (+)">
+                        <button type="button" onclick="changeImageModalZoom(0.25)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Büyüt (+)">
                             <i class="fa-solid fa-magnifying-glass-plus"></i>
                         </button>
                     </div>
 
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
                         <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
                 </div>
 
-                <!-- Görsel Alanı: İmleçle tutup kaydırma (Pan & Drag) ve zoom alanı -->
-                <div id="inpage-modal-zoom-container" class="p-2 sm:p-4 bg-slate-100/95 flex items-center justify-center overflow-hidden max-h-[72vh] min-h-[260px] relative touch-none select-none cursor-grab" title="İmleçle basılı tutup kaydırabilirsiniz">
-                    <img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" draggable="false" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" class="max-h-[56vh] sm:max-h-[66vh] max-w-[84vw] sm:max-w-[70vw] w-auto h-auto object-contain rounded-xl shadow-md border border-slate-200 bg-white block mx-auto select-none pointer-events-auto" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;" loading="lazy">
-                </div>
-
-                <!-- Alt İpucu Barı -->
-                <div class="px-3 py-1.5 bg-slate-50 border-t border-slate-200 text-center text-[10px] sm:text-[11px] font-bold text-slate-600 flex items-center justify-center gap-1.5 shrink-0">
-                    <i class="fa-solid fa-arrows-up-down-left-right text-amber-500"></i>
-                    <span>Büyüttükten sonra görseli <strong>imleçle basılı tutup istediğiniz yöne kaydırabilirsiniz</strong>.</span>
+                <!-- Görsel Alanı: Tamamen boşluksuz, sıfır padding, ekrana tam oturan net görsel -->
+                <div id="inpage-modal-zoom-container" class="p-0 m-0 bg-slate-950 flex items-center justify-center overflow-hidden relative touch-none select-none cursor-grab" title="İmleçle basılı tutup kaydırabilirsiniz">
+                    <img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" draggable="false" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" class="max-h-[82vh] sm:max-h-[86vh] max-w-[95vw] sm:max-w-[90vw] w-auto h-auto object-contain block mx-auto select-none pointer-events-auto" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;" loading="lazy">
                 </div>
             </div>
         `;
