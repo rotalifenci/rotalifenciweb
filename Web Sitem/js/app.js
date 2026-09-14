@@ -4789,13 +4789,13 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 }
 
-// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (KAYDIRMASIZ, TEK EKRANA TAM SIĞAN DOĞAL GÖRSEL MODALI)
+// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (TELEFON VE BİLGİSAYARDA NORMAL DOĞAL BOYUTTA, KAYDIRMASIZ)
 function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf") {
     let modal = document.getElementById("inpage-document-modal");
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "inpage-document-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 transition-all";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 transition-all";
         modal.onclick = function(e) {
             if (e.target === this) closeInPageDocumentModal();
         };
@@ -4807,51 +4807,51 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     let contentHtml = "";
     if (isImageDoc) {
         contentHtml = `
-            <div class="bg-white rounded-3xl max-w-3xl w-auto max-h-[90vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl sm:max-w-3xl w-auto max-h-[85vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-2" onclick="event.stopPropagation()">
                 <!-- Üst Başlık & Kapat Butonu -->
-                <div class="px-5 py-3 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-3">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <span class="w-8 h-8 rounded-xl bg-red-600 text-white flex items-center justify-center text-sm font-black shrink-0">
+                <div class="px-4 py-2.5 sm:px-5 sm:py-3 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-2">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-red-600 text-white flex items-center justify-center text-xs sm:text-sm font-black shrink-0">
                             <i class="fa-solid fa-image"></i>
                         </span>
                         <div class="min-w-0">
-                            <h3 class="text-sm sm:text-base font-black truncate">${docTitle}</h3>
-                            <span class="text-[11px] text-slate-400">Görsel Önizleme</span>
+                            <h3 class="text-xs sm:text-sm font-black truncate">${docTitle}</h3>
+                            <span class="text-[10px] text-slate-400 hidden sm:inline">Görsel Önizleme</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer" title="Kapat">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer" title="Kapat">
+                        <i class="fa-solid fa-xmark text-xs sm:text-sm"></i>
                     </button>
                 </div>
 
-                <!-- Görsel Alanı: Tamamen tek ekrana sığan, kesinlikle kaydırma çubuğu oluşturmayan net önizleme -->
-                <div class="p-3 sm:p-4 bg-slate-100/90 flex items-center justify-center overflow-hidden">
-                    <img src="${docUrl}" alt="${docTitle}" class="max-h-[75vh] max-w-[85vw] object-contain rounded-2xl shadow-sm border border-slate-200 bg-white block mx-auto" style="height: auto; width: auto;" loading="lazy">
+                <!-- Görsel Alanı: Telefonda ve PC'de tek ekrana tam sığan, kesinlikle kaydırmasız ve doğal boyutunda görsel -->
+                <div class="p-2 sm:p-4 bg-slate-100/90 flex items-center justify-center overflow-hidden">
+                    <img src="${docUrl}" alt="${docTitle}" class="max-h-[62vh] sm:max-h-[72vh] max-w-[88vw] sm:max-w-[78vw] object-contain rounded-xl shadow-sm border border-slate-200 bg-white block mx-auto" style="height: auto; width: auto;" loading="lazy">
                 </div>
             </div>
         `;
     } else {
         contentHtml = `
-            <div class="bg-slate-900 rounded-3xl max-w-5xl w-full h-[88vh] overflow-hidden shadow-2xl border border-slate-700 flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-                <!-- Üst Başlık & Kapat Barı (Yazdır seçeneği yok, sadece temiz görüntüleme) -->
-                <div class="px-5 py-3.5 bg-slate-800 text-white flex items-center justify-between shrink-0 border-b border-slate-700 gap-3">
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <span class="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center text-sm font-black shrink-0">
+            <div class="bg-slate-900 rounded-2xl sm:rounded-3xl max-w-5xl w-full h-[85vh] sm:h-[88vh] overflow-hidden shadow-2xl border border-slate-700 flex flex-col animate-in zoom-in-95 duration-200 mx-2" onclick="event.stopPropagation()">
+                <!-- Üst Başlık & Kapat Barı -->
+                <div class="px-4 py-2.5 sm:px-5 sm:py-3.5 bg-slate-800 text-white flex items-center justify-between shrink-0 border-b border-slate-700 gap-3">
+                    <div class="flex items-center gap-2 min-w-0">
+                        <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs sm:text-sm font-black shrink-0">
                             <i class="fa-solid fa-file-pdf"></i>
                         </span>
                         <div class="min-w-0">
-                            <h3 class="text-sm sm:text-base font-black truncate">${docTitle}</h3>
-                            <span class="text-[11px] text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
+                            <h3 class="text-xs sm:text-sm font-black truncate">${docTitle}</h3>
+                            <span class="text-[10px] text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer" title="Kapat">
-                        <i class="fa-solid fa-xmark text-sm"></i>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer" title="Kapat">
+                        <i class="fa-solid fa-xmark text-xs sm:text-sm"></i>
                     </button>
                 </div>
 
                 <!-- Belge Alanı -->
                 <div class="flex-1 bg-slate-950 p-2 overflow-hidden">
-                    <iframe src="${docUrl}" class="w-full h-full rounded-2xl border-0 bg-white"></iframe>
+                    <iframe src="${docUrl}" class="w-full h-full rounded-xl sm:rounded-2xl border-0 bg-white"></iframe>
                 </div>
             </div>
         `;
