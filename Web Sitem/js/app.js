@@ -443,7 +443,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                         <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105">
                                         <div class="absolute bottom-2.5 right-2.5">
                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-magnifying-glass-plus"></i> Tam Sayfa Aç
+                                                <i class="fa-solid fa-magnifying-glass-plus"></i> Görseli Aç
                                             </span>
                                         </div>
                                     </div>
@@ -4765,7 +4765,10 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         const fileRecord = await RotaliDB.getFile(id);
         if (fileRecord && fileRecord.blob) {
             const url = URL.createObjectURL(fileRecord.blob);
-            openInPageDocumentModal(url, title || fileRecord.fileName || fileName, fileName);
+            const isImg = (fileRecord.type && fileRecord.type.startsWith("image/")) || 
+                          (fileRecord.fileName && (/\.(jpg|jpeg|png|webp|svg|gif)$/i).test(fileRecord.fileName)) ||
+                          (category && (category === "gorseller" || category.includes("gorsel") || category.includes("infografik")));
+            openInPageDocumentModal(url, title || fileRecord.fileName || fileName, fileName, isImg);
             return;
         }
     } catch(err) {
@@ -4780,44 +4783,51 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 }
 
-// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (TELEFON VE BİLGİSAYARDA NORMAL DOĞAL BOYUTTA, KAYDIRMASIZ)
-function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf") {
+// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (TELEFON VE BİLGİSAYARDA NORMAL DOĞAL BOYUTTA, KESİNLİKLE KAYDIRMASIZ)
+function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false) {
     let modal = document.getElementById("inpage-document-modal");
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "inpage-document-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4 transition-all";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-200";
         modal.onclick = function(e) {
             if (e.target === this) closeInPageDocumentModal();
         };
         document.body.appendChild(modal);
     }
 
-    const isImageDoc = docUrl && (docUrl.endsWith(".svg") || docUrl.endsWith(".jpg") || docUrl.endsWith(".jpeg") || docUrl.endsWith(".png") || docUrl.endsWith(".webp") || docUrl.includes("data:image"));
-    
+    const lowerUrl = (docUrl || "").toLowerCase();
+    const lowerFile = (fileName || "").toLowerCase();
+    const lowerTitle = (docTitle || "").toLowerCase();
+
+    const isImageDoc = forceImage || 
+        lowerUrl.endsWith(".svg") || lowerUrl.endsWith(".jpg") || lowerUrl.endsWith(".jpeg") || lowerUrl.endsWith(".png") || lowerUrl.endsWith(".webp") || lowerUrl.endsWith(".gif") || lowerUrl.includes("data:image") ||
+        lowerFile.endsWith(".svg") || lowerFile.endsWith(".jpg") || lowerFile.endsWith(".jpeg") || lowerFile.endsWith(".png") || lowerFile.endsWith(".webp") || lowerFile.endsWith(".gif") ||
+        lowerTitle.includes("görsel") || lowerTitle.includes("infografik") || lowerTitle.includes("resim") || lowerTitle.includes("ünite") || lowerTitle.includes("kazanım");
+
     let contentHtml = "";
     if (isImageDoc) {
         contentHtml = `
-            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl sm:max-w-3xl w-auto max-h-[85vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-2" onclick="event.stopPropagation()">
+            <div class="bg-white rounded-2xl sm:rounded-3xl max-w-2xl sm:max-w-3xl w-auto max-h-[88vh] shadow-2xl border border-slate-200 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto" onclick="event.stopPropagation()">
                 <!-- Üst Başlık & Kapat Butonu -->
-                <div class="px-4 py-2.5 sm:px-5 sm:py-3 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-2">
+                <div class="px-4 py-2 sm:px-5 sm:py-2.5 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-3 border-b border-slate-800">
                     <div class="flex items-center gap-2 min-w-0">
-                        <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-red-600 text-white flex items-center justify-center text-xs sm:text-sm font-black shrink-0">
+                        <span class="w-7 h-7 rounded-lg bg-red-600 text-white flex items-center justify-center text-xs font-black shrink-0">
                             <i class="fa-solid fa-image"></i>
                         </span>
                         <div class="min-w-0">
                             <h3 class="text-xs sm:text-sm font-black truncate">${docTitle}</h3>
-                            <span class="text-[10px] text-slate-400 hidden sm:inline">Görsel Önizleme</span>
+                            <span class="text-[10px] text-slate-400 hidden sm:inline">Rotalı Fenci Görsel Önizleme</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer" title="Kapat">
-                        <i class="fa-solid fa-xmark text-xs sm:text-sm"></i>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
+                        <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
                 </div>
 
-                <!-- Görsel Alanı: Telefonda ve PC'de tek ekrana tam sığan, kesinlikle kaydırmasız ve doğal boyutunda görsel -->
+                <!-- Görsel Alanı: Tamamen ekrana sığan, dikey veya yatay kaydırma gerektirmeyen, doğal ve net görünüm -->
                 <div class="p-2 sm:p-4 bg-slate-100/90 flex items-center justify-center overflow-hidden">
-                    <img src="${docUrl}" alt="${docTitle}" class="max-h-[62vh] sm:max-h-[72vh] max-w-[88vw] sm:max-w-[78vw] object-contain rounded-xl shadow-sm border border-slate-200 bg-white block mx-auto" style="height: auto; width: auto;" loading="lazy">
+                    <img src="${docUrl}" alt="${docTitle}" class="max-h-[58vh] sm:max-h-[68vh] max-w-[86vw] sm:max-w-[70vw] w-auto h-auto object-contain rounded-xl shadow-md border border-slate-200 bg-white block mx-auto select-none" loading="lazy">
                 </div>
             </div>
         `;
@@ -4835,8 +4845,8 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                             <span class="text-[10px] text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer" title="Kapat">
-                        <i class="fa-solid fa-xmark text-xs sm:text-sm"></i>
+                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
+                        <i class="fa-solid fa-xmark text-sm"></i>
                     </button>
                 </div>
 
