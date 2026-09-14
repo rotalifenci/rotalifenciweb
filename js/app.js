@@ -14,13 +14,20 @@ function readFileAsDataURL(file) {
 // Telefon, Bilgisayar, Tablet ve Akıllı Tahta Arası Tam Eşitleme
 // =============================================================
 
+let ROTALI_MATERIALS_CACHE = null;
+
 function getDeletedMaterialIds() {
     try {
         const stored = localStorage.getItem("rotali_deleted_materials");
         let list = stored ? JSON.parse(stored) : [];
         if (!Array.isArray(list)) list = [];
-        // Başlık bazlı silmeleri temizle - Sadece 'mat-' ile başlayan ID'ler tutulur
-        list = list.filter(id => typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441");
+        // Sadece 'mat-' ile başlayan ID'ler tutulur
+        list = list.filter(id => typeof id === "string" && id.startsWith("mat-"));
+        // Aktif olarak önbellekte bulunan veya yüklenen hiçbir materyal silinmiş sayılamaz
+        if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
+            const activeIds = new Set(ROTALI_MATERIALS_CACHE.map(m => m && m.id).filter(Boolean));
+            list = list.filter(id => !activeIds.has(id));
+        }
         return list;
     } catch(e) {
         return [];
@@ -28,7 +35,7 @@ function getDeletedMaterialIds() {
 }
 
 function addDeletedMaterialId(id) {
-    if (!id || typeof id !== "string" || !id.startsWith("mat-")) return; // Başlıkları asla ekleme!
+    if (!id || typeof id !== "string" || !id.startsWith("mat-")) return;
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -36,6 +43,20 @@ function addDeletedMaterialId(id) {
             localStorage.setItem("rotali_deleted_materials", JSON.stringify(list));
         } catch(e) {}
     }
+}
+
+function removeDeletedMaterialId(id) {
+    if (!id) return;
+    try {
+        const stored = localStorage.getItem("rotali_deleted_materials");
+        if (stored) {
+            let list = JSON.parse(stored);
+            if (Array.isArray(list) && list.includes(id)) {
+                list = list.filter(x => x !== id);
+                localStorage.setItem("rotali_deleted_materials", JSON.stringify(list));
+            }
+        }
+    } catch(e) {}
 }
 
 const CloudSyncManager = {
@@ -147,21 +168,32 @@ const CloudSyncManager = {
                 }
             }
 
-            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle (Sadece geçerli ID'ler, başlıklar ASLA eklenmez)
+            // Buluttan gelen aktif materyallerin ID'lerini yerel silinmiş listesinden temizle (Kendi kendini onarma)
+            cloudMaterials.forEach(item => {
+                if (item && item.id) {
+                    removeDeletedMaterialId(item.id);
+                }
+            });
+
+            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle (Sadece geçerli ID'ler)
             cloudDeletedIds.forEach(id => {
-                if (typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441") {
+                if (typeof id === "string" && id.startsWith("mat-")) {
                     addDeletedMaterialId(id);
                 }
             });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
             activeDeletedSet.add("mat-5-unite-bilgi");
 
-            // 2. Cihazdaki yerel materyalleri al
+            // 2. Cihazdaki yerel materyalleri al (Bellek öncelikli)
             let localMaterials = [];
-            try {
-                localMaterials = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-            } catch(e) {
-                localMaterials = [];
+            if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
+                localMaterials = ROTALI_MATERIALS_CACHE;
+            } else {
+                try {
+                    localMaterials = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+                } catch(e) {
+                    localMaterials = [];
+                }
             }
 
             // 3. Birleştir: Sadece gerçekten silinmiş ID'leri hariç tut (Başlıklar asla engellenmez)
@@ -195,12 +227,8 @@ const CloudSyncManager = {
                 }
             });
 
-            // 4. Yerel hafızaya kaydet
-            try {
-                localStorage.setItem("rotali_custom_materials", JSON.stringify(finalMergedList));
-            } catch(e) {
-                console.warn("localStorage quota or error:", e);
-            }
+            // 4. Bellek ve Yerel hafızaya güvenle kaydet (Mobilde kota aşımına karşı korumalı)
+            saveCustomMaterialsSafe(finalMergedList);
 
             // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder
             if (hasNewLocalToUpload) {
@@ -365,7 +393,32 @@ const DEFAULT_CUSTOM_MATERIALS = [
     }
 ];
 
+function saveCustomMaterialsSafe(list) {
+    if (!Array.isArray(list)) return;
+    ROTALI_MATERIALS_CACHE = [...list];
+    try {
+        localStorage.setItem("rotali_custom_materials", JSON.stringify(list));
+    } catch (storageErr) {
+        console.warn("LocalStorage quota uyarısı, hafifletilmiş önbellek kaydediliyor:", storageErr);
+        try {
+            // Mobilde LocalStorage kotası dolarsa, bellekteki tam veri korunurken yerel depolama için ağır base64 URL'leri kısaltılır
+            const slimList = list.map(item => {
+                const copy = { ...item };
+                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > 80000) {
+                    copy.fileUrl = ""; // Tam dosya ROTALI_MATERIALS_CACHE ve IndexedDB'de mevcuttur
+                }
+                return copy;
+            });
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(slimList));
+        } catch (e2) {}
+    }
+}
+
 function getCustomMaterialsList() {
+    if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
+        return ROTALI_MATERIALS_CACHE;
+    }
+
     let customList = [];
     const deletedIds = new Set(getDeletedMaterialIds());
     deletedIds.add("mat-5-unite-bilgi");
@@ -381,16 +434,12 @@ function getCustomMaterialsList() {
 
     if (!Array.isArray(customList) || customList.length === 0) {
         customList = DEFAULT_CUSTOM_MATERIALS.filter(item => !deletedIds.has(item.id));
-        try {
-            localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
-        } catch (e) {}
+        saveCustomMaterialsSafe(customList);
     } else {
         const cleanList = customList.filter(item => item && !deletedIds.has(item.id));
         if (cleanList.length !== customList.length) {
             customList = cleanList;
-            try {
-                localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
-            } catch (e) {}
+            saveCustomMaterialsSafe(customList);
         }
     }
 
@@ -401,6 +450,7 @@ function getCustomMaterialsList() {
         }
     });
 
+    ROTALI_MATERIALS_CACHE = customList;
     return customList;
 }
 
@@ -423,8 +473,10 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
         let categoryMatch = false;
         if (targetSubTab === "all" || targetSubTab === "uniteler") {
             categoryMatch = true;
+        } else if (itemCat === targetSubTab) {
+            categoryMatch = true;
         } else if (targetSubTab === "egitsel-oyunlar" || targetSubTab === "oyunlar" || targetSubTab === "oyun") {
-            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemCat.includes("oyun") || itemCat.includes("lab") || itemCat.includes("simula") || itemFormat.includes("oyun") || itemTitle.includes("oyun") || itemTitle.includes("eşleştirme") || itemTitle.includes("laboratuvar"));
+            categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemFormat.includes("oyun") || itemTitle.includes("oyun") || itemTitle.includes("eşleştirme"));
         } else if (targetSubTab === "ders-notu") {
             categoryMatch = (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")));
         } else if (targetSubTab === "ders-sunumu") {
@@ -4768,16 +4820,10 @@ async function deleteCustomMaterial(id) {
     if (!checkAdminAccess()) return;
     if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
 
-    let customList = [];
-    try {
-        customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-    } catch(e) { customList = []; }
-
+    let customList = getCustomMaterialsList();
     addDeletedMaterialId(id);
-    customList = customList.filter(item => item.id !== id);
-    try {
-        localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
-    } catch(e) {}
+    customList = customList.filter(item => item && item.id !== id);
+    saveCustomMaterialsSafe(customList);
 
     if (typeof RotaliDB !== "undefined" && RotaliDB.deleteFile) {
         try {
@@ -6344,16 +6390,16 @@ async function compressImageIfNeeded(file) {
                 canvas.height = h;
                 const ctx = canvas.getContext("2d");
                 ctx.drawImage(img, 0, 0, w, h);
-                let dataUrl = canvas.toDataURL("image/jpeg", 0.78);
+                let dataUrl = canvas.toDataURL("image/jpeg", 0.70);
                 
-                // Eğer dataUrl 250KB üzerindeyse, biraz daha optimize ederek 150KB altına indir
-                if (dataUrl.length > 300000) {
+                // Mobilde ve bulutta kotayı asla aşmamak için 120KB altına optimize et
+                if (dataUrl.length > 150000) {
                     const canvas2 = document.createElement("canvas");
-                    canvas2.width = Math.round(w * 0.8);
-                    canvas2.height = Math.round(h * 0.8);
+                    canvas2.width = Math.round(w * 0.75);
+                    canvas2.height = Math.round(h * 0.75);
                     const ctx2 = canvas2.getContext("2d");
                     ctx2.drawImage(img, 0, 0, canvas2.width, canvas2.height);
-                    dataUrl = canvas2.toDataURL("image/jpeg", 0.72);
+                    dataUrl = canvas2.toDataURL("image/jpeg", 0.62);
                 }
                 
                 resolve(dataUrl);
@@ -6496,12 +6542,8 @@ async function handleAdvMaterialSubmit(e) {
             customList.unshift(newMaterial);
         }
 
-        // Yerel hafızaya kaydet
-        try {
-            localStorage.setItem("rotali_custom_materials", JSON.stringify(customList));
-        } catch (storageErr) {
-            console.warn("LocalStorage hatası:", storageErr);
-        }
+        // Yerel hafızaya ve bellek havuzuna anında güvenle kaydet
+        saveCustomMaterialsSafe(customList);
 
         // ☁️ Buluta Anında Senkronize Et (Telefondan yüklenen içerik bilgisayarda ve tüm ziyaretçilerde anında görünsün)
         if (submitBtn) {

@@ -108,7 +108,13 @@ module.exports = async function handler(req, res) {
             } catch(e) {}
 
             // Combine deleted IDs (strictly material IDs, never titles)
-            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441"));
+            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.startsWith("mat-")));
+            // Aktif olarak yuklenen veya listede olan materyaller silinmisler listesinden otomatik cikarilir
+            incomingMaterials.forEach(item => {
+                if (item && item.id) {
+                    allDeletedSet.delete(item.id);
+                }
+            });
             const allDeletedIds = Array.from(allDeletedSet);
 
             let finalMaterials = [];
