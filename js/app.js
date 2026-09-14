@@ -4593,58 +4593,53 @@ function handleAdminLogout() {
     localStorage.removeItem("rotali_is_admin");
     ADMIN_CONFIG.isAdmin = false;
     updateAdminNavUI();
-    showToast("🚪 Yönetici oturumu güvenle kapatıldı.", "info");
-    window.location.hash = "home";
-    setTimeout(() => {
-        handleRouteChange();
-    }, 50);
+    showToast("🚪 Yönetici oturumundan başarıyla çıkış yapıldı.", "info");
+    handleRouteChange();
 }
 
 function updateAdminNavUI() {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     ADMIN_CONFIG.isAdmin = isAdmin;
 
-    // 1. Desktop: Ev (Home) Butonunun Yanına Çıkış Simgesi
-    const desktopLogout = document.getElementById("admin-home-logout-desktop");
-    if (desktopLogout) {
+    // 1. Üst Bar Yönetici / Çıkış Butonu
+    const topContainer = document.getElementById("admin-nav-container");
+    if (topContainer) {
         if (isAdmin) {
-            desktopLogout.innerHTML = `
-                <button type="button" onclick="CloudSyncManager.forceSync()" class="h-11 px-3.5 rounded-2xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center gap-2 text-xs font-black transition-all shadow-sm border border-blue-200 hover:scale-105 transform active:scale-95" title="☁️ Bulut ile Eşitle (Telefon ve Bilgisayarı Senkronize Et)">
-                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span class="hidden xl:inline">Bulutla Eşitle</span>
-                </button>
-                <button type="button" onclick="handleAdminLogout()" class="w-11 h-11 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-lg transition-all shadow-sm border border-rose-200 hover:scale-105 transform active:scale-95 animate-in fade-in" title="👑 Yönetici Modunu Kapat (Çıkış Yap)">
-                    <i class="fa-solid fa-power-off"></i>
-                </button>
+            topContainer.innerHTML = `
+                <div class="flex items-center gap-1.5 animate-in fade-in duration-200">
+                    <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all" title="Hızlı Materyal Ekle">
+                        <i class="fa-solid fa-plus text-xs"></i> <span class="hidden md:inline">Ekle</span>
+                    </button>
+                    <button type="button" onclick="handleAdminLogout()" class="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer border border-rose-500" title="👑 Yönetici Oturumunu Kapat (Çıkış Yap)">
+                        <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+                        <span>Çıkış Yap</span>
+                    </button>
+                </div>
             `;
         } else {
-            desktopLogout.innerHTML = "";
+            topContainer.innerHTML = `
+                <button type="button" onclick="openAdminLoginModal()" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 border border-slate-200 transition-colors" title="Yönetici Girişi">
+                    <i class="fa-solid fa-lock text-[11px]"></i> <span class="hidden md:inline">Yönetici</span>
+                </button>
+            `;
         }
     }
 
-    // 2. Mobil: Ev (Home) Butonunun Yanına Çıkış Simgesi
-    const mobileLogout = document.getElementById("admin-home-logout-mobile");
-    if (mobileLogout) {
+    // 2. Alt Bilgi (Footer) Göstergesi
+    const footerIndicator = document.getElementById("admin-status-indicator");
+    if (footerIndicator) {
         if (isAdmin) {
-            mobileLogout.innerHTML = `
-                <button type="button" onclick="CloudSyncManager.forceSync()" class="w-10 h-10 rounded-2xl bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white flex items-center justify-center text-base transition-all shadow-sm border border-blue-200 active:scale-95 animate-in fade-in" title="☁️ Bulutla Eşitle (Tüm Cihazlara Aktar)">
-                    <i class="fa-solid fa-cloud-arrow-up"></i>
-                </button>
-                <button type="button" onclick="handleAdminLogout()" class="w-10 h-10 rounded-2xl bg-rose-50 hover:bg-rose-600 text-rose-600 hover:text-white flex items-center justify-center text-base transition-all shadow-sm border border-rose-200 active:scale-95 animate-in fade-in" title="👑 Yönetici Modunu Kapat">
-                    <i class="fa-solid fa-power-off"></i>
-                </button>
+            footerIndicator.className = "flex items-center gap-2 px-3 py-1 rounded-xl bg-emerald-900/60 border border-emerald-500/40 text-xs text-emerald-300";
+            footerIndicator.innerHTML = `
+                <i class="fa-solid fa-shield-check text-emerald-400"></i>
+                <span>Yönetici Aktif</span>
+                <button onclick="handleAdminLogout()" class="ml-2 px-2 py-0.5 rounded bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-bold" title="Çıkış Yap"><i class="fa-solid fa-arrow-right-from-bracket mr-1"></i>Çıkış</button>
             `;
         } else {
-            mobileLogout.innerHTML = "";
+            footerIndicator.className = "hidden";
+            footerIndicator.innerHTML = "";
         }
     }
-
-    // Floating Quick Admin Bar ve diğer menüleri temizle
-    const desktopContainer = document.getElementById("admin-nav-container");
-    if (desktopContainer) desktopContainer.innerHTML = "";
-    const mobileContainer = document.getElementById("admin-mobile-nav-container");
-    if (mobileContainer) mobileContainer.innerHTML = "";
-    const floatingBar = document.getElementById("floating-admin-bar");
-    if (floatingBar && typeof floatingBar.remove === "function") floatingBar.remove();
 }
 
 // Gizli Yönetici Girişi Kısayolu: Ctrl + Shift + A veya Ctrl + Alt + A
@@ -4660,10 +4655,10 @@ document.addEventListener("keydown", function(e) {
     if (e.key === "Escape" || e.keyCode === 27) {
         closeMaterialUploadModal();
         closeAdminLoginModal();
+        closeInPageDocumentModal();
     }
 });
 
-// Modal Kapatma
 function closeMaterialUploadModal() {
     const modal = document.getElementById("material-upload-modal");
     if (modal) {
