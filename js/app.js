@@ -328,6 +328,41 @@ const CloudSyncManager = {
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
+        id: "mat-8-liseye-nasil-gidecegiz",
+        grade: "8",
+        category: "videolar",
+        title: "Liseye Nasıl Gideceğiz?",
+        unit: "LGS Rehberlik & Tercih",
+        desc: "8. Sınıf LGS ve liselere geçiş sistemi bilgilendirme ve motivasyon videosu.",
+        fileName: "Liseye Nasıl Gideceğiz.mp4",
+        fileUrl: "#",
+        imageUrl: "assets/kapak-8.jpg",
+        format: "MP4",
+        hasBlob: true,
+        tags: ["MEB 2026-2027", "LGS", "Liseye Geçiş", "video", "rehberlik", "ortaokul", "fenbilimleri", "fen"],
+        visibility: "public",
+        downloadCount: "Yeni",
+        createdAt: "15.09.2026",
+        updatedAt: "15.09.2026"
+    },
+    {
+        id: "mat-1789502325405",
+        grade: "8",
+        category: "ders-notu",
+        title: "8.Sınıf Fen Bilimleri Ders Kitabı",
+        unit: "8. Sınıf Fen Bilimleri",
+        desc: "Milli Eğitim Bakanlığı 8. Sınıf Fen Bilimleri Ders Kitabı (MEB 2026-2027).",
+        fileName: "8.Sınıf Fen Bilimleri Ders Kitabı.pdf",
+        fileUrl: "#",
+        imageUrl: "assets/kapak-8.jpg",
+        format: "PDF",
+        hasBlob: true,
+        tags: ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
+        visibility: "public",
+        downloadCount: "Yeni",
+        createdAt: "15.09.2026"
+    },
+    {
         id: "mat-1789501786165",
         grade: "5",
         category: "videolar",
@@ -336,7 +371,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         desc: "5. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
         fileName: "Güvenlik Sembolleri.mp4",
         fileUrl: "#",
-        imageUrl: "",
+        imageUrl: "assets/kapak-5.jpg",
         format: "MP4",
         hasBlob: true,
         tags: ["MEB 2026-2027", "video", "güvenlik", "5.sınıf"],
@@ -354,7 +389,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         desc: "8. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
         fileName: "Güvenlik Sembolleri.mp4",
         fileUrl: "#",
-        imageUrl: "",
+        imageUrl: "assets/kapak-8.jpg",
         format: "MP4",
         hasBlob: true,
         tags: ["MEB 2026-2027", "video", "güvenlik", "8.sınıf"],
@@ -4677,6 +4712,42 @@ const RotaliDB = {
         });
     },
 
+    async findFileByTitleOrName(title, fileName) {
+        const db = await this.getDB();
+        if (!db) return null;
+        return new Promise((resolve) => {
+            try {
+                const tx = db.transaction("files", "readonly");
+                const store = tx.objectStore("files");
+                const request = store.openCursor();
+                const searchTitle = (title || "").trim().toLowerCase();
+                const searchFileName = (fileName || "").trim().toLowerCase();
+                let match = null;
+
+                request.onsuccess = (e) => {
+                    const cursor = e.target.result;
+                    if (cursor) {
+                        const item = cursor.value;
+                        const itemTitle = (item.title || "").trim().toLowerCase();
+                        const itemFileName = (item.fileName || "").trim().toLowerCase();
+                        if ((searchFileName && itemFileName && (itemFileName === searchFileName || itemFileName.includes(searchFileName) || searchFileName.includes(itemFileName))) ||
+                            (searchTitle && itemTitle && (itemTitle === searchTitle || itemTitle.includes(searchTitle) || searchTitle.includes(itemTitle)))) {
+                            match = item;
+                            resolve(match);
+                            return;
+                        }
+                        cursor.continue();
+                    } else {
+                        resolve(match);
+                    }
+                };
+                request.onerror = () => resolve(null);
+            } catch(e) {
+                resolve(null);
+            }
+        });
+    },
+
     async saveFile(id, fileBlob, fileName, fileType) {
         const db = await this.getDB();
         if (!db) return false;
@@ -4996,6 +5067,7 @@ let DigitalBookState = {
     currentScale: 1.0,
     isRendering: false,
     pageRenderingQueue: null,
+    currentRenderTask: null,
     bookInfo: null,
     fallbackPages: [],
     mode: "fallback", // 'pdf' | 'fallback'
@@ -5012,17 +5084,24 @@ let DigitalBookState = {
     dragStartPanY: 0
 };
 
+let bookZoomDebounceTimer = null;
+
 function updateBookTransform(animate = true) {
     const wrapper = document.getElementById("book-page-wrapper");
     if (!wrapper) return;
-    wrapper.style.transition = animate ? "transform 0.12s ease-out" : "none";
-    wrapper.style.transform = `translate(${DigitalBookState.panX}px, ${DigitalBookState.panY}px) scale(${DigitalBookState.currentScale})`;
+    wrapper.style.transition = animate ? "transform 0.1s ease-out" : "none";
+    if (DigitalBookState.mode === "pdf") {
+        wrapper.style.transform = `translate(${DigitalBookState.panX}px, ${DigitalBookState.panY}px)`;
+    } else {
+        wrapper.style.transform = `translate(${DigitalBookState.panX}px, ${DigitalBookState.panY}px) scale(${DigitalBookState.currentScale})`;
+    }
     wrapper.style.cursor = DigitalBookState.isDragging ? "grabbing" : "grab";
 }
 
 function resetBookPosition(resetScale = false) {
     DigitalBookState.panX = 0;
     DigitalBookState.panY = 0;
+    const oldScale = DigitalBookState.currentScale;
     if (resetScale) {
         DigitalBookState.currentScale = 1.0;
         const zoomText = document.getElementById("book-zoom-text");
@@ -5034,6 +5113,9 @@ function resetBookPosition(resetScale = false) {
         scrollArea.scrollLeft = 0;
     }
     updateBookTransform(true);
+    if (resetScale && oldScale !== 1.0 && DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
+        renderBookPage(DigitalBookState.currentPage);
+    }
 }
 
 function scrollBookVertical(delta) {
@@ -5449,7 +5531,7 @@ async function openDigitalBookModal(options = {}) {
                 </div>
 
                 <!-- 1. PDF Canvas (PDF Render Edildiğinde) -->
-                <canvas id="book-canvas" class="hidden rounded-xl shadow-2xl bg-white max-w-[94vw] max-h-[82vh] w-auto h-auto object-contain border border-slate-200/20 select-none"></canvas>
+                <canvas id="book-canvas" class="hidden rounded-xl shadow-2xl bg-white border border-slate-200/20 select-none block"></canvas>
 
                 <!-- 2. Fallback / Kitap Sayfası Görüntüleyici (PDF yoksa veya yükleme aşamasında) -->
                 <div id="book-fallback-container" class="rounded-xl shadow-2xl bg-white max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[720px] min-h-[72vh] max-h-[82vh] overflow-y-auto border border-slate-300 p-4 sm:p-8 text-slate-900 flex flex-col justify-between select-none">
@@ -5518,6 +5600,9 @@ async function openDigitalBookModal(options = {}) {
 
 async function tryLoadPdfDocument(id, fileUrl) {
     if (typeof window === "undefined" || !window.pdfjsLib) return;
+    if (!window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+    }
 
     const statusEl = document.getElementById("book-modal-status");
     let pdfSource = null;
@@ -5625,26 +5710,55 @@ async function renderBookPage(pageNum) {
         const spinner = document.getElementById("book-loading-spinner");
         if (spinner) spinner.classList.remove("hidden");
 
+        // Devam eden bir render işlemi varsa iptal et
+        if (DigitalBookState.currentRenderTask) {
+            try {
+                DigitalBookState.currentRenderTask.cancel();
+            } catch(e) {}
+            DigitalBookState.currentRenderTask = null;
+        }
+
         try {
             const page = await DigitalBookState.pdfDoc.getPage(pageNum);
             const baseViewport = page.getViewport({ scale: 1.0 });
             const scrollArea = document.getElementById("book-reader-scroll-area");
-            const targetHeight = (scrollArea ? scrollArea.clientHeight : window.innerHeight) * 0.82;
+            const targetHeight = (scrollArea ? scrollArea.clientHeight : window.innerHeight) * 0.84;
             const fitScale = targetHeight / baseViewport.height;
 
-            const viewport = page.getViewport({ scale: fitScale * 1.5 }); // Keskin render
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+            // Gerçek Vektörel HiDPI / Ultra Keskin Render Mantığı (Büyütmede sıfır pikselleşme)
+            const zoom = DigitalBookState.currentScale || 1.0;
+            const cssWidth = Math.round(baseViewport.width * fitScale * zoom);
+            const cssHeight = Math.round(baseViewport.height * fitScale * zoom);
 
-            const ctx = canvas.getContext("2d");
+            // DPR: Cihaz piksel oranına göre en az 2.0x, yüksek çözünürlük için süper-örnekleme
+            const dpr = Math.min(3.0, Math.max(window.devicePixelRatio || 1.0, 2.0));
+            const viewport = page.getViewport({ scale: fitScale * zoom * dpr });
+
+            canvas.width = Math.round(viewport.width);
+            canvas.height = Math.round(viewport.height);
+            canvas.style.width = cssWidth + "px";
+            canvas.style.height = cssHeight + "px";
+            canvas.style.maxWidth = "none";
+            canvas.style.maxHeight = "none";
+
+            const ctx = canvas.getContext("2d", { alpha: false });
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
             const renderContext = {
                 canvasContext: ctx,
-                viewport: viewport
+                viewport: viewport,
+                intent: "display"
             };
-            await page.render(renderContext).promise;
+            DigitalBookState.currentRenderTask = page.render(renderContext);
+            await DigitalBookState.currentRenderTask.promise;
+            DigitalBookState.currentRenderTask = null;
+
             updateBookTransform(false);
         } catch (e) {
-            console.error("PDF render hatası:", e);
+            if (e && e.name !== "RenderingCancelledException") {
+                console.error("PDF render hatası:", e);
+            }
         } finally {
             DigitalBookState.isRendering = false;
             if (spinner) spinner.classList.add("hidden");
@@ -5699,10 +5813,18 @@ function onBookPageInputChange(val) {
 }
 
 function changeBookZoom(delta) {
-    DigitalBookState.currentScale = Math.min(2.8, Math.max(0.5, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
+    DigitalBookState.currentScale = Math.min(3.2, Math.max(0.6, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
     const zoomText = document.getElementById("book-zoom-text");
     if (zoomText) zoomText.innerText = "%" + Math.round(DigitalBookState.currentScale * 100);
-    updateBookTransform(true);
+
+    if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
+        clearTimeout(bookZoomDebounceTimer);
+        bookZoomDebounceTimer = setTimeout(() => {
+            renderBookPage(DigitalBookState.currentPage);
+        }, 60);
+    } else {
+        updateBookTransform(true);
+    }
 }
 
 function resetBookZoom() {
@@ -5914,19 +6036,22 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         // 1. Video ise sayfayı terketmeden veya indirmeden site içinde video oynatıcıda aç
     if (isVideo) {
         try {
-            const fileRecord = await RotaliDB.getFile(id);
+            let fileRecord = await RotaliDB.getFile(id);
+            if (!fileRecord || !fileRecord.blob) {
+                fileRecord = await RotaliDB.findFileByTitleOrName(title, fileName);
+            }
             if (fileRecord && fileRecord.blob) {
                 const blobUrl = URL.createObjectURL(fileRecord.blob);
-                openInPageVideoModal(blobUrl, title || "Semboller Videosu", true);
+                openInPageVideoModal(blobUrl, title || fileRecord.fileName || "Ders Videosu", true, id);
                 return;
             }
         } catch(e) {}
 
         if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("youtube") && !fallbackUrl.includes("kR1eZq9Q2n4")) {
-            openInPageVideoModal(fallbackUrl, title || "Semboller Videosu", false);
+            openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false, id);
             return;
         } else {
-            openInPageVideoModal("", title || "Semboller Videosu", false);
+            openInPageVideoModal("", title || "Ders Videosu", false, id);
             return;
         }
     }
@@ -6289,7 +6414,10 @@ const LAB_SAFETY_SYMBOLS = [
     }
 ];
 
-function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = false) {
+let currentPlayingVideoMaterialId = null;
+
+function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = false, materialId = "") {
+    if (materialId) currentPlayingVideoMaterialId = materialId;
     if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
     }
@@ -6369,13 +6497,18 @@ function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = fa
                             <i class="fa-solid fa-circle-play"></i>
                         </div>
                         <h4 class="text-base sm:text-lg font-black text-white mb-2">${videoTitle}</h4>
-                        <p class="text-xs text-slate-400 max-w-md mx-auto mb-5 font-medium leading-relaxed">
-                            Bu video cihazınızdan yerel MP4 dosyası olarak yüklenmiştir. Videoyu bu tarayıcıda doğrudan oynatmak için dosyayı seçebilirsiniz:
+                        <p class="text-xs text-slate-300 max-w-md mx-auto mb-4 font-medium leading-relaxed">
+                            Bu video yerel cihazınızdan eklenmiştir. Cihazınızdaki MP4 dosyasını seçtiğinizde hem hemen oynatılır hem de bu tarayıcıya güvenle kaydedilerek bir daha sorulmaz.
                         </p>
-                        <label class="px-5 py-3 bg-red-600 hover:bg-red-700 active:scale-98 text-white rounded-2xl text-xs font-black cursor-pointer shadow-xl transition-all flex items-center gap-2.5">
-                            <i class="fa-solid fa-folder-open text-sm"></i> Cihazdan Bu MP4 Dosyasını Seçip Oynat
-                            <input type="file" accept="video/mp4,video/*" onchange="handleSelectAndPlayVideo(event)" class="hidden">
-                        </label>
+                        <div class="flex flex-wrap items-center justify-center gap-3">
+                            <label class="px-5 py-2.5 bg-red-600 hover:bg-red-700 active:scale-98 text-white rounded-2xl text-xs font-black cursor-pointer shadow-xl transition-all flex items-center gap-2">
+                                <i class="fa-solid fa-folder-open text-sm"></i> Cihazdan Bu MP4 Dosyasını Seçip Oynat
+                                <input type="file" accept="video/mp4,video/*" onchange="handleSelectAndPlayVideo(event)" class="hidden">
+                            </label>
+                            <button type="button" onclick="promptVideoUrlForMaterial()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 active:scale-98 text-slate-200 border border-slate-700 rounded-2xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer" title="Tüm cihazlarda doğrudan oynatmak için YouTube veya Drive linki ekle">
+                                <i class="fa-brands fa-youtube text-red-500"></i> Video Linki / YouTube Ekle
+                            </button>
+                        </div>
                     </div>
                 `)}
                 <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
@@ -6498,11 +6631,51 @@ function speakCurrentSymbol() {
 }
 
 
-function handleSelectAndPlayVideo(e) {
+async function handleSelectAndPlayVideo(e) {
     if (e.target && e.target.files && e.target.files[0]) {
         const file = e.target.files[0];
         const blobUrl = URL.createObjectURL(file);
-        openInPageVideoModal(blobUrl, file.name, true);
+        if (currentPlayingVideoMaterialId && typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
+            try {
+                await RotaliDB.saveFile(currentPlayingVideoMaterialId, file, file.name, file.type);
+                if (typeof showToast === "function") {
+                    showToast("✅ Video bu cihaza kaydedildi. Artık doğrudan oynatılacak!", "success");
+                }
+            } catch(err) {}
+        }
+        openInPageVideoModal(blobUrl, file.name, true, currentPlayingVideoMaterialId);
+    }
+}
+
+async function promptVideoUrlForMaterial() {
+    const url = prompt("Videonun tüm cihazlarda (telefon, bilgisayar, akıllı tahta) doğrudan oynatılması için YouTube veya Google Drive bağlantısını girin:");
+    if (!url || !url.trim()) return;
+    const cleanUrl = url.trim();
+    if (currentPlayingVideoMaterialId) {
+        try {
+            const allCustom = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+            const item = allCustom.find(m => m.id === currentPlayingVideoMaterialId);
+            if (item) {
+                item.fileUrl = cleanUrl;
+                if (cleanUrl.includes("youtube") || cleanUrl.includes("youtu.be")) {
+                    item.format = "YouTube Video";
+                } else if (cleanUrl.includes("drive.google.com")) {
+                    item.format = "Google Drive";
+                }
+                if (typeof saveCustomMaterialsSafe === "function") {
+                    saveCustomMaterialsSafe(allCustom);
+                }
+                if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.saveToCloud) {
+                    await CloudSyncManager.saveToCloud(allCustom);
+                }
+                if (typeof showToast === "function") {
+                    showToast("✅ Video bağlantısı başarıyla güncellendi!", "success");
+                }
+                openInPageVideoModal(cleanUrl, item.title, false, currentPlayingVideoMaterialId);
+            }
+        } catch(e) {
+            console.warn(e);
+        }
     }
 }
 
