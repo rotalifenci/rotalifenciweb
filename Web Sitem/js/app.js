@@ -699,7 +699,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                                 <!-- Görsel Varsa: Orantılı, Kırpılmayan Net Önizleme Kutusu (Kitaplar İçin Dikey 1 Tam Sayfa) -->
                                 ${validImgUrl ? `
-                                    <div class="mat-preview-box relative w-full ${isBook ? 'h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3' : 'h-52 sm:h-60 bg-slate-50 p-2'} rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl}')">
+                                    <div class="mat-preview-box relative w-full ${isBook ? 'h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3' : 'h-52 sm:h-60 bg-slate-50 p-2'} rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || validImgUrl || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
                                         <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-auto h-full max-h-full object-contain ${isBook ? 'rounded-xl shadow-lg border border-slate-300/60' : ''} transition-transform duration-300 group-hover:scale-105">
                                         <div class="absolute bottom-2.5 right-2.5">
                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -724,7 +724,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                             <!-- Butonlar -->
                             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl || item.fileUrl || '#'}', '${(item.fileName || item.title + '.pdf').replace(/'/g, "\\'")}', '${item.category || 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : (isBook ? 'from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700')} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
+                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || (isBook ? '#' : validImgUrl) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'ders-notu'))}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : (isBook ? 'from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700')} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
                                     <i class="fa-solid ${isVideo ? 'fa-play' : (validImgUrl ? 'fa-eye' : 'fa-file-lines')}"></i>
                                     <span>${isVideo ? 'Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görüntüle')}</span>
                                 </button>
@@ -5629,6 +5629,10 @@ async function openDigitalBookModal(options = {}) {
                     </button>
                 </div>
 
+                <button type="button" onclick="downloadOrOpenCurrentBook()" class="px-2 sm:px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm" title="PDF Dokümanını İndir veya Yeni Sekmede Aç">
+                    <i class="fa-solid fa-file-arrow-down text-amber-400"></i> <span class="hidden sm:inline">İndir / Aç</span>
+                </button>
+
                 ${fileUrl && fileUrl.startsWith("http") ? `
                     <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="hidden xl:flex px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-[11px] font-bold items-center gap-1.5 transition-all" title="MEB / EBA'da Aç">
                         <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>EBA</span>
@@ -5730,17 +5734,70 @@ async function openDigitalBookModal(options = {}) {
     tryLoadPdfDocument(id, fileUrl);
 }
 
-async function tryLoadPdfDocument(id, fileUrl) {
-    if (typeof window === "undefined" || !window.pdfjsLib) return;
-    if (!window.pdfjsLib.GlobalWorkerOptions.workerSrc) {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+function downloadOrOpenCurrentBook() {
+    const info = DigitalBookState.bookInfo;
+    if (!info) return;
+
+    if (DigitalBookState.activeBlob) {
+        const url = URL.createObjectURL(DigitalBookState.activeBlob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = info.fileName || (info.title + ".pdf");
+        a.target = "_blank";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(() => a.remove(), 1000);
+        return;
     }
 
-    const statusEl = document.getElementById("book-modal-status");
-    let pdfSource = null;
+    if (info.fileUrl && info.fileUrl !== "#" && info.fileUrl !== "" && info.fileUrl !== "null") {
+        window.open(info.fileUrl, "_blank");
+        return;
+    }
 
-    // 1. IndexedDB'de bu materyale ait kaydedilmiş Blob var mı?
-    if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
+    if (typeof RotaliDB !== "undefined" && info.id) {
+        RotaliDB.getFile(info.id).then(rec => {
+            if (rec && rec.blob) {
+                const url = URL.createObjectURL(rec.blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = rec.fileName || (info.title + ".pdf");
+                a.target = "_blank";
+                document.body.appendChild(a);
+                a.click();
+                setTimeout(() => a.remove(), 1000);
+            } else {
+                showToast("Bu dokümana ait harici dosya bulunamadı.", "info");
+            }
+        }).catch(() => {
+            showToast("Doküman açılamadı.", "error");
+        });
+    }
+}
+
+async function tryLoadPdfDocument(id, fileUrl) {
+    if (typeof window === "undefined") return;
+
+    const statusEl = document.getElementById("book-modal-status");
+
+    // 1. PDF.js ve Worker güvenli yapılandırma (CORS engeline takılmayan blob worker)
+    if (window.pdfjsLib && !window._pdfWorkerConfigured) {
+        try {
+            const workerCode = `importScripts('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');`;
+            const workerBlob = new Blob([workerCode], { type: "application/javascript" });
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
+            window._pdfWorkerConfigured = true;
+        } catch(wErr) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+        }
+    }
+
+    let pdfData = null;
+    let isDataBuffer = false;
+    DigitalBookState.activeBlob = null;
+
+    // 2. IndexedDB (RotaliDB) kontrolü
+    if (typeof RotaliDB !== "undefined") {
         try {
             let record = id ? await RotaliDB.getFile(id) : null;
             if (!record || !record.blob) {
@@ -5749,17 +5806,55 @@ async function tryLoadPdfDocument(id, fileUrl) {
                 }
             }
             if (record && record.blob) {
-                pdfSource = record.blob;
+                // Görsel ise görsel modalına aktar
+                if (record.fileType?.startsWith("image/") || (/\.(jpg|jpeg|png|webp|svg|gif)$/i).test(record.fileName || "")) {
+                    closeDigitalBookModal();
+                    const imgUrl = URL.createObjectURL(record.blob);
+                    openInPageDocumentModal(imgUrl, DigitalBookState.bookInfo.title || record.fileName, record.fileName, true);
+                    return;
+                }
+                const ab = await record.blob.arrayBuffer();
+                pdfData = new Uint8Array(ab);
+                isDataBuffer = true;
+                DigitalBookState.activeBlob = record.blob;
             }
-        } catch(e) {}
+        } catch(idbErr) {
+            console.warn("RotaliDB fetch error:", idbErr);
+        }
     }
 
-    // 2. Yoksa ve fileUrl geçerli bir bağlantı veya Data URL ise
-    if (!pdfSource && fileUrl && (fileUrl.startsWith("http") || fileUrl.startsWith("data:") || fileUrl.startsWith("blob:") || fileUrl.startsWith("assets/"))) {
-        pdfSource = fileUrl;
+    // 3. fileUrl kontrolü
+    if (!pdfData && fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") {
+        if (fileUrl.startsWith("data:application/pdf") || fileUrl.startsWith("data:")) {
+            try {
+                const base64Index = fileUrl.indexOf(";base64,");
+                const base64Part = base64Index !== -1 ? fileUrl.substring(base64Index + 8) : (fileUrl.includes(",") ? fileUrl.split(",")[1] : fileUrl);
+                const binaryString = window.atob(base64Part);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                pdfData = bytes;
+                isDataBuffer = true;
+            } catch(e) {
+                pdfData = fileUrl;
+            }
+        } else if (fileUrl.startsWith("blob:")) {
+            try {
+                const resp = await fetch(fileUrl);
+                const ab = await resp.arrayBuffer();
+                pdfData = new Uint8Array(ab);
+                isDataBuffer = true;
+            } catch(blobFetchErr) {
+                pdfData = fileUrl;
+            }
+        } else {
+            pdfData = fileUrl;
+        }
     }
 
-    if (!pdfSource) {
+    if (!pdfData) {
         if (statusEl) statusEl.innerText = "Önizleme Modu (" + DigitalBookState.totalPages + " Sayfa)";
         return;
     }
@@ -5767,29 +5862,28 @@ async function tryLoadPdfDocument(id, fileUrl) {
     if (statusEl) statusEl.innerText = "Doküman Yükleniyor...";
 
     try {
+        if (!window.pdfjsLib) {
+            throw new Error("pdfjsLib henüz yüklenmedi");
+        }
+
         let loadingTask;
-        if (pdfSource instanceof Blob) {
-            const ab = await pdfSource.arrayBuffer();
-            loadingTask = window.pdfjsLib.getDocument({ data: ab });
-        } else if (typeof pdfSource === "string" && pdfSource.startsWith("data:")) {
-            try {
-                const base64Part = pdfSource.includes(",") ? pdfSource.split(",")[1] : pdfSource;
-                const binaryString = window.atob(base64Part);
-                const len = binaryString.length;
-                const bytes = new Uint8Array(len);
-                for (let i = 0; i < len; i++) {
-                    bytes[i] = binaryString.charCodeAt(i);
-                }
-                loadingTask = window.pdfjsLib.getDocument({ data: bytes.buffer });
-            } catch(dataUrlErr) {
-                loadingTask = window.pdfjsLib.getDocument({ url: pdfSource });
-            }
-        } else {
+        const cMapOptions = {
+            cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+            cMapPacked: true
+        };
+
+        if (isDataBuffer && pdfData instanceof Uint8Array) {
             loadingTask = window.pdfjsLib.getDocument({
-                url: pdfSource,
-                cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
-                cMapPacked: true
+                data: pdfData,
+                ...cMapOptions
             });
+        } else if (typeof pdfData === "string") {
+            loadingTask = window.pdfjsLib.getDocument({
+                url: pdfData,
+                ...cMapOptions
+            });
+        } else {
+            loadingTask = window.pdfjsLib.getDocument(pdfData);
         }
 
         const pdf = await loadingTask.promise;
@@ -5797,7 +5891,7 @@ async function tryLoadPdfDocument(id, fileUrl) {
         DigitalBookState.mode = "pdf";
         DigitalBookState.totalPages = pdf.numPages;
 
-        if (statusEl) statusEl.innerText = "MEB Tam Kitap (" + pdf.numPages + " Sayfa)";
+        if (statusEl) statusEl.innerText = "Tam Doküman (" + pdf.numPages + " Sayfa)";
 
         const totalEl = document.getElementById("book-total-pages");
         if (totalEl) totalEl.innerText = pdf.numPages;
@@ -5805,11 +5899,14 @@ async function tryLoadPdfDocument(id, fileUrl) {
         const inputEl = document.getElementById("book-page-input");
         if (inputEl) inputEl.max = pdf.numPages;
 
+        const mobCounter = document.getElementById("book-mob-counter");
+        if (mobCounter) mobCounter.innerText = "1 / " + pdf.numPages;
+
         // PDF moduna geç ve 1. sayfayı render et
-        renderBookPage(DigitalBookState.currentPage || 1);
+        renderBookPage(1);
     } catch (err) {
         console.warn("PDF.js yükleme uyarısı (Fallback modunda devam ediliyor):", err);
-        if (statusEl) statusEl.innerText = "Önizleme Modu (8 Sayfa)";
+        if (statusEl) statusEl.innerText = "Önizleme Modu (" + DigitalBookState.totalPages + " Sayfa)";
     }
 }
 
@@ -6605,6 +6702,9 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         try {
             const allCustom = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
             found = allCustom.find(m => m.id === id);
+            if (!found && title) {
+                found = allCustom.find(m => (m.title || "").trim().toLowerCase() === title.trim().toLowerCase());
+            }
             if (found) {
                 if (!category) category = found.category || "";
                 if (!title) title = found.title || "";
@@ -6620,15 +6720,51 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const checkFormat = ((found && (found.format || "")) || "").toUpperCase();
     const targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
 
-    // 1. 🖼️ GÖRSEL DOSYASI MI? (JPG, JPEG, PNG, WEBP, SVG, GIF) -> Doğrudan HD Görsel Modalında Aç (Bekleme yapmaz)
-    const isImageDoc = checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || 
-                       checkFile.endsWith(".webp") || checkFile.endsWith(".svg") || checkFile.endsWith(".gif") ||
-                       checkFormat.includes("JPG") || checkFormat.includes("JPEG") || checkFormat.includes("PNG") ||
-                       checkFormat.includes("GÖRSEL") || checkFormat.includes("RESİM") || checkFormat.includes("IMAGE") ||
-                       checkCat === "gorseller" || checkCat.includes("gorsel") || checkCat.includes("infografik") ||
-                       (targetUrl && (targetUrl.startsWith("data:image") || (/\.(jpg|jpeg|png|webp|svg|gif)(\?.*)?$/i).test(targetUrl)));
+    // 1. 🎬 VİDEO DOSYASI MI? (MP4, WEBM, YouTube)
+    const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat === "MP4" ||
+                    checkFile.endsWith(".mp4") || checkFile.endsWith(".webm") ||
+                    (targetUrl && (targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be")));
 
-    if (isImageDoc) {
+    if (isVideo) {
+        try {
+            let fileRecord = await RotaliDB.getFile(id);
+            if (!fileRecord || !fileRecord.blob) {
+                fileRecord = await RotaliDB.findFileByTitleOrName(title, fileName);
+            }
+            if (fileRecord && fileRecord.blob) {
+                const blobUrl = URL.createObjectURL(fileRecord.blob);
+                openInPageVideoModal(blobUrl, title || fileRecord.fileName || "Ders Videosu", true, id);
+                return;
+            }
+        } catch(e) {}
+
+        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("youtube") && !fallbackUrl.includes("kR1eZq9Q2n4")) {
+            openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false, id);
+            return;
+        } else {
+            openInPageVideoModal("", title || "Ders Videosu", false, id);
+            return;
+        }
+    }
+
+    // 2. 🎮 EĞİTSEL OYUN VEYA EŞLEŞTİRME
+    if (category === "egitsel-oyunlar" || category.includes("oyun") || (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("laboratuvar")))) {
+        if (!fallbackUrl || fallbackUrl === "#" || fallbackUrl === "" || fallbackUrl === "null") {
+            openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
+            return;
+        }
+    }
+
+    // 3. 🖼️ SAF GÖRSEL DOSYASI MI? (Sadece görsel formatındaysa ve PDF/kitap değilse)
+    const isExplicitImage = checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || 
+                            checkFile.endsWith(".webp") || checkFile.endsWith(".svg") || checkFile.endsWith(".gif") ||
+                            checkFormat === "JPG" || checkFormat === "JPEG" || checkFormat === "PNG" ||
+                            checkFormat === "GÖRSEL" || checkFormat === "RESİM" || checkFormat === "IMAGE" ||
+                            checkCat === "gorseller";
+
+    const isExplicitPdf = checkFile.endsWith(".pdf") || checkFormat.includes("PDF") || targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf");
+
+    if (isExplicitImage && !isExplicitPdf) {
         try {
             let fileRecord = id ? await RotaliDB.getFile(id) : null;
             if (!fileRecord || !fileRecord.blob) {
@@ -6657,51 +6793,20 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 2. 🎬 VİDEO DOSYASI MI? (MP4, WEBM, YouTube)
-    const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat === "MP4" ||
-                    checkFile.endsWith(".mp4") || checkFile.endsWith(".webm") ||
-                    (targetUrl && (targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be")));
-
-    if (isVideo) {
-        try {
-            let fileRecord = await RotaliDB.getFile(id);
-            if (!fileRecord || !fileRecord.blob) {
-                fileRecord = await RotaliDB.findFileByTitleOrName(title, fileName);
-            }
-            if (fileRecord && fileRecord.blob) {
-                const blobUrl = URL.createObjectURL(fileRecord.blob);
-                openInPageVideoModal(blobUrl, title || fileRecord.fileName || "Ders Videosu", true, id);
-                return;
-            }
-        } catch(e) {}
-
-        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("youtube") && !fallbackUrl.includes("kR1eZq9Q2n4")) {
-            openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false, id);
-            return;
-        } else {
-            openInPageVideoModal("", title || "Ders Videosu", false, id);
-            return;
-        }
-    }
-
-    // 3. 🎮 EĞİTSEL OYUN VEYA EŞLEŞTİRME
-    if (category === "egitsel-oyunlar" || category.includes("oyun") || (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("laboratuvar")))) {
-        if (!fallbackUrl || fallbackUrl === "#" || fallbackUrl === "" || fallbackUrl === "null") {
-            openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
-            return;
-        }
-    }
-
-    // 4. 📚 PDF DERS NOTU & DERS KİTABI -> Vektörel Dijital Kitap Okuyucuda Aç
-    const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab");
+    // 4. 📚 PDF DERS NOTU, DERS KİTABI & DİJİTAL DOKÜMAN -> Vektörel Dijital Okuyucuda Aç
+    const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab") || checkCat === "ders-kitabi";
     const isPdfDoc = isBookMaterial || 
-                     checkFormat.includes("PDF") || 
-                     checkFile.endsWith(".pdf") || 
+                     isExplicitPdf ||
                      checkCat === "ders-notu" || 
                      checkCat === "not" || 
+                     checkCat === "ders-sunumu" || 
+                     checkCat === "yaprak-test" || 
+                     checkCat === "lgs-deneme" || 
+                     checkCat === "deney-foy" ||
+                     checkCat === "etkinlik" ||
                      (targetUrl && (targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf") || targetUrl.startsWith("blob:")));
 
-    if (isPdfDoc) {
+    if (isPdfDoc || !targetUrl || targetUrl === "#") {
         let pdfTarget = targetUrl;
         const gradeStr = String((found && found.grade) || "7").replace(/^grade-/, "").trim();
         
