@@ -1,0 +1,346 @@
+/* rotalifenci.com - Özel Stil Dosyası & BTK/Okulistik Marka Tasarımı */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap');
+
+:root {
+    --brand-red: #dc2626;
+    --brand-red-dark: #b91c1c;
+    --brand-navy: #1e3a8a;
+    --brand-navy-dark: #0f172a;
+    --brand-gold: #d97706;
+    --brand-space: #090d16;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f8fafc;
+    color: #0f172a;
+    overflow-x: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Artistik ve Simetrik Başlık */
+.hero-title-artistic {
+    font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif;
+    font-weight: 900;
+    letter-spacing: -0.025em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+.hero-glow-badge {
+    box-shadow: 0 4px 20px -2px rgba(220, 38, 38, 0.15), 0 2px 6px -1px rgba(30, 58, 138, 0.1);
+}
+
+#reading-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0284c7, #4f46e5, #059669);
+    z-index: 100;
+    width: 0%;
+    transition: width 0.1s ease;
+}
+
+.glass-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.flashcard-container {
+    perspective: 1000px;
+}
+
+.flashcard {
+    position: relative;
+    width: 100%;
+    height: 280px;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+}
+
+.flashcard.flipped {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+.flashcard-back {
+    transform: rotateY(180deg);
+}
+
+.quiz-option {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border: 2px solid #e2e8f0;
+}
+
+.quiz-option:hover:not(.disabled) {
+    border-color: #38bdf8;
+    background-color: #f0f9ff;
+    transform: translateX(4px);
+}
+
+.quiz-option.selected {
+    border-color: #0284c7;
+    background-color: #e0f2fe;
+}
+
+.quiz-option.correct {
+    border-color: #10b981 !important;
+    background-color: #ecfdf5 !important;
+    color: #065f46 !important;
+    font-weight: 700;
+}
+
+.quiz-option.incorrect {
+    border-color: #f43f5e !important;
+    background-color: #fff1f2 !important;
+    color: #9f1239 !important;
+}
+
+.blog-content {
+    font-size: 1.075rem;
+    line-height: 1.85;
+    color: #334155;
+}
+
+.blog-content h2,
+.blog-content h3 {
+    color: #0f172a;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+}
+
+.blog-content h3 {
+    font-size: 1.35rem;
+    border-left: 4px solid #0284c7;
+    padding-left: 0.75rem;
+}
+
+.blog-content p {
+    margin-bottom: 1.25rem;
+}
+
+.blog-content p.lead {
+    font-size: 1.2rem;
+    line-height: 1.75;
+    color: #1e293b;
+    font-weight: 500;
+    background: #f0f9ff;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    border-left: 4px solid #0284c7;
+}
+
+.blog-content ul,
+.blog-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+}
+
+.blog-content ul li {
+    list-style-type: disc;
+    margin-bottom: 0.5rem;
+}
+
+.blog-content .tip-box {
+    display: flex;
+    gap: 1rem;
+    background: #fdf4ff;
+    border: 1px solid #f0abfc;
+    border-left: 4px solid #c026d3;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    margin: 1.5rem 0;
+    color: #581c87;
+}
+
+.blog-content .tip-box i {
+    font-size: 1.5rem;
+    color: #c026d3;
+    flex-shrink: 0;
+    margin-top: 0.2rem;
+}
+
+.blog-content .summary-card {
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    margin: 2rem 0;
+}
+
+.blog-content .summary-card h4 {
+    color: #065f46;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.blog-content .content-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    background: #fff;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.blog-content .content-table th {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 600;
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.blog-content .content-table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    transform: translateY(150%);
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 9999;
+}
+
+#toast.show {
+    transform: translateY(0);
+}
+
+.post-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.post-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.admin-nav-item {
+    transition: all 0.2s ease;
+}
+.admin-nav-item.active {
+    background-color: #0284c7;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* =========================================================
+   AKILLI TAHTA / DERS MODU (CLASSROOM / SMARTBOARD MODE)
+   ========================================================= */
+body.smartboard-mode {
+    background-color: #0b1120 !important;
+    color: #f8fafc !important;
+}
+
+body.smartboard-mode header,
+body.smartboard-mode footer,
+body.smartboard-mode #reading-progress,
+body.smartboard-mode .portal-hide-smartboard {
+    display: none !important;
+}
+
+body.smartboard-mode #app {
+    padding: 1.5rem !important;
+    max-width: 1600px !important;
+    margin: 0 auto !important;
+}
+
+body.smartboard-mode .smartboard-target {
+    font-size: 1.25rem !important;
+    line-height: 1.8 !important;
+}
+
+body.smartboard-mode button,
+body.smartboard-mode .btn {
+    min-height: 54px !important;
+    font-size: 1.1rem !important;
+}
+
+/* Yüzen Akıllı Tahta Çıkış Butonu */
+#smartboard-exit-bar {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 99999;
+    display: none;
+}
+
+body.smartboard-mode #smartboard-exit-bar {
+    display: flex !important;
+}
+
+/* =========================================================
+   ÜNİTE HUB 5-ADIM SEKMELERİ (ÖĞREN, KEŞFET, UYGULA, ÇÖZ, ANALİZ)
+   ========================================================= */
+.hub-step-tab {
+    transition: all 0.25s ease;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+}
+
+.hub-step-tab.active {
+    border-bottom-color: #dc2626;
+    color: #dc2626;
+    background-color: #fef2f2;
+}
+
+/* =========================================================
+   YAZDIR & PDF ÇIKTI MOTORU (@media print)
+   ========================================================= */
+@media print {
+    header,
+    footer,
+    #reading-progress,
+    #smartboard-exit-bar,
+    .no-print,
+    button:not(.print-keep),
+    #mobile-menu {
+        display: none !important;
+    }
+
+    body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-size: 11pt !important;
+        line-height: 1.5 !important;
+    }
+
+    .printable-sheet {
+        box-shadow: none !important;
+        border: 1px solid #cbd5e1 !important;
+        padding: 1.5cm !important;
+        page-break-after: always;
+    }
+
+    .printable-sheet h1,
+    .printable-sheet h2,
+    .printable-sheet h3 {
+        color: #000000 !important;
+    }
+}

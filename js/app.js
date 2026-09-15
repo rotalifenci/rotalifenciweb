@@ -216,7 +216,19 @@ const CloudSyncManager = {
                     if (!inCloud) {
                         hasNewLocalToUpload = true;
                     }
-                    mergedMap.set(item.id, { ...(inCloud || {}), ...item });
+                    // Akıllı birleştirme: Boş yerel fileUrl buluttaki dolu veriyi silmesin
+                    const merged = { ...(inCloud || {}), ...item };
+                    if (inCloud && inCloud.fileUrl && inCloud.fileUrl.startsWith("data:") && inCloud.fileUrl.length > 10) {
+                        if (!item.fileUrl || item.fileUrl === "" || item.fileUrl === "#") {
+                            merged.fileUrl = inCloud.fileUrl; // Buluttaki DataURL'yi koru
+                        }
+                    }
+                    if (inCloud && inCloud.imageUrl && inCloud.imageUrl.startsWith("data:") && inCloud.imageUrl.length > 10) {
+                        if (!item.imageUrl || item.imageUrl === "" || item.imageUrl === "#") {
+                            merged.imageUrl = inCloud.imageUrl;
+                        }
+                    }
+                    mergedMap.set(item.id, merged);
                 }
             });
 
@@ -261,11 +273,26 @@ const CloudSyncManager = {
     async uploadToCloud(materialsList, isReplace = false) {
         try {
             const deletedIds = getDeletedMaterialIds();
-            // Payload'ı gereksiz duplicate base64'lerden arındırarak gönder (Kota dostu)
+            // Bellekteki tam DataURL'leri kullanarak buluta gönder (Tüm cihazlarda açılabilmesi için)
+            // fileUrl DataURL ise ve 5MB altındaysa bulutta saklanır, üzerindeyse IndexedDB'ye bırakılır
+            const MAX_CLOUD_DATAURL_SIZE = 5 * 1024 * 1024; // 5MB
             const cleanMaterials = materialsList.map(item => {
                 const copy = { ...item };
-                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.imageUrl && copy.imageUrl === copy.fileUrl) {
-                    copy.imageUrl = ""; // Bulutta çift depolamayı önle
+                // Bellekteki tam veriyi geri yükle (localStorage kırpmış olabilir)
+                if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
+                    const cached = ROTALI_MATERIALS_CACHE.find(c => c && c.id === copy.id);
+                    if (cached && cached.fileUrl && cached.fileUrl.startsWith("data:") && (!copy.fileUrl || copy.fileUrl === "")) {
+                        copy.fileUrl = cached.fileUrl;
+                    }
+                }
+                // 5MB üstü DataURL'leri buluta gönderme (Gist boyut sınırı)
+                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
+                    copy.fileUrl = "";
+                    copy.hasBlob = true; // Bu cihazda IndexedDB'de saklanır işareti
+                }
+                // Duplicate imageUrl/fileUrl temizliği
+                if (copy.imageUrl && copy.fileUrl && copy.imageUrl === copy.fileUrl && copy.fileUrl.startsWith("data:")) {
+                    copy.imageUrl = "";
                 }
                 return copy;
             });
@@ -519,20 +546,31 @@ const DEFAULT_CUSTOM_MATERIALS = [
 function saveCustomMaterialsSafe(list) {
     if (!Array.isArray(list)) return;
     ROTALI_MATERIALS_CACHE = [...list];
+    // LocalStorage'a her zaman kısaltılmış hali yaz (kota aşımını önle)
+    // Bellekteki ROTALI_MATERIALS_CACHE her zaman tam DataURL içerir
     try {
-        localStorage.setItem("rotali_custom_materials", JSON.stringify(list));
+        const slimList = list.map(item => {
+            const copy = { ...item };
+            if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > 80000) {
+                copy.fileUrl = ""; // Tam dosya ROTALI_MATERIALS_CACHE ve IndexedDB'de mevcuttur
+            }
+            return copy;
+        });
+        localStorage.setItem("rotali_custom_materials", JSON.stringify(slimList));
     } catch (storageErr) {
-        console.warn("LocalStorage quota uyarısı, hafifletilmiş önbellek kaydediliyor:", storageErr);
+        console.warn("LocalStorage quota uyarısı:", storageErr);
         try {
-            // Mobilde LocalStorage kotası dolarsa, bellekteki tam veri korunurken yerel depolama için ağır base64 URL'leri kısaltılır
-            const slimList = list.map(item => {
+            const tinyList = list.map(item => {
                 const copy = { ...item };
-                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > 80000) {
-                    copy.fileUrl = ""; // Tam dosya ROTALI_MATERIALS_CACHE ve IndexedDB'de mevcuttur
+                if (copy.fileUrl && (copy.fileUrl.startsWith("data:") || copy.fileUrl.length > 50000)) {
+                    copy.fileUrl = "";
+                }
+                if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 50000) {
+                    copy.imageUrl = "";
                 }
                 return copy;
             });
-            localStorage.setItem("rotali_custom_materials", JSON.stringify(slimList));
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(tinyList));
         } catch (e2) {}
     }
 }
@@ -5620,6 +5658,20 @@ async function tryLoadPdfDocument(id, fileUrl) {
         }
     }
 
+    // 2.5. Bellekteki bulut verisinden (ROTALI_MATERIALS_CACHE) DataURL kontrolü
+    // IndexedDB'de dosya yoksa, bellekteki (buluttan indirilen) DataURL'yi kullan
+    if (!pdfData && (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null")) {
+        try {
+            if (Array.isArray(ROTALI_MATERIALS_CACHE) && id) {
+                const cachedItem = ROTALI_MATERIALS_CACHE.find(m => m && m.id === id);
+                if (cachedItem && cachedItem.fileUrl && cachedItem.fileUrl.startsWith("data:") && cachedItem.fileUrl.length > 10) {
+                    fileUrl = cachedItem.fileUrl;
+                    console.log("📦 Bulut önbelleğinden DataURL ile yükleniyor:", id);
+                }
+            }
+        } catch(e) {}
+    }
+
     // 3. fileUrl kontrolü
     if (!pdfData && fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") {
         if (fileUrl.startsWith("data:application/pdf") || fileUrl.startsWith("data:")) {
@@ -5652,7 +5704,45 @@ async function tryLoadPdfDocument(id, fileUrl) {
     }
 
     if (!pdfData) {
-        if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
+        // hasBlob = true ise dosya başka cihazda IDB'de var ama buraya sync edilememiş demektir
+        const bookInfo = DigitalBookState.bookInfo || {};
+        const hasRemoteBlob = bookInfo.hasBlob || (function() {
+            try {
+                if (Array.isArray(ROTALI_MATERIALS_CACHE) && id) {
+                    const m = ROTALI_MATERIALS_CACHE.find(c => c && c.id === id);
+                    return m && m.hasBlob;
+                }
+            } catch(e) {}
+            return false;
+        })();
+
+        if (hasRemoteBlob) {
+            // Dosya başka cihazda mevcut ama bu cihazda yok - dosya seçme butonu göster
+            if (statusEl) statusEl.innerText = "Bu cihazda dosya bulunamadı";
+            const container = document.getElementById("book-pages-container");
+            if (container) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-16 px-6 text-center gap-5">
+                        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-red-500/20 flex items-center justify-center text-4xl text-amber-400 shadow-lg border border-amber-500/30">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                        </div>
+                        <h3 class="text-lg font-black text-white">Bu Cihazda Dosya Bulunamadı</h3>
+                        <p class="text-sm text-slate-400 max-w-md leading-relaxed">
+                            Bu doküman başka bir cihazdan yüklenmiş. PDF dosyasını bu cihazdan da açabilmek için aşağıdaki butona tıklayarak dosyayı seçin.
+                            <br><span class="text-amber-400 font-bold">Dosya bir kez seçildiğinde bu cihaza kaydedilir ve her zaman açılır.</span>
+                        </p>
+                        <label class="cursor-pointer px-6 py-3 bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95">
+                            <i class="fa-solid fa-file-arrow-up"></i>
+                            <span>PDF Dosyasını Seç</span>
+                            <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${id}')">
+                        </label>
+                        <p class="text-[10px] text-slate-500 mt-2">Aynı PDF dosyasını (${bookInfo.fileName || 'dosya.pdf'}) seçmeniz yeterli.</p>
+                    </div>
+                `;
+            }
+        } else {
+            if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
+        }
         return;
     }
 
@@ -6062,6 +6152,118 @@ function closeDigitalBookModal() {
     }
 }
 
+// 🔄 ÇAPRAZ CİHAZ DOSYA YÜKLEMESİ - Başka cihazdan eklenen dosyayı bu cihaza da kaydet
+async function handleCrossDevicePdfUpload(inputEl, materialId) {
+    if (!inputEl || !inputEl.files || !inputEl.files[0]) return;
+    const file = inputEl.files[0];
+    
+    // 1. IndexedDB'ye kaydet (Bu cihazda kalıcı olsun)
+    if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
+        try {
+            await RotaliDB.saveFile(materialId, file, file.name, file.type || "application/pdf");
+            if (typeof showToast === "function") {
+                showToast("✅ Dosya bu cihaza kaydedildi! Artık her zaman açılacak.", "success");
+            }
+        } catch(err) {
+            console.warn("IDB save error:", err);
+        }
+    }
+
+    // 2. DataURL oluştur ve bellek önbelleğine ekle (Bulut sync için)
+    try {
+        if (file.size <= 5 * 1024 * 1024 && Array.isArray(ROTALI_MATERIALS_CACHE)) {
+            const dataUrl = await readFileAsDataURL(file);
+            const item = ROTALI_MATERIALS_CACHE.find(m => m && m.id === materialId);
+            if (item && dataUrl) {
+                item.fileUrl = dataUrl;
+                item.hasBlob = true;
+                saveCustomMaterialsSafe(ROTALI_MATERIALS_CACHE);
+                // Buluta da gönder ki diğer cihazlar da açabilsin
+                if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+                    CloudSyncManager.uploadToCloud(ROTALI_MATERIALS_CACHE, true);
+                }
+            }
+        }
+    } catch(e) {}
+
+    // 3. Okuyucuyu dosya ile yeniden başlat
+    const blobUrl = URL.createObjectURL(file);
+    try {
+        const ab = await file.arrayBuffer();
+        const pdfData = new Uint8Array(ab);
+        
+        // PDF.js ile yeniden yükle
+        if (window.pdfjsLib) {
+            const statusEl = document.getElementById("book-modal-status");
+            if (statusEl) statusEl.innerText = "Doküman Yükleniyor...";
+
+            const cMapOptions = {
+                cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+                cMapPacked: true
+            };
+            const loadingTask = window.pdfjsLib.getDocument({ data: pdfData, ...cMapOptions });
+            const pdf = await loadingTask.promise;
+
+            DigitalBookState.pdfDoc = pdf;
+            DigitalBookState.mode = "pdf";
+            DigitalBookState.totalPages = pdf.numPages;
+            DigitalBookState.renderedPages.clear();
+            DigitalBookState.renderingPages.clear();
+
+            if (statusEl) statusEl.innerText = "Tam Doküman (" + pdf.numPages + " Sayfa)";
+
+            const totalEl = document.getElementById("book-total-pages");
+            if (totalEl) totalEl.innerText = pdf.numPages;
+            const inputPageEl = document.getElementById("book-page-input");
+            if (inputPageEl) inputPageEl.max = pdf.numPages;
+            const mobCounter = document.getElementById("book-mob-counter");
+            if (mobCounter) mobCounter.innerText = "1 / " + pdf.numPages;
+
+            await setupVerticalPdfSlots(pdf);
+        }
+    } catch(err) {
+        console.warn("Cross-device PDF load error:", err);
+        // Fallback: blob URL ile iframe göster
+        const container = document.getElementById("book-pages-container");
+        if (container) {
+            container.innerHTML = `<iframe src="${blobUrl}" class="w-full h-[80vh] rounded-xl border-0"></iframe>`;
+        }
+    }
+}
+
+// Görsel dosyası için çapraz cihaz yükleme
+async function handleCrossDeviceImageUpload(inputEl, materialId) {
+    if (!inputEl || !inputEl.files || !inputEl.files[0]) return;
+    const file = inputEl.files[0];
+    
+    if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
+        try {
+            await RotaliDB.saveFile(materialId, file, file.name, file.type);
+            if (typeof showToast === "function") {
+                showToast("✅ Görsel bu cihaza kaydedildi!", "success");
+            }
+        } catch(err) {}
+    }
+
+    const blobUrl = URL.createObjectURL(file);
+    
+    // Mevcut modalı kapat ve görsel modaliyle aç
+    const existingModal = document.getElementById("inpage-doc-modal");
+    if (existingModal) existingModal.remove();
+    
+    const title = (function() {
+        try {
+            if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
+                const m = ROTALI_MATERIALS_CACHE.find(c => c && c.id === materialId);
+                return m ? m.title : file.name;
+            }
+        } catch(e) {}
+        return file.name;
+    })();
+    
+    openInPageDocumentModal(blobUrl, title, file.name, true);
+}
+
 
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
     let found = null;
@@ -6085,7 +6287,17 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const checkFile = ((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
     const checkCat = ((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
     const checkFormat = ((found && (found.format || "")) || "").toUpperCase();
-    const targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
+    let targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
+
+    // Bellekteki bulut önbelleğinden DataURL fallback (çapraz cihaz uyumluluğu)
+    if ((!targetUrl || targetUrl === "" || targetUrl === "#" || targetUrl === "null") && id && Array.isArray(ROTALI_MATERIALS_CACHE)) {
+        try {
+            const cachedItem = ROTALI_MATERIALS_CACHE.find(m => m && m.id === id);
+            if (cachedItem && cachedItem.fileUrl && cachedItem.fileUrl.startsWith("data:") && cachedItem.fileUrl.length > 10) {
+                targetUrl = cachedItem.fileUrl;
+            }
+        } catch(e) {}
+    }
 
     // 1. 🎬 VİDEO DOSYASI MI? (MP4, WEBM, YouTube)
     const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat === "MP4" ||
@@ -6167,7 +6379,8 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             openInPageDocumentModal(found.imageUrl, title || fileName, fileName, true);
             return;
         } else {
-            openInPageDocumentModal("", title || "Fen Bilimleri Görseli", fileName, true);
+            // Dosya bu cihazda yok - dosya seçme seçeneği sun
+            openInPageDocumentModal("", title || "Fen Bilimleri Görseli", fileName, true, id);
             return;
         }
     }
@@ -6427,9 +6640,21 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                     </button>
                 </div>
 
-                <!-- Görsel Alanı: Tamamen boşluksuz, sıfır padding, ekrana tam oturan net görsel -->
+                <!-- Görsel Alanı -->
                 <div id="inpage-modal-zoom-container" class="p-0 m-0 bg-slate-950 flex items-center justify-center overflow-hidden relative touch-none select-none cursor-grab" title="İmleçle basılı tutup kaydırabilirsiniz">
-                    <img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" draggable="false" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" class="max-h-[82vh] sm:max-h-[86vh] max-w-[95vw] sm:max-w-[90vw] w-auto h-auto object-contain block mx-auto select-none pointer-events-auto" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;" loading="lazy">
+                    ${docUrl ? `<img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" draggable="false" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" class="max-h-[82vh] sm:max-h-[86vh] max-w-[95vw] sm:max-w-[90vw] w-auto h-auto object-contain block mx-auto select-none pointer-events-auto" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;" loading="lazy">` : `
+                        <div class="flex flex-col items-center justify-center py-12 px-6 text-center gap-4">
+                            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-3xl text-amber-400 border border-amber-500/30">
+                                <i class="fa-solid fa-image"></i>
+                            </div>
+                            <h3 class="text-base font-black text-white">Görsel Bu Cihazda Bulunamadı</h3>
+                            <p class="text-xs text-slate-400 max-w-sm">Bu görsel başka bir cihazdan yüklendi. Aşağıdaki butonla görseli seçin.</p>
+                            <label class="cursor-pointer px-5 py-2.5 bg-gradient-to-r from-amber-500 to-red-600 text-white font-black text-xs uppercase rounded-xl shadow-lg flex items-center gap-2">
+                                <i class="fa-solid fa-file-arrow-up"></i> Görseli Seç
+                                <input type="file" accept="image/*" class="hidden" onchange="handleCrossDeviceImageUpload(this, '${externalPdf || ''}')">
+                            </label>
+                        </div>
+                    `}
                 </div>
             </div>
         `;

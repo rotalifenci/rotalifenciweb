@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>6. Sınıf Fen Bilimleri | Rotalı Fenci</title>
+  <meta name="description" content="6. sınıf Fen Bilimleri konuları, konu anlatımları, testler, deneyler ve etkinlikler. Rotalı Fenci ile öğren!">
+  <link rel="stylesheet" href="platform.css">
+</head>
+<body>
+<header class="navbar" role="banner">
+  <div class="container navbar__inner">
+    <a href="index.html" class="navbar__logo" aria-label="Rotalı Fenci Ana Sayfa">
+      <div class="navbar__logo-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2a10 10 0 0 1 7.07 17.07M12 2A10 10 0 0 0 4.93 19.07"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)" opacity=".6"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-60 12 12)" opacity=".6"/></svg>
+      </div>
+      <div class="navbar__logo-text">
+        <div class="navbar__logo-name">Rotalı Fenci</div>
+        <div class="navbar__logo-slogan">ROTAMIZ FEN!</div>
+      </div>
+    </a>
+    <nav class="navbar__links" aria-label="Ana Menü">
+      <a href="index.html"       class="navbar__link">Ana Sayfa</a>
+      <a href="5-sinif.html"     class="navbar__link">5. Sınıf</a>
+      <a href="6-sinif.html"     class="navbar__link active">6. Sınıf</a>
+      <a href="7-sinif.html"     class="navbar__link">7. Sınıf</a>
+      <a href="8-sinif.html"     class="navbar__link">8. Sınıf</a>
+      <a href="etkinlikler.html" class="navbar__link">Etkinlikler</a>
+      <a href="blog.html"        class="navbar__link">Blog</a>
+      <a href="oyunlar.html"     class="navbar__link navbar__link--game">🎮 Oyunlar</a>
+    </nav>
+    <div class="navbar__actions">
+      <button class="navbar__search-btn" data-search-open aria-label="Ara">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <button class="navbar__hamburger" id="navHamburger" aria-label="Menüyü Aç/Kapat" aria-expanded="false"><span></span><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+<nav class="navbar__mobile" id="navMobile">
+  <div class="navbar__mobile-inner">
+    <a href="index.html"       class="navbar__mobile-link">🏠 Ana Sayfa</a>
+    <div class="navbar__mobile-divider"></div>
+    <a href="5-sinif.html"     class="navbar__mobile-link">📘 5. Sınıf</a>
+    <a href="6-sinif.html"     class="navbar__mobile-link">📗 6. Sınıf</a>
+    <a href="7-sinif.html"     class="navbar__mobile-link">📙 7. Sınıf</a>
+    <a href="8-sinif.html"     class="navbar__mobile-link">📕 8. Sınıf</a>
+    <div class="navbar__mobile-divider"></div>
+    <a href="etkinlikler.html" class="navbar__mobile-link">🧪 Etkinlikler</a>
+    <a href="blog.html"        class="navbar__mobile-link">📰 Blog</a>
+    <a href="hakkinda.html"    class="navbar__mobile-link">ℹ️ Hakkında</a>
+    <a href="iletisim.html"    class="navbar__mobile-link">✉️ İletişim</a>
+    <div class="navbar__mobile-divider"></div>
+    <a href="oyunlar.html"     class="navbar__mobile-link navbar__mobile-link--game">🎮 Oyunlar</a>
+  </div>
+</nav>
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true">
+  <div class="search-box">
+    <div class="search-box__input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="searchInput" class="search-box__input" placeholder="Konu, ders, oyun ara..." autocomplete="off">
+      <button class="search-box__close" id="searchClose">ESC</button>
+    </div>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+</div>
+
+<main>
+<section class="page-hero" style="background:linear-gradient(135deg,#14532D 0%,#16A34A 100%);">
+  <div class="container page-hero__inner">
+    <a href="index.html" class="page-hero__back">← Ana Sayfa</a>
+    <div class="page-hero__eyebrow"><span class="badge badge--green">6. Sınıf</span></div>
+    <h1 class="page-hero__title">6. Sınıf Fen Bilimleri</h1>
+    <p class="page-hero__desc">Yeni konularla bilim dünyasını keşfet! Işık, ses, kuvvet, ekosistem ve daha fazlası seni bekliyor.</p>
+  </div>
+</section>
+
+<section class="section section--sm" style="background:#fff;">
+  <div class="container tab-section">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="tab6-konular">📖 Konular</button>
+      <button class="tab-btn" data-tab="tab6-notlar">🧠 Ders Notları</button>
+      <button class="tab-btn" data-tab="tab6-testler">📝 Testler</button>
+      <button class="tab-btn" data-tab="tab6-deneyler">🧪 Deneyler</button>
+      <button class="tab-btn" data-tab="tab6-oyunlar">🎮 Oyunlar</button>
+    </div>
+
+    <div class="tab-panel" id="tab6-konular">
+      <div class="topics-grid">
+        <a href="#" class="topic-card">
+          <div class="topic-card__top"><div class="topic-card__icon" style="background:#DCFCE7;">🌍</div><span class="topic-card__count">7 İçerik</span></div>
+          <div class="topic-card__title">Dünya, Güneş ve Ay</div>
+          <p class="topic-card__desc">Uzaydaki komşularımızı keşfet! Mevsimlerin oluşumu, tutulmalar.</p>
+          <div class="topic-card__footer"><span class="badge badge--green">6. Sınıf</span><span class="topic-card__link">Konuya Git →</span></div>
+        </a>
+        <a href="#" class="topic-card">
+          <div class="topic-card__top"><div class="topic-card__icon" style="background:#CFFAFE;">💡</div><span class="topic-card__count">8 İçerik</span></div>
+          <div class="topic-card__title">Işık ve Ses</div>
+          <p class="topic-card__desc">Işığın yansıması, kırılması; sesin yayılması ve özellikleri.</p>
+          <div class="topic-card__footer"><span class="badge badge--blue">6. Sınıf</span><span class="topic-card__link">Konuya Git →</span></div>
+        </a>
+        <a href="#" class="topic-card">
+          <div class="topic-card__top"><div class="topic-card__icon" style="background:#FFEDD5;">⚽</div><span class="topic-card__count">6 İçerik</span></div>
+          <div class="topic-card__title">Kuvvet ve Hareket</div>
+          <p class="topic-card__desc">Net kuvvet, sürtünme kuvveti, Newton yasaları.</p>
+          <div class="topic-card__footer"><span class="badge badge--orange">6. Sınıf</span><span class="topic-card__link">Konuya Git →</span></div>
+        </a>
+        <a href="#" class="topic-card">
+          <div class="topic-card__top"><div class="topic-card__icon" style="background:#DCFCE7;">♻️</div><span class="topic-card__count">5 İçerik</span></div>
+          <div class="topic-card__title">Madde ve Isı</div>
+          <p class="topic-card__desc">Isının maddeler üzerindeki etkileri, genleşme ve büzülme.</p>
+          <div class="topic-card__footer"><span class="badge badge--green">6. Sınıf</span><span class="topic-card__link">Konuya Git →</span></div>
+        </a>
+        <a href="#" class="topic-card">
+          <div class="topic-card__top"><div class="topic-card__icon" style="background:#EDE9FE;">🧬</div><span class="topic-card__count">9 İçerik</span></div>
+          <div class="topic-card__title">Vücudumuzdaki Sistemler</div>
+          <p class="topic-card__desc">Sindirim, dolaşım, solunum ve boşaltım sistemleri.</p>
+          <div class="topic-card__footer"><span class="badge badge--purple">6. Sınıf</span><span class="topic-card__link">Konuya Git →</span></div>
+        </a>
+        <a href="#" class="topic-card">
+          <div class="topic-card__top"><div class="topic-card__icon" style="background:#FEE2E2;">⚡</div><span class="topic-card__count">6 İçerik</span></div>
+          <div class="topic-card__title">Elektrik ve Manyetizma</div>
+          <p class="topic-card__desc">Statik elektrik, mıknatıs, elektrik yükü ve kuvveti.</p>
+          <div class="topic-card__footer"><span class="badge badge--red">6. Sınıf</span><span class="topic-card__link">Konuya Git →</span></div>
+        </a>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab6-notlar" hidden>
+      <div class="topics-grid">
+        <a href="#" class="topic-card"><div class="topic-card__top"><div class="topic-card__icon" style="background:#DCFCE7;">📋</div><span class="topic-card__count">Özet</span></div><div class="topic-card__title">Işık ve Ses – Özet Notlar</div><p class="topic-card__desc">Işık ve ses konusunun en önemli formülleri ve özet tablosu.</p><div class="topic-card__footer"><span class="badge badge--green">6. Sınıf</span><span class="topic-card__link">Notlara Git →</span></div></a>
+        <a href="#" class="topic-card"><div class="topic-card__top"><div class="topic-card__icon" style="background:#CFFAFE;">📋</div><span class="topic-card__count">Özet</span></div><div class="topic-card__title">Vücudumuzdaki Sistemler – Özet</div><p class="topic-card__desc">Tüm sistemlerin organ listesi ve görevleri özet halinde.</p><div class="topic-card__footer"><span class="badge badge--blue">6. Sınıf</span><span class="topic-card__link">Notlara Git →</span></div></a>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab6-testler" hidden>
+      <div style="background:#fff;border-radius:16px;padding:2rem;text-align:center;border:1px solid #E2E8F0;">
+        <div style="font-size:3rem;margin-bottom:1rem;">📝</div>
+        <h3 style="font-weight:800;font-size:1.2rem;margin-bottom:.5rem;color:#1E293B;">6. Sınıf Testleri</h3>
+        <p style="color:#64748B;margin-bottom:1.5rem;">6. sınıf konuları için hazırlanmış testlerle bilgini ölç!</p>
+        <a href="oyunlar.html" class="btn btn--green">Testlere Başla →</a>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab6-deneyler" hidden>
+      <div class="act-grid">
+        <a href="etkinlikler.html" class="act-card"><div class="act-card__img" style="background:linear-gradient(135deg,#DCFCE7,#CFFAFE);">🌈</div><div class="act-card__body"><div class="act-card__meta"><span class="badge badge--green">6. Sınıf</span></div><div class="act-card__title">Prizma ile Işık Kırılması</div><p class="act-card__desc">Beyaz ışığı bileşenlerine ayır, gökkuşağı oluştur!</p><span class="act-card__link">Deneyi Gör →</span></div></a>
+        <a href="etkinlikler.html" class="act-card"><div class="act-card__img" style="background:linear-gradient(135deg,#FFEDD5,#FEF3C7);">🔊</div><div class="act-card__body"><div class="act-card__meta"><span class="badge badge--orange">6. Sınıf</span></div><div class="act-card__title">Ses Titreşim Deneyi</div><p class="act-card__desc">Sesin titreşimle yayıldığını gözlemle.</p><span class="act-card__link">Deneyi Gör →</span></div></a>
+      </div>
+    </div>
+
+    <div class="tab-panel" id="tab6-oyunlar" hidden>
+      <div class="games-grid">
+        <a href="passaparola.html" class="game-card" style="background:#1E293B;border-color:#334155;"><span class="game-card__icon">🎯</span><div class="game-card__title">Passaparola</div><p class="game-card__desc">6. sınıf sorularıyla heyecan dolu passaparola yarışması!</p><span class="game-card__btn">Oyuna Başla →</span></a>
+        <a href="oyunlar.html" class="game-card" style="background:#1E293B;border-color:#334155;"><span class="game-card__icon">🧠</span><div class="game-card__title">Fen Quiz</div><p class="game-card__desc">6. sınıf konularından quiz sorularıyla kendini test et.</p><span class="game-card__btn">Oyuna Başla →</span></a>
+      </div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="footer" role="contentinfo">
+  <div class="container">
+    <div class="footer__grid">
+      <div><div class="footer__brand-name">Rotalı Fenci</div><div class="footer__brand-slogan">ROTAMIZ FEN!</div><p class="footer__brand-desc">5, 6, 7 ve 8. sınıf Fen Bilimleri için öğren, keşfet ve eğlen!</p></div>
+      <div><div class="footer__col-title">Sınıflar</div><ul class="footer__links"><li><a href="5-sinif.html" class="footer__link">5. Sınıf</a></li><li><a href="6-sinif.html" class="footer__link">6. Sınıf</a></li><li><a href="7-sinif.html" class="footer__link">7. Sınıf</a></li><li><a href="8-sinif.html" class="footer__link">8. Sınıf</a></li></ul></div>
+      <div><div class="footer__col-title">İçerikler</div><ul class="footer__links"><li><a href="oyunlar.html" class="footer__link">Oyunlar</a></li><li><a href="etkinlikler.html" class="footer__link">Etkinlikler</a></li><li><a href="blog.html" class="footer__link">Blog</a></li></ul></div>
+      <div><div class="footer__col-title">Platform</div><ul class="footer__links"><li><a href="hakkinda.html" class="footer__link">Hakkında</a></li><li><a href="iletisim.html" class="footer__link">İletişim</a></li></ul></div>
+    </div>
+    <div class="footer__bottom">© 2026 Rotalı Fenci. Tüm hakları saklıdır.</div>
+  </div>
+</footer>
+<button class="scroll-top" id="scrollTop" aria-label="Yukarı Çık"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg></button>
+<script src="platform.js"></script>
+</body>
+</html>

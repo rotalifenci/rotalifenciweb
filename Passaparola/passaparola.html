@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Fen Bilimleri Passaparola | Rotalı Fenci</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .back-to-platform {
+      position: fixed;
+      top: 10px;
+      left: 10px;
+      z-index: 9999;
+      background: rgba(37,99,235,0.92);
+      color: #fff;
+      text-decoration: none;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      border: 1px solid rgba(255,255,255,0.2);
+      backdrop-filter: blur(8px);
+      transition: background 0.2s;
+    }
+    .back-to-platform:hover { background: rgba(37,99,235,1); }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="back-to-platform">← Rotalı Fenci</a>
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- 1. Üst Başlık & Menü Kontrolleri -->
+  <header>
+    <div class="logo-area">
+      <div class="logo-icon">🔬</div>
+      <div class="title-group">
+        <h1>FEN BİLİMLERİ PASSAPAROLA</h1>
+        <span>5 • 6 • 7. SINIF YARIŞMASI</span>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button id="btnTeamMode" class="btn-ctrl" title="Oyun Modunu Değiştir"><span>👥</span> Tekli</button>
+      <button id="btnTimerToggle" class="btn-ctrl" title="Süreyi Başlat veya Durdur (Kısayol: T)"><span>▶️</span> Başlat</button>
+      <button id="btnSound" class="btn-ctrl" title="Sesi Aç / Kapat"><span>🔊</span> Ses Açık</button>
+      <button id="btnFullscreen" class="btn-ctrl" title="Tam Ekran Modu"><span>⛶</span> Tam Ekran</button>
+      <button id="btnReset" class="btn-ctrl" title="Oyunu Baştan Başlat"><span>🔄</span> Sıfırla</button>
+    </div>
+  </header>
+
+  <!-- 2. Skorbord & Kompakt Bilgi Paneli (Her Zaman Ekranda) -->
+  <section class="scoreboard-bar" aria-label="Oyun İstatistikleri">
+    <div class="stat-chip puan">
+      <span class="stat-chip-label">⭐ Puan:</span>
+      <span id="statPuan" class="stat-chip-val">0</span>
+    </div>
+
+    <div id="timerChip" class="stat-chip sure">
+      <span class="stat-chip-label">⏱ Süre:</span>
+      <span id="timerText" class="stat-chip-val">04:00</span>
+    </div>
+
+    <div class="stat-chip dogru">
+      <span class="stat-chip-label">✓ Doğru:</span>
+      <span id="statDogru" class="stat-chip-val">0</span>
+    </div>
+
+    <div class="stat-chip yanlis">
+      <span class="stat-chip-label">✕ Yanlış:</span>
+      <span id="statYanlis" class="stat-chip-val">0</span>
+    </div>
+
+    <div class="stat-chip pas">
+      <span class="stat-chip-label">⏭ Pas:</span>
+      <span id="statPas" class="stat-chip-val">0</span>
+    </div>
+
+    <!-- 2 Takım Modu Seçicisi (Varsayılan Gizli) -->
+    <div id="teamBar" class="team-bar" style="display: none;">
+      <div id="teamAPill" class="team-pill active">🔵 A: <span id="teamAScore">0</span></div>
+      <div id="teamBPill" class="team-pill">🔴 B: <span id="teamBScore">0</span></div>
+    </div>
+  </section>
+
+  <!-- 3. Ana Oyun Alanı (Çark + Soru Kartı) -->
+  <main class="game-container">
+    <!-- Sol Alan: Passaparola Harf Çarkı -->
+    <section class="wheel-wrapper" aria-label="Passaparola Harf Çarkı">
+      <div id="wheelContainer" class="wheel-container">
+        <div id="wheelCenter" class="wheel-center">
+          <div id="centerLetter" class="center-letter">A</div>
+          <div class="center-info">AKTİF HARF</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sağ Alan: Soru Kartı & Aksiyon Butonları -->
+    <section class="question-card" aria-label="Soru Alanı">
+      <div class="q-header">
+        <div class="q-badge-group">
+          <div class="q-badge" id="qBadge">A HARFİ</div>
+          <div class="q-grade" id="qGrade">5. Sınıf</div>
+        </div>
+      </div>
+
+      <div class="q-body">
+        <div class="q-text" id="qText">Soru yükleniyor...</div>
+        <div class="q-answer-reveal" id="qReveal">DOĞRU CEVAP</div>
+      </div>
+
+      <!-- Cevap Giriş Alanı -->
+      <div class="input-area">
+        <input type="text" id="txtAnswer" class="txt-answer" placeholder="Cevabınızı yazın..." autocomplete="off" autocorrect="off" autocapitalize="characters">
+        <button id="btnShowAnswer" class="btn-hint" title="Cevabı Göster (Kısayol: C)">👁️ Göster</button>
+      </div>
+
+      <!-- Büyük Dokunmatik Butonlar (Passaparola, Doğru, Yanlış) -->
+      <div class="btn-action-group">
+        <button id="btnCorrect" class="btn-action btn-correct" aria-label="Doğru Cevap (+10 Puan)">
+          <span>✓ DOĞRU</span>
+          <small>+10 PUAN (D)</small>
+        </button>
+        <button id="btnPass" class="btn-action btn-pass" aria-label="Passaparola - Soruyu Sona Bırak">
+          <span>⏭ PASSAPAROLA</span>
+          <small>SONA BIRAK (P / Boşluk)</small>
+        </button>
+        <button id="btnWrong" class="btn-action btn-wrong" aria-label="Yanlış Cevap">
+          <span>✕ YANLIŞ</span>
+          <small>(Y)</small>
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <!-- 4. Oyun Sonu / Tebrikler Penceresi -->
+  <div id="endModal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-trophy">🎉</div>
+      <h2 id="modalTitle" class="modal-title">TEBRİKLER!</h2>
+      <p id="modalSubtitle" class="modal-subtitle">Oyun başarıyla tamamlandı.</p>
+      
+      <div class="modal-results-grid">
+        <div class="m-res-box">
+          <div class="m-res-title">✓ Doğru</div>
+          <div class="m-res-val" style="color: var(--accent-green);" id="mStatD">0</div>
+        </div>
+        <div class="m-res-box">
+          <div class="m-res-title">✕ Yanlış</div>
+          <div class="m-res-val" style="color: var(--accent-red);" id="mStatY">0</div>
+        </div>
+        <div class="m-res-box">
+          <div class="m-res-title">⏭ Pas</div>
+          <div class="m-res-val" style="color: var(--accent-yellow);" id="mStatP">0</div>
+        </div>
+      </div>
+
+      <div style="background: rgba(0, 229, 255, 0.1); padding: 12px; border-radius: 12px; margin-bottom: 18px; border: 1px solid rgba(0, 229, 255, 0.3);">
+        <div style="font-size: 0.85rem; color: var(--text-muted); font-weight: 700;">⭐ TOPLAM PUAN</div>
+        <div id="mStatScore" style="font-size: 1.8rem; font-weight: 900; color: var(--accent-cyan);">0 Puan</div>
+      </div>
+
+      <button id="btnPlayAgain" class="btn-restart">🔄 YENİDEN OYNA</button>
+      <a href="index.html" style="display:block; margin-top:10px; color:#94a3b8; font-size:0.85rem; text-decoration:none; text-align:center;">← Ana Sayfaya Dön</a>
+    </div>
+  </div>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
