@@ -1499,7 +1499,7 @@ function renderHomePage(container) {
 
                         <!-- Özellik Rozetleri (Checkmark Listesi) -->
                         <div class="flex flex-wrap items-center gap-2 pt-4 border-t border-slate-200/80 text-slate-600 text-xs font-bold">
-                            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center gap-1.5">✓ PDF Ders Föyleri</span>
+                            <span class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200/80 flex items-center gap-1.5">✓ Ünite Ders Notları</span>
                             <span class="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-800 border border-blue-200/80 flex items-center gap-1.5">✓ Akıllı Tahta PPTX</span>
                             <span class="px-2.5 py-1 rounded-lg bg-purple-50 text-purple-800 border border-purple-200/80 flex items-center gap-1.5">✓ 3D Eğitsel Oyunlar</span>
                             <span class="px-2.5 py-1 rounded-lg bg-red-50 text-red-800 border border-red-200/80 flex items-center gap-1.5">✓ LGS Branş Denemeleri</span>
@@ -2686,7 +2686,7 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     } else if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
         return renderScientistsModule(grade.number);
-    } else if (subTab === "ders-notu") {
+        } else if (subTab === "ders-notu") {
         const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
         const foysList = (subData && subData.dersNotu) ? subData.dersNotu : [];
 
@@ -2695,30 +2695,32 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                 <div>
                     <div class="flex items-center gap-2 mb-1">
                         <span class="px-3 py-0.5 rounded-full bg-red-100 text-red-700 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-pdf"></i> MEB 2026-2027
+                            <i class="fa-solid fa-book-open"></i> MEB 2026-2027
                         </span>
                         <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Müfredatı</span>
                     </div>
                     <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-                        <i class="fa-solid fa-file-pdf text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri PDF Ders Föyleri
+                        <i class="fa-solid fa-file-lines text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri Ünite Ders Notları
                     </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">Konu özetleri, kavram haritaları, etkinlik ve çalışma föylerini inceleyebilir, yeni föy ekleyebilir veya düzenleyebilirsiniz.</p>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">MEB müfredatına uygun konu özetleri, kavram haritaları, formül tabloları ve püf noktalarını inceleyebilirsiniz.</p>
                 </div>
-                <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-5 py-3 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95 cursor-pointer self-start sm:self-auto shrink-0" title="Bu sınıfa yeni PDF ders föyü veya doküman ekle">
-                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>+ Yeni PDF Ders Föyü Ekle</span>
-                </button>
+                ${isAdmin ? `
+                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-5 py-3 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95 cursor-pointer self-start sm:self-auto shrink-0" title="Bu sınıfa yeni PDF ders föyü veya doküman ekle">
+                        <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>+ Yeni Ders Notu Ekle</span>
+                    </button>
+                ` : ''}
             </div>
 
-            <!-- Kullanıcının Eklediği ve Düzenlediği Özel Föyler (Düzenleme & Sıralama Aktif) -->
+            <!-- Kullanıcının Eklediği ve Düzenlediği Özel Ders Notları (Düzenleme & Sıralama Aktif) -->
             ${renderCustomMaterialsSection(grade.number, "ders-notu")}
 
-            <!-- Ünite Bazlı Temel MEB PDF Ders Föyleri (Dosya Ekleme & Düzenleme Aktif) -->
+            <!-- Ünite Bazlı Temel MEB Ders Notları -->
             <div class="mb-6 flex items-center justify-between">
                 <h4 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
                     <i class="fa-solid fa-folder-open text-blue-600"></i>
-                    <span>${grade.number}. Sınıf Ünite PDF Ders Föyleri Havuzu</span>
+                    <span>${grade.number}. Sınıf Ünite Ders Notları</span>
                 </h4>
-                <span class="text-xs font-bold text-slate-400">${foysList.length} Ünite Föyü</span>
+                <span class="text-xs font-bold text-slate-400">${foysList.length} Ünite Ders Notu</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -2733,22 +2735,22 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                     const effectiveId = customMatch ? customMatch.id : item.id;
                     const effectiveTitle = customMatch ? customMatch.title : item.title;
                     const effectiveDesc = customMatch ? customMatch.desc : item.desc;
-                    const effectiveFileUrl = (customMatch && customMatch.fileUrl && customMatch.fileUrl !== "#") ? customMatch.fileUrl : (item.fileUrl || "#");
+                    const effectiveFileUrl = (customMatch && customMatch.fileUrl && customMatch.fileUrl !== "#") ? customMatch.fileUrl : (item.fileUrl || "");
                     const effectiveFileName = (customMatch && customMatch.fileName) ? customMatch.fileName : `${item.title}.pdf`;
                     const hasFile = (customMatch && (customMatch.hasBlob || (customMatch.fileUrl && customMatch.fileUrl !== "#")));
 
-                    const safeTitle = effectiveTitle.replace(/'/g, "\'");
-                    const safeUnit = (item.unit || "").replace(/'/g, "\'");
-                    const safeDesc = effectiveDesc.replace(/'/g, "\'");
-                    const safeFileName = effectiveFileName.replace(/'/g, "\'");
+                    const safeTitle = effectiveTitle.replace(/'/g, "\\'");
+                    const safeUnit = (item.unit || "").replace(/'/g, "\\'");
+                    const safeDesc = effectiveDesc.replace(/'/g, "\\'");
+                    const safeFileName = effectiveFileName.replace(/'/g, "\\'");
 
                     return `
                         <div class="bg-white rounded-3xl p-5 sm:p-6 border ${hasFile ? 'border-emerald-300 ring-2 ring-emerald-500/10 shadow-md' : 'border-slate-200 shadow-sm'} hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
                             <div>
                                 <div class="flex items-center justify-between gap-2 mb-3">
                                     <span class="px-3 py-1 rounded-full ${hasFile ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-100'} text-[11px] font-black tracking-wider uppercase inline-flex items-center gap-1.5">
-                                        <i class="fa-solid ${hasFile ? 'fa-circle-check text-emerald-600' : 'fa-file-pdf text-red-600'}"></i>
-                                        <span>${hasFile ? 'PDF Dosyası Hazır' : item.badge || 'PDF / Föy'}</span>
+                                        <i class="fa-solid ${hasFile ? 'fa-circle-check text-emerald-600' : 'fa-file-lines text-red-600'}"></i>
+                                        <span>${hasFile ? 'PDF Dokümanı Ekli' : item.badge || 'Ders Notu'}</span>
                                     </span>
                                     <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
                                         <i class="fa-regular fa-file-lines"></i> ${item.pages || '4-6 Sayfa'}
@@ -2769,28 +2771,26 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                             </div>
 
                             <div class="pt-3 border-t border-slate-100 space-y-2">
-                                ${hasFile ? `
-                                    <button type="button" onclick="openOrDownloadMaterial('${effectiveId}', '${effectiveFileUrl}', '${safeFileName}', 'ders-notu', '${safeTitle}')" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer">
-                                        <i class="fa-solid fa-book-open-reader"></i> Föyü Aç & İncele
-                                    </button>
-                                ` : `
-                                    <button type="button" onclick="triggerEditFoy('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${safeDesc}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
-                                        <i class="fa-solid fa-cloud-arrow-up text-amber-400"></i> Bu Föye PDF Dosyası Ekle
-                                    </button>
-                                `}
+                                <!-- Herkes için birincil ve tek buton: Notu Görüntüle -->
+                                <button type="button" onclick="openUnitStudyNoteModal('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${effectiveFileUrl}', '${safeFileName}')" class="w-full py-2.5 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95 cursor-pointer">
+                                    <i class="fa-solid fa-eye"></i> Notu Görüntüle
+                                </button>
 
-                                <div class="flex items-center gap-1.5 pt-1">
-                                    <button type="button" onclick="triggerEditFoy('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${safeDesc}')" class="flex-1 py-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-800 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 hover:border-amber-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Föyü Düzenle veya Dosya Yükle">
-                                        <i class="fa-solid fa-pen-to-square text-amber-600"></i>
-                                        <span>${hasFile ? 'Düzenle / Dosyayı Değiştir' : 'Föyü Düzenle & Dosya Seç'}</span>
-                                    </button>
-
-                                    ${customMatch ? `
-                                        <button type="button" onclick="deleteCustomMaterial('${customMatch.id}')" class="p-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition-all flex items-center justify-center cursor-pointer" title="Yüklenen Dosyayı Kaldır">
-                                            <i class="fa-solid fa-trash-can"></i>
+                                <!-- Sadece Yönetici (Admin) Girişi Yapılmışsa Görünen Düzenleme Butonları -->
+                                ${isAdmin ? `
+                                    <div class="flex items-center gap-1.5 pt-1">
+                                        <button type="button" onclick="triggerEditFoy('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${safeDesc}')" class="flex-1 py-1.5 bg-slate-50 hover:bg-amber-50 hover:text-amber-800 text-slate-700 text-[11px] font-bold rounded-xl border border-slate-200 hover:border-amber-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Ders Notunu Düzenle veya Dosya Yükle">
+                                            <i class="fa-solid fa-pen-to-square text-amber-600"></i>
+                                            <span>${hasFile ? 'Düzenle / Dosya Değiştir' : 'Föyü Düzenle & Dosya Seç'}</span>
                                         </button>
-                                    ` : ''}
-                                </div>
+
+                                        ${customMatch ? `
+                                            <button type="button" onclick="deleteCustomMaterial('${customMatch.id}')" class="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition-all flex items-center justify-center cursor-pointer" title="Yüklenen Dosyayı Kaldır">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                ` : ''}
                             </div>
                         </div>
                     `;
@@ -6094,6 +6094,437 @@ function closeDigitalBookModal() {
 
 
 // Materyal Açma / Görüntüleme & Oynatma (İndirme Olmadan Sayfa İçi Önizleme & Oynatıcı)
+// -------------------------------------------------------------
+// 📚 MEB MÜFREDATI TÜM SINIFLAR ÜNİTE DERS NOTLARI HAVUZU (5, 6, 7, 8. SINIF)
+// -------------------------------------------------------------
+const UNIT_STUDY_NOTES = {
+    "5-genel": {
+        unitCode: "F.5.G",
+        title: "5. Sınıf Ünite Bilgilendirmeleri & Kazanım Rehberi",
+        summary: "MEB 2026-2027 Maarif Modeli kapsamında 5. sınıf Fen Bilimleri dersi 7 temel üniteden oluşmaktadır. Bilimsel süreç becerileri, gözlem, deney, eleştirel düşünme ve çevre bilinci kazanımları hedeflenmektedir.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-indigo-100 font-bold text-indigo-900"><th class="p-2 border">Ünite No</th><th class="p-2 border">Ünite Adı</th><th class="p-2 border">Kazanım Sayısı</th></tr><tr><td class="p-2 border font-bold">1. Ünite</td><td class="p-2 border">Güneş, Dünya ve Ay</td><td class="p-2 border">4 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">2. Ünite</td><td class="p-2 border">Canlılar Dünyası</td><td class="p-2 border">4 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">3. Ünite</td><td class="p-2 border">Kuvvetin Ölçülmesi ve Sürtünme</td><td class="p-2 border">3 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">4. Ünite</td><td class="p-2 border">Madde ve Değişim</td><td class="p-2 border">5 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">5. Ünite</td><td class="p-2 border">Işığın Yayılması</td><td class="p-2 border">4 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">6. Ünite</td><td class="p-2 border">İnsan ve Çevre</td><td class="p-2 border">3 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">7. Ünite</td><td class="p-2 border">Elektrik Devre Elemanları</td><td class="p-2 border">2 Temel Kazanım</td></tr></table>`,
+        tips: "Ders notlarını düzenli takip edip deney ve etkinliklerle pekiştirmek fen bilimlerinde tam başarı sağlar.",
+        question: "5. Sınıf Fen Bilimleri dersinde hangi beceri türleri önceliklidir?\nA) Yalnızca formül ezberleme\nB) Gözlem, deney ve bilimsel süreç becerileri (Doğru)\nC) Sadece test çözme\nD) Metin kopyalama"
+    },
+    // 5. SINIF
+    "5-1": {
+        unitCode: "F.5.1",
+        title: "Güneş, Dünya ve Ay",
+        summary: "Güneş orta büyüklükte, küre şeklinde sıcak gazlardan oluşan bir yıldızdır ve kendi ekseni etrafında saat yönünün tersine döner. Ay, Dünya'nın tek doğal uydusudur; atmosferi yok denecek kadar az olduğu için hava olayları görülmez, gece-gündüz sıcaklık farkı çok yüksektir ve yüzeyi kraterlerle kaplıdır.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-amber-100/80 font-bold text-amber-900"><th class="p-2 border border-amber-200">Ay'ın Ana Evreleri</th><th class="p-2 border border-amber-200">Görünümü</th><th class="p-2 border border-amber-200">Özelliği</th></tr><tr><td class="p-2 border border-amber-200 font-bold">Yeni Ay</td><td class="p-2 border border-amber-200">Görünmez (Karanlık)</td><td class="p-2 border border-amber-200">Ay, Güneş ile Dünya arasındadır.</td></tr><tr><td class="p-2 border border-amber-200 font-bold">İlk Dördün</td><td class="p-2 border border-amber-200">D harfi şeklinde</td><td class="p-2 border border-amber-200">Yeni ay'dan 1 hafta sonra, sağ yarısı aydınlıktır.</td></tr><tr><td class="p-2 border border-amber-200 font-bold">Dolunay</td><td class="p-2 border border-amber-200">Tam daire (Parlak)</td><td class="p-2 border border-amber-200">Dünya, Güneş ile Ay arasındadır.</td></tr><tr><td class="p-2 border border-amber-200 font-bold">Son Dördün</td><td class="p-2 border border-amber-200">Ters D harfi</td><td class="p-2 border border-amber-200">Dolunay'dan 1 hafta sonra, sol yarısı aydınlıktır.</td></tr></table>`,
+        tips: "Ay'ın kendi etrafında dönme süresi ile Dünya etrafında dolanma süresi birbirine eşit (yaklaşık 27 gün 8 saat) olduğu için Dünya'dan bakıldığında her zaman Ay'ın aynı yüzü görülür!",
+        question: "Ay'da rüzgâr, yağmur gibi hava olaylarının görülmemesinin temel sebebi nedir?\\nA) Dünya'ya çok yakın olması\\nB) Belirgin bir atmosferinin bulunmaması (Doğru)\\nC) Işık kaynağı olmaması\\nD) Şeklinin küresel olması"
+    },
+    "5-2": {
+        unitCode: "F.5.2",
+        title: "Canlılar Dünyası",
+        summary: "Canlılar benzer özelliklerine göre 4 ana grupta sınıflandırılır: Mikroskobik Canlılar (bakteri, amip, öglena, paramesyum), Mantarlar (şapkalı, küf, maya, parazit mantarlar), Bitkiler (çiçekli ve çiçeksiz) ve Hayvanlar (omurgalı ve omurgasız).",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-emerald-100/80 font-bold text-emerald-900"><th class="p-2 border border-emerald-200">Omurgalı Grubu</th><th class="p-2 border border-emerald-200">Solunum / Çoğalma</th><th class="p-2 border border-emerald-200">Örnek Canlılar</th></tr><tr><td class="p-2 border border-emerald-200 font-bold">Balıklar</td><td class="p-2 border border-emerald-200">Solungaç / Yumurta ile</td><td class="p-2 border border-emerald-200">Hamsi, sazan, köpekbalığı</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Kurbağalar</td><td class="p-2 border border-emerald-200">Deri & Akciğer (Başkalaşım)</td><td class="p-2 border border-emerald-200">Su kurbağası, semender</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Sürüngenler</td><td class="p-2 border border-emerald-200">Akciğer / Yumurta ile</td><td class="p-2 border border-emerald-200">Yılan, kertenkele, timsah, kaplumbağa</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Kuşlar</td><td class="p-2 border border-emerald-200">Akciğer / Yumurta ile (Yavru bakımı var)</td><td class="p-2 border border-emerald-200">Kartal, penguen, deve kuşu</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Memeliler</td><td class="p-2 border border-emerald-200">Akciğer / Doğurarak (Sütle besler)</td><td class="p-2 border border-emerald-200">İnsan, inek, yunus, balina, yarasa</td></tr></table>`,
+        tips: "Mantarlar bitki DEĞİLDİR! Klorofilleri olmadığı için fotosentez yapamazlar, kendi besinlerini üretemezler. Balina ve yarasa ise memelidir!",
+        question: "Aşağıdakilerden hangisi memeliler sınıfında yer alır?\\nA) Penguen\\nB) Timsah\\nC) Yarasa (Doğru)\\nD) Köpekbalığı"
+    },
+    "5-3": {
+        unitCode: "F.5.3",
+        title: "Kuvvetin Ölçülmesi ve Sürtünme",
+        summary: "Kuvvet; duran cismi hareket ettiren, hareket eden cismi durduran, yönünü, hızını veya şeklini değiştiren etkidir. Birimi Newton'dur (N). Dinamometre ile ölçülür ve sarmal yayların esneklik özelliğinden yararlanılır. Sürtünme kuvveti ise hareketi engelleyen veya zorlaştıran zıt yönlü kuvvettir.",
+        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-red-50 border border-red-200 rounded-xl"><strong class="text-red-700 block mb-1">Sürtünmeyi Artıran Durumlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Kışın araç lastiklerine zincir takılması</li><li>Futbolcuların krampon tabanındaki dişler</li><li>Haltercilerin ellerine magnezyum tozu sürmesi</li><li>Merdiven basamaklarına kaydırmaz bant takılması</li></ul></div><div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl"><strong class="text-emerald-700 block mb-1">Sürtünmeyi Azaltan Durumlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Makinelerin hareketli parçalarının yağlanması</li><li>Araçların ve hızlı trenlerin aerodinamik tasarımı</li><li>Gemi burunlarının V şeklinde (pruva) yapılması</li><li>Ağır yüklerin altına tekerlek yerleştirilmesi</li></ul></div></div>`,
+        tips: "Dinamometrenin ölçebileceği maksimum kuvvet aşılırsa içindeki yayın esneklik özelliği bozulur ve bir daha doğru ölçüm yapamaz.",
+        question: "Hassas ölçüm yapabilen bir dinamometrede kullanılan yay nasıl olmalıdır?\\nA) Kalın ve sert\\nB) İnce ve esnek (Doğru)\\nC) Çok kısa ve kalın\\nD) Plastik ve sert"
+    },
+    "5-4": {
+        unitCode: "F.5.4",
+        title: "Madde ve Değişim",
+        summary: "Maddeler ısı aldığında veya verdiğinde hâl değiştirir. Erime, buharlaşma ve süblimleşme ısı alarak; donma, yoğuşma ve kırağılaşma ısı vererek gerçekleşir. Isı bir enerji türüdür (Joule/Kalori), sıcaklık ise enerjinin bir göstergesidir (°C).",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-blue-100/80 font-bold text-blue-900"><th class="p-2 border border-blue-200">Kavram</th><th class="p-2 border border-blue-200">Isı</th><th class="p-2 border border-blue-200">Sıcaklık</th></tr><tr><td class="p-2 border border-blue-200 font-bold">Tanım</td><td class="p-2 border border-blue-200">Aktarılan enerji türüdür</td><td class="p-2 border border-blue-200">Madde taneciklerinin ortalama kinetik enerjisinin ölçüsüdür</td></tr><tr><td class="p-2 border border-blue-200 font-bold">Ölçüm Aleti</td><td class="p-2 border border-blue-200">Kalorimetre Kabı</td><td class="p-2 border border-blue-200">Termometre</td></tr><tr><td class="p-2 border border-blue-200 font-bold">Birimi</td><td class="p-2 border border-blue-200">Joule (J) veya Kalori (cal)</td><td class="p-2 border border-blue-200">Derece Selsiyus (°C)</td></tr></table>`,
+        tips: "Buharlaşma her sıcaklıkta ve sadece sıvının yüzeyinde gerçekleşirken; kaynama belirli bir sabit sıcaklıkta ve sıvının her yerinde kabarcıklar hâlinde gerçekleşir!",
+        question: "Saf suyun deniz seviyesinde kaynama noktası kaç °C'dir?\\nA) 0 °C\\nB) 50 °C\\nC) 100 °C (Doğru)\\nD) 120 °C"
+    },
+    "5-5": {
+        unitCode: "F.5.5",
+        title: "Işığın Yayılması",
+        summary: "Işık bir enerji türüdür ve homojen ortamlarda her yöne doğrusal ışınlar hâlinde yayılır. Maddeler ışığı geçirme özelliklerine göre Saydam (cam, hava), Yarı Saydam (buzlu cam, yağlı kağıt) ve Opak/Saydam Olmayan (tahta, taş, metal) olarak üçe ayrılır.",
+        tablesHtml: `<div class="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs space-y-2"><strong class="text-slate-900 block">Tam Gölgeyi Etkileyen Değişkenler:</strong><p>1. Işık kaynağı opak cisme yaklaştırılırsa gölge boyu <strong>BÜYÜR</strong>.</p><p>2. Opak cisim ekrandan/perdeden uzaklaştırılıp kaynağa yaklaşırsa gölge <strong>BÜYÜR</strong>.</p><p>3. Opak cisim ışık kaynağından uzaklaştırılırsa gölge <strong>KÜÇÜLÜR</strong>.</p></div>`,
+        tips: "Gölge oluşumu ışığın doğrusal yolla yayıldığının en net kanıtıdır!",
+        question: "Işık kaynağı ile perde arasındaki opak cisim perdeye doğru yaklaştırılırsa gölge boyu nasıl değişir?\\nA) Büyür\\nB) Küçülür (Doğru)\\nC) Değişmez\\nD) Önce büyür sonra küçülür"
+    },
+    "5-6": {
+        unitCode: "F.5.6",
+        title: "İnsan ve Çevre",
+        summary: "Biyoçeşitlilik; bir bölgede yaşayan canlı türlerinin çeşit ve sayıca zenginliğidir. Çevre kirliliği (hava, su, toprak) ve bilinçsiz avlanma biyoçeşitliliği tehdit eder. Canlıların bir kısmı tamamen yok olmuş (Mamut, Dinozor, Moa kuşu), bir kısmı ise tükenme tehlikesindedir (Panda, Kutup ayısı, Kelaynak).",
+        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-rose-50 border border-rose-200 rounded-xl"><strong class="text-rose-700">Dünyada Nesli Tükenmiş:</strong><p class="text-slate-700 mt-1">Dinozor, Mamut, Tazmanya Kaplanı, Dodo Kuşu, Moa</p></div><div class="p-3 bg-amber-50 border border-amber-200 rounded-xl"><strong class="text-amber-700">Türkiye'de Nesli Tükenmiş:</strong><p class="text-slate-700 mt-1">Anadolu Parsı, Asya Fili, Kunduz, Kafkas Bizonu, Hazar Kaplanı</p></div></div>`,
+        tips: "Geri dönüşüm, ağaçlandırma ve doğal koruma alanları (milli parklar) biyoçeşitliliği korumanın en etkili yollarıdır.",
+        question: "Aşağıdakilerden hangisi biyoçeşitliliği olumsuz etkileyen insan faaliyetlerinden biridir?\\nA) Ağaçlandırma yapmak\\nB) Doğal yaşam alanlarını tahrip etmek (Doğru)\\nC) Geri dönüşüme katkı sağlamak\\nD) Milli parklar kurmak"
+    },
+    "5-7": {
+        unitCode: "F.5.7",
+        title: "Elektrik Devre Elemanları",
+        summary: "Basit bir elektrik devresi; pil (güç kaynağı), ampul (ışık üretici), anahtar (akımı kontrol eden) ve bağlantı kablosundan oluşur. Bilimsel iletişimde devre elemanları uluslararası standart sembollerle gösterilir.",
+        tablesHtml: `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs space-y-1.5"><strong class="text-indigo-900 block">Lamba Parlaklığı Kuralları:</strong><p>• <strong>Pil Sayısı Artarsa:</strong> Devreye sağlanan enerji artar, ampul parlaklığı <strong>ARTAR</strong> (Bağımsız değişken: Pil sayısı).</p><p>• <strong>Ampul Sayısı Artarsa:</strong> Devrenin direnci artar, ampul başına düşen enerji azalır, parlaklık <strong>AZALIR</strong> (Bağımsız değişken: Ampul sayısı).</p></div>`,
+        tips: "Deneylerde sonucunu gözlemlemek istediğimiz ve bilerek değiştirdiğimiz değişken 'Bağımsız Değişken', buna bağlı olarak değişen sonuç ise 'Bağımlı Değişken'dir.",
+        question: "Bir elektrik devresinde pil sayısı sabit tutulup ampul sayısı artırılırsa lamba parlaklığı nasıl değişir?\\nA) Artar\\nB) Azalır (Doğru)\\nC) Değişmez\\nD) Önce artar sonra söner"
+    },
+
+    // 6. SINIF
+    "6-1": {
+        unitCode: "F.6.1",
+        title: "Güneş Sistemi ve Tutulmalar",
+        summary: "Güneş Sistemi'nde 8 gezegen bulunur. Güneş'e yakınlıklarına göre: Merkür, Venüs, Dünya, Mars (Karasal/İç gezegenler - yoğun ve kayalık), Jüpiter, Satürn, Uranüs, Neptün (Gazsal/Dış gezegenler - büyük ve halkalı). Mars ile Jüpiter arasında asteroit kuşağı yer alır.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-indigo-100/80 font-bold text-indigo-900"><th class="p-2 border border-indigo-200">Tutulma Türü</th><th class="p-2 border border-indigo-200">Sıralama</th><th class="p-2 border border-indigo-200">Ay'ın Evresi</th></tr><tr><td class="p-2 border border-indigo-200 font-bold">Güneş Tutulması</td><td class="p-2 border border-indigo-200">Güneş - Ay - Dünya</td><td class="p-2 border border-indigo-200">Yeni Ay (Gündüz yaşanır)</td></tr><tr><td class="p-2 border border-indigo-200 font-bold">Ay Tutulması</td><td class="p-2 border border-indigo-200">Güneş - Dünya - Ay</td><td class="p-2 border border-indigo-200">Dolunay (Gece yaşanır)</td></tr></table>`,
+        tips: "Venüs ve Uranüs diğer gezegenlerin tersi yönde (saat yönünde) döner. En sıcak gezegen sera etkisinden dolayı Merkür değil Venüs'tür!",
+        question: "Güneş tutulması sırasında Ay hangi evrededir?\\nA) Dolunay\\nB) Yeni Ay (Doğru)\\nC) İlk Dördün\\nD) Son Dördün"
+    },
+    "6-2": {
+        unitCode: "F.6.2",
+        title: "Vücudumuzdaki Sistemler",
+        summary: "Destek ve hareket (kemik, kıkırdak, kas), sindirim (ağız, mide, ince bağırsak, pankreas, karaciğer), dolaşım (kalp, damarlar, kan), solunum (akciğer, alveoller) ve boşaltım (böbrekler, nefronlar) sistemlerinin eşgüdümlü çalışmasıdır.",
+        tablesHtml: `<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1.5"><strong class="text-blue-900 block">Kimyasal Sindirim Başlama ve Bitme Noktaları:</strong><p>• <strong>Karbonhidratlar:</strong> Ağızda başlar (Tükürük/Amilaz) -> İnce bağırsakta biter.</p><p>• <strong>Proteinler:</strong> Midede başlar (Mide özsuyu/Pepsin) -> İnce bağırsakta biter.</p><p>• <strong>Yağlar:</strong> İnce bağırsakta başlar (Pankreas özsuyu/Lipaz) -> İnce bağırsakta biter.</p><p><em>* Safra sıvısı karaciğerde üretilir, yağların mekanik (fiziksel) sindirimini sağlar, enzim içermez!</em></p></div>`,
+        tips: "Küçük kan dolaşımı kanı akciğerde temizler; büyük kan dolaşımı temiz kanı tüm vücuda dağıtıp kirli kanı toplar.",
+        question: "Yağların kimyasal sindirimi hangi organda başlar ve nerede biter?\\nA) Mide - İnce Bağırsak\\nB) İnce Bağırsak - İnce Bağırsak (Doğru)\\nC) Ağız - Mide\\nD) Karaciğer - Kalın Bağırsak"
+    },
+    "6-3": {
+        unitCode: "F.6.3",
+        title: "Kuvvet ve Hareket",
+        summary: "Birden fazla kuvvetin yaptığı etkiyi tek başına yapan kuvvete Bileşke Kuvvet (Net Kuvvet, R) denir. Aynı yönlü kuvvetler toplanır, zıt yönlü kuvvetler çıkarılır. R = 0 ise dengelenmiş kuvvetler; R ≠ 0 ise dengelenmemiş kuvvetler etki eder.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-slate-100 font-bold text-slate-900"><th class="p-2 border">Durum</th><th class="p-2 border">Bileşke Kuvvet</th><th class="p-2 border">Cismin Hareketi</th></tr><tr><td class="p-2 border font-bold">Dengelenmiş Kuvvetler</td><td class="p-2 border">R = 0 N</td><td class="p-2 border">Duran cisim durur, hareket halindeyse sabit süratle devam eder.</td></tr><tr><td class="p-2 border font-bold">Dengelenmemiş Kuvvetler</td><td class="p-2 border">R ≠ 0 N</td><td class="p-2 border">Cisim net kuvvet yönünde hızlanır veya kuvvet zıtsa yavaşlar.</td></tr></table>`,
+        tips: "Sürat = Alınan Yol / Geçen Zaman (v = x / t). Sabit süratli harekette eşit zaman aralıklarında eşit yollar alınır.",
+        question: "Doğuya 15 N, batıya 10 N kuvvet uygulanan bir sandığa etki eden bileşke kuvvet nedir?\\nA) 25 N Doğu\\nB) 5 N Doğu (Doğru)\\nC) 5 N Batı\\nD) 0 N"
+    },
+    "6-4": {
+        unitCode: "F.6.4",
+        title: "Madde ve Isı",
+        summary: "Bütün maddeler taneciklerden oluşur. Tanecikler titreşim, öteleme ve dönme hareketleri yapar. Isı enerjisi katılarda İletim, sıvı ve gazlarda Konveksiyon, boşlukta ise Işıma (Radyasyon) yoluyla yayılır.",
+        tablesHtml: `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1"><strong class="text-amber-900 block">Isı Yalıtım Malzemeleri Özellikleri:</strong><p>• İçlerinde hava boşlukları çoktur (hava kötü bir iletkendir).</p><p>• Cam yünü, taş yünü, strafor köpük, ahşap, silikon yünü, çift cam.</p><p>• Binalarda ısı yalıtımı yakıt tasarrufu sağlar ve hava kirliliğini önler.</p></div>`,
+        tips: "Güneş'in Dünya'yı ısıtması ışıma yoluyla olur; çorba kasesindeki metal kaşığın ısınması ise iletim yoluyladır.",
+        question: "Aşağıdakilerden hangisi iyi bir ısı yalıtım malzemesidir?\\nA) Bakır\\nB) Demir\\nC) Strafor köpük (Doğru)\\nD) Alüminyum"
+    },
+    "6-5": {
+        unitCode: "F.6.5",
+        title: "Ses ve Özellikleri",
+        summary: "Ses maddesel ortamlarda taneciklerin titreşimiyle dalgalar hâlinde yayılır. Ses boşlukta YAYILMAZ! Sesin sürati ortamın yoğunluğuna ve sıcaklığına bağlıdır: Katı > Sıvı > Gaz.",
+        tablesHtml: `<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1.5"><strong class="text-blue-900 block">Sesin Maddeyle Etkileşimi:</strong><p>• <strong>Yansıma:</strong> Ses dalgalarının sert engele çarpıp geri dönmesidir (Yankı, sonar, ultrason).</p><p>• <strong>Soğurulma:</strong> Ses dalgalarının pürüzlü ve gözenekli yüzeylerde yutulmasıdır (Ses yalıtımı, sünger, strafor).</p><p>• <strong>Geçiş:</strong> Sesin engelin diğer tarafına iletilmesidir.</p></div>`,
+        tips: "Şimşek çaktığında önce ışığı görüp sonra gök gürültüsünü duymamız, ışık hızının (300.000 km/s) ses hızından (havada ~340 m/s) katbekat hızlı olmasındandır.",
+        question: "Ses dalgaları aşağıdaki ortamların hangisinde kesinlikle yayılamaz?\\nA) Deniz suyu\\nB) Demir levha\\nC) Uzay boşluğu (Doğru)\\nD) Hava"
+    },
+    "6-6": {
+        unitCode: "F.6.6",
+        title: "Vücudumuzdaki Sistemler ve Sağlığı",
+        summary: "Denetleyici ve düzenleyici sistemler vücuttaki tüm sistemlerin uyum içinde çalışmasını sağlar: Sinir Sistemi (Beyin, beyincik, omurilik soğanı, omurilik) ve İç Salgı Bezleri (Hipofiz, tiroit, pankreas, böbrek üstü bezleri).",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-teal-100 font-bold text-teal-900"><th class="p-2 border border-teal-200">Organ</th><th class="p-2 border border-teal-200">Temel Görevi</th></tr><tr><td class="p-2 border border-teal-200 font-bold">Beyin</td><td class="p-2 border border-teal-200">Öğrenme, hafıza, bilinç, duyu merkezleri, kan basıncı ve vücut sıcaklığı</td></tr><tr><td class="p-2 border border-teal-200 font-bold">Beyincik</td><td class="p-2 border border-teal-200">Kol ve bacak kaslarının koordinasyonu, vücudun denge merkezi</td></tr><tr><td class="p-2 border border-teal-200 font-bold">Omurilik Soğanı</td><td class="p-2 border border-teal-200">İç organların çalışması (solunum, dolaşım, yutma, hapşırma, kusma)</td></tr><tr><td class="p-2 border border-teal-200 font-bold">Omurilik</td><td class="p-2 border border-teal-200">Refleks davranışları (diz kapağı, göze ışık tutulması, sıcak nesneye dokunma)</td></tr></table>`,
+        tips: "Pankreas hem insülin (kan şekerini düşürür) hem de glukagon (kan şekerini yükseltir) hormonlarını salgılar.",
+        question: "Vücudun denge ve kas koordinasyon merkezi hangi organdır?\\nA) Beyin\\nB) Beyincik (Doğru)\\nC) Omurilik Soğanı\\nD) Hipofiz"
+    },
+    "6-7": {
+        unitCode: "F.6.7",
+        title: "Elektriğin İletimi",
+        summary: "Elektrik akımını ileten maddelere İletken (metaller, tuzlu su, asitli su), iletmeyen maddelere Yalıtkan (plastik, porselen, cam, tahta, saf su) denir. Elektriksel direnç; bir iletkenin elektrik akımına karşı gösterdiği zorluktur (Ohm, Ω).",
+        tablesHtml: `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs space-y-1"><strong class="text-indigo-900 block">Bir İletkenin Direncine Etki Eden Faktörler:</strong><p>1. <strong>Uzunluk (L):</strong> Telin boyu uzadıkça direnç <strong>ARTAR</strong> (Doğru orantı).</p><p>2. <strong>Kesit Alanı / Kalınlık (S):</strong> Tel kalınlaştıkça direnç <strong>AZALIR</strong> (Ters orantı).</p><p>3. <strong>Cinsi:</strong> İletkenin cinsine (özdirenç) bağlıdır.</p></div>`,
+        tips: "Ampulün içindeki tungsten tel çok ince ve çok uzundur (sarmal yapılmıştır); böylece direnci çok yüksek olur, ısınıp ışık saçar.",
+        question: "Direnci en küçük olan iletken tel hangisidir?\\nA) Uzun ve ince\\nB) Kısa ve kalın (Doğru)\\nC) Uzun ve kalın\\nD) Kısa ve ince"
+    },
+
+    // 7. SINIF
+    "7-1": {
+        unitCode: "F.7.1",
+        title: "Güneş Sistemi ve Ötesi",
+        summary: "Uzay araştırmalarında roketler, uzay mekikleri, sondalar ve yapay uydular kullanılır. Yıldızlar bulutsulardan (nebula) doğar, yaşar ve enerjileri bitince ölürler. Güneş sarı renkte, orta sıcaklıkta bir yıldızdır.",
+        tablesHtml: `<div class="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs space-y-1"><strong class="text-purple-900 block">Yıldızların Sıcaklık Renkleri & Yaşam Sonu:</strong><p>• <strong>Mavi/Beyaz:</strong> En sıcak yıldızlar</p><p>• <strong>Sarı:</strong> Orta sıcaklıktaki yıldızlar (Güneş)</p><p>• <strong>Kırmızı:</strong> En soğuk yıldızlar</p><p>• Büyük kütleli yıldızlar süpernova patlamasıyla Nötron yıldızı (Pulsar) veya <strong>Kara Delik</strong>'e dönüşür.</p></div>`,
+        tips: "Işık yılı bir zaman birimi DEĞİL, astronomik bir mesafe birimidir (Işığın boşlukta 1 yılda aldığı yol: yaklaşık 9.46 trilyon km).",
+        question: "Aşağıdakilerden hangisi en sıcak yıldızların rengidir?\\nA) Kırmızı\\nB) Sarı\\nC) Mavi (Doğru)\\nD) Turuncu"
+    },
+    "7-2": {
+        unitCode: "F.7.2",
+        title: "Hücre ve Bölünmeler",
+        summary: "Hücre canlının en küçük yapı birimidir: Hücre zarı, sitoplazma ve çekirdek. Bitki hücresinde hücre duvarı ve kloroplast varken; hayvan hücresinde sentrozom bulunur. Hücre bölünmesi Mitoz ve Mayoz olarak ikiye ayrılır.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-indigo-100 font-bold text-indigo-900"><th class="p-2 border">Özellik</th><th class="p-2 border">Mitoz Bölünme</th><th class="p-2 border">Mayoz Bölünme</th></tr><tr><td class="p-2 border font-bold">Görüldüğü Hücre</td><td class="p-2 border">Vücut hücrelerinde (2n)</td><td class="p-2 border">Üreme ana hücrelerinde (2n)</td></tr><tr><td class="p-2 border font-bold">Oluşan Hücre</td><td class="p-2 border">2 yeni hücre</td><td class="p-2 border">4 yeni hücre (gamet, n)</td></tr><tr><td class="p-2 border font-bold">Kromozom Sayısı</td><td class="p-2 border">Sabit kalır (2n -> 2n)</td><td class="p-2 border">Yarıya iner (2n -> n)</td></tr><tr><td class="p-2 border font-bold">Kalıtsal Çeşitlilik</td><td class="p-2 border">Yoktur (Klon fotokopi)</td><td class="p-2 border">Vardır (Krossing-over / Parça değişimi)</td></tr></table>`,
+        tips: "Mayoz bölünmedeki parça değişimi (krossing-over) ve döllenme olayı nesiller boyu tür içi genetik çeşitliliği sağlar.",
+        question: "Mayoz bölünmede kromozom sayısının yarıya inmesi neyi sağlar?\\nA) Canlının hızlı büyümesini\\nB) Nesiller boyunca tür içi kromozom sayısının sabit kalmasını (Doğru)\\nC) Hücrelerin yenilenmesini\\nD) Doku onarımını"
+    },
+    "7-3": {
+        unitCode: "F.7.3",
+        title: "Kuvvet ve Enerji",
+        summary: "Kütle değişmeyen madde miktarıdır (kg, terazi); ağırlık ise cisme etki eden yerçekimi kuvvetidir (N, dinamometre). Fiziksel anlamda iş: Kuvvet uygulanmalı ve cisim uygulanan kuvvet doğrultusunda yol almalıdır (İş = Kuvvet x Yol, Joule).",
+        tablesHtml: `<div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1.5"><strong class="text-emerald-900 block">Enerji Türleri ve Korunumu:</strong><p>• <strong>Kinetik Enerji:</strong> Hareket enerjisidir (Kütle ve Sürate bağlıdır).</p><p>• <strong>Çekim Potansiyel Enerjisi:</strong> Konum enerjisidir (Kütle ve Yüksekliğe bağlıdır).</p><p>• Sürtünmesiz ortamda Mekanik Enerji korunur (Potansiyel <-> Kinetik birbirine dönüşür).</p></div>`,
+        tips: "Elindeki çantayla düz yolda sabit süratle yürüyen bir öğrenci fiziksel anlamda İŞ YAPMAZ (Kuvvet yukarı yönlü, hareket yatay yönlüdür; doğrultular farklıdır!).",
+        question: "Sırtındaki çantayla merdivenlerden yukarı çıkan bir öğrenci için hangisi doğrudur?\\nA) Fiziksel anlamda iş yapmıştır (Doğru)\\nB) Çantanın potansiyel enerjisi azalmıştır\\nC) Kinetik enerjisi sürekli sıfırdır\\nD) Yerçekimine karşı iş yapılmamıştır"
+    },
+    "7-4": {
+        unitCode: "F.7.4",
+        title: "Saf Madde ve Karışımlar",
+        summary: "Elementler tek cins atomlardan oluşan saf maddelerdir (Sembollerle gösterilir: Fe, Cu, O). Bileşikler en az iki farklı cins atomun kimyasal bağlarla birleşmesidir (Formüllerle gösterilir: H2O, CO2, NaCl). Karışımlar ise maddelerin özelliklerini kaybetmeden rastgele oranlarda bir araya gelmesidir.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-cyan-100 font-bold text-cyan-900"><th class="p-2 border">Karışım Türü</th><th class="p-2 border">Özellik</th><th class="p-2 border">Örnekler</th></tr><tr><td class="p-2 border font-bold">Homojen (Çözelti)</td><td class="p-2 border">Her yerinde aynı özelliği gösterir, tek fazlıdır.</td><td class="p-2 border">Tuzlu su, şekerli su, hava, kolonya, gazoz, pirinç (alaşım)</td></tr><tr><td class="p-2 border font-bold">Heterojen</td><td class="p-2 border">Her yerinde aynı özelliği göstermez, tanecikler seçilir.</td><td class="p-2 border">Zeytinyağı-su, çorba, ayran, kumlu su, salata</td></tr></table>`,
+        tips: "Bileşikler kimyasal yollarla ayrışırken; karışımlar fiziksel yollarla (buharlaştırma, damıtma, süzme, yoğunluk farkı) ayrıştırılır.",
+        question: "Aşağıdakilerden hangisi bir bileşiktir?\\nA) Hava\\nB) Demir (Fe)\\nC) Su (H2O) (Doğru)\\nD) Tuzlu su"
+    },
+    "7-5": {
+        unitCode: "F.7.5",
+        title: "Işığın Madde ile Etkileşimi",
+        summary: "Işık saydam ortamlardan geçerken kırıcılık indisi farklı ortamlara rastladığında yön ve sürat değiştirir (Kırılma). Aynalar ışığı yansıtır: Düzlem ayna (boy eşit, simetrik görüntü), Çukur ayna (odak noktası var, dev aynası, ters/düz görüntü), Tümsek ayna (geniş görüş açısı, daima düz ve küçük görüntü).",
+        tablesHtml: `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1.5"><strong class="text-amber-900 block">Kırılma ve Mercek Kuralları:</strong><p>• Az Yoğun Ortamdan Çok Yoğun Ortama geçen ışık <strong>NORMALE YAKLAŞARAK</strong> kırılır, sürati azalır.</p><p>• Çok Yoğun Ortamdan Az Yoğun Ortama geçen ışık <strong>NORMALDEN UZAKLAŞARAK</strong> kırılır, sürati artar.</p><p>• İnce Kenarlı Mercek ışığı toplar (Hipermetrop düzeltir); Kalın Kenarlı Mercek ışığı dağıtır (Miyop düzeltir).</p></div>`,
+        tips: "Göz kusurları kodlaması: MİYOP -> Kalın kenarlı mercekle düzeltilir (Uzağı göremez); HİPERMETROP -> İnce kenarlı mercekle düzeltilir (Yakını göremez).",
+        question: "Araçların sağ-sol yan aynalarında ve otopark virajlarında geniş alanı görmek için hangi ayna kullanılır?\\nA) Çukur Ayna\\nB) Düzlem Ayna\\nC) Tümsek Ayna (Doğru)\\nD) İnce Mercek"
+    },
+    "7-6": {
+        unitCode: "F.7.6",
+        title: "Canlılarda Üreme, Büyüme ve Gelişme",
+        summary: "Canlılar nesillerini devam ettirmek için ürerler. İnsanda üreme eşeyli gerçekleşir: Sperm + Yumurta -> Döllenme -> Zigot -> Embriyo -> Fetüs -> Bebek. Bitkilerde tozlaşma ile döllenme gerçekleşir. Eşeysiz üreme türleri: Bölünerek, tomurcuklanma, vejetatif ve rejenerasyon.",
+        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-rose-50 border border-rose-200 rounded-xl"><strong class="text-rose-700">Başkalaşım Geçiren Canlılar:</strong><p class="text-slate-700 mt-1">Yumurtadan çıkan yavrunun ana canlıya benzemeyip zamanla değişim geçirmesidir: Kurbağa, Kelebek, İpek böceği, Karasinek.</p></div><div class="p-3 bg-teal-50 border border-teal-200 rounded-xl"><strong class="text-teal-700">Tohumun Çimlenme Şartları (S-O-S):</strong><p class="text-slate-700 mt-1">1. Su (Nem)<br>2. Oksijen (Hava)<br>3. Sıcaklık (Uygun ısı)<br><em>* Çimlenme sırasında ışığa ihtiyaç YOKTUR!</em></p></div></div>`,
+        tips: "Çimlenmekte olan bir tohum henüz klorofil üretmediği için fotosentez yapamaz, çimlenene kadar sadece oksijenli solunum yapar.",
+        question: "Tohumun çimlenmesi için aşağıdakilerden hangisi zorunlu DEĞİLDİR?\\nA) Su\\nB) Oksijen\\nC) Işık (Doğru)\\nD) Uygun sıcaklık"
+    },
+    "7-7": {
+        unitCode: "F.7.7",
+        title: "Elektrik Devreleri",
+        summary: "Elektrik devrelerinde ampuller seri veya paralel bağlanabilir. Seri bağlamada devre direnci artar, akım azalır, ampuller sönük yanar. Paralel bağlamada ampullerin uçları aynı potansiyele bağlıdır, ampul sayısı artsa da parlaklık değişmez. Ohm Yasası: Gerilim / Akım = Direnç (V = I . R).",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-blue-100 font-bold text-blue-900"><th class="p-2 border">Özellik</th><th class="p-2 border">Seri Bağlama</th><th class="p-2 border">Paralel Bağlama</th></tr><tr><td class="p-2 border font-bold">Ampul Eklendikçe Parlaklık</td><td class="p-2 border">Azalır</td><td class="p-2 border">Değişmez</td></tr><tr><td class="p-2 border font-bold">Biri Patlarsa / Çıkarılırsa</td><td class="p-2 border">Devre kesilir, hepsi söner</td><td class="p-2 border">Diğerleri aynı parlaklıkta yanmaya devam eder</td></tr><tr><td class="p-2 border font-bold">Ölçü Aletleri</td><td class="p-2 border" colspan="2">Ampermetre <strong>seri</strong> bağlanır (İç direnci ~0); Voltmetre <strong>paralel</strong> bağlanır (İç direnci sonsuzdur).</td></tr></table>`,
+        tips: "Evlerimizdeki tüm priz ve aydınlatma armatürleri PARALEL bağlıdır; bir lamba kapandığında diğerlerinin sönmemesi bu sayededir.",
+        question: "Paralel bağlı özdeş ampullerden bir tanesi patlarsa diğer ampullerin parlaklığı nasıl değişir?\\nA) Söner\\nB) Parlaklığı artar\\nC) Değişmez (Doğru)\\nD) Yarıya iner"
+    },
+
+    // 8. SINIF (LGS)
+    "8-1": {
+        unitCode: "F.8.1",
+        title: "Mevsimler ve İklim",
+        summary: "Mevsimlerin oluşumunda iki temel faktör vardır: 1) Dünya'nın 23° 27' eksen eğikliği, 2) Güneş etrafında eliptik yörüngede dolanması. Dünya'nın Güneş'e olan mesafesinin mevsimlerin oluşumuyla hiçbir ilgisi yoktur! Işık dik geldikçe birim yüzeye düşen enerji artar, sıcaklık yükselir ve gölge boyu kısalır.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-rose-100 font-bold text-rose-900"><th class="p-2 border">Tarih</th><th class="p-2 border">Kuzey Yarım Küre</th><th class="p-2 border">Güney Yarım Küre</th><th class="p-2 border">Önemli Olay</th></tr><tr><td class="p-2 border font-bold">21 Haziran</td><td class="p-2 border">Yaz Başlangıcı (En uzun gündüz)</td><td class="p-2 border">Kış Başlangıcı (En uzun gece)</td><td class="p-2 border">Yengeç Dönencesi'ne dik gelir.</td></tr><tr><td class="p-2 border font-bold">21 Aralık</td><td class="p-2 border">Kış Başlangıcı (En uzun gece)</td><td class="p-2 border">Yaz Başlangıcı (En uzun gündüz)</td><td class="p-2 border">Oğlak Dönencesi'ne dik gelir.</td></tr><tr><td class="p-2 border font-bold">21 Mart / 23 Eylül</td><td class="p-2 border">İlkbahar / Sonbahar (Ekinoks)</td><td class="p-2 border">Sonbahar / İlkbahar (Ekinoks)</td><td class="p-2 border">Ekvator'a dik gelir. Dünyada 12 saat gece - 12 saat gündüz eşitliği.</td></tr></table>`,
+        tips: "Rüzgâr; Yüksek Basınç (soğuk, alçalıcı hava hareketi) alanından Alçak Basınç (sıcak, yükselici hava hareketi, bulut ve yağış ihtimali yüksek) alanına doğru yatay yönde gerçekleşir.",
+        question: "21 Haziran tarihinde Güney Yarım Küre'de bulunan bir gözlemci için hangisi doğrudur?\\nA) En uzun gündüz yaşanır\\nB) Kış mevsimi başlangıcıdır (Doğru)\\nC) Güneş ışınları dik açıyla gelir\\nD) Gölge boyu en kısadır"
+    },
+    "8-2": {
+        unitCode: "F.8.2",
+        title: "DNA ve Genetik Kod",
+        summary: "Karmaşıktan basite: Kromozom > DNA > Gen > Nükleotid (KEDİGENİ). DNA çift zincirli sarmal yapıdadır. Nükleotid = Fosfat + Deoksiriboz Şekeri + Organik Baz. Eşlenmede A karşısına T, G karşısına C gelir. Kalıtımda genotip (gen yapısı) ve fenotip (dış görünüş) çaprazlamalarla incelenir.",
+        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl"><strong class="text-indigo-900 block mb-1">Mutasyon vs. Modifikasyon:</strong><p>• <strong>Mutasyon:</strong> Gen YAPISINDA bozulma (Radyasyon, kimyasal). Kalıtsaldır (üreme hücresindeyse). Örn: Van kedisi, albinoluk, 6 parmaklılık.</p><p>• <strong>Modifikasyon:</strong> Gen İŞLEYİŞİNDE değişim (Çevreye bağlı). Kalıtsal DEĞİLDİR. Örn: Çuha çiçeği, arı sütüyle beslenen kraliçe arı, kas yapma.</p></div><div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl"><strong class="text-emerald-900 block mb-1">Adaptasyon & Doğal Seçilim:</strong><p>• <strong>Adaptasyon:</strong> Yaşama ve üreme şansını artıran kalıtsal uyum (Kutup ayısının beyaz kürkü, kaktüsün diken yaprakları).</p><p>• <strong>Doğal Seçilim:</strong> Çevreye uyum sağlayanların hayatta kalıp diğerlerinin elenmesi.</p></div></div>`,
+        tips: "İki melez döl (Aa x Aa) çaprazlandığında fenotip oranı %75 Baskın, %25 Çekinik; Genotip oranı %25 Saf Baskın, %50 Melez, %25 Saf Çekinik çıkar.",
+        question: "Himalaya tavşanının sırtındaki beyaz kıllar kazınıp buz bağlandığında siyah kıl çıkması, bu kıllar tekrar kazındığında sıcakta yine beyaz çıkması neye örnektir?\\nA) Mutasyon\\nB) Modifikasyon (Doğru)\\nC) Adaptasyon\\nD) Biyoteknoloji"
+    },
+    "8-3": {
+        unitCode: "F.8.3",
+        title: "Basınç (Katı, Sıvı, Gaz)",
+        summary: "Birim yüzeye dik etki eden kuvvettir. Katı basıncı (P = G / S): Ağırlıkla doğru, yüzey alanıyla ters orantılıdır. Sıvı basıncı (P = h . d): Sıvı derinliği (h) ve yoğunluğu (d) ile doğru orantılıdır; kabın şekline ve sıvı hacmine bağlı değildir! Sıvılar sıkıştırılamaz ve basıncı her yöne aynen iletir (Pascal Prensibi).",
+        tablesHtml: `<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1.5"><strong class="text-blue-900 block">Basınç Formülleri & Pascal Prensibi Uygulamaları:</strong><p>• <strong>Katı Basıncı:</strong> P = Ağırlık / Taban Alanı (Bıçakların bilenmesi basıncı artırır; tır tekerleklerinin çokluğu basıncı azaltır).</p><p>• <strong>Sıvı Basıncı:</strong> P = Derinlik (h) x Yoğunluk (d) x Yerçekimi (g).</p><p>• <strong>Pascal Prensibi Uygulamaları:</strong> Su cenderesi, hidrolik fren, berber koltuğu, itfaiye merdiveni, damperli kamyonlar.</p><p>• <strong>Açık Hava Basıncı (P0):</strong> Torricelli deneyi (Deniz seviyesinde 0 °C'de 76 cm-Hg cıva yüksekliği). Yükseklere çıkıldıkça açık hava basıncı AZALIR.</p></div>`,
+        tips: "Sıvı basıncında derinlik daima sıvının EN ÜST AÇIK YÜZEYİNDEN ölçülür, kabın tabanından değil!",
+        question: "Aynı derinlikte su (d=1 g/cm³) ve zeytinyağı (d=0.9 g/cm³) bulunan kapların tabanındaki sıvı basınçları karşılaştırıldığında hangisi doğrudur?\\nA) Su basıncı daha büyüktür (Doğru)\\nB) Zeytinyağı basıncı daha büyüktür\\nC) Basınçlar eşittir\\nD) Kabın şekli bilinmeden söylenemez"
+    },
+    "8-4": {
+        unitCode: "F.8.4",
+        title: "Madde ve Endüstri",
+        summary: "Periyodik tablo artan atom numaralarına (proton sayısına) göre düzenlenmiştir (7 periyot, 18 grup). Kimyasal tepkimelerde KÜTLE HER ZAMAN KORUNUR; atom cinsi ve sayısı değişmez. Asitler pH 0-7, tatları ekşi, H+ iyonu verir; Bazlar pH 7-14, tatları acı, ele kayganlık verir, OH- iyonu verir.",
+        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-amber-100 font-bold text-amber-900"><th class="p-2 border">Özellik</th><th class="p-2 border">Asitler</th><th class="p-2 border">Bazlar</th></tr><tr><td class="p-2 border font-bold">pH Değeri</td><td class="p-2 border">0 - 7 arası (0'a yaklaştıkça kuvvetlenir)</td><td class="p-2 border">7 - 14 arası (14'e yaklaştıkça kuvvetlenir)</td></tr><tr><td class="p-2 border font-bold">Turnusol Kağıdı</td><td class="p-2 border">Maviyi <strong>KIRMIZIYA</strong> çevirir</td><td class="p-2 border">Kırmızıyı <strong>MAVİYE</strong> çevirir</td></tr><tr><td class="p-2 border font-bold">Etkilediği Yüzey</td><td class="p-2 border">Metallerle H2 gazı çıkarır, mermeri aşındırır</td><td class="p-2 border">Cam ve porselen eşyaları matlaştırır/aşındırır</td></tr></table>`,
+        tips: "Özısı (c) saf maddeler için ayırt edici özelliktir. Özısısı KÜÇÜK olan madde çabuk ısınır ve çabuk soğur; özısısı BÜYÜK olan madde geç ısınır ve geç soğur!",
+        question: "pH değeri 2 olan bir çözelti için aşağıdakilerden hangisi doğrudur?\\nA) Ele kayganlık hissi verir\\nB) Kuvvetli bir asittir ve metalleri aşındırır (Doğru)\\nC) Kırmızı turnusolu maviye çevirir\\nD) Tatları acıdır"
+    },
+    "8-5": {
+        unitCode: "F.8.5",
+        title: "Basit Makineler",
+        summary: "Basit makineler hiçbir zaman İŞTEN VE ENERJİDEN KAZANÇ SAĞLAMAZ! Sadece iş kolaylığı sağlar. Kuvvetten kazanç varsa yoldan aynı oranda kayıp vardır. Kuvvet Kazancı = Yük / Kuvvet = Kuvvet Kolu / Yük Kolu. Kuvvet kolu yük kolundan büyükse daima kuvvet kazancı vardır.",
+        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-red-50 border border-red-200 rounded-xl"><strong class="text-red-700 block mb-1">Daima Kuvvetten Kazanç Sağlayanlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Eğik Düzlem (Boyu / Yüksekliği > 1)</li><li>Hareketli Makara (2 kat kazanç)</li><li>Yükün ortada olduğu kaldıraç (El arabası, ceviz kıracağı)</li><li>Çıkrık (R > r)</li><li>Vida</li></ul></div><div class="p-3 bg-blue-50 border border-blue-200 rounded-xl"><strong class="text-blue-700 block mb-1">Kuvvetten Kayıp (Yoldan Kazanç) Olanlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Kuvvetin ortada olduğu kaldıraç (Cımbız, maşa, olta, kürek)</li><li>Sabit makara (Kazanç yoktur, yön değiştirir)</li><li>Eşit kollu kaldıraç (Tahterevalli - kazanç yok)</li></ul></div></div>`,
+        tips: "Eğik düzlemin boyu (L) artırılırsa veya yüksekliği (h) azaltılırsa kuvvet kazancı artar, cismi yukarı çıkarmak için daha küçük kuvvet gerekir.",
+        question: "Basit makinelerle ilgili aşağıdaki ifadelerden hangisi kesinlikle YANLIŞTIR?\\nA) İş yapma kolaylığı sağlarlar\\nB) İşten ve enerjiden kazanç sağlarlar (Doğru - Yanlış ifade)\\nC) Kuvvetin yönünü değiştirebilirler\\nD) Kuvvetten kazanç varsa yoldan kayıp vardır"
+    },
+    "8-6": {
+        unitCode: "F.8.6",
+        title: "Enerji Dönüşümleri ve Çevre Bilimi",
+        summary: "Besin zinciri üreticilerle başlar. Ekosistemde enerji akışı üreticiden tüketiciye doğru tek yönlüdür ve her basamakta enerjinin yaklaşık %10'u bir üst basamağa aktarılır. Fotosentez: Işık enerjisi ile besin ve oksijen üretimidir. Solunum: Besinlerin parçalanarak ATP enerjisi üretilmesidir.",
+        tablesHtml: `<div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1.5"><strong class="text-emerald-900 block">Besin Piramidinde Aşağıdan Yukarıya Çıkıldıkça:</strong><p>• Aktarılan enerji miktarı <strong>AZALIR</strong> (%10 kuralı).</p><p>• Toplam biyokütle ve birey sayısı <strong>AZALIR</strong>.</p><p>• Biyolojik birikim (zehirli kimyasal madde miktarı) <strong>ARTAR</strong>.</p><p>• Canlıların vücut büyüklüğü genellikle <strong>ARTAR</strong>.</p></div>`,
+        tips: "Fotosentez hızı yeşil ışıkta EN YAVAŞ (çünkü yeşil klorofil tarafından yansıtılır), mor ve kırmızı ışıkta EN HIZLIDIR!",
+        question: "Bir besin piramidinde üreticiden son tüketiciye doğru gidildikçe aşağıdakilerden hangisi ARTAR?\\nA) Biyolojik birikim (zehir miktarı) (Doğru)\\nB) Aktarılan enerji miktarı\\nC) Toplam canlı kütlesi\\nD) Birey sayısı"
+    },
+    "8-7": {
+        unitCode: "F.8.7",
+        title: "Elektrik Yükleri ve Elektrik Enerjisi",
+        summary: "Cisimler sürtünme, dokunma ve etki ile elektriklenir. Aynı yükler birbirini iter (+ +, - -), zıt yükler birbirini çeker (+ -). Nötr cisimler pozitif ve negatif yük sayıları eşit olan cisimlerdir; yüksüz demek değildir! Yüklü cisimler nötr cisimleri çeker. Topraklama cisimleri nötr yapar.",
+        tablesHtml: `<div class="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs space-y-1.5"><strong class="text-purple-900 block">Elektriklenme Türleri & Topraklama:</strong><p>• <strong>Ebonit (Plastik) Çubuk - Yün Kumaş:</strong> Ebonit çubuk (-) negatif, yün kumaş (+) pozitif yüklenir.</p><p>• <strong>Cam Çubuk - İpek Kumaş:</strong> Cam çubuk (+) pozitif, ipek kumaş (-) negatif yüklenir.</p><p>• <strong>Topraklama:</strong> Cisim ile yer arasında elektron alışverişi yapılarak cismin nötrlenmesidir. (-) yüklü cisimden toprağa elektron akar; (+) yüklü cisme topraktan elektron gelir.</p></div>`,
+        tips: "Elektriklenmede SADECE elektronlar (negatif yükler) hareket eder! Protonlar (pozitif yükler) çekirdekte bağlı olduğu için ASLA hareket etmez!",
+        question: "İpek kumaşa sürtülen bir cam çubuğun yük durumu aşağıdakilerden hangisidir?\\nA) Cam çubuk (+) pozitif yüklenir (Doğru)\\nB) Cam çubuk (-) negatif yüklenir\\nC) Cam çubuk nötr kalır\\nD) İpek kumaş (+) pozitif yüklenir"
+    }
+};
+
+let currentStudyNoteZoom = 1.0;
+
+function openUnitStudyNoteModal(gradeNum, unitId, unitTitle, unitSubtitle, fileUrl) {
+    // 1. Eğer gerçek bir PDF dosyası veya harici link eklenmişse doğrudan vektörel okuyucuya yönlendir
+    if (fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") {
+        openOrDownloadMaterial(unitId, fileUrl, unitTitle + ".pdf", "ders-notu", unitTitle);
+        return;
+    }
+
+    // 2. ID'ye göre veya unit indeksine göre ders notu içeriğini çek
+    const g = String(gradeNum).replace(/^grade-/, "").trim();
+    let noteKey = "";
+    
+    // unitId 'not-5-1' veya benzeri ise parçala
+    const match = String(unitId).match(/(?:not-)?(\d+)[-_](\d+)/);
+    if (match) {
+        noteKey = `${match[1]}-${match[2]}`;
+    } else {
+        // unitTitle üzerinden indeks bul
+        const unitNumMatch = String(unitTitle).match(/(\d+)\.\s*Ünite/i);
+        const uIdx = unitNumMatch ? unitNumMatch[1] : "1";
+        noteKey = `${g}-${uIdx}`;
+    }
+
+    const note = UNIT_STUDY_NOTES[noteKey] || UNIT_STUDY_NOTES[`${g}-1`] || {
+        unitCode: `F.${g}`,
+        title: unitTitle,
+        summary: "Bu ünite için MEB 2026-2027 müfredatına uygun konu özetleri, kavram haritaları ve soru çözümleri hazırlanmaktadır.",
+        tablesHtml: "<p class='text-xs text-slate-500'>Kavram tablosu hazırlanıyor...</p>",
+        tips: "Ders notlarını düzenli tekrar etmek ve ünite sonundaki değerlendirme sorularını çözmek başarıyı artırır.",
+        question: "MEB kazanımlarına uygun çalışma föyleri ve ders notları tamamlanmaktadır."
+    };
+
+    currentStudyNoteZoom = 1.0;
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    let modal = document.getElementById("unit-study-note-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "unit-study-note-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-200 select-none";
+        modal.onclick = function(e) {
+            if (e.target === this) closeUnitStudyNoteModal();
+        };
+        document.addEventListener('keydown', function handleStudyNoteKey(e) {
+            if (e.key === 'Escape' && document.getElementById('unit-study-note-modal')) {
+                closeUnitStudyNoteModal();
+                document.removeEventListener('keydown', handleStudyNoteKey);
+            }
+        });
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[94vh] border border-slate-200 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <!-- Üst Kontrol Barı -->
+            <div class="px-4 sm:px-6 py-3 bg-slate-900 text-white flex items-center justify-between gap-2 border-b border-slate-800 shrink-0">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
+                        <i class="fa-solid fa-file-lines"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h3 class="text-xs sm:text-sm font-black truncate max-w-[150px] sm:max-w-md text-white">${unitTitle}</h3>
+                        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
+                            <span class="px-1.5 py-0.2 rounded bg-slate-800 text-red-400 border border-slate-700">${g}. SINIF MEB</span>
+                            <span>${note.unitCode || 'F.' + g}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ Toolbar (Büyüt / Küçült / Yazdır / Kapat) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <div class="flex items-center gap-1 bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+                        <button type="button" onclick="changeStudyNoteZoom(-0.15)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Küçült (-)">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <span id="study-note-zoom-text" class="px-1.5 text-[11px] font-black text-amber-400 min-w-[40px] text-center">%100</span>
+                        <button type="button" onclick="changeStudyNoteZoom(0.15)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Büyüt (+)">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
+
+                    <button type="button" onclick="window.print()" class="hidden sm:flex px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer" title="Bu Ders Notunu Yazdır / PDF Kaydet">
+                        <i class="fa-solid fa-print"></i> <span>Yazdır</span>
+                    </button>
+
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerEditFoy('${g}', '${unitId}', '${unitTitle.replace(/'/g, "\\\\'")}', '${(unitSubtitle || '').replace(/'/g, "\\\\'")}')" class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer" title="Bu Üniteye Özel PDF Föyü Dosyası Yükle">
+                            <i class="fa-solid fa-pen-to-square"></i> <span class="hidden md:inline">Dosya Yükle</span>
+                        </button>
+                    ` : ''}
+
+                    <button type="button" onclick="closeUnitStudyNoteModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all cursor-pointer" title="Kapat (ESC)">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Orta Not Okuma Alanı (Ders Kitabı ve Görseller Gibi Net, Büyütülebilir ve Kaydırılabilir) -->
+            <div id="study-note-scroll-container" class="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-100/70 select-text">
+                <div id="study-note-zoom-wrapper" class="max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-10 shadow-lg border border-slate-200 transition-transform duration-100 ease-out origin-top space-y-6">
+                    
+                    <!-- Başlık & Rozet -->
+                    <div class="border-b-2 border-slate-100 pb-4">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider border border-red-200">
+                                📖 MEB 2026-2027 Ders Notu & Kazanım Rehberi
+                            </span>
+                            <span class="text-xs font-bold text-slate-400">${unitSubtitle || g + '. Sınıf Fen Bilimleri'}</span>
+                        </div>
+                        <h2 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">${unitTitle}</h2>
+                    </div>
+
+                    <!-- 1. Kazanım & Konu Özeti -->
+                    <div class="bg-gradient-to-r from-red-50/70 to-rose-50/70 border-l-4 border-red-600 p-4 sm:p-5 rounded-r-2xl">
+                        <h4 class="font-black text-red-900 text-sm sm:text-base mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-bullseye text-red-600"></i> 1. Ünite Kazanım & Kavram Özeti
+                        </h4>
+                        <p class="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
+                            ${note.summary}
+                        </p>
+                    </div>
+
+                    <!-- 2. Kavram Tabloları & Karşılaştırmalar -->
+                    <div class="space-y-3">
+                        <h4 class="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
+                            <i class="fa-solid fa-table-columns text-blue-600"></i> 2. Kavram Tablosu & Kritik Bilgiler
+                        </h4>
+                        <div class="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 overflow-x-auto">
+                            ${note.tablesHtml}
+                        </div>
+                    </div>
+
+                    <!-- 3. Püf Noktalar & Sınav İpuçları -->
+                    <div class="bg-amber-50 border border-amber-200/90 p-4 sm:p-5 rounded-2xl">
+                        <h4 class="font-black text-amber-900 text-sm sm:text-base mb-2 flex items-center gap-2">
+                            <i class="fa-solid fa-lightbulb text-amber-600"></i> 3. Dikkat Edilecek Püf Noktalar & Sınav İpuçları
+                        </h4>
+                        <p class="text-xs sm:text-sm text-amber-950 leading-relaxed font-semibold">
+                            ⚠️ ${note.tips}
+                        </p>
+                    </div>
+
+                    <!-- 4. Örnek Pekiştirme Sorusu -->
+                    <div class="bg-emerald-50/80 border border-emerald-200 p-4 sm:p-5 rounded-2xl space-y-2">
+                        <h4 class="font-black text-emerald-900 text-sm sm:text-base flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question text-emerald-600"></i> 4. Örnek Pekiştirme Sorusu
+                        </h4>
+                        <div class="text-xs sm:text-sm text-slate-800 font-medium whitespace-pre-line leading-relaxed pl-2 border-l-2 border-emerald-400">
+                            ${note.question}
+                        </div>
+                    </div>
+
+                    <!-- Alt Bilgilendirme & Yazdır -->
+                    <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+                        <span>Rotalı Fenci • MEB Fen Bilimleri Dijital Ders Platformu</span>
+                        <button type="button" onclick="window.print()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm">
+                            <i class="fa-solid fa-print"></i> A4 Formatında Yazdır / PDF İndir
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    modal.style.display = "flex";
+    modal.classList.remove("hidden");
+}
+
+function changeStudyNoteZoom(delta) {
+    currentStudyNoteZoom = Math.min(2.0, Math.max(0.7, parseFloat((currentStudyNoteZoom + delta).toFixed(2))));
+    const wrapper = document.getElementById("study-note-zoom-wrapper");
+    const textEl = document.getElementById("study-note-zoom-text");
+    if (wrapper) wrapper.style.transform = `scale(${currentStudyNoteZoom})`;
+    if (textEl) textEl.innerText = `%${Math.round(currentStudyNoteZoom * 100)}`;
+}
+
+function closeUnitStudyNoteModal() {
+    const modal = document.getElementById("unit-study-note-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+}
+
+
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
     let found = null;
     if (id) {
@@ -7398,7 +7829,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 PDF Ders Föyleri & Ders Notu</option>
+                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ünite Ders Notları & PDF Föy</option>
                                 <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
                                 <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
                                 <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
