@@ -5233,6 +5233,30 @@ function scrollBookVertical(delta) {
 
 function getFallbackPagesForGrade(grade, title) {
     const g = String(grade || "5").replace(/^grade-/, "").trim();
+    const lowerTitle = String(title || "").toLowerCase();
+    const isBook = lowerTitle.includes("kitap") || lowerTitle.includes("kitab");
+
+    if (!isBook) {
+        return [
+            {
+                pageNum: 1,
+                title: title || "Ders Notu & PDF Föy",
+                html: `
+                    <div class="flex flex-col items-center justify-center p-6 text-center select-none max-w-lg mx-auto bg-slate-900/60 rounded-3xl border border-slate-700 shadow-2xl">
+                        <div class="w-16 h-16 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center text-3xl mb-4">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-black text-white mb-2">${title}</h3>
+                        <p class="text-xs text-slate-400 mb-4">MEB müfredatına uygun ünite dokümanı açılıyor...</p>
+                        <div class="flex items-center gap-2 text-xs font-bold text-amber-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                            <i class="fa-solid fa-spinner fa-spin"></i> Doküman Yükleniyor...
+                        </div>
+                    </div>
+                `
+            }
+        ];
+    }
+
     const coverJpg = ["5", "6", "7", "8"].includes(g) ? `assets/kapak-${g}.jpg` : "assets/kapak-5.jpg";
 
     const unitsByGrade = {
@@ -5520,7 +5544,7 @@ async function openDigitalBookModal(options = {}) {
     DigitalBookState.mode = "fallback";
     DigitalBookState.fallbackPages = getFallbackPagesForGrade(grade, bookTitle);
     DigitalBookState.totalPages = DigitalBookState.fallbackPages.length;
-    DigitalBookState.bookInfo = { id, title: bookTitle, grade, fileUrl };
+    DigitalBookState.bookInfo = { id, title: bookTitle, grade, fileUrl, fileName: options.fileName || "dokuman.pdf" };
 
     let modal = document.getElementById("digital-book-modal");
     if (!modal) {
@@ -5716,32 +5740,50 @@ async function tryLoadPdfDocument(id, fileUrl) {
     let pdfSource = null;
 
     // 1. IndexedDB'de bu materyale ait kaydedilmiş Blob var mı?
-    if (id && typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
+    if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
         try {
-            const record = await RotaliDB.getFile(id);
+            let record = id ? await RotaliDB.getFile(id) : null;
+            if (!record || !record.blob) {
+                if (RotaliDB.findFileByTitleOrName) {
+                    record = await RotaliDB.findFileByTitleOrName(DigitalBookState.bookInfo.title, DigitalBookState.bookInfo.fileName);
+                }
+            }
             if (record && record.blob) {
                 pdfSource = record.blob;
             }
         } catch(e) {}
     }
 
-    // 2. Yoksa ve fileUrl geçerli bir HTTP linki ise
-    if (!pdfSource && fileUrl && fileUrl.startsWith("http")) {
+    // 2. Yoksa ve fileUrl geçerli bir bağlantı veya Data URL ise
+    if (!pdfSource && fileUrl && (fileUrl.startsWith("http") || fileUrl.startsWith("data:") || fileUrl.startsWith("blob:") || fileUrl.startsWith("assets/"))) {
         pdfSource = fileUrl;
     }
 
     if (!pdfSource) {
-        if (statusEl) statusEl.innerText = "Önizleme Modu (8 Sayfa)";
+        if (statusEl) statusEl.innerText = "Önizleme Modu (" + DigitalBookState.totalPages + " Sayfa)";
         return;
     }
 
-    if (statusEl) statusEl.innerText = "Kitap Yükleniyor...";
+    if (statusEl) statusEl.innerText = "Doküman Yükleniyor...";
 
     try {
         let loadingTask;
         if (pdfSource instanceof Blob) {
             const ab = await pdfSource.arrayBuffer();
             loadingTask = window.pdfjsLib.getDocument({ data: ab });
+        } else if (typeof pdfSource === "string" && pdfSource.startsWith("data:")) {
+            try {
+                const base64Part = pdfSource.includes(",") ? pdfSource.split(",")[1] : pdfSource;
+                const binaryString = window.atob(base64Part);
+                const len = binaryString.length;
+                const bytes = new Uint8Array(len);
+                for (let i = 0; i < len; i++) {
+                    bytes[i] = binaryString.charCodeAt(i);
+                }
+                loadingTask = window.pdfjsLib.getDocument({ data: bytes.buffer });
+            } catch(dataUrlErr) {
+                loadingTask = window.pdfjsLib.getDocument({ url: pdfSource });
+            }
         } else {
             loadingTask = window.pdfjsLib.getDocument({
                 url: pdfSource,
@@ -6573,21 +6615,36 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 
     const checkTitle = ((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
+    const checkFile = ((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
+    const checkCat = ((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
+    const checkFormat = ((found && (found.format || "")) || "").toUpperCase();
+    const targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
+
     const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab");
-    if (isBookMaterial) {
-        let pdfTarget = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
-        const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
-        if (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http")) {
+    const isPdfDoc = isBookMaterial || 
+                     checkFormat.includes("PDF") || 
+                     checkFile.endsWith(".pdf") || 
+                     checkCat === "ders-notu" || 
+                     checkCat === "not" || 
+                     (targetUrl && (targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf") || targetUrl.startsWith("blob:")));
+
+    // 📚 TÜM PDF VE DERS NOTLARI: Ders Kitabı ile Birebir Aynı Formatta (Sayfa Çevirme, Yakınlaştırma, İmleçle Kaydırma)
+    if (isPdfDoc) {
+        let pdfTarget = targetUrl;
+        const gradeStr = String((found && found.grade) || "7").replace(/^grade-/, "").trim();
+        
+        if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
             if (["5", "6", "7"].includes(gradeStr)) {
                 pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
             }
         }
+
         openDigitalBookModal({
-            id: id,
-            title: (found && found.title) || title || "Fen Bilimleri Ders Kitabı",
+            id: (found && found.id) || id,
+            title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
             grade: gradeStr,
             fileUrl: pdfTarget,
-            fileName: (found && found.fileName) || fileName || "ders-kitabi.pdf"
+            fileName: (found && found.fileName) || fileName || "dokuman.pdf"
         });
         return;
     }
