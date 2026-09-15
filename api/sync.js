@@ -2,6 +2,7 @@
 // Provides universal cloud sync for Rotalı Fenci materials across all devices (Mobile, Desktop, Smartboard)
 
 const GIST_ID = "a1bd259d8d4d9e04e93e4e038ef2b0c7";
+const PERMANENTLY_REMOVED_IDS = new Set(["mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"]);
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
 module.exports = async function handler(req, res) {
@@ -70,7 +71,8 @@ module.exports = async function handler(req, res) {
             }
 
             const deletedIds = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
-            const cleanMats = (parsed.materials || []).filter(m => !deletedIds.includes(m.id));
+            PERMANENTLY_REMOVED_IDS.forEach(pid => { if (!deletedIds.includes(pid)) deletedIds.push(pid); });
+            const cleanMats = (parsed.materials || []).filter(m => !deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id));
 
             return res.status(200).json({
                 success: true,
@@ -109,9 +111,10 @@ module.exports = async function handler(req, res) {
 
             // Combine deleted IDs (strictly material IDs, never titles)
             const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.startsWith("mat-")));
-            // Aktif olarak yuklenen veya listede olan materyaller silinmisler listesinden otomatik cikarilir
+            PERMANENTLY_REMOVED_IDS.forEach(pid => allDeletedSet.add(pid));
+            // Aktif olarak yuklenen materyaller silinmisler listesinden cikarilir (kalici silinenler haric)
             incomingMaterials.forEach(item => {
-                if (item && item.id) {
+                if (item && item.id && !PERMANENTLY_REMOVED_IDS.has(item.id)) {
                     allDeletedSet.delete(item.id);
                 }
             });
