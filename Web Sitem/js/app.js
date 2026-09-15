@@ -699,11 +699,11 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                                 <!-- Görsel Varsa: Orantılı, Kırpılmayan Net Önizleme Kutusu (Kitaplar İçin Dikey 1 Tam Sayfa) -->
                                 ${validImgUrl ? `
-                                    <div class="mat-preview-box relative w-full ${isBook ? 'h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3' : 'h-52 sm:h-60 bg-slate-50 p-2'} rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || validImgUrl || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
-                                        <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-auto h-full max-h-full object-contain ${isBook ? 'rounded-xl shadow-lg border border-slate-300/60' : ''} transition-transform duration-300 group-hover:scale-105">
+                                    <div class="mat-preview-box relative w-full h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || validImgUrl || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
+                                        <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-auto h-full max-h-full object-contain rounded-xl shadow-lg border border-slate-300/60 transition-transform duration-300 group-hover:scale-105">
                                         <div class="absolute bottom-2.5 right-2.5">
                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-book-open-reader"></i> ${isBook ? 'Kitabı Aç & Sayfaları Çevir' : 'Görseli Aç'}
+                                                <i class="fa-solid ${isVideo ? 'fa-play' : (isBook ? 'fa-book-open-reader' : 'fa-eye')}"></i> ${isVideo ? 'Videoyu Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görseli Aç')}
                                             </span>
                                         </div>
                                     </div>
@@ -1407,8 +1407,13 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
 
                                     <!-- Görsel Önizleme (Varsa) -->
                                     ${item.imageUrl && item.imageUrl !== '#' && !item.imageUrl.includes('placeholder') ? `
-                                        <div class="relative w-full aspect-[16/9] bg-slate-50 border-b border-slate-100 overflow-hidden flex items-center justify-center p-2">
-                                            <img src="${item.imageUrl}" alt="${item.title}" class="max-h-full max-w-full object-contain rounded-xl group-hover:scale-105 transition-transform duration-300" loading="lazy">
+                                        <div class="mat-preview-box relative w-full h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.fileName || 'materyal'}', '${item.category || ''}', '${item.title || ''}')">
+                                            <img src="${item.imageUrl}" alt="${item.title}" class="w-auto h-full max-h-full object-contain rounded-xl shadow-lg border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="absolute bottom-2.5 right-2.5">
+                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                    <i class="fa-solid ${item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i> ${item.category === 'videolar' ? 'Videoyu Oynat' : 'Görüntüle'}
+                                                </span>
+                                            </div>
                                         </div>
                                     ` : ''}
 
@@ -6100,12 +6105,24 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             }
         } catch(e) {}
 
-        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("youtube") && !fallbackUrl.includes("kR1eZq9Q2n4")) {
+        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("kR1eZq9Q2n4")) {
             openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false, id);
             return;
-        } else {
-            openInPageVideoModal("", title || "Ders Videosu", false, id);
+        } else if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
+            openInPageVideoModal(targetUrl, title || "Ders Videosu", false, id);
             return;
+        } else {
+            // Telefon veya başka cihazda açıldığında otomatik video akışı ve interaktif ders
+            if (checkTitle.includes("güvenlik") || checkTitle.includes("sembol") || checkTitle.includes("laboratuvar")) {
+                openInPageVideoModal("https://www.youtube-nocookie.com/embed/E-0C1f0Ksqw", title || "Laboratuvar Güvenlik Sembolleri Videosu", false, id);
+                return;
+            } else if (checkTitle.includes("lise") || checkTitle.includes("lgs") || checkTitle.includes("rehber")) {
+                openInPageVideoModal("https://www.youtube-nocookie.com/embed/5F2v_25gqj8", title || "Liseye Nasıl Gideceğiz Rehberlik Videosu", false, id);
+                return;
+            } else {
+                openInPageVideoModal("", title || "Ders Videosu", false, id);
+                return;
+            }
         }
     }
 
