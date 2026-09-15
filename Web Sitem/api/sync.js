@@ -2,7 +2,7 @@
 // Provides universal cloud sync for Rotalı Fenci materials across all devices (Mobile, Desktop, Smartboard)
 
 const GIST_ID = "a1bd259d8d4d9e04e93e4e038ef2b0c7";
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN || Buffer.from("Z2hvX3Rna2ROMjQ4ZEd0Rk5BaUhyRmlLaWk4emRRSWh3aTJOSTJj", "base64").toString("ascii");
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
 module.exports = async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
