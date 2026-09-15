@@ -533,6 +533,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                     }
 
                     const isVideo = item.category === "videolar" || (item.format && item.format.toUpperCase().includes("VİDEO")) || (item.format && item.format.toUpperCase() === "MP4");
+                    const isBook = lowerTitle.includes("kitap") || lowerTitle.includes("kitab");
 
                     return `
                         <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
