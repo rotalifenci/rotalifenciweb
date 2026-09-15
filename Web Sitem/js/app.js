@@ -6620,38 +6620,48 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const checkFormat = ((found && (found.format || "")) || "").toUpperCase();
     const targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
 
-    const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab");
-    const isPdfDoc = isBookMaterial || 
-                     checkFormat.includes("PDF") || 
-                     checkFile.endsWith(".pdf") || 
-                     checkCat === "ders-notu" || 
-                     checkCat === "not" || 
-                     (targetUrl && (targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf") || targetUrl.startsWith("blob:")));
+    // 1. 🖼️ GÖRSEL DOSYASI MI? (JPG, JPEG, PNG, WEBP, SVG, GIF) -> Doğrudan HD Görsel Modalında Aç (Bekleme yapmaz)
+    const isImageDoc = checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || 
+                       checkFile.endsWith(".webp") || checkFile.endsWith(".svg") || checkFile.endsWith(".gif") ||
+                       checkFormat.includes("JPG") || checkFormat.includes("JPEG") || checkFormat.includes("PNG") ||
+                       checkFormat.includes("GÖRSEL") || checkFormat.includes("RESİM") || checkFormat.includes("IMAGE") ||
+                       checkCat === "gorseller" || checkCat.includes("gorsel") || checkCat.includes("infografik") ||
+                       (targetUrl && (targetUrl.startsWith("data:image") || (/\.(jpg|jpeg|png|webp|svg|gif)(\?.*)?$/i).test(targetUrl)));
 
-    // 📚 TÜM PDF VE DERS NOTLARI: Ders Kitabı ile Birebir Aynı Formatta (Sayfa Çevirme, Yakınlaştırma, İmleçle Kaydırma)
-    if (isPdfDoc) {
-        let pdfTarget = targetUrl;
-        const gradeStr = String((found && found.grade) || "7").replace(/^grade-/, "").trim();
-        
-        if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
-            if (["5", "6", "7"].includes(gradeStr)) {
-                pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
+    if (isImageDoc) {
+        try {
+            let fileRecord = id ? await RotaliDB.getFile(id) : null;
+            if (!fileRecord || !fileRecord.blob) {
+                if (RotaliDB.findFileByTitleOrName) {
+                    fileRecord = await RotaliDB.findFileByTitleOrName(title, fileName);
+                }
             }
+            if (fileRecord && fileRecord.blob) {
+                const url = URL.createObjectURL(fileRecord.blob);
+                openInPageDocumentModal(url, title || fileRecord.fileName || fileName, fileName, true);
+                return;
+            }
+        } catch(err) {
+            console.warn("IDB getFile error for image:", err);
         }
 
-        openDigitalBookModal({
-            id: (found && found.id) || id,
-            title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
-            grade: gradeStr,
-            fileUrl: pdfTarget,
-            fileName: (found && found.fileName) || fileName || "dokuman.pdf"
-        });
-        return;
+        if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
+            openInPageDocumentModal(targetUrl, title || fileName, fileName, true);
+            return;
+        } else if (found && found.imageUrl && found.imageUrl !== "#") {
+            openInPageDocumentModal(found.imageUrl, title || fileName, fileName, true);
+            return;
+        } else {
+            openInPageDocumentModal("", title || "Fen Bilimleri Görseli", fileName, true);
+            return;
+        }
     }
 
-    const isVideo = category === "videolar" || (title && title.toLowerCase().includes("video")) || (fileName && (fileName.endsWith(".mp4") || fileName.endsWith(".webm") || fileName.toLowerCase().includes("video")));
+    // 2. 🎬 VİDEO DOSYASI MI? (MP4, WEBM, YouTube)
+    const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat === "MP4" ||
+                    checkFile.endsWith(".mp4") || checkFile.endsWith(".webm") ||
+                    (targetUrl && (targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be")));
 
-        // 1. Video ise sayfayı terketmeden veya indirmeden site içinde video oynatıcıda aç
     if (isVideo) {
         try {
             let fileRecord = await RotaliDB.getFile(id);
@@ -6674,7 +6684,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 2. Eğitsel Oyun veya Eşleştirme ise sayfa içi oyun motorunu çalıştır
+    // 3. 🎮 EĞİTSEL OYUN VEYA EŞLEŞTİRME
     if (category === "egitsel-oyunlar" || category.includes("oyun") || (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("laboratuvar")))) {
         if (!fallbackUrl || fallbackUrl === "#" || fallbackUrl === "" || fallbackUrl === "null") {
             openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
@@ -6682,26 +6692,40 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 3. IDB'den dosyayı al ve sayfa içi belge görüntüleyicide göster (İndirme yapmaz!)
-    try {
-        const fileRecord = await RotaliDB.getFile(id);
-        if (fileRecord && fileRecord.blob) {
-            const url = URL.createObjectURL(fileRecord.blob);
-            const isImg = (fileRecord.type && fileRecord.type.startsWith("image/")) || 
-                          (fileRecord.fileName && (/\.(jpg|jpeg|png|webp|svg|gif)$/i).test(fileRecord.fileName)) ||
-                          (category && (category === "gorseller" || category.includes("gorsel") || category.includes("infografik")));
-            openInPageDocumentModal(url, title || fileRecord.fileName || fileName, fileName, isImg);
-            return;
+    // 4. 📚 PDF DERS NOTU & DERS KİTABI -> Vektörel Dijital Kitap Okuyucuda Aç
+    const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab");
+    const isPdfDoc = isBookMaterial || 
+                     checkFormat.includes("PDF") || 
+                     checkFile.endsWith(".pdf") || 
+                     checkCat === "ders-notu" || 
+                     checkCat === "not" || 
+                     (targetUrl && (targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf") || targetUrl.startsWith("blob:")));
+
+    if (isPdfDoc) {
+        let pdfTarget = targetUrl;
+        const gradeStr = String((found && found.grade) || "7").replace(/^grade-/, "").trim();
+        
+        if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
+            if (["5", "6", "7"].includes(gradeStr)) {
+                pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
+            }
         }
-    } catch(err) {
-        console.warn("IDB getFile error:", err);
+
+        openDigitalBookModal({
+            id: (found && found.id) || id,
+            title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
+            grade: gradeStr,
+            fileUrl: pdfTarget,
+            fileName: (found && found.fileName) || fileName || "dokuman.pdf"
+        });
+        return;
     }
 
-    // 4. Web Bağlantısı veya Data URL ise sayfa içi modalda göster
-    if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null") {
-        openInPageDocumentModal(fallbackUrl, title || fileName, fileName);
+    // 5. Diğer Web Bağlantısı veya Dokümanlar
+    if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
+        openInPageDocumentModal(targetUrl, title || fileName, fileName, false);
     } else {
-        openInPageDocumentModal("", title || "Fen Bilimleri Ders Dokümanı", fileName);
+        openInPageDocumentModal("", title || "Fen Bilimleri Ders Dokümanı", fileName, false);
     }
 }
 
