@@ -4701,6 +4701,8 @@ const RotaliDB = {
 };
 
 let currentUploadedFile = null;
+    currentUploadedCoverDataUrl = (editMaterial && editMaterial.imageUrl) ? editMaterial.imageUrl : '';
+let currentUploadedCoverDataUrl = '';
 let currentTagsList = ["MEB 2026-2027"];
 let editingMaterialId = null;
 
@@ -7147,7 +7149,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                     <div id="upload-method-link-container" class="hidden space-y-2">
                         <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
                         <div class="relative">
-                            <input type="url" id="adv-link-input" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <input type="url" id="adv-link-input" oninput="handleAdvLinkInput(this.value)" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
                             <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         </div>
                     </div>
@@ -7168,6 +7170,56 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 🖼️ 3. KAPAK RESMİ / GÖRSELİ (VİDEO VE İÇERİK AFİŞİ) -->
+                <div class="p-4 sm:p-5 bg-gradient-to-br from-amber-50/60 to-orange-50/50 border border-amber-200/90 rounded-2xl space-y-3 sm:space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-black uppercase text-slate-900 tracking-wider flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-amber-500"></span> 3. Kapak Resmi / Görseli <span class="text-[10px] sm:text-[11px] font-bold text-amber-800 normal-case bg-amber-100/80 px-2 py-0.5 rounded-md">Video & Materyal Afişi</span>
+                        </span>
+                        <span class="text-[10px] sm:text-[11px] font-bold text-slate-500">İsteğe Bağlı</span>
+                    </div>
+                    <p class="text-[11px] text-slate-600 font-medium">
+                        Videonuz veya ders notunuz için sitede görünecek özel bir kapak görseli seçebilirsiniz. (Video linki girildiğinde YouTube kapağı otomatik de algılanır).
+                    </p>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <!-- Kapak Dosyası Seç (Cihazdan) -->
+                        <div>
+                            <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">Cihazdan Kapak Resmi Seç</label>
+                            <input type="file" id="adv-cover-input" onchange="handleCoverFileSelected(event)" accept="image/*,.png,.jpg,.jpeg,.webp,.svg" class="hidden">
+                            <label for="adv-cover-input" class="w-full p-2.5 sm:p-3 bg-white hover:bg-amber-100/40 border border-slate-200 hover:border-amber-400 rounded-xl text-xs font-bold text-slate-700 cursor-pointer flex items-center justify-center gap-2 transition-all shadow-sm group">
+                                <i class="fa-solid fa-image text-amber-600 text-sm group-hover:scale-110 transition-transform"></i>
+                                <span id="cover-file-btn-text">Kapak Görseli Yükle...</span>
+                            </label>
+                        </div>
+
+                        <!-- Kapak Resmi URL'si -->
+                        <div>
+                            <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">veya Kapak Resmi Linki (URL)</label>
+                            <div class="relative">
+                                <input type="url" id="adv-cover-url-input" oninput="handleCoverUrlInput(this.value)" value="${isEditing && editMaterial.imageUrl ? editMaterial.imageUrl : ''}" placeholder="https://.../kapak.jpg veya YouTube afişi" class="w-full p-2.5 sm:p-3 pl-8 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-amber-500 shadow-sm">
+                                <i class="fa-solid fa-link absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kapak Resmi Canlı Önizleme Kartı -->
+                    <div id="cover-preview-box" class="${isEditing && editMaterial.imageUrl ? 'flex' : 'hidden'} items-center gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm animate-in fade-in duration-200">
+                        <div class="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
+                            <img id="cover-preview-img" src="${isEditing && editMaterial.imageUrl ? editMaterial.imageUrl : ''}" alt="Kapak Önizleme" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-xs font-black text-slate-800 truncate" id="cover-preview-title">Kapak Resmi Hazır</div>
+                            <div class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
+                                <i class="fa-solid fa-circle-check"></i> Sitede bu görsel kapak olarak görünecek
+                            </div>
+                        </div>
+                        <button type="button" onclick="removeSelectedCover()" class="p-2 text-slate-400 hover:text-red-600 transition-colors cursor-pointer" title="Kapak Resmini Kaldır">
+                            <i class="fa-solid fa-trash-can text-xs"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -7325,6 +7377,94 @@ function processSelectedFile(file) {
     previewCard.classList.add("block");
 }
 
+
+// 🖼️ KAPAK RESMİ / VİDEO AFİŞİ YÖNETİMİ
+async function handleCoverFileSelected(e) {
+    if (e.target && e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        try {
+            const compressed = await compressImageIfNeeded(file);
+            currentUploadedCoverDataUrl = compressed || await readFileAsDataURL(file);
+        } catch(err) {
+            currentUploadedCoverDataUrl = await readFileAsDataURL(file);
+        }
+        
+        const previewImg = document.getElementById("cover-preview-img");
+        const previewBox = document.getElementById("cover-preview-box");
+        const btnText = document.getElementById("cover-file-btn-text");
+        const urlInput = document.getElementById("adv-cover-url-input");
+
+        if (previewImg) previewImg.src = currentUploadedCoverDataUrl;
+        if (previewBox) {
+            previewBox.classList.remove("hidden");
+            previewBox.classList.add("flex");
+        }
+        if (btnText) btnText.innerText = file.name.length > 20 ? (file.name.substring(0, 18) + '...') : file.name;
+        if (urlInput) urlInput.value = "";
+    }
+}
+
+function handleCoverUrlInput(url) {
+    const previewImg = document.getElementById("cover-preview-img");
+    const previewBox = document.getElementById("cover-preview-box");
+    const cleanUrl = (url || "").trim();
+
+    if (cleanUrl.startsWith("http") || cleanUrl.startsWith("data:image")) {
+        currentUploadedCoverDataUrl = cleanUrl;
+        if (previewImg) previewImg.src = cleanUrl;
+        if (previewBox) {
+            previewBox.classList.remove("hidden");
+            previewBox.classList.add("flex");
+        }
+    } else if (!cleanUrl && !currentUploadedCoverDataUrl) {
+        if (previewBox) {
+            previewBox.classList.add("hidden");
+            previewBox.classList.remove("flex");
+        }
+    }
+}
+
+function removeSelectedCover() {
+    currentUploadedCoverDataUrl = "";
+    const fileInput = document.getElementById("adv-cover-input");
+    const urlInput = document.getElementById("adv-cover-url-input");
+    const previewBox = document.getElementById("cover-preview-box");
+    const btnText = document.getElementById("cover-file-btn-text");
+
+    if (fileInput) fileInput.value = "";
+    if (urlInput) urlInput.value = "";
+    if (previewBox) {
+        previewBox.classList.add("hidden");
+        previewBox.classList.remove("flex");
+    }
+    if (btnText) btnText.innerText = "Kapak Görseli Yükle...";
+}
+
+function handleAdvLinkInput(val) {
+    if (!val) return;
+    const cleanVal = val.trim();
+    // YouTube ID Çıkarımı
+    const ytMatch = cleanVal.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+    if (ytMatch && ytMatch[1]) {
+        const ytId = ytMatch[1];
+        const ytThumb = `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+        const urlInput = document.getElementById("adv-cover-url-input");
+        const previewBox = document.getElementById("cover-preview-box");
+        const previewImg = document.getElementById("cover-preview-img");
+
+        // Eğer kullanıcı elle başka bir dosya yüklemediyse otomatik YouTube afişini yerleştir
+        if (!currentUploadedCoverDataUrl || currentUploadedCoverDataUrl.includes("youtube.com")) {
+            currentUploadedCoverDataUrl = ytThumb;
+            if (urlInput) urlInput.value = ytThumb;
+            if (previewImg) previewImg.src = ytThumb;
+            if (previewBox) {
+                previewBox.classList.remove("hidden");
+                previewBox.classList.add("flex");
+            }
+        }
+    }
+}
+
 function removeSelectedFile() {
     currentUploadedFile = null;
     const fileInput = document.getElementById("adv-file-input");
@@ -7455,6 +7595,14 @@ async function handleAdvMaterialSubmit(e) {
     const desc = descInput && descInput.value.trim() ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
     const linkVal = linkInput ? linkInput.value.trim() : "";
     const visibility = visibilitySelect ? visibilitySelect.value : "public";
+    
+    // Kapak Resmi Çözümleme
+    const coverUrlInput = document.getElementById("adv-cover-url-input");
+    let chosenCover = currentUploadedCoverDataUrl || (coverUrlInput ? coverUrlInput.value.trim() : "");
+    if (!chosenCover && linkVal) {
+        const ytM = linkVal.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
+        if (ytM && ytM[1]) chosenCover = `https://img.youtube.com/vi/${ytM[1]}/hqdefault.jpg`;
+    }
 
     if (submitBtn) {
         submitBtn.disabled = true;
@@ -7518,7 +7666,7 @@ async function handleAdvMaterialSubmit(e) {
                     desc: desc,
                     fileName: currentUploadedFile ? finalFileName : customList[idx].fileName,
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
-                    imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : (customList[idx].imageUrl || ""),
+                    imageUrl: chosenCover || (customList[idx].imageUrl || (externalUrl && !externalUrl.startsWith("data:") ? externalUrl : "")),
                     format: fileFormat || customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
@@ -7537,7 +7685,7 @@ async function handleAdvMaterialSubmit(e) {
                 desc: desc,
                 fileName: finalFileName,
                 fileUrl: fileDataUrl || externalUrl || "#",
-                imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : "", // Çift base64 depolamayı önle
+                imageUrl: chosenCover || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp"))) ? externalUrl : ""),
                 format: fileFormat,
                 hasBlob: hasBlob,
                 tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
