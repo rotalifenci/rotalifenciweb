@@ -5168,68 +5168,25 @@ function editCustomMaterial(id) {
 // -------------------------------------------------------------
 // 📖 ROTALI FENCİ DİJİTAL KİTAP OKUYUCU MOTORU (GERÇEK KAPAKLAR, BÜYÜT/KÜÇÜLT & İMLEÇLE KAYDIRMA)
 // -------------------------------------------------------------
+// 📚 DİKEY KESİNTİSİZ AKIŞLI VEKTÖREL DİJİTAL KİTAP & PDF OKUYUCU
+// (Fare Tekerleğiyle Aşağı-Yukarı Akıcı Kaydırma, İndirme Butonsuz Güvenli Görüntüleme)
+// -------------------------------------------------------------
 let DigitalBookState = {
     pdfDoc: null,
     currentPage: 1,
     totalPages: 1,
     currentScale: 1.0,
-    isRendering: false,
-    pageRenderingQueue: null,
-    currentRenderTask: null,
+    renderedPages: new Set(),
+    renderingPages: new Set(),
+    observer: null,
     bookInfo: null,
     fallbackPages: [],
     mode: "fallback", // 'pdf' | 'fallback'
     keyListener: null,
-    touchStartX: 0,
-    touchStartY: 0,
-    // İmleçle Sayfayı Sürükleyip Kaydırma (Pan) Durumu
-    panX: 0,
-    panY: 0,
-    isDragging: false,
-    dragStartX: 0,
-    dragStartY: 0,
-    dragStartPanX: 0,
-    dragStartPanY: 0
+    scrollListener: null
 };
 
 let bookZoomDebounceTimer = null;
-
-function updateBookTransform(animate = true) {
-    const wrapper = document.getElementById("book-page-wrapper");
-    if (!wrapper) return;
-    wrapper.style.transition = animate ? "transform 0.1s ease-out" : "none";
-    if (DigitalBookState.mode === "pdf") {
-        wrapper.style.transform = `translate(${DigitalBookState.panX}px, ${DigitalBookState.panY}px)`;
-    } else {
-        wrapper.style.transform = `translate(${DigitalBookState.panX}px, ${DigitalBookState.panY}px) scale(${DigitalBookState.currentScale})`;
-    }
-    wrapper.style.cursor = DigitalBookState.isDragging ? "grabbing" : "grab";
-}
-
-function resetBookPosition(resetScale = false) {
-    DigitalBookState.panX = 0;
-    DigitalBookState.panY = 0;
-    const oldScale = DigitalBookState.currentScale;
-    if (resetScale) {
-        DigitalBookState.currentScale = 1.0;
-        const zoomText = document.getElementById("book-zoom-text");
-        if (zoomText) zoomText.innerText = "%100";
-    }
-    const scrollArea = document.getElementById("book-reader-scroll-area");
-    if (scrollArea) {
-        scrollArea.scrollTop = 0;
-        scrollArea.scrollLeft = 0;
-    }
-    updateBookTransform(true);
-    if (resetScale && oldScale !== 1.0 && DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
-        renderBookPage(DigitalBookState.currentPage);
-    }
-}
-
-function scrollBookVertical(delta) {
-    DigitalBookState.panY += delta;
-    updateBookTransform(true);
-}
 
 function getFallbackPagesForGrade(grade, title) {
     const g = String(grade || "5").replace(/^grade-/, "").trim();
@@ -5248,8 +5205,8 @@ function getFallbackPagesForGrade(grade, title) {
                         </div>
                         <h3 class="text-base sm:text-lg font-black text-white mb-2">${title}</h3>
                         <p class="text-xs text-slate-400 mb-4">MEB müfredatına uygun ünite dokümanı açılıyor...</p>
-                        <div class="flex items-center gap-2 text-xs font-bold text-amber-400 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
-                            <i class="fa-solid fa-spinner fa-spin"></i> Doküman Yükleniyor...
+                        <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs text-amber-300 font-bold">
+                            <i class="fa-solid fa-circle-info mr-1"></i> Fare tekerleği veya parmağınızla aşağı-yukarı kaydırabilirsiniz.
                         </div>
                     </div>
                 `
@@ -5257,59 +5214,33 @@ function getFallbackPagesForGrade(grade, title) {
         ];
     }
 
-    const coverJpg = ["5", "6", "7", "8"].includes(g) ? `assets/kapak-${g}.jpg` : "assets/kapak-5.jpg";
-
-    const unitsByGrade = {
-        "5": [
-            "1. Ünite: Güneş, Dünya ve Ay",
-            "2. Ünite: Canlılar Dünyası",
-            "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
-            "4. Ünite: Madde ve Değişim",
-            "5. Ünite: Işığın Yayılması",
-            "6. Ünite: İnsan ve Çevre",
-            "7. Ünite: Elektrik Devre Elemanları"
-        ],
-        "6": [
-            "1. Ünite: Güneş Sistemi ve Tutulmalar",
-            "2. Ünite: Vücudumuzdaki Sistemler",
-            "3. Ünite: Kuvvet ve Hareket",
-            "4. Ünite: Madde ve Isı",
-            "5. Ünite: Ses ve Özellikleri",
-            "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
-            "7. Ünite: Elektriğin İletimi"
-        ],
-        "7": [
-            "1. Ünite: Güneş Sistemi ve Ötesi",
-            "2. Ünite: Hücre ve Bölünmeler",
-            "3. Ünite: Kuvvet ve Enerji",
-            "4. Ünite: Saf Madde ve Karışımlar",
-            "5. Ünite: Işığın Madde ile Etkileşimi",
-            "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
-            "7. Ünite: Elektrik Devreleri"
-        ],
-        "8": [
-            "1. Ünite: Mevsimler ve İklim",
-            "2. Ünite: DNA ve Genetik Kod",
-            "3. Ünite: Basınç",
-            "4. Ünite: Madde ve Endüstri",
-            "5. Ünite: Basit Makineler",
-            "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
-            "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
-        ]
-    };
-
-    const units = unitsByGrade[g] || unitsByGrade["5"];
-
     return [
         {
             pageNum: 1,
-            title: "Kitap Ön Kapağı (Orijinal MEB)",
+            title: "Kitap Kapağı & Bilgiler",
             html: `
-                <div class="flex flex-col items-center justify-center p-2 text-center select-none">
-                    <img src="${coverJpg}" alt="${title}" class="max-h-[72vh] sm:max-h-[76vh] w-auto object-contain rounded-2xl shadow-2xl border border-slate-300">
-                    <p class="text-xs font-bold text-slate-500 mt-3 flex items-center gap-1.5">
-                        <i class="fa-solid fa-hand-pointer text-red-600 animate-bounce"></i> Sayfayı çevirmek için <strong>Sonraki ▶</strong> butonuna basın veya imleçle yukarı/aşağı kaydırın
+                <div class="flex flex-col items-center justify-center text-center py-6 px-2 sm:px-6 select-none max-w-xl mx-auto">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-600 to-amber-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-red-600/30 mb-4 ring-4 ring-red-500/20">
+                        <i class="fa-solid fa-atom animate-pulse"></i>
+                    </div>
+                    <span class="px-3 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-black uppercase tracking-wider mb-2 border border-red-100">
+                        T.C. Millî Eğitim Bakanlığı
+                    </span>
+                    <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-2">
+                        ${g}. SINIF FEN BİLİMLERİ DERS KİTABI
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-6 font-medium leading-relaxed">
+                        2026-2027 Eğitim Öğretim Yılı Resmî Ders Kitabı Müfredatı
                     </p>
+                    <div class="grid grid-cols-2 gap-3 w-full text-left max-w-md bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs mb-6">
+                        <div class="text-slate-500">Yazar Komisyonu: <strong class="text-slate-800 block">MEB Fen Kurulu</strong></div>
+                        <div class="text-slate-500">Basım Yılı: <strong class="text-slate-800 block">2026 - 2027</strong></div>
+                        <div class="text-slate-500">Kapsam: <strong class="text-slate-800 block">1 - 7. Üniteler</strong></div>
+                        <div class="text-slate-500">Format: <strong class="text-emerald-700 block">Dikey Akışlı PDF</strong></div>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold">
+                        <i class="fa-solid fa-arrows-up-down"></i> Fare tekerleğiyle aşağı kaydırarak diğer sayfaları okuyabilirsiniz
+                    </div>
                 </div>
             `
         },
@@ -5317,85 +5248,76 @@ function getFallbackPagesForGrade(grade, title) {
             pageNum: 2,
             title: "İstiklâl Marşı & Atatürk",
             html: `
-                <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
-                    <div class="text-center border-b-2 border-red-600 pb-3 mb-5">
-                        <h2 class="text-xl sm:text-2xl font-black text-red-700 tracking-wider">İSTİKLÂL MARŞI</h2>
-                        <p class="text-xs text-slate-500 font-semibold mt-1">Korkma, sönmez bu şafaklarda yüzen al sancak...</p>
+                <div class="max-w-xl mx-auto py-4 px-2 sm:px-6 text-center text-slate-800 select-none">
+                    <h3 class="text-base sm:text-lg font-black text-red-600 uppercase tracking-widest mb-3 border-b-2 border-red-600/20 pb-1">
+                        İSTİKLÂL MARŞI
+                    </h3>
+                    <div class="text-xs sm:text-sm leading-relaxed font-serif space-y-2 text-slate-700">
+                        <p class="mb-3">Korkma, sönmez bu şafaklarda yüzen al sancak;<br>Sönmeden yurdumun üstünde tüten en son ocak.<br>O benim milletimin yıldızıdır, parlayacak;<br>O benimdir, o benim milletimindir ancak.</p>
+                        <p>Çatma, kurban olayım, çehreni ey nazlı hilâl!<br>Kahraman ırkıma bir gül! Ne bu şiddet, bu celâl?<br>Sana olmaz dökülen kanlarımız sonra helâl...<br>Hakkıdır, Hakk'a tapan, milletimin istiklâl!</p>
                     </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm font-serif leading-relaxed text-slate-700 bg-red-50/50 p-4 sm:p-6 rounded-2xl border border-red-100">
-                        <div>
-                            <p class="mb-3">Korkma, sönmez bu şafaklarda yüzen al sancak;<br>Sönmeden yurdumun üstünde tüten en son ocak.<br>O benim milletimin yıldızıdır, parlayacak;<br>O benimdir, o benim milletimindir ancak.</p>
-                            <p>Çatma, kurban olayım çehreni ey nazlı hilâl!<br>Kahraman ırkıma bir gül… ne bu şiddet bu celâl?<br>Sana olmaz dökülen kanlarımız sonra helâl;<br>Hakkıdır, Hakk’a tapan milletimin istiklâl!</p>
-                        </div>
-                        <div class="flex flex-col justify-between items-center text-center p-4 bg-white rounded-xl border border-slate-200 shadow-sm">
-                            <div class="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center border-2 border-slate-300 shadow-inner mb-2">
-                                <i class="fa-solid fa-landmark text-3xl text-slate-700"></i>
-                            </div>
-                            <blockquote class="text-xs italic font-bold text-slate-700 my-2">
-                                "Dünyada her şey için, medeniyet için, hayat için, muvaffakiyet için en hakiki mürşit ilimdir, fendir."
-                            </blockquote>
-                            <span class="text-xs font-black text-red-700">Gazi Mustafa Kemal ATATÜRK</span>
-                        </div>
+                    <div class="mt-4 pt-3 border-t border-slate-200 text-right">
+                        <span class="text-xs font-black text-slate-800">Mehmet Âkif ERSOY</span>
                     </div>
                 </div>
             `
         },
         {
             pageNum: 3,
-            title: "İçindekiler & Üniteler",
+            title: "İçindekiler & Ünite Haritası",
             html: `
-                <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
-                    <div class="flex items-center justify-between border-b-2 border-amber-500 pb-3 mb-5">
-                        <div>
-                            <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                                <i class="fa-solid fa-list-ol text-amber-500"></i> İÇİNDEKİLER
-                            </h2>
-                            <p class="text-xs text-slate-500 font-bold mt-0.5">${g}. Sınıf Fen Bilimleri MEB Müfredatı</p>
-                        </div>
-                        <span class="px-3 py-1 bg-amber-50 text-amber-800 rounded-full font-black text-xs border border-amber-200">2026-2027</span>
+                <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 select-none text-slate-800">
+                    <div class="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-4">
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 uppercase">İÇİNDEKİLER</h3>
+                        <span class="text-xs font-bold text-red-600">${g}. Sınıf Tam Müfredat</span>
                     </div>
-                    <div class="space-y-2">
-                        ${units.map((u, idx) => `
-                            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 transition-colors">
-                                <div class="flex items-center gap-3">
-                                    <span class="w-7 h-7 rounded-lg bg-red-600 text-white font-black text-xs flex items-center justify-center">${idx + 1}</span>
-                                    <span class="text-xs sm:text-sm font-black text-slate-800">${u}</span>
-                                </div>
-                                <span class="text-xs font-black text-slate-400">Sayfa ${(idx * 24) + 1}</span>
-                            </div>
-                        `).join("")}
+                    <div class="space-y-2 text-xs sm:text-sm">
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">1. Ünite: Güneş Sistemi ve Gezegenler</span>
+                            <span class="font-bold text-red-600">s. 12</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">2. Ünite: Canlılar Dünyası ve Hücre</span>
+                            <span class="font-bold text-red-600">s. 44</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">3. Ünite: Kuvvet, Hareket ve Enerji</span>
+                            <span class="font-bold text-red-600">s. 78</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">4. Ünite: Maddenin Tanecikli Yapısı & Etkileşim</span>
+                            <span class="font-bold text-red-600">s. 112</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">5. Ünite: Işık, Aynalar ve Mercekler</span>
+                            <span class="font-bold text-red-600">s. 146</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">6. Ünite: Canlılarda Üreme ve Gelişme</span>
+                            <span class="font-bold text-red-600">s. 180</span>
+                        </div>
+                        <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                            <span class="font-black text-slate-800">7. Ünite: Elektrik Devreleri & Enerji</span>
+                            <span class="font-bold text-red-600">s. 214</span>
+                        </div>
                     </div>
                 </div>
             `
         },
         {
             pageNum: 4,
-            title: "1. Üniteye Başlarken",
+            title: "1. Ünite: Konu Özeti & Kavramlar",
             html: `
                 <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
-                    <div class="bg-gradient-to-r from-red-600 to-rose-600 text-white p-5 sm:p-6 rounded-2xl shadow-lg mb-5">
-                        <span class="px-2.5 py-1 bg-white/20 text-white rounded-lg text-xs font-black uppercase tracking-wider">1. ÜNİTE</span>
-                        <h2 class="text-xl sm:text-2xl font-black mt-2">${units[0]}</h2>
-                        <p class="text-xs sm:text-sm text-red-100 mt-2 font-medium">Bu ünitede fen bilimlerinin temel prensiplerini ve bilimsel düşünme modellerini inceleyeceğiz.</p>
+                    <div class="p-5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-2xl shadow-md mb-4">
+                        <span class="text-[11px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">1. Ünite Başlangıcı</span>
+                        <h3 class="text-lg sm:text-xl font-black mt-1">Güneş Sistemi, Uzay Araştırmaları ve Ötesi</h3>
                     </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
-                            <h4 class="text-xs font-black text-amber-900 uppercase flex items-center gap-1.5 mb-2">
-                                <i class="fa-solid fa-key text-amber-600"></i> Temel Kavramlar
-                            </h4>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Gözlem</span>
-                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Veri</span>
-                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Modelleme</span>
-                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Sonuç</span>
-                            </div>
-                        </div>
-                        <div class="p-4 bg-blue-50 rounded-2xl border border-blue-200">
-                            <h4 class="text-xs font-black text-blue-900 uppercase flex items-center gap-1.5 mb-2">
-                                <i class="fa-solid fa-bullseye text-blue-600"></i> Hedef Kazanımlar
-                            </h4>
-                            <p class="text-xs text-blue-800 leading-relaxed font-medium">Bilimsel süreç basamaklarını kullanarak araştırma yapma ve problem çözme becerisi geliştirme.</p>
+                    <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        <p><strong>Temel Kazanımlar:</strong> Uzay teknolojilerini açıklar, gök cisimlerinin özelliklerini tanır, yapay uyduların görevlerini ve uzay kirliliğinin nedenlerini analiz eder.</p>
+                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-950">
+                            <strong class="block mb-1 font-black text-amber-900">Önemli Kavram:</strong>
+                            Teleskoplar (Aynalı, Mercekli, Radyo) uzay gözlemlerinde kullanılır. İlk uzay teleskopu Hubble ve yeni nesil James Webb Uzay Teleskopu evrenin derinliklerini görüntüler.
                         </div>
                     </div>
                 </div>
@@ -5403,32 +5325,24 @@ function getFallbackPagesForGrade(grade, title) {
         },
         {
             pageNum: 5,
-            title: "Konu Anlatımı & Bilimsel Yolculuk",
+            title: "Laboratuvar ve Güvenlik Kuralları",
             html: `
                 <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
-                    <div class="flex items-center gap-2 border-b border-slate-200 pb-3 mb-4">
-                        <span class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-black text-sm">
-                            <i class="fa-solid fa-flask"></i>
-                        </span>
-                        <div>
-                            <h3 class="text-base sm:text-lg font-black text-slate-900">1. Bölüm: Bilimsel Yolculuk</h3>
-                            <span class="text-xs text-slate-500 font-bold">Fen Bilimlerinde Araştırma ve Gözlem</span>
-                        </div>
-                    </div>
-
-                    <div class="space-y-3.5 text-xs sm:text-sm text-slate-700 leading-relaxed">
-                        <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                            <h4 class="font-black text-slate-900 mb-1.5 text-sm flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-600"></span> Bilim İnsanları ve Araştırma
+                    <h3 class="text-base sm:text-lg font-black text-slate-900 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-flask-vial text-red-600"></i> Fen Laboratuvarı Temel İlkeleri
+                    </h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                        <div class="p-3.5 bg-blue-50 rounded-2xl border border-blue-200">
+                            <h4 class="font-black text-blue-900 mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-glasses"></i> Kişisel Korunma
                             </h4>
-                            <p>Doğayı ve evreni anlama isteği, insanlığın en büyük merak kaynaklarından biridir. Fen bilimleri; gözlem, deney ve mantık yoluyla gerçeği keşfetme sanatıdır.</p>
+                            <p class="text-blue-800 font-medium">Önlük, koruyucu gözlük ve ısıya dayanıklı eldiven kullanımı zorunludur.</p>
                         </div>
-
-                        <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
-                            <h4 class="font-black text-emerald-900 mb-1.5 text-sm flex items-center gap-2">
-                                <i class="fa-solid fa-circle-check text-emerald-600"></i> Önemli Hatırlatma
+                        <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+                            <h4 class="font-black text-emerald-900 mb-1 flex items-center gap-1.5">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Güvenlik Sembolleri
                             </h4>
-                            <p class="text-emerald-800 font-medium">Laboratuvarda çalışırken güvenlik sembollerine dikkat edilmeli, koruyucu ekipmanlar kullanılmalı ve öğretmen rehberliğinde deneyler yürütülmelidir.</p>
+                            <p class="text-emerald-800 font-medium">Laboratuvarda çalışırken güvenlik sembollerine dikkat edilmeli, öğretmen rehberliğinde deneyler yürütülmelidir.</p>
                         </div>
                     </div>
                 </div>
@@ -5443,7 +5357,6 @@ function getFallbackPagesForGrade(grade, title) {
                         <span class="text-[11px] font-black uppercase bg-white/25 px-2 py-0.5 rounded-md">Deney Saati</span>
                         <h3 class="text-lg sm:text-xl font-black mt-1">Etkinlik: Gözlem ve Ölçüm Yapalım</h3>
                     </div>
-
                     <div class="space-y-3.5">
                         <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
                             <h4 class="text-xs font-black text-slate-900 uppercase mb-2">Gerekli Malzemeler:</h4>
@@ -5452,15 +5365,6 @@ function getFallbackPagesForGrade(grade, title) {
                                 <li>Dinamometre veya ölçüm cetveli</li>
                                 <li>Gözlem formu ve not defteri</li>
                             </ul>
-                        </div>
-
-                        <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                            <h4 class="text-xs font-black text-slate-900 uppercase mb-2">Uygulama Basamakları:</h4>
-                            <ol class="list-decimal list-inside text-xs sm:text-sm text-slate-700 space-y-1.5">
-                                <li>Ölçüm aletini sıfırlayınız ve kalibre ediniz.</li>
-                                <li>Deneyi en az 3 kez tekrarlayıp ortalama değeri bulunuz.</li>
-                                <li>Sonuçları sınıf arkadaşlarınızla paylaşınız.</li>
-                            </ol>
                         </div>
                     </div>
                 </div>
@@ -5477,25 +5381,11 @@ function getFallbackPagesForGrade(grade, title) {
                         </h3>
                         <span class="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">Örnek Sorular</span>
                     </div>
-
                     <div class="space-y-3.5 text-xs sm:text-sm">
                         <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
                             <p class="font-black text-slate-900 mb-2">1. Bilimsel bir araştırmada toplanan verilerin grafik ve tablolara dönüştürülmesinin temel amacı nedir?</p>
                             <div class="space-y-1.5 text-slate-700 pl-2">
-                                <div>A) Deney süresini uzatmak</div>
                                 <div class="font-bold text-emerald-700">B) Verileri anlaşılır ve karşılaştırılabilir kılmak (Doğru)</div>
-                                <div>C) Hataları gizlemek</div>
-                                <div>D) Raporu renklendirmek</div>
-                            </div>
-                        </div>
-
-                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                            <p class="font-black text-slate-900 mb-2">2. Güvenlik kuralları gereği laboratuvarda aşağıdakilerden hangisi kesinlikle yapılmamalıdır?</p>
-                            <div class="space-y-1.5 text-slate-700 pl-2">
-                                <div>A) Önlük ve gözlük takmak</div>
-                                <div class="font-bold text-emerald-700">B) Kimyasal maddelerin tadına bakmak veya koklamak (Doğru)</div>
-                                <div>C) Öğretmenin talimatlarına uymak</div>
-                                <div>D) Deney sonrasında elleri yıkamak</div>
                             </div>
                         </div>
                     </div>
@@ -5504,22 +5394,19 @@ function getFallbackPagesForGrade(grade, title) {
         },
         {
             pageNum: 8,
-            title: "Kitap Sonu & EBA",
+            title: "Kitap Sonu",
             html: `
                 <div class="max-w-md mx-auto py-6 px-4 text-center text-slate-800 select-none">
                     <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl mx-auto mb-4 shadow-xl">
                         <i class="fa-solid fa-book-bookmark"></i>
                     </div>
-                    <h3 class="text-xl font-black text-slate-900 mb-2">Kitap Önizlemesi Tamamlandı</h3>
+                    <h3 class="text-xl font-black text-slate-900 mb-2">Doküman Sonu</h3>
                     <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
-                        MEB Fen Bilimleri ders kitabının tüm sayfaları (200+ sayfa) dijital olarak incelenebilir.
+                        Tüm sayfalar başarıyla görüntülendi. Fare tekerleğiyle yukarı kaydırarak önceki sayfalara dönebilirsiniz.
                     </p>
-
-                    <div class="space-y-3">
-                        <button type="button" onclick="goToFirstBookPage()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md">
-                            <i class="fa-solid fa-backward-step"></i> Kitabın Başına Dön (Kapak)
-                        </button>
-                    </div>
+                    <button type="button" onclick="scrollBookToPage(1)" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md">
+                        <i class="fa-solid fa-angles-up"></i> En Başa Dön
+                    </button>
                 </div>
             `
         }
@@ -5527,19 +5414,16 @@ function getFallbackPagesForGrade(grade, title) {
 }
 
 async function openDigitalBookModal(options = {}) {
-    const bookTitle = options.title || "Fen Bilimleri Ders Kitabı";
-    const grade = options.grade || "5";
+    const bookTitle = options.title || "Fen Bilimleri Ders Dokümanı";
+    const grade = options.grade || "7";
     let fileUrl = options.fileUrl || "";
     const id = options.id || "";
 
     DigitalBookState.currentPage = 1;
     DigitalBookState.totalPages = 1;
     DigitalBookState.currentScale = 1.0;
-    DigitalBookState.panX = 0;
-    DigitalBookState.panY = 0;
-    DigitalBookState.isDragging = false;
-    DigitalBookState.isRendering = false;
-    DigitalBookState.pageRenderingQueue = null;
+    DigitalBookState.renderedPages.clear();
+    DigitalBookState.renderingPages.clear();
     DigitalBookState.pdfDoc = null;
     DigitalBookState.mode = "fallback";
     DigitalBookState.fallbackPages = getFallbackPagesForGrade(grade, bookTitle);
@@ -5550,7 +5434,7 @@ async function openDigitalBookModal(options = {}) {
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "digital-book-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col justify-between select-none animate-in fade-in duration-200 overflow-hidden";
+        modal.className = "fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between select-none animate-in fade-in duration-150 overflow-hidden";
         document.body.appendChild(modal);
     }
 
@@ -5563,24 +5447,24 @@ async function openDigitalBookModal(options = {}) {
                     <i class="fa-solid fa-book-open"></i>
                 </div>
                 <div class="min-w-0">
-                    <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[110px] sm:max-w-xs md:max-w-md text-white">${bookTitle}</h3>
+                    <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[120px] sm:max-w-xs md:max-w-md text-white">${bookTitle}</h3>
                     <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
                         <span class="px-1.5 py-0.2 rounded bg-slate-800 text-red-400 border border-slate-700">${grade}. SINIF MEB</span>
-                        <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Açılıyor...</span>
+                        <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Dikey Akış Yükleniyor...</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Orta: Sayfa İlerletme ve Sayfa Numarası Butonları -->
+            <!-- Orta: Dikey Sayfa İlerletme ve Sayfa Numarası Butonları -->
             <div class="flex items-center gap-1 sm:gap-1.5 bg-slate-800/90 px-1.5 sm:px-3 py-1 rounded-2xl border border-slate-700 shadow-inner">
-                <!-- İlk Sayfa -->
-                <button type="button" onclick="goToFirstBookPage()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-first" title="İlk Sayfa">
-                    <i class="fa-solid fa-backward-step"></i>
+                <!-- En Başa Dön -->
+                <button type="button" onclick="scrollBookToPage(1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer" title="En Başa Dön (1. Sayfa)">
+                    <i class="fa-solid fa-angles-up"></i>
                 </button>
                 
-                <!-- Önceki Sayfa (Geri) Butonu -->
-                <button type="button" onclick="changeBookPage(-1)" class="px-2 sm:px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-red-600 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-prev" title="Önceki Sayfa (Sol Ok)">
-                    <i class="fa-solid fa-chevron-left"></i>
+                <!-- Önceki Sayfa (Yukarı) -->
+                <button type="button" onclick="scrollBookStep(-1)" class="px-2 sm:px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-red-600 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer" title="Önceki Sayfa (Yukarı Kaydır)">
+                    <i class="fa-solid fa-chevron-up"></i>
                     <span class="hidden md:inline text-[11px]">Önceki</span>
                 </button>
 
@@ -5592,52 +5476,31 @@ async function openDigitalBookModal(options = {}) {
                     <span id="book-total-pages" class="text-slate-300 font-bold min-w-[18px] text-center">${DigitalBookState.totalPages}</span>
                 </div>
 
-                <!-- Sonraki Sayfa (İleri) Butonu -->
-                <button type="button" onclick="changeBookPage(1)" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-md disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-next" title="Sonraki Sayfa (Sağ Ok veya Boşluk)">
+                <!-- Sonraki Sayfa (Aşağı) -->
+                <button type="button" onclick="scrollBookStep(1)" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-md cursor-pointer" title="Sonraki Sayfa (Aşağı Kaydır)">
                     <span class="hidden md:inline text-[11px]">Sonraki</span>
-                    <i class="fa-solid fa-chevron-right"></i>
+                    <i class="fa-solid fa-chevron-down"></i>
                 </button>
 
-                <!-- Son Sayfa -->
-                <button type="button" onclick="goToLastBookPage()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-last" title="Son Sayfa">
-                    <i class="fa-solid fa-forward-step"></i>
+                <!-- En Sona Git -->
+                <button type="button" onclick="scrollBookToPage(DigitalBookState.totalPages)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer" title="En Sona Git">
+                    <i class="fa-solid fa-angles-down"></i>
                 </button>
             </div>
 
-            <!-- Sağ: BÜYÜTME / KÜÇÜLTME & İMLEÇLE HAREKET ARAÇLARI -->
-            <div class="flex items-center gap-1 sm:gap-1.5">
-                <!-- 🔍 Büyüt / Küçült / Sıfırla Toolbar -->
+            <!-- Sağ: BÜYÜTME / KÜÇÜLTME & KAPAT (İNDİRME BUTONU YOKTUR) -->
+            <div class="flex items-center gap-1 sm:gap-2">
                 <div class="flex items-center gap-0.5 sm:gap-1 bg-slate-800 p-0.5 rounded-xl border border-slate-700 shadow-sm">
                     <button type="button" onclick="changeBookZoom(-0.2)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Küçült (-)">
                         <i class="fa-solid fa-magnifying-glass-minus"></i>
                     </button>
-                    <button type="button" onclick="resetBookPosition(true)" id="book-zoom-text" class="px-1.5 sm:px-2 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-700 text-[10px] sm:text-[11px] font-black text-amber-400 select-none cursor-pointer transition-colors" title="Yakınlaştırmayı ve Konumu Sıfırla (%100)">
+                    <button type="button" onclick="resetBookZoom()" id="book-zoom-text" class="px-1.5 sm:px-2 py-0.5 rounded-lg bg-slate-900 hover:bg-slate-700 text-[10px] sm:text-[11px] font-black text-amber-400 select-none cursor-pointer transition-colors" title="Yakınlaştırmayı Sıfırla (%100)">
                         %100
                     </button>
                     <button type="button" onclick="changeBookZoom(0.2)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Büyüt (+)">
                         <i class="fa-solid fa-magnifying-glass-plus"></i>
                     </button>
                 </div>
-
-                <!-- Sayfayı Yukarı / Aşağı Kaydır Butonları -->
-                <div class="hidden md:flex items-center gap-0.5 bg-slate-800 p-0.5 rounded-xl border border-slate-700">
-                    <button type="button" onclick="scrollBookVertical(90)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold cursor-pointer" title="Sayfayı Yukarı Taşı">
-                        <i class="fa-solid fa-arrow-up"></i>
-                    </button>
-                    <button type="button" onclick="scrollBookVertical(-90)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold cursor-pointer" title="Sayfayı Aşağı Taşı">
-                        <i class="fa-solid fa-arrow-down"></i>
-                    </button>
-                </div>
-
-                <button type="button" onclick="downloadOrOpenCurrentBook()" class="px-2 sm:px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-[11px] font-bold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm" title="PDF Dokümanını İndir veya Yeni Sekmede Aç">
-                    <i class="fa-solid fa-file-arrow-down text-amber-400"></i> <span class="hidden sm:inline">İndir / Aç</span>
-                </button>
-
-                ${fileUrl && fileUrl.startsWith("http") ? `
-                    <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="hidden xl:flex px-2 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-[11px] font-bold items-center gap-1.5 transition-all" title="MEB / EBA'da Aç">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>EBA</span>
-                    </a>
-                ` : ''}
 
                 <!-- Kapat Butonu -->
                 <button type="button" onclick="closeDigitalBookModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shadow-md cursor-pointer ml-1" title="Kapat (ESC)">
@@ -5646,133 +5509,64 @@ async function openDigitalBookModal(options = {}) {
             </div>
         </div>
 
-        <!-- ORTA OKUMA ALANI (KİTAP SAYFASI & İMLEÇLE SÜRÜKLEME ALANI) -->
-        <div class="relative flex-1 bg-slate-950 overflow-hidden flex items-center justify-center p-2 sm:p-4 touch-none select-none" id="book-reader-scroll-area" title="İmleç ile basılı tutup sayfayı yukarı ve aşağı serbestçe hareket ettirebilirsiniz">
-            <!-- Sol Yüzen Sayfa İlerletme Butonu -->
-            <button type="button" onclick="changeBookPage(-1)" class="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-slate-900/85 hover:bg-red-600 text-white flex items-center justify-center text-lg sm:text-2xl font-black shadow-2xl backdrop-blur-md border border-slate-700 hover:border-red-500 transition-all hover:scale-110 active:scale-95 cursor-pointer disabled:opacity-0 disabled:pointer-events-none" id="book-float-prev" title="Önceki Sayfaya Git (←)">
-                <i class="fa-solid fa-angle-left"></i>
-            </button>
-
-            <!-- 🖱️ İmleçle Taşıma Bilgi Rozeti (Başlangıçta belirip kaybolur) -->
-            <div id="book-drag-hint" class="fixed top-14 left-1/2 -translate-x-1/2 z-30 bg-slate-900/90 text-amber-300 text-[11px] font-black px-3.5 py-1.5 rounded-full border border-slate-700 shadow-xl pointer-events-none transition-opacity duration-700 flex items-center gap-1.5">
-                <i class="fa-solid fa-arrows-up-down-left-right text-xs"></i> İmleçle basılı tutup sayfayı aşağı-yukarı kaydırabilirsiniz
-            </div>
-
-            <!-- Sayfa Taşıyıcı / Render Alanı -->
-            <div id="book-page-wrapper" class="relative max-w-full max-h-full flex items-center justify-center transition-transform duration-100 ease-out cursor-grab select-none" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;">
+        <!-- ORTA KESİNTİSİZ DİKEY KAYDIRMA ALANI (Fare Tekerleği ile Aşağı-Yukarı Akıcı Kaydırılır) -->
+        <div id="book-reader-scroll-area" class="relative flex-1 bg-slate-950 overflow-y-auto overflow-x-auto p-3 sm:p-6" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+            <!-- Sayfaların Alt Alta Sıralandığı Dikey Taşıyıcı -->
+            <div id="book-pages-container" class="flex flex-col items-center gap-6 max-w-full mx-auto w-fit min-h-full pb-16">
                 <!-- Yükleniyor Göstergesi -->
-                <div id="book-loading-spinner" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm z-30 flex flex-col items-center justify-center gap-3 text-white rounded-2xl hidden">
+                <div id="book-loading-spinner" class="py-12 flex flex-col items-center justify-center gap-3 text-white">
                     <div class="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                    <div class="text-xs sm:text-sm font-black text-slate-200" id="book-loading-text">Sayfa Yükleniyor...</div>
+                    <div class="text-xs sm:text-sm font-black text-slate-200">Doküman Yükleniyor ve Hazırlanıyor...</div>
                 </div>
-
-                <!-- 1. PDF Canvas (PDF Render Edildiğinde) -->
-                <canvas id="book-canvas" class="hidden rounded-xl shadow-2xl bg-white border border-slate-200/20 select-none block"></canvas>
-
-                <!-- 2. Fallback / Kitap Sayfası Görüntüleyici (PDF yoksa veya yükleme aşamasında) -->
-                <div id="book-fallback-container" class="rounded-xl shadow-2xl bg-white max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[720px] min-h-[72vh] max-h-[82vh] overflow-y-auto border border-slate-300 p-4 sm:p-8 text-slate-900 flex flex-col justify-between select-none">
-                </div>
-            </div>
-
-            <!-- Sağ Yüzen Sayfa İlerletme Butonu -->
-            <button type="button" onclick="changeBookPage(1)" class="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 sm:w-14 sm:h-14 rounded-full bg-slate-900/85 hover:bg-red-600 text-white flex items-center justify-center text-lg sm:text-2xl font-black shadow-2xl backdrop-blur-md border border-slate-700 hover:border-red-500 transition-all hover:scale-110 active:scale-95 cursor-pointer disabled:opacity-0 disabled:pointer-events-none" id="book-float-next" title="Sonraki Sayfaya Git (→)">
-                <i class="fa-solid fa-angle-right"></i>
-            </button>
-
-            <!-- 🎛️ Sağ Kenar Sabit Yüzen Hızlı Kaydırma & Yakınlaştırma Araç Çubuğu -->
-            <div class="fixed right-3 sm:right-5 bottom-20 sm:bottom-8 z-30 flex flex-col gap-1.5 bg-slate-900/85 backdrop-blur-md p-1.5 rounded-2xl border border-slate-700 shadow-2xl">
-                <button type="button" onclick="scrollBookVertical(100)" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black shadow-sm transition-colors cursor-pointer" title="Yukarı Kaydır (▲)">
-                    <i class="fa-solid fa-arrow-up"></i>
-                </button>
-                <button type="button" onclick="changeBookZoom(0.2)" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black shadow-sm transition-colors cursor-pointer" title="Büyüt (+)">
-                    <i class="fa-solid fa-plus"></i>
-                </button>
-                <button type="button" onclick="resetBookPosition(true)" class="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 text-amber-400 flex items-center justify-center text-[10px] font-black shadow-sm transition-colors cursor-pointer" title="Sıfırla (%100)">
-                    %100
-                </button>
-                <button type="button" onclick="changeBookZoom(-0.2)" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black shadow-sm transition-colors cursor-pointer" title="Küçült (-)">
-                    <i class="fa-solid fa-minus"></i>
-                </button>
-                <button type="button" onclick="scrollBookVertical(-100)" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black shadow-sm transition-colors cursor-pointer" title="Aşağı Kaydır (▼)">
-                    <i class="fa-solid fa-arrow-down"></i>
-                </button>
             </div>
         </div>
 
-        <!-- MOBİL ALT SAYFA ÇUBUĞU (Parmakla Kolay Geçiş ve Hızlı Büyüt/Küçült) -->
-        <div class="sm:hidden px-3 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-2 shrink-0 z-20">
-            <button type="button" onclick="changeBookPage(-1)" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 border border-slate-700" id="book-mob-prev">
-                <i class="fa-solid fa-arrow-left"></i> Önceki
+        <!-- MOBİL ALT SAYFA ÇUBUĞU -->
+        <div class="sm:hidden px-4 py-2 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between gap-2 shrink-0 z-20 backdrop-blur-md">
+            <button type="button" onclick="scrollBookStep(-1)" class="py-1.5 px-3 bg-slate-800 text-white rounded-xl text-xs font-black flex items-center gap-1 border border-slate-700">
+                <i class="fa-solid fa-chevron-up"></i> Yukarı
             </button>
-            <div class="flex items-center gap-1 shrink-0 px-2 py-1 bg-slate-800 rounded-xl border border-slate-700">
-                <button type="button" onclick="changeBookZoom(-0.2)" class="w-6 h-6 rounded-lg bg-slate-700 text-white text-[10px] font-black"><i class="fa-solid fa-minus"></i></button>
-                <span class="text-[11px] font-black text-amber-400 px-1" id="book-mob-counter">1 / ${DigitalBookState.totalPages}</span>
-                <button type="button" onclick="changeBookZoom(0.2)" class="w-6 h-6 rounded-lg bg-slate-700 text-white text-[10px] font-black"><i class="fa-solid fa-plus"></i></button>
-            </div>
-            <button type="button" onclick="changeBookPage(1)" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-md" id="book-mob-next">
-                Sonraki <i class="fa-solid fa-arrow-right"></i>
+            <span class="text-xs font-black text-amber-400" id="book-mob-counter">1 / ${DigitalBookState.totalPages}</span>
+            <button type="button" onclick="scrollBookStep(1)" class="py-1.5 px-3 bg-red-600 text-white rounded-xl text-xs font-black flex items-center gap-1 shadow-md">
+                Aşağı <i class="fa-solid fa-chevron-down"></i>
             </button>
         </div>
     `;
 
-    // İpucu rozetini 3.5 saniye sonra yumuşakça gizle
-    setTimeout(() => {
-        const hint = document.getElementById("book-drag-hint");
-        if (hint) {
-            hint.style.opacity = "0";
-            setTimeout(() => { if (hint && hint.remove) hint.remove(); }, 700);
-        }
-    }, 3500);
+    // 1. Fallback sayfalarını dikey olarak diz
+    renderFallbackVerticalPages();
 
-    // 1. sayfayı hemen render et (Kullanıcı hiç beklemez)
-    renderBookPage(1);
-
-    // İmleçle (Mouse & Touch) Sayfa Sürükleme ve Klavye Dinleyicilerini Kur
+    // 2. Olay Dinleyicileri (Klavye, Scroll takibi)
     initBookEventListeners();
 
-    // Arka Planda PDF Yüklemeyi Başlat
+    // 3. Arka Planda PDF Yüklemeyi Başlat
     tryLoadPdfDocument(id, fileUrl);
 }
 
-function downloadOrOpenCurrentBook() {
-    const info = DigitalBookState.bookInfo;
-    if (!info) return;
+function renderFallbackVerticalPages() {
+    const container = document.getElementById("book-pages-container");
+    if (!container) return;
 
-    if (DigitalBookState.activeBlob) {
-        const url = URL.createObjectURL(DigitalBookState.activeBlob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = info.fileName || (info.title + ".pdf");
-        a.target = "_blank";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(() => a.remove(), 1000);
-        return;
-    }
-
-    if (info.fileUrl && info.fileUrl !== "#" && info.fileUrl !== "" && info.fileUrl !== "null") {
-        window.open(info.fileUrl, "_blank");
-        return;
-    }
-
-    if (typeof RotaliDB !== "undefined" && info.id) {
-        RotaliDB.getFile(info.id).then(rec => {
-            if (rec && rec.blob) {
-                const url = URL.createObjectURL(rec.blob);
-                const a = document.createElement("a");
-                a.href = url;
-                a.download = rec.fileName || (info.title + ".pdf");
-                a.target = "_blank";
-                document.body.appendChild(a);
-                a.click();
-                setTimeout(() => a.remove(), 1000);
-            } else {
-                showToast("Bu dokümana ait harici dosya bulunamadı.", "info");
-            }
-        }).catch(() => {
-            showToast("Doküman açılamadı.", "error");
-        });
-    }
+    container.innerHTML = "";
+    DigitalBookState.fallbackPages.forEach((p, idx) => {
+        const pageNum = idx + 1;
+        const pageEl = document.createElement("div");
+        pageEl.id = `fallback-page-wrap-${pageNum}`;
+        pageEl.className = "fallback-page-card bg-white shadow-2xl rounded-2xl p-6 sm:p-8 max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[760px] text-slate-900 border border-slate-200 flex flex-col justify-between my-2";
+        pageEl.dataset.page = pageNum;
+        pageEl.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-4 shrink-0">
+                <span class="text-xs font-black text-red-600 uppercase tracking-wider">
+                    <i class="fa-solid fa-book-bookmark mr-1"></i> ${p.title || 'Sayfa ' + pageNum}
+                </span>
+                <span class="text-xs font-bold text-slate-400">Sayfa ${pageNum} / ${DigitalBookState.totalPages}</span>
+            </div>
+            <div class="flex-1 overflow-y-auto">
+                ${p.html}
+            </div>
+        `;
+        container.appendChild(pageEl);
+    });
 }
 
 async function tryLoadPdfDocument(id, fileUrl) {
@@ -5794,7 +5588,6 @@ async function tryLoadPdfDocument(id, fileUrl) {
 
     let pdfData = null;
     let isDataBuffer = false;
-    DigitalBookState.activeBlob = null;
 
     // 2. IndexedDB (RotaliDB) kontrolü
     if (typeof RotaliDB !== "undefined") {
@@ -5816,7 +5609,6 @@ async function tryLoadPdfDocument(id, fileUrl) {
                 const ab = await record.blob.arrayBuffer();
                 pdfData = new Uint8Array(ab);
                 isDataBuffer = true;
-                DigitalBookState.activeBlob = record.blob;
             }
         } catch(idbErr) {
             console.warn("RotaliDB fetch error:", idbErr);
@@ -5855,7 +5647,7 @@ async function tryLoadPdfDocument(id, fileUrl) {
     }
 
     if (!pdfData) {
-        if (statusEl) statusEl.innerText = "Önizleme Modu (" + DigitalBookState.totalPages + " Sayfa)";
+        if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
         return;
     }
 
@@ -5863,7 +5655,7 @@ async function tryLoadPdfDocument(id, fileUrl) {
 
     try {
         if (!window.pdfjsLib) {
-            throw new Error("pdfjsLib henüz yüklenmedi");
+            throw new Error("pdfjsLib bulunamadı");
         }
 
         let loadingTask;
@@ -5890,6 +5682,8 @@ async function tryLoadPdfDocument(id, fileUrl) {
         DigitalBookState.pdfDoc = pdf;
         DigitalBookState.mode = "pdf";
         DigitalBookState.totalPages = pdf.numPages;
+        DigitalBookState.renderedPages.clear();
+        DigitalBookState.renderingPages.clear();
 
         if (statusEl) statusEl.innerText = "Tam Doküman (" + pdf.numPages + " Sayfa)";
 
@@ -5902,183 +5696,236 @@ async function tryLoadPdfDocument(id, fileUrl) {
         const mobCounter = document.getElementById("book-mob-counter");
         if (mobCounter) mobCounter.innerText = "1 / " + pdf.numPages;
 
-        // PDF moduna geç ve 1. sayfayı render et
-        renderBookPage(1);
+        // Dikey sayfa yuvalarını oluştur ve ilk sayfaları hemen çiz
+        await setupVerticalPdfSlots(pdf);
     } catch (err) {
-        console.warn("PDF.js yükleme uyarısı (Fallback modunda devam ediliyor):", err);
-        if (statusEl) statusEl.innerText = "Önizleme Modu (" + DigitalBookState.totalPages + " Sayfa)";
+        console.warn("PDF.js yükleme uyarısı (Önizleme modunda devam ediliyor):", err);
+        if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
     }
 }
 
-async function renderBookPage(pageNum) {
+async function setupVerticalPdfSlots(pdf) {
+    const container = document.getElementById("book-pages-container");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    // 1. İlk sayfadan standart boyut hesapla
+    const firstPage = await pdf.getPage(1);
+    const baseVp = firstPage.getViewport({ scale: 1.0 });
+    const scrollArea = document.getElementById("book-reader-scroll-area");
+    const availableWidth = Math.min(880, Math.max(320, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 36));
+    const baseFitScale = availableWidth / baseVp.width;
+
+    const zoom = DigitalBookState.currentScale || 1.0;
+    const targetWidth = Math.round(baseVp.width * baseFitScale * zoom);
+    const targetHeight = Math.round(baseVp.height * baseFitScale * zoom);
+
+    for (let p = 1; p <= pdf.numPages; p++) {
+        const slot = document.createElement("div");
+        slot.id = `pdf-page-slot-${p}`;
+        slot.className = "pdf-page-card relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-700/60 my-2 flex flex-col items-center select-none";
+        slot.dataset.page = p;
+        slot.style.width = targetWidth + "px";
+        slot.style.minHeight = targetHeight + "px";
+
+        slot.innerHTML = `
+            <div class="w-full bg-slate-900 text-slate-400 text-[10px] font-bold px-3.5 py-1.5 flex items-center justify-between border-b border-slate-800 select-none">
+                <span class="text-amber-400 font-extrabold flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-lines text-xs"></i> Sayfa ${p} / ${pdf.numPages}
+                </span>
+                <span class="truncate max-w-[220px] text-slate-400 font-medium">${DigitalBookState.bookInfo.title}</span>
+            </div>
+            <div class="relative w-full flex items-center justify-center bg-white min-h-[300px]" id="pdf-page-body-${p}">
+                <div id="pdf-page-spinner-${p}" class="absolute inset-0 flex items-center justify-center text-slate-400 text-xs font-bold gap-2 bg-white/90 z-10">
+                    <div class="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                    <span>Sayfa ${p} Hazırlanıyor...</span>
+                </div>
+                <canvas id="pdf-canvas-${p}" class="block bg-white"></canvas>
+            </div>
+        `;
+        container.appendChild(slot);
+    }
+
+    // 2. Sayfaların ekrana girdikçe çizilmesi için IntersectionObserver kur
+    setupPdfIntersectionObserver();
+
+    // 3. İlk 3 sayfayı anında render et
+    renderSinglePdfPage(1);
+    if (pdf.numPages >= 2) renderSinglePdfPage(2);
+    if (pdf.numPages >= 3) renderSinglePdfPage(3);
+}
+
+function setupPdfIntersectionObserver() {
+    if (DigitalBookState.observer) {
+        DigitalBookState.observer.disconnect();
+    }
+
+    const scrollArea = document.getElementById("book-reader-scroll-area");
+    if (!scrollArea || typeof IntersectionObserver === "undefined") return;
+
+    DigitalBookState.observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const pageNum = parseInt(entry.target.dataset.page, 10);
+                if (!isNaN(pageNum)) {
+                    renderSinglePdfPage(pageNum);
+                    // Bir sonraki sayfayı da önceden yükle
+                    if (pageNum + 1 <= DigitalBookState.totalPages) {
+                        renderSinglePdfPage(pageNum + 1);
+                    }
+                }
+            }
+        });
+    }, {
+        root: scrollArea,
+        rootMargin: "350px 0px 350px 0px",
+        threshold: 0.05
+    });
+
+    const slots = scrollArea.querySelectorAll(".pdf-page-card");
+    slots.forEach(slot => DigitalBookState.observer.observe(slot));
+}
+
+async function renderSinglePdfPage(pageNum) {
+    if (!DigitalBookState.pdfDoc) return;
+    if (DigitalBookState.renderedPages.has(pageNum) || DigitalBookState.renderingPages.has(pageNum)) return;
+
+    DigitalBookState.renderingPages.add(pageNum);
+
+    try {
+        const page = await DigitalBookState.pdfDoc.getPage(pageNum);
+        const baseVp = page.getViewport({ scale: 1.0 });
+        const scrollArea = document.getElementById("book-reader-scroll-area");
+        const availableWidth = Math.min(880, Math.max(320, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 36));
+        const baseFitScale = availableWidth / baseVp.width;
+        const zoom = DigitalBookState.currentScale || 1.0;
+
+        const cssWidth = Math.round(baseVp.width * baseFitScale * zoom);
+        const cssHeight = Math.round(baseVp.height * baseFitScale * zoom);
+
+        const slot = document.getElementById(`pdf-page-slot-${pageNum}`);
+        if (slot) {
+            slot.style.width = cssWidth + "px";
+            slot.style.minHeight = cssHeight + "px";
+        }
+
+        const canvas = document.getElementById(`pdf-canvas-${pageNum}`);
+        const spinner = document.getElementById(`pdf-page-spinner-${pageNum}`);
+        if (!canvas) return;
+
+        const dpr = Math.min(2.5, Math.max(window.devicePixelRatio || 1.0, 1.5));
+        const viewport = page.getViewport({ scale: baseFitScale * zoom * dpr });
+
+        canvas.width = Math.round(viewport.width);
+        canvas.height = Math.round(viewport.height);
+        canvas.style.width = cssWidth + "px";
+        canvas.style.height = cssHeight + "px";
+
+        const ctx = canvas.getContext("2d", { alpha: false });
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        await page.render({
+            canvasContext: ctx,
+            viewport: viewport,
+            intent: "display"
+        }).promise;
+
+        DigitalBookState.renderedPages.add(pageNum);
+        if (spinner) spinner.remove();
+    } catch(err) {
+        if (err && err.name !== "RenderingCancelledException") {
+            console.warn(`Sayfa ${pageNum} çizim hatası:`, err);
+        }
+    } finally {
+        DigitalBookState.renderingPages.delete(pageNum);
+    }
+}
+
+function updateBookToolbarPage(pageNum) {
+    const inputEl = document.getElementById("book-page-input");
+    if (inputEl && document.activeElement !== inputEl) {
+        inputEl.value = pageNum;
+    }
+
+    const mobCounter = document.getElementById("book-mob-counter");
+    if (mobCounter) {
+        mobCounter.innerText = `${pageNum} / ${DigitalBookState.totalPages}`;
+    }
+}
+
+function scrollBookToPage(pageNum) {
     pageNum = Math.max(1, Math.min(pageNum, DigitalBookState.totalPages));
     DigitalBookState.currentPage = pageNum;
 
-    // Sayfa değiştiğinde dikey konumu sıfırla (sayfanın başı görünsün)
-    resetBookPosition(false);
+    const targetEl = document.getElementById(
+        DigitalBookState.mode === "pdf" ? `pdf-page-slot-${pageNum}` : `fallback-page-wrap-${pageNum}`
+    );
 
-    // UI Güncelle
-    const inputEl = document.getElementById("book-page-input");
-    if (inputEl) inputEl.value = pageNum;
+    if (targetEl) {
+        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    updateBookToolbarPage(pageNum);
 
-    const totalEl = document.getElementById("book-total-pages");
-    if (totalEl) totalEl.innerText = DigitalBookState.totalPages;
-
-    const mobCounter = document.getElementById("book-mob-counter");
-    if (mobCounter) mobCounter.innerText = pageNum + " / " + DigitalBookState.totalPages;
-
-    // Buton aktiflik / pasiflik
-    const isFirst = pageNum <= 1;
-    const isLast = pageNum >= DigitalBookState.totalPages;
-
-    ["book-btn-prev", "book-btn-first", "book-float-prev", "book-mob-prev"].forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.disabled = isFirst;
-    });
-
-    ["book-btn-next", "book-btn-last", "book-float-next", "book-mob-next"].forEach(id => {
-        const btn = document.getElementById(id);
-        if (btn) btn.disabled = isLast;
-    });
-
-    const canvas = document.getElementById("book-canvas");
-    const fallbackBox = document.getElementById("book-fallback-container");
-
-    if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
-        if (canvas) canvas.classList.remove("hidden");
-        if (fallbackBox) fallbackBox.classList.add("hidden");
-
-        if (DigitalBookState.isRendering) {
-            DigitalBookState.pageRenderingQueue = pageNum;
-            return;
-        }
-
-        DigitalBookState.isRendering = true;
-        const spinner = document.getElementById("book-loading-spinner");
-        if (spinner) spinner.classList.remove("hidden");
-
-        // Devam eden bir render işlemi varsa iptal et
-        if (DigitalBookState.currentRenderTask) {
-            try {
-                DigitalBookState.currentRenderTask.cancel();
-            } catch(e) {}
-            DigitalBookState.currentRenderTask = null;
-        }
-
-        try {
-            const page = await DigitalBookState.pdfDoc.getPage(pageNum);
-            const baseViewport = page.getViewport({ scale: 1.0 });
-            const scrollArea = document.getElementById("book-reader-scroll-area");
-            const targetHeight = (scrollArea ? scrollArea.clientHeight : window.innerHeight) * 0.84;
-            const fitScale = targetHeight / baseViewport.height;
-
-            // Gerçek Vektörel HiDPI / Ultra Keskin Render Mantığı (Büyütmede sıfır pikselleşme)
-            const zoom = DigitalBookState.currentScale || 1.0;
-            const cssWidth = Math.round(baseViewport.width * fitScale * zoom);
-            const cssHeight = Math.round(baseViewport.height * fitScale * zoom);
-
-            // DPR: Cihaz piksel oranına göre en az 2.0x, yüksek çözünürlük için süper-örnekleme
-            const dpr = Math.min(3.0, Math.max(window.devicePixelRatio || 1.0, 2.0));
-            const viewport = page.getViewport({ scale: fitScale * zoom * dpr });
-
-            canvas.width = Math.round(viewport.width);
-            canvas.height = Math.round(viewport.height);
-            canvas.style.width = cssWidth + "px";
-            canvas.style.height = cssHeight + "px";
-            canvas.style.maxWidth = "none";
-            canvas.style.maxHeight = "none";
-
-            const ctx = canvas.getContext("2d", { alpha: false });
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const renderContext = {
-                canvasContext: ctx,
-                viewport: viewport,
-                intent: "display"
-            };
-            DigitalBookState.currentRenderTask = page.render(renderContext);
-            await DigitalBookState.currentRenderTask.promise;
-            DigitalBookState.currentRenderTask = null;
-
-            updateBookTransform(false);
-        } catch (e) {
-            if (e && e.name !== "RenderingCancelledException") {
-                console.error("PDF render hatası:", e);
-            }
-        } finally {
-            DigitalBookState.isRendering = false;
-            if (spinner) spinner.classList.add("hidden");
-            if (DigitalBookState.pageRenderingQueue !== null) {
-                const nextP = DigitalBookState.pageRenderingQueue;
-                DigitalBookState.pageRenderingQueue = null;
-                renderBookPage(nextP);
-            }
-        }
-    } else {
-        // Fallback HTML Modu
-        if (canvas) canvas.classList.add("hidden");
-        if (fallbackBox) {
-            fallbackBox.classList.remove("hidden");
-            const pageObj = DigitalBookState.fallbackPages[pageNum - 1];
-            if (pageObj) {
-                fallbackBox.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3 shrink-0">
-                        <span class="text-xs font-black text-red-600 uppercase tracking-wider">
-                            <i class="fa-solid fa-book-bookmark mr-1"></i> ${pageObj.title || 'Sayfa ' + pageNum}
-                        </span>
-                        <span class="text-xs font-bold text-slate-400">Sayfa ${pageNum} / ${DigitalBookState.totalPages}</span>
-                    </div>
-                    <div class="flex-1 overflow-y-auto pointer-events-auto">
-                        ${pageObj.html}
-                    </div>
-                `;
-                fallbackBox.scrollTop = 0;
-            }
-        }
-        updateBookTransform(false);
+    if (DigitalBookState.mode === "pdf") {
+        renderSinglePdfPage(pageNum);
     }
 }
 
-function changeBookPage(delta) {
-    renderBookPage(DigitalBookState.currentPage + delta);
-}
-
-function goToFirstBookPage() {
-    renderBookPage(1);
-}
-
-function goToLastBookPage() {
-    renderBookPage(DigitalBookState.totalPages);
+function scrollBookStep(delta) {
+    scrollBookToPage(DigitalBookState.currentPage + delta);
 }
 
 function onBookPageInputChange(val) {
     const num = parseInt(val, 10);
     if (!isNaN(num)) {
-        renderBookPage(num);
+        scrollBookToPage(num);
     }
 }
 
 function changeBookZoom(delta) {
-    DigitalBookState.currentScale = Math.min(3.2, Math.max(0.6, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
+    DigitalBookState.currentScale = Math.min(3.0, Math.max(0.6, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
     const zoomText = document.getElementById("book-zoom-text");
     if (zoomText) zoomText.innerText = "%" + Math.round(DigitalBookState.currentScale * 100);
 
     if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
         clearTimeout(bookZoomDebounceTimer);
         bookZoomDebounceTimer = setTimeout(() => {
-            renderBookPage(DigitalBookState.currentPage);
-        }, 60);
+            DigitalBookState.renderedPages.clear();
+            DigitalBookState.renderingPages.clear();
+            setupVerticalPdfSlots(DigitalBookState.pdfDoc).then(() => {
+                scrollBookToPage(DigitalBookState.currentPage);
+            });
+        }, 120);
     } else {
-        updateBookTransform(true);
+        const fallbackCards = document.querySelectorAll(".fallback-page-card");
+        fallbackCards.forEach(c => {
+            c.style.transform = `scale(${DigitalBookState.currentScale})`;
+            c.style.transformOrigin = "top center";
+        });
     }
 }
 
 function resetBookZoom() {
-    resetBookPosition(true);
+    DigitalBookState.currentScale = 1.0;
+    const zoomText = document.getElementById("book-zoom-text");
+    if (zoomText) zoomText.innerText = "%100";
+
+    if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
+        DigitalBookState.renderedPages.clear();
+        DigitalBookState.renderingPages.clear();
+        setupVerticalPdfSlots(DigitalBookState.pdfDoc).then(() => {
+            scrollBookToPage(DigitalBookState.currentPage);
+        });
+    } else {
+        const fallbackCards = document.querySelectorAll(".fallback-page-card");
+        fallbackCards.forEach(c => {
+            c.style.transform = "none";
+        });
+    }
 }
 
-// 🖱️ İMLEÇ İLE SAYFAYI AŞAĞI YUKARI VE SAĞA SOLA SERBESTÇE HAREKET ETTİRME (DRAG & PAN)
 function initBookEventListeners() {
     if (DigitalBookState.keyListener) {
         window.removeEventListener("keydown", DigitalBookState.keyListener);
@@ -6088,24 +5935,20 @@ function initBookEventListeners() {
         if (!document.getElementById("digital-book-modal")) return;
         if (e.target && e.target.tagName === "INPUT") return;
 
-        if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+        const scrollArea = document.getElementById("book-reader-scroll-area");
+
+        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
             e.preventDefault();
-            changeBookPage(1);
-        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+            if (scrollArea) scrollArea.scrollBy({ top: 320, behavior: "smooth" });
+        } else if (e.key === "ArrowUp" || e.key === "PageUp") {
             e.preventDefault();
-            changeBookPage(-1);
-        } else if (e.key === "ArrowUp") {
-            e.preventDefault();
-            scrollBookVertical(70);
-        } else if (e.key === "ArrowDown") {
-            e.preventDefault();
-            scrollBookVertical(-70);
+            if (scrollArea) scrollArea.scrollBy({ top: -320, behavior: "smooth" });
         } else if (e.key === "Home") {
             e.preventDefault();
-            goToFirstBookPage();
+            scrollBookToPage(1);
         } else if (e.key === "End") {
             e.preventDefault();
-            goToLastBookPage();
+            scrollBookToPage(DigitalBookState.totalPages);
         } else if (e.key === "+" || e.key === "=") {
             e.preventDefault();
             changeBookZoom(0.2);
@@ -6114,7 +5957,7 @@ function initBookEventListeners() {
             changeBookZoom(-0.2);
         } else if (e.key === "0") {
             e.preventDefault();
-            resetBookPosition(true);
+            resetBookZoom();
         } else if (e.key === "Escape") {
             closeDigitalBookModal();
         }
@@ -6124,571 +5967,51 @@ function initBookEventListeners() {
     const scrollArea = document.getElementById("book-reader-scroll-area");
     if (!scrollArea) return;
 
-    // 1. Mouse Dragging (İmleçle Basılı Tutup Sayfayı Aşağı-Yukarı Kaydırma)
-    const onMouseDown = (e) => {
-        if (e.target.closest("button") || e.target.closest("input") || e.target.closest("a")) return;
-        if (e.button !== 0) return; // Sadece sol tık
-        e.preventDefault();
+    if (DigitalBookState.scrollListener) {
+        scrollArea.removeEventListener("scroll", DigitalBookState.scrollListener);
+    }
 
-        DigitalBookState.isDragging = true;
-        DigitalBookState.dragStartX = e.clientX;
-        DigitalBookState.dragStartY = e.clientY;
-        DigitalBookState.dragStartPanX = DigitalBookState.panX;
-        DigitalBookState.dragStartPanY = DigitalBookState.panY;
-        updateBookTransform(false);
-    };
+    let scrollTimeout = null;
+    DigitalBookState.scrollListener = () => {
+        if (scrollTimeout) return;
+        scrollTimeout = setTimeout(() => {
+            scrollTimeout = null;
+            const slots = scrollArea.querySelectorAll(DigitalBookState.mode === "pdf" ? ".pdf-page-card" : ".fallback-page-card");
+            if (!slots || slots.length === 0) return;
 
-    const onMouseMove = (e) => {
-        if (!DigitalBookState.isDragging) return;
-        e.preventDefault();
+            const areaTop = scrollArea.scrollTop;
+            const viewHeight = scrollArea.clientHeight;
+            const triggerLine = areaTop + (viewHeight * 0.35);
 
-        const deltaX = e.clientX - DigitalBookState.dragStartX;
-        const deltaY = e.clientY - DigitalBookState.dragStartY;
-        DigitalBookState.panX = DigitalBookState.dragStartPanX + deltaX;
-        DigitalBookState.panY = DigitalBookState.dragStartPanY + deltaY;
-        updateBookTransform(false);
-    };
-
-    const onMouseUp = () => {
-        if (DigitalBookState.isDragging) {
-            DigitalBookState.isDragging = false;
-            updateBookTransform(true);
-        }
-    };
-
-    // 2. Mouse Wheel Scroll (Fare Tekerleğiyle Sayfayı Aşağı/Yukarı Akıtma)
-    const onWheel = (e) => {
-        e.preventDefault();
-        if (e.ctrlKey || e.metaKey) {
-            // Ctrl + Tekerlek -> Büyüt / Küçült
-            const delta = e.deltaY < 0 ? 0.15 : -0.15;
-            changeBookZoom(delta);
-        } else {
-            // Normal Tekerlek -> Sayfayı Aşağı / Yukarı Kaydır
-            DigitalBookState.panY -= (e.deltaY * 0.9);
-            updateBookTransform(false);
-        }
-    };
-
-    // 3. Touch Dragging (Mobilde ve Dokunmatik Tahtada Parmağı Aşağı-Yukarı Kaydırma)
-    const onTouchStart = (e) => {
-        if (e.target.closest("button") || e.target.closest("input") || e.target.closest("a")) return;
-        if (e.touches.length === 1) {
-            DigitalBookState.isDragging = true;
-            DigitalBookState.dragStartX = e.touches[0].clientX;
-            DigitalBookState.dragStartY = e.touches[0].clientY;
-            DigitalBookState.dragStartPanX = DigitalBookState.panX;
-            DigitalBookState.dragStartPanY = DigitalBookState.panY;
-            DigitalBookState.touchStartX = e.touches[0].clientX;
-            DigitalBookState.touchStartY = e.touches[0].clientY;
-        }
-    };
-
-    const onTouchMove = (e) => {
-        if (!DigitalBookState.isDragging || e.touches.length !== 1) return;
-        e.preventDefault();
-
-        const deltaX = e.touches[0].clientX - DigitalBookState.dragStartX;
-        const deltaY = e.touches[0].clientY - DigitalBookState.dragStartY;
-        DigitalBookState.panX = DigitalBookState.dragStartPanX + deltaX;
-        DigitalBookState.panY = DigitalBookState.dragStartPanY + deltaY;
-        updateBookTransform(false);
-    };
-
-    const onTouchEnd = (e) => {
-        if (DigitalBookState.isDragging) {
-            DigitalBookState.isDragging = false;
-            updateBookTransform(true);
-
-            // Yatay swipe kontrolü (hızlı sayfa geçişi için)
-            if (e.changedTouches.length === 1) {
-                const diffX = e.changedTouches[0].clientX - DigitalBookState.touchStartX;
-                const diffY = e.changedTouches[0].clientY - DigitalBookState.touchStartY;
-                if (Math.abs(diffX) > 70 && Math.abs(diffX) > Math.abs(diffY) * 2) {
-                    if (diffX < 0) {
-                        changeBookPage(1); // Sağa kaydırma -> Sonraki
-                    } else {
-                        changeBookPage(-1); // Sola kaydırma -> Önceki
-                    }
+            let visiblePage = DigitalBookState.currentPage;
+            slots.forEach(slot => {
+                const top = slot.offsetTop;
+                const bottom = top + slot.offsetHeight;
+                if (triggerLine >= top && triggerLine <= bottom) {
+                    visiblePage = parseInt(slot.dataset.page, 10) || visiblePage;
                 }
+            });
+
+            if (visiblePage !== DigitalBookState.currentPage) {
+                DigitalBookState.currentPage = visiblePage;
+                updateBookToolbarPage(visiblePage);
             }
-        }
+        }, 80);
     };
 
-    scrollArea.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-
-    scrollArea.addEventListener("wheel", onWheel, { passive: false });
-    scrollArea.addEventListener("touchstart", onTouchStart, { passive: false });
-    scrollArea.addEventListener("touchmove", onTouchMove, { passive: false });
-    scrollArea.addEventListener("touchend", onTouchEnd);
+    scrollArea.addEventListener("scroll", DigitalBookState.scrollListener, { passive: true });
 }
 
 function closeDigitalBookModal() {
-    const modal = document.getElementById("digital-book-modal");
-    if (modal) {
-        modal.innerHTML = "";
-        modal.remove();
+    if (DigitalBookState.observer) {
+        DigitalBookState.observer.disconnect();
+        DigitalBookState.observer = null;
     }
     if (DigitalBookState.keyListener) {
         window.removeEventListener("keydown", DigitalBookState.keyListener);
         DigitalBookState.keyListener = null;
     }
-    DigitalBookState.pdfDoc = null;
-    DigitalBookState.isRendering = false;
-    DigitalBookState.pageRenderingQueue = null;
-}
-
-
-
-// Materyal Açma / Görüntüleme & Oynatma (İndirme Olmadan Sayfa İçi Önizleme & Oynatıcı)
-// -------------------------------------------------------------
-// 📚 MEB MÜFREDATI TÜM SINIFLAR ÜNİTE DERS NOTLARI HAVUZU (5, 6, 7, 8. SINIF)
-// -------------------------------------------------------------
-const UNIT_STUDY_NOTES = {
-    "5-genel": {
-        unitCode: "F.5.G",
-        title: "5. Sınıf Ünite Bilgilendirmeleri & Kazanım Rehberi",
-        summary: "MEB 2026-2027 Maarif Modeli kapsamında 5. sınıf Fen Bilimleri dersi 7 temel üniteden oluşmaktadır. Bilimsel süreç becerileri, gözlem, deney, eleştirel düşünme ve çevre bilinci kazanımları hedeflenmektedir.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-indigo-100 font-bold text-indigo-900"><th class="p-2 border">Ünite No</th><th class="p-2 border">Ünite Adı</th><th class="p-2 border">Kazanım Sayısı</th></tr><tr><td class="p-2 border font-bold">1. Ünite</td><td class="p-2 border">Güneş, Dünya ve Ay</td><td class="p-2 border">4 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">2. Ünite</td><td class="p-2 border">Canlılar Dünyası</td><td class="p-2 border">4 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">3. Ünite</td><td class="p-2 border">Kuvvetin Ölçülmesi ve Sürtünme</td><td class="p-2 border">3 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">4. Ünite</td><td class="p-2 border">Madde ve Değişim</td><td class="p-2 border">5 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">5. Ünite</td><td class="p-2 border">Işığın Yayılması</td><td class="p-2 border">4 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">6. Ünite</td><td class="p-2 border">İnsan ve Çevre</td><td class="p-2 border">3 Temel Kazanım</td></tr><tr><td class="p-2 border font-bold">7. Ünite</td><td class="p-2 border">Elektrik Devre Elemanları</td><td class="p-2 border">2 Temel Kazanım</td></tr></table>`,
-        tips: "Ders notlarını düzenli takip edip deney ve etkinliklerle pekiştirmek fen bilimlerinde tam başarı sağlar.",
-        question: "5. Sınıf Fen Bilimleri dersinde hangi beceri türleri önceliklidir?\nA) Yalnızca formül ezberleme\nB) Gözlem, deney ve bilimsel süreç becerileri (Doğru)\nC) Sadece test çözme\nD) Metin kopyalama"
-    },
-    // 5. SINIF
-    "5-1": {
-        unitCode: "F.5.1",
-        title: "Güneş, Dünya ve Ay",
-        summary: "Güneş orta büyüklükte, küre şeklinde sıcak gazlardan oluşan bir yıldızdır ve kendi ekseni etrafında saat yönünün tersine döner. Ay, Dünya'nın tek doğal uydusudur; atmosferi yok denecek kadar az olduğu için hava olayları görülmez, gece-gündüz sıcaklık farkı çok yüksektir ve yüzeyi kraterlerle kaplıdır.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-amber-100/80 font-bold text-amber-900"><th class="p-2 border border-amber-200">Ay'ın Ana Evreleri</th><th class="p-2 border border-amber-200">Görünümü</th><th class="p-2 border border-amber-200">Özelliği</th></tr><tr><td class="p-2 border border-amber-200 font-bold">Yeni Ay</td><td class="p-2 border border-amber-200">Görünmez (Karanlık)</td><td class="p-2 border border-amber-200">Ay, Güneş ile Dünya arasındadır.</td></tr><tr><td class="p-2 border border-amber-200 font-bold">İlk Dördün</td><td class="p-2 border border-amber-200">D harfi şeklinde</td><td class="p-2 border border-amber-200">Yeni ay'dan 1 hafta sonra, sağ yarısı aydınlıktır.</td></tr><tr><td class="p-2 border border-amber-200 font-bold">Dolunay</td><td class="p-2 border border-amber-200">Tam daire (Parlak)</td><td class="p-2 border border-amber-200">Dünya, Güneş ile Ay arasındadır.</td></tr><tr><td class="p-2 border border-amber-200 font-bold">Son Dördün</td><td class="p-2 border border-amber-200">Ters D harfi</td><td class="p-2 border border-amber-200">Dolunay'dan 1 hafta sonra, sol yarısı aydınlıktır.</td></tr></table>`,
-        tips: "Ay'ın kendi etrafında dönme süresi ile Dünya etrafında dolanma süresi birbirine eşit (yaklaşık 27 gün 8 saat) olduğu için Dünya'dan bakıldığında her zaman Ay'ın aynı yüzü görülür!",
-        question: "Ay'da rüzgâr, yağmur gibi hava olaylarının görülmemesinin temel sebebi nedir?\\nA) Dünya'ya çok yakın olması\\nB) Belirgin bir atmosferinin bulunmaması (Doğru)\\nC) Işık kaynağı olmaması\\nD) Şeklinin küresel olması"
-    },
-    "5-2": {
-        unitCode: "F.5.2",
-        title: "Canlılar Dünyası",
-        summary: "Canlılar benzer özelliklerine göre 4 ana grupta sınıflandırılır: Mikroskobik Canlılar (bakteri, amip, öglena, paramesyum), Mantarlar (şapkalı, küf, maya, parazit mantarlar), Bitkiler (çiçekli ve çiçeksiz) ve Hayvanlar (omurgalı ve omurgasız).",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-emerald-100/80 font-bold text-emerald-900"><th class="p-2 border border-emerald-200">Omurgalı Grubu</th><th class="p-2 border border-emerald-200">Solunum / Çoğalma</th><th class="p-2 border border-emerald-200">Örnek Canlılar</th></tr><tr><td class="p-2 border border-emerald-200 font-bold">Balıklar</td><td class="p-2 border border-emerald-200">Solungaç / Yumurta ile</td><td class="p-2 border border-emerald-200">Hamsi, sazan, köpekbalığı</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Kurbağalar</td><td class="p-2 border border-emerald-200">Deri & Akciğer (Başkalaşım)</td><td class="p-2 border border-emerald-200">Su kurbağası, semender</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Sürüngenler</td><td class="p-2 border border-emerald-200">Akciğer / Yumurta ile</td><td class="p-2 border border-emerald-200">Yılan, kertenkele, timsah, kaplumbağa</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Kuşlar</td><td class="p-2 border border-emerald-200">Akciğer / Yumurta ile (Yavru bakımı var)</td><td class="p-2 border border-emerald-200">Kartal, penguen, deve kuşu</td></tr><tr><td class="p-2 border border-emerald-200 font-bold">Memeliler</td><td class="p-2 border border-emerald-200">Akciğer / Doğurarak (Sütle besler)</td><td class="p-2 border border-emerald-200">İnsan, inek, yunus, balina, yarasa</td></tr></table>`,
-        tips: "Mantarlar bitki DEĞİLDİR! Klorofilleri olmadığı için fotosentez yapamazlar, kendi besinlerini üretemezler. Balina ve yarasa ise memelidir!",
-        question: "Aşağıdakilerden hangisi memeliler sınıfında yer alır?\\nA) Penguen\\nB) Timsah\\nC) Yarasa (Doğru)\\nD) Köpekbalığı"
-    },
-    "5-3": {
-        unitCode: "F.5.3",
-        title: "Kuvvetin Ölçülmesi ve Sürtünme",
-        summary: "Kuvvet; duran cismi hareket ettiren, hareket eden cismi durduran, yönünü, hızını veya şeklini değiştiren etkidir. Birimi Newton'dur (N). Dinamometre ile ölçülür ve sarmal yayların esneklik özelliğinden yararlanılır. Sürtünme kuvveti ise hareketi engelleyen veya zorlaştıran zıt yönlü kuvvettir.",
-        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-red-50 border border-red-200 rounded-xl"><strong class="text-red-700 block mb-1">Sürtünmeyi Artıran Durumlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Kışın araç lastiklerine zincir takılması</li><li>Futbolcuların krampon tabanındaki dişler</li><li>Haltercilerin ellerine magnezyum tozu sürmesi</li><li>Merdiven basamaklarına kaydırmaz bant takılması</li></ul></div><div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl"><strong class="text-emerald-700 block mb-1">Sürtünmeyi Azaltan Durumlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Makinelerin hareketli parçalarının yağlanması</li><li>Araçların ve hızlı trenlerin aerodinamik tasarımı</li><li>Gemi burunlarının V şeklinde (pruva) yapılması</li><li>Ağır yüklerin altına tekerlek yerleştirilmesi</li></ul></div></div>`,
-        tips: "Dinamometrenin ölçebileceği maksimum kuvvet aşılırsa içindeki yayın esneklik özelliği bozulur ve bir daha doğru ölçüm yapamaz.",
-        question: "Hassas ölçüm yapabilen bir dinamometrede kullanılan yay nasıl olmalıdır?\\nA) Kalın ve sert\\nB) İnce ve esnek (Doğru)\\nC) Çok kısa ve kalın\\nD) Plastik ve sert"
-    },
-    "5-4": {
-        unitCode: "F.5.4",
-        title: "Madde ve Değişim",
-        summary: "Maddeler ısı aldığında veya verdiğinde hâl değiştirir. Erime, buharlaşma ve süblimleşme ısı alarak; donma, yoğuşma ve kırağılaşma ısı vererek gerçekleşir. Isı bir enerji türüdür (Joule/Kalori), sıcaklık ise enerjinin bir göstergesidir (°C).",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-blue-100/80 font-bold text-blue-900"><th class="p-2 border border-blue-200">Kavram</th><th class="p-2 border border-blue-200">Isı</th><th class="p-2 border border-blue-200">Sıcaklık</th></tr><tr><td class="p-2 border border-blue-200 font-bold">Tanım</td><td class="p-2 border border-blue-200">Aktarılan enerji türüdür</td><td class="p-2 border border-blue-200">Madde taneciklerinin ortalama kinetik enerjisinin ölçüsüdür</td></tr><tr><td class="p-2 border border-blue-200 font-bold">Ölçüm Aleti</td><td class="p-2 border border-blue-200">Kalorimetre Kabı</td><td class="p-2 border border-blue-200">Termometre</td></tr><tr><td class="p-2 border border-blue-200 font-bold">Birimi</td><td class="p-2 border border-blue-200">Joule (J) veya Kalori (cal)</td><td class="p-2 border border-blue-200">Derece Selsiyus (°C)</td></tr></table>`,
-        tips: "Buharlaşma her sıcaklıkta ve sadece sıvının yüzeyinde gerçekleşirken; kaynama belirli bir sabit sıcaklıkta ve sıvının her yerinde kabarcıklar hâlinde gerçekleşir!",
-        question: "Saf suyun deniz seviyesinde kaynama noktası kaç °C'dir?\\nA) 0 °C\\nB) 50 °C\\nC) 100 °C (Doğru)\\nD) 120 °C"
-    },
-    "5-5": {
-        unitCode: "F.5.5",
-        title: "Işığın Yayılması",
-        summary: "Işık bir enerji türüdür ve homojen ortamlarda her yöne doğrusal ışınlar hâlinde yayılır. Maddeler ışığı geçirme özelliklerine göre Saydam (cam, hava), Yarı Saydam (buzlu cam, yağlı kağıt) ve Opak/Saydam Olmayan (tahta, taş, metal) olarak üçe ayrılır.",
-        tablesHtml: `<div class="p-3 bg-slate-100 border border-slate-300 rounded-xl text-xs space-y-2"><strong class="text-slate-900 block">Tam Gölgeyi Etkileyen Değişkenler:</strong><p>1. Işık kaynağı opak cisme yaklaştırılırsa gölge boyu <strong>BÜYÜR</strong>.</p><p>2. Opak cisim ekrandan/perdeden uzaklaştırılıp kaynağa yaklaşırsa gölge <strong>BÜYÜR</strong>.</p><p>3. Opak cisim ışık kaynağından uzaklaştırılırsa gölge <strong>KÜÇÜLÜR</strong>.</p></div>`,
-        tips: "Gölge oluşumu ışığın doğrusal yolla yayıldığının en net kanıtıdır!",
-        question: "Işık kaynağı ile perde arasındaki opak cisim perdeye doğru yaklaştırılırsa gölge boyu nasıl değişir?\\nA) Büyür\\nB) Küçülür (Doğru)\\nC) Değişmez\\nD) Önce büyür sonra küçülür"
-    },
-    "5-6": {
-        unitCode: "F.5.6",
-        title: "İnsan ve Çevre",
-        summary: "Biyoçeşitlilik; bir bölgede yaşayan canlı türlerinin çeşit ve sayıca zenginliğidir. Çevre kirliliği (hava, su, toprak) ve bilinçsiz avlanma biyoçeşitliliği tehdit eder. Canlıların bir kısmı tamamen yok olmuş (Mamut, Dinozor, Moa kuşu), bir kısmı ise tükenme tehlikesindedir (Panda, Kutup ayısı, Kelaynak).",
-        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-rose-50 border border-rose-200 rounded-xl"><strong class="text-rose-700">Dünyada Nesli Tükenmiş:</strong><p class="text-slate-700 mt-1">Dinozor, Mamut, Tazmanya Kaplanı, Dodo Kuşu, Moa</p></div><div class="p-3 bg-amber-50 border border-amber-200 rounded-xl"><strong class="text-amber-700">Türkiye'de Nesli Tükenmiş:</strong><p class="text-slate-700 mt-1">Anadolu Parsı, Asya Fili, Kunduz, Kafkas Bizonu, Hazar Kaplanı</p></div></div>`,
-        tips: "Geri dönüşüm, ağaçlandırma ve doğal koruma alanları (milli parklar) biyoçeşitliliği korumanın en etkili yollarıdır.",
-        question: "Aşağıdakilerden hangisi biyoçeşitliliği olumsuz etkileyen insan faaliyetlerinden biridir?\\nA) Ağaçlandırma yapmak\\nB) Doğal yaşam alanlarını tahrip etmek (Doğru)\\nC) Geri dönüşüme katkı sağlamak\\nD) Milli parklar kurmak"
-    },
-    "5-7": {
-        unitCode: "F.5.7",
-        title: "Elektrik Devre Elemanları",
-        summary: "Basit bir elektrik devresi; pil (güç kaynağı), ampul (ışık üretici), anahtar (akımı kontrol eden) ve bağlantı kablosundan oluşur. Bilimsel iletişimde devre elemanları uluslararası standart sembollerle gösterilir.",
-        tablesHtml: `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs space-y-1.5"><strong class="text-indigo-900 block">Lamba Parlaklığı Kuralları:</strong><p>• <strong>Pil Sayısı Artarsa:</strong> Devreye sağlanan enerji artar, ampul parlaklığı <strong>ARTAR</strong> (Bağımsız değişken: Pil sayısı).</p><p>• <strong>Ampul Sayısı Artarsa:</strong> Devrenin direnci artar, ampul başına düşen enerji azalır, parlaklık <strong>AZALIR</strong> (Bağımsız değişken: Ampul sayısı).</p></div>`,
-        tips: "Deneylerde sonucunu gözlemlemek istediğimiz ve bilerek değiştirdiğimiz değişken 'Bağımsız Değişken', buna bağlı olarak değişen sonuç ise 'Bağımlı Değişken'dir.",
-        question: "Bir elektrik devresinde pil sayısı sabit tutulup ampul sayısı artırılırsa lamba parlaklığı nasıl değişir?\\nA) Artar\\nB) Azalır (Doğru)\\nC) Değişmez\\nD) Önce artar sonra söner"
-    },
-
-    // 6. SINIF
-    "6-1": {
-        unitCode: "F.6.1",
-        title: "Güneş Sistemi ve Tutulmalar",
-        summary: "Güneş Sistemi'nde 8 gezegen bulunur. Güneş'e yakınlıklarına göre: Merkür, Venüs, Dünya, Mars (Karasal/İç gezegenler - yoğun ve kayalık), Jüpiter, Satürn, Uranüs, Neptün (Gazsal/Dış gezegenler - büyük ve halkalı). Mars ile Jüpiter arasında asteroit kuşağı yer alır.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-indigo-100/80 font-bold text-indigo-900"><th class="p-2 border border-indigo-200">Tutulma Türü</th><th class="p-2 border border-indigo-200">Sıralama</th><th class="p-2 border border-indigo-200">Ay'ın Evresi</th></tr><tr><td class="p-2 border border-indigo-200 font-bold">Güneş Tutulması</td><td class="p-2 border border-indigo-200">Güneş - Ay - Dünya</td><td class="p-2 border border-indigo-200">Yeni Ay (Gündüz yaşanır)</td></tr><tr><td class="p-2 border border-indigo-200 font-bold">Ay Tutulması</td><td class="p-2 border border-indigo-200">Güneş - Dünya - Ay</td><td class="p-2 border border-indigo-200">Dolunay (Gece yaşanır)</td></tr></table>`,
-        tips: "Venüs ve Uranüs diğer gezegenlerin tersi yönde (saat yönünde) döner. En sıcak gezegen sera etkisinden dolayı Merkür değil Venüs'tür!",
-        question: "Güneş tutulması sırasında Ay hangi evrededir?\\nA) Dolunay\\nB) Yeni Ay (Doğru)\\nC) İlk Dördün\\nD) Son Dördün"
-    },
-    "6-2": {
-        unitCode: "F.6.2",
-        title: "Vücudumuzdaki Sistemler",
-        summary: "Destek ve hareket (kemik, kıkırdak, kas), sindirim (ağız, mide, ince bağırsak, pankreas, karaciğer), dolaşım (kalp, damarlar, kan), solunum (akciğer, alveoller) ve boşaltım (böbrekler, nefronlar) sistemlerinin eşgüdümlü çalışmasıdır.",
-        tablesHtml: `<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1.5"><strong class="text-blue-900 block">Kimyasal Sindirim Başlama ve Bitme Noktaları:</strong><p>• <strong>Karbonhidratlar:</strong> Ağızda başlar (Tükürük/Amilaz) -> İnce bağırsakta biter.</p><p>• <strong>Proteinler:</strong> Midede başlar (Mide özsuyu/Pepsin) -> İnce bağırsakta biter.</p><p>• <strong>Yağlar:</strong> İnce bağırsakta başlar (Pankreas özsuyu/Lipaz) -> İnce bağırsakta biter.</p><p><em>* Safra sıvısı karaciğerde üretilir, yağların mekanik (fiziksel) sindirimini sağlar, enzim içermez!</em></p></div>`,
-        tips: "Küçük kan dolaşımı kanı akciğerde temizler; büyük kan dolaşımı temiz kanı tüm vücuda dağıtıp kirli kanı toplar.",
-        question: "Yağların kimyasal sindirimi hangi organda başlar ve nerede biter?\\nA) Mide - İnce Bağırsak\\nB) İnce Bağırsak - İnce Bağırsak (Doğru)\\nC) Ağız - Mide\\nD) Karaciğer - Kalın Bağırsak"
-    },
-    "6-3": {
-        unitCode: "F.6.3",
-        title: "Kuvvet ve Hareket",
-        summary: "Birden fazla kuvvetin yaptığı etkiyi tek başına yapan kuvvete Bileşke Kuvvet (Net Kuvvet, R) denir. Aynı yönlü kuvvetler toplanır, zıt yönlü kuvvetler çıkarılır. R = 0 ise dengelenmiş kuvvetler; R ≠ 0 ise dengelenmemiş kuvvetler etki eder.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-slate-100 font-bold text-slate-900"><th class="p-2 border">Durum</th><th class="p-2 border">Bileşke Kuvvet</th><th class="p-2 border">Cismin Hareketi</th></tr><tr><td class="p-2 border font-bold">Dengelenmiş Kuvvetler</td><td class="p-2 border">R = 0 N</td><td class="p-2 border">Duran cisim durur, hareket halindeyse sabit süratle devam eder.</td></tr><tr><td class="p-2 border font-bold">Dengelenmemiş Kuvvetler</td><td class="p-2 border">R ≠ 0 N</td><td class="p-2 border">Cisim net kuvvet yönünde hızlanır veya kuvvet zıtsa yavaşlar.</td></tr></table>`,
-        tips: "Sürat = Alınan Yol / Geçen Zaman (v = x / t). Sabit süratli harekette eşit zaman aralıklarında eşit yollar alınır.",
-        question: "Doğuya 15 N, batıya 10 N kuvvet uygulanan bir sandığa etki eden bileşke kuvvet nedir?\\nA) 25 N Doğu\\nB) 5 N Doğu (Doğru)\\nC) 5 N Batı\\nD) 0 N"
-    },
-    "6-4": {
-        unitCode: "F.6.4",
-        title: "Madde ve Isı",
-        summary: "Bütün maddeler taneciklerden oluşur. Tanecikler titreşim, öteleme ve dönme hareketleri yapar. Isı enerjisi katılarda İletim, sıvı ve gazlarda Konveksiyon, boşlukta ise Işıma (Radyasyon) yoluyla yayılır.",
-        tablesHtml: `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1"><strong class="text-amber-900 block">Isı Yalıtım Malzemeleri Özellikleri:</strong><p>• İçlerinde hava boşlukları çoktur (hava kötü bir iletkendir).</p><p>• Cam yünü, taş yünü, strafor köpük, ahşap, silikon yünü, çift cam.</p><p>• Binalarda ısı yalıtımı yakıt tasarrufu sağlar ve hava kirliliğini önler.</p></div>`,
-        tips: "Güneş'in Dünya'yı ısıtması ışıma yoluyla olur; çorba kasesindeki metal kaşığın ısınması ise iletim yoluyladır.",
-        question: "Aşağıdakilerden hangisi iyi bir ısı yalıtım malzemesidir?\\nA) Bakır\\nB) Demir\\nC) Strafor köpük (Doğru)\\nD) Alüminyum"
-    },
-    "6-5": {
-        unitCode: "F.6.5",
-        title: "Ses ve Özellikleri",
-        summary: "Ses maddesel ortamlarda taneciklerin titreşimiyle dalgalar hâlinde yayılır. Ses boşlukta YAYILMAZ! Sesin sürati ortamın yoğunluğuna ve sıcaklığına bağlıdır: Katı > Sıvı > Gaz.",
-        tablesHtml: `<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1.5"><strong class="text-blue-900 block">Sesin Maddeyle Etkileşimi:</strong><p>• <strong>Yansıma:</strong> Ses dalgalarının sert engele çarpıp geri dönmesidir (Yankı, sonar, ultrason).</p><p>• <strong>Soğurulma:</strong> Ses dalgalarının pürüzlü ve gözenekli yüzeylerde yutulmasıdır (Ses yalıtımı, sünger, strafor).</p><p>• <strong>Geçiş:</strong> Sesin engelin diğer tarafına iletilmesidir.</p></div>`,
-        tips: "Şimşek çaktığında önce ışığı görüp sonra gök gürültüsünü duymamız, ışık hızının (300.000 km/s) ses hızından (havada ~340 m/s) katbekat hızlı olmasındandır.",
-        question: "Ses dalgaları aşağıdaki ortamların hangisinde kesinlikle yayılamaz?\\nA) Deniz suyu\\nB) Demir levha\\nC) Uzay boşluğu (Doğru)\\nD) Hava"
-    },
-    "6-6": {
-        unitCode: "F.6.6",
-        title: "Vücudumuzdaki Sistemler ve Sağlığı",
-        summary: "Denetleyici ve düzenleyici sistemler vücuttaki tüm sistemlerin uyum içinde çalışmasını sağlar: Sinir Sistemi (Beyin, beyincik, omurilik soğanı, omurilik) ve İç Salgı Bezleri (Hipofiz, tiroit, pankreas, böbrek üstü bezleri).",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-teal-100 font-bold text-teal-900"><th class="p-2 border border-teal-200">Organ</th><th class="p-2 border border-teal-200">Temel Görevi</th></tr><tr><td class="p-2 border border-teal-200 font-bold">Beyin</td><td class="p-2 border border-teal-200">Öğrenme, hafıza, bilinç, duyu merkezleri, kan basıncı ve vücut sıcaklığı</td></tr><tr><td class="p-2 border border-teal-200 font-bold">Beyincik</td><td class="p-2 border border-teal-200">Kol ve bacak kaslarının koordinasyonu, vücudun denge merkezi</td></tr><tr><td class="p-2 border border-teal-200 font-bold">Omurilik Soğanı</td><td class="p-2 border border-teal-200">İç organların çalışması (solunum, dolaşım, yutma, hapşırma, kusma)</td></tr><tr><td class="p-2 border border-teal-200 font-bold">Omurilik</td><td class="p-2 border border-teal-200">Refleks davranışları (diz kapağı, göze ışık tutulması, sıcak nesneye dokunma)</td></tr></table>`,
-        tips: "Pankreas hem insülin (kan şekerini düşürür) hem de glukagon (kan şekerini yükseltir) hormonlarını salgılar.",
-        question: "Vücudun denge ve kas koordinasyon merkezi hangi organdır?\\nA) Beyin\\nB) Beyincik (Doğru)\\nC) Omurilik Soğanı\\nD) Hipofiz"
-    },
-    "6-7": {
-        unitCode: "F.6.7",
-        title: "Elektriğin İletimi",
-        summary: "Elektrik akımını ileten maddelere İletken (metaller, tuzlu su, asitli su), iletmeyen maddelere Yalıtkan (plastik, porselen, cam, tahta, saf su) denir. Elektriksel direnç; bir iletkenin elektrik akımına karşı gösterdiği zorluktur (Ohm, Ω).",
-        tablesHtml: `<div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl text-xs space-y-1"><strong class="text-indigo-900 block">Bir İletkenin Direncine Etki Eden Faktörler:</strong><p>1. <strong>Uzunluk (L):</strong> Telin boyu uzadıkça direnç <strong>ARTAR</strong> (Doğru orantı).</p><p>2. <strong>Kesit Alanı / Kalınlık (S):</strong> Tel kalınlaştıkça direnç <strong>AZALIR</strong> (Ters orantı).</p><p>3. <strong>Cinsi:</strong> İletkenin cinsine (özdirenç) bağlıdır.</p></div>`,
-        tips: "Ampulün içindeki tungsten tel çok ince ve çok uzundur (sarmal yapılmıştır); böylece direnci çok yüksek olur, ısınıp ışık saçar.",
-        question: "Direnci en küçük olan iletken tel hangisidir?\\nA) Uzun ve ince\\nB) Kısa ve kalın (Doğru)\\nC) Uzun ve kalın\\nD) Kısa ve ince"
-    },
-
-    // 7. SINIF
-    "7-1": {
-        unitCode: "F.7.1",
-        title: "Güneş Sistemi ve Ötesi",
-        summary: "Uzay araştırmalarında roketler, uzay mekikleri, sondalar ve yapay uydular kullanılır. Yıldızlar bulutsulardan (nebula) doğar, yaşar ve enerjileri bitince ölürler. Güneş sarı renkte, orta sıcaklıkta bir yıldızdır.",
-        tablesHtml: `<div class="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs space-y-1"><strong class="text-purple-900 block">Yıldızların Sıcaklık Renkleri & Yaşam Sonu:</strong><p>• <strong>Mavi/Beyaz:</strong> En sıcak yıldızlar</p><p>• <strong>Sarı:</strong> Orta sıcaklıktaki yıldızlar (Güneş)</p><p>• <strong>Kırmızı:</strong> En soğuk yıldızlar</p><p>• Büyük kütleli yıldızlar süpernova patlamasıyla Nötron yıldızı (Pulsar) veya <strong>Kara Delik</strong>'e dönüşür.</p></div>`,
-        tips: "Işık yılı bir zaman birimi DEĞİL, astronomik bir mesafe birimidir (Işığın boşlukta 1 yılda aldığı yol: yaklaşık 9.46 trilyon km).",
-        question: "Aşağıdakilerden hangisi en sıcak yıldızların rengidir?\\nA) Kırmızı\\nB) Sarı\\nC) Mavi (Doğru)\\nD) Turuncu"
-    },
-    "7-2": {
-        unitCode: "F.7.2",
-        title: "Hücre ve Bölünmeler",
-        summary: "Hücre canlının en küçük yapı birimidir: Hücre zarı, sitoplazma ve çekirdek. Bitki hücresinde hücre duvarı ve kloroplast varken; hayvan hücresinde sentrozom bulunur. Hücre bölünmesi Mitoz ve Mayoz olarak ikiye ayrılır.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-indigo-100 font-bold text-indigo-900"><th class="p-2 border">Özellik</th><th class="p-2 border">Mitoz Bölünme</th><th class="p-2 border">Mayoz Bölünme</th></tr><tr><td class="p-2 border font-bold">Görüldüğü Hücre</td><td class="p-2 border">Vücut hücrelerinde (2n)</td><td class="p-2 border">Üreme ana hücrelerinde (2n)</td></tr><tr><td class="p-2 border font-bold">Oluşan Hücre</td><td class="p-2 border">2 yeni hücre</td><td class="p-2 border">4 yeni hücre (gamet, n)</td></tr><tr><td class="p-2 border font-bold">Kromozom Sayısı</td><td class="p-2 border">Sabit kalır (2n -> 2n)</td><td class="p-2 border">Yarıya iner (2n -> n)</td></tr><tr><td class="p-2 border font-bold">Kalıtsal Çeşitlilik</td><td class="p-2 border">Yoktur (Klon fotokopi)</td><td class="p-2 border">Vardır (Krossing-over / Parça değişimi)</td></tr></table>`,
-        tips: "Mayoz bölünmedeki parça değişimi (krossing-over) ve döllenme olayı nesiller boyu tür içi genetik çeşitliliği sağlar.",
-        question: "Mayoz bölünmede kromozom sayısının yarıya inmesi neyi sağlar?\\nA) Canlının hızlı büyümesini\\nB) Nesiller boyunca tür içi kromozom sayısının sabit kalmasını (Doğru)\\nC) Hücrelerin yenilenmesini\\nD) Doku onarımını"
-    },
-    "7-3": {
-        unitCode: "F.7.3",
-        title: "Kuvvet ve Enerji",
-        summary: "Kütle değişmeyen madde miktarıdır (kg, terazi); ağırlık ise cisme etki eden yerçekimi kuvvetidir (N, dinamometre). Fiziksel anlamda iş: Kuvvet uygulanmalı ve cisim uygulanan kuvvet doğrultusunda yol almalıdır (İş = Kuvvet x Yol, Joule).",
-        tablesHtml: `<div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1.5"><strong class="text-emerald-900 block">Enerji Türleri ve Korunumu:</strong><p>• <strong>Kinetik Enerji:</strong> Hareket enerjisidir (Kütle ve Sürate bağlıdır).</p><p>• <strong>Çekim Potansiyel Enerjisi:</strong> Konum enerjisidir (Kütle ve Yüksekliğe bağlıdır).</p><p>• Sürtünmesiz ortamda Mekanik Enerji korunur (Potansiyel <-> Kinetik birbirine dönüşür).</p></div>`,
-        tips: "Elindeki çantayla düz yolda sabit süratle yürüyen bir öğrenci fiziksel anlamda İŞ YAPMAZ (Kuvvet yukarı yönlü, hareket yatay yönlüdür; doğrultular farklıdır!).",
-        question: "Sırtındaki çantayla merdivenlerden yukarı çıkan bir öğrenci için hangisi doğrudur?\\nA) Fiziksel anlamda iş yapmıştır (Doğru)\\nB) Çantanın potansiyel enerjisi azalmıştır\\nC) Kinetik enerjisi sürekli sıfırdır\\nD) Yerçekimine karşı iş yapılmamıştır"
-    },
-    "7-4": {
-        unitCode: "F.7.4",
-        title: "Saf Madde ve Karışımlar",
-        summary: "Elementler tek cins atomlardan oluşan saf maddelerdir (Sembollerle gösterilir: Fe, Cu, O). Bileşikler en az iki farklı cins atomun kimyasal bağlarla birleşmesidir (Formüllerle gösterilir: H2O, CO2, NaCl). Karışımlar ise maddelerin özelliklerini kaybetmeden rastgele oranlarda bir araya gelmesidir.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-cyan-100 font-bold text-cyan-900"><th class="p-2 border">Karışım Türü</th><th class="p-2 border">Özellik</th><th class="p-2 border">Örnekler</th></tr><tr><td class="p-2 border font-bold">Homojen (Çözelti)</td><td class="p-2 border">Her yerinde aynı özelliği gösterir, tek fazlıdır.</td><td class="p-2 border">Tuzlu su, şekerli su, hava, kolonya, gazoz, pirinç (alaşım)</td></tr><tr><td class="p-2 border font-bold">Heterojen</td><td class="p-2 border">Her yerinde aynı özelliği göstermez, tanecikler seçilir.</td><td class="p-2 border">Zeytinyağı-su, çorba, ayran, kumlu su, salata</td></tr></table>`,
-        tips: "Bileşikler kimyasal yollarla ayrışırken; karışımlar fiziksel yollarla (buharlaştırma, damıtma, süzme, yoğunluk farkı) ayrıştırılır.",
-        question: "Aşağıdakilerden hangisi bir bileşiktir?\\nA) Hava\\nB) Demir (Fe)\\nC) Su (H2O) (Doğru)\\nD) Tuzlu su"
-    },
-    "7-5": {
-        unitCode: "F.7.5",
-        title: "Işığın Madde ile Etkileşimi",
-        summary: "Işık saydam ortamlardan geçerken kırıcılık indisi farklı ortamlara rastladığında yön ve sürat değiştirir (Kırılma). Aynalar ışığı yansıtır: Düzlem ayna (boy eşit, simetrik görüntü), Çukur ayna (odak noktası var, dev aynası, ters/düz görüntü), Tümsek ayna (geniş görüş açısı, daima düz ve küçük görüntü).",
-        tablesHtml: `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-xs space-y-1.5"><strong class="text-amber-900 block">Kırılma ve Mercek Kuralları:</strong><p>• Az Yoğun Ortamdan Çok Yoğun Ortama geçen ışık <strong>NORMALE YAKLAŞARAK</strong> kırılır, sürati azalır.</p><p>• Çok Yoğun Ortamdan Az Yoğun Ortama geçen ışık <strong>NORMALDEN UZAKLAŞARAK</strong> kırılır, sürati artar.</p><p>• İnce Kenarlı Mercek ışığı toplar (Hipermetrop düzeltir); Kalın Kenarlı Mercek ışığı dağıtır (Miyop düzeltir).</p></div>`,
-        tips: "Göz kusurları kodlaması: MİYOP -> Kalın kenarlı mercekle düzeltilir (Uzağı göremez); HİPERMETROP -> İnce kenarlı mercekle düzeltilir (Yakını göremez).",
-        question: "Araçların sağ-sol yan aynalarında ve otopark virajlarında geniş alanı görmek için hangi ayna kullanılır?\\nA) Çukur Ayna\\nB) Düzlem Ayna\\nC) Tümsek Ayna (Doğru)\\nD) İnce Mercek"
-    },
-    "7-6": {
-        unitCode: "F.7.6",
-        title: "Canlılarda Üreme, Büyüme ve Gelişme",
-        summary: "Canlılar nesillerini devam ettirmek için ürerler. İnsanda üreme eşeyli gerçekleşir: Sperm + Yumurta -> Döllenme -> Zigot -> Embriyo -> Fetüs -> Bebek. Bitkilerde tozlaşma ile döllenme gerçekleşir. Eşeysiz üreme türleri: Bölünerek, tomurcuklanma, vejetatif ve rejenerasyon.",
-        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-rose-50 border border-rose-200 rounded-xl"><strong class="text-rose-700">Başkalaşım Geçiren Canlılar:</strong><p class="text-slate-700 mt-1">Yumurtadan çıkan yavrunun ana canlıya benzemeyip zamanla değişim geçirmesidir: Kurbağa, Kelebek, İpek böceği, Karasinek.</p></div><div class="p-3 bg-teal-50 border border-teal-200 rounded-xl"><strong class="text-teal-700">Tohumun Çimlenme Şartları (S-O-S):</strong><p class="text-slate-700 mt-1">1. Su (Nem)<br>2. Oksijen (Hava)<br>3. Sıcaklık (Uygun ısı)<br><em>* Çimlenme sırasında ışığa ihtiyaç YOKTUR!</em></p></div></div>`,
-        tips: "Çimlenmekte olan bir tohum henüz klorofil üretmediği için fotosentez yapamaz, çimlenene kadar sadece oksijenli solunum yapar.",
-        question: "Tohumun çimlenmesi için aşağıdakilerden hangisi zorunlu DEĞİLDİR?\\nA) Su\\nB) Oksijen\\nC) Işık (Doğru)\\nD) Uygun sıcaklık"
-    },
-    "7-7": {
-        unitCode: "F.7.7",
-        title: "Elektrik Devreleri",
-        summary: "Elektrik devrelerinde ampuller seri veya paralel bağlanabilir. Seri bağlamada devre direnci artar, akım azalır, ampuller sönük yanar. Paralel bağlamada ampullerin uçları aynı potansiyele bağlıdır, ampul sayısı artsa da parlaklık değişmez. Ohm Yasası: Gerilim / Akım = Direnç (V = I . R).",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-blue-100 font-bold text-blue-900"><th class="p-2 border">Özellik</th><th class="p-2 border">Seri Bağlama</th><th class="p-2 border">Paralel Bağlama</th></tr><tr><td class="p-2 border font-bold">Ampul Eklendikçe Parlaklık</td><td class="p-2 border">Azalır</td><td class="p-2 border">Değişmez</td></tr><tr><td class="p-2 border font-bold">Biri Patlarsa / Çıkarılırsa</td><td class="p-2 border">Devre kesilir, hepsi söner</td><td class="p-2 border">Diğerleri aynı parlaklıkta yanmaya devam eder</td></tr><tr><td class="p-2 border font-bold">Ölçü Aletleri</td><td class="p-2 border" colspan="2">Ampermetre <strong>seri</strong> bağlanır (İç direnci ~0); Voltmetre <strong>paralel</strong> bağlanır (İç direnci sonsuzdur).</td></tr></table>`,
-        tips: "Evlerimizdeki tüm priz ve aydınlatma armatürleri PARALEL bağlıdır; bir lamba kapandığında diğerlerinin sönmemesi bu sayededir.",
-        question: "Paralel bağlı özdeş ampullerden bir tanesi patlarsa diğer ampullerin parlaklığı nasıl değişir?\\nA) Söner\\nB) Parlaklığı artar\\nC) Değişmez (Doğru)\\nD) Yarıya iner"
-    },
-
-    // 8. SINIF (LGS)
-    "8-1": {
-        unitCode: "F.8.1",
-        title: "Mevsimler ve İklim",
-        summary: "Mevsimlerin oluşumunda iki temel faktör vardır: 1) Dünya'nın 23° 27' eksen eğikliği, 2) Güneş etrafında eliptik yörüngede dolanması. Dünya'nın Güneş'e olan mesafesinin mevsimlerin oluşumuyla hiçbir ilgisi yoktur! Işık dik geldikçe birim yüzeye düşen enerji artar, sıcaklık yükselir ve gölge boyu kısalır.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-rose-100 font-bold text-rose-900"><th class="p-2 border">Tarih</th><th class="p-2 border">Kuzey Yarım Küre</th><th class="p-2 border">Güney Yarım Küre</th><th class="p-2 border">Önemli Olay</th></tr><tr><td class="p-2 border font-bold">21 Haziran</td><td class="p-2 border">Yaz Başlangıcı (En uzun gündüz)</td><td class="p-2 border">Kış Başlangıcı (En uzun gece)</td><td class="p-2 border">Yengeç Dönencesi'ne dik gelir.</td></tr><tr><td class="p-2 border font-bold">21 Aralık</td><td class="p-2 border">Kış Başlangıcı (En uzun gece)</td><td class="p-2 border">Yaz Başlangıcı (En uzun gündüz)</td><td class="p-2 border">Oğlak Dönencesi'ne dik gelir.</td></tr><tr><td class="p-2 border font-bold">21 Mart / 23 Eylül</td><td class="p-2 border">İlkbahar / Sonbahar (Ekinoks)</td><td class="p-2 border">Sonbahar / İlkbahar (Ekinoks)</td><td class="p-2 border">Ekvator'a dik gelir. Dünyada 12 saat gece - 12 saat gündüz eşitliği.</td></tr></table>`,
-        tips: "Rüzgâr; Yüksek Basınç (soğuk, alçalıcı hava hareketi) alanından Alçak Basınç (sıcak, yükselici hava hareketi, bulut ve yağış ihtimali yüksek) alanına doğru yatay yönde gerçekleşir.",
-        question: "21 Haziran tarihinde Güney Yarım Küre'de bulunan bir gözlemci için hangisi doğrudur?\\nA) En uzun gündüz yaşanır\\nB) Kış mevsimi başlangıcıdır (Doğru)\\nC) Güneş ışınları dik açıyla gelir\\nD) Gölge boyu en kısadır"
-    },
-    "8-2": {
-        unitCode: "F.8.2",
-        title: "DNA ve Genetik Kod",
-        summary: "Karmaşıktan basite: Kromozom > DNA > Gen > Nükleotid (KEDİGENİ). DNA çift zincirli sarmal yapıdadır. Nükleotid = Fosfat + Deoksiriboz Şekeri + Organik Baz. Eşlenmede A karşısına T, G karşısına C gelir. Kalıtımda genotip (gen yapısı) ve fenotip (dış görünüş) çaprazlamalarla incelenir.",
-        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-indigo-50 border border-indigo-200 rounded-xl"><strong class="text-indigo-900 block mb-1">Mutasyon vs. Modifikasyon:</strong><p>• <strong>Mutasyon:</strong> Gen YAPISINDA bozulma (Radyasyon, kimyasal). Kalıtsaldır (üreme hücresindeyse). Örn: Van kedisi, albinoluk, 6 parmaklılık.</p><p>• <strong>Modifikasyon:</strong> Gen İŞLEYİŞİNDE değişim (Çevreye bağlı). Kalıtsal DEĞİLDİR. Örn: Çuha çiçeği, arı sütüyle beslenen kraliçe arı, kas yapma.</p></div><div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl"><strong class="text-emerald-900 block mb-1">Adaptasyon & Doğal Seçilim:</strong><p>• <strong>Adaptasyon:</strong> Yaşama ve üreme şansını artıran kalıtsal uyum (Kutup ayısının beyaz kürkü, kaktüsün diken yaprakları).</p><p>• <strong>Doğal Seçilim:</strong> Çevreye uyum sağlayanların hayatta kalıp diğerlerinin elenmesi.</p></div></div>`,
-        tips: "İki melez döl (Aa x Aa) çaprazlandığında fenotip oranı %75 Baskın, %25 Çekinik; Genotip oranı %25 Saf Baskın, %50 Melez, %25 Saf Çekinik çıkar.",
-        question: "Himalaya tavşanının sırtındaki beyaz kıllar kazınıp buz bağlandığında siyah kıl çıkması, bu kıllar tekrar kazındığında sıcakta yine beyaz çıkması neye örnektir?\\nA) Mutasyon\\nB) Modifikasyon (Doğru)\\nC) Adaptasyon\\nD) Biyoteknoloji"
-    },
-    "8-3": {
-        unitCode: "F.8.3",
-        title: "Basınç (Katı, Sıvı, Gaz)",
-        summary: "Birim yüzeye dik etki eden kuvvettir. Katı basıncı (P = G / S): Ağırlıkla doğru, yüzey alanıyla ters orantılıdır. Sıvı basıncı (P = h . d): Sıvı derinliği (h) ve yoğunluğu (d) ile doğru orantılıdır; kabın şekline ve sıvı hacmine bağlı değildir! Sıvılar sıkıştırılamaz ve basıncı her yöne aynen iletir (Pascal Prensibi).",
-        tablesHtml: `<div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs space-y-1.5"><strong class="text-blue-900 block">Basınç Formülleri & Pascal Prensibi Uygulamaları:</strong><p>• <strong>Katı Basıncı:</strong> P = Ağırlık / Taban Alanı (Bıçakların bilenmesi basıncı artırır; tır tekerleklerinin çokluğu basıncı azaltır).</p><p>• <strong>Sıvı Basıncı:</strong> P = Derinlik (h) x Yoğunluk (d) x Yerçekimi (g).</p><p>• <strong>Pascal Prensibi Uygulamaları:</strong> Su cenderesi, hidrolik fren, berber koltuğu, itfaiye merdiveni, damperli kamyonlar.</p><p>• <strong>Açık Hava Basıncı (P0):</strong> Torricelli deneyi (Deniz seviyesinde 0 °C'de 76 cm-Hg cıva yüksekliği). Yükseklere çıkıldıkça açık hava basıncı AZALIR.</p></div>`,
-        tips: "Sıvı basıncında derinlik daima sıvının EN ÜST AÇIK YÜZEYİNDEN ölçülür, kabın tabanından değil!",
-        question: "Aynı derinlikte su (d=1 g/cm³) ve zeytinyağı (d=0.9 g/cm³) bulunan kapların tabanındaki sıvı basınçları karşılaştırıldığında hangisi doğrudur?\\nA) Su basıncı daha büyüktür (Doğru)\\nB) Zeytinyağı basıncı daha büyüktür\\nC) Basınçlar eşittir\\nD) Kabın şekli bilinmeden söylenemez"
-    },
-    "8-4": {
-        unitCode: "F.8.4",
-        title: "Madde ve Endüstri",
-        summary: "Periyodik tablo artan atom numaralarına (proton sayısına) göre düzenlenmiştir (7 periyot, 18 grup). Kimyasal tepkimelerde KÜTLE HER ZAMAN KORUNUR; atom cinsi ve sayısı değişmez. Asitler pH 0-7, tatları ekşi, H+ iyonu verir; Bazlar pH 7-14, tatları acı, ele kayganlık verir, OH- iyonu verir.",
-        tablesHtml: `<table class="w-full text-xs text-left border-collapse"><tr class="bg-amber-100 font-bold text-amber-900"><th class="p-2 border">Özellik</th><th class="p-2 border">Asitler</th><th class="p-2 border">Bazlar</th></tr><tr><td class="p-2 border font-bold">pH Değeri</td><td class="p-2 border">0 - 7 arası (0'a yaklaştıkça kuvvetlenir)</td><td class="p-2 border">7 - 14 arası (14'e yaklaştıkça kuvvetlenir)</td></tr><tr><td class="p-2 border font-bold">Turnusol Kağıdı</td><td class="p-2 border">Maviyi <strong>KIRMIZIYA</strong> çevirir</td><td class="p-2 border">Kırmızıyı <strong>MAVİYE</strong> çevirir</td></tr><tr><td class="p-2 border font-bold">Etkilediği Yüzey</td><td class="p-2 border">Metallerle H2 gazı çıkarır, mermeri aşındırır</td><td class="p-2 border">Cam ve porselen eşyaları matlaştırır/aşındırır</td></tr></table>`,
-        tips: "Özısı (c) saf maddeler için ayırt edici özelliktir. Özısısı KÜÇÜK olan madde çabuk ısınır ve çabuk soğur; özısısı BÜYÜK olan madde geç ısınır ve geç soğur!",
-        question: "pH değeri 2 olan bir çözelti için aşağıdakilerden hangisi doğrudur?\\nA) Ele kayganlık hissi verir\\nB) Kuvvetli bir asittir ve metalleri aşındırır (Doğru)\\nC) Kırmızı turnusolu maviye çevirir\\nD) Tatları acıdır"
-    },
-    "8-5": {
-        unitCode: "F.8.5",
-        title: "Basit Makineler",
-        summary: "Basit makineler hiçbir zaman İŞTEN VE ENERJİDEN KAZANÇ SAĞLAMAZ! Sadece iş kolaylığı sağlar. Kuvvetten kazanç varsa yoldan aynı oranda kayıp vardır. Kuvvet Kazancı = Yük / Kuvvet = Kuvvet Kolu / Yük Kolu. Kuvvet kolu yük kolundan büyükse daima kuvvet kazancı vardır.",
-        tablesHtml: `<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs"><div class="p-3 bg-red-50 border border-red-200 rounded-xl"><strong class="text-red-700 block mb-1">Daima Kuvvetten Kazanç Sağlayanlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Eğik Düzlem (Boyu / Yüksekliği > 1)</li><li>Hareketli Makara (2 kat kazanç)</li><li>Yükün ortada olduğu kaldıraç (El arabası, ceviz kıracağı)</li><li>Çıkrık (R > r)</li><li>Vida</li></ul></div><div class="p-3 bg-blue-50 border border-blue-200 rounded-xl"><strong class="text-blue-700 block mb-1">Kuvvetten Kayıp (Yoldan Kazanç) Olanlar:</strong><ul class="list-disc list-inside space-y-1 text-slate-700"><li>Kuvvetin ortada olduğu kaldıraç (Cımbız, maşa, olta, kürek)</li><li>Sabit makara (Kazanç yoktur, yön değiştirir)</li><li>Eşit kollu kaldıraç (Tahterevalli - kazanç yok)</li></ul></div></div>`,
-        tips: "Eğik düzlemin boyu (L) artırılırsa veya yüksekliği (h) azaltılırsa kuvvet kazancı artar, cismi yukarı çıkarmak için daha küçük kuvvet gerekir.",
-        question: "Basit makinelerle ilgili aşağıdaki ifadelerden hangisi kesinlikle YANLIŞTIR?\\nA) İş yapma kolaylığı sağlarlar\\nB) İşten ve enerjiden kazanç sağlarlar (Doğru - Yanlış ifade)\\nC) Kuvvetin yönünü değiştirebilirler\\nD) Kuvvetten kazanç varsa yoldan kayıp vardır"
-    },
-    "8-6": {
-        unitCode: "F.8.6",
-        title: "Enerji Dönüşümleri ve Çevre Bilimi",
-        summary: "Besin zinciri üreticilerle başlar. Ekosistemde enerji akışı üreticiden tüketiciye doğru tek yönlüdür ve her basamakta enerjinin yaklaşık %10'u bir üst basamağa aktarılır. Fotosentez: Işık enerjisi ile besin ve oksijen üretimidir. Solunum: Besinlerin parçalanarak ATP enerjisi üretilmesidir.",
-        tablesHtml: `<div class="p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs space-y-1.5"><strong class="text-emerald-900 block">Besin Piramidinde Aşağıdan Yukarıya Çıkıldıkça:</strong><p>• Aktarılan enerji miktarı <strong>AZALIR</strong> (%10 kuralı).</p><p>• Toplam biyokütle ve birey sayısı <strong>AZALIR</strong>.</p><p>• Biyolojik birikim (zehirli kimyasal madde miktarı) <strong>ARTAR</strong>.</p><p>• Canlıların vücut büyüklüğü genellikle <strong>ARTAR</strong>.</p></div>`,
-        tips: "Fotosentez hızı yeşil ışıkta EN YAVAŞ (çünkü yeşil klorofil tarafından yansıtılır), mor ve kırmızı ışıkta EN HIZLIDIR!",
-        question: "Bir besin piramidinde üreticiden son tüketiciye doğru gidildikçe aşağıdakilerden hangisi ARTAR?\\nA) Biyolojik birikim (zehir miktarı) (Doğru)\\nB) Aktarılan enerji miktarı\\nC) Toplam canlı kütlesi\\nD) Birey sayısı"
-    },
-    "8-7": {
-        unitCode: "F.8.7",
-        title: "Elektrik Yükleri ve Elektrik Enerjisi",
-        summary: "Cisimler sürtünme, dokunma ve etki ile elektriklenir. Aynı yükler birbirini iter (+ +, - -), zıt yükler birbirini çeker (+ -). Nötr cisimler pozitif ve negatif yük sayıları eşit olan cisimlerdir; yüksüz demek değildir! Yüklü cisimler nötr cisimleri çeker. Topraklama cisimleri nötr yapar.",
-        tablesHtml: `<div class="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs space-y-1.5"><strong class="text-purple-900 block">Elektriklenme Türleri & Topraklama:</strong><p>• <strong>Ebonit (Plastik) Çubuk - Yün Kumaş:</strong> Ebonit çubuk (-) negatif, yün kumaş (+) pozitif yüklenir.</p><p>• <strong>Cam Çubuk - İpek Kumaş:</strong> Cam çubuk (+) pozitif, ipek kumaş (-) negatif yüklenir.</p><p>• <strong>Topraklama:</strong> Cisim ile yer arasında elektron alışverişi yapılarak cismin nötrlenmesidir. (-) yüklü cisimden toprağa elektron akar; (+) yüklü cisme topraktan elektron gelir.</p></div>`,
-        tips: "Elektriklenmede SADECE elektronlar (negatif yükler) hareket eder! Protonlar (pozitif yükler) çekirdekte bağlı olduğu için ASLA hareket etmez!",
-        question: "İpek kumaşa sürtülen bir cam çubuğun yük durumu aşağıdakilerden hangisidir?\\nA) Cam çubuk (+) pozitif yüklenir (Doğru)\\nB) Cam çubuk (-) negatif yüklenir\\nC) Cam çubuk nötr kalır\\nD) İpek kumaş (+) pozitif yüklenir"
-    }
-};
-
-let currentStudyNoteZoom = 1.0;
-
-async function openUnitStudyNoteModal(gradeNum, unitId, unitTitle, unitSubtitle, fileUrl, fileName) {
-    // 1. Eğer bu ünitenin yüklenmiş bir PDF/doküman dosyası varsa (IndexedDB, Blob veya URL), doğrudan okuyucuda aç!
-    let hasUploadedFile = false;
-    let targetFileUrl = (fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") ? fileUrl : "";
-    let targetFileName = fileName || (unitTitle + ".pdf");
-
-    if (targetFileUrl) {
-        hasUploadedFile = true;
-    } else {
-        try {
-            if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
-                let rec = await RotaliDB.getFile(unitId);
-                if (!rec || !rec.blob) {
-                    rec = await RotaliDB.findFileByTitleOrName(unitTitle, targetFileName);
-                }
-                if (rec && rec.blob) {
-                    hasUploadedFile = true;
-                    targetFileUrl = URL.createObjectURL(rec.blob);
-                    targetFileName = rec.fileName || targetFileName;
-                }
-            }
-        } catch(e) {}
-    }
-
-    if (hasUploadedFile) {
-        openOrDownloadMaterial(unitId, targetFileUrl, targetFileName, "ders-notu", unitTitle);
-        return;
-    }
-
-    // 2. ID'ye göre veya unit indeksine göre ders notu içeriğini çek
-    const g = String(gradeNum).replace(/^grade-/, "").trim();
-    let noteKey = "";
-    
-    // unitId 'not-5-1' veya benzeri ise parçala
-    const match = String(unitId).match(/(?:not-)?(\d+)[-_](\d+)/);
-    if (match) {
-        noteKey = `${match[1]}-${match[2]}`;
-    } else {
-        // unitTitle üzerinden indeks bul
-        const unitNumMatch = String(unitTitle).match(/(\d+)\.\s*Ünite/i);
-        const uIdx = unitNumMatch ? unitNumMatch[1] : "1";
-        noteKey = `${g}-${uIdx}`;
-    }
-
-    const note = UNIT_STUDY_NOTES[noteKey] || UNIT_STUDY_NOTES[`${g}-1`] || {
-        unitCode: `F.${g}`,
-        title: unitTitle,
-        summary: "Bu ünite için MEB 2026-2027 müfredatına uygun konu özetleri, kavram haritaları ve soru çözümleri hazırlanmaktadır.",
-        tablesHtml: "<p class='text-xs text-slate-500'>Kavram tablosu hazırlanıyor...</p>",
-        tips: "Ders notlarını düzenli tekrar etmek ve ünite sonundaki değerlendirme sorularını çözmek başarıyı artırır.",
-        question: "MEB kazanımlarına uygun çalışma föyleri ve ders notları tamamlanmaktadır."
-    };
-
-    currentStudyNoteZoom = 1.0;
-    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-
-    let modal = document.getElementById("unit-study-note-modal");
-    if (!modal) {
-        modal = document.createElement("div");
-        modal.id = "unit-study-note-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-200 select-none";
-        modal.onclick = function(e) {
-            if (e.target === this) closeUnitStudyNoteModal();
-        };
-        document.addEventListener('keydown', function handleStudyNoteKey(e) {
-            if (e.key === 'Escape' && document.getElementById('unit-study-note-modal')) {
-                closeUnitStudyNoteModal();
-                document.removeEventListener('keydown', handleStudyNoteKey);
-            }
-        });
-        document.body.appendChild(modal);
-    }
-
-    modal.innerHTML = `
-        <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[94vh] border border-slate-200 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-            <!-- Üst Kontrol Barı -->
-            <div class="px-4 sm:px-6 py-3 bg-slate-900 text-white flex items-center justify-between gap-2 border-b border-slate-800 shrink-0">
-                <div class="flex items-center gap-2.5 min-w-0">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
-                        <i class="fa-solid fa-file-lines"></i>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="text-xs sm:text-sm font-black truncate max-w-[150px] sm:max-w-md text-white">${unitTitle}</h3>
-                        <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
-                            <span class="px-1.5 py-0.2 rounded bg-slate-800 text-red-400 border border-slate-700">${g}. SINIF MEB</span>
-                            <span>${note.unitCode || 'F.' + g}</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sağ Toolbar (Büyüt / Küçült / Yazdır / Kapat) -->
-                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-                    <div class="flex items-center gap-1 bg-slate-800 p-0.5 rounded-xl border border-slate-700">
-                        <button type="button" onclick="changeStudyNoteZoom(-0.15)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Küçült (-)">
-                            <i class="fa-solid fa-minus"></i>
-                        </button>
-                        <span id="study-note-zoom-text" class="px-1.5 text-[11px] font-black text-amber-400 min-w-[40px] text-center">%100</span>
-                        <button type="button" onclick="changeStudyNoteZoom(0.15)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Büyüt (+)">
-                            <i class="fa-solid fa-plus"></i>
-                        </button>
-                    </div>
-
-                    <button type="button" onclick="window.print()" class="hidden sm:flex px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-xl text-xs font-bold items-center gap-1.5 border border-slate-700 transition-colors cursor-pointer" title="Bu Ders Notunu Yazdır / PDF Kaydet">
-                        <i class="fa-solid fa-print"></i> <span>Yazdır</span>
-                    </button>
-
-                    ${isAdmin ? `
-                        <button type="button" onclick="triggerEditFoy('${g}', '${unitId}', '${unitTitle.replace(/'/g, "\\\\'")}', '${(unitSubtitle || '').replace(/'/g, "\\\\'")}')" class="px-2.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-colors cursor-pointer" title="Bu Üniteye Özel PDF Föyü Dosyası Yükle">
-                            <i class="fa-solid fa-pen-to-square"></i> <span class="hidden md:inline">Dosya Yükle</span>
-                        </button>
-                    ` : ''}
-
-                    <button type="button" onclick="closeUnitStudyNoteModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all cursor-pointer" title="Kapat (ESC)">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Orta Not Okuma Alanı (Ders Kitabı ve Görseller Gibi Net, Büyütülebilir ve Kaydırılabilir) -->
-            <div id="study-note-scroll-container" class="flex-1 overflow-y-auto p-4 sm:p-8 bg-slate-100/70 select-text">
-                <div id="study-note-zoom-wrapper" class="max-w-3xl mx-auto bg-white rounded-3xl p-6 sm:p-10 shadow-lg border border-slate-200 transition-transform duration-100 ease-out origin-top space-y-6">
-                    
-                    <!-- Başlık & Rozet -->
-                    <div class="border-b-2 border-slate-100 pb-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-black uppercase tracking-wider border border-red-200">
-                                📖 MEB 2026-2027 Ders Notu & Kazanım Rehberi
-                            </span>
-                            <span class="text-xs font-bold text-slate-400">${unitSubtitle || g + '. Sınıf Fen Bilimleri'}</span>
-                        </div>
-                        <h2 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight">${unitTitle}</h2>
-                    </div>
-
-                    <!-- 1. Kazanım & Konu Özeti -->
-                    <div class="bg-gradient-to-r from-red-50/70 to-rose-50/70 border-l-4 border-red-600 p-4 sm:p-5 rounded-r-2xl">
-                        <h4 class="font-black text-red-900 text-sm sm:text-base mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-bullseye text-red-600"></i> 1. Ünite Kazanım & Kavram Özeti
-                        </h4>
-                        <p class="text-xs sm:text-sm text-slate-800 leading-relaxed font-medium">
-                            ${note.summary}
-                        </p>
-                    </div>
-
-                    <!-- 2. Kavram Tabloları & Karşılaştırmalar -->
-                    <div class="space-y-3">
-                        <h4 class="font-black text-slate-900 text-sm sm:text-base flex items-center gap-2">
-                            <i class="fa-solid fa-table-columns text-blue-600"></i> 2. Kavram Tablosu & Kritik Bilgiler
-                        </h4>
-                        <div class="bg-slate-50 p-4 sm:p-5 rounded-2xl border border-slate-200 overflow-x-auto">
-                            ${note.tablesHtml}
-                        </div>
-                    </div>
-
-                    <!-- 3. Püf Noktalar & Sınav İpuçları -->
-                    <div class="bg-amber-50 border border-amber-200/90 p-4 sm:p-5 rounded-2xl">
-                        <h4 class="font-black text-amber-900 text-sm sm:text-base mb-2 flex items-center gap-2">
-                            <i class="fa-solid fa-lightbulb text-amber-600"></i> 3. Dikkat Edilecek Püf Noktalar & Sınav İpuçları
-                        </h4>
-                        <p class="text-xs sm:text-sm text-amber-950 leading-relaxed font-semibold">
-                            ⚠️ ${note.tips}
-                        </p>
-                    </div>
-
-                    <!-- 4. Örnek Pekiştirme Sorusu -->
-                    <div class="bg-emerald-50/80 border border-emerald-200 p-4 sm:p-5 rounded-2xl space-y-2">
-                        <h4 class="font-black text-emerald-900 text-sm sm:text-base flex items-center gap-2">
-                            <i class="fa-solid fa-circle-question text-emerald-600"></i> 4. Örnek Pekiştirme Sorusu
-                        </h4>
-                        <div class="text-xs sm:text-sm text-slate-800 font-medium whitespace-pre-line leading-relaxed pl-2 border-l-2 border-emerald-400">
-                            ${note.question}
-                        </div>
-                    </div>
-
-                    <!-- Alt Bilgilendirme & Yazdır -->
-                    <div class="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
-                        <span>Rotalı Fenci • MEB Fen Bilimleri Dijital Ders Platformu</span>
-                        <button type="button" onclick="window.print()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl transition-all flex items-center gap-2 cursor-pointer shadow-sm">
-                            <i class="fa-solid fa-print"></i> A4 Formatında Yazdır / PDF İndir
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-
-    modal.style.display = "flex";
-    modal.classList.remove("hidden");
-}
-
-function changeStudyNoteZoom(delta) {
-    currentStudyNoteZoom = Math.min(2.0, Math.max(0.7, parseFloat((currentStudyNoteZoom + delta).toFixed(2))));
-    const wrapper = document.getElementById("study-note-zoom-wrapper");
-    const textEl = document.getElementById("study-note-zoom-text");
-    if (wrapper) wrapper.style.transform = `scale(${currentStudyNoteZoom})`;
-    if (textEl) textEl.innerText = `%${Math.round(currentStudyNoteZoom * 100)}`;
-}
-
-function closeUnitStudyNoteModal() {
-    const modal = document.getElementById("unit-study-note-modal");
+    const modal = document.getElementById("digital-book-modal");
     if (modal) {
         modal.innerHTML = "";
         modal.remove();
