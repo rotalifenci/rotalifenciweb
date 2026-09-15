@@ -109,6 +109,7 @@ const CloudSyncManager = {
         try {
             const deletedIds = new Set(getDeletedMaterialIds());
             deletedIds.add("mat-5-unite-bilgi");
+    deletedIds.add("mat-5-lab-guvenlik-gorsel");
 
             // 1. Buluttaki en güncel materyalleri çek
             let cloudMaterials = [];
@@ -183,6 +184,7 @@ const CloudSyncManager = {
             });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
             activeDeletedSet.add("mat-5-unite-bilgi");
+            activeDeletedSet.add("mat-5-lab-guvenlik-gorsel");
 
             // 2. Cihazdaki yerel materyalleri al (Bellek öncelikli)
             let localMaterials = [];
@@ -241,9 +243,9 @@ const CloudSyncManager = {
                 showToast(`✅ Eşitleme başarılı! ${finalMergedList.length} materyal tüm cihazlarda aktif.`, "success");
             }
 
-            // Sayfadaki arayüzü anında güncelle (Telefondan yüklenenler masaüstünde anında belirir)
+            // Sayfadaki arayüzü anında güncelle (Kullanıcı aşağı kaydırmışsa yukarı sıçratma)
             if (typeof handleRouteChange === "function") {
-                handleRouteChange();
+                handleRouteChange({ preserveScroll: true });
             }
         } catch(err) {
             console.error("Cloud sync general error:", err);
@@ -326,24 +328,6 @@ const CloudSyncManager = {
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
-        id: "mat-5-lab-guvenlik-gorsel",
-        grade: "5",
-        category: "ders-notu",
-        categoryAlt: "ders-sunumu",
-        title: "Laboratuvar Güvenliği Görseli",
-        unit: "1. Ünite",
-        desc: "Laboratuvar kuralları ve 8 temel güvenlik işaretini gösteren detaylı, renkli infografik görseli.",
-        fileName: "lab-guvenligi.svg",
-        fileUrl: "assets/lab-guvenligi.svg",
-        imageUrl: "assets/lab-guvenligi.svg",
-        format: "GÖRSEL / İNFOGRAFİK",
-        hasBlob: false,
-        tags: ["Güvenlik", "Görsel", "Laboratuvar", "Semboller"],
-        visibility: "public",
-        downloadCount: "1.850+",
-        createdAt: "Bugün"
-    },
-    {
         id: "mat-5-lab-oyun-1",
         grade: "5",
         category: "egitsel-oyunlar",
@@ -422,6 +406,7 @@ function getCustomMaterialsList() {
     let customList = [];
     const deletedIds = new Set(getDeletedMaterialIds());
     deletedIds.add("mat-5-unite-bilgi");
+    deletedIds.add("mat-5-lab-guvenlik-gorsel");
 
     try {
         const stored = localStorage.getItem("rotali_custom_materials");
@@ -523,18 +508,27 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 ${items.map(item => {
-                    // Görsel URL çözümleme
+                    // Görsel & Kapak Çözümleme
                     let validImgUrl = "";
-                    const rawImg = item.imageUrl || "";
-                    const rawFile = item.fileUrl || "";
+                    const rawImg = (item.imageUrl || "").trim();
+                    const rawFile = (item.fileUrl || "").trim();
+                    const lowerTitle = (item.title || "").toLocaleLowerCase("tr-TR");
+                    const itemGrade = String(item.grade || gradeNumber || "5").replace(/^grade-/, "").trim();
 
-                    if (rawImg && rawImg !== "#" && rawImg !== "null") {
+                    if (rawImg && rawImg !== "#" && rawImg !== "null" && !rawImg.includes("cdn.eba.gov.tr")) {
                         validImgUrl = rawImg;
-                    } else if (rawFile && rawFile !== "#" && rawFile !== "null" && (rawFile.startsWith("data:image") || rawFile.startsWith("http") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp") || rawFile.startsWith("assets/"))) {
+                    } else if (rawFile && rawFile !== "#" && rawFile !== "null" && !rawFile.includes("cdn.eba.gov.tr") && (rawFile.startsWith("data:image") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp") || rawFile.startsWith("assets/"))) {
                         validImgUrl = rawFile;
-                    } else if (item.title && (item.title.toLowerCase().includes("ünite") || item.title.toLowerCase().includes("üniteler")) && (item.title.toLowerCase().includes("bilgi") || item.title.toLowerCase().includes("işlenecek"))) {
+                    } else if (lowerTitle.includes("kitap") || lowerTitle.includes("kitab")) {
+                        // 📚 Tüm sınıflar için otomatik MEB Fen Bilimleri Ders Kitabı Kapak Görseli
+                        if (["5", "6", "7", "8"].includes(itemGrade)) {
+                            validImgUrl = `assets/ders-kitabi-${itemGrade}.svg`;
+                        } else {
+                            validImgUrl = "assets/ders-kitabi.svg";
+                        }
+                    } else if ((lowerTitle.includes("ünite") || lowerTitle.includes("üniteler")) && (lowerTitle.includes("bilgi") || lowerTitle.includes("işlenecek"))) {
                         validImgUrl = "assets/unite-bilgilendirmeleri-gorsel.png";
-                    } else if (item.title && item.title.toLowerCase().includes("laboratuvar") && (item.title.toLowerCase().includes("güvenli") || item.title.toLowerCase().includes("kural")) && !item.title.toLowerCase().includes("video") && !item.title.toLowerCase().includes("oyun")) {
+                    } else if (lowerTitle.includes("laboratuvar") && (lowerTitle.includes("güvenli") || lowerTitle.includes("kural")) && !lowerTitle.includes("video") && !lowerTitle.includes("oyun")) {
                         validImgUrl = "assets/lab-guvenligi.svg";
                     }
 
@@ -596,11 +590,17 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                 </button>
 
                                 ${isAdmin ? `
-                                    <div class="flex items-center gap-2 mt-1">
-                                        <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5">
+                                    <div class="flex items-center gap-1.5 mt-2">
+                                        <button type="button" onclick="moveCustomMaterial('${item.id}', -1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Yukarı Taşı">
+                                            <i class="fa-solid fa-arrow-up"></i>
+                                        </button>
+                                        <button type="button" onclick="moveCustomMaterial('${item.id}', 1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Aşağı Taşı">
+                                            <i class="fa-solid fa-arrow-down"></i>
+                                        </button>
+                                        <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
                                             <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                         </button>
-                                        <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5">
+                                        <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="py-1.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
                                             <i class="fa-solid fa-trash-can"></i> Sil
                                         </button>
                                     </div>
@@ -912,14 +912,16 @@ function showToast(message, type = "success") {
 // -------------------------------------------------------------
 // DİNAMİK PORTAL ROUTER
 // -------------------------------------------------------------
-function handleRouteChange() {
+function handleRouteChange(options = {}) {
     updateAdminNavUI();
     const rawHash = window.location.hash.slice(1);
     const hash = rawHash || "home";
     const appEl = document.getElementById("app");
     if (!appEl) return;
 
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    if (!options || !options.preserveScroll) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     if (hash === "home" || hash === "") {
         renderHomePage(appEl);
@@ -4816,6 +4818,28 @@ function closeMaterialUploadModal() {
 }
 
 // Materyal Silme
+
+// Materyalin Sırasını Değiştirme (Yukarı / Aşağı Taşıma)
+async function moveCustomMaterial(id, direction) {
+    if (!checkAdminAccess()) return;
+    let customList = getCustomMaterialsList();
+    const idx = customList.findIndex(m => m.id === id);
+    if (idx === -1) return;
+    const targetIdx = idx + direction;
+    if (targetIdx < 0 || targetIdx >= customList.length) return;
+
+    const itemToMove = customList.splice(idx, 1)[0];
+    customList.splice(targetIdx, 0, itemToMove);
+
+    saveCustomMaterialsSafe(customList);
+    showToast("↕️ Materyalin konumu ve sırası güncellendi.", "info");
+
+    if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+        await CloudSyncManager.uploadToCloud(customList, true);
+    }
+    handleRouteChange({ preserveScroll: true });
+}
+
 async function deleteCustomMaterial(id) {
     if (!checkAdminAccess()) return;
     if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
@@ -4845,13 +4869,14 @@ async function deleteCustomMaterial(id) {
 // Materyal Düzenleme & Taşıma
 function editCustomMaterial(id) {
     if (!checkAdminAccess()) return;
-    const customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+    const customList = getCustomMaterialsList();
     const mat = customList.find(item => item.id === id);
     if (!mat) {
         showToast("Materyal bulunamadı!", "error");
         return;
     }
-    openMaterialUploadModal(mat.grade || "8", mat.category || "ders-notu", mat);
+    const cleanGrade = String(mat.grade || "8").replace(/^grade-/, "");
+    openMaterialUploadModal(cleanGrade, mat.category || "ders-notu", mat);
 }
 
 // Materyal Açma / Görüntüleme & Oynatma (İndirme Olmadan Sayfa İçi Önizleme & Oynatıcı)
@@ -6000,7 +6025,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     }
 
     currentUploadedFile = null;
-    currentTagsList = editMaterial && editMaterial.tags ? [...editMaterial.tags] : ["MEB 2026-2027"];
+    currentTagsList = editMaterial && editMaterial.tags ? [...editMaterial.tags] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"];
+    const targetGradeClean = editMaterial ? String(editMaterial.grade || "").replace(/^grade-/, "") : String(prefillGrade || "8").replace(/^grade-/, "");
     const isEditing = !!editMaterial;
     if (editMaterial) editingMaterialId = editMaterial.id;
     else editingMaterialId = null;
@@ -6044,10 +6070,10 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
                             <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="8" ${(isEditing ? editMaterial.grade === '8' : prefillGrade === '8') ? 'selected' : ''}>8. Sınıf & LGS</option>
-                                <option value="7" ${(isEditing ? editMaterial.grade === '7' : prefillGrade === '7') ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
-                                <option value="6" ${(isEditing ? editMaterial.grade === '6' : prefillGrade === '6') ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
-                                <option value="5" ${(isEditing ? editMaterial.grade === '5' : prefillGrade === '5') ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
+                                <option value="8" ${targetGradeClean === '8' ? 'selected' : ''}>8. Sınıf & LGS</option>
+                                <option value="7" ${targetGradeClean === '7' ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
+                                <option value="6" ${targetGradeClean === '6' ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
+                                <option value="5" ${targetGradeClean === '5' ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
                                 <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
                             </select>
                         </div>
@@ -6451,12 +6477,7 @@ async function handleAdvMaterialSubmit(e) {
     }
 
     try {
-        let customList = [];
-        try {
-            customList = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-        } catch (err) {
-            customList = [];
-        }
+        let customList = getCustomMaterialsList();
 
         const materialId = editingMaterialId || `mat-${Date.now()}`;
         let fileFormat = "PDF";
@@ -6505,14 +6526,14 @@ async function handleAdvMaterialSubmit(e) {
             if (idx !== -1) {
                 customList[idx] = {
                     ...customList[idx],
-                    grade: grade,
+                    grade: String(grade).replace(/^grade-/, ""),
                     category: category,
                     title: title,
                     unit: unit,
                     desc: desc,
                     fileName: currentUploadedFile ? finalFileName : customList[idx].fileName,
-                    fileUrl: externalUrl || customList[idx].fileUrl || "#",
-                    imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : "",
+                    fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
+                    imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : (customList[idx].imageUrl || ""),
                     format: fileFormat || customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
@@ -6534,7 +6555,7 @@ async function handleAdvMaterialSubmit(e) {
                 imageUrl: (externalUrl && !externalUrl.startsWith("data:")) ? externalUrl : "", // Çift base64 depolamayı önle
                 format: fileFormat,
                 hasBlob: hasBlob,
-                tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["MEB 2026-2027"],
+                tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
                 visibility: visibility,
                 downloadCount: "Yeni",
                 createdAt: new Date().toLocaleDateString("tr-TR")
@@ -6551,7 +6572,7 @@ async function handleAdvMaterialSubmit(e) {
         }
 
         if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-            await CloudSyncManager.uploadToCloud(customList, false);
+            await CloudSyncManager.uploadToCloud(customList, true);
         }
 
         showToast(`🎉 "${title}" başarıyla kaydedildi ve tüm cihazlara yayınlandı!`, "success");

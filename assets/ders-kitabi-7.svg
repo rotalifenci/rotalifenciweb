@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 850" width="100%" height="100%">
+  <defs>
+    <linearGradient id="grad-7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7c2d12"/>
+      <stop offset="100%" stop-color="#ea580c"/>
+    </linearGradient>
+    <linearGradient id="spine" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="rgba(0,0,0,0.45)"/>
+      <stop offset="10%" stop-color="rgba(255,255,255,0.18)"/>
+      <stop offset="20%" stop-color="rgba(0,0,0,0.12)"/>
+      <stop offset="100%" stop-color="rgba(0,0,0,0)"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-opacity="0.35"/>
+    </filter>
+  </defs>
+
+  <!-- Arka Plan -->
+  <rect width="600" height="850" rx="24" fill="url(#grad-7)"/>
+
+  <!-- Kitap Sirti Efekti -->
+  <rect width="36" height="850" rx="24" fill="url(#spine)"/>
+  <line x1="36" y1="0" x2="36" y2="850" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"/>
+
+  <!-- Modern Geometrik Cizgiler -->
+  <circle cx="500" cy="150" r="220" fill="white" fill-opacity="0.06"/>
+  <circle cx="100" cy="700" r="260" fill="white" fill-opacity="0.04"/>
+  <circle cx="550" cy="600" r="180" fill="#fb923c" fill-opacity="0.1"/>
+
+  <!-- MEB Bandi -->
+  <g transform="translate(70, 50)">
+    <rect x="0" y="0" width="460" height="46" rx="12" fill="rgba(0,0,0,0.25)" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>
+    <text x="230" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="900" fill="#ffffff" letter-spacing="2" text-anchor="middle">T.C. MİLLÎ EĞİTİM BAKANLIĞI</text>
+  </g>
+
+  <!-- Sinif Rozeti -->
+  <g transform="translate(430, 130)" filter="url(#shadow)">
+    <circle cx="55" cy="55" r="55" fill="#fb923c"/>
+    <circle cx="55" cy="55" r="48" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="6 4"/>
+    <text x="55" y="66" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="46" font-weight="900" fill="#0f172a" text-anchor="middle">7</text>
+    <text x="55" y="86" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="900" fill="#0f172a" letter-spacing="1" text-anchor="middle">SINIF</text>
+  </g>
+
+  <!-- Seviye Basligi -->
+  <text x="75" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="800" fill="#fb923c" letter-spacing="2">ORTAOKUL VE İMAM HATİP ORTAOKULU</text>
+
+  <!-- Ana Kitap Basligi -->
+  <text x="75" y="240" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" fill="#ffffff" letter-spacing="1">FEN</text>
+  <text x="75" y="300" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="52" font-weight="900" fill="#ffffff" letter-spacing="1">BİLİMLERİ</text>
+  
+  <rect x="75" y="325" width="130" height="6" rx="3" fill="#fb923c"/>
+
+  <text x="75" y="365" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="26" font-weight="900" fill="#ffffff" fill-opacity="0.95" letter-spacing="4">DERS KİTABI</text>
+  <text x="75" y="395" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" fill="#ffffff" fill-opacity="0.75">MEB 2026 - 2027 GÜNCEL MÜFREDAT</text>
+
+  <!-- Fen Illustrasyonu (Atom & Bilim Ikonu) -->
+  <g transform="translate(300, 540)" filter="url(#shadow)">
+    <circle cx="0" cy="0" r="24" fill="#fb923c"/>
+    <ellipse cx="0" cy="0" rx="115" ry="42" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-opacity="0.85" transform="rotate(30)"/>
+    <ellipse cx="0" cy="0" rx="115" ry="42" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-opacity="0.85" transform="rotate(-30)"/>
+    <ellipse cx="0" cy="0" rx="115" ry="42" fill="none" stroke="#ffffff" stroke-width="3.5" stroke-opacity="0.85" transform="rotate(90)"/>
+    <circle cx="85" cy="-48" r="9" fill="#fb923c"/>
+    <circle cx="-85" cy="48" r="9" fill="#fb923c"/>
+    <circle cx="0" cy="115" r="9" fill="#ffffff"/>
+  </g>
+
+  <!-- Alt Bilgi Kutusu -->
+  <g transform="translate(70, 720)">
+    <rect x="0" y="0" width="460" height="65" rx="16" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.15)" stroke-width="1.5"/>
+    <text x="230" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="900" fill="#fb923c" letter-spacing="2" text-anchor="middle">DEVLET KİTAPLARI</text>
+    <text x="230" y="52" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="700" fill="#ffffff" fill-opacity="0.9" letter-spacing="1" text-anchor="middle">ROTALI FENCİ DİJİTAL KÜTÜPHANESİ</text>
+  </g>
+</svg>
