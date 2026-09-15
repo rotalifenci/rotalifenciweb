@@ -374,6 +374,74 @@ const DEFAULT_CUSTOM_MATERIALS = [
         visibility: "public",
         downloadCount: "3.480+",
         createdAt: "Yeni Yayınlandı"
+    },
+    {
+        id: "mat-1789495187673",
+        grade: "5",
+        category: "ders-notu",
+        title: "5.Sınıf Fen Bilimleri Ders Kitabı-1",
+        unit: "5. Sınıf Fen Bilimleri",
+        desc: "Milli Eğitim Bakanlığı 5. Sınıf Fen Bilimleri Ders Kitabı 1. Kitap (MEB 2026-2027 Müfredatı).",
+        fileName: "fenbilimleri5-1.pdf",
+        fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf",
+        imageUrl: "assets/ders-kitabi-5.svg",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "derskitabı", "fenbilimleri", "ortaokul"],
+        visibility: "public",
+        downloadCount: "5.100+",
+        createdAt: "15.09.2026"
+    },
+    {
+        id: "mat-1789495365682",
+        grade: "6",
+        category: "ders-notu",
+        title: "6.Sınıf Fen Bilimleri Ders Kitabı-1",
+        unit: "6. Sınıf Fen Bilimleri",
+        desc: "Milli Eğitim Bakanlığı 6. Sınıf Fen Bilimleri Ders Kitabı 1. Kitap (MEB 2026-2027 Müfredatı).",
+        fileName: "fenbilimleri6-1.pdf",
+        fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf",
+        imageUrl: "assets/ders-kitabi-6.svg",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "fenbilimleri", "derskitabı", "ortaokul"],
+        visibility: "public",
+        downloadCount: "4.800+",
+        createdAt: "15.09.2026"
+    },
+    {
+        id: "mat-1789495424636",
+        grade: "7",
+        category: "ders-notu",
+        title: "7.Sınıf Fen Bilimleri Ders Kitabı-1",
+        unit: "7. Sınıf Fen Bilimleri",
+        desc: "Milli Eğitim Bakanlığı 7. Sınıf Fen Bilimleri Ders Kitabı 1. Kitap (MEB 2026-2027 Müfredatı).",
+        fileName: "fenbilimleri7-1.pdf",
+        fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri7-1.pdf",
+        imageUrl: "assets/ders-kitabi-7.svg",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "fenbilimleri", "derskitabı", "ortaokul"],
+        visibility: "public",
+        downloadCount: "4.200+",
+        createdAt: "15.09.2026"
+    },
+    {
+        id: "mat-8-ders-kitabi-1",
+        grade: "8",
+        category: "ders-notu",
+        title: "8.Sınıf Fen Bilimleri Ders Kitabı-1",
+        unit: "8. Sınıf Fen Bilimleri (LGS)",
+        desc: "Milli Eğitim Bakanlığı 8. Sınıf Fen Bilimleri Ders Kitabı (MEB 2026-2027 Müfredatı & LGS Hazırlık).",
+        fileName: "fenbilimleri8-1.pdf",
+        fileUrl: "#",
+        imageUrl: "assets/ders-kitabi-8.svg",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "fenbilimleri", "derskitabı", "LGS", "ortaokul"],
+        visibility: "public",
+        downloadCount: "6.900+",
+        createdAt: "15.09.2026"
     }
 ];
 
@@ -564,7 +632,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                         <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-auto h-full max-h-full object-contain ${isBook ? 'rounded-xl shadow-lg border border-slate-300/60' : ''} transition-transform duration-300 group-hover:scale-105">
                                         <div class="absolute bottom-2.5 right-2.5">
                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-magnifying-glass-plus"></i> ${isBook ? 'Kapağı / Sayfayı Aç' : 'Görseli Aç'}
+                                                <i class="fa-solid fa-book-open-reader"></i> ${isBook ? 'Kitabı Aç & Sayfaları Çevir' : 'Görseli Aç'}
                                             </span>
                                         </div>
                                     </div>
@@ -585,9 +653,9 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                             <!-- Butonlar -->
                             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl || item.fileUrl || '#'}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
+                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl || item.fileUrl || '#'}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : (isBook ? 'from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700')} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
                                     <i class="fa-solid ${isVideo ? 'fa-play' : (validImgUrl ? 'fa-eye' : 'fa-file-lines')}"></i>
-                                    <span>${isVideo ? 'Oynat' : 'Görüntüle'}</span>
+                                    <span>${isVideo ? 'Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görüntüle')}</span>
                                 </button>
 
                                 ${isAdmin ? `
@@ -4880,6 +4948,717 @@ function editCustomMaterial(id) {
     openMaterialUploadModal(cleanGrade, mat.category || "ders-notu", mat);
 }
 
+
+// -------------------------------------------------------------
+// 📖 ROTALI FENCİ DİJİTAL KİTAP OKUYUCU MOTORU (ÇOK SAYFALI & İLERLETME BUTONLU)
+// -------------------------------------------------------------
+let DigitalBookState = {
+    pdfDoc: null,
+    currentPage: 1,
+    totalPages: 1,
+    currentScale: 1.1,
+    isRendering: false,
+    pageRenderingQueue: null,
+    bookInfo: null,
+    fallbackPages: [],
+    mode: "fallback", // 'pdf' | 'fallback'
+    keyListener: null,
+    touchStartX: 0,
+    touchStartY: 0
+};
+
+function getFallbackPagesForGrade(grade, title) {
+    const g = String(grade || "5").replace(/^grade-/, "").trim();
+    const coverSvg = ["5", "6", "7", "8"].includes(g) ? ("assets/ders-kitabi-" + g + ".svg") : "assets/ders-kitabi.svg";
+
+    const unitsByGrade = {
+        "5": [
+            "1. Ünite: Güneş, Dünya ve Ay",
+            "2. Ünite: Canlılar Dünyası",
+            "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
+            "4. Ünite: Madde ve Değişim",
+            "5. Ünite: Işığın Yayılması",
+            "6. Ünite: İnsan ve Çevre",
+            "7. Ünite: Elektrik Devre Elemanları"
+        ],
+        "6": [
+            "1. Ünite: Güneş Sistemi ve Tutulmalar",
+            "2. Ünite: Vücudumuzdaki Sistemler",
+            "3. Ünite: Kuvvet ve Hareket",
+            "4. Ünite: Madde ve Isı",
+            "5. Ünite: Ses ve Özellikleri",
+            "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
+            "7. Ünite: Elektriğin İletimi"
+        ],
+        "7": [
+            "1. Ünite: Güneş Sistemi ve Ötesi",
+            "2. Ünite: Hücre ve Bölünmeler",
+            "3. Ünite: Kuvvet ve Enerji",
+            "4. Ünite: Saf Madde ve Karışımlar",
+            "5. Ünite: Işığın Madde ile Etkileşimi",
+            "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
+            "7. Ünite: Elektrik Devreleri"
+        ],
+        "8": [
+            "1. Ünite: Mevsimler ve İklim",
+            "2. Ünite: DNA ve Genetik Kod",
+            "3. Ünite: Basınç",
+            "4. Ünite: Madde ve Endüstri",
+            "5. Ünite: Basit Makineler",
+            "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
+            "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
+        ]
+    };
+
+    const units = unitsByGrade[g] || unitsByGrade["5"];
+
+    return [
+        {
+            pageNum: 1,
+            title: "Kitap Kapağı",
+            html: `
+                <div class="flex flex-col items-center justify-center p-2 sm:p-4 text-center">
+                    <img src="${coverSvg}" alt="${title}" class="max-h-[70vh] sm:max-h-[74vh] w-auto object-contain rounded-2xl shadow-2xl border border-slate-200">
+                    <p class="text-xs font-bold text-slate-500 mt-4 flex items-center gap-1.5">
+                        <i class="fa-solid fa-hand-pointer text-red-600 animate-bounce"></i> Sayfayı çevirmek için sağdaki <strong>Sonraki ▶</strong> butonuna veya klavyede <strong>→</strong> tuşuna basın
+                    </p>
+                </div>
+            `
+        },
+        {
+            pageNum: 2,
+            title: "İstiklâl Marşı & Atatürk",
+            html: `
+                <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 text-slate-800">
+                    <div class="text-center border-b-2 border-red-600 pb-4 mb-6">
+                        <h2 class="text-xl sm:text-2xl font-black text-red-700 tracking-wider">İSTİKLÂL MARŞI</h2>
+                        <p class="text-xs text-slate-500 font-semibold mt-1">Korkma, sönmez bu şafaklarda yüzen al sancak...</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 text-xs sm:text-sm font-serif leading-relaxed text-slate-700 bg-red-50/50 p-4 sm:p-6 rounded-2xl border border-red-100">
+                        <div>
+                            <p class="mb-3">Korkma, sönmez bu şafaklarda yüzen al sancak;<br>Sönmeden yurdumun üstünde tüten en son ocak.<br>O benim milletimin yıldızıdır, parlayacak;<br>O benimdir, o benim milletimindir ancak.</p>
+                            <p>Çatma, kurban olayım çehreni ey nazlı hilâl!<br>Kahraman ırkıma bir gül… ne bu şiddet bu celâl?<br>Sana olmaz dökülen kanlarımız sonra helâl;<br>Hakkıdır, Hakk’a tapan milletimin istiklâl!</p>
+                        </div>
+                        <div class="flex flex-col justify-between items-center text-center p-4 bg-white rounded-xl border border-slate-200">
+                            <div class="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center border-2 border-slate-300 shadow-inner">
+                                <i class="fa-solid fa-landmark text-3xl text-slate-700"></i>
+                            </div>
+                            <blockquote class="text-xs italic font-bold text-slate-700 my-3">
+                                "Dünyada her şey için, medeniyet için, hayat için, muvaffakiyet için en hakiki mürşit ilimdir, fendir."
+                            </blockquote>
+                            <span class="text-xs font-black text-red-700">Gazi Mustafa Kemal ATATÜRK</span>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        {
+            pageNum: 3,
+            title: "İçindekiler",
+            html: `
+                <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 text-slate-800">
+                    <div class="flex items-center justify-between border-b-2 border-amber-500 pb-3 mb-5">
+                        <div>
+                            <h2 class="text-xl font-black text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-list-ol text-amber-500"></i> İÇİNDEKİLER
+                            </h2>
+                            <p class="text-xs text-slate-500 font-bold mt-0.5">${g}. Sınıf Fen Bilimleri MEB Müfredatı</p>
+                        </div>
+                        <span class="px-3 py-1 bg-amber-50 text-amber-800 rounded-full font-black text-xs border border-amber-200">2026-2027</span>
+                    </div>
+                    <div class="space-y-2.5">
+                        ${units.map((u, idx) => `
+                            <div class="flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-red-50 border border-slate-200 transition-colors">
+                                <div class="flex items-center gap-3">
+                                    <span class="w-7 h-7 rounded-lg bg-red-600 text-white font-black text-xs flex items-center justify-center">${idx + 1}</span>
+                                    <span class="text-xs sm:text-sm font-black text-slate-800">${u}</span>
+                                </div>
+                                <span class="text-xs font-black text-slate-400">Sayfa ${(idx * 24) + 1}</span>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `
+        },
+        {
+            pageNum: 4,
+            title: "1. Ünite Giriş",
+            html: `
+                <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 text-slate-800">
+                    <div class="bg-gradient-to-r from-red-600 to-rose-600 text-white p-6 rounded-2xl shadow-lg mb-6">
+                        <span class="px-2.5 py-1 bg-white/20 text-white rounded-lg text-xs font-black uppercase tracking-wider">1. ÜNİTE</span>
+                        <h2 class="text-xl sm:text-2xl font-black mt-2">${units[0]}</h2>
+                        <p class="text-xs sm:text-sm text-red-100 mt-2 font-medium">Bu ünitede fen bilimlerinin temel prensiplerini ve bilimsel düşünme modellerini inceleyeceğiz.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200">
+                            <h4 class="text-xs font-black text-amber-900 uppercase flex items-center gap-1.5 mb-2">
+                                <i class="fa-solid fa-key text-amber-600"></i> Temel Kavramlar
+                            </h4>
+                            <div class="flex flex-wrap gap-1.5">
+                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Gözlem</span>
+                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Veri</span>
+                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Modelleme</span>
+                                <span class="px-2 py-1 bg-white text-amber-800 rounded-lg text-xs font-bold shadow-sm">Sonuç</span>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-blue-50 rounded-2xl border border-blue-200">
+                            <h4 class="text-xs font-black text-blue-900 uppercase flex items-center gap-1.5 mb-2">
+                                <i class="fa-solid fa-bullseye text-blue-600"></i> Kazanımlar
+                            </h4>
+                            <p class="text-xs text-blue-800 leading-relaxed font-medium">Bilimsel süreç basamaklarını kullanarak araştırma yapma ve problem çözme becerisi geliştirme.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        {
+            pageNum: 5,
+            title: "Konu Anlatımı & Keşfetme",
+            html: `
+                <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 text-slate-800">
+                    <div class="flex items-center gap-2 border-b border-slate-200 pb-3 mb-5">
+                        <span class="w-8 h-8 rounded-xl bg-red-100 text-red-600 flex items-center justify-center font-black text-sm">
+                            <i class="fa-solid fa-flask"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-base sm:text-lg font-black text-slate-900">1. Bölüm: Bilimsel Yolculuk</h3>
+                            <span class="text-xs text-slate-500 font-bold">Fen Bilimlerinde Araştırma ve Gözlem</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                        <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                            <h4 class="font-black text-slate-900 mb-1.5 text-sm flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-600"></span> Bilim İnsanları ve Araştırma
+                            </h4>
+                            <p>Doğayı ve evreni anlama isteği, insanlığın en büyük merak kaynaklarından biridir. Fen bilimleri; gözlem, deney ve mantık yoluyla gerçeği keşfetme sanatıdır.</p>
+                        </div>
+
+                        <div class="p-4 bg-emerald-50 rounded-2xl border border-emerald-200">
+                            <h4 class="font-black text-emerald-900 mb-1.5 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-circle-check text-emerald-600"></i> Önemli Not
+                            </h4>
+                            <p class="text-emerald-800 font-medium">Laboratuvarda çalışırken güvenlik sembollerine dikkat edilmeli, koruyucu ekipmanlar kullanılmalı ve öğretmen rehberliğinde deneyler yürütülmelidir.</p>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        {
+            pageNum: 6,
+            title: "Deney ve Laboratuvar Saati",
+            html: `
+                <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 text-slate-800">
+                    <div class="p-5 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-2xl shadow-md mb-5">
+                        <span class="text-[11px] font-black uppercase bg-white/25 px-2 py-0.5 rounded-md">Deney Zamanı</span>
+                        <h3 class="text-lg sm:text-xl font-black mt-1">Etkinlik: Gözlem ve Ölçüm Yapalım</h3>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                            <h4 class="text-xs font-black text-slate-900 uppercase mb-2">Malzemeler:</h4>
+                            <ul class="list-disc list-inside text-xs sm:text-sm text-slate-700 space-y-1">
+                                <li>Laboratuvar önlüğü ve koruyucu gözlük</li>
+                                <li>Dinamometre veya ölçüm cetveli</li>
+                                <li>Gözlem formu ve not defteri</li>
+                            </ul>
+                        </div>
+
+                        <div class="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm">
+                            <h4 class="text-xs font-black text-slate-900 uppercase mb-2">Uygulama Basamakları:</h4>
+                            <ol class="list-decimal list-inside text-xs sm:text-sm text-slate-700 space-y-1.5">
+                                <li>Ölçüm aletini sıfırlayınız ve kalibre ediniz.</li>
+                                <li>Deneyi en az 3 kez tekrarlayıp ortalama değeri bulunuz.</li>
+                                <li>Sonuçları sınıf arkadaşlarınızla paylaşınız.</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        {
+            pageNum: 7,
+            title: "Değerlendirme Soruları",
+            html: `
+                <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 text-slate-800">
+                    <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-5">
+                        <h3 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question text-red-600"></i> Ünite Sonu Değerlendirme
+                        </h3>
+                        <span class="text-xs font-bold text-red-600 bg-red-50 px-2.5 py-1 rounded-lg">Örnek Sorular</span>
+                    </div>
+
+                    <div class="space-y-4 text-xs sm:text-sm">
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                            <p class="font-black text-slate-900 mb-2">1. Bilimsel bir araştırmada toplanan verilerin grafik ve tablolara dönüştürülmesinin temel amacı nedir?</p>
+                            <div class="space-y-1.5 text-slate-700 pl-2">
+                                <div>A) Deney süresini uzatmak</div>
+                                <div class="font-bold text-emerald-700">B) Verileri anlaşılır ve karşılaştırılabilir kılmak (Doğru)</div>
+                                <div>C) Hataları gizlemek</div>
+                                <div>D) Raporu renklendirmek</div>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                            <p class="font-black text-slate-900 mb-2">2. Güvenlik kuralları gereği laboratuvarda aşağıdakilerden hangisi kesinlikle yapılmamalıdır?</p>
+                            <div class="space-y-1.5 text-slate-700 pl-2">
+                                <div>A) Önlük ve gözlük takmak</div>
+                                <div class="font-bold text-emerald-700">B) Kimyasal maddelerin tadına bakmak veya koklamak (Doğru)</div>
+                                <div>C) Öğretmenin talimatlarına uymak</div>
+                                <div>D) Deney sonrasında elleri yıkamak</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `
+        },
+        {
+            pageNum: 8,
+            title: "Kitap Sonu & EBA",
+            html: `
+                <div class="max-w-md mx-auto py-8 px-4 text-center text-slate-800">
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 to-rose-700 text-white flex items-center justify-center text-2xl mx-auto mb-4 shadow-xl">
+                        <i class="fa-solid fa-book-bookmark"></i>
+                    </div>
+                    <h3 class="text-xl font-black text-slate-900 mb-2">Kitap Önizlemesi Tamamlandı</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
+                        MEB Fen Bilimleri ders kitabının tüm sayfaları (200+ sayfa) dijital olarak incelenebilir.
+                    </p>
+
+                    <div class="space-y-3">
+                        <button type="button" onclick="goToFirstBookPage()" class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-backward-step"></i> Kitabın Başına Dön (Kapak)
+                        </button>
+                    </div>
+                </div>
+            `
+        }
+    ];
+}
+
+async function openDigitalBookModal(options = {}) {
+    const bookTitle = options.title || "Fen Bilimleri Ders Kitabı";
+    const grade = options.grade || "5";
+    let fileUrl = options.fileUrl || "";
+    const id = options.id || "";
+
+    DigitalBookState.currentPage = 1;
+    DigitalBookState.totalPages = 1;
+    DigitalBookState.currentScale = 1.1;
+    DigitalBookState.isRendering = false;
+    DigitalBookState.pageRenderingQueue = null;
+    DigitalBookState.pdfDoc = null;
+    DigitalBookState.mode = "fallback";
+    DigitalBookState.fallbackPages = getFallbackPagesForGrade(grade, bookTitle);
+    DigitalBookState.totalPages = DigitalBookState.fallbackPages.length;
+    DigitalBookState.bookInfo = { id, title: bookTitle, grade, fileUrl };
+
+    let modal = document.getElementById("digital-book-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "digital-book-modal";
+        modal.className = "fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex flex-col justify-between select-none animate-in fade-in duration-200";
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <!-- ÜST KONTROL ÇUBUĞU (TOOLBAR) -->
+        <div class="px-3 sm:px-6 py-2.5 bg-slate-900 border-b border-slate-800 text-white flex items-center justify-between shrink-0 gap-2 sm:gap-4 shadow-xl z-20">
+            <!-- Sol: Başlık & Rozet -->
+            <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-red-600 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[130px] sm:max-w-md text-white">${bookTitle}</h3>
+                    <div class="flex items-center gap-2 text-[10px] text-slate-400 font-bold">
+                        <span class="px-1.5 py-0.5 rounded bg-slate-800 text-red-400 border border-slate-700">${grade}. SINIF MEB</span>
+                        <span id="book-modal-status" class="text-slate-400">Açılıyor...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orta: Sayfa İlerletme ve Sayfa Numarası Butonları -->
+            <div class="flex items-center gap-1 sm:gap-2 bg-slate-800/90 px-2 sm:px-3 py-1 rounded-2xl border border-slate-700 shadow-inner">
+                <!-- İlk Sayfa -->
+                <button type="button" onclick="goToFirstBookPage()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-first" title="İlk Sayfa">
+                    <i class="fa-solid fa-backward-step"></i>
+                </button>
+                
+                <!-- Önceki Sayfa (Geri) Butonu -->
+                <button type="button" onclick="changeBookPage(-1)" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-red-600 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-prev" title="Önceki Sayfa (Sol Ok)">
+                    <i class="fa-solid fa-chevron-left"></i>
+                    <span class="hidden md:inline text-[11px]">Önceki</span>
+                </button>
+
+                <!-- Sayfa Sayacı ve Atlama -->
+                <div class="flex items-center gap-1 px-1 sm:px-2 text-xs font-bold text-slate-200">
+                    <span class="text-[11px] text-slate-400 hidden sm:inline">Sayfa</span>
+                    <input type="number" id="book-page-input" min="1" max="${DigitalBookState.totalPages}" value="1" onchange="onBookPageInputChange(this.value)" class="w-12 sm:w-14 text-center py-1 bg-slate-900 border border-slate-600 rounded-lg text-xs font-black text-amber-400 focus:outline-none focus:border-red-500 select-all">
+                    <span class="text-slate-400">/</span>
+                    <span id="book-total-pages" class="text-slate-300 font-bold min-w-[20px] text-center">${DigitalBookState.totalPages}</span>
+                </div>
+
+                <!-- Sonraki Sayfa (İleri) Butonu -->
+                <button type="button" onclick="changeBookPage(1)" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-md disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-next" title="Sonraki Sayfa (Sağ Ok veya Boşluk)">
+                    <span class="hidden md:inline text-[11px]">Sonraki</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+
+                <!-- Son Sayfa -->
+                <button type="button" onclick="goToLastBookPage()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" id="book-btn-last" title="Son Sayfa">
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+            </div>
+
+            <!-- Sağ: Araçlar (Büyüt / Küçült / Tam Ekran / Kapat) -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <!-- Büyüt / Küçült -->
+                <div class="hidden sm:flex items-center gap-1 bg-slate-800 p-0.5 rounded-xl border border-slate-700">
+                    <button type="button" onclick="changeBookZoom(-0.2)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold cursor-pointer" title="Küçült (-)">
+                        <i class="fa-solid fa-minus"></i>
+                    </button>
+                    <button type="button" onclick="resetBookZoom()" id="book-zoom-text" class="px-2 text-[11px] font-black text-amber-400 select-none cursor-pointer" title="Yakınlaştırmayı Sıfırla">
+                        %110
+                    </button>
+                    <button type="button" onclick="changeBookZoom(0.2)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold cursor-pointer" title="Büyüt (+)">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                </div>
+
+                ${fileUrl && fileUrl.startsWith("http") ? `
+                    <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="hidden sm:flex px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-xl text-[11px] font-bold items-center gap-1.5 transition-all" title="MEB / EBA'da Aç">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> <span class="hidden lg:inline">EBA'da Aç</span>
+                    </a>
+                ` : ''}
+
+                <!-- Kapat Butonu -->
+                <button type="button" onclick="closeDigitalBookModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shadow-md cursor-pointer ml-1" title="Kapat (ESC)">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ORTA OKUMA ALANI (KİTAP SAYFASI & YÜZEN İLERİ/GERİ BUTONLARI) -->
+        <div class="relative flex-1 bg-slate-950 overflow-auto flex items-center justify-center p-2 sm:p-4" id="book-reader-scroll-area">
+            <!-- Sol Yüzen Sayfa İlerletme Butonu -->
+            <button type="button" onclick="changeBookPage(-1)" class="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/80 hover:bg-red-600 text-white flex items-center justify-center text-lg sm:text-2xl font-black shadow-2xl backdrop-blur-md border border-slate-700 hover:border-red-500 transition-all hover:scale-110 active:scale-95 cursor-pointer disabled:opacity-0 disabled:pointer-events-none" id="book-float-prev" title="Önceki Sayfaya Git (←)">
+                <i class="fa-solid fa-angle-left"></i>
+            </button>
+
+            <!-- Sayfa Taşıyıcı / Render Alanı -->
+            <div id="book-page-wrapper" class="relative max-w-full max-h-full flex items-center justify-center transition-transform duration-200 ease-out">
+                <!-- Yükleniyor Göstergesi -->
+                <div id="book-loading-spinner" class="absolute inset-0 bg-slate-950/70 backdrop-blur-sm z-30 flex flex-col items-center justify-center gap-3 text-white rounded-2xl hidden">
+                    <div class="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
+                    <div class="text-xs sm:text-sm font-black text-slate-200" id="book-loading-text">Sayfa Yükleniyor...</div>
+                </div>
+
+                <!-- 1. PDF Canvas (PDF Render Edildiğinde) -->
+                <canvas id="book-canvas" class="hidden rounded-xl shadow-2xl bg-white max-w-full max-h-[78vh] sm:max-h-[82vh] w-auto h-auto object-contain border border-slate-200/20"></canvas>
+
+                <!-- 2. Fallback / Kitap Sayfası Görüntüleyici (PDF yoksa veya yükleme aşamasında) -->
+                <div id="book-fallback-container" class="rounded-xl shadow-2xl bg-white max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[720px] min-h-[72vh] max-h-[82vh] overflow-y-auto border border-slate-300 p-4 sm:p-8 text-slate-900 flex flex-col justify-between">
+                </div>
+            </div>
+
+            <!-- Sağ Yüzen Sayfa İlerletme Butonu -->
+            <button type="button" onclick="changeBookPage(1)" class="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/80 hover:bg-red-600 text-white flex items-center justify-center text-lg sm:text-2xl font-black shadow-2xl backdrop-blur-md border border-slate-700 hover:border-red-500 transition-all hover:scale-110 active:scale-95 cursor-pointer disabled:opacity-0 disabled:pointer-events-none" id="book-float-next" title="Sonraki Sayfaya Git (→)">
+                <i class="fa-solid fa-angle-right"></i>
+            </button>
+        </div>
+
+        <!-- MOBİL ALT SAYFA ÇUBUĞU (Parmakla Kolay Geçiş İçin) -->
+        <div class="sm:hidden px-4 py-2.5 bg-slate-900 border-t border-slate-800 flex items-center justify-between gap-3 shrink-0 z-20">
+            <button type="button" onclick="changeBookPage(-1)" class="flex-1 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 border border-slate-700" id="book-mob-prev">
+                <i class="fa-solid fa-arrow-left"></i> Önceki Sayfa
+            </button>
+            <span class="text-xs font-black text-amber-400 shrink-0" id="book-mob-counter">1 / ${DigitalBookState.totalPages}</span>
+            <button type="button" onclick="changeBookPage(1)" class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md" id="book-mob-next">
+                Sonraki Sayfa <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    `;
+
+    // Hemen 1. sayfayı render et (Kullanıcı hiç beklemez)
+    renderBookPage(1);
+
+    // Klavye ve Dokunmatik Dinleyicileri Kur
+    initBookEventListeners();
+
+    // Arka Planda PDF Yüklemeyi Dene (IndexedDB veya EBA URL)
+    tryLoadPdfDocument(id, fileUrl);
+}
+
+async function tryLoadPdfDocument(id, fileUrl) {
+    if (typeof window === "undefined" || !window.pdfjsLib) return;
+
+    const statusEl = document.getElementById("book-modal-status");
+    let pdfSource = null;
+
+    // 1. IndexedDB'de bu materyale ait kaydedilmiş Blob var mı?
+    if (id && typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
+        try {
+            const record = await RotaliDB.getFile(id);
+            if (record && record.blob) {
+                pdfSource = record.blob;
+            }
+        } catch(e) {}
+    }
+
+    // 2. Yoksa ve fileUrl geçerli bir HTTP linki ise
+    if (!pdfSource && fileUrl && fileUrl.startsWith("http")) {
+        pdfSource = fileUrl;
+    }
+
+    if (!pdfSource) {
+        if (statusEl) statusEl.innerText = "Önizleme Modu (8 Sayfa)";
+        return;
+    }
+
+    if (statusEl) statusEl.innerText = "Kitap Yükleniyor...";
+
+    try {
+        let loadingTask;
+        if (pdfSource instanceof Blob) {
+            const ab = await pdfSource.arrayBuffer();
+            loadingTask = window.pdfjsLib.getDocument({ data: ab });
+        } else {
+            loadingTask = window.pdfjsLib.getDocument({
+                url: pdfSource,
+                cMapUrl: "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",
+                cMapPacked: true
+            });
+        }
+
+        const pdf = await loadingTask.promise;
+        DigitalBookState.pdfDoc = pdf;
+        DigitalBookState.mode = "pdf";
+        DigitalBookState.totalPages = pdf.numPages;
+
+        if (statusEl) statusEl.innerText = "MEB Tam Kitap (" + pdf.numPages + " Sayfa)";
+
+        const totalEl = document.getElementById("book-total-pages");
+        if (totalEl) totalEl.innerText = pdf.numPages;
+
+        const inputEl = document.getElementById("book-page-input");
+        if (inputEl) inputEl.max = pdf.numPages;
+
+        // PDF moduna geç ve 1. sayfayı render et
+        renderBookPage(DigitalBookState.currentPage || 1);
+    } catch (err) {
+        console.warn("PDF.js yükleme uyarısı (Fallback modunda devam ediliyor):", err);
+        if (statusEl) statusEl.innerText = "Önizleme Modu (8 Sayfa)";
+    }
+}
+
+async function renderBookPage(pageNum) {
+    pageNum = Math.max(1, Math.min(pageNum, DigitalBookState.totalPages));
+    DigitalBookState.currentPage = pageNum;
+
+    // UI Güncelle
+    const inputEl = document.getElementById("book-page-input");
+    if (inputEl) inputEl.value = pageNum;
+
+    const totalEl = document.getElementById("book-total-pages");
+    if (totalEl) totalEl.innerText = DigitalBookState.totalPages;
+
+    const mobCounter = document.getElementById("book-mob-counter");
+    if (mobCounter) mobCounter.innerText = pageNum + " / " + DigitalBookState.totalPages;
+
+    // Buton aktiflik / pasiflik
+    const isFirst = pageNum <= 1;
+    const isLast = pageNum >= DigitalBookState.totalPages;
+
+    ["book-btn-prev", "book-btn-first", "book-float-prev", "book-mob-prev"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = isFirst;
+    });
+
+    ["book-btn-next", "book-btn-last", "book-float-next", "book-mob-next"].forEach(id => {
+        const btn = document.getElementById(id);
+        if (btn) btn.disabled = isLast;
+    });
+
+    const canvas = document.getElementById("book-canvas");
+    const fallbackBox = document.getElementById("book-fallback-container");
+
+    if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
+        if (canvas) canvas.classList.remove("hidden");
+        if (fallbackBox) fallbackBox.classList.add("hidden");
+
+        if (DigitalBookState.isRendering) {
+            DigitalBookState.pageRenderingQueue = pageNum;
+            return;
+        }
+
+        DigitalBookState.isRendering = true;
+        const spinner = document.getElementById("book-loading-spinner");
+        if (spinner) spinner.classList.remove("hidden");
+
+        try {
+            const page = await DigitalBookState.pdfDoc.getPage(pageNum);
+            const viewport = page.getViewport({ scale: DigitalBookState.currentScale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const ctx = canvas.getContext("2d");
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            await page.render(renderContext).promise;
+        } catch (e) {
+            console.error("PDF render hatası:", e);
+        } finally {
+            DigitalBookState.isRendering = false;
+            if (spinner) spinner.classList.add("hidden");
+            if (DigitalBookState.pageRenderingQueue !== null) {
+                const nextP = DigitalBookState.pageRenderingQueue;
+                DigitalBookState.pageRenderingQueue = null;
+                renderBookPage(nextP);
+            }
+        }
+    } else {
+        // Fallback HTML Modu
+        if (canvas) canvas.classList.add("hidden");
+        if (fallbackBox) {
+            fallbackBox.classList.remove("hidden");
+            const pageObj = DigitalBookState.fallbackPages[pageNum - 1];
+            if (pageObj) {
+                fallbackBox.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-3 shrink-0">
+                        <span class="text-xs font-black text-red-600 uppercase tracking-wider">
+                            <i class="fa-solid fa-book-bookmark mr-1"></i> ${pageObj.title || 'Sayfa ' + pageNum}
+                        </span>
+                        <span class="text-xs font-bold text-slate-400">Sayfa ${pageNum} / ${DigitalBookState.totalPages}</span>
+                    </div>
+                    <div class="flex-1 overflow-y-auto">
+                        ${pageObj.html}
+                    </div>
+                `;
+                fallbackBox.scrollTop = 0;
+            }
+        }
+    }
+}
+
+function changeBookPage(delta) {
+    renderBookPage(DigitalBookState.currentPage + delta);
+}
+
+function goToFirstBookPage() {
+    renderBookPage(1);
+}
+
+function goToLastBookPage() {
+    renderBookPage(DigitalBookState.totalPages);
+}
+
+function onBookPageInputChange(val) {
+    const num = parseInt(val, 10);
+    if (!isNaN(num)) {
+        renderBookPage(num);
+    }
+}
+
+function changeBookZoom(delta) {
+    DigitalBookState.currentScale = Math.min(2.5, Math.max(0.6, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
+    const zoomText = document.getElementById("book-zoom-text");
+    if (zoomText) zoomText.innerText = "%" + Math.round(DigitalBookState.currentScale * 100);
+
+    const wrapper = document.getElementById("book-page-wrapper");
+    if (wrapper && DigitalBookState.mode === "fallback") {
+        wrapper.style.transform = "scale(" + DigitalBookState.currentScale + ")";
+    } else {
+        renderBookPage(DigitalBookState.currentPage);
+    }
+}
+
+function resetBookZoom() {
+    DigitalBookState.currentScale = 1.1;
+    const zoomText = document.getElementById("book-zoom-text");
+    if (zoomText) zoomText.innerText = "%110";
+
+    const wrapper = document.getElementById("book-page-wrapper");
+    if (wrapper) wrapper.style.transform = "scale(1)";
+
+    renderBookPage(DigitalBookState.currentPage);
+}
+
+function initBookEventListeners() {
+    if (DigitalBookState.keyListener) {
+        window.removeEventListener("keydown", DigitalBookState.keyListener);
+    }
+
+    DigitalBookState.keyListener = (e) => {
+        if (!document.getElementById("digital-book-modal")) return;
+
+        if (e.target && e.target.tagName === "INPUT") return;
+
+        if (e.key === "ArrowRight" || e.key === "PageDown" || e.key === " ") {
+            e.preventDefault();
+            changeBookPage(1);
+        } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+            e.preventDefault();
+            changeBookPage(-1);
+        } else if (e.key === "Home") {
+            e.preventDefault();
+            goToFirstBookPage();
+        } else if (e.key === "End") {
+            e.preventDefault();
+            goToLastBookPage();
+        } else if (e.key === "Escape") {
+            closeDigitalBookModal();
+        }
+    };
+    window.addEventListener("keydown", DigitalBookState.keyListener);
+
+    // Touch Swipe (Mobilde parmakla sayfa çevirme)
+    const scrollArea = document.getElementById("book-reader-scroll-area");
+    if (scrollArea) {
+        scrollArea.addEventListener("touchstart", (e) => {
+            if (e.touches.length === 1) {
+                DigitalBookState.touchStartX = e.touches[0].clientX;
+                DigitalBookState.touchStartY = e.touches[0].clientY;
+            }
+        }, { passive: true });
+
+        scrollArea.addEventListener("touchend", (e) => {
+            if (e.changedTouches.length === 1) {
+                const diffX = e.changedTouches[0].clientX - DigitalBookState.touchStartX;
+                const diffY = e.changedTouches[0].clientY - DigitalBookState.touchStartY;
+                // Yatay kaydırma dikeyden belirgin şekilde fazlaysa
+                if (Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY) * 1.5) {
+                    if (diffX < 0) {
+                        changeBookPage(1); // Sağa kaydırma -> Sonraki sayfa
+                    } else {
+                        changeBookPage(-1); // Sola kaydırma -> Önceki sayfa
+                    }
+                }
+            }
+        }, { passive: true });
+    }
+}
+
+function closeDigitalBookModal() {
+    const modal = document.getElementById("digital-book-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+    if (DigitalBookState.keyListener) {
+        window.removeEventListener("keydown", DigitalBookState.keyListener);
+        DigitalBookState.keyListener = null;
+    }
+    DigitalBookState.pdfDoc = null;
+    DigitalBookState.isRendering = false;
+    DigitalBookState.pageRenderingQueue = null;
+}
+
+
 // Materyal Açma / Görüntüleme & Oynatma (İndirme Olmadan Sayfa İçi Önizleme & Oynatıcı)
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
     let found = null;
@@ -4899,17 +5678,20 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const checkTitle = ((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
     const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab");
     if (isBookMaterial) {
-        let bookImg = "";
-        if (fallbackUrl && fallbackUrl !== "#" && (fallbackUrl.endsWith(".svg") || fallbackUrl.endsWith(".png") || fallbackUrl.endsWith(".jpg") || fallbackUrl.startsWith("data:image") || fallbackUrl.startsWith("assets/"))) {
-            bookImg = fallbackUrl;
-        } else if (found && found.imageUrl && !found.imageUrl.includes("cdn.eba.gov.tr") && found.imageUrl !== "#") {
-            bookImg = found.imageUrl;
-        } else {
-            const g = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
-            bookImg = ["5", "6", "7", "8"].includes(g) ? `assets/ders-kitabi-${g}.svg` : "assets/ders-kitabi.svg";
+        let pdfTarget = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
+        const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
+        if (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http")) {
+            if (["5", "6", "7"].includes(gradeStr)) {
+                pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
+            }
         }
-        const externalEbaPdf = (found && found.fileUrl && found.fileUrl.startsWith("http")) ? found.fileUrl : ((fallbackUrl && fallbackUrl.startsWith("http")) ? fallbackUrl : "");
-        openInPageDocumentModal(bookImg, (found && found.title) || title || "Fen Bilimleri Ders Kitabı", fileName, true, externalEbaPdf);
+        openDigitalBookModal({
+            id: id,
+            title: (found && found.title) || title || "Fen Bilimleri Ders Kitabı",
+            grade: gradeStr,
+            fileUrl: pdfTarget,
+            fileName: (found && found.fileName) || fileName || "ders-kitabi.pdf"
+        });
         return;
     }
 
