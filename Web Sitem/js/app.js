@@ -724,7 +724,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                             <!-- Butonlar -->
                             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl || item.fileUrl || '#'}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : (isBook ? 'from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700')} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
+                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl || item.fileUrl || '#'}', '${(item.fileName || item.title + '.pdf').replace(/'/g, "\\'")}', '${item.category || 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : (isBook ? 'from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700')} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
                                     <i class="fa-solid ${isVideo ? 'fa-play' : (validImgUrl ? 'fa-eye' : 'fa-file-lines')}"></i>
                                     <span>${isVideo ? 'Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görüntüle')}</span>
                                 </button>
@@ -2724,13 +2724,23 @@ function renderGradeSubTabContent(grade, subData, subTab) {
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${foysList.map(item => {
+                ${foysList.map((item, idx) => {
                     const normItemTitle = (item.title || "").trim().toLowerCase();
-                    const customMatch = customList.find(m => 
-                        (m.id === item.id) || 
-                        (String(m.grade).replace(/^grade-/, "") === String(grade.number) && 
-                         (m.title || "").trim().toLowerCase() === normItemTitle)
-                    );
+                    const itemUnitNum = String(idx + 1);
+                    const cleanUnitName = (item.unit || "").replace(/^\d+\.\s*Ünite\s*[•:]?\s*/i, "").trim().toLowerCase();
+
+                    const customMatch = customList.find(m => {
+                        if (!m) return false;
+                        if (m.id === item.id) return true;
+                        const mGrade = String(m.grade || "").replace(/^grade-/, "").trim();
+                        if (mGrade !== String(grade.number)) return false;
+                        const mTitle = (m.title || "").trim().toLowerCase();
+                        const mUnit = (m.unit || "").trim().toLowerCase();
+                        if (mTitle === normItemTitle) return true;
+                        if (mUnit.includes(itemUnitNum + ". ünite") || mTitle.includes(itemUnitNum + ". ünite")) return true;
+                        if (cleanUnitName.length > 3 && (mTitle.includes(cleanUnitName) || mUnit.includes(cleanUnitName))) return true;
+                        return false;
+                    });
 
                     const effectiveId = customMatch ? customMatch.id : item.id;
                     const effectiveTitle = customMatch ? customMatch.title : item.title;
@@ -6341,10 +6351,32 @@ const UNIT_STUDY_NOTES = {
 
 let currentStudyNoteZoom = 1.0;
 
-function openUnitStudyNoteModal(gradeNum, unitId, unitTitle, unitSubtitle, fileUrl) {
-    // 1. Eğer gerçek bir PDF dosyası veya harici link eklenmişse doğrudan vektörel okuyucuya yönlendir
-    if (fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") {
-        openOrDownloadMaterial(unitId, fileUrl, unitTitle + ".pdf", "ders-notu", unitTitle);
+async function openUnitStudyNoteModal(gradeNum, unitId, unitTitle, unitSubtitle, fileUrl, fileName) {
+    // 1. Eğer bu ünitenin yüklenmiş bir PDF/doküman dosyası varsa (IndexedDB, Blob veya URL), doğrudan okuyucuda aç!
+    let hasUploadedFile = false;
+    let targetFileUrl = (fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") ? fileUrl : "";
+    let targetFileName = fileName || (unitTitle + ".pdf");
+
+    if (targetFileUrl) {
+        hasUploadedFile = true;
+    } else {
+        try {
+            if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
+                let rec = await RotaliDB.getFile(unitId);
+                if (!rec || !rec.blob) {
+                    rec = await RotaliDB.findFileByTitleOrName(unitTitle, targetFileName);
+                }
+                if (rec && rec.blob) {
+                    hasUploadedFile = true;
+                    targetFileUrl = URL.createObjectURL(rec.blob);
+                    targetFileName = rec.fileName || targetFileName;
+                }
+            }
+        } catch(e) {}
+    }
+
+    if (hasUploadedFile) {
+        openOrDownloadMaterial(unitId, targetFileUrl, targetFileName, "ders-notu", unitTitle);
         return;
     }
 
@@ -8443,6 +8475,27 @@ async function handleAdvMaterialSubmit(e) {
                     visibility: visibility,
                     updatedAt: new Date().toLocaleDateString("tr-TR")
                 };
+            } else {
+                // Varsayılan MEB ünite notu düzenlenmişse veya listede yoksa, customList'e ekle
+                const newEditedItem = {
+                    id: editingMaterialId,
+                    grade: String(grade).replace(/^grade-/, ""),
+                    category: category,
+                    title: title,
+                    unit: unit,
+                    desc: desc,
+                    fileName: finalFileName,
+                    fileUrl: fileDataUrl || externalUrl || "#",
+                    imageUrl: chosenCover || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp"))) ? externalUrl : ""),
+                    format: fileFormat,
+                    hasBlob: hasBlob,
+                    tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027", "ders-notu"],
+                    visibility: visibility,
+                    downloadCount: "Yeni",
+                    createdAt: new Date().toLocaleDateString("tr-TR"),
+                    updatedAt: new Date().toLocaleDateString("tr-TR")
+                };
+                customList.unshift(newEditedItem);
             }
             editingMaterialId = null;
         } else {
