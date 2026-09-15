@@ -328,6 +328,42 @@ const CloudSyncManager = {
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
+        id: "mat-1789501786165",
+        grade: "5",
+        category: "videolar",
+        title: "Genel Güvenlik Sembolleri Video",
+        unit: "Genel",
+        desc: "5. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
+        fileName: "Güvenlik Sembolleri.mp4",
+        fileUrl: "#",
+        imageUrl: "",
+        format: "MP4",
+        hasBlob: true,
+        tags: ["MEB 2026-2027", "video", "güvenlik", "5.sınıf"],
+        visibility: "public",
+        downloadCount: "Yeni",
+        createdAt: "15.09.2026",
+        updatedAt: "15.09.2026"
+    },
+    {
+        id: "mat-1789503112888",
+        grade: "8",
+        category: "videolar",
+        title: "8. Sınıf Genel Güvenlik Sembolleri Video",
+        unit: "Genel",
+        desc: "8. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
+        fileName: "Güvenlik Sembolleri.mp4",
+        fileUrl: "#",
+        imageUrl: "",
+        format: "MP4",
+        hasBlob: true,
+        tags: ["MEB 2026-2027", "video", "güvenlik", "8.sınıf"],
+        visibility: "public",
+        downloadCount: "Yeni",
+        createdAt: "15.09.2026",
+        updatedAt: "15.09.2026"
+    },
+    {
         id: "mat-5-lab-oyun-1",
         grade: "5",
         category: "egitsel-oyunlar",
@@ -4701,7 +4737,6 @@ const RotaliDB = {
 };
 
 let currentUploadedFile = null;
-    currentUploadedCoverDataUrl = (editMaterial && editMaterial.imageUrl) ? editMaterial.imageUrl : '';
 let currentUploadedCoverDataUrl = '';
 let currentTagsList = ["MEB 2026-2027"];
 let editingMaterialId = null;
@@ -5467,7 +5502,7 @@ async function openDigitalBookModal(options = {}) {
         const hint = document.getElementById("book-drag-hint");
         if (hint) {
             hint.style.opacity = "0";
-            setTimeout(() => hint.remove(), 700);
+            setTimeout(() => { if (hint && hint.remove) hint.remove(); }, 700);
         }
     }, 3500);
 
@@ -6271,6 +6306,8 @@ function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = fa
     }
 
     let ytSrc = "";
+    let isDirectVideo = false;
+
     if (videoSrc && (videoSrc.includes("youtube") || videoSrc.includes("youtu.be"))) {
         let ytId = "";
         let match = videoSrc.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
@@ -6281,12 +6318,10 @@ function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = fa
         } else if (videoSrc.includes("youtu.be/")) {
             ytId = videoSrc.split("youtu.be/")[1].split("?")[0];
         }
-        if (!ytId) ytId = "HhXVz4JzwJ4";
-        ytSrc = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
-    } else if (videoSrc && (videoSrc.startsWith("blob:") || videoSrc.endsWith(".mp4") || videoSrc.endsWith(".webm") || videoSrc.startsWith("http"))) {
+        if (ytId) ytSrc = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+    } else if (videoSrc && (videoSrc.startsWith("blob:") || videoSrc.startsWith("data:video") || videoSrc.endsWith(".mp4") || videoSrc.endsWith(".webm") || (videoSrc.startsWith("http") && !videoSrc.includes("youtube")))) {
         ytSrc = videoSrc;
-    } else {
-        ytSrc = "https://www.youtube-nocookie.com/embed/HhXVz4JzwJ4?autoplay=1&rel=0";
+        isDirectVideo = true;
     }
 
     modal.innerHTML = `
@@ -6318,17 +6353,31 @@ function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = fa
                 </div>
             </div>
 
-            <!-- Video Alanı 1: Canlı Video / YouTube -->
+            <!-- Video Alanı 1: Canlı Video / MP4 / YouTube -->
             <div id="video-tab-yt" class="p-3 sm:p-5 bg-slate-950">
-                ${ytSrc.startsWith("blob:") || ytSrc.endsWith(".mp4") ? `
+                ${isDirectVideo ? `
                     <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl flex items-center justify-center">
-                        <video src="${ytSrc}" controls autoplay class="w-full h-full rounded-2xl max-h-[70vh]"></video>
+                        <video src="${ytSrc}" controls autoplay playsinline class="w-full h-full rounded-2xl max-h-[70vh] object-contain"></video>
                     </div>
-                ` : `
+                ` : (ytSrc ? `
                     <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-2xl border border-slate-800">
                         <iframe src="${ytSrc}" class="w-full h-full border-0" title="${videoTitle}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
                     </div>
-                `}
+                ` : `
+                    <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-slate-950 flex flex-col items-center justify-center p-6 text-center border border-slate-800 shadow-2xl">
+                        <div class="w-16 h-16 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center text-3xl mb-3 shadow-lg border border-red-500/30">
+                            <i class="fa-solid fa-circle-play"></i>
+                        </div>
+                        <h4 class="text-base sm:text-lg font-black text-white mb-2">${videoTitle}</h4>
+                        <p class="text-xs text-slate-400 max-w-md mx-auto mb-5 font-medium leading-relaxed">
+                            Bu video cihazınızdan yerel MP4 dosyası olarak yüklenmiştir. Videoyu bu tarayıcıda doğrudan oynatmak için dosyayı seçebilirsiniz:
+                        </p>
+                        <label class="px-5 py-3 bg-red-600 hover:bg-red-700 active:scale-98 text-white rounded-2xl text-xs font-black cursor-pointer shadow-xl transition-all flex items-center gap-2.5">
+                            <i class="fa-solid fa-folder-open text-sm"></i> Cihazdan Bu MP4 Dosyasını Seçip Oynat
+                            <input type="file" accept="video/mp4,video/*" onchange="handleSelectAndPlayVideo(event)" class="hidden">
+                        </label>
+                    </div>
+                `)}
                 <div class="mt-3 flex items-center justify-between text-xs text-slate-400">
                     <span class="flex items-center gap-2">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
@@ -6446,6 +6495,15 @@ function speakCurrentSymbol() {
     utterance.lang = "tr-TR";
     utterance.rate = 1.0;
     window.speechSynthesis.speak(utterance);
+}
+
+
+function handleSelectAndPlayVideo(e) {
+    if (e.target && e.target.files && e.target.files[0]) {
+        const file = e.target.files[0];
+        const blobUrl = URL.createObjectURL(file);
+        openInPageVideoModal(blobUrl, file.name, true);
+    }
 }
 
 function closeInPageVideoModal() {
