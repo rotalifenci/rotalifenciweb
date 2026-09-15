@@ -5884,27 +5884,77 @@ function onBookPageInputChange(val) {
     }
 }
 
-function changeBookZoom(delta) {
-    DigitalBookState.currentScale = Math.min(3.0, Math.max(0.6, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
-    const zoomText = document.getElementById("book-zoom-text");
-    if (zoomText) zoomText.innerText = "%" + Math.round(DigitalBookState.currentScale * 100);
+async function applyBookZoomInPlace() {
+    const scrollArea = document.getElementById("book-reader-scroll-area");
+    if (!scrollArea) return;
+
+    const anchorPage = DigitalBookState.currentPage || 1;
+    const anchorSlot = document.getElementById(
+        DigitalBookState.mode === "pdf" ? `pdf-page-slot-${anchorPage}` : `fallback-page-wrap-${anchorPage}`
+    );
+
+    // Büyütme öncesi mevcut sayfa içi bağıl dikey konumu kaydet
+    let relativeRatio = 0;
+    if (anchorSlot) {
+        const slotTop = anchorSlot.offsetTop;
+        const currentScroll = scrollArea.scrollTop;
+        const slotHeight = anchorSlot.offsetHeight || 1;
+        relativeRatio = Math.max(0, Math.min(1, (currentScroll - slotTop) / slotHeight));
+    }
 
     if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
+        const firstPage = await DigitalBookState.pdfDoc.getPage(1);
+        const baseVp = firstPage.getViewport({ scale: 1.0 });
+        const availableWidth = Math.min(880, Math.max(320, scrollArea.clientWidth - 36));
+        const baseFitScale = availableWidth / baseVp.width;
+        const zoom = DigitalBookState.currentScale || 1.0;
+
+        const newWidth = Math.round(baseVp.width * baseFitScale * zoom);
+        const newHeight = Math.round(baseVp.height * baseFitScale * zoom);
+
+        const allSlots = scrollArea.querySelectorAll(".pdf-page-card");
+        allSlots.forEach(slot => {
+            slot.style.width = newWidth + "px";
+            slot.style.minHeight = newHeight + "px";
+            const canvas = slot.querySelector("canvas");
+            if (canvas) {
+                canvas.style.width = newWidth + "px";
+                canvas.style.height = newHeight + "px";
+            }
+        });
+
+        // Sayfayı kaydırmadan tam olduğumuz konuma sabitle
+        if (anchorSlot) {
+            scrollArea.scrollTop = anchorSlot.offsetTop + (relativeRatio * anchorSlot.offsetHeight);
+        }
+
+        // Görünür sayfaları yüksek çözünürlükle arka planda yeniden çiz
         clearTimeout(bookZoomDebounceTimer);
         bookZoomDebounceTimer = setTimeout(() => {
             DigitalBookState.renderedPages.clear();
             DigitalBookState.renderingPages.clear();
-            setupVerticalPdfSlots(DigitalBookState.pdfDoc).then(() => {
-                scrollBookToPage(DigitalBookState.currentPage);
-            });
-        }, 120);
+            renderSinglePdfPage(anchorPage);
+            if (anchorPage > 1) renderSinglePdfPage(anchorPage - 1);
+            if (anchorPage < DigitalBookState.totalPages) renderSinglePdfPage(anchorPage + 1);
+        }, 80);
     } else {
         const fallbackCards = document.querySelectorAll(".fallback-page-card");
         fallbackCards.forEach(c => {
             c.style.transform = `scale(${DigitalBookState.currentScale})`;
             c.style.transformOrigin = "top center";
         });
+        if (anchorSlot) {
+            scrollArea.scrollTop = anchorSlot.offsetTop + (relativeRatio * anchorSlot.offsetHeight);
+        }
     }
+}
+
+function changeBookZoom(delta) {
+    DigitalBookState.currentScale = Math.min(3.0, Math.max(0.6, parseFloat((DigitalBookState.currentScale + delta).toFixed(2))));
+    const zoomText = document.getElementById("book-zoom-text");
+    if (zoomText) zoomText.innerText = "%" + Math.round(DigitalBookState.currentScale * 100);
+
+    applyBookZoomInPlace();
 }
 
 function resetBookZoom() {
@@ -5912,18 +5962,7 @@ function resetBookZoom() {
     const zoomText = document.getElementById("book-zoom-text");
     if (zoomText) zoomText.innerText = "%100";
 
-    if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
-        DigitalBookState.renderedPages.clear();
-        DigitalBookState.renderingPages.clear();
-        setupVerticalPdfSlots(DigitalBookState.pdfDoc).then(() => {
-            scrollBookToPage(DigitalBookState.currentPage);
-        });
-    } else {
-        const fallbackCards = document.querySelectorAll(".fallback-page-card");
-        fallbackCards.forEach(c => {
-            c.style.transform = "none";
-        });
-    }
+    applyBookZoomInPlace();
 }
 
 function initBookEventListeners() {
