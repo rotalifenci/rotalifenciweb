@@ -2687,43 +2687,114 @@ function renderGradeSubTabContent(grade, subData, subTab) {
     } else if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
         return renderScientistsModule(grade.number);
     } else if (subTab === "ders-notu") {
+        const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+        const foysList = (subData && subData.dersNotu) ? subData.dersNotu : [];
+
         return `
-            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
                 <div>
-                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-0.5 rounded-full bg-red-100 text-red-700 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-file-pdf"></i> MEB 2026-2027
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Müfredatı</span>
+                    </div>
+                    <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
                         <i class="fa-solid fa-file-pdf text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri PDF Ders Föyleri
                     </h3>
-                    <span class="text-xs font-bold text-slate-500">MEB 2026-2027 Müfredatına Uygun Ders Notları & Föyler</span>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">Konu özetleri, kavram haritaları, etkinlik ve çalışma föylerini inceleyebilir, yeni föy ekleyebilir veya düzenleyebilirsiniz.</p>
                 </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95 self-start sm:self-auto">
-                        <i class="fa-solid fa-plus"></i> + Not / Föy Ekle
-                    </button>
-                ` : ''}
+                <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-5 py-3 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95 cursor-pointer self-start sm:self-auto shrink-0" title="Bu sınıfa yeni PDF ders föyü veya doküman ekle">
+                    <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>+ Yeni PDF Ders Föyü Ekle</span>
+                </button>
             </div>
 
+            <!-- Kullanıcının Eklediği ve Düzenlediği Özel Föyler (Düzenleme & Sıralama Aktif) -->
             ${renderCustomMaterialsSection(grade.number, "ders-notu")}
-            <h4 class="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-folder-open text-blue-600"></i> ${grade.number}. Sınıf PDF Ders Föyleri
-            </h4>
+
+            <!-- Ünite Bazlı Temel MEB PDF Ders Föyleri (Dosya Ekleme & Düzenleme Aktif) -->
+            <div class="mb-6 flex items-center justify-between">
+                <h4 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-blue-600"></i>
+                    <span>${grade.number}. Sınıf Ünite PDF Ders Föyleri Havuzu</span>
+                </h4>
+                <span class="text-xs font-bold text-slate-400">${foysList.length} Ünite Föyü</span>
+            </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${subData.dersNotu.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <span class="px-3 py-1 rounded-full bg-red-50 text-red-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
-                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
-                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
-                                <span>📄 ${item.pages}</span>
-                                <span>👁️ ${item.downloadCount}</span>
+                ${foysList.map(item => {
+                    const normItemTitle = (item.title || "").trim().toLowerCase();
+                    const customMatch = customList.find(m => 
+                        (m.id === item.id) || 
+                        (String(m.grade).replace(/^grade-/, "") === String(grade.number) && 
+                         (m.title || "").trim().toLowerCase() === normItemTitle)
+                    );
+
+                    const effectiveId = customMatch ? customMatch.id : item.id;
+                    const effectiveTitle = customMatch ? customMatch.title : item.title;
+                    const effectiveDesc = customMatch ? customMatch.desc : item.desc;
+                    const effectiveFileUrl = (customMatch && customMatch.fileUrl && customMatch.fileUrl !== "#") ? customMatch.fileUrl : (item.fileUrl || "#");
+                    const effectiveFileName = (customMatch && customMatch.fileName) ? customMatch.fileName : `${item.title}.pdf`;
+                    const hasFile = (customMatch && (customMatch.hasBlob || (customMatch.fileUrl && customMatch.fileUrl !== "#")));
+
+                    const safeTitle = effectiveTitle.replace(/'/g, "\'");
+                    const safeUnit = (item.unit || "").replace(/'/g, "\'");
+                    const safeDesc = effectiveDesc.replace(/'/g, "\'");
+                    const safeFileName = effectiveFileName.replace(/'/g, "\'");
+
+                    return `
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 border ${hasFile ? 'border-emerald-300 ring-2 ring-emerald-500/10 shadow-md' : 'border-slate-200 shadow-sm'} hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
+                            <div>
+                                <div class="flex items-center justify-between gap-2 mb-3">
+                                    <span class="px-3 py-1 rounded-full ${hasFile ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-100'} text-[11px] font-black tracking-wider uppercase inline-flex items-center gap-1.5">
+                                        <i class="fa-solid ${hasFile ? 'fa-circle-check text-emerald-600' : 'fa-file-pdf text-red-600'}"></i>
+                                        <span>${hasFile ? 'PDF Dosyası Hazır' : item.badge || 'PDF / Föy'}</span>
+                                    </span>
+                                    <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
+                                        <i class="fa-regular fa-file-lines"></i> ${item.pages || '4-6 Sayfa'}
+                                    </span>
+                                </div>
+
+                                <div class="text-[11px] font-black text-blue-600 mb-1.5 uppercase tracking-wide truncate">
+                                    <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${item.unit}
+                                </div>
+
+                                <h4 class="text-base sm:text-lg font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors">
+                                    ${effectiveTitle}
+                                </h4>
+
+                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
+                                    ${effectiveDesc}
+                                </p>
+                            </div>
+
+                            <div class="pt-3 border-t border-slate-100 space-y-2">
+                                ${hasFile ? `
+                                    <button type="button" onclick="openOrDownloadMaterial('${effectiveId}', '${effectiveFileUrl}', '${safeFileName}', 'ders-notu', '${safeTitle}')" class="w-full py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer">
+                                        <i class="fa-solid fa-book-open-reader"></i> Föyü Aç & İncele
+                                    </button>
+                                ` : `
+                                    <button type="button" onclick="triggerEditFoy('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${safeDesc}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer">
+                                        <i class="fa-solid fa-cloud-arrow-up text-amber-400"></i> Bu Föye PDF Dosyası Ekle
+                                    </button>
+                                `}
+
+                                <div class="flex items-center gap-1.5 pt-1">
+                                    <button type="button" onclick="triggerEditFoy('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${safeDesc}')" class="flex-1 py-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-800 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 hover:border-amber-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Föyü Düzenle veya Dosya Yükle">
+                                        <i class="fa-solid fa-pen-to-square text-amber-600"></i>
+                                        <span>${hasFile ? 'Düzenle / Dosyayı Değiştir' : 'Föyü Düzenle & Dosya Seç'}</span>
+                                    </button>
+
+                                    ${customMatch ? `
+                                        <button type="button" onclick="deleteCustomMaterial('${customMatch.id}')" class="p-2 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition-all flex items-center justify-center cursor-pointer" title="Yüklenen Dosyayı Kaldır">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    ` : ''}
+                                </div>
                             </div>
                         </div>
-                        <button type="button" onclick="openOrDownloadMaterial(null, '${item.fileUrl || '#'}', '${item.title}.pdf', 'ders-notu', '${item.title}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fa-solid fa-eye"></i> Materyali Görüntüle
-                        </button>
-                    </div>
-                `).join("")}
+                    `;
+                }).join("")}
             </div>
         `;
     } else if (subTab === "ders-sunumu") {
@@ -4822,6 +4893,33 @@ function checkAdminAccess(callback) {
     }
     openAdminLoginModal(callback);
     return false;
+}
+
+function triggerEditFoy(gradeNumber, foyId, defaultTitle, defaultUnit, defaultDesc) {
+    checkAdminAccess(() => {
+        const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+        let existing = customList.find(m => 
+            (m.id === foyId) || 
+            (String(m.grade).replace(/^grade-/, "") === String(gradeNumber) && 
+             (m.title || "").trim().toLowerCase() === (defaultTitle || "").trim().toLowerCase())
+        );
+
+        if (!existing) {
+            existing = {
+                id: foyId || ("foy-" + gradeNumber + "-" + Date.now()),
+                grade: String(gradeNumber),
+                category: "ders-notu",
+                title: defaultTitle || `${gradeNumber}. Sınıf PDF Ders Föyü`,
+                unit: defaultUnit || `${gradeNumber}. Sınıf Fen Bilimleri`,
+                desc: defaultDesc || "MEB 2026-2027 müfredatına uygun ünite PDF ders föyü.",
+                fileName: "",
+                fileUrl: "#",
+                format: "PDF",
+                tags: ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027", "ders-föyü"]
+            };
+        }
+        openMaterialUploadModal(String(gradeNumber), "ders-notu", existing);
+    });
 }
 
 function triggerUploadModal(gradeNumber = "8", subTab = "ders-notu") {
@@ -7300,7 +7398,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ders Notu</option>
+                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 PDF Ders Föyleri & Ders Notu</option>
                                 <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
                                 <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
                                 <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
@@ -7493,7 +7591,17 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     
     if (isEditing && editMaterial.unit) {
         const unitSelect = document.getElementById("adv-unit-select");
-        if (unitSelect) unitSelect.value = editMaterial.unit;
+        if (unitSelect) {
+            let exists = Array.from(unitSelect.options).some(opt => opt.value === editMaterial.unit);
+            if (!exists) {
+                const newOpt = document.createElement("option");
+                newOpt.value = editMaterial.unit;
+                newOpt.textContent = editMaterial.unit;
+                newOpt.selected = true;
+                unitSelect.appendChild(newOpt);
+            }
+            unitSelect.value = editMaterial.unit;
+        }
     }
 
     renderTagsBadges();
