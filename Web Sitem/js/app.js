@@ -557,13 +557,13 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     ${item.title}
                                 </h4>
 
-                                <!-- Görsel Varsa: Orantılı, Kırpılmayan Net Önizleme Kutusu -->
+                                <!-- Görsel Varsa: Orantılı, Kırpılmayan Net Önizleme Kutusu (Kitaplar İçin Dikey 1 Tam Sayfa) -->
                                 ${validImgUrl ? `
-                                    <div class="mat-preview-box relative w-full h-52 sm:h-60 rounded-2xl overflow-hidden mb-3.5 bg-slate-50 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl}')">
-                                        <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-full h-full object-contain p-2 transition-transform duration-300 group-hover:scale-105">
+                                    <div class="mat-preview-box relative w-full ${isBook ? 'h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3' : 'h-52 sm:h-60 bg-slate-50 p-2'} rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${validImgUrl}')">
+                                        <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-auto h-full max-h-full object-contain ${isBook ? 'rounded-xl shadow-lg border border-slate-300/60' : ''} transition-transform duration-300 group-hover:scale-105">
                                         <div class="absolute bottom-2.5 right-2.5">
                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-magnifying-glass-plus"></i> Görseli Aç
+                                                <i class="fa-solid fa-magnifying-glass-plus"></i> ${isBook ? 'Kapağı / Sayfayı Aç' : 'Görseli Aç'}
                                             </span>
                                         </div>
                                     </div>
@@ -4881,10 +4881,11 @@ function editCustomMaterial(id) {
 
 // Materyal Açma / Görüntüleme & Oynatma (İndirme Olmadan Sayfa İçi Önizleme & Oynatıcı)
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
+    let found = null;
     if (id) {
         try {
             const allCustom = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
-            const found = allCustom.find(m => m.id === id);
+            found = allCustom.find(m => m.id === id);
             if (found) {
                 if (!category) category = found.category || "";
                 if (!title) title = found.title || "";
@@ -4892,6 +4893,23 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
                 if (!fallbackUrl || fallbackUrl === "#") fallbackUrl = found.fileUrl || "#";
             }
         } catch(e) {}
+    }
+
+    const checkTitle = ((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
+    const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab");
+    if (isBookMaterial) {
+        let bookImg = "";
+        if (fallbackUrl && fallbackUrl !== "#" && (fallbackUrl.endsWith(".svg") || fallbackUrl.endsWith(".png") || fallbackUrl.endsWith(".jpg") || fallbackUrl.startsWith("data:image") || fallbackUrl.startsWith("assets/"))) {
+            bookImg = fallbackUrl;
+        } else if (found && found.imageUrl && !found.imageUrl.includes("cdn.eba.gov.tr") && found.imageUrl !== "#") {
+            bookImg = found.imageUrl;
+        } else {
+            const g = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
+            bookImg = ["5", "6", "7", "8"].includes(g) ? `assets/ders-kitabi-${g}.svg` : "assets/ders-kitabi.svg";
+        }
+        const externalEbaPdf = (found && found.fileUrl && found.fileUrl.startsWith("http")) ? found.fileUrl : ((fallbackUrl && fallbackUrl.startsWith("http")) ? fallbackUrl : "");
+        openInPageDocumentModal(bookImg, (found && found.title) || title || "Fen Bilimleri Ders Kitabı", fileName, true, externalEbaPdf);
+        return;
     }
 
     const isVideo = category === "videolar" || (title && title.toLowerCase().includes("video")) || (fileName && (fileName.endsWith(".mp4") || fileName.endsWith(".webm") || fileName.toLowerCase().includes("video")));
@@ -5095,7 +5113,7 @@ function initImagePanDragListeners() {
     };
 }
 
-function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false) {
+function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false, externalPdf = "") {
     inPageModalZoom = 1.0;
     inPageModalPanX = 0;
     inPageModalPanY = 0;
@@ -5135,6 +5153,13 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                             <h3 class="text-xs sm:text-sm font-black truncate max-w-[140px] sm:max-w-xs">${docTitle}</h3>
                         </div>
                     </div>
+
+                    <!-- Dış Bağlantı & EBA Butonu (Varsa) -->
+                    ${externalPdf && externalPdf.startsWith("http") ? `
+                        <a href="${externalPdf}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white rounded-xl text-[11px] font-black flex items-center gap-1.5 transition-all shadow-sm shrink-0" title="MEB / EBA Üzerinden Tüm Kitabı Oku">
+                            <i class="fa-solid fa-book-open"></i> <span class="hidden sm:inline">Tüm Kitabı Oku</span><span>(EBA)</span>
+                        </a>
+                    ` : ''}
 
                     <!-- 🔍 Büyüt / Küçült / Sıfırla Toolbar -->
                     <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-slate-800 p-0.5 sm:p-1 rounded-xl border border-slate-700">
