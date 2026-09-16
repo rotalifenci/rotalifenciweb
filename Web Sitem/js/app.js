@@ -687,7 +687,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
         // Kategori / Sekme Eşleştirmesi
         const itemCat = String(item.category || "").trim().toLowerCase();
-        const targetSubTab = String(subTab || "").trim().toLowerCase();
+                const targetSubTab = String(subTab || "").trim().toLowerCase();
         const itemFormat = String(item.format || "").trim().toLowerCase();
         const itemTitle = String(item.title || "").trim().toLowerCase();
 
@@ -699,11 +699,33 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
         } else if (targetSubTab === "egitsel-oyunlar" || targetSubTab === "oyunlar" || targetSubTab === "oyun") {
             categoryMatch = (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemFormat.includes("oyun") || itemTitle.includes("oyun") || itemTitle.includes("eşleştirme"));
         } else if (targetSubTab === "ders-notu") {
-            categoryMatch = (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")));
+            // Ders Notları: Notlar, PDF'ler, Konu Anlatımları, Ünite Özetleri ve PDF formatındaki tüm müfredat ders dokümanları
+            categoryMatch = (
+                itemCat === "ders-notu" || 
+                itemCat === "not" || 
+                itemCat === "pdf" || 
+                (!itemCat && itemFormat.includes("pdf")) ||
+                itemTitle.includes("konu") || 
+                itemTitle.includes("özet") || 
+                itemTitle.includes("not") || 
+                itemTitle.includes("ünite") ||
+                itemTitle.includes("müfredat") ||
+                itemTitle.includes("kitap") ||
+                (itemCat === "ders-sunumu" && (itemTitle.includes("konu") || itemTitle.includes("ünite") || itemFormat.includes("pdf") || itemFormat.includes("doküman")))
+            );
         } else if (targetSubTab === "ders-sunumu") {
-            categoryMatch = (itemCat === "ders-sunumu" || itemCat === "sunum" || itemFormat.includes("ppt") || itemFormat.includes("slayt"));
+            // Ders Sunumları: Sunumlar, slaytlar, PPTX ve sunum/konu içerikli dokümanlar
+            categoryMatch = (
+                itemCat === "ders-sunumu" || 
+                itemCat === "sunum" || 
+                itemFormat.includes("ppt") || 
+                itemFormat.includes("slayt") ||
+                itemTitle.includes("sunum") ||
+                itemTitle.includes("slayt") ||
+                (itemTitle.includes("konu") && itemFormat.includes("pdf"))
+            );
         } else if (targetSubTab === "videolar") {
-            categoryMatch = (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video"));
+            categoryMatch = (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video") || itemFormat.includes("mp4"));
         } else if (targetSubTab === "etkinlikler") {
             categoryMatch = (itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy");
         } else if (targetSubTab === "soru-bankasi") {
@@ -719,8 +741,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
         } else {
             categoryMatch = (itemCat === targetSubTab);
         }
-
-        return gradeMatch && categoryMatch;
+    return gradeMatch && categoryMatch;
     });
 
     if (!items || items.length === 0) return "";
@@ -2582,6 +2603,39 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
     const subData = getGradeSubSectionsData(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const allCustomMaterials = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+    const getTabCustomCount = (tabKey) => {
+        return allCustomMaterials.filter(item => {
+            const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+            const normTargetGrade = String(grade.number || "").replace(/^grade-/, "").trim().toLowerCase();
+            const gradeMatch = (normTargetGrade === "all" || normItemGrade === "all" || normItemGrade === normTargetGrade);
+            if (!gradeMatch) return false;
+
+            const itemCat = String(item.category || "").trim().toLowerCase();
+            const itemFormat = String(item.format || "").trim().toLowerCase();
+            const itemTitle = String(item.title || "").trim().toLowerCase();
+
+            if (tabKey === "ders-notu") {
+                return (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")) || itemTitle.includes("konu") || itemTitle.includes("özet") || itemTitle.includes("not") || itemTitle.includes("ünite") || itemTitle.includes("müfredat") || itemTitle.includes("kitap") || (itemCat === "ders-sunumu" && (itemTitle.includes("konu") || itemTitle.includes("ünite") || itemFormat.includes("pdf"))));
+            } else if (tabKey === "ders-sunumu") {
+                return (itemCat === "ders-sunumu" || itemCat === "sunum" || itemFormat.includes("ppt") || itemFormat.includes("slayt") || itemTitle.includes("sunum") || itemTitle.includes("slayt") || (itemTitle.includes("konu") && itemFormat.includes("pdf")));
+            } else if (tabKey === "videolar") {
+                return (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video") || itemFormat.includes("mp4"));
+            } else if (tabKey === "etkinlikler") {
+                return (itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy");
+            } else if (tabKey === "soru-bankasi") {
+                return (itemCat === "soru-bankasi" || itemCat === "soru" || itemCat === "test");
+            } else if (tabKey === "denemeler") {
+                return (itemCat === "denemeler" || itemCat === "deneme");
+            } else if (tabKey === "egitsel-oyunlar") {
+                return (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemFormat.includes("oyun") || itemTitle.includes("oyun"));
+            } else if (tabKey === "lgs") {
+                return (itemCat === "lgs" || itemCat === "lgs-pusulasi" || itemTitle.includes("lgs"));
+            }
+            return itemCat === tabKey;
+        }).length;
+    };
+
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-10">
@@ -2613,18 +2667,26 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                             
                             <!-- 1. Ders Notu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-notu')" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-notu' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-notu' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-file-lines"></i>
+                                    ${getTabCustomCount('ders-notu') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">📝 DERS NOTU</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>📝 DERS NOTU</span>
+                                    ${getTabCustomCount('ders-notu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'ders-notu' ? 'bg-blue-100 text-blue-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-notu')}</span>` : ''}
+                                </span>
                             </button>
 
                             <!-- 2. Ders Sunumu -->
                             <button onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu')" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 ${subTab === 'ders-sunumu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-sunumu' ? 'bg-orange-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-sunumu' ? 'bg-orange-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-file-powerpoint"></i>
+                                    ${getTabCustomCount('ders-sunumu') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">📊 DERS SUNUMU</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>📊 DERS SUNUMU</span>
+                                    ${getTabCustomCount('ders-sunumu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'ders-sunumu' ? 'bg-orange-100 text-orange-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-sunumu')}</span>` : ''}
+                                </span>
                             </button>
 
                             <!-- 3. Videolar -->
