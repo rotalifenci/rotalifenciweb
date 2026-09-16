@@ -2884,32 +2884,22 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
-            <!-- ÜST BAŞLIK VE HIZLI KONTROLLER -->
-            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="px-3 py-0.5 rounded-full bg-red-100 text-red-700 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-book-open"></i> MEB 2026-2027
-                        </span>
-                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Müfredatı</span>
-                    </div>
-                    <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-                        <i class="fa-solid fa-file-lines text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri 4 Kademeli Ders Notları
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">Ders kitabı, ünite özetleri, laboratuvar föyleri ve pekiştirme testlerini dikey kategorize yapıda inceleyebilirsiniz.</p>
-                </div>
-                <div class="flex items-center gap-2 flex-wrap self-start sm:self-auto">
-                    <button type="button" onclick="expandAllAccordions('ders-notu-accordion-group')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-all">
-                        Tümünü Aç
-                    </button>
-                    <button type="button" onclick="collapseAllAccordions('ders-notu-accordion-group')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-all">
-                        Tümünü Kapat
-                    </button>
-                    ${isAdmin ? `
-                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
-                            <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>+ Yeni Ders Notu Ekle</span>
+            
+            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler (DERS NOTU İÇİN DE EKLENDİ) -->
+            <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
+                <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
+                    ${[1,2,3,4,5,6,7].map(num => `
+                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer">
+                            <span>${num}. Ünite</span>
                         </button>
-                    ` : ''}
+                    `).join("")}
+                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-flask-vial text-emerald-600"></i>
+                        <span>Laboratuvar</span>
+                    </button>
+                    <button type="button" onclick="filterDersNotuUnits('all')" data-unit="all" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer">
+                        <span>🌟 Tüm Üniteler (7)</span>
+                    </button>
                 </div>
             </div>
 
@@ -2921,7 +2911,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                 <!-- 1. KATEGORİ: MEB DERS KİTABI -->
                 <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
                                 <i class="fa-solid fa-book-open"></i>
@@ -2954,7 +2944,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı. İndirmeden, sayfa sayfa veya dikey akış modunda doğrudan tarayıcınızda okuyabilirsiniz.
                                 </p>
                                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                                    <button type="button" onclick="openDigitalBookModal('${currentBook.fileUrl}', '${currentBook.title}', '${grade.number}')" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md shadow-amber-600/20 active:scale-95">
+                                    <button type="button" onclick="openDigitalBookModal('${currentBook.fileUrl}', '${currentBook.title}', '${grade.number}')" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
                                     </button>
                                 </div>
@@ -2965,7 +2955,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                 <!-- 2. KATEGORİ: ÜNİTE DERS NOTLARI, SKETCHNOTES & KAVRAM HARİTALARI -->
                 <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-notlar')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-notlar')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
                                 <i class="fa-solid fa-file-lines"></i>
@@ -2987,9 +2977,10 @@ function renderGradeDersNotuAccordion(grade, subData) {
                         <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">MEB kazanımlarına uygun, görsel zenginleştirilmiş kavram haritaları, özet föyler ve formül şemaları.</p>
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             ${foysList.map((item, idx) => {
+                                const unitNum = idx + 1;
                                 const normItemTitle = (item.title || "").trim().toLowerCase();
-                                const itemUnitNum = String(idx + 1);
-                                const cleanUnitName = (item.unit || "").replace(/^\\d+\\.\\s*Ünite\\s*[•:]?\\s*/i, "").trim().toLowerCase();
+                                const itemUnitNum = String(unitNum);
+                                const cleanUnitName = (item.unit || "").replace(/^\d+\.\s*Ünite\s*[•:]?\s*/i, "").trim().toLowerCase();
 
                                 const customMatch = customList.find(m => {
                                     if (!m) return false;
@@ -3012,7 +3003,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 const isReadyPdf = hasCustomFile || item.fileUrl;
 
                                 return `
-                                    <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                                    <div data-unit="${unitNum}" class="foy-card-item bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
                                         <div>
                                             <div class="flex items-center justify-between gap-2 mb-3">
                                                 <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
@@ -3031,7 +3022,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             </p>
                                         </div>
                                         <div class="pt-3 border-t border-slate-100">
-                                            <button type="button" onclick="openOrDownloadMaterial('${customMatch ? customMatch.id : item.id}', '${customMatch ? (customMatch.fileUrl || '#') : (item.fileUrl || '#')}', '${effectiveTitle.replace(/'/g, "\\\\'")}.pdf', 'ders-notu', '${effectiveTitle.replace(/'/g, "\\\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95">
+                                            <button type="button" onclick="openOrDownloadMaterial('${customMatch ? customMatch.id : item.id}', '${customMatch ? (customMatch.fileUrl || '#') : (item.fileUrl || '#')}', '${effectiveTitle.replace(/'/g, "\\'")}.pdf', 'ders-notu', '${effectiveTitle.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
                                                 <i class="fa-solid ${isReadyPdf ? 'fa-file-lines' : 'fa-book-open'}"></i>
                                                 <span>${isReadyPdf ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
                                             </button>
@@ -3045,7 +3036,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                 <!-- 3. KATEGORİ: LABORATUVAR & DENEYLER -->
                 <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
                                 <i class="fa-solid fa-flask-vial"></i>
@@ -3076,7 +3067,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
                                     </div>
-                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95">
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-play"></i>
                                         <span>Etkinliği Başlat</span>
                                     </button>
@@ -3088,7 +3079,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                 <!-- 4. KATEGORİ: SORU ÇÖZÜMÜ / LGS HAZIRLIK -->
                 <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-soru')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-soru')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
                                 <i class="fa-solid fa-bullseye"></i>
@@ -3119,7 +3110,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-purple-600 transition-colors">${item.title}</h5>
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
                                     </div>
-                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\\\'")}', 'soru-bankasi', '${item.title.replace(/'/g, "\\\\'")}')" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 active:scale-95">
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\'")}', 'soru-bankasi', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-circle-check"></i>
                                         <span>Testi Çöz / İncele</span>
                                     </button>
@@ -3134,7 +3125,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
     `;
 }
 
-// 2. 🌟 DİĞER 7 ANA BÖLÜM İÇİN ÜNİTE BAZLI MERKEZ (HUB) ŞABLONU
+
 function renderGradeUnitBasedHub(grade, subData, subTab) {
     const gNum = String(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
@@ -3440,6 +3431,144 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         </div>
     `;
 }
+
+
+
+// =========================================================================
+// 🌟 EVRENSEL AKORDEON & ÜNİTE FİLTRELEME FONKSİYONLARI (GLOBAL & HATASIZ)
+// =========================================================================
+
+window.toggleAccordionSection = function(sectionId) {
+    const bodyEl = document.getElementById(sectionId);
+    const iconEl = document.getElementById(sectionId + "-icon");
+    if (!bodyEl) {
+        console.warn("Accordion element not found:", sectionId);
+        return;
+    }
+    const isHidden = bodyEl.classList.contains("hidden");
+    if (isHidden) {
+        bodyEl.classList.remove("hidden");
+        if (iconEl) iconEl.classList.add("rotate-180");
+    } else {
+        bodyEl.classList.add("hidden");
+        if (iconEl) iconEl.classList.remove("rotate-180");
+    }
+};
+
+window.filterDersNotuUnits = function(unitIndex) {
+    const container = document.getElementById("ders-notu-accordion-group");
+    if (!container) return;
+
+    // 1. Buton stilini güncelle
+    const btns = container.querySelectorAll(".notu-filter-btn");
+    btns.forEach(b => {
+        const bUnit = b.getAttribute("data-unit");
+        if (bUnit === String(unitIndex)) {
+            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
+        } else if (bUnit === "lab") {
+            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
+        } else {
+            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+        }
+    });
+
+    // 2. Eğer 'lab' seçildiyse: Laboratuvar akordeonunu (acc-sec-lab) aç ve oraya kaydır
+    if (unitIndex === "lab") {
+        const labBody = document.getElementById("acc-sec-lab");
+        const labIcon = document.getElementById("acc-sec-lab-icon");
+        if (labBody) labBody.classList.remove("hidden");
+        if (labIcon) labIcon.classList.add("rotate-180");
+        const labBtn = document.querySelector("button[onclick*='acc-sec-lab']");
+        if (labBtn) labBtn.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+    }
+
+    // 3. 1-7 veya 'all' seçildiyse: Notlar bölümünün (acc-sec-notlar) açık olduğundan emin ol
+    const notlarBody = document.getElementById("acc-sec-notlar");
+    const notlarIcon = document.getElementById("acc-sec-notlar-icon");
+    if (notlarBody) notlarBody.classList.remove("hidden");
+    if (notlarIcon) notlarIcon.classList.add("rotate-180");
+
+    // Föy kartlarını filtrele
+    const cards = notlarBody.querySelectorAll(".foy-card-item");
+    cards.forEach(card => {
+        const cardUnit = card.getAttribute("data-unit");
+        if (unitIndex === "all" || cardUnit === String(unitIndex)) {
+            card.classList.remove("hidden");
+        } else {
+            card.classList.add("hidden");
+        }
+    });
+
+    if (unitIndex !== "all") {
+        const targetCard = notlarBody.querySelector(`.foy-card-item[data-unit="${unitIndex}"]`);
+        if (targetCard) {
+            targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+    }
+};
+
+window.filterUnitHubSection = function(containerId, unitIndex) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // 1. Buton stillerini güncelle
+    const btns = container.querySelectorAll(".unit-filter-btn");
+    btns.forEach(b => {
+        const bUnit = b.getAttribute("data-unit");
+        if (bUnit === String(unitIndex)) {
+            b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
+        } else if (bUnit === "lab") {
+            b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
+        } else {
+            b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+        }
+    });
+
+    // 2. Ünite ve Laboratuvar akordeonlarını filtrele
+    const unitCards = container.querySelectorAll(".unit-accordion-card");
+    unitCards.forEach(card => {
+        const cardUnit = card.getAttribute("data-unit");
+        if (unitIndex === "all" || cardUnit === String(unitIndex)) {
+            card.classList.remove("hidden");
+            // Tek bir ünite veya Laboratuvar seçildiğinde otomatik aç
+            if (unitIndex !== "all") {
+                const body = card.querySelector(".unit-card-body");
+                const icon = card.querySelector(".unit-card-icon");
+                if (body) body.classList.remove("hidden");
+                if (icon) icon.classList.add("rotate-180");
+            }
+        } else {
+            card.classList.add("hidden");
+        }
+    });
+
+    // Yumuşak kaydırma
+    if (unitIndex !== "all") {
+        const targetCard = container.querySelector(`.unit-accordion-card[data-unit="${unitIndex}"]`);
+        if (targetCard) {
+            targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        }
+    }
+};
+
+window.expandAllAccordions = function(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    const bodies = group.querySelectorAll(".accordion-body-collapsible");
+    const icons = group.querySelectorAll(".accordion-icon-rotatable");
+    bodies.forEach(b => b.classList.remove("hidden"));
+    icons.forEach(i => i.classList.add("rotate-180"));
+};
+
+window.collapseAllAccordions = function(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    const bodies = group.querySelectorAll(".accordion-body-collapsible");
+    const icons = group.querySelectorAll(".accordion-icon-rotatable");
+    bodies.forEach(b => b.classList.add("hidden"));
+    icons.forEach(i => i.classList.remove("rotate-180"));
+};
 
 
 function renderGradeSubTabContent(grade, subData, subTab) {
