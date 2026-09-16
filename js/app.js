@@ -21,16 +21,13 @@ function getDeletedMaterialIds() {
         const stored = localStorage.getItem("rotali_deleted_materials");
         let list = stored ? JSON.parse(stored) : [];
         if (!Array.isArray(list)) list = [];
-        // Sadece 'mat-' ile başlayan ID'ler tutulur
+        // Kullanıcı isteğiyle kalıcı olarak kaldırılan id'ler
+        const hardDeleted = ["mat-1789495187673", "mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"];
+        hardDeleted.forEach(hd => { if (!list.includes(hd)) list.push(hd); });
         list = list.filter(id => typeof id === "string" && id.startsWith("mat-"));
-        // Aktif olarak önbellekte bulunan veya yüklenen hiçbir materyal silinmiş sayılamaz
-        if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
-            const activeIds = new Set(ROTALI_MATERIALS_CACHE.map(m => m && m.id).filter(Boolean));
-            list = list.filter(id => !activeIds.has(id));
-        }
         return list;
     } catch(e) {
-        return [];
+        return ["mat-1789495187673"];
     }
 }
 
@@ -845,17 +842,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     ${item.title}
                                 </h4>
 
-                                <!-- Görsel Varsa: Orantılı, Kırpılmayan Net Önizleme Kutusu (Kitaplar İçin Dikey 1 Tam Sayfa) -->
-                                ${validImgUrl ? `
-                                    <div class="mat-preview-box relative w-full h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || validImgUrl || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
-                                        <img src="${validImgUrl}" alt="${item.title}" onerror="this.closest('.mat-preview-box').style.display='none';" class="w-auto h-full max-h-full object-contain rounded-xl shadow-lg border border-slate-300/60 transition-transform duration-300 group-hover:scale-105">
-                                        <div class="absolute bottom-2.5 right-2.5">
-                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid ${isVideo ? 'fa-play' : (isBook ? 'fa-book-open-reader' : 'fa-eye')}"></i> ${isVideo ? 'Videoyu Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görseli Aç')}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ` : ''}
+<!-- Kapak görseli liste kartında gösterilmez; yalnızca içerik açıldığında görüntüleme sayfasında gösterilir -->
 
                                 <!-- Açıklama -->
                                 <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
@@ -1558,17 +1545,7 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                         <span class="text-[11px] font-bold text-slate-400">${item.createdAt || 'Yeni'}</span>
                                     </div>
 
-                                    <!-- Görsel Önizleme (Varsa) -->
-                                    ${item.imageUrl && item.imageUrl !== '#' && !item.imageUrl.includes('placeholder') ? `
-                                        <div class="mat-preview-box relative w-full h-80 sm:h-96 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3.5 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.fileName || 'materyal'}', '${item.category || ''}', '${item.title || ''}')">
-                                            <img src="${item.imageUrl}" alt="${item.title}" class="w-auto h-full max-h-full object-contain rounded-xl shadow-lg border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                            <div class="absolute bottom-2.5 right-2.5">
-                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid ${item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i> ${item.category === 'videolar' ? 'Videoyu Oynat' : 'Görüntüle'}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    ` : ''}
+                                    <!-- Kapak görseli liste kartında gösterilmez; yalnızca içerik açıldığında görüntüleme sayfasında gösterilir -->
 
                                     <!-- İçerik Başlığı & Açıklaması -->
                                     <div class="p-5">
@@ -2861,12 +2838,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
     const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const foysList = (subData && subData.dersNotu) ? subData.dersNotu : [];
 
-    // MEB Ders Kitapları
+    // MEB Ders Kitapları (Resmi EBA CDN & Vektörel PDF URL'leri)
     const textbookMap = {
-        "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
-        "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
-        "7": { title: "7. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "240 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri7-1.pdf", cover: "assets/kapak-7.jpg" },
-        "8": { title: "8. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "256 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri8-1.pdf", cover: "assets/kapak-8.jpg" }
+        "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
+        "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
+        "7": { title: "7. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "240 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri7-1.pdf", cover: "assets/kapak-7.jpg" },
+        "8": { title: "8. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "256 Sayfa", fileUrl: "#", cover: "assets/kapak-8.jpg" }
     };
     const currentBook = textbookMap[gNum] || textbookMap["8"];
 
@@ -2994,8 +2971,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6">
-                            <div class="w-24 sm:w-32 h-36 sm:h-44 shrink-0 rounded-xl overflow-hidden shadow-md border border-slate-200 bg-slate-100 flex items-center justify-center">
-                                <img src="${currentBook.cover}" alt="${currentBook.title}" class="w-full h-full object-cover" onerror="this.src='assets/kapak-5.jpg'">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-sm">
+                                <i class="fa-solid fa-book-open"></i>
                             </div>
                             <div class="flex-1 text-center md:text-left">
                                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
@@ -3004,10 +2981,10 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 </div>
                                 <h5 class="text-lg sm:text-xl font-black text-slate-900 mb-2">${currentBook.title}</h5>
                                 <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4 leading-relaxed">
-                                    Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı. İndirmeden, sayfa sayfa veya dikey akış modunda doğrudan tarayıcınızda okuyabilirsiniz.
+                                    Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı. Görsel kapak ve tüm sayfaları indirmeden, kesintisiz dikey akış modunda doğrudan tarayıcınızda okuyabilirsiniz.
                                 </p>
                                 <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                                    <button type="button" onclick="openDigitalBookModal('${currentBook.fileUrl}', '${currentBook.title}', '${grade.number}')" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
+                                    <button type="button" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
                                     </button>
                                 </div>
@@ -5994,10 +5971,11 @@ let DigitalBookState = {
 
 let bookZoomDebounceTimer = null;
 
-function getFallbackPagesForGrade(grade, title) {
+function getFallbackPagesForGrade(grade, title, coverUrl = "") {
     const g = String(grade || "5").replace(/^grade-/, "").trim();
     const lowerTitle = String(title || "").toLowerCase();
     const isBook = lowerTitle.includes("kitap") || lowerTitle.includes("kitab");
+    const activeCover = coverUrl || (["5", "6", "7", "8"].includes(g) ? `assets/kapak-${g}.jpg` : "assets/kapak-5.jpg");
 
     if (!isBook) {
         return [
@@ -6026,8 +6004,9 @@ function getFallbackPagesForGrade(grade, title) {
             title: "Kitap Kapağı & Bilgiler",
             html: `
                 <div class="flex flex-col items-center justify-center text-center py-6 px-2 sm:px-6 select-none max-w-xl mx-auto">
-                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-red-600 via-rose-600 to-amber-500 text-white flex items-center justify-center text-2xl shadow-xl shadow-red-600/30 mb-4 ring-4 ring-red-500/20">
-                        <i class="fa-solid fa-atom animate-pulse"></i>
+                    <!-- Görsel Kapak (Yalnızca içerik açıldığında detay/görüntüleme sayfasında gösterilir) -->
+                    <div class="w-44 sm:w-56 h-60 sm:h-76 mx-auto rounded-2xl overflow-hidden shadow-2xl border border-slate-200 mb-5 bg-slate-100 flex items-center justify-center">
+                        <img src="${activeCover}" alt="${title}" class="w-full h-full object-cover" onerror="this.src='assets/kapak-5.jpg'">
                     </div>
                     <span class="px-3 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-black uppercase tracking-wider mb-2 border border-red-100">
                         T.C. Millî Eğitim Bakanlığı
@@ -6220,10 +6199,25 @@ function getFallbackPagesForGrade(grade, title) {
 }
 
 async function openDigitalBookModal(options = {}) {
+    // String veya nesne olarak çağrılmayı destekle
+    if (typeof options === "string") {
+        options = {
+            fileUrl: arguments[0] || "",
+            title: arguments[1] || "Fen Bilimleri Ders Dokümanı",
+            grade: arguments[2] || "5",
+            cover: arguments[3] || ""
+        };
+    }
     const bookTitle = options.title || "Fen Bilimleri Ders Dokümanı";
-    const grade = options.grade || "7";
+    const grade = String(options.grade || "5").replace(/^grade-/, "").trim();
     let fileUrl = options.fileUrl || "";
     const id = options.id || "";
+    const coverUrl = options.cover || options.imageUrl || (["5", "6", "7", "8"].includes(grade) ? `assets/kapak-${grade}.jpg` : "assets/kapak-5.jpg");
+
+    // EBA CDN otomatik fallback
+    if ((!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") && ["5", "6", "7"].includes(grade)) {
+        fileUrl = `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${grade}-1.pdf`;
+    }
 
     // 🎯 Bilinen statik doküman eşleştirmesi
     if (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") {
@@ -6242,7 +6236,7 @@ async function openDigitalBookModal(options = {}) {
     DigitalBookState.renderingPages.clear();
     DigitalBookState.pdfDoc = null;
     DigitalBookState.mode = "fallback";
-    DigitalBookState.fallbackPages = getFallbackPagesForGrade(grade, bookTitle);
+    DigitalBookState.fallbackPages = getFallbackPagesForGrade(grade, bookTitle, coverUrl);
     DigitalBookState.totalPages = DigitalBookState.fallbackPages.length;
     DigitalBookState.bookInfo = { id, title: bookTitle, grade, fileUrl, fileName: options.fileName || "dokuman.pdf" };
 
@@ -7230,7 +7224,8 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
             grade: gradeStr,
             fileUrl: pdfTarget,
-            fileName: (found && found.fileName) || fileName || "dokuman.pdf"
+            fileName: (found && found.fileName) || fileName || "dokuman.pdf",
+            cover: (found && (found.imageUrl || found.cover)) || ""
         });
         return;
     }
