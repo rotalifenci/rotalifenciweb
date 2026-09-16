@@ -2885,9 +2885,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
             
-            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler (DERS NOTU İÇİN DE EKLENDİ) -->
+            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Ders Kitabı + 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler -->
             <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
                 <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
+                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-book-open text-amber-600"></i>
+                        <span>Ders Kitabı</span>
+                    </button>
                     ${[1,2,3,4,5,6,7].map(num => `
                         <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer">
                             <span>${num}. Ünite</span>
@@ -3465,6 +3469,8 @@ window.filterDersNotuUnits = function(unitIndex) {
         const bUnit = b.getAttribute("data-unit");
         if (bUnit === String(unitIndex)) {
             b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
+        } else if (bUnit === "kitap") {
+            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer";
         } else if (bUnit === "lab") {
             b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
         } else {
@@ -3472,7 +3478,18 @@ window.filterDersNotuUnits = function(unitIndex) {
         }
     });
 
-    // 2. Eğer 'lab' seçildiyse: Laboratuvar akordeonunu (acc-sec-lab) aç ve oraya kaydır
+    // 2. Eğer 'kitap' seçildiyse: Ders Kitabı akordeonunu (acc-sec-kitap) aç ve oraya kaydır
+    if (unitIndex === "kitap") {
+        const kitapBody = document.getElementById("acc-sec-kitap");
+        const kitapIcon = document.getElementById("acc-sec-kitap-icon");
+        if (kitapBody) kitapBody.classList.remove("hidden");
+        if (kitapIcon) kitapIcon.classList.add("rotate-180");
+        const kitapBtn = document.querySelector("button[onclick*='acc-sec-kitap']");
+        if (kitapBtn) kitapBtn.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+    }
+
+    // 3. Eğer 'lab' seçildiyse: Laboratuvar akordeonunu (acc-sec-lab) aç ve oraya kaydır
     if (unitIndex === "lab") {
         const labBody = document.getElementById("acc-sec-lab");
         const labIcon = document.getElementById("acc-sec-lab-icon");
@@ -3483,7 +3500,7 @@ window.filterDersNotuUnits = function(unitIndex) {
         return;
     }
 
-    // 3. 1-7 veya 'all' seçildiyse: Notlar bölümünün (acc-sec-notlar) açık olduğundan emin ol
+    // 4. 1-7 veya 'all' seçildiyse: Notlar bölümünün (acc-sec-notlar) açık olduğundan emin ol
     const notlarBody = document.getElementById("acc-sec-notlar");
     const notlarIcon = document.getElementById("acc-sec-notlar-icon");
     if (notlarBody) notlarBody.classList.remove("hidden");
