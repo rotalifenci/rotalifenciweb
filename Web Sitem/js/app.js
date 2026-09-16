@@ -3220,7 +3220,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     return `
         <div id="${containerId}" class="mb-10 animate-in fade-in duration-300">
             <!-- 1. BÖLÜM HERO BAŞLIĞI -->
-            <div class="bg-gradient-to-r ${cfg.gradient} text-white rounded-3xl p-6 sm:p-8 mb-6 shadow-xl relative overflow-hidden">
+            <div class="bg-gradient-to-r ${cfg.gradient} text-white rounded-3xl p-6 sm:p-8 mb-4 shadow-xl relative overflow-hidden">
                 <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <div class="flex items-center gap-2 mb-2">
@@ -3249,20 +3249,23 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                 </div>
             </div>
 
+            <!-- 2. HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + En Sonda '🌟 Tüm Üniteler' -->
+            <div class="bg-white/80 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 mb-6 shadow-sm">
+                <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar py-0.5">
+                    ${unitList.map((uTitle, idx) => `
+                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${idx+1}')" data-unit="${idx+1}" class="unit-filter-btn px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-sm active:scale-95">
+                            <span class="w-5 h-5 rounded-lg bg-slate-100 text-slate-800 text-[10px] font-black flex items-center justify-center">${idx+1}</span>
+                            <span>${idx+1}. Ünite</span>
+                        </button>
+                    `).join("")}
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'all')" data-unit="all" class="unit-filter-btn px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95">
+                        <span>🌟 Tüm Üniteler (${unitList.length})</span>
+                    </button>
+                </div>
+            </div>
+
             <!-- Kullanıcının Eklediği Özel Materyaller (Canlı & Otomatik Listelenir) -->
             ${renderCustomMaterialsSection(grade.number, normSubTab)}
-
-            <!-- 2. HIZLI ÜNİTE FİLTRELEME ÇUBUĞU -->
-            <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 custom-scrollbar">
-                <button type="button" onclick="filterUnitHubSection('${containerId}', 'all')" data-unit="all" class="unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20">
-                    <span>🌟 Tüm Üniteler (7)</span>
-                </button>
-                ${unitList.map((uTitle, idx) => `
-                    <button type="button" onclick="filterUnitHubSection('${containerId}', '${idx+1}')" data-unit="${idx+1}" class="unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
-                        <span>${idx+1}. Ünite</span>
-                    </button>
-                `).join("")}
-            </div>
 
             <!-- 3. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye) -->
             <div class="space-y-4">
