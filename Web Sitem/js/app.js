@@ -76,11 +76,12 @@ const CloudSyncManager = {
         this.startLiveSync();
     },
 
-    // ⚡ Anlık Canlı Senkronizasyon (Kullanıcı sekmeye dönünce veya 15 saniyede bir)
+    // ⚡ Anlık Canlı Senkronizasyon (Pencere odaklandığında, sekme değiştiğinde, internet gelince ve 8 saniyede bir)
     startLiveSync() {
         if (this.heartbeatStarted) return;
         this.heartbeatStarted = true;
 
+        // Sekmeye dönüldüğünde veya pencereye odaklanıldığında anında çek
         window.addEventListener("focus", () => {
             this.syncWithCloud(false);
         });
@@ -91,13 +92,32 @@ const CloudSyncManager = {
             }
         });
 
-        // Sayfa açıkken her 20 saniyede bir sessiz arka plan kontrolü
-        setInterval(() => {
+        // Çevrimiçi olunduğunda anında senkronize et
+        window.addEventListener("online", () => {
             this.syncWithCloud(false);
-        }, 20000);
+        });
+
+        // Aynı tarayıcıdaki diğer sekmelerden gelen yerel güncellemeleri anında yakala
+        window.addEventListener("storage", (e) => {
+            if (e.key === "rotali_custom_materials" || e.key === "rotali_materials_sync_signal") {
+                try {
+                    ROTALI_MATERIALS_CACHE = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+                    if (typeof handleRouteChange === "function") {
+                        handleRouteChange({ preserveScroll: true });
+                    }
+                } catch(err) {}
+            }
+        });
+
+        // Sayfa açıkken her 8 saniyede bir sessiz arka plan kontrolü (Mobil ve web arası tam anlık eşitleme)
+        setInterval(() => {
+            if (document.visibilityState === "visible" || !document.hidden) {
+                this.syncWithCloud(false);
+            }
+        }, 8000);
     },
 
-    // Bulut ile iki yönlü akıllı eşitleme
+    // Bulut ile iki yönlü akıllı eşitleme (Bulut öncelikli - Cloud First Source of Truth)
     async syncWithCloud(notify = false) {
         if (this.isSyncing) return;
         this.isSyncing = true;
@@ -109,17 +129,21 @@ const CloudSyncManager = {
         try {
             const deletedIds = new Set(getDeletedMaterialIds());
             deletedIds.add("mat-5-unite-bilgi");
-    deletedIds.add("mat-5-lab-guvenlik-gorsel");
+            deletedIds.add("mat-5-lab-guvenlik-gorsel");
 
-            // 1. Buluttaki en güncel materyalleri çek
+            // 1. Buluttaki en güncel materyalleri çek (Cache-Busting zaman damgasıyla)
             let cloudMaterials = [];
             let cloudDeletedIds = [];
             let fetchSuccess = false;
+            const noCacheHeaders = {
+                "Cache-Control": "no-cache, no-store, must-revalidate",
+                "Pragma": "no-cache"
+            };
 
             // Önce API endpoint dene
             try {
-                const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}`, {
-                    headers: { "Cache-Control": "no-cache" }
+                const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}&r=${Math.random()}`, {
+                    headers: noCacheHeaders
                 });
                 if (res.ok) {
                     const data = await res.json();
@@ -136,8 +160,8 @@ const CloudSyncManager = {
             // Fallback: Canlı rotalifenci.vercel.app/api/sync
             if (!fetchSuccess && this.apiEndpoint !== "https://rotalifenci.vercel.app/api/sync") {
                 try {
-                    const vRes = await fetch(`https://rotalifenci.vercel.app/api/sync?t=${Date.now()}`, {
-                        headers: { "Cache-Control": "no-cache" }
+                    const vRes = await fetch(`https://rotalifenci.vercel.app/api/sync?t=${Date.now()}&r=${Math.random()}`, {
+                        headers: noCacheHeaders
                     });
                     if (vRes.ok) {
                         const vData = await vRes.json();
@@ -153,8 +177,8 @@ const CloudSyncManager = {
             // Fallback Gist Raw
             if (!fetchSuccess) {
                 try {
-                    const gistRes = await fetch(`${this.fallbackGistUrl}?t=${Date.now()}`, {
-                        headers: { "Cache-Control": "no-cache" }
+                    const gistRes = await fetch(`${this.fallbackGistUrl}?t=${Date.now()}&r=${Math.random()}`, {
+                        headers: noCacheHeaders
                     });
                     if (gistRes.ok) {
                         const gistData = await gistRes.json();
@@ -169,14 +193,14 @@ const CloudSyncManager = {
                 }
             }
 
-            // Buluttan gelen aktif materyallerin ID'lerini yerel silinmiş listesinden temizle (Kendi kendini onarma)
+            // Buluttan gelen aktif materyallerin ID'lerini yerel silinmiş listesinden temizle
             cloudMaterials.forEach(item => {
                 if (item && item.id) {
                     removeDeletedMaterialId(item.id);
                 }
             });
 
-            // Buluttan gelen silinmiş ID'leri yerel tombstone'a ekle (Sadece geçerli ID'ler)
+            // Buluttan gelen silinmiş ID'leri yerel listeye ekle
             cloudDeletedIds.forEach(id => {
                 if (typeof id === "string" && id.startsWith("mat-")) {
                     addDeletedMaterialId(id);
@@ -186,7 +210,7 @@ const CloudSyncManager = {
             activeDeletedSet.add("mat-5-unite-bilgi");
             activeDeletedSet.add("mat-5-lab-guvenlik-gorsel");
 
-            // 2. Cihazdaki yerel materyalleri al (Bellek öncelikli)
+            // 2. Cihazdaki yerel materyalleri al
             let localMaterials = [];
             if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
                 localMaterials = ROTALI_MATERIALS_CACHE;
@@ -198,53 +222,72 @@ const CloudSyncManager = {
                 }
             }
 
-            // 3. Birleştir: Sadece gerçekten silinmiş ID'leri hariç tut (Başlıklar asla engellenmez)
+            // 3. 🌟 BULUT ÖNCELİKLİ AKILLI BİRLEŞTİRME (Cloud First Source of Truth)
+            // Telefondan yapılan değişiklikler bilgisayarı, bilgisayardan yapılanlar telefonu anında günceller!
             const mergedMap = new Map();
 
-            // Sadece silinmemiş bulut materyalleri
+            // Adım A: Önce buluttaki güncel materyalleri ekle
             cloudMaterials.forEach(item => {
                 if (item && item.id && !activeDeletedSet.has(item.id)) {
                     mergedMap.set(item.id, item);
                 }
             });
 
-            // Yerel cihazdaki materyaller (silinmemiş olanlar)
+            // Adım B: Yerel cihazdaki materyalleri birleştir
             let hasNewLocalToUpload = false;
-            localMaterials.forEach(item => {
-                if (item && item.id && !activeDeletedSet.has(item.id)) {
-                    const inCloud = mergedMap.get(item.id);
-                    if (!inCloud) {
+            localMaterials.forEach(localItem => {
+                if (localItem && localItem.id && !activeDeletedSet.has(localItem.id)) {
+                    if (mergedMap.has(localItem.id)) {
+                        const inCloud = mergedMap.get(localItem.id);
+                        // inCloud esastır (telefondan gelen en güncel başlık, kategori, kapak, açıklama kazanır!)
+                        const merged = { ...localItem, ...inCloud };
+                        
+                        // Sadece bu cihazda yüklü olan DataURL veya yerel blob korunur
+                        if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
+                            merged.fileUrl = localItem.fileUrl;
+                        }
+                        if (localItem.imageUrl && localItem.imageUrl.startsWith("data:") && (!inCloud.imageUrl || inCloud.imageUrl === "" || inCloud.imageUrl === "#")) {
+                            merged.imageUrl = localItem.imageUrl;
+                        }
+                        mergedMap.set(localItem.id, merged);
+                    } else {
+                        // Sadece bulutta henüz hiç olmayan YENİ yerel materyaller buluta eklenmek üzere korunur
                         hasNewLocalToUpload = true;
+                        mergedMap.set(localItem.id, localItem);
                     }
-                    // Akıllı birleştirme: Boş yerel fileUrl buluttaki dolu veriyi silmesin
-                    const merged = { ...(inCloud || {}), ...item };
-                    if (inCloud && inCloud.fileUrl && inCloud.fileUrl.startsWith("data:") && inCloud.fileUrl.length > 10) {
-                        if (!item.fileUrl || item.fileUrl === "" || item.fileUrl === "#") {
-                            merged.fileUrl = inCloud.fileUrl; // Buluttaki DataURL'yi koru
-                        }
-                    }
-                    if (inCloud && inCloud.imageUrl && inCloud.imageUrl.startsWith("data:") && inCloud.imageUrl.length > 10) {
-                        if (!item.imageUrl || item.imageUrl === "" || item.imageUrl === "#") {
-                            merged.imageUrl = inCloud.imageUrl;
-                        }
-                    }
-                    mergedMap.set(item.id, merged);
                 }
             });
 
             const finalMergedList = Array.from(mergedMap.values());
 
-            // Görsel URL referanslarını güvene al (fileUrl dataURL ise imageUrl olarak da kullanılabilsin)
+            // Görsel URL referanslarını güvene al
             finalMergedList.forEach(item => {
                 if (item && !item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
                     item.imageUrl = item.fileUrl;
                 }
             });
 
-            // 4. Bellek ve Yerel hafızaya güvenle kaydet (Mobilde kota aşımına karşı korumalı)
-            saveCustomMaterialsSafe(finalMergedList);
+            // 4. Fark var mı kontrol et (Gereksiz render ve localStorage yazımını önle)
+            const prevCount = Array.isArray(ROTALI_MATERIALS_CACHE) ? ROTALI_MATERIALS_CACHE.length : -1;
+            const currentSerialized = JSON.stringify(finalMergedList.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
+            const prevSerialized = Array.isArray(ROTALI_MATERIALS_CACHE) 
+                ? JSON.stringify(ROTALI_MATERIALS_CACHE.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })))
+                : "";
 
-            // 5. Eğer bu cihazda bulutta olmayan yerel materyal varsa, buluta gönder
+            const hasChanged = currentSerialized !== prevSerialized;
+
+            if (hasChanged || prevCount !== finalMergedList.length) {
+                // Bellek ve Yerel hafızaya güvenle kaydet
+                saveCustomMaterialsSafe(finalMergedList);
+                console.log(`🔄 Senkronizasyon güncellendi: ${finalMergedList.length} materyal aktif.`);
+
+                // Sayfadaki arayüzü anında güncelle (Kullanıcı aşağı kaydırmışsa kaydırma konumunu bozma)
+                if (typeof handleRouteChange === "function") {
+                    handleRouteChange({ preserveScroll: true });
+                }
+            }
+
+            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa, buluta gönder
             if (hasNewLocalToUpload) {
                 await this.uploadToCloud(finalMergedList, false);
             }
@@ -253,11 +296,6 @@ const CloudSyncManager = {
 
             if (notify) {
                 showToast(`✅ Eşitleme başarılı! ${finalMergedList.length} materyal tüm cihazlarda aktif.`, "success");
-            }
-
-            // Sayfadaki arayüzü anında güncelle (Kullanıcı aşağı kaydırmışsa yukarı sıçratma)
-            if (typeof handleRouteChange === "function") {
-                handleRouteChange({ preserveScroll: true });
             }
         } catch(err) {
             console.error("Cloud sync general error:", err);
@@ -575,6 +613,8 @@ function saveCustomMaterialsSafe(list) {
             return copy;
         });
         localStorage.setItem("rotali_custom_materials", JSON.stringify(slimList));
+        // Sekmeler arası ve cihaz içi anlık güncelleme sinyali
+        localStorage.setItem("rotali_materials_sync_signal", Date.now().toString());
     } catch (storageErr) {
         console.warn("LocalStorage quota uyarısı:", storageErr);
         try {
@@ -589,6 +629,7 @@ function saveCustomMaterialsSafe(list) {
                 return copy;
             });
             localStorage.setItem("rotali_custom_materials", JSON.stringify(tinyList));
+            localStorage.setItem("rotali_materials_sync_signal", Date.now().toString());
         } catch (e2) {}
     }
 }
@@ -8345,7 +8386,7 @@ async function handleAdvMaterialSubmit(e) {
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
                     visibility: visibility,
-                    updatedAt: new Date().toLocaleDateString("tr-TR")
+                    updatedAt: new Date().toISOString()
                 };
             } else {
                 // Varsayılan MEB ünite notu düzenlenmişse veya listede yoksa, customList'e ekle
@@ -8364,8 +8405,8 @@ async function handleAdvMaterialSubmit(e) {
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027", "ders-notu"],
                     visibility: visibility,
                     downloadCount: "Yeni",
-                    createdAt: new Date().toLocaleDateString("tr-TR"),
-                    updatedAt: new Date().toLocaleDateString("tr-TR")
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
                 };
                 customList.unshift(newEditedItem);
             }
@@ -8386,7 +8427,8 @@ async function handleAdvMaterialSubmit(e) {
                 tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
                 visibility: visibility,
                 downloadCount: "Yeni",
-                createdAt: new Date().toLocaleDateString("tr-TR")
+                createdAt: new Date().toISOString(),
+                updatedAt: new Date().toISOString()
             };
             customList.unshift(newMaterial);
         }

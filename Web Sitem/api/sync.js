@@ -9,6 +9,11 @@ module.exports = async function handler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    // ⚡ KESİN ANLIK EŞİTLEME: Tarayıcı, Vercel Edge ve CDN önbelleklerini tamamen devre dışı bırak
+    res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+    res.setHeader("Surrogate-Control", "no-store");
 
     if (req.method === "OPTIONS") {
         return res.status(200).end();
@@ -100,14 +105,39 @@ module.exports = async function handler(req, res) {
             let existingMaterials = [];
             let existingDeletedIds = [];
             try {
-                const rawUrl = "https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now();
-                const rawResp = await fetch(rawUrl);
-                if (rawResp.ok) {
-                    const parsed = await rawResp.json();
-                    existingMaterials = Array.isArray(parsed.materials) ? parsed.materials : [];
-                    existingDeletedIds = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
+                const gistApiUrl = "https://api.github.com/gists/" + GIST_ID;
+                const h = { "User-Agent": "RotaliFenci-App", "Accept": "application/vnd.github+json" };
+                if (GITHUB_TOKEN && GITHUB_TOKEN.trim().length > 5) h["Authorization"] = "Bearer " + GITHUB_TOKEN.trim();
+                const gResp = await fetch(gistApiUrl, { headers: h });
+                if (gResp.ok) {
+                    const gData = await gResp.json();
+                    const fObj = gData.files && gData.files["materials.json"];
+                    if (fObj) {
+                        let parsed = null;
+                        if (fObj.content && !fObj.truncated) {
+                            try { parsed = JSON.parse(fObj.content); } catch(e) {}
+                        }
+                        if (!parsed && fObj.raw_url) {
+                            const rResp = await fetch(fObj.raw_url);
+                            parsed = await rResp.json();
+                        }
+                        if (parsed) {
+                            existingMaterials = Array.isArray(parsed.materials) ? parsed.materials : [];
+                            existingDeletedIds = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
+                        }
+                    }
                 }
-            } catch(e) {}
+            } catch(apiReadErr) {
+                try {
+                    const rawUrl = "https://gist.githubusercontent.com/rotalifenci/" + GIST_ID + "/raw/materials.json?t=" + Date.now();
+                    const rawResp = await fetch(rawUrl);
+                    if (rawResp.ok) {
+                        const parsed = await rawResp.json();
+                        existingMaterials = Array.isArray(parsed.materials) ? parsed.materials : [];
+                        existingDeletedIds = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
+                    }
+                } catch(e) {}
+            }
 
             // Combine deleted IDs (strictly material IDs, never titles)
             const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.startsWith("mat-")));
