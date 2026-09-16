@@ -914,7 +914,12 @@ function initPortal() {
 
     handleRouteChange();
     updateUserInterface();
-    CloudSyncManager.init();
+    // ⚡ Sayfa açılır açılmaz buluttan en taze veriyi çek ve ekranı anında tazele
+    CloudSyncManager.init().then(() => {
+        if (typeof handleRouteChange === "function") {
+            handleRouteChange({ preserveScroll: true });
+        }
+    }).catch(() => {});
 }
 
 // -------------------------------------------------------------
@@ -5146,6 +5151,9 @@ function updateAdminNavUI() {
         if (isAdmin) {
             topContainer.innerHTML = `
                 <div class="flex items-center gap-1.5 animate-in fade-in duration-200">
+                    <button type="button" onclick="CloudSyncManager.syncWithCloud(true)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-slate-700 active:scale-95" title="☁️ Canlı Bulut Eşitlemesini Çalıştır">
+                        <i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden md:inline">Bulut Eşitle</span>
+                    </button>
                     <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all" title="Hızlı Materyal Ekle">
                         <i class="fa-solid fa-plus text-xs"></i> <span class="hidden md:inline">Ekle</span>
                     </button>
