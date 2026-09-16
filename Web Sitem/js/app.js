@@ -5141,20 +5141,45 @@ function handleAdminLogout() {
     handleRouteChange();
 }
 
+window.triggerManualCloudSync = async function(btnEl) {
+    if (btnEl) {
+        btnEl.disabled = true;
+        btnEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Eşitleniyor...</span>`;
+    }
+    try {
+        if (typeof CloudSyncManager !== "undefined") {
+            CloudSyncManager.isSyncing = false; // Kilitlenmeyi sıfırla
+            await CloudSyncManager.syncWithCloud(true);
+        }
+        if (btnEl) {
+            btnEl.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>Eşitlendi!</span>`;
+            setTimeout(() => {
+                btnEl.disabled = false;
+                btnEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden md:inline">Bulut Eşitle</span>`;
+            }, 1800);
+        }
+    } catch(err) {
+        if (btnEl) {
+            btnEl.disabled = false;
+            btnEl.innerHTML = `<i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden md:inline">Bulut Eşitle</span>`;
+        }
+    }
+};
+
 function updateAdminNavUI() {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     ADMIN_CONFIG.isAdmin = isAdmin;
 
-    // 1. Üst Bar: Sadece Giriş Yapıldığında Çıkış Butonu Göster (Giriş yapılmamışsa buton görünmez)
+    // 1. Üst Bar: Sadece Giriş Yapıldığında Çıkış Butonu Göster
     const topContainer = document.getElementById("admin-nav-container");
     if (topContainer) {
         if (isAdmin) {
             topContainer.innerHTML = `
                 <div class="flex items-center gap-1.5 animate-in fade-in duration-200">
-                    <button type="button" onclick="CloudSyncManager.syncWithCloud(true)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-slate-700 active:scale-95" title="☁️ Canlı Bulut Eşitlemesini Çalıştır">
+                    <button type="button" onclick="triggerManualCloudSync(this)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-slate-700 active:scale-95 cursor-pointer" title="☁️ Canlı Bulut Eşitlemesini Çalıştır">
                         <i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden md:inline">Bulut Eşitle</span>
                     </button>
-                    <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all" title="Hızlı Materyal Ekle">
+                    <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="px-3 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center gap-1.5 shadow-sm transition-all cursor-pointer" title="Hızlı Materyal Ekle">
                         <i class="fa-solid fa-plus text-xs"></i> <span class="hidden md:inline">Ekle</span>
                     </button>
                     <button type="button" onclick="handleAdminLogout()" class="px-3 sm:px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer border border-rose-500" title="👑 Yönetici Oturumunu Kapat">
@@ -5787,27 +5812,10 @@ async function tryLoadPdfDocument(id, fileUrl) {
                 pdfData = fileUrl;
             }
         } else if (typeof fileUrl === "string" && (fileUrl.startsWith("http") || fileUrl.startsWith("assets/") || fileUrl.endsWith(".pdf"))) {
-            try {
-                if (statusEl) statusEl.innerText = "Doküman İndiriliyor...";
-                const resp = await fetch(fileUrl);
-                if (resp.ok) {
-                    const ab = await resp.arrayBuffer();
-                    pdfData = new Uint8Array(ab);
-                    isDataBuffer = true;
-                    // Telefonda veya diğer cihazda yerel IndexedDB'ye önbellekle
-                    if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile && id) {
-                        try {
-                            const blob = new Blob([pdfData], { type: "application/pdf" });
-                            RotaliDB.saveFile(id, blob, bookInfo.fileName || "7.1. Ders Notu.pdf", "application/pdf").catch(() => {});
-                        } catch(saveErr) {}
-                    }
-                } else {
-                    pdfData = fileUrl;
-                }
-            } catch(fetchErr) {
-                console.warn("Fetch failed, passing url to PDF.js:", fetchErr);
-                pdfData = fileUrl;
-            }
+            // ⚡ DERS KİTAPLARI HIZLANDIRMA: Dosyayı tek seferde indirmeyi beklemek yerine streaming ile aç
+            // PDF.js HTTP Range Requests ile ilk sayfayı 1 saniyede açar!
+            pdfData = fileUrl;
+            isDataBuffer = false;
         } else {
             pdfData = fileUrl;
         }
@@ -5890,6 +5898,9 @@ async function tryLoadPdfDocument(id, fileUrl) {
         } else if (typeof pdfData === "string") {
             loadingTask = window.pdfjsLib.getDocument({
                 url: pdfData,
+                rangeChunkSize: 65536,
+                disableAutoFetch: false,
+                disableStream: false,
                 ...cMapOptions
             });
         } else {
@@ -5946,6 +5957,9 @@ async function setupVerticalPdfSlots(pdf) {
         slot.dataset.page = p;
         slot.style.width = targetWidth + "px";
         slot.style.minHeight = targetHeight + "px";
+        // ⚡ GPU ve DOM Performans Canavarı: Yüzlerce sayfayı anında akıcı hale getirir
+        slot.style.contentVisibility = "auto";
+        slot.style.containIntrinsicSize = `${targetWidth}px ${targetHeight}px`;
 
         slot.innerHTML = `
             <div class="w-full bg-slate-900 text-slate-400 text-[10px] font-bold px-3.5 py-1.5 flex items-center justify-between border-b border-slate-800 select-none">
@@ -5968,10 +5982,11 @@ async function setupVerticalPdfSlots(pdf) {
     // 2. Sayfaların ekrana girdikçe çizilmesi için IntersectionObserver kur
     setupPdfIntersectionObserver();
 
-    // 3. İlk 3 sayfayı anında render et
+    // 3. ⚡ İlk sayfayı ANINDA çiz, sonrakileri arka planda akıt
     renderSinglePdfPage(1);
-    if (pdf.numPages >= 2) renderSinglePdfPage(2);
-    if (pdf.numPages >= 3) renderSinglePdfPage(3);
+    if (pdf.numPages >= 2) {
+        requestAnimationFrame(() => renderSinglePdfPage(2));
+    }
 }
 
 function setupPdfIntersectionObserver() {
@@ -6032,7 +6047,7 @@ async function renderSinglePdfPage(pageNum) {
         const spinner = document.getElementById(`pdf-page-spinner-${pageNum}`);
         if (!canvas) return;
 
-        const dpr = Math.min(2.5, Math.max(window.devicePixelRatio || 1.0, 1.5));
+        const dpr = Math.min(1.8, Math.max(window.devicePixelRatio || 1.0, 1.25));
         const viewport = page.getViewport({ scale: baseFitScale * zoom * dpr });
 
         canvas.width = Math.round(viewport.width);
