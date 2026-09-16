@@ -2901,9 +2901,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                         <i class="fa-solid fa-flask-vial text-emerald-600"></i>
                         <span>Laboratuvar</span>
                     </button>
-                    <button type="button" onclick="filterDersNotuUnits('all')" data-unit="all" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer">
-                        <span>🌟 Tüm Üniteler (7)</span>
-                    </button>
+                    
                 </div>
             </div>
 
@@ -3284,9 +3282,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         <i class="fa-solid fa-flask-vial text-emerald-600"></i>
                         <span>Laboratuvar</span>
                     </button>
-                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'all')" data-unit="all" class="unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95">
-                        <span>🌟 Tüm Üniteler (${unitList.length})</span>
-                    </button>
+                    
                 </div>
             </div>
 
@@ -3463,23 +3459,33 @@ window.filterDersNotuUnits = function(unitIndex) {
     const container = document.getElementById("ders-notu-accordion-group");
     if (!container) return;
 
-    // 1. Buton stilini güncelle
+    const clickedBtn = container.querySelector(`.notu-filter-btn[data-unit="${unitIndex}"]`);
+    const isCurrentlyActive = clickedBtn && clickedBtn.getAttribute("data-active") === "true";
+
+    // Tekrar tıklandığında filtreyi kaldır (tümünü göster)
+    const targetUnit = isCurrentlyActive ? "all" : unitIndex;
+
+    // 1. Buton stillerini güncelle
     const btns = container.querySelectorAll(".notu-filter-btn");
     btns.forEach(b => {
         const bUnit = b.getAttribute("data-unit");
-        if (bUnit === String(unitIndex)) {
+        if (targetUnit !== "all" && bUnit === String(targetUnit)) {
+            b.setAttribute("data-active", "true");
             b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
-        } else if (bUnit === "kitap") {
-            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer";
-        } else if (bUnit === "lab") {
-            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
         } else {
-            b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+            b.removeAttribute("data-active");
+            if (bUnit === "kitap") {
+                b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer";
+            } else if (bUnit === "lab") {
+                b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
+            } else {
+                b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+            }
         }
     });
 
     // 2. Eğer 'kitap' seçildiyse: Ders Kitabı akordeonunu (acc-sec-kitap) aç ve oraya kaydır
-    if (unitIndex === "kitap") {
+    if (targetUnit === "kitap") {
         const kitapBody = document.getElementById("acc-sec-kitap");
         const kitapIcon = document.getElementById("acc-sec-kitap-icon");
         if (kitapBody) kitapBody.classList.remove("hidden");
@@ -3490,7 +3496,7 @@ window.filterDersNotuUnits = function(unitIndex) {
     }
 
     // 3. Eğer 'lab' seçildiyse: Laboratuvar akordeonunu (acc-sec-lab) aç ve oraya kaydır
-    if (unitIndex === "lab") {
+    if (targetUnit === "lab") {
         const labBody = document.getElementById("acc-sec-lab");
         const labIcon = document.getElementById("acc-sec-lab-icon");
         if (labBody) labBody.classList.remove("hidden");
@@ -3510,15 +3516,15 @@ window.filterDersNotuUnits = function(unitIndex) {
     const cards = notlarBody.querySelectorAll(".foy-card-item");
     cards.forEach(card => {
         const cardUnit = card.getAttribute("data-unit");
-        if (unitIndex === "all" || cardUnit === String(unitIndex)) {
+        if (targetUnit === "all" || cardUnit === String(targetUnit)) {
             card.classList.remove("hidden");
         } else {
             card.classList.add("hidden");
         }
     });
 
-    if (unitIndex !== "all") {
-        const targetCard = notlarBody.querySelector(`.foy-card-item[data-unit="${unitIndex}"]`);
+    if (targetUnit !== "all") {
+        const targetCard = notlarBody.querySelector(`.foy-card-item[data-unit="${targetUnit}"]`);
         if (targetCard) {
             targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
@@ -3529,16 +3535,26 @@ window.filterUnitHubSection = function(containerId, unitIndex) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
+    const clickedBtn = container.querySelector(`.unit-filter-btn[data-unit="${unitIndex}"]`);
+    const isCurrentlyActive = clickedBtn && clickedBtn.getAttribute("data-active") === "true";
+
+    // Tekrar tıklandığında filtreyi kaldır (tümünü göster)
+    const targetUnit = isCurrentlyActive ? "all" : unitIndex;
+
     // 1. Buton stillerini güncelle
     const btns = container.querySelectorAll(".unit-filter-btn");
     btns.forEach(b => {
         const bUnit = b.getAttribute("data-unit");
-        if (bUnit === String(unitIndex)) {
+        if (targetUnit !== "all" && bUnit === String(targetUnit)) {
+            b.setAttribute("data-active", "true");
             b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
-        } else if (bUnit === "lab") {
-            b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
         } else {
-            b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+            b.removeAttribute("data-active");
+            if (bUnit === "lab") {
+                b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
+            } else {
+                b.className = "unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+            }
         }
     });
 
@@ -3546,10 +3562,9 @@ window.filterUnitHubSection = function(containerId, unitIndex) {
     const unitCards = container.querySelectorAll(".unit-accordion-card");
     unitCards.forEach(card => {
         const cardUnit = card.getAttribute("data-unit");
-        if (unitIndex === "all" || cardUnit === String(unitIndex)) {
+        if (targetUnit === "all" || cardUnit === String(targetUnit)) {
             card.classList.remove("hidden");
-            // Tek bir ünite veya Laboratuvar seçildiğinde otomatik aç
-            if (unitIndex !== "all") {
+            if (targetUnit !== "all") {
                 const body = card.querySelector(".unit-card-body");
                 const icon = card.querySelector(".unit-card-icon");
                 if (body) body.classList.remove("hidden");
@@ -3561,8 +3576,8 @@ window.filterUnitHubSection = function(containerId, unitIndex) {
     });
 
     // Yumuşak kaydırma
-    if (unitIndex !== "all") {
-        const targetCard = container.querySelector(`.unit-accordion-card[data-unit="${unitIndex}"]`);
+    if (targetUnit !== "all") {
+        const targetCard = container.querySelector(`.unit-accordion-card[data-unit="${targetUnit}"]`);
         if (targetCard) {
             targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
         }
@@ -8303,6 +8318,27 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     if (editMaterial) editingMaterialId = editMaterial.id;
     else editingMaterialId = null;
 
+    let preselectedSection = "1";
+    if (isEditing && editMaterial) {
+        if (editMaterial.targetSection) {
+            preselectedSection = String(editMaterial.targetSection);
+        } else {
+            const uStr = (editMaterial.unit || "").toLowerCase();
+            const tStr = (editMaterial.title || "").toLowerCase();
+            const cStr = (editMaterial.category || "").toLowerCase();
+            if (uStr.includes("kitap") || tStr.includes("kitap") || tStr.includes("kitab")) {
+                preselectedSection = "kitap";
+            } else if (uStr.includes("lab") || tStr.includes("lab") || cStr.includes("lab") || cStr === "laboratuvar") {
+                preselectedSection = "lab";
+            } else {
+                const m = uStr.match(/(\d+)\s*\.\s*ünite/i) || tStr.match(/(\d+)\s*\.\s*ünite/i);
+                if (m && m[1] && parseInt(m[1]) >= 1 && parseInt(m[1]) <= 7) {
+                    preselectedSection = m[1];
+                }
+            }
+        }
+    }
+
     modal.innerHTML = `
         <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-2xl w-full border border-slate-200 shadow-2xl relative animate-in fade-in zoom-in-95 duration-200 max-h-[92vh] overflow-y-auto custom-scrollbar" onclick="event.stopPropagation()">
             
@@ -8337,7 +8373,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">İstediğiniz Sınıfa / Bölüme Taşıyın</span>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                         <!-- Ana Kategori / Sınıf -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
@@ -8350,7 +8386,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             </select>
                         </div>
 
-                        <!-- Alt Kategori -->
+                        <!-- Alt Kategori (Materyal Türü / Sekme) -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
@@ -8364,6 +8400,22 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
                                 <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
                                 <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
+                            </select>
+                        </div>
+
+                        <!-- Hedef Bölüm / Ünite (Ders Kitabı, 1-7. Ünite, Laboratuvar) -->
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Bölüm / Ünite</label>
+                            <select id="adv-section-select" onchange="handleTargetSectionChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                                <option value="kitap" ${preselectedSection === 'kitap' ? 'selected' : ''}>📖 Ders Kitabı</option>
+                                <option value="1" ${preselectedSection === '1' ? 'selected' : ''}>1. Ünite</option>
+                                <option value="2" ${preselectedSection === '2' ? 'selected' : ''}>2. Ünite</option>
+                                <option value="3" ${preselectedSection === '3' ? 'selected' : ''}>3. Ünite</option>
+                                <option value="4" ${preselectedSection === '4' ? 'selected' : ''}>4. Ünite</option>
+                                <option value="5" ${preselectedSection === '5' ? 'selected' : ''}>5. Ünite</option>
+                                <option value="6" ${preselectedSection === '6' ? 'selected' : ''}>6. Ünite</option>
+                                <option value="7" ${preselectedSection === '7' ? 'selected' : ''}>7. Ünite</option>
+                                <option value="lab" ${preselectedSection === 'lab' ? 'selected' : ''}>🧪 Laboratuvar</option>
                             </select>
                         </div>
                     </div>
@@ -8568,12 +8620,40 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
 function updateCascadingUnits(forceGrade) {
     const gradeSelect = document.getElementById("adv-grade-select");
     const unitSelect = document.getElementById("adv-unit-select");
+    const sectionSelect = document.getElementById("adv-section-select");
     if (!gradeSelect || !unitSelect) return;
 
     const selectedGrade = forceGrade || gradeSelect.value || "8";
     const units = GRADE_UNITS_MAP[selectedGrade] || GRADE_UNITS_MAP["8"];
 
-    unitSelect.innerHTML = units.map(u => `<option value="${u}">${u}</option>`).join("");
+    unitSelect.innerHTML = `
+        <option value="Ders Kitabı">📖 MEB Ders Kitabı & Ünite PDF'leri</option>
+        ${units.map(u => `<option value="${u}">${u}</option>`).join("")}
+        <option value="Laboratuvar">🧪 Laboratuvar / Deneyler & Simülasyonlar</option>
+    `;
+
+    if (sectionSelect) {
+        handleTargetSectionChange(sectionSelect.value);
+    }
+}
+
+function handleTargetSectionChange(sec) {
+    const gradeSelect = document.getElementById("adv-grade-select");
+    const unitSelect = document.getElementById("adv-unit-select");
+    if (!unitSelect) return;
+
+    const g = gradeSelect ? gradeSelect.value : "8";
+    if (sec === "kitap") {
+        unitSelect.value = "Ders Kitabı";
+    } else if (sec === "lab") {
+        unitSelect.value = "Laboratuvar";
+    } else {
+        const idx = parseInt(sec, 10) - 1;
+        const units = GRADE_UNITS_MAP[g] || GRADE_UNITS_MAP["8"];
+        if (units && units[idx]) {
+            unitSelect.value = units[idx];
+        }
+    }
 }
 
 function toggleCustomTopicInput() {
@@ -8885,8 +8965,14 @@ async function handleAdvMaterialSubmit(e) {
 
     const grade = gradeSelect ? gradeSelect.value : "8";
     const category = categorySelect ? categorySelect.value : "ders-notu";
+    const sectionSelect = document.getElementById("adv-section-select");
+    const targetSection = sectionSelect ? sectionSelect.value : "1";
     const customTopic = customTopicInput ? customTopicInput.value.trim() : "";
-    const unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${grade}. Sınıf Fen Bilimleri`);
+    let unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${grade}. Sınıf Fen Bilimleri`);
+    if (!customTopic) {
+        if (targetSection === "kitap") unit = "Ders Kitabı & Ünite PDF'leri";
+        else if (targetSection === "lab") unit = "Laboratuvar & Deneyler";
+    }
     const desc = descInput && descInput.value.trim() ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
     const linkVal = linkInput ? linkInput.value.trim() : "";
     const visibility = visibilitySelect ? visibilitySelect.value : "public";
@@ -8956,6 +9042,7 @@ async function handleAdvMaterialSubmit(e) {
                     ...customList[idx],
                     grade: String(grade).replace(/^grade-/, ""),
                     category: category,
+                    targetSection: targetSection,
                     title: title,
                     unit: unit,
                     desc: desc,
@@ -8974,6 +9061,7 @@ async function handleAdvMaterialSubmit(e) {
                     id: editingMaterialId,
                     grade: String(grade).replace(/^grade-/, ""),
                     category: category,
+                    targetSection: targetSection,
                     title: title,
                     unit: unit,
                     desc: desc,
