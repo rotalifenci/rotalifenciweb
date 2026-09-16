@@ -2603,6 +2603,63 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
     const subData = getGradeSubSectionsData(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+        // Aktif Sekmeye Göre Üst Başlık ve Açıklama (Kullanıcı Talebi: Sekme Bilgisi 8 Butonun Üstündeki Alana Taşındı)
+    const tabMetaMap = {
+        "ders-notu": {
+            title: `${grade.number}. Sınıf Fen Bilimleri 4 Kademeli Ders Notları`,
+            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, laboratuvar föyleri ve pekiştirme testleri."
+        },
+        "ders-sunumu": {
+            title: `${grade.number}. Sınıf Akıllı Tahta Ders Sunumları`,
+            desc: "MEB kazanımlarına uygun, sınıf içi projeksiyon ve akıllı tahta uyumlu animasyonlu sunum slaytları."
+        },
+        "videolar": {
+            title: `${grade.number}. Sınıf Video Dersler & Deney Kayıtları`,
+            desc: "Fen kavramlarını somutlaştıran konu anlatım videoları, 3D animasyonlar ve laboratuvar çekimleri."
+        },
+        "etkinlikler": {
+            title: `${grade.number}. Sınıf Çalışma Föyleri & Etkinlikler`,
+            desc: "İstasyon etkinlikleri, boşluk doldurma, kavram eşleştirme ve A4 yazdırılabilir çalışma kağıtları."
+        },
+        "soru-bankasi": {
+            title: `${grade.number}. Sınıf Soru Bankası & Testler`,
+            desc: "MEB kazanım değerlendirme testleri, grafik ve tablo yorumlama ağırlıklı beceri temelli sorular."
+        },
+        "denemeler": {
+            title: `${grade.number}. Sınıf Ünite Denemeleri & Ortak Sınavlar`,
+            desc: "Süre tutularak uygulanan dönemlik ortak sınav senaryoları ve Türkiye geneli branş denemeleri."
+        },
+        "egitsel-oyunlar": {
+            title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
+            desc: "Eğlenerek öğrenmeyi sağlayan interaktif Wordwall yarışmaları, eşleştirme oyunları ve fen çarkıfeleği."
+        },
+        "oyunlar": {
+            title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
+            desc: "Eğlenerek öğrenmeyi sağlayan interaktif Wordwall yarışmaları, eşleştirme oyunları ve fen çarkıfeleği."
+        },
+        "bilim-insanlari": {
+            title: `${grade.number}. Sınıf Bilimin Rotasını Çizenler`,
+            desc: "Müfredat ünitelerindeki keşiflere imza atan bilim insanlarının yaşamları, deneyleri ve modelleri."
+        },
+        "uniteler": {
+            title: `${grade.number}. Sınıf Bilimin Rotasını Çizenler`,
+            desc: "Müfredat ünitelerindeki keşiflere imza atan bilim insanlarının yaşamları, deneyleri ve modelleri."
+        },
+        "bilimin-rotasi": {
+            title: `${grade.number}. Sınıf Bilimin Rotasını Çizenler`,
+            desc: "Müfredat ünitelerindeki keşiflere imza atan bilim insanlarının yaşamları, deneyleri ve modelleri."
+        },
+        "lgs": {
+            title: "8. Sınıf + LGS Pusulası & Çıkmış Soru Analizleri",
+            desc: "MEB çıkmış sorular, örnek soru analizleri, yeni nesil soru çözüm taktikleri ve Türkiye geneli branş denemeleri."
+        },
+        "lgs-pusulasi": {
+            title: "8. Sınıf + LGS Pusulası & Çıkmış Soru Analizleri",
+            desc: "MEB çıkmış sorular, örnek soru analizleri, yeni nesil soru çözüm taktikleri ve Türkiye geneli branş denemeleri."
+        }
+    };
+    const currentTabMeta = tabMetaMap[subTab] || { title: `${grade.number}. Sınıf Fen Bilimleri`, desc: grade.description };
+
     const allCustomMaterials = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const getTabCustomCount = (tabKey) => {
         return allCustomMaterials.filter(item => {
@@ -2658,8 +2715,8 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     ` : ''}
                     </div>
 
-                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 drop-shadow-sm">${grade.title}</h2>
-                    <p class="text-xs sm:text-sm text-white/90 leading-snug max-w-4xl font-medium drop-shadow-sm mb-3">${grade.description}</p>
+                    <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 drop-shadow-sm">${currentTabMeta.title}</h2>
+                    <p class="text-xs sm:text-sm text-white/90 leading-snug max-w-4xl font-medium drop-shadow-sm mb-3">${currentTabMeta.desc}</p>
                     
                     <!-- 8 ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
                     <div class="pt-3 border-t border-white/20">
@@ -3217,48 +3274,22 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
     const containerId = `hub-container-${normSubTab}-${grade.number}`;
 
+
     return `
         <div id="${containerId}" class="mb-10 animate-in fade-in duration-300">
-            <!-- 1. BÖLÜM HERO BAŞLIĞI -->
-            <div class="bg-gradient-to-r ${cfg.gradient} text-white rounded-3xl p-6 sm:p-8 mb-4 shadow-xl relative overflow-hidden">
-                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md text-white">
-                                ${grade.number}. SINIF FEN BİLİMLERİ
-                            </span>
-                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-400 text-slate-950 shadow-sm">
-                                MEB 2026-2027
-                            </span>
-                        </div>
-                        <h3 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3">
-                            <i class="${cfg.icon}"></i>
-                            <span>${cfg.title}</span>
-                        </h3>
-                        <p class="text-xs sm:text-sm text-white/90 font-medium mt-1.5 max-w-3xl leading-relaxed">
-                            ${cfg.description}
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-2 flex-wrap self-start md:self-auto">
-                        ${isAdmin ? `
-                            <button type="button" onclick="triggerUploadModal('${grade.number}', '${normSubTab}')" class="px-4 py-2.5 bg-white text-slate-900 hover:bg-slate-100 font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-lg active:scale-95 cursor-pointer">
-                                <i class="fa-solid fa-plus ${cfg.colorText}"></i> + Yeni İçerik Ekle
-                            </button>
-                        ` : ''}
-                    </div>
-                </div>
-            </div>
-
-            <!-- 2. HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + En Sonda '🌟 Tüm Üniteler' -->
-            <div class="bg-white/80 backdrop-blur-md border border-slate-200/90 rounded-2xl p-2.5 mb-6 shadow-sm">
-                <div class="flex items-center gap-2 overflow-x-auto custom-scrollbar py-0.5">
+            <!-- 1. HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler (BÜYÜTÜLMÜŞ & NUMARA KUTUSU KALDIRILMIŞ) -->
+            <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
+                <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
                     ${unitList.map((uTitle, idx) => `
-                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${idx+1}')" data-unit="${idx+1}" class="unit-filter-btn px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200 shadow-sm active:scale-95">
-                            <span class="w-5 h-5 rounded-lg bg-slate-100 text-slate-800 text-[10px] font-black flex items-center justify-center">${idx+1}</span>
+                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${idx+1}')" data-unit="${idx+1}" class="unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95">
                             <span>${idx+1}. Ünite</span>
                         </button>
                     `).join("")}
-                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'all')" data-unit="all" class="unit-filter-btn px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95">
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab')" data-unit="lab" class="unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95">
+                        <i class="fa-solid fa-flask-vial text-emerald-600"></i>
+                        <span>Laboratuvar</span>
+                    </button>
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'all')" data-unit="all" class="unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95">
                         <span>🌟 Tüm Üniteler (${unitList.length})</span>
                     </button>
                 </div>
@@ -3267,7 +3298,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             <!-- Kullanıcının Eklediği Özel Materyaller (Canlı & Otomatik Listelenir) -->
             ${renderCustomMaterialsSection(grade.number, normSubTab)}
 
-            <!-- 3. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye) -->
+            <!-- 2. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye + LABORATUVAR) -->
             <div class="space-y-4">
                 ${unitList.map((uTitle, idx) => {
                     const unitNum = idx + 1;
@@ -3275,7 +3306,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     const isOpenInitial = (unitNum === 1);
 
                     // Bu üniteyle eşleşen özel yüklemeler
-                    const cleanUName = uTitle.replace(/^\\d+\\.\\s*Ünite\\s*[•:]?\\s*/i, "").trim().toLowerCase();
+                    const cleanUName = uTitle.replace(/^\d+\.\s*Ünite\s*[•:]?\s*/i, "").trim().toLowerCase();
                     const unitCustoms = customList.filter(m => {
                         const gMatch = (m.grade === String(grade.number) || m.grade === "all");
                         const cMatch = (m.category === normSubTab || (normSubTab === "egitsel-oyunlar" && String(m.category).includes("oyun")));
@@ -3350,73 +3381,65 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         </div>
                     `;
                 }).join("")}
+
+                <!-- 8. LABORATUVAR & DENEYLER AKORDEONU (KULLANICI TALEBİYLE EKLENDİ) -->
+                <div data-unit="lab" class="unit-accordion-card border border-emerald-200/90 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('${containerId}-unit-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-emerald-50/40">
+                        <div class="flex items-center gap-3 sm:gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm text-xl">
+                                <i class="fa-solid fa-flask-vial"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-xs font-black text-emerald-700 uppercase tracking-wider">${grade.number}. Sınıf • Özel Bölüm</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">Laboratuvar & Deneyler</span>
+                                </div>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar</h4>
+                            </div>
+                        </div>
+                        <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 transition-transform duration-300">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+
+                    <div id="${containerId}-unit-lab" class="unit-card-body accordion-body-collapsible hidden border-t border-emerald-100 p-4 sm:p-6 bg-slate-50/50">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">Deney Föyü</span>
+                                        <span class="text-[11px] font-bold text-slate-400">MEB Uyumlu</span>
+                                    </div>
+                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu</h5>
+                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.</p>
+                                </div>
+                                <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', 'assets/lab-guvenligi.svg', '${grade.number}. Sınıf Laboratuvar Rehberi', 'laboratuvar', '${grade.number}. Sınıf Laboratuvar Rehberi')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                    <span>Kılavuzu Aç & İncele</span>
+                                </button>
+                            </div>
+
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between">
+                                <div>
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">PhET Simülasyon</span>
+                                        <span class="text-[11px] font-bold text-slate-400">3D İnteraktif</span>
+                                    </div>
+                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü</h5>
+                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.</p>
+                                </div>
+                                <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', 'https://phet.colorado.edu', '${grade.number}. Sınıf Fen Simülasyonu', 'laboratuvar', '${grade.number}. Sınıf Fen Simülasyonu')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
+                                    <i class="fa-solid fa-play text-xs"></i>
+                                    <span>Simülasyonu Başlat</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
 }
-
-// 3. EVRENSEL AKORDEON & FİLTRE YARDIMCILARI (VANILLA & ALPINE UYUMLU)
-window.toggleAccordionSection = function(sectionId) {
-    const bodyEl = document.getElementById(sectionId);
-    const iconEl = document.getElementById(sectionId + "-icon");
-    if (!bodyEl) return;
-    const isHidden = bodyEl.classList.contains("hidden");
-    if (isHidden) {
-        bodyEl.classList.remove("hidden");
-        if (iconEl) iconEl.classList.add("rotate-180");
-    } else {
-        bodyEl.classList.add("hidden");
-        if (iconEl) iconEl.classList.remove("rotate-180");
-    }
-};
-
-window.filterUnitHubSection = function(containerId, unitIndex) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-    
-    const btns = container.querySelectorAll(".unit-filter-btn");
-    btns.forEach(b => {
-        if (b.getAttribute("data-unit") === String(unitIndex)) {
-            b.className = "unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20";
-        } else {
-            b.className = "unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200";
-        }
-    });
-
-    const unitCards = container.querySelectorAll(".unit-accordion-card");
-    unitCards.forEach(card => {
-        const cardUnit = card.getAttribute("data-unit");
-        if (unitIndex === "all" || cardUnit === String(unitIndex)) {
-            card.classList.remove("hidden");
-            if (unitIndex !== "all") {
-                const body = card.querySelector(".unit-card-body");
-                const icon = card.querySelector(".unit-card-icon");
-                if (body) body.classList.remove("hidden");
-                if (icon) icon.classList.add("rotate-180");
-            }
-        } else {
-            card.classList.add("hidden");
-        }
-    });
-};
-
-window.expandAllAccordions = function(groupId) {
-    const group = document.getElementById(groupId);
-    if (!group) return;
-    const bodies = group.querySelectorAll(".accordion-body-collapsible");
-    const icons = group.querySelectorAll(".accordion-icon-rotatable");
-    bodies.forEach(b => b.classList.remove("hidden"));
-    icons.forEach(i => i.classList.add("rotate-180"));
-};
-
-window.collapseAllAccordions = function(groupId) {
-    const group = document.getElementById(groupId);
-    if (!group) return;
-    const bodies = group.querySelectorAll(".accordion-body-collapsible");
-    const icons = group.querySelectorAll(".accordion-icon-rotatable");
-    bodies.forEach(b => b.classList.add("hidden"));
-    icons.forEach(i => i.classList.remove("rotate-180"));
-};
 
 
 function renderGradeSubTabContent(grade, subData, subTab) {
