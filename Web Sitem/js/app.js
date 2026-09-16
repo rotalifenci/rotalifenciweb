@@ -2927,19 +2927,19 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
-            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Ders Kitabı + 1. Üniteden 7. Üniteye + Laboratuvar -->
+            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Varsayılan Olarak Ders Kitabı Aktif -->
             <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
                 <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
-                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer">
-                        <i class="fa-solid fa-book-open text-amber-600"></i>
+                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="true" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-book-open text-amber-400"></i>
                         <span>Ders Kitabı</span>
                     </button>
                     ${[1,2,3,4,5,6,7].map(num => `
-                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" data-active="${num === 1 ? 'true' : 'false'}" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 ${num === 1 ? 'shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
+                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" data-active="false" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer">
                             <span>${num}. Ünite</span>
                         </button>
                     `).join("")}
-                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
+                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" data-active="false" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
                         <i class="fa-solid fa-flask-vial text-emerald-600"></i>
                         <span>Laboratuvar</span>
                     </button>
@@ -2950,7 +2950,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
             <div class="space-y-4">
 
                 <!-- 📖 DERS KİTABI BÖLÜMÜ -->
-                <div data-unit="kitap" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                <div data-unit="kitap" class="notu-unit-card border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                     <button type="button" onclick="toggleAccordionSection('notu-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
@@ -3005,7 +3005,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <p class="text-xs text-slate-500 mb-3 line-clamp-2 font-medium">${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}</p>
                                             </div>
                                             <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                                <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+                                                <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
                                                     <i class="fa-solid fa-book-open"></i> Oku
                                                 </button>
                                                 ${isAdmin ? `
@@ -3052,7 +3052,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     const allNotesForUnit = [...unitCustomNotes, standardNote];
 
                     return `
-                        <div data-unit="${unitNum}" class="notu-unit-card ${unitNum === 1 ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                        <div data-unit="${unitNum}" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                             <!-- Akordeon Başlığı -->
                             <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                                 <div class="flex items-center gap-3 sm:gap-4">
@@ -3101,7 +3101,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}.pdf', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
+                                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
                                                         <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
                                                         <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
                                                     </button>
@@ -3160,7 +3160,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
                                         </div>
                                         <div>
-                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
+                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
                                                 <i class="fa-solid fa-play"></i>
                                                 <span>Etkinliği Başlat / İncele</span>
                                             </button>
@@ -3404,8 +3404,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     ${totalItems.map(item => {
                                         const isCustom = !String(item.id).startsWith("std-");
-                                        const actionCall = (isCustom && item.fileUrl && item.fileUrl !== "#")
-                                            ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
+                                        const actionCall = isCustom
+                                            ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
                                             : cfg.btnAction(item);
 
                                         return `
@@ -3487,7 +3487,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
                                     </div>
                                     <div>
-                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
                                             <i class="fa-solid fa-play text-xs"></i>
                                             <span>Materyali Aç & İncele</span>
                                         </button>
@@ -6321,12 +6321,13 @@ async function openDigitalBookModal(options = {}) {
 
         <!-- ORTA KESİNTİSİZ DİKEY KAYDIRMA ALANI (Fare Tekerleği ile Aşağı-Yukarı Akıcı Kaydırılır) -->
         <div id="book-reader-scroll-area" class="relative flex-1 bg-slate-950 overflow-y-auto overflow-x-auto p-3 sm:p-6" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
-            <!-- Sayfaların Alt Alta Sıralandığı Dikey Taşıyıcı -->
+            <!-- Sayfaların Alt Alta Sıralandığı Dikey Taşıyıcı: Önizleme ekranı olmadan doğrudan sayfalar yüklenir -->
             <div id="book-pages-container" class="flex flex-col items-center gap-6 max-w-full mx-auto w-fit min-h-full pb-16">
-                <!-- Yükleniyor Göstergesi -->
-                <div id="book-loading-spinner" class="py-12 flex flex-col items-center justify-center gap-3 text-white">
-                    <div class="w-12 h-12 border-4 border-red-500 border-t-transparent rounded-full animate-spin"></div>
-                    <div class="text-xs sm:text-sm font-black text-slate-200">Doküman Yükleniyor ve Hazırlanıyor...</div>
+                <!-- Hızlı Yükleme Göstergesi (Önizleme Adımı Olmadan Doğrudan Kitap Sayfalarına Geçer) -->
+                <div id="book-loading-spinner" class="py-24 flex flex-col items-center justify-center gap-4 text-white">
+                    <div class="w-14 h-14 border-4 border-amber-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-amber-500/20"></div>
+                    <div class="text-base font-black text-white tracking-wide">Ders Kitabı Açılıyor...</div>
+                    <div class="text-xs text-slate-400">MEB resmî kitabı doğrudan yükleniyor, lütfen bekleyiniz</div>
                 </div>
             </div>
         </div>
@@ -6343,13 +6344,8 @@ async function openDigitalBookModal(options = {}) {
         </div>
     `;
 
-    // 1. Fallback sayfalarını dikey olarak diz
-    renderFallbackVerticalPages();
-
-    // 2. Olay Dinleyicileri (Klavye, Scroll takibi)
+    // ⚡ ÖNİZLEME EKRANI KALDIRILDI: Herhangi bir sahte önizleme adımı beklemeden doğrudan PDF yüklemeyi başlat
     initBookEventListeners();
-
-    // 3. Arka Planda PDF Yüklemeyi Başlat
     tryLoadPdfDocument(id, fileUrl);
 }
 
@@ -6593,8 +6589,26 @@ async function tryLoadPdfDocument(id, fileUrl) {
         // Dikey sayfa yuvalarını oluştur ve ilk sayfaları hemen çiz
         await setupVerticalPdfSlots(pdf);
     } catch (err) {
-        console.warn("PDF.js yükleme uyarısı (Önizleme modunda devam ediliyor):", err);
-        if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
+        console.warn("PDF.js yükleme hatası:", err);
+        if (statusEl) statusEl.innerText = "Bağlantı Uyarısı";
+        const container = document.getElementById("book-pages-container");
+        if (container) {
+            const externalLink = (typeof fileUrl === "string" && fileUrl.startsWith("http")) ? fileUrl : (["5", "6", "7"].includes(String(DigitalBookState.bookInfo.grade)) ? `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${DigitalBookState.bookInfo.grade}-1.pdf` : "");
+            container.innerHTML = `
+                <div class="flex flex-col items-center justify-center py-20 px-6 text-center gap-5 max-w-md mx-auto">
+                    <div class="w-20 h-20 rounded-3xl bg-red-600/20 text-red-400 flex items-center justify-center text-4xl shadow-xl border border-red-500/30">
+                        <i class="fa-solid fa-book-open"></i>
+                    </div>
+                    <h3 class="text-lg font-black text-white">${DigitalBookState.bookInfo.title}</h3>
+                    <p class="text-xs text-slate-400 leading-relaxed">Tarayıcınız PDF akışını doğrudan yükleyemedi. Aşağıdaki bağlantıdan resmî MEB sunucusu üzerinden doğrudan açabilirsiniz.</p>
+                    ${externalLink ? `
+                        <a href="${externalLink}" target="_blank" rel="noopener noreferrer" class="px-6 py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-lg flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Kitabı Yeni Sekmede Aç (EBA)</span>
+                        </a>
+                    ` : ''}
+                </div>
+            `;
+        }
     }
 }
 
@@ -7078,39 +7092,42 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
                 found = allCustom.find(m => (m.title || "").trim().toLowerCase() === title.trim().toLowerCase());
             }
             if (found) {
-                if (!category) category = found.category || "";
-                if (!title) title = found.title || "";
-                if (!fileName || fileName === "materyal.pdf") fileName = found.fileName || "materyal.pdf";
-                if (!fallbackUrl || fallbackUrl === "#") fallbackUrl = found.fileUrl || "#";
+                if (found.category) category = found.category;
+                if (found.title) title = found.title;
+                if (found.fileName && found.fileName !== "materyal.pdf") fileName = found.fileName;
+                if (found.fileUrl && found.fileUrl !== "#" && found.fileUrl !== "") fallbackUrl = found.fileUrl;
             }
         } catch(e) {}
     }
 
-    const checkTitle = ((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
-    const checkFile = ((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
-    const checkCat = ((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
-    const checkFormat = ((found && (found.format || "")) || "").toUpperCase();
+    const coverUrl = (found && (found.imageUrl || found.cover)) || "";
     let targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
 
-    // Bellekteki bulut önbelleğinden DataURL fallback (çapraz cihaz uyumluluğu)
-    if ((!targetUrl || targetUrl === "" || targetUrl === "#" || targetUrl === "null") && id && Array.isArray(ROTALI_MATERIALS_CACHE)) {
+    // 🎯 Eğer fileUrl boş ama imageUrl (kapak görseli) varsa, materyalin ana görsel içeriği budur!
+    if ((!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") && coverUrl) {
+        targetUrl = coverUrl;
+    }
+
+    // Bulut önbelleğinden kontrol
+    if ((!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") && id && Array.isArray(ROTALI_MATERIALS_CACHE)) {
         try {
             const cachedItem = ROTALI_MATERIALS_CACHE.find(m => m && m.id === id);
-            if (cachedItem && cachedItem.fileUrl && cachedItem.fileUrl.startsWith("data:") && cachedItem.fileUrl.length > 10) {
-                targetUrl = cachedItem.fileUrl;
+            if (cachedItem) {
+                if (cachedItem.fileUrl && cachedItem.fileUrl.startsWith("data:") && cachedItem.fileUrl.length > 10) {
+                    targetUrl = cachedItem.fileUrl;
+                } else if (cachedItem.imageUrl && cachedItem.imageUrl.startsWith("data:") && cachedItem.imageUrl.length > 10) {
+                    targetUrl = cachedItem.imageUrl;
+                }
             }
         } catch(e) {}
     }
 
-    // 🎯 Statik sunucu dokümanı eşleştirmesi (Telefon ve bilgisayarda sıfır gecikmeyle açılmasını garanti eder)
-    if (!targetUrl || targetUrl === "" || targetUrl === "#" || targetUrl === "null") {
-        const idLower = String(id || (found && found.id) || "").toLowerCase();
-        if (idLower === "not-7-1" || checkFile.includes("7.1. ders notu") || checkFile.includes("7-1-ders-notu") || checkTitle.includes("7. sınıf 1. ünite") || checkTitle.includes("güneş sistemi ve ötesi")) {
-            targetUrl = "assets/docs/7-1-ders-notu.pdf";
-        }
-    }
+    const checkFormat = String((found && found.format) || "").toUpperCase();
+    const checkFile = String((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
+    const checkTitle = String((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
+    const checkCat = String((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
 
-    // 1. 🎬 VİDEO DOSYASI MI? (MP4, WEBM, YouTube)
+    // 1. 🎬 VİDEO İÇERİK KONTROLÜ
     const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat === "MP4" ||
                     checkFile.endsWith(".mp4") || checkFile.endsWith(".webm") ||
                     (targetUrl && (targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be")));
@@ -7128,14 +7145,10 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             }
         } catch(e) {}
 
-        if (fallbackUrl && fallbackUrl !== "#" && fallbackUrl !== "" && fallbackUrl !== "null" && !fallbackUrl.includes("kR1eZq9Q2n4")) {
-            openInPageVideoModal(fallbackUrl, title || "Ders Videosu", false, id);
-            return;
-        } else if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
+        if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
             openInPageVideoModal(targetUrl, title || "Ders Videosu", false, id);
             return;
         } else {
-            // Telefon veya başka cihazda açıldığında otomatik video akışı ve interaktif ders
             if (checkTitle.includes("güvenlik") || checkTitle.includes("sembol") || checkTitle.includes("laboratuvar")) {
                 openInPageVideoModal("https://www.youtube-nocookie.com/embed/E-0C1f0Ksqw", title || "Laboratuvar Güvenlik Sembolleri Videosu", false, id);
                 return;
@@ -7149,241 +7162,47 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 2. 🎮 EĞİTSEL OYUN VEYA EŞLEŞTİRME
-    if (category === "egitsel-oyunlar" || category.includes("oyun") || (title && (title.toLowerCase().includes("oyun") || title.toLowerCase().includes("eşleştirme") || title.toLowerCase().includes("laboratuvar")))) {
-        if (!fallbackUrl || fallbackUrl === "#" || fallbackUrl === "" || fallbackUrl === "null") {
+    // 2. 🎮 EĞİTSEL OYUN VEYA ETKİNLİK
+    if (checkCat === "egitsel-oyunlar" || checkCat.includes("oyun") || checkTitle.includes("oyun") || checkTitle.includes("eşleştirme")) {
+        if (!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") {
             openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
             return;
         }
     }
 
-    // 3. 🖼️ SAF GÖRSEL DOSYASI MI? (Sadece görsel formatındaysa ve PDF/kitap değilse)
-    const isExplicitImage = checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || 
-                            checkFile.endsWith(".webp") || checkFile.endsWith(".svg") || checkFile.endsWith(".gif") ||
-                            checkFormat === "JPG" || checkFormat === "JPEG" || checkFormat === "PNG" ||
-                            checkFormat === "GÖRSEL" || checkFormat === "RESİM" || checkFormat === "IMAGE" ||
-                            checkCat === "gorseller";
+    // 3. 🖼️ GÖRSEL / KAPAK İÇERİĞİ (JPG, PNG, WEBP, SVG veya DataURL Kapak Görseli)
+    const isImageContent = (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-") || targetUrl.includes("assets/"))) ||
+                           ["JPG", "JPEG", "PNG", "WEBP", "SVG", "GÖRSEL", "RESİM"].includes(checkFormat) ||
+                           checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || checkFile.endsWith(".webp") || checkFile.endsWith(".svg") ||
+                           (!targetUrl.includes(".pdf") && coverUrl.startsWith("data:image"));
 
-    const isExplicitPdf = checkFile.endsWith(".pdf") || checkFormat.includes("PDF") || targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf");
-
-    if (isExplicitImage && !isExplicitPdf) {
-        try {
-            let fileRecord = id ? await RotaliDB.getFile(id) : null;
-            if (!fileRecord || !fileRecord.blob) {
-                if (RotaliDB.findFileByTitleOrName) {
-                    fileRecord = await RotaliDB.findFileByTitleOrName(title, fileName);
-                }
-            }
-            if (fileRecord && fileRecord.blob) {
-                const url = URL.createObjectURL(fileRecord.blob);
-                openInPageDocumentModal(url, title || fileRecord.fileName || fileName, fileName, true);
-                return;
-            }
-        } catch(err) {
-            console.warn("IDB getFile error for image:", err);
-        }
-
-        if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
-            openInPageDocumentModal(targetUrl, title || fileName, fileName, true);
-            return;
-        } else if (found && found.imageUrl && found.imageUrl !== "#") {
-            openInPageDocumentModal(found.imageUrl, title || fileName, fileName, true);
-            return;
-        } else {
-            // Dosya bu cihazda yok - dosya seçme seçeneği sun
-            openInPageDocumentModal("", title || "Fen Bilimleri Görseli", fileName, true, id);
+    if (isImageContent) {
+        const activeImg = targetUrl || coverUrl;
+        if (activeImg) {
+            openInPageDocumentModal(activeImg, title || (found && found.title) || "Fen Bilimleri Görseli", fileName, true, "");
             return;
         }
     }
 
-    // 4. 📚 PDF DERS NOTU, DERS KİTABI & DİJİTAL DOKÜMAN -> Vektörel Dijital Okuyucuda Aç
+    // 4. 📚 PDF DERS NOTU & DERS KİTABI -> Dijital Kitap Okuyucuda Aç
     const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab") || checkCat === "ders-kitabi";
-    const isPdfDoc = isBookMaterial || 
-                     isExplicitPdf ||
-                     checkCat === "ders-notu" || 
-                     checkCat === "not" || 
-                     checkCat === "ders-sunumu" || 
-                     checkCat === "yaprak-test" || 
-                     checkCat === "lgs-deneme" || 
-                     checkCat === "deney-foy" ||
-                     checkCat === "etkinlik" ||
-                     (targetUrl && (targetUrl.includes(".pdf") || targetUrl.startsWith("data:application/pdf") || targetUrl.startsWith("blob:")));
+    let pdfTarget = targetUrl;
+    const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
 
-    if (isPdfDoc || !targetUrl || targetUrl === "#") {
-        let pdfTarget = targetUrl;
-        const gradeStr = String((found && found.grade) || "7").replace(/^grade-/, "").trim();
-        
-        if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
-            if (["5", "6", "7"].includes(gradeStr)) {
-                pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
-            }
+    if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
+        if (["5", "6", "7"].includes(gradeStr)) {
+            pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
         }
-
-        openDigitalBookModal({
-            id: (found && found.id) || id,
-            title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
-            grade: gradeStr,
-            fileUrl: pdfTarget,
-            fileName: (found && found.fileName) || fileName || "dokuman.pdf",
-            cover: (found && (found.imageUrl || found.cover)) || ""
-        });
-        return;
     }
 
-    // 5. Diğer Web Bağlantısı veya Dokümanlar
-    if (targetUrl && targetUrl !== "#" && targetUrl !== "" && targetUrl !== "null") {
-        openInPageDocumentModal(targetUrl, title || fileName, fileName, false);
-    } else {
-        openInPageDocumentModal("", title || "Fen Bilimleri Ders Dokümanı", fileName, false);
-    }
-}
-
-// 📄 SAYFA İÇİ DOKÜMAN & GÖRSEL GÖRÜNTÜLEYİCİ (BÜYÜTME, KÜÇÜLTME & İMLEÇLE SÜRÜKLEYİP KAYDIRMA)
-let inPageModalZoom = 1.0;
-let inPageModalPanX = 0;
-let inPageModalPanY = 0;
-let inPageIsDragging = false;
-let inPagePanCleanup = null;
-
-function updateImageModalTransform(animate = true) {
-    const img = document.getElementById("inpage-modal-zoom-img");
-    const container = document.getElementById("inpage-modal-zoom-container");
-    if (!img) return;
-
-    if (inPageModalZoom <= 1.0) {
-        inPageModalPanX = 0;
-        inPageModalPanY = 0;
-    }
-
-    img.style.transition = animate ? "transform 0.2s cubic-bezier(0.2, 0, 0, 1)" : "none";
-    img.style.transform = `translate(${inPageModalPanX}px, ${inPageModalPanY}px) scale(${inPageModalZoom})`;
-    img.style.cursor = inPageModalZoom > 1.0 ? (inPageIsDragging ? "grabbing" : "grab") : "zoom-in";
-
-    if (container) {
-        container.style.cursor = inPageModalZoom > 1.0 ? (inPageIsDragging ? "grabbing" : "grab") : "default";
-    }
-}
-
-function changeImageModalZoom(delta) {
-    inPageModalZoom = Math.min(3.5, Math.max(0.6, parseFloat((inPageModalZoom + delta).toFixed(2))));
-    if (inPageModalZoom <= 1.0) {
-        inPageModalPanX = 0;
-        inPageModalPanY = 0;
-    }
-    const zoomText = document.getElementById("inpage-zoom-level-text");
-    if (zoomText) {
-        zoomText.innerText = `%${Math.round(inPageModalZoom * 100)}`;
-    }
-    updateImageModalTransform(true);
-}
-
-function resetImageModalZoom() {
-    inPageModalZoom = 1.0;
-    inPageModalPanX = 0;
-    inPageModalPanY = 0;
-    const zoomText = document.getElementById("inpage-zoom-level-text");
-    if (zoomText) zoomText.innerText = "%100";
-    updateImageModalTransform(true);
-}
-
-function initImagePanDragListeners() {
-    if (inPagePanCleanup) {
-        inPagePanCleanup();
-        inPagePanCleanup = null;
-    }
-
-    const container = document.getElementById("inpage-modal-zoom-container");
-    const img = document.getElementById("inpage-modal-zoom-img");
-    if (!container || !img) return;
-
-    let startX = 0;
-    let startY = 0;
-    let initialPanX = 0;
-    let initialPanY = 0;
-
-    // Mouse Dragging (İmleç ile basıp sürükleyerek kaydırma)
-    const onMouseDown = (e) => {
-        if (inPageModalZoom <= 1.0 && e.button !== 0) return;
-        e.preventDefault();
-        inPageIsDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        initialPanX = inPageModalPanX;
-        initialPanY = inPageModalPanY;
-        updateImageModalTransform(false);
-    };
-
-    const onMouseMove = (e) => {
-        if (!inPageIsDragging) return;
-        e.preventDefault();
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        inPageModalPanX = initialPanX + deltaX;
-        inPageModalPanY = initialPanY + deltaY;
-        updateImageModalTransform(false);
-    };
-
-    const onMouseUp = () => {
-        if (inPageIsDragging) {
-            inPageIsDragging = false;
-            updateImageModalTransform(false);
-        }
-    };
-
-    // Touch Dragging (Mobilde parmakla kaydırma)
-    const onTouchStart = (e) => {
-        if (e.touches.length === 1) {
-            inPageIsDragging = true;
-            startX = e.touches[0].clientX;
-            startY = e.touches[0].clientY;
-            initialPanX = inPageModalPanX;
-            initialPanY = inPageModalPanY;
-            updateImageModalTransform(false);
-        }
-    };
-
-    const onTouchMove = (e) => {
-        if (!inPageIsDragging || e.touches.length !== 1) return;
-        e.preventDefault();
-        const deltaX = e.touches[0].clientX - startX;
-        const deltaY = e.touches[0].clientY - startY;
-        inPageModalPanX = initialPanX + deltaX;
-        inPageModalPanY = initialPanY + deltaY;
-        updateImageModalTransform(false);
-    };
-
-    const onTouchEnd = () => {
-        if (inPageIsDragging) {
-            inPageIsDragging = false;
-            updateImageModalTransform(false);
-        }
-    };
-
-    // Mouse Wheel Zoom (Fare tekerleğiyle hızlı yakınlaştırma)
-    const onWheel = (e) => {
-        e.preventDefault();
-        const delta = e.deltaY < 0 ? 0.25 : -0.25;
-        changeImageModalZoom(delta);
-    };
-
-    container.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-
-    container.addEventListener("touchstart", onTouchStart, { passive: false });
-    window.addEventListener("touchmove", onTouchMove, { passive: false });
-    window.addEventListener("touchend", onTouchEnd);
-    container.addEventListener("wheel", onWheel, { passive: false });
-
-    inPagePanCleanup = () => {
-        container.removeEventListener("mousedown", onMouseDown);
-        window.removeEventListener("mousemove", onMouseMove);
-        window.removeEventListener("mouseup", onMouseUp);
-        container.removeEventListener("touchstart", onTouchStart);
-        window.removeEventListener("touchmove", onTouchMove);
-        window.removeEventListener("touchend", onTouchEnd);
-        container.removeEventListener("wheel", onWheel);
-    };
+    openDigitalBookModal({
+        id: (found && found.id) || id,
+        title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
+        grade: gradeStr,
+        fileUrl: pdfTarget,
+        fileName: (found && found.fileName) || fileName || "dokuman.pdf",
+        cover: coverUrl
+    });
 }
 
 function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false, externalPdf = "") {
