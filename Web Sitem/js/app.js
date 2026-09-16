@@ -2763,8 +2763,663 @@ function switchGradeSubTab(gradeId, tabName) {
     window.location.hash = `grade/${gradeId}/${tabName}`;
 }
 
+// =========================================================================
+// 🌟 MODERN DİKEY & KATEGORİZE AKORDEON BİLEŞENLERİ (MEB 5, 6, 7, 8. SINIFLAR)
+// =========================================================================
+
+// 1. 📝 DERS NOTU: 4 KADEMELİ DİKEY KATEGORİZE AKORDEON YAPISI
+function renderGradeDersNotuAccordion(grade, subData) {
+    const gNum = String(grade.number);
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+    const foysList = (subData && subData.dersNotu) ? subData.dersNotu : [];
+
+    // MEB Ders Kitabı Tanımları
+    const textbookMap = {
+        "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
+        "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
+        "7": { title: "7. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "240 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri7-1.pdf", cover: "assets/kapak-7.jpg" },
+        "8": { title: "8. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "256 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri8-1.pdf", cover: "assets/kapak-8.jpg" }
+    };
+    const currentBook = textbookMap[gNum] || textbookMap["8"];
+
+    // 3. Kategori: Laboratuvar & Deneyler
+    const labItemsMap = {
+        "5": [
+            { id: "lab-5-1", title: "5. Sınıf Laboratuvar Güvenliği & Malzemeleri Renkli İnfografiği", badge: "İnfografik Föy", desc: "Güvenlik sembolleri, piktogramlar ve temel laboratuvar ekipmanları görsel kılavuzu.", format: "GÖRSEL FÖY", fileUrl: "assets/lab-guvenligi.svg" },
+            { id: "lab-5-2", title: "Güneş, Dünya ve Ay 3D Yörünge Simülatörü", badge: "PhET Simülasyon", desc: "Ay'ın evrelerini ve Dünya çevresindeki dolanma hareketini 3D keşfedin.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" }
+        ],
+        "6": [
+            { id: "lab-6-1", title: "Bileşke Kuvvet ve Sürtünme Simülatörü", badge: "PhET Simülasyon", desc: "Kuvvet vektörleri, net kuvvet hesabı ve hareket gözlemi.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" },
+            { id: "lab-6-2", title: "Destek ve Hareket / Kemik & Eklem İnceleme Deney Föyü", badge: "Deney Föyü", desc: "Kemik çeşitleri, eklemler ve kasların çalışma prensibi laboratuvar föyü.", format: "PDF FÖY", fileUrl: "#" }
+        ],
+        "7": [
+            { id: "lab-7-1", title: "PhET Enerji Kaykay Parkı & Kinetik-Potansiyel Simülatörü", badge: "PhET Simülasyon", desc: "Kinetik ve potansiyel enerji dönüşümlerini sürtünmeli ortamda keşfedin.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" },
+            { id: "lab-7-2", title: "Mitoz & Mayoz Bölünme Mikroskop Gözlem Föyü", badge: "Deney Föyü", desc: "Bitki ve hayvan hücresi bölünme evreleri laboratuvar inceleme rehberi.", format: "PDF FÖY", fileUrl: "#" }
+        ],
+        "8": [
+            { id: "lab-8-1", title: "Sıvı Basıncı, Derinlik & Yoğunluk Simülatörü", badge: "PhET Simülasyon", desc: "Pascal prensibi, U borusu ve sıvı basıncını etkileyen değişkenler deneyi.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" },
+            { id: "lab-8-2", title: "LGS Bağımlı, Bağımsız & Kontrol Edilen Değişken Kılavuzu", badge: "LGS Deney Modeli", desc: "MEB sınavlarında çıkan deneysel hipotez ve düzenek çözümleri.", format: "PDF / LGS", fileUrl: "#" }
+        ]
+    };
+    const labItems = labItemsMap[gNum] || labItemsMap["8"];
+
+    // 4. Kategori: Soru Çözümü / Sınav Hazırlık
+    const testItemsMap = {
+        "5": [
+            { id: "test-5-1", title: "5. Sınıf 1. Dönem Kazanım Kavrama Testi", badge: "Kazanım Testi", count: "16 Soru", desc: "Güneş, Dünya, Ay ve Canlılar Dünyası kazanım pekiştirme soruları.", format: "TEST", fileUrl: "#" },
+            { id: "test-5-2", title: "5. Sınıf Beceri Temelli Yeni Nesil Soru Föyü", badge: "Yeni Nesil", count: "12 Soru", desc: "Görsel ve grafik okuma becerilerini ölçen MEB formatında test.", format: "PDF TEST", fileUrl: "#" }
+        ],
+        "6": [
+            { id: "test-6-1", title: "6. Sınıf Sistemler ve Kuvvet Tarama Testi", badge: "Tarama Testi", count: "18 Soru", desc: "Dolaşım, solunum ve bileşke kuvvet karma soru havuzu.", format: "TEST", fileUrl: "#" },
+            { id: "test-6-2", title: "6. Sınıf MEB Ölçme & Değerlendirme Örnek Soruları", badge: "MEB Uyumlu", count: "15 Soru", desc: "Açık uçlu ve çoktan seçmeli yeni nesil senaryolar.", format: "PDF TEST", fileUrl: "#" }
+        ],
+        "7": [
+            { id: "test-7-1", title: "7. Sınıf Kuvvet, İş ve Enerji Fen Lisesi Denemesi", badge: "İleri Düzey", count: "15 Soru", desc: "Üst düzey akıl yürütme ve mantık-muhakeme soruları.", format: "TEST", fileUrl: "#" },
+            { id: "test-7-2", title: "7. Sınıf Hücre ve Bölünmeler Beceri Temelli Test", badge: "Beceri Temelli", count: "12 Soru", desc: "Mitoz-mayoz kromozom sayısı ve genetik çeşitlilik analizi.", format: "PDF TEST", fileUrl: "#" }
+        ],
+        "8": [
+            { id: "test-8-1", title: "8. Sınıf LGS Tam Kapsamlı Fen Branş Denemesi 1", badge: "LGS Formatı", count: "20 Soru", desc: "MEB 2026-2027 sınav standartlarında 20 yeni nesil soru.", format: "LGS DENEME", fileUrl: "#" },
+            { id: "test-8-2", title: "Son 5 Yılın MEB LGS Çıkmış Soru & Çözüm Modelleri", badge: "MEB Çıkmış", count: "Yıllara Göre", desc: "Konulara göre ayrıştırılmış detaylı soru çözümleri.", format: "ÇÖZÜM MODELLERİ", fileUrl: "#" }
+        ]
+    };
+    const testItems = testItemsMap[gNum] || testItemsMap["8"];
+
+    return `
+        <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
+            <!-- ÜST BAŞLIK VE HIZLI KONTROLLER -->
+            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-0.5 rounded-full bg-red-100 text-red-700 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                            <i class="fa-solid fa-book-open"></i> MEB 2026-2027
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Müfredatı</span>
+                    </div>
+                    <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
+                        <i class="fa-solid fa-file-lines text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri 4 Kademeli Ders Notları
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">Ders kitabı, ünite özetleri, laboratuvar föyleri ve pekiştirme testlerini dikey kategorize yapıda inceleyebilirsiniz.</p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+                    <button type="button" onclick="expandAllAccordions('ders-notu-accordion-group')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-all">
+                        Tümünü Aç
+                    </button>
+                    <button type="button" onclick="collapseAllAccordions('ders-notu-accordion-group')" class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black transition-all">
+                        Tümünü Kapat
+                    </button>
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>+ Yeni Ders Notu Ekle</span>
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+
+            <!-- Kullanıcının Eklediği ve Düzenlediği Özel Materyaller (Bulut ve Cihazlar Arası Eşitlenmiş) -->
+            ${renderCustomMaterialsSection(grade.number, "ders-notu")}
+
+            <!-- DİKEY 4 TEMEL KATEGORİ AKORDEON LİSTESİ -->
+            <div class="space-y-4">
+
+                <!-- 1. KATEGORİ: MEB DERS KİTABI -->
+                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                        <div class="flex items-center gap-3.5 sm:gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
+                                <i class="fa-solid fa-book-open"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black uppercase tracking-wider text-amber-700">1. Kategori</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">MEB Resmi Kitap</span>
+                                </div>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900">Ders Kitabı & Ünite PDF'leri</h4>
+                            </div>
+                        </div>
+                        <div id="acc-sec-kitap-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+
+                    <div id="acc-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6">
+                            <div class="w-24 sm:w-32 h-36 sm:h-44 shrink-0 rounded-xl overflow-hidden shadow-md border border-slate-200 bg-slate-100 flex items-center justify-center">
+                                <img src="${currentBook.cover}" alt="${currentBook.title}" class="w-full h-full object-cover" onerror="this.src='assets/kapak-5.jpg'">
+                            </div>
+                            <div class="flex-1 text-center md:text-left">
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+                                    <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-black uppercase border border-amber-200">MEB 2026-2027</span>
+                                    <span class="text-xs font-bold text-slate-400">${currentBook.pages}</span>
+                                </div>
+                                <h5 class="text-lg sm:text-xl font-black text-slate-900 mb-2">${currentBook.title}</h5>
+                                <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4 leading-relaxed">
+                                    Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı. İndirmeden, sayfa sayfa veya dikey akış modunda doğrudan tarayıcınızda okuyabilirsiniz.
+                                </p>
+                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
+                                    <button type="button" onclick="openDigitalBookModal('${currentBook.fileUrl}', '${currentBook.title}', '${grade.number}')" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md shadow-amber-600/20 active:scale-95">
+                                        <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. KATEGORİ: ÜNİTE DERS NOTLARI, SKETCHNOTES & KAVRAM HARİTALARI -->
+                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-notlar')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                        <div class="flex items-center gap-3.5 sm:gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black uppercase tracking-wider text-blue-700">2. Kategori</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-50 text-blue-800 border border-blue-200">${foysList.length} Ünite Föyü</span>
+                                </div>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900">Ders Notları, Sketchnotes & Kavram Haritaları</h4>
+                            </div>
+                        </div>
+                        <div id="acc-sec-notlar-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+
+                    <div id="acc-sec-notlar" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">MEB kazanımlarına uygun, görsel zenginleştirilmiş kavram haritaları, özet föyler ve formül şemaları.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${foysList.map((item, idx) => {
+                                const normItemTitle = (item.title || "").trim().toLowerCase();
+                                const itemUnitNum = String(idx + 1);
+                                const cleanUnitName = (item.unit || "").replace(/^\\d+\\.\\s*Ünite\\s*[•:]?\\s*/i, "").trim().toLowerCase();
+
+                                const customMatch = customList.find(m => {
+                                    if (!m) return false;
+                                    const gMatch = (m.grade === String(grade.number) || m.grade === "all");
+                                    const cMatch = (m.category === "ders-notu" || m.category === "not" || m.category === "pdf" || (!m.category && m.format && m.format.toLowerCase().includes("pdf")));
+                                    if (!gMatch || !cMatch) return false;
+
+                                    const mTitle = (m.title || "").toLowerCase();
+                                    const mUnit = (m.unit || "").toLowerCase();
+                                    return mTitle.includes(normItemTitle) || 
+                                           (mTitle.includes(itemUnitNum + ". ünite") && mTitle.includes("not")) ||
+                                           (cleanUnitName && mTitle.includes(cleanUnitName)) ||
+                                           (cleanUnitName && mUnit.includes(cleanUnitName));
+                                });
+
+                                const effectiveTitle = customMatch ? customMatch.title : item.title;
+                                const effectiveDesc = customMatch ? customMatch.desc : item.desc;
+                                const effectiveBadge = customMatch ? (customMatch.format || "PDF") : item.badge;
+                                const hasCustomFile = customMatch && customMatch.fileUrl && customMatch.fileUrl !== "#";
+                                const isReadyPdf = hasCustomFile || item.fileUrl;
+
+                                return `
+                                    <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                                        <div>
+                                            <div class="flex items-center justify-between gap-2 mb-3">
+                                                <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
+                                                    ${effectiveBadge}
+                                                </span>
+                                                <span class="text-[11px] font-black text-slate-400">${item.pages || '4-6 Sayfa'}</span>
+                                            </div>
+                                            <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
+                                                <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${item.unit}
+                                            </div>
+                                            <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
+                                                ${effectiveTitle}
+                                            </h5>
+                                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
+                                                ${effectiveDesc}
+                                            </p>
+                                        </div>
+                                        <div class="pt-3 border-t border-slate-100">
+                                            <button type="button" onclick="openOrDownloadMaterial('${customMatch ? customMatch.id : item.id}', '${customMatch ? (customMatch.fileUrl || '#') : (item.fileUrl || '#')}', '${effectiveTitle.replace(/'/g, "\\\\'")}.pdf', 'ders-notu', '${effectiveTitle.replace(/'/g, "\\\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95">
+                                                <i class="fa-solid ${isReadyPdf ? 'fa-file-lines' : 'fa-book-open'}"></i>
+                                                <span>${isReadyPdf ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join("")}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. KATEGORİ: LABORATUVAR & DENEYLER -->
+                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                        <div class="flex items-center gap-3.5 sm:gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
+                                <i class="fa-solid fa-flask-vial"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black uppercase tracking-wider text-emerald-700">3. Kategori</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">${labItems.length} Deney & Simülasyon</span>
+                                </div>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900">Laboratuvar / Deneyler & Simülasyonlar</h4>
+                            </div>
+                        </div>
+                        <div id="acc-sec-lab-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+
+                    <div id="acc-sec-lab" class="accordion-body-collapsible hidden border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">Sınıf içi deney föyleri, PhET laboratuvar simülasyonları ve interaktif etkinlikler.</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${labItems.map(item => `
+                                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-emerald-400 transition-all group">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.badge}</span>
+                                            <span class="text-[11px] font-bold text-slate-400">İnteraktif</span>
+                                        </div>
+                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
+                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
+                                    </div>
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95">
+                                        <i class="fa-solid fa-play"></i>
+                                        <span>Etkinliği Başlat</span>
+                                    </button>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. KATEGORİ: SORU ÇÖZÜMÜ / LGS HAZIRLIK -->
+                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('acc-sec-soru')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                        <div class="flex items-center gap-3.5 sm:gap-4">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
+                                <i class="fa-solid fa-bullseye"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs font-black uppercase tracking-wider text-purple-700">4. Kategori</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-50 text-purple-800 border border-purple-200">${testItems.length} Test Modülü</span>
+                                </div>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900">${grade.number === 8 ? 'LGS Soru Çözümü & Çıkmış Sorular' : 'Soru Çözümü & Beceri Temelli Testler'}</h4>
+                            </div>
+                        </div>
+                        <div id="acc-sec-soru-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300">
+                            <i class="fa-solid fa-chevron-down text-xs"></i>
+                        </div>
+                    </button>
+
+                    <div id="acc-sec-soru" class="accordion-body-collapsible hidden border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                        <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">${grade.number === 8 ? 'MEB LGS çıkmış soru modelleri, yeni nesil soru çözüm taktikleri ve branş denemeleri.' : 'MEB ölçme-değerlendirme standartlarında kazanım kavrama ve beceri temelli testler.'}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${testItems.map(item => `
+                                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-purple-400 transition-all group">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-purple-50 text-purple-700 border border-purple-200">${item.badge}</span>
+                                            <span class="text-[11px] font-bold text-slate-400">${item.count}</span>
+                                        </div>
+                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-purple-600 transition-colors">${item.title}</h5>
+                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
+                                    </div>
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\\\'")}', 'soru-bankasi', '${item.title.replace(/'/g, "\\\\'")}')" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 active:scale-95">
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span>Testi Çöz / İncele</span>
+                                    </button>
+                                </div>
+                            `).join("")}
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    `;
+}
+
+// 2. 🌟 DİĞER 7 ANA BÖLÜM İÇİN ÜNİTE BAZLI MERKEZ (HUB) ŞABLONU
+function renderGradeUnitBasedHub(grade, subData, subTab) {
+    const gNum = String(grade.number);
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+
+    // Resmi MEB 7 Ünitesi
+    const unitTitlesMap = {
+        "5": [
+            "1. Ünite: Güneş, Dünya ve Ay",
+            "2. Ünite: Canlılar Dünyası",
+            "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
+            "4. Ünite: Madde ve Değişim",
+            "5. Ünite: Işığın Yayılması",
+            "6. Ünite: İnsan ve Çevre",
+            "7. Ünite: Elektrik Devre Elemanları"
+        ],
+        "6": [
+            "1. Ünite: Güneş Sistemi ve Tutulmalar",
+            "2. Ünite: Vücudumuzdaki Sistemler",
+            "3. Ünite: Kuvvet ve Hareket",
+            "4. Ünite: Madde ve Isı",
+            "5. Ünite: Ses ve Özellikleri",
+            "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
+            "7. Ünite: Elektriğin İletimi"
+        ],
+        "7": [
+            "1. Ünite: Güneş Sistemi ve Ötesi",
+            "2. Ünite: Hücre ve Bölünmeler",
+            "3. Ünite: Kuvvet ve Enerji",
+            "4. Ünite: Saf Madde ve Karışımlar",
+            "5. Ünite: Işığın Madde ile Etkileşimi",
+            "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
+            "7. Ünite: Elektrik Devreleri"
+        ],
+        "8": [
+            "1. Ünite: Mevsimler ve İklim",
+            "2. Ünite: DNA ve Genetik Kod",
+            "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+            "4. Ünite: Madde ve Endüstri",
+            "5. Ünite: Basit Makineler",
+            "6. Ünite: Canlılar ve Enerji İlişkileri",
+            "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
+        ]
+    };
+    const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
+
+    // 7 Bölümün Yapılandırma Bilgileri
+    const sectionConfigs = {
+        "ders-sunumu": {
+            title: `${grade.number}. Sınıf Akıllı Tahta Ders Sunumları`,
+            description: "MEB kazanımlarına uygun, sınıf içi projeksiyon ve akıllı tahta uyumlu animasyonlu sunum slaytları.",
+            gradient: "from-orange-600 via-amber-600 to-slate-900",
+            icon: "fa-solid fa-file-powerpoint",
+            colorText: "text-orange-600",
+            btnBg: "bg-orange-600 hover:bg-orange-700 shadow-orange-600/20",
+            btnText: "Sunumu Başlat",
+            badgeStyle: "bg-orange-50 text-orange-700 border-orange-200",
+            defaultFormat: "PPTX / SLAYT",
+            btnAction: (item) => `toggleSmartboardMode(true)`
+        },
+        "videolar": {
+            title: `${grade.number}. Sınıf Video Dersler & Deneyler`,
+            description: "Fen kavramlarını somutlaştıran konu anlatım videoları, 3D animasyonlar ve laboratuvar çekimleri.",
+            gradient: "from-rose-600 via-red-600 to-slate-900",
+            icon: "fa-solid fa-circle-play",
+            colorText: "text-rose-600",
+            btnBg: "bg-rose-600 hover:bg-rose-700 shadow-rose-600/20",
+            btnText: "Videoyu Oynat",
+            badgeStyle: "bg-rose-50 text-rose-700 border-rose-200",
+            defaultFormat: "HD VİDEO",
+            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'videolar', '${item.title.replace(/'/g, "\\\\'")}')`
+        },
+        "etkinlikler": {
+            title: `${grade.number}. Sınıf Çalışma Föyleri & Etkinlikler`,
+            description: "İstasyon etkinlikleri, boşluk doldurma, kavram eşleştirme ve A4 yazdırılabilir çalışma kağıtları.",
+            gradient: "from-emerald-600 via-teal-600 to-slate-900",
+            icon: "fa-solid fa-puzzle-piece",
+            colorText: "text-emerald-600",
+            btnBg: "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20",
+            btnText: "Föyü Aç & İncele",
+            badgeStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
+            defaultFormat: "PDF FÖY",
+            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'etkinlikler', '${item.title.replace(/'/g, "\\\\'")}')`
+        },
+        "soru-bankasi": {
+            title: `${grade.number}. Sınıf Soru Bankası & Testler`,
+            description: "MEB kazanım değerlendirme testleri, grafik ve tablo yorumlama ağırlıklı beceri temelli sorular.",
+            gradient: "from-indigo-600 via-blue-600 to-slate-900",
+            icon: "fa-solid fa-book-open-reader",
+            colorText: "text-indigo-600",
+            btnBg: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20",
+            btnText: "Testi Başlat",
+            badgeStyle: "bg-indigo-50 text-indigo-700 border-indigo-200",
+            defaultFormat: "TEST HAVUZU",
+            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'soru-bankasi', '${item.title.replace(/'/g, "\\\\'")}')`
+        },
+        "denemeler": {
+            title: `${grade.number}. Sınıf Ünite Denemeleri & Ortak Sınavlar`,
+            description: "Süre tutularak uygulanan dönemlik ortak sınav senaryoları ve Türkiye geneli branş denemeleri.",
+            gradient: "from-purple-600 via-fuchsia-700 to-slate-900",
+            icon: "fa-solid fa-bullseye",
+            colorText: "text-purple-600",
+            btnBg: "bg-purple-600 hover:bg-purple-700 shadow-purple-600/20",
+            btnText: "Denemeyi Başlat",
+            badgeStyle: "bg-purple-50 text-purple-700 border-purple-200",
+            defaultFormat: "DENEME SINAVI",
+            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'denemeler', '${item.title.replace(/'/g, "\\\\'")}')`
+        },
+        "egitsel-oyunlar": {
+            title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
+            description: "Eğlenerek öğrenmeyi sağlayan interaktif Wordwall yarışmaları, eşleştirme oyunları ve fen çarkıfeleği.",
+            gradient: "from-fuchsia-600 via-pink-600 to-slate-900",
+            icon: "fa-solid fa-gamepad",
+            colorText: "text-fuchsia-600",
+            btnBg: "bg-fuchsia-600 hover:bg-fuchsia-700 shadow-fuchsia-600/20",
+            btnText: "Oyunu Başlat",
+            badgeStyle: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
+            defaultFormat: "İNTERAKTİF OYUN",
+            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\\\'")}')`
+        },
+        "bilim-insanlari": {
+            title: `${grade.number}. Sınıf Bilimin Rotasını Çizenler`,
+            description: "Müfredat ünitelerindeki keşiflere imza atan bilim insanlarının yaşamları, deneyleri ve modelleri.",
+            gradient: "from-cyan-700 via-blue-800 to-slate-950",
+            icon: "fa-solid fa-telescope",
+            colorText: "text-cyan-700",
+            btnBg: "bg-cyan-700 hover:bg-cyan-800 shadow-cyan-700/20",
+            btnText: "Keşfi İncele",
+            badgeStyle: "bg-cyan-50 text-cyan-700 border-cyan-200",
+            defaultFormat: "BİYOGRAFİ",
+            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'bilim-insanlari', '${item.title.replace(/'/g, "\\\\'")}')`
+        }
+    };
+
+    const normSubTab = (subTab === "oyunlar") ? "egitsel-oyunlar" : ((subTab === "uniteler" || subTab === "bilimin-rotasi") ? "bilim-insanlari" : subTab);
+    const cfg = sectionConfigs[normSubTab] || sectionConfigs["ders-sunumu"];
+
+    const containerId = `hub-container-${normSubTab}-${grade.number}`;
+
+    return `
+        <div id="${containerId}" class="mb-10 animate-in fade-in duration-300">
+            <!-- 1. BÖLÜM HERO BAŞLIĞI -->
+            <div class="bg-gradient-to-r ${cfg.gradient} text-white rounded-3xl p-6 sm:p-8 mb-6 shadow-xl relative overflow-hidden">
+                <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-white/20 backdrop-blur-md text-white">
+                                ${grade.number}. SINIF FEN BİLİMLERİ
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-black bg-amber-400 text-slate-950 shadow-sm">
+                                MEB 2026-2027
+                            </span>
+                        </div>
+                        <h3 class="text-2xl sm:text-3xl font-black tracking-tight flex items-center gap-3">
+                            <i class="${cfg.icon}"></i>
+                            <span>${cfg.title}</span>
+                        </h3>
+                        <p class="text-xs sm:text-sm text-white/90 font-medium mt-1.5 max-w-3xl leading-relaxed">
+                            ${cfg.description}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap self-start md:self-auto">
+                        ${isAdmin ? `
+                            <button type="button" onclick="triggerUploadModal('${grade.number}', '${normSubTab}')" class="px-4 py-2.5 bg-white text-slate-900 hover:bg-slate-100 font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-lg active:scale-95 cursor-pointer">
+                                <i class="fa-solid fa-plus ${cfg.colorText}"></i> + Yeni İçerik Ekle
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kullanıcının Eklediği Özel Materyaller (Canlı & Otomatik Listelenir) -->
+            ${renderCustomMaterialsSection(grade.number, normSubTab)}
+
+            <!-- 2. HIZLI ÜNİTE FİLTRELEME ÇUBUĞU -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 custom-scrollbar">
+                <button type="button" onclick="filterUnitHubSection('${containerId}', 'all')" data-unit="all" class="unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20">
+                    <span>🌟 Tüm Üniteler (7)</span>
+                </button>
+                ${unitList.map((uTitle, idx) => `
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', '${idx+1}')" data-unit="${idx+1}" class="unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200">
+                        <span>${idx+1}. Ünite</span>
+                    </button>
+                `).join("")}
+            </div>
+
+            <!-- 3. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye) -->
+            <div class="space-y-4">
+                ${unitList.map((uTitle, idx) => {
+                    const unitNum = idx + 1;
+                    const accordionId = `${containerId}-unit-${unitNum}`;
+                    const isOpenInitial = (unitNum === 1);
+
+                    // Bu üniteyle eşleşen özel yüklemeler
+                    const cleanUName = uTitle.replace(/^\\d+\\.\\s*Ünite\\s*[•:]?\\s*/i, "").trim().toLowerCase();
+                    const unitCustoms = customList.filter(m => {
+                        const gMatch = (m.grade === String(grade.number) || m.grade === "all");
+                        const cMatch = (m.category === normSubTab || (normSubTab === "egitsel-oyunlar" && String(m.category).includes("oyun")));
+                        if (!gMatch || !cMatch) return false;
+                        const mTitle = (m.title || "").toLowerCase();
+                        const mUnit = (m.unit || "").toLowerCase();
+                        return mTitle.includes(unitNum + ". ünite") || mTitle.includes(unitNum + ".ünite") || (cleanUName && mTitle.includes(cleanUName)) || (cleanUName && mUnit.includes(cleanUName));
+                    });
+
+                    // Standart Müfredat Mock / Temel Verisi
+                    const standardItem = {
+                        id: `std-${normSubTab}-${grade.number}-${unitNum}`,
+                        title: `${grade.number}. Sınıf ${uTitle} ${cfg.title.split(" ").slice(-2).join(" ")}`,
+                        desc: `MEB 2026-2027 müfredatına uygun ${unitNum}. ünite ${normSubTab.replace("-", " ")} modülü.`,
+                        format: cfg.defaultFormat,
+                        fileUrl: "#"
+                    };
+
+                    const totalItems = [...unitCustoms, standardItem];
+
+                    return `
+                        <div data-unit="${unitNum}" class="unit-accordion-card border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                            <!-- Akordeon Başlığı -->
+                            <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex flex-col items-center justify-center shrink-0 shadow-sm">
+                                        <span class="text-[9px] font-black uppercase tracking-wider text-slate-300">ÜNİTE</span>
+                                        <span class="text-base font-black leading-none">${unitNum}</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-0.5">
+                                            <span class="text-xs font-black ${cfg.colorText} uppercase tracking-wider">${grade.number}. Sınıf • ${unitNum}. Ünite</span>
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
+                                                ${totalItems.length} İçerik
+                                            </span>
+                                        </div>
+                                        <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
+                                    </div>
+                                </div>
+                                <div id="${accordionId}-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 ${isOpenInitial ? 'rotate-180' : ''}">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </button>
+
+                            <!-- Akordeon Gövdesi -->
+                            <div id="${accordionId}" class="unit-card-body accordion-body-collapsible ${isOpenInitial ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${totalItems.map(item => `
+                                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group">
+                                            <div>
+                                                <div class="flex items-center justify-between gap-2 mb-2">
+                                                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border ${cfg.badgeStyle}">
+                                                        ${item.format || cfg.defaultFormat}
+                                                    </span>
+                                                    <span class="text-[11px] font-bold text-slate-400">MEB 2026</span>
+                                                </div>
+                                                <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
+                                                    ${item.title}
+                                                </h5>
+                                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
+                                                    ${item.desc || cfg.description}
+                                                </p>
+                                            </div>
+                                            <button type="button" onclick="${cfg.btnAction(item)}" class="w-full py-2.5 ${cfg.btnBg} text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95">
+                                                <i class="${cfg.icon} text-xs"></i>
+                                                <span>${cfg.btnText}</span>
+                                            </button>
+                                        </div>
+                                    `).join("")}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join("")}
+            </div>
+        </div>
+    `;
+}
+
+// 3. EVRENSEL AKORDEON & FİLTRE YARDIMCILARI (VANILLA & ALPINE UYUMLU)
+window.toggleAccordionSection = function(sectionId) {
+    const bodyEl = document.getElementById(sectionId);
+    const iconEl = document.getElementById(sectionId + "-icon");
+    if (!bodyEl) return;
+    const isHidden = bodyEl.classList.contains("hidden");
+    if (isHidden) {
+        bodyEl.classList.remove("hidden");
+        if (iconEl) iconEl.classList.add("rotate-180");
+    } else {
+        bodyEl.classList.add("hidden");
+        if (iconEl) iconEl.classList.remove("rotate-180");
+    }
+};
+
+window.filterUnitHubSection = function(containerId, unitIndex) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const btns = container.querySelectorAll(".unit-filter-btn");
+    btns.forEach(b => {
+        if (b.getAttribute("data-unit") === String(unitIndex)) {
+            b.className = "unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20";
+        } else {
+            b.className = "unit-filter-btn px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-1.5 bg-white text-slate-700 hover:bg-slate-100 border border-slate-200";
+        }
+    });
+
+    const unitCards = container.querySelectorAll(".unit-accordion-card");
+    unitCards.forEach(card => {
+        const cardUnit = card.getAttribute("data-unit");
+        if (unitIndex === "all" || cardUnit === String(unitIndex)) {
+            card.classList.remove("hidden");
+            if (unitIndex !== "all") {
+                const body = card.querySelector(".unit-card-body");
+                const icon = card.querySelector(".unit-card-icon");
+                if (body) body.classList.remove("hidden");
+                if (icon) icon.classList.add("rotate-180");
+            }
+        } else {
+            card.classList.add("hidden");
+        }
+    });
+};
+
+window.expandAllAccordions = function(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    const bodies = group.querySelectorAll(".accordion-body-collapsible");
+    const icons = group.querySelectorAll(".accordion-icon-rotatable");
+    bodies.forEach(b => b.classList.remove("hidden"));
+    icons.forEach(i => i.classList.add("rotate-180"));
+};
+
+window.collapseAllAccordions = function(groupId) {
+    const group = document.getElementById(groupId);
+    if (!group) return;
+    const bodies = group.querySelectorAll(".accordion-body-collapsible");
+    const icons = group.querySelectorAll(".accordion-icon-rotatable");
+    bodies.forEach(b => b.classList.add("hidden"));
+    icons.forEach(i => i.classList.remove("rotate-180"));
+};
+
+
 function renderGradeSubTabContent(grade, subData, subTab) {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+
+    // 8. Sınıf Özel LGS Pusulası
     if (subTab === "lgs" || subTab === "lgs-pusulasi") {
         return `
             <div class="mb-8">
@@ -2853,352 +3508,20 @@ function renderGradeSubTabContent(grade, subData, subTab) {
                 </div>
             </div>
         `;
-    } else if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
-        return renderScientistsModule(grade.number);
-        } else if (subTab === "ders-notu") {
-        const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
-        const foysList = (subData && subData.dersNotu) ? subData.dersNotu : [];
-
-        return `
-            <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-                <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="px-3 py-0.5 rounded-full bg-red-100 text-red-700 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
-                            <i class="fa-solid fa-book-open"></i> MEB 2026-2027
-                        </span>
-                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Müfredatı</span>
-                    </div>
-                    <h3 class="text-xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-2.5">
-                        <i class="fa-solid fa-file-lines text-red-600"></i> ${grade.number}. Sınıf Fen Bilimleri Ünite Ders Notları
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-600 font-medium mt-1">MEB müfredatına uygun konu özetleri, kavram haritaları, formül tabloları ve püf noktalarını inceleyebilirsiniz.</p>
-                </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu')" class="px-5 py-3 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95 cursor-pointer self-start sm:self-auto shrink-0" title="Bu sınıfa yeni PDF ders föyü veya doküman ekle">
-                        <i class="fa-solid fa-cloud-arrow-up text-sm"></i> <span>+ Yeni Ders Notu Ekle</span>
-                    </button>
-                ` : ''}
-            </div>
-
-            <!-- Kullanıcının Eklediği ve Düzenlediği Özel Ders Notları (Düzenleme & Sıralama Aktif) -->
-            ${renderCustomMaterialsSection(grade.number, "ders-notu")}
-
-            <!-- Ünite Bazlı Temel MEB Ders Notları -->
-            <div class="mb-6 flex items-center justify-between">
-                <h4 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
-                    <i class="fa-solid fa-folder-open text-blue-600"></i>
-                    <span>${grade.number}. Sınıf Ünite Ders Notları</span>
-                </h4>
-                <span class="text-xs font-bold text-slate-400">${foysList.length} Ünite Ders Notu</span>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${foysList.map((item, idx) => {
-                    const normItemTitle = (item.title || "").trim().toLowerCase();
-                    const itemUnitNum = String(idx + 1);
-                    const cleanUnitName = (item.unit || "").replace(/^\d+\.\s*Ünite\s*[•:]?\s*/i, "").trim().toLowerCase();
-
-                    const customMatch = customList.find(m => {
-                        if (!m) return false;
-                        if (m.id === item.id) return true;
-                        const mGrade = String(m.grade || "").replace(/^grade-/, "").trim();
-                        if (mGrade !== String(grade.number)) return false;
-                        const mTitle = (m.title || "").trim().toLowerCase();
-                        const mUnit = (m.unit || "").trim().toLowerCase();
-                        if (mTitle === normItemTitle) return true;
-                        if (mUnit.includes(itemUnitNum + ". ünite") || mTitle.includes(itemUnitNum + ". ünite")) return true;
-                        if (cleanUnitName.length > 3 && (mTitle.includes(cleanUnitName) || mUnit.includes(cleanUnitName))) return true;
-                        return false;
-                    });
-
-                    const effectiveId = customMatch ? customMatch.id : item.id;
-                    const effectiveTitle = customMatch ? customMatch.title : item.title;
-                    const effectiveDesc = customMatch ? customMatch.desc : item.desc;
-                    const effectiveFileUrl = (customMatch && customMatch.fileUrl && customMatch.fileUrl !== "#") ? customMatch.fileUrl : (item.fileUrl || "");
-                    const effectiveFileName = (customMatch && customMatch.fileName) ? customMatch.fileName : `${item.title}.pdf`;
-                    const hasFile = (customMatch && (customMatch.hasBlob || (customMatch.fileUrl && customMatch.fileUrl !== "#")));
-
-                    const safeTitle = effectiveTitle.replace(/'/g, "\\'");
-                    const safeUnit = (item.unit || "").replace(/'/g, "\\'");
-                    const safeDesc = effectiveDesc.replace(/'/g, "\\'");
-                    const safeFileName = effectiveFileName.replace(/'/g, "\\'");
-
-                    return `
-                        <div class="bg-white rounded-3xl p-5 sm:p-6 border ${hasFile ? 'border-emerald-300 ring-2 ring-emerald-500/10 shadow-md' : 'border-slate-200 shadow-sm'} hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative overflow-hidden">
-                            <div>
-                                <div class="flex items-center justify-between gap-2 mb-3">
-                                    <span class="px-3 py-1 rounded-full ${hasFile ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-red-50 text-red-700 border border-red-100'} text-[11px] font-black tracking-wider uppercase inline-flex items-center gap-1.5">
-                                        <i class="fa-solid ${hasFile ? 'fa-circle-check text-emerald-600' : 'fa-file-lines text-red-600'}"></i>
-                                        <span>${hasFile ? 'PDF Dokümanı Ekli' : item.badge || 'Ders Notu'}</span>
-                                    </span>
-                                    <span class="text-[11px] font-bold text-slate-400 flex items-center gap-1">
-                                        <i class="fa-regular fa-file-lines"></i> ${item.pages || '4-6 Sayfa'}
-                                    </span>
-                                </div>
-
-                                <div class="text-[11px] font-black text-blue-600 mb-1.5 uppercase tracking-wide truncate">
-                                    <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${item.unit}
-                                </div>
-
-                                <h4 class="text-base sm:text-lg font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors">
-                                    ${effectiveTitle}
-                                </h4>
-
-                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
-                                    ${effectiveDesc}
-                                </p>
-                            </div>
-
-                            <div class="pt-3 border-t border-slate-100 space-y-2">
-                                <!-- Herkes için birincil ve tek buton: Notu Görüntüle -->
-                                <button type="button" onclick="openUnitStudyNoteModal('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${effectiveFileUrl}', '${safeFileName}')" class="w-full py-2.5 bg-gradient-to-r from-red-600 via-rose-600 to-red-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-md hover:shadow-lg active:scale-95 cursor-pointer">
-                                    <i class="fa-solid fa-eye"></i> Notu Görüntüle
-                                </button>
-
-                                <!-- Sadece Yönetici (Admin) Girişi Yapılmışsa Görünen Düzenleme Butonları -->
-                                ${isAdmin ? `
-                                    <div class="flex items-center gap-1.5 pt-1">
-                                        <button type="button" onclick="triggerEditFoy('${grade.number}', '${effectiveId}', '${safeTitle}', '${safeUnit}', '${safeDesc}')" class="flex-1 py-1.5 bg-slate-50 hover:bg-amber-50 hover:text-amber-800 text-slate-700 text-[11px] font-bold rounded-xl border border-slate-200 hover:border-amber-300 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Ders Notunu Düzenle veya Dosya Yükle">
-                                            <i class="fa-solid fa-pen-to-square text-amber-600"></i>
-                                            <span>${hasFile ? 'Düzenle / Dosya Değiştir' : 'Föyü Düzenle & Dosya Seç'}</span>
-                                        </button>
-
-                                        ${customMatch ? `
-                                            <button type="button" onclick="deleteCustomMaterial('${customMatch.id}')" class="p-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-xs font-bold rounded-xl border border-red-200 transition-all flex items-center justify-center cursor-pointer" title="Yüklenen Dosyayı Kaldır">
-                                                <i class="fa-solid fa-trash-can"></i>
-                                            </button>
-                                        ` : ''}
-                                    </div>
-                                ` : ''}
-                            </div>
-                        </div>
-                    `;
-                }).join("")}
-            </div>
-        `;
-    } else if (subTab === "ders-sunumu") {
-        return `
-            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-file-powerpoint text-orange-600"></i> ${grade.number}. Sınıf Akıllı Tahta Ders Sunumları (PPTX / PDF)
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">${subData.dersSunumu.length} Sunum Dosyası</span>
-                </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-sunumu')" class="px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-orange-600/20 active:scale-95 self-start sm:self-auto">
-                        <i class="fa-solid fa-plus"></i> + Sunum Ekle
-                    </button>
-                ` : ''}
-            </div>
-            ${renderCustomMaterialsSection(grade.number, "ders-sunumu")}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${subData.dersSunumu.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <span class="px-3 py-1 rounded-full bg-orange-50 text-orange-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
-                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
-                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
-                                <span>📊 ${item.slides}</span>
-                                <span>🖥️ ${item.format}</span>
-                            </div>
-                        </div>
-                        <button onclick="toggleSmartboardMode(true)" class="w-full py-2.5 bg-orange-600 hover:bg-orange-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-chalkboard-user"></i> Akıllı Tahtada Başlat
-                        </button>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-        } else if (subTab === "videolar") {
-        const customVideos = getCustomMaterialsList().filter(m => {
-            const gMatch = (m.grade === String(grade.number) || m.grade === "all");
-            const cMatch = (m.category === "videolar" || m.category === "video");
-            return gMatch && cMatch;
-        });
-
-        return `
-            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-play text-red-600"></i> ${grade.number}. Sınıf Videoları
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">${customVideos.length} Video</span>
-                </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-rose-600/20 active:scale-95 self-start sm:self-auto">
-                        <i class="fa-solid fa-plus"></i> + Video Ekle
-                    </button>
-                ` : ''}
-            </div>
-
-            ${renderCustomMaterialsSection(grade.number, "videolar")}
-
-            ${customVideos.length === 0 ? `
-                <div class="p-8 sm:p-12 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 shadow-sm">
-                    <div class="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl mx-auto mb-4">
-                        <i class="fa-solid fa-video"></i>
-                    </div>
-                    <h4 class="text-base font-black text-slate-800 mb-1">Bu sınıfta henüz video bulunmuyor</h4>
-                    <p class="text-xs text-slate-500 mb-4 max-w-sm mx-auto">Yönetici panelinden video yükleyerek sadece kendi videolarınızı burada yayınlayabilirsiniz.</p>
-                    ${isAdmin ? `
-                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'videolar')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-plus"></i> Hemen Video Ekle
-                        </button>
-                    ` : ''}
-                </div>
-            ` : ''}
-        `;
-    } else if (subTab === "etkinlikler") {
-        return `
-            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-puzzle-piece text-emerald-600"></i> ${grade.number}. Sınıf Çalışma Föyleri & İstasyon Etkinlikleri
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">${subData.etkinlikler.length} Etkinlik Föyü</span>
-                </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'etkinlikler')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95 self-start sm:self-auto">
-                        <i class="fa-solid fa-plus"></i> + Etkinlik Ekle
-                    </button>
-                ` : ''}
-            </div>
-            ${renderCustomMaterialsSection(grade.number, "etkinlikler")}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${subData.etkinlikler.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <span class="px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
-                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
-                            <div class="text-[11px] font-bold text-slate-500 bg-slate-50 p-2.5 rounded-xl mb-4">
-                                📌 ${item.type}
-                            </div>
-                        </div>
-                        <button onclick="window.print()" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-eye"></i> Etkinlik Föyünü Görüntüle / Yazdır
-                        </button>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-    } else if (subTab === "soru-bankasi") {
-        return `
-            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-book-open-reader text-blue-600"></i> ${grade.number}. Sınıf Kazanım & Beceri Temelli Soru Bankası
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">${subData.soruBankasi.length} Ünite Soru Havuzu</span>
-                </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'soru-bankasi')" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 self-start sm:self-auto">
-                        <i class="fa-solid fa-plus"></i> + Soru / Test Ekle
-                    </button>
-                ` : ''}
-            </div>
-            ${renderCustomMaterialsSection(grade.number, "soru-bankasi")}
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${subData.soruBankasi.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.badge}</span>
-                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">${item.desc}</p>
-                            <div class="text-[11px] font-bold text-slate-400 mb-4 flex items-center justify-between">
-                                <span>📝 ${item.count}</span>
-                                <span>🎯 ${item.difficulty}</span>
-                            </div>
-                        </div>
-                        <a href="#quizzes" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-colors flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-circle-check"></i> Testi Çözmeye Başla
-                        </a>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-    } else if (subTab === "denemeler") {
-        return `
-            <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-bullseye text-purple-600"></i> ${grade.number}. Sınıf Dönemlik Ortak Sınav & Branş Denemeleri
-                    </h3>
-                    <span class="text-xs font-bold text-slate-500">${subData.denemeler.length} Deneme Sınavı</span>
-                </div>
-                ${isAdmin ? `
-                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'denemeler')" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-purple-600/20 active:scale-95 self-start sm:self-auto">
-                        <i class="fa-solid fa-plus"></i> + Deneme Ekle
-                    </button>
-                ` : ''}
-            </div>
-            ${renderCustomMaterialsSection(grade.number, "denemeler")}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                ${subData.denemeler.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <span class="px-3 py-1 rounded-full bg-purple-50 text-purple-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.type}</span>
-                            <h4 class="text-lg font-black text-slate-900 mb-2">${item.title}</h4>
-                            <div class="grid grid-cols-2 gap-3 my-4">
-                                <div class="p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-700">
-                                    📋 Soru Sayısı: <span class="text-purple-700">${item.questions}</span>
-                                </div>
-                                <div class="p-3 bg-slate-50 rounded-xl text-xs font-bold text-slate-700">
-                                    ⏱️ Sınav Süresi: <span class="text-purple-700">${item.time}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex gap-2">
-                            <a href="#exams" class="flex-1 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl text-center transition-colors">
-                                Denemeyi Başlat
-                            </a>
-                            <button onclick="window.print()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl transition-colors" title="PDF Görüntüle / Yazdır">
-                                <i class="fa-solid fa-print"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join("")}
-            </div>
-        `;
-    } else if (subTab === "egitsel-oyunlar" || subTab === "oyunlar") {
-        return `
-            <div class="mb-6 flex items-center justify-between">
-                <div>
-                    <h3 class="text-xl sm:text-2xl font-black text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-gamepad text-fuchsia-600"></i> ${grade.number}. Sınıf Eğitsel Oyunlar & İnteraktif Etkinlikler
-                    </h3>
-                    <p class="text-xs text-slate-500 font-medium mt-1">Eğlenerek öğrenmeyi sağlayan fen laboratuvar simülasyonları, eğitsel oyunlar ve bilgi yarışmaları.</p>
-                </div>
-                <button onclick="triggerUploadModal('${grade.number}', 'egitsel-oyunlar')" class="px-4 py-2 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-fuchsia-600/20">
-                    <i class="fa-solid fa-plus"></i> Oyun Ekle
-                </button>
-            </div>
-
-            ${renderCustomMaterialsSection(grade.number, "egitsel-oyunlar")}
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${subData.egitselOyunlar.map(item => `
-                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between">
-                        <div>
-                            <div class="w-14 h-14 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-2xl shadow-md mb-4">
-                                <i class="${item.icon}"></i>
-                            </div>
-                            <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-[11px] font-black tracking-wider uppercase inline-block mb-3">${item.type}</span>
-                            <h4 class="text-base font-black text-slate-900 mb-2">${item.title}</h4>
-                            <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">${item.desc}</p>
-                        </div>
-                        <button type="button" onclick="openInteractiveGameModal('${item.id}', '${item.title.replace(/'/g, "\'")}')" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-xs uppercase rounded-xl transition-all text-center shadow-md flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95">
-                            <i class="fa-solid fa-gamepad text-sm"></i> <span>Oyunu Başlat (Oyna)</span>
-                        </button>
-                    </div>
-                `).join("")}
-            </div>
-        `;
     }
-}
 
+    // 1. 📝 DERS NOTU (4 Kademeli Dikey Akordeon: Kitap, Notlar, Lab, Soru)
+    if (subTab === "ders-notu") {
+        return renderGradeDersNotuAccordion(grade, subData);
+    }
+
+    // 2. 🌟 DİĞER 7 ANA BÖLÜM (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
+    if (["ders-sunumu", "videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar", "bilim-insanlari", "uniteler", "bilimin-rotasi"].includes(subTab)) {
+        return renderGradeUnitBasedHub(grade, subData, subTab);
+    }
+
+    return renderGradeDersNotuAccordion(grade, subData);
+}
 
 
 // -------------------------------------------------------------
