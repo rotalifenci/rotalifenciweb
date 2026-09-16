@@ -355,6 +355,24 @@ const CloudSyncManager = {
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
+        id: "not-7-1",
+        grade: "7",
+        category: "ders-notu",
+        title: "7. Sınıf 1. Ünite Notu",
+        unit: "1. Ünite: Güneş Sistemi ve Ötesi",
+        desc: "7. Sınıf 1. Ünite: Güneş Sistemi ve Ötesi kapsamlı ders notu ve özet föyü.",
+        fileName: "7.1. Ders Notu.pdf",
+        fileUrl: "assets/docs/7-1-ders-notu.pdf",
+        imageUrl: "assets/kapak-7.jpg",
+        format: "PDF",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "7.sınıf", "dersnotu", "fen"],
+        visibility: "public",
+        downloadCount: "1.850+",
+        createdAt: "16.09.2026",
+        updatedAt: "16.09.2026"
+    },
+    {
         id: "mat-8-liseye-nasil-gidecegiz",
         grade: "8",
         category: "videolar",
@@ -5462,6 +5480,16 @@ async function openDigitalBookModal(options = {}) {
     let fileUrl = options.fileUrl || "";
     const id = options.id || "";
 
+    // 🎯 Bilinen statik doküman eşleştirmesi
+    if (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") {
+        const idLower = String(id || "").toLowerCase();
+        const fileLower = String(options.fileName || "").toLowerCase();
+        const titleLower = String(bookTitle || "").toLowerCase();
+        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || fileLower.includes("7-1-ders-notu") || titleLower.includes("7. sınıf 1. ünite") || titleLower.includes("güneş sistemi ve ötesi")) {
+            fileUrl = "assets/docs/7-1-ders-notu.pdf";
+        }
+    }
+
     DigitalBookState.currentPage = 1;
     DigitalBookState.totalPages = 1;
     DigitalBookState.currentScale = 1.0;
@@ -5672,7 +5700,18 @@ async function tryLoadPdfDocument(id, fileUrl) {
         } catch(e) {}
     }
 
-    // 3. fileUrl kontrolü
+    // 2.7. 🎯 Statik sunucu dokümanı eşleştirmesi (7. Sınıf 1. Ünite Notu vb.)
+    const bookInfo = DigitalBookState.bookInfo || {};
+    const idLower = String(id || bookInfo.id || "").toLowerCase();
+    const fileLower = String(bookInfo.fileName || "").toLowerCase();
+    const titleLower = String(bookInfo.title || "").toLowerCase();
+    if (!pdfData && (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null")) {
+        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || fileLower.includes("7-1-ders-notu") || titleLower.includes("7. sınıf 1. ünite") || titleLower.includes("güneş sistemi ve ötesi")) {
+            fileUrl = "assets/docs/7-1-ders-notu.pdf";
+        }
+    }
+
+    // 3. fileUrl kontrolü ve doğrudan binary indirme (Mobil tarayıcı uyumluluğu için en sağlam yöntem)
     if (!pdfData && fileUrl && fileUrl !== "#" && fileUrl !== "" && fileUrl !== "null") {
         if (fileUrl.startsWith("data:application/pdf") || fileUrl.startsWith("data:")) {
             try {
@@ -5698,14 +5737,49 @@ async function tryLoadPdfDocument(id, fileUrl) {
             } catch(blobFetchErr) {
                 pdfData = fileUrl;
             }
+        } else if (typeof fileUrl === "string" && (fileUrl.startsWith("http") || fileUrl.startsWith("assets/") || fileUrl.endsWith(".pdf"))) {
+            try {
+                if (statusEl) statusEl.innerText = "Doküman İndiriliyor...";
+                const resp = await fetch(fileUrl);
+                if (resp.ok) {
+                    const ab = await resp.arrayBuffer();
+                    pdfData = new Uint8Array(ab);
+                    isDataBuffer = true;
+                    // Telefonda veya diğer cihazda yerel IndexedDB'ye önbellekle
+                    if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile && id) {
+                        try {
+                            const blob = new Blob([pdfData], { type: "application/pdf" });
+                            RotaliDB.saveFile(id, blob, bookInfo.fileName || "7.1. Ders Notu.pdf", "application/pdf").catch(() => {});
+                        } catch(saveErr) {}
+                    }
+                } else {
+                    pdfData = fileUrl;
+                }
+            } catch(fetchErr) {
+                console.warn("Fetch failed, passing url to PDF.js:", fetchErr);
+                pdfData = fileUrl;
+            }
         } else {
             pdfData = fileUrl;
         }
     }
 
     if (!pdfData) {
-        // hasBlob = true ise dosya başka cihazda IDB'de var ama buraya sync edilememiş demektir
-        const bookInfo = DigitalBookState.bookInfo || {};
+        // Son bir kez statik 7. sınıf dokümanını dene
+        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || titleLower.includes("7. sınıf 1. ünite")) {
+            try {
+                const fallbackResp = await fetch("assets/docs/7-1-ders-notu.pdf");
+                if (fallbackResp.ok) {
+                    const ab = await fallbackResp.arrayBuffer();
+                    pdfData = new Uint8Array(ab);
+                    isDataBuffer = true;
+                }
+            } catch(e) {}
+        }
+    }
+
+    if (!pdfData) {
+        // hasBlob = true ise ve gerçekten hiçbir veri bulunamadıysa dosya seçme opsiyonu sun
         const hasRemoteBlob = bookInfo.hasBlob || (function() {
             try {
                 if (Array.isArray(ROTALI_MATERIALS_CACHE) && id) {
@@ -6297,6 +6371,14 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
                 targetUrl = cachedItem.fileUrl;
             }
         } catch(e) {}
+    }
+
+    // 🎯 Statik sunucu dokümanı eşleştirmesi (Telefon ve bilgisayarda sıfır gecikmeyle açılmasını garanti eder)
+    if (!targetUrl || targetUrl === "" || targetUrl === "#" || targetUrl === "null") {
+        const idLower = String(id || (found && found.id) || "").toLowerCase();
+        if (idLower === "not-7-1" || checkFile.includes("7.1. ders notu") || checkFile.includes("7-1-ders-notu") || checkTitle.includes("7. sınıf 1. ünite") || checkTitle.includes("güneş sistemi ve ötesi")) {
+            targetUrl = "assets/docs/7-1-ders-notu.pdf";
+        }
     }
 
     // 1. 🎬 VİDEO DOSYASI MI? (MP4, WEBM, YouTube)
