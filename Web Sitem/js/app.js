@@ -2861,7 +2861,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
     const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const foysList = (subData && subData.dersNotu) ? subData.dersNotu : [];
 
-    // MEB Ders Kitabı Tanımları
+    // MEB Ders Kitapları
     const textbookMap = {
         "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
         "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "assets/kitaplar/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
@@ -2870,7 +2870,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
     };
     const currentBook = textbookMap[gNum] || textbookMap["8"];
 
-    // 3. Kategori: Laboratuvar & Deneyler
+    // Laboratuvar & Deneyler
     const labItemsMap = {
         "5": [
             { id: "lab-5-1", title: "5. Sınıf Laboratuvar Güvenliği & Malzemeleri Renkli İnfografiği", badge: "İnfografik Föy", desc: "Güvenlik sembolleri, piktogramlar ve temel laboratuvar ekipmanları görsel kılavuzu.", format: "GÖRSEL FÖY", fileUrl: "assets/lab-guvenligi.svg" },
@@ -2891,31 +2891,66 @@ function renderGradeDersNotuAccordion(grade, subData) {
     };
     const labItems = labItemsMap[gNum] || labItemsMap["8"];
 
-    // 4. Kategori: Soru Çözümü / Sınav Hazırlık
-    const testItemsMap = {
+    // Resmi MEB 7 Ünitesi
+    const unitTitlesMap = {
         "5": [
-            { id: "test-5-1", title: "5. Sınıf 1. Dönem Kazanım Kavrama Testi", badge: "Kazanım Testi", count: "16 Soru", desc: "Güneş, Dünya, Ay ve Canlılar Dünyası kazanım pekiştirme soruları.", format: "TEST", fileUrl: "#" },
-            { id: "test-5-2", title: "5. Sınıf Beceri Temelli Yeni Nesil Soru Föyü", badge: "Yeni Nesil", count: "12 Soru", desc: "Görsel ve grafik okuma becerilerini ölçen MEB formatında test.", format: "PDF TEST", fileUrl: "#" }
+            "1. Ünite: Güneş, Dünya ve Ay",
+            "2. Ünite: Canlılar Dünyası",
+            "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
+            "4. Ünite: Madde ve Değişim",
+            "5. Ünite: Işığın Yayılması",
+            "6. Ünite: İnsan ve Çevre",
+            "7. Ünite: Elektrik Devre Elemanları"
         ],
         "6": [
-            { id: "test-6-1", title: "6. Sınıf Sistemler ve Kuvvet Tarama Testi", badge: "Tarama Testi", count: "18 Soru", desc: "Dolaşım, solunum ve bileşke kuvvet karma soru havuzu.", format: "TEST", fileUrl: "#" },
-            { id: "test-6-2", title: "6. Sınıf MEB Ölçme & Değerlendirme Örnek Soruları", badge: "MEB Uyumlu", count: "15 Soru", desc: "Açık uçlu ve çoktan seçmeli yeni nesil senaryolar.", format: "PDF TEST", fileUrl: "#" }
+            "1. Ünite: Güneş Sistemi ve Tutulmalar",
+            "2. Ünite: Vücudumuzdaki Sistemler",
+            "3. Ünite: Kuvvet ve Hareket",
+            "4. Ünite: Madde ve Isı",
+            "5. Ünite: Ses ve Özellikleri",
+            "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
+            "7. Ünite: Elektriğin İletimi"
         ],
         "7": [
-            { id: "test-7-1", title: "7. Sınıf Kuvvet, İş ve Enerji Fen Lisesi Denemesi", badge: "İleri Düzey", count: "15 Soru", desc: "Üst düzey akıl yürütme ve mantık-muhakeme soruları.", format: "TEST", fileUrl: "#" },
-            { id: "test-7-2", title: "7. Sınıf Hücre ve Bölünmeler Beceri Temelli Test", badge: "Beceri Temelli", count: "12 Soru", desc: "Mitoz-mayoz kromozom sayısı ve genetik çeşitlilik analizi.", format: "PDF TEST", fileUrl: "#" }
+            "1. Ünite: Güneş Sistemi ve Ötesi",
+            "2. Ünite: Hücre ve Bölünmeler",
+            "3. Ünite: Kuvvet ve Enerji",
+            "4. Ünite: Saf Madde ve Karışımlar",
+            "5. Ünite: Işığın Madde ile Etkileşimi",
+            "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
+            "7. Ünite: Elektrik Devreleri"
         ],
         "8": [
-            { id: "test-8-1", title: "8. Sınıf LGS Tam Kapsamlı Fen Branş Denemesi 1", badge: "LGS Formatı", count: "20 Soru", desc: "MEB 2026-2027 sınav standartlarında 20 yeni nesil soru.", format: "LGS DENEME", fileUrl: "#" },
-            { id: "test-8-2", title: "Son 5 Yılın MEB LGS Çıkmış Soru & Çözüm Modelleri", badge: "MEB Çıkmış", count: "Yıllara Göre", desc: "Konulara göre ayrıştırılmış detaylı soru çözümleri.", format: "ÇÖZÜM MODELLERİ", fileUrl: "#" }
+            "1. Ünite: Mevsimler ve İklim",
+            "2. Ünite: DNA ve Genetik Kod",
+            "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+            "4. Ünite: Madde ve Endüstri",
+            "5. Ünite: Basit Makineler",
+            "6. Ünite: Canlılar ve Enerji İlişkileri",
+            "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
         ]
     };
-    const testItems = testItemsMap[gNum] || testItemsMap["8"];
+    const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
+
+    // Özel Ders Kitabı Materyalleri
+    const customBooks = customList.filter(m => {
+        const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+        if (gClean !== "all" && gClean !== String(grade.number)) return false;
+        return getMaterialTargetSection(m) === "kitap";
+    });
+
+    // Özel Laboratuvar Materyalleri
+    const customLabItems = customList.filter(m => {
+        const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+        if (gClean !== "all" && gClean !== String(grade.number)) return false;
+        const sec = getMaterialTargetSection(m);
+        return sec === "lab" || m.category === "laboratuvar";
+    });
+    const allLab = [...customLabItems, ...labItems];
 
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
-            
-            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Ders Kitabı + 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler -->
+            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Ders Kitabı + 1. Üniteden 7. Üniteye + Laboratuvar -->
             <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
                 <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
                     <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer">
@@ -2931,36 +2966,33 @@ function renderGradeDersNotuAccordion(grade, subData) {
                         <i class="fa-solid fa-flask-vial text-emerald-600"></i>
                         <span>Laboratuvar</span>
                     </button>
-                    
                 </div>
             </div>
 
-            <!-- Özel materyaller doğrudan kendi ünite ve bölümlerine yerleştirildi -->
-
-            <!-- DİKEY 4 TEMEL KATEGORİ AKORDEON LİSTESİ -->
+            <!-- DOĞRUDAN ÜNİTE AKORDEONLARI (Kategori başlıkları olmadan doğrudan ilgili ünite içeriği) -->
             <div class="space-y-4">
 
-                <!-- 1. KATEGORİ: MEB DERS KİTABI -->
-                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
+                <!-- 📖 DERS KİTABI BÖLÜMÜ -->
+                <div data-unit="kitap" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('notu-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
                                 <i class="fa-solid fa-book-open"></i>
                             </div>
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-black uppercase tracking-wider text-amber-700">1. Kategori</span>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-xs font-black uppercase tracking-wider text-amber-700">${grade.number}. Sınıf • Ders Kitabı</span>
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-50 text-amber-800 border border-amber-200">MEB Resmi Kitap</span>
                                 </div>
                                 <h4 class="text-base sm:text-lg font-black text-slate-900">Ders Kitabı & Ünite PDF'leri</h4>
                             </div>
                         </div>
-                        <div id="acc-sec-kitap-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
+                        <div id="notu-sec-kitap-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
 
-                    <div id="acc-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                    <div id="notu-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6">
                             <div class="w-24 sm:w-32 h-36 sm:h-44 shrink-0 rounded-xl overflow-hidden shadow-md border border-slate-200 bg-slate-100 flex items-center justify-center">
                                 <img src="${currentBook.cover}" alt="${currentBook.title}" class="w-full h-full object-cover" onerror="this.src='assets/kapak-5.jpg'">
@@ -2982,246 +3014,193 @@ function renderGradeDersNotuAccordion(grade, subData) {
                             </div>
                         </div>
 
-                        ${(() => {
-                            const customBooks = customList.filter(m => {
-                                const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
-                                if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                                return getMaterialTargetSection(m) === "kitap";
-                            });
-                            if (customBooks.length === 0) return "";
-                            return `
-                                <div class="mt-4 pt-4 border-t border-slate-200">
-                                    <h6 class="text-xs font-black uppercase tracking-wider text-amber-900 mb-3 flex items-center gap-2">
-                                        <i class="fa-solid fa-book-bookmark text-amber-600"></i> Bu Sınıfa Eklenen Ders Kitabı & Bölüm Materyalleri
-                                    </h6>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                        ${customBooks.map(cb => `
-                                            <div class="p-4 bg-white rounded-2xl border border-amber-200 shadow-sm flex flex-col justify-between">
-                                                <div>
-                                                    <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200 mb-2 inline-block">${cb.format || 'PDF KİTAP'}</span>
-                                                    <h6 class="text-sm font-black text-slate-900 mb-1">${cb.title}</h6>
-                                                    <p class="text-xs text-slate-500 mb-3 line-clamp-2 font-medium">${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}</p>
-                                                </div>
-                                                <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                                    <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95">
-                                                        <i class="fa-solid fa-book-open"></i> Oku
-                                                    </button>
-                                                    ${isAdmin ? `
-                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2 px-2.5 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl" title="Düzenle">
-                                                            <i class="fa-solid fa-pen-to-square"></i>
-                                                        </button>
-                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2 px-2.5 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl" title="Sil">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    ` : ''}
-                                                </div>
-                                            </div>
-                                        `).join("")}
-                                    </div>
-                                </div>
-                            `;
-                        })()}
-                    </div>
-                </div>
-
-                <!-- 2. KATEGORİ: ÜNİTE DERS NOTLARI, SKETCHNOTES & KAVRAM HARİTALARI -->
-                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-notlar')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
-                        <div class="flex items-center gap-3.5 sm:gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
-                                <i class="fa-solid fa-file-lines"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-black uppercase tracking-wider text-blue-700">2. Kategori</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-blue-50 text-blue-800 border border-blue-200">${foysList.length} Ünite Föyü</span>
-                                </div>
-                                <h4 class="text-base sm:text-lg font-black text-slate-900">Ders Notları, Sketchnotes & Kavram Haritaları</h4>
-                            </div>
-                        </div>
-                        <div id="acc-sec-notlar-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </div>
-                    </button>
-
-                    <div id="acc-sec-notlar" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                        <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">MEB kazanımlarına uygun, görsel zenginleştirilmiş kavram haritaları, özet föyler ve formül şemaları.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${[1,2,3,4,5,6,7].map(unitNum => {
-                                const unitCustomNotes = customList.filter(m => {
-                                    const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
-                                    if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                                    if (!matchesSubTabCategory(m, "ders-notu")) return false;
-                                    const sec = getMaterialTargetSection(m);
-                                    return sec === String(unitNum);
-                                });
-
-                                const standardNote = foysList[unitNum - 1] || {
-                                    id: `foy-${grade.number}-${unitNum}`,
-                                    title: `${grade.number}. Sınıf ${unitNum}. Ünite Ders Özeti`,
-                                    unit: `${unitNum}. Ünite`,
-                                    desc: "MEB kazanımlarına uygun ünite ders notu ve kavram haritası.",
-                                    badge: "PDF FÖY",
-                                    pages: "4-6 Sayfa",
-                                    fileUrl: "#"
-                                };
-
-                                const allNotesForUnit = [...unitCustomNotes, standardNote];
-
-                                return allNotesForUnit.map(item => {
-                                    const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
-                                    const isPdfReady = item.fileUrl && item.fileUrl !== "#";
-                                    return `
-                                        <div data-unit="${unitNum}" class="foy-card-item ${unitNum === 1 ? '' : 'hidden'} bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                        ${customBooks.length > 0 ? `
+                            <div class="mt-4 pt-4 border-t border-slate-200">
+                                <h6 class="text-xs font-black uppercase tracking-wider text-amber-900 mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-book-bookmark text-amber-600"></i> Bu Sınıfa Eklenen Ders Kitabı & Bölüm Materyalleri
+                                </h6>
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                    ${customBooks.map(cb => `
+                                        <div class="p-4 bg-white rounded-2xl border border-amber-200 shadow-sm flex flex-col justify-between">
                                             <div>
-                                                <div class="flex items-center justify-between gap-2 mb-3">
-                                                    <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
-                                                        ${item.format || item.badge || 'PDF'}
-                                                    </span>
-                                                    <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? 'Özel İçerik' : '4-6 Sayfa')}</span>
-                                                </div>
-                                                <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
-                                                    <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
-                                                </div>
-                                                <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
-                                                    ${item.title}
-                                                </h5>
-                                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
-                                                    ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
-                                                </p>
+                                                <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200 mb-2 inline-block">${cb.format || 'PDF KİTAP'}</span>
+                                                <h6 class="text-sm font-black text-slate-900 mb-1">${cb.title}</h6>
+                                                <p class="text-xs text-slate-500 mb-3 line-clamp-2 font-medium">${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}</p>
                                             </div>
-                                            <div>
-                                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}.pdf', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
-                                                    <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
-                                                    <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
+                                            <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+                                                <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+                                                    <i class="fa-solid fa-book-open"></i> Oku
                                                 </button>
-                                                ${(isCustom && isAdmin) ? `
-                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                        </button>
-                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
+                                                ${isAdmin ? `
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2 px-2.5 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
+                                                        <i class="fa-solid fa-pen-to-square"></i>
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2 px-2.5 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl cursor-pointer" title="Sil">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
                                                 ` : ''}
                                             </div>
                                         </div>
-                                    `;
-                                }).join("");
-                            }).join("")}
-                        </div>
+                                    `).join("")}
+                                </div>
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
 
-                <!-- 3. KATEGORİ: LABORATUVAR & DENEYLER -->
-                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
+                <!-- 📚 1. ÜNİTEDEN 7. ÜNİTEYE KADAR DOĞRUDAN ÜNİTE AKORDEONLARI -->
+                ${[1,2,3,4,5,6,7].map(unitNum => {
+                    const accordionId = `notu-sec-unit-${unitNum}`;
+                    const uTitle = unitList[unitNum - 1] || `${unitNum}. Ünite`;
+                    const isOpenInitial = (unitNum === 1);
+
+                    const unitCustomNotes = customList.filter(m => {
+                        const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+                        if (gClean !== "all" && gClean !== String(grade.number)) return false;
+                        if (!matchesSubTabCategory(m, "ders-notu")) return false;
+                        const sec = getMaterialTargetSection(m);
+                        return sec === String(unitNum);
+                    });
+
+                    const standardNote = foysList[unitNum - 1] || {
+                        id: `foy-${grade.number}-${unitNum}`,
+                        title: `${grade.number}. Sınıf ${unitNum}. Ünite Ders Özeti & Kavram Haritası`,
+                        unit: `${unitNum}. Ünite`,
+                        desc: "MEB 2026-2027 kazanımlarına uygun görsel ünite ders notu ve özet formül föyü.",
+                        badge: "PDF FÖY",
+                        pages: "4-6 Sayfa",
+                        fileUrl: "#"
+                    };
+
+                    const allNotesForUnit = [...unitCustomNotes, standardNote];
+
+                    return `
+                        <div data-unit="${unitNum}" class="notu-unit-card ${unitNum === 1 ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                            <!-- Akordeon Başlığı -->
+                            <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
+                                <div class="flex items-center gap-3 sm:gap-4">
+                                    <div class="w-12 h-12 rounded-2xl bg-blue-600 text-white flex flex-col items-center justify-center shrink-0 shadow-sm shadow-blue-600/20">
+                                        <span class="text-[9px] font-black uppercase tracking-wider text-blue-100">ÜNİTE</span>
+                                        <span class="text-base font-black leading-none">${unitNum}</span>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-0.5">
+                                            <span class="text-xs font-black text-blue-600 uppercase tracking-wider">${grade.number}. Sınıf • ${unitNum}. Ünite</span>
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100">
+                                                ${allNotesForUnit.length} Ders Notu
+                                            </span>
+                                        </div>
+                                        <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
+                                    </div>
+                                </div>
+                                <div id="${accordionId}-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 ${isOpenInitial ? 'rotate-180' : ''}">
+                                    <i class="fa-solid fa-chevron-down text-xs"></i>
+                                </div>
+                            </button>
+
+                            <!-- Akordeon Gövdesi -->
+                            <div id="${accordionId}" class="accordion-body-collapsible ${isOpenInitial ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    ${allNotesForUnit.map(item => {
+                                        const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
+                                        const isPdfReady = item.fileUrl && item.fileUrl !== "#";
+                                        return `
+                                            <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                                                <div>
+                                                    <div class="flex items-center justify-between gap-2 mb-3">
+                                                        <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
+                                                            ${item.format || item.badge || 'PDF FÖY'}
+                                                        </span>
+                                                        <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? 'Özel İçerik' : '4-6 Sayfa')}</span>
+                                                    </div>
+                                                    <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
+                                                        <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
+                                                    </div>
+                                                    <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
+                                                        ${item.title}
+                                                    </h5>
+                                                    <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
+                                                        ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}.pdf', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
+                                                        <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
+                                                        <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
+                                                    </button>
+                                                    ${(isCustom && isAdmin) ? `
+                                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
+                                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                            </button>
+                                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer" title="Sil">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    ` : ''}
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join("")}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join("")}
+
+                <!-- 🧪 LABORATUVAR BÖLÜMÜ -->
+                <div data-unit="lab" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('notu-sec-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
                                 <i class="fa-solid fa-flask-vial"></i>
                             </div>
                             <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-black uppercase tracking-wider text-emerald-700">3. Kategori</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">${labItems.length} Deney & Simülasyon</span>
+                                <div class="flex items-center gap-2 mb-0.5">
+                                    <span class="text-xs font-black uppercase tracking-wider text-emerald-700">${grade.number}. Sınıf • Laboratuvar</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-emerald-50 text-emerald-800 border border-emerald-200">${allLab.length} İçerik</span>
                                 </div>
-                                <h4 class="text-base sm:text-lg font-black text-slate-900">Laboratuvar / Deneyler & Simülasyonlar</h4>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900">Laboratuvar, Deneyler & PhET Simülasyonları</h4>
                             </div>
                         </div>
-                        <div id="acc-sec-lab-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300">
+                        <div id="notu-sec-lab-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
 
-                    <div id="acc-sec-lab" class="accordion-body-collapsible hidden border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                        <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">Sınıf içi deney föyleri, PhET laboratuvar simülasyonları ve interaktif etkinlikler.</p>
+                    <div id="notu-sec-lab" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${(() => {
-                                const customLabItems = customList.filter(m => {
-                                    const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
-                                    if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                                    const sec = getMaterialTargetSection(m);
-                                    return sec === "lab" || m.category === "laboratuvar";
-                                });
-
-                                const allLab = [...customLabItems, ...labItems];
-
-                                return allLab.map(item => {
-                                    const isCustom = !String(item.id).startsWith("lab-");
-                                    return `
-                                        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-emerald-400 transition-all group">
-                                            <div>
-                                                <div class="flex items-center justify-between mb-2">
-                                                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || item.badge || 'Deney Föyü'}</span>
-                                                    <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'İnteraktif'}</span>
+                            ${allLab.map(item => {
+                                const isCustom = !String(item.id).startsWith("lab-");
+                                return `
+                                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-emerald-400 transition-all group">
+                                        <div>
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || item.badge || 'Deney Föyü'}</span>
+                                                <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'İnteraktif'}</span>
+                                            </div>
+                                            <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
+                                            <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
+                                        </div>
+                                        <div>
+                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
+                                                <i class="fa-solid fa-play"></i>
+                                                <span>Etkinliği Başlat / İncele</span>
+                                            </button>
+                                            ${(isCustom && isAdmin) ? `
+                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer" title="Sil">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
                                                 </div>
-                                                <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
-                                                <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
-                                            </div>
-                                            <div>
-                                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
-                                                    <i class="fa-solid fa-play"></i>
-                                                    <span>Etkinliği Başlat / İncele</span>
-                                                </button>
-                                                ${(isCustom && isAdmin) ? `
-                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                        </button>
-                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                ` : ''}
-                                            </div>
+                                            ` : ''}
                                         </div>
-                                    `;
-                                }).join("");
-                            })()}
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 4. KATEGORİ: SORU ÇÖZÜMÜ / LGS HAZIRLIK -->
-                <div class="border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('acc-sec-soru')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
-                        <div class="flex items-center gap-3.5 sm:gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
-                                <i class="fa-solid fa-bullseye"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-xs font-black uppercase tracking-wider text-purple-700">4. Kategori</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-50 text-purple-800 border border-purple-200">${testItems.length} Test Modülü</span>
-                                </div>
-                                <h4 class="text-base sm:text-lg font-black text-slate-900">${grade.number === 8 ? 'LGS Soru Çözümü & Çıkmış Sorular' : 'Soru Çözümü & Beceri Temelli Testler'}</h4>
-                            </div>
-                        </div>
-                        <div id="acc-sec-soru-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300">
-                            <i class="fa-solid fa-chevron-down text-xs"></i>
-                        </div>
-                    </button>
-
-                    <div id="acc-sec-soru" class="accordion-body-collapsible hidden border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                        <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4">${grade.number === 8 ? 'MEB LGS çıkmış soru modelleri, yeni nesil soru çözüm taktikleri ve branş denemeleri.' : 'MEB ölçme-değerlendirme standartlarında kazanım kavrama ve beceri temelli testler.'}</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${testItems.map(item => `
-                                <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-purple-400 transition-all group">
-                                    <div>
-                                        <div class="flex items-center justify-between mb-2">
-                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-purple-50 text-purple-700 border border-purple-200">${item.badge}</span>
-                                            <span class="text-[11px] font-bold text-slate-400">${item.count}</span>
-                                        </div>
-                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-purple-600 transition-colors">${item.title}</h5>
-                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium">${item.desc}</p>
                                     </div>
-                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl}', '${item.title.replace(/'/g, "\\'")}', 'soru-bankasi', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-purple-600/20 active:scale-95 cursor-pointer">
-                                        <i class="fa-solid fa-circle-check"></i>
-                                        <span>Testi Çöz / İncele</span>
-                                    </button>
-                                </div>
-                            `).join("")}
+                                `;
+                            }).join("")}
                         </div>
                     </div>
                 </div>
@@ -3612,17 +3591,11 @@ window.filterDersNotuUnits = function(unitIndex) {
     const container = document.getElementById("ders-notu-accordion-group");
     if (!container) return;
 
-    const clickedBtn = container.querySelector(`.notu-filter-btn[data-unit="${unitIndex}"]`);
-    const isCurrentlyActive = clickedBtn && clickedBtn.getAttribute("data-active") === "true";
-
-    // Tekrar tıklandığında filtreyi kaldır (tümünü göster)
-    const targetUnit = isCurrentlyActive ? "all" : unitIndex;
-
     // 1. Buton stillerini güncelle
     const btns = container.querySelectorAll(".notu-filter-btn");
     btns.forEach(b => {
         const bUnit = b.getAttribute("data-unit");
-        if (targetUnit !== "all" && bUnit === String(targetUnit)) {
+        if (bUnit === String(unitIndex)) {
             b.setAttribute("data-active", "true");
             b.className = "notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
         } else {
@@ -3637,51 +3610,20 @@ window.filterDersNotuUnits = function(unitIndex) {
         }
     });
 
-    // 2. Eğer 'kitap' seçildiyse: Ders Kitabı akordeonunu (acc-sec-kitap) aç ve oraya kaydır
-    if (targetUnit === "kitap") {
-        const kitapBody = document.getElementById("acc-sec-kitap");
-        const kitapIcon = document.getElementById("acc-sec-kitap-icon");
-        if (kitapBody) kitapBody.classList.remove("hidden");
-        if (kitapIcon) kitapIcon.classList.add("rotate-180");
-        const kitapBtn = document.querySelector("button[onclick*='acc-sec-kitap']");
-        if (kitapBtn) kitapBtn.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-    }
-
-    // 3. Eğer 'lab' seçildiyse: Laboratuvar akordeonunu (acc-sec-lab) aç ve oraya kaydır
-    if (targetUnit === "lab") {
-        const labBody = document.getElementById("acc-sec-lab");
-        const labIcon = document.getElementById("acc-sec-lab-icon");
-        if (labBody) labBody.classList.remove("hidden");
-        if (labIcon) labIcon.classList.add("rotate-180");
-        const labBtn = document.querySelector("button[onclick*='acc-sec-lab']");
-        if (labBtn) labBtn.scrollIntoView({ behavior: "smooth", block: "start" });
-        return;
-    }
-
-    // 4. 1-7 veya 'all' seçildiyse: Notlar bölümünün (acc-sec-notlar) açık olduğundan emin ol
-    const notlarBody = document.getElementById("acc-sec-notlar");
-    const notlarIcon = document.getElementById("acc-sec-notlar-icon");
-    if (notlarBody) notlarBody.classList.remove("hidden");
-    if (notlarIcon) notlarIcon.classList.add("rotate-180");
-
-    // Föy kartlarını filtrele
-    const cards = notlarBody.querySelectorAll(".foy-card-item");
+    // 2. Doğrudan ilgili ünite veya bölüm kartını göster, diğerlerini gizle
+    const cards = container.querySelectorAll(".notu-unit-card");
     cards.forEach(card => {
         const cardUnit = card.getAttribute("data-unit");
-        if (targetUnit === "all" || cardUnit === String(targetUnit)) {
+        if (cardUnit === String(unitIndex)) {
             card.classList.remove("hidden");
+            const body = card.querySelector(".accordion-body-collapsible");
+            const icon = card.querySelector(".accordion-icon-rotatable");
+            if (body) body.classList.remove("hidden");
+            if (icon) icon.classList.add("rotate-180");
         } else {
             card.classList.add("hidden");
         }
     });
-
-    if (targetUnit !== "all") {
-        const targetCard = notlarBody.querySelector(`.foy-card-item[data-unit="${targetUnit}"]`);
-        if (targetCard) {
-            targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
-    }
 };
 
 window.filterUnitHubSection = function(containerId, unitIndex) {
@@ -5985,45 +5927,49 @@ async function moveCustomMaterial(id, direction) {
     handleRouteChange({ preserveScroll: true });
 }
 
-async function deleteCustomMaterial(id) {
-    if (!checkAdminAccess()) return;
-    if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
+function deleteCustomMaterial(id) {
+    checkAdminAccess(async () => {
+        if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
 
-    let customList = getCustomMaterialsList();
-    addDeletedMaterialId(id);
-    customList = customList.filter(item => item && item.id !== id);
-    saveCustomMaterialsSafe(customList);
+        let customList = getCustomMaterialsList();
+        addDeletedMaterialId(id);
+        customList = customList.filter(item => item && item.id !== id);
+        saveCustomMaterialsSafe(customList);
 
-    if (typeof RotaliDB !== "undefined" && RotaliDB.deleteFile) {
-        try {
-            await RotaliDB.deleteFile(id);
-        } catch(e) {}
-    }
+        if (typeof RotaliDB !== "undefined" && RotaliDB.deleteFile) {
+            try {
+                await RotaliDB.deleteFile(id);
+            } catch(e) {}
+        }
 
-    showToast("🗑️ Materyal başarıyla silindi.", "info");
+        showToast("🗑️ Materyal başarıyla silindi.", "info");
 
-    if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.deleteMaterial) {
-        await CloudSyncManager.deleteMaterial(id, customList);
-    } else if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-        await CloudSyncManager.uploadToCloud(customList, true);
-    }
+        if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.deleteMaterial) {
+            await CloudSyncManager.deleteMaterial(id, customList);
+        } else if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
+            await CloudSyncManager.uploadToCloud(customList, true);
+        }
 
-    handleRouteChange();
+        handleRouteChange();
+    });
 }
+window.deleteCustomMaterial = deleteCustomMaterial;
+window.triggerDeleteMaterial = deleteCustomMaterial;
 
-// Materyal Düzenleme & Taşıma
 function editCustomMaterial(id) {
-    if (!checkAdminAccess()) return;
-    const customList = getCustomMaterialsList();
-    const mat = customList.find(item => item.id === id);
-    if (!mat) {
-        showToast("Materyal bulunamadı!", "error");
-        return;
-    }
-    const cleanGrade = String(mat.grade || "8").replace(/^grade-/, "");
-    openMaterialUploadModal(cleanGrade, mat.category || "ders-notu", mat);
+    checkAdminAccess(() => {
+        const customList = getCustomMaterialsList();
+        const mat = customList.find(item => item.id === id);
+        if (!mat) {
+            showToast("Materyal bulunamadı!", "error");
+            return;
+        }
+        const cleanGrade = String(mat.grade || "8").replace(/^grade-/, "");
+        openMaterialUploadModal(cleanGrade, mat.category || "ders-notu", mat);
+    });
 }
-
+window.editCustomMaterial = editCustomMaterial;
+window.triggerEditMaterial = editCustomMaterial;
 
 // -------------------------------------------------------------
 // 📖 ROTALI FENCİ DİJİTAL KİTAP OKUYUCU MOTORU (GERÇEK KAPAKLAR, BÜYÜT/KÜÇÜLT & İMLEÇLE KAYDIRMA)
