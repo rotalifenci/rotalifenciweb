@@ -45,6 +45,20 @@ function addDeletedMaterialId(id) {
             localStorage.setItem("rotali_deleted_materials", JSON.stringify(list));
         } catch(e) {}
     }
+    // Aktif bellek ve yerel depolamadan anında temizle
+    if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
+        ROTALI_MATERIALS_CACHE = ROTALI_MATERIALS_CACHE.filter(m => m && m.id !== id);
+    }
+    try {
+        const stored = localStorage.getItem("rotali_custom_materials");
+        if (stored) {
+            let mList = JSON.parse(stored);
+            if (Array.isArray(mList)) {
+                mList = mList.filter(m => m && m.id !== id);
+                localStorage.setItem("rotali_custom_materials", JSON.stringify(mList));
+            }
+        }
+    } catch(e) {}
 }
 
 function removeDeletedMaterialId(id) {
@@ -587,33 +601,48 @@ function saveCustomMaterialsSafe(list) {
 }
 
 function getCustomMaterialsList() {
-    if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
-        return ROTALI_MATERIALS_CACHE;
-    }
-
-    let customList = [];
     const deletedIds = new Set(getDeletedMaterialIds());
     deletedIds.add("mat-5-unite-bilgi");
     deletedIds.add("mat-5-lab-guvenlik-gorsel");
 
+    if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
+        ROTALI_MATERIALS_CACHE = ROTALI_MATERIALS_CACHE.filter(item => item && item.id && !deletedIds.has(item.id));
+        return ROTALI_MATERIALS_CACHE;
+    }
+
+    let customList = [];
+    let hasStored = false;
     try {
         const stored = localStorage.getItem("rotali_custom_materials");
-        if (stored) {
+        if (stored !== null) {
+            hasStored = true;
             customList = JSON.parse(stored);
         }
     } catch (e) {
         customList = [];
     }
 
-    if (!Array.isArray(customList) || customList.length === 0) {
-        customList = DEFAULT_CUSTOM_MATERIALS.filter(item => !deletedIds.has(item.id));
+    if (!Array.isArray(customList)) customList = [];
+
+    const hasInitialized = localStorage.getItem("rotali_has_initialized_materials") === "true";
+
+    // Başlangıç mock verileri SADECE ilk açılışta ve daha önce hiç materyal listesi oluşturulmamışsa yüklenir.
+    // Kullanıcı sildiyse veya liste boşaldıysa mock veriler ASLA tekrar yüklenmez!
+    if (!hasInitialized && !hasStored) {
+        customList = DEFAULT_CUSTOM_MATERIALS.filter(item => item && item.id && !deletedIds.has(item.id));
         saveCustomMaterialsSafe(customList);
+        try {
+            localStorage.setItem("rotali_has_initialized_materials", "true");
+        } catch(e) {}
     } else {
-        const cleanList = customList.filter(item => item && !deletedIds.has(item.id));
+        const cleanList = customList.filter(item => item && item.id && !deletedIds.has(item.id));
         if (cleanList.length !== customList.length) {
             customList = cleanList;
             saveCustomMaterialsSafe(customList);
         }
+        try {
+            localStorage.setItem("rotali_has_initialized_materials", "true");
+        } catch(e) {}
     }
 
     // Görsel URL güvencesi (fileUrl dataURL ise imageUrl olarak da kullan)
@@ -2848,7 +2877,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
         // Aktif Sekmeye Göre Üst Başlık ve Açıklama (Kullanıcı Talebi: Sekme Bilgisi 8 Butonun Üstündeki Alana Taşındı)
     const tabMetaMap = {
         "ders-notu": {
-            title: `${grade.number}. Sınıf Fen Bilimleri 4 Kademeli Ders Notları`,
+            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notları`,
             desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, laboratuvar föyleri ve pekiştirme testleri."
         },
         "ders-sunumu": {
@@ -8834,19 +8863,38 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <span class="text-[11px] font-bold text-slate-400 hidden sm:inline">İstediğiniz Sınıfa / Bölüme Taşıyın</span>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <!-- Ana Kategori / Sınıf -->
-                        <div>
-                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Sınıf / Seviye</label>
-                            <select id="adv-grade-select" onchange="updateCascadingUnits()" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="8" ${targetGradeClean === '8' ? 'selected' : ''}>8. Sınıf & LGS</option>
-                                <option value="7" ${targetGradeClean === '7' ? 'selected' : ''}>7. Sınıf Fen Bilimleri</option>
-                                <option value="6" ${targetGradeClean === '6' ? 'selected' : ''}>6. Sınıf Fen Bilimleri</option>
-                                <option value="5" ${targetGradeClean === '5' ? 'selected' : ''}>5. Sınıf Fen Bilimleri</option>
-                                <option value="all" ${(isEditing ? editMaterial.grade === 'all' : prefillGrade === 'all') ? 'selected' : ''}>Proje & Genel Merkez</option>
-                            </select>
+                    <!-- Çoklu Hedef Sınıf Seçimi (Multi-Select) -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1.5">
+                            <label class="block text-xs font-black uppercase text-slate-700">Hedef Sınıf / Seviye (Çoklu Seçim)</label>
+                            <span class="text-[11px] text-slate-500 font-medium">Birden fazla sınıf işaretleyebilirsiniz</span>
                         </div>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="adv-grades-container">
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="5" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === '5' ? 'checked' : ''}>
+                                <span>5. Sınıf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="6" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === '6' ? 'checked' : ''}>
+                                <span>6. Sınıf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="7" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === '7' ? 'checked' : ''}>
+                                <span>7. Sınıf</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','all'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
+                                <span>8. Sınıf & LGS</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="all" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === 'all' ? 'checked' : ''}>
+                                <span>Genel</span>
+                            </label>
+                        </div>
+                        <input type="hidden" id="adv-grade-select" value="${targetGradeClean || '8'}">
+                    </div>
 
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                         <!-- Alt Kategori (Materyal Türü / Sekme) -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
@@ -9079,12 +9127,17 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
 }
 
 function updateCascadingUnits(forceGrade) {
-    const gradeSelect = document.getElementById("adv-grade-select");
+    const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
+    const firstChecked = checkedBoxes.length > 0 ? checkedBoxes[0].value : "8";
+    const selectedGrade = forceGrade || firstChecked;
+
+    const hiddenGradeInput = document.getElementById("adv-grade-select");
+    if (hiddenGradeInput) hiddenGradeInput.value = selectedGrade;
+
     const unitSelect = document.getElementById("adv-unit-select");
     const sectionSelect = document.getElementById("adv-section-select");
-    if (!gradeSelect || !unitSelect) return;
+    if (!unitSelect) return;
 
-    const selectedGrade = forceGrade || gradeSelect.value || "8";
     const units = GRADE_UNITS_MAP[selectedGrade] || GRADE_UNITS_MAP["8"];
 
     unitSelect.innerHTML = `
@@ -9099,11 +9152,11 @@ function updateCascadingUnits(forceGrade) {
 }
 
 function handleTargetSectionChange(sec) {
-    const gradeSelect = document.getElementById("adv-grade-select");
+    const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
+    const g = checkedBoxes.length > 0 ? checkedBoxes[0].value : (document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "8");
     const unitSelect = document.getElementById("adv-unit-select");
     if (!unitSelect) return;
 
-    const g = gradeSelect ? gradeSelect.value : "8";
     if (sec === "kitap") {
         unitSelect.value = "Ders Kitabı";
     } else if (sec === "lab") {
@@ -9424,12 +9477,27 @@ async function handleAdvMaterialSubmit(e) {
 
     titleInput.classList.remove("border-red-500", "ring-2", "ring-red-500/30");
 
-    const grade = gradeSelect ? gradeSelect.value : "8";
+    const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
+    let selectedGrades = Array.from(checkedBoxes).map(cb => cb.value);
+    if (selectedGrades.length === 0) {
+        const fallbackGrade = document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "8";
+        if (fallbackGrade) selectedGrades = [fallbackGrade];
+    }
+    if (selectedGrades.length === 0) {
+        showToast("⚠️ Lütfen en az bir hedef sınıf seçiniz!", "error");
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Yayınla & Kaydet</span>`;
+        }
+        return;
+    }
+    const primaryGrade = selectedGrades[0];
+    const grade = primaryGrade;
     const category = categorySelect ? categorySelect.value : "ders-notu";
     const sectionSelect = document.getElementById("adv-section-select");
     const targetSection = sectionSelect ? sectionSelect.value : "1";
     const customTopic = customTopicInput ? customTopicInput.value.trim() : "";
-    let unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${grade}. Sınıf Fen Bilimleri`);
+    let unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${primaryGrade}. Sınıf Fen Bilimleri`);
     if (!customTopic) {
         if (targetSection === "kitap") unit = "Ders Kitabı & Ünite PDF'leri";
         else if (targetSection === "lab") unit = "Laboratuvar & Deneyler";
@@ -9501,7 +9569,7 @@ async function handleAdvMaterialSubmit(e) {
             if (idx !== -1) {
                 customList[idx] = {
                     ...customList[idx],
-                    grade: String(grade).replace(/^grade-/, ""),
+                    grade: String(primaryGrade).replace(/^grade-/, ""),
                     category: category,
                     targetSection: targetSection,
                     title: title,
@@ -9517,10 +9585,9 @@ async function handleAdvMaterialSubmit(e) {
                     updatedAt: new Date().toISOString()
                 };
             } else {
-                // Varsayılan MEB ünite notu düzenlenmişse veya listede yoksa, customList'e ekle
                 const newEditedItem = {
                     id: editingMaterialId,
-                    grade: String(grade).replace(/^grade-/, ""),
+                    grade: String(primaryGrade).replace(/^grade-/, ""),
                     category: category,
                     targetSection: targetSection,
                     title: title,
@@ -9539,28 +9606,84 @@ async function handleAdvMaterialSubmit(e) {
                 };
                 customList.unshift(newEditedItem);
             }
+
+            // Eğer düzenleme sırasında birden fazla sınıf seçildiyse, diğer sınıflar için de materyal kopyaları oluştur
+            for (let i = 1; i < selectedGrades.length; i++) {
+                const extraGrade = selectedGrades[i];
+                let extraUnit = customTopic;
+                if (!extraUnit) {
+                    if (targetSection === "kitap") extraUnit = "Ders Kitabı & Ünite PDF'leri";
+                    else if (targetSection === "lab") extraUnit = "Laboratuvar & Deneyler";
+                    else {
+                        const secIdx = parseInt(targetSection, 10) - 1;
+                        const gUnits = GRADE_UNITS_MAP[extraGrade] || GRADE_UNITS_MAP["8"];
+                        extraUnit = (gUnits && gUnits[secIdx]) ? gUnits[secIdx] : `${extraGrade}. Sınıf Fen Bilimleri`;
+                    }
+                }
+                const clonedMaterial = {
+                    id: `mat-${Date.now()}-g${extraGrade}`,
+                    grade: String(extraGrade).replace(/^grade-/, ""),
+                    category: category,
+                    targetSection: targetSection,
+                    title: title,
+                    unit: extraUnit,
+                    desc: desc,
+                    fileName: currentUploadedFile ? finalFileName : (customList[idx] ? customList[idx].fileName : finalFileName),
+                    fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : (customList[idx] ? customList[idx].fileUrl : fileDataUrl)) || "#",
+                    imageUrl: chosenCover || (customList[idx] ? customList[idx].imageUrl : "") || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : ""),
+                    format: fileFormat,
+                    hasBlob: hasBlob,
+                    tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
+                    visibility: visibility,
+                    downloadCount: "Yeni",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                customList.unshift(clonedMaterial);
+            }
             editingMaterialId = null;
         } else {
-            const newMaterial = {
-                id: materialId,
-                grade: String(grade).replace(/^grade-/, ""),
-                category: category,
-                targetSection: targetSection,
-                title: title,
-                unit: unit,
-                desc: desc,
-                fileName: finalFileName,
-                fileUrl: fileDataUrl || externalUrl || "#",
-                imageUrl: chosenCover || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
-                format: fileFormat,
-                hasBlob: hasBlob,
-                tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
-                visibility: visibility,
-                downloadCount: "Yeni",
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
-            };
-            customList.unshift(newMaterial);
+            // 🌟 ÇOKLU SINIF SEÇİMİ: Kullanıcı tek submit ile materyali seçilen tüm sınıflara tek seferde atar!
+            selectedGrades.forEach((g, idx) => {
+                const itemGradeId = (idx === 0) ? materialId : `${materialId}-g${g}`;
+                let itemUnit = customTopic;
+                if (!itemUnit) {
+                    if (targetSection === "kitap") {
+                        itemUnit = "Ders Kitabı & Ünite PDF'leri";
+                    } else if (targetSection === "lab") {
+                        itemUnit = "Laboratuvar & Deneyler";
+                    } else {
+                        const secIdx = parseInt(targetSection, 10) - 1;
+                        const gUnits = GRADE_UNITS_MAP[g] || GRADE_UNITS_MAP["8"];
+                        if (gUnits && gUnits[secIdx]) {
+                            itemUnit = gUnits[secIdx];
+                        } else {
+                            itemUnit = (unitSelect && unitSelect.value) ? unitSelect.value : `${g}. Sınıf Fen Bilimleri`;
+                        }
+                    }
+                }
+
+                const newMaterial = {
+                    id: itemGradeId,
+                    grade: String(g).replace(/^grade-/, ""),
+                    category: category,
+                    targetSection: targetSection,
+                    title: title,
+                    unit: itemUnit,
+                    desc: desc,
+                    fileName: finalFileName,
+                    fileUrl: fileDataUrl || externalUrl || "#",
+                    imageUrl: chosenCover || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
+                    format: fileFormat,
+                    hasBlob: hasBlob,
+                    tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
+                    visibility: visibility,
+                    downloadCount: "Yeni",
+                    createdAt: new Date().toISOString(),
+                    updatedAt: new Date().toISOString()
+                };
+                customList.unshift(newMaterial);
+            });
         }
 
         // Yerel hafızaya ve bellek havuzuna anında güvenle kaydet
@@ -9575,14 +9698,15 @@ async function handleAdvMaterialSubmit(e) {
             await CloudSyncManager.uploadToCloud(customList, true);
         }
 
-        showToast(`🎉 "${title}" başarıyla kaydedildi ve tüm cihazlara yayınlandı!`, "success");
+        const gradesLabel = selectedGrades.map(g => g === "all" ? "Genel" : `${g}. Sınıf`).join(", ");
+        showToast(`🎉 "${title}" başarıyla (${gradesLabel}) sınıflarına kaydedildi ve tüm cihazlara yayınlandı!`, "success");
         closeMaterialUploadModal();
 
-        // Sayfayı hedefe yönlendir ve anında yenile
-        if (grade === "all") {
+        // Sayfayı birincil hedefe yönlendir ve anında yenile
+        if (primaryGrade === "all") {
             window.location.hash = "projects";
         } else {
-            window.location.hash = `grade/grade-${grade}/${category}`;
+            window.location.hash = `grade/grade-${primaryGrade}/${category}`;
         }
 
         handleRouteChange();
