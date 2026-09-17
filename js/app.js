@@ -1,4 +1,16 @@
 
+// 🌟 GÜVENLİ VE BENZERSİZ KİMLİK (UUID v4) MOTORU
+function generateUUID(prefix = "mat-") {
+    if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+        return prefix + crypto.randomUUID();
+    }
+    return prefix + "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
+        const r = (Math.random() * 16) | 0;
+        const v = c === "x" ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+}
+
 function readFileAsDataURL(file) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -661,12 +673,38 @@ function getCustomMaterialsList() {
         } catch(e) {}
     }
 
-    // Görsel URL güvencesi (fileUrl dataURL ise imageUrl olarak da kullan)
-    customList.forEach(item => {
-        if (item && !item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
+    // Benzersiz ID ve çakışma önleme (UUID güvencesi ile state bozulmasını engelle)
+    const seenIds = new Set();
+    const normalizedList = [];
+    let modified = false;
+
+    for (let item of customList) {
+        if (!item || typeof item !== "object") continue;
+        if (!item.id || typeof item.id !== "string" || item.id.trim() === "") {
+            item.id = generateUUID("mat-");
+            modified = true;
+        }
+        if (deletedIds.has(item.id)) {
+            modified = true;
+            continue;
+        }
+        if (seenIds.has(item.id)) {
+            item.id = generateUUID("mat-");
+            modified = true;
+        }
+        seenIds.add(item.id);
+
+        // Görsel URL güvencesi (fileUrl dataURL ise imageUrl olarak da kullan)
+        if (!item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
             item.imageUrl = item.fileUrl;
         }
-    });
+        normalizedList.push(item);
+    }
+
+    customList = normalizedList;
+    if (modified) {
+        saveCustomMaterialsSafe(customList);
+    }
 
     ROTALI_MATERIALS_CACHE = customList;
     return customList;
@@ -1014,13 +1052,13 @@ function initPortal() {
         }
     });
 
-    // Geçmişteki hatalı başlık filtrelerini localStorage'dan temizle
+    // Geçmişteki hatalı başlık filtrelerini localStorage'dan temizle (Tüm geçerli ID tiplerini koru)
     try {
         const storedDel = localStorage.getItem("rotali_deleted_materials");
         if (storedDel) {
             let list = JSON.parse(storedDel);
             if (Array.isArray(list)) {
-                const cleaned = list.filter(id => typeof id === "string" && id.startsWith("mat-") && id !== "mat-1789419390441");
+                const cleaned = list.filter(id => typeof id === "string" && id.trim().length > 0 && !id.includes(" ") && id !== "mat-1789419390441");
                 localStorage.setItem("rotali_deleted_materials", JSON.stringify(cleaned));
             }
         }
@@ -3335,6 +3373,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible ${isKitapActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${!deletedIds.includes(`book-${grade.number}`) ? `
                             <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                                 <div>
                                     <div class="flex items-center justify-between gap-2 mb-2">
@@ -3367,9 +3406,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('book-${grade.number}')" class="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1 shadow-xs active:scale-95" title="Ders Kitabını Düzenle">
                                             <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                         </button>
+                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('book-${grade.number}')" class="py-2.5 px-3 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs rounded-xl cursor-pointer flex items-center justify-center shadow-xs active:scale-95" title="Sil">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
                                     ` : ''}
                                 </div>
                             </div>
+                            ` : ''}
 
                             ${customBooks.map(cb => `
                                 <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
@@ -3945,6 +3988,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             ${customList.filter(m => {
                                 const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
                                 if (gClean !== "all" && gClean !== String(grade.number)) return false;
+                                if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
                                 const sec = getMaterialTargetSection(m);
                                 return sec === "lab" || m.category === "laboratuvar";
                             }).map(item => `
@@ -3984,6 +4028,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     </div>
                                 </div>
                             `).join("")}
+                            ${!deletedIds.includes(`lab-${grade.number}-guide`) ? `
                             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
@@ -4009,14 +4054,19 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     </button>
                                     ${isAdmin ? `
                                         <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-guide')" class="w-full py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95">
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-guide')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
                                                 <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </button>
+                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-guide')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </div>
                                     ` : ''}
                                 </div>
                             </div>
+                            ` : ''}
 
+                            ${!deletedIds.includes(`lab-${grade.number}-sim`) ? `
                             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
@@ -4042,13 +4092,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     </button>
                                     ${isAdmin ? `
                                         <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-sim')" class="w-full py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95">
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-sim')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
                                                 <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </button>
+                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-sim')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </div>
                                     ` : ''}
                                 </div>
                             </div>
+                            ` : ''}
                         </div>
                     </div>
                 </div>
@@ -6651,7 +6705,7 @@ function editCustomMaterial(id) {
         // 6. Son çare güvenli nesne
         if (!mat) {
             mat = {
-                id: id || `mat-${Date.now()}`,
+                id: id || generateUUID("mat-"),
                 title: "Ders İçeriği",
                 grade: "8",
                 category: "ders-notu",
@@ -9881,7 +9935,7 @@ async function handleAdvMaterialSubmit(e) {
     try {
         let customList = getCustomMaterialsList();
 
-        const materialId = editingMaterialId || `mat-${Date.now()}`;
+        const materialId = editingMaterialId || generateUUID("mat-");
         let fileFormat = "PDF";
         let finalFileName = `${title}.pdf`;
         let externalUrl = linkVal || "";
@@ -9980,7 +10034,7 @@ async function handleAdvMaterialSubmit(e) {
                     }
                 }
                 const clonedMaterial = {
-                    id: `mat-${Date.now()}-g${extraGrade}`,
+                    id: generateUUID("mat-"),
                     grade: String(extraGrade).replace(/^grade-/, ""),
                     category: category,
                     targetSection: targetSection,
@@ -10004,7 +10058,7 @@ async function handleAdvMaterialSubmit(e) {
         } else {
             // 🌟 ÇOKLU SINIF SEÇİMİ: Kullanıcı tek submit ile materyali seçilen tüm sınıflara tek seferde atar!
             selectedGrades.forEach((g, idx) => {
-                const itemGradeId = (idx === 0) ? materialId : `${materialId}-g${g}`;
+                const itemGradeId = (idx === 0) ? materialId : generateUUID("mat-");
                 let itemUnit = customTopic;
                 if (!itemUnit) {
                     if (targetSection === "kitap") {
