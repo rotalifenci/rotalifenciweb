@@ -467,8 +467,34 @@ const CloudSyncManager = {
 };
 
 // -------------------------------------------------------------
-// 📚 ROTALI FENCİ — ÖZEL MATERYAL HAVUZU
+// 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
+const ROTALI_DATA_SCHEMA_VERSION = 20260917_03;
+
+function sanitizeMaterialItem(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const item = { ...raw };
+    item.id = String(item.id || "").trim();
+    if (!item.id) {
+        item.id = (typeof generateUUID === "function") ? generateUUID("mat-") : `mat-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+    }
+    item.title = String(item.title || "İsimsiz Materyal").trim();
+    item.grade = String(item.grade || "5").replace(/^grade-/, "").trim();
+    item.category = String(item.category || "diger").trim().toLowerCase();
+    item.unit = String(item.unit || "Genel").trim();
+    item.desc = String(item.desc || "").trim();
+    item.fileName = String(item.fileName || (item.title ? `${item.title}.pdf` : "dokuman.pdf")).trim();
+    item.fileUrl = String(item.fileUrl || "").trim();
+    item.imageUrl = String(item.imageUrl || "").trim();
+    item.format = String(item.format || (item.fileUrl.endsWith(".mp4") ? "MP4" : "PDF")).trim();
+    item.hasBlob = Boolean(item.hasBlob);
+    item.tags = Array.isArray(item.tags) ? item.tags : [];
+    item.visibility = String(item.visibility || "public").trim();
+    item.downloadCount = String(item.downloadCount || "Yeni").trim();
+    item.createdAt = String(item.createdAt || "17.09.2026").trim();
+    item.updatedAt = String(item.updatedAt || item.createdAt).trim();
+    return item;
+}
 
 const DEFAULT_CUSTOM_MATERIALS = [
     {
@@ -497,34 +523,34 @@ const DEFAULT_CUSTOM_MATERIALS = [
         unit: "LGS Rehberlik & Tercih",
         desc: "8. Sınıf LGS ve liselere geçiş sistemi bilgilendirme ve motivasyon videosu.",
         fileName: "Liseye Nasıl Gideceğiz.mp4",
-        fileUrl: "#",
+        fileUrl: "https://www.youtube.com/watch?v=5F2v_25gqj8",
         imageUrl: "assets/kapak-8.jpg",
-        format: "MP4",
-        hasBlob: true,
+        format: "YouTube Video",
+        hasBlob: false,
         tags: ["MEB 2026-2027", "LGS", "Liseye Geçiş", "video", "rehberlik", "ortaokul", "fenbilimleri", "fen"],
         visibility: "public",
         downloadCount: "Yeni",
         createdAt: "15.09.2026",
-        updatedAt: "15.09.2026"
+        updatedAt: "17.09.2026"
     },
-    
     {
         id: "mat-1789501786165",
         grade: "5",
         category: "videolar",
         title: "Genel Güvenlik Sembolleri Video",
         unit: "Genel",
+        targetSection: "lab",
         desc: "5. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
         fileName: "Güvenlik Sembolleri.mp4",
-        fileUrl: "#",
+        fileUrl: "https://www.youtube.com/watch?v=E-0C1f0Ksqw",
         imageUrl: "assets/kapak-5.jpg",
-        format: "MP4",
-        hasBlob: true,
-        tags: ["MEB 2026-2027", "video", "güvenlik", "5.sınıf"],
+        format: "YouTube Video",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "video", "güvenlik", "5.sınıf", "laboratuvar"],
         visibility: "public",
         downloadCount: "Yeni",
         createdAt: "15.09.2026",
-        updatedAt: "15.09.2026"
+        updatedAt: "17.09.2026"
     },
     {
         id: "mat-1789503112888",
@@ -532,17 +558,18 @@ const DEFAULT_CUSTOM_MATERIALS = [
         category: "videolar",
         title: "8. Sınıf Genel Güvenlik Sembolleri Video",
         unit: "Genel",
+        targetSection: "lab",
         desc: "8. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
         fileName: "Güvenlik Sembolleri.mp4",
-        fileUrl: "#",
+        fileUrl: "https://www.youtube.com/watch?v=E-0C1f0Ksqw",
         imageUrl: "assets/kapak-8.jpg",
-        format: "MP4",
-        hasBlob: true,
-        tags: ["MEB 2026-2027", "video", "güvenlik", "8.sınıf"],
+        format: "YouTube Video",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "video", "güvenlik", "8.sınıf", "laboratuvar"],
         visibility: "public",
         downloadCount: "Yeni",
         createdAt: "15.09.2026",
-        updatedAt: "15.09.2026"
+        updatedAt: "17.09.2026"
     },
     {
         id: "mat-5-lab-oyun-1",
@@ -550,10 +577,11 @@ const DEFAULT_CUSTOM_MATERIALS = [
         category: "egitsel-oyunlar",
         title: "Laboratuvar Malzemeleri Eşleştirme",
         unit: "1. Ünite: Güneş, Dünya ve Ay",
+        targetSection: "lab",
         desc: "Bu interaktif eşleştirme oyunu, ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirerek eğlenceli ve kalıcı bir şekilde öğrenmeyi sağlar.",
         fileName: "Laboratuvar Malzemeleri Eşleştirme",
-        fileUrl: "#",
-        format: "Web Bağlantısı",
+        fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
+        format: "Eğitsel Oyun",
         hasBlob: false,
         tags: ["MEB 2026-2027", "Laboratuvar", "Eşleştirme", "İnteraktif Oyun"],
         visibility: "public",
@@ -566,10 +594,11 @@ const DEFAULT_CUSTOM_MATERIALS = [
         category: "egitsel-oyunlar",
         title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
         unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
+        targetSection: "lab",
         desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eğlenerek eşleştirin ve tanıyın.",
         fileName: "5. Sınıf Laboratuvar Oyunu",
-        fileUrl: "#",
-        format: "EĞİTSEL OYUN",
+        fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
+        format: "Eğitsel Oyun",
         hasBlob: false,
         tags: ["MEB 2026-2027", "Laboratuvar", "Güvenlik Kuralları", "Fen Dünyası"],
         visibility: "public",
@@ -628,86 +657,187 @@ function saveCustomMaterialsSafe(list) {
     }
 }
 
+function migrateAndSanitizeMaterials(rawList, forceMigrate = false) {
+    const deletedIds = new Set(getDeletedMaterialIds());
+    deletedIds.add("mat-5-unite-bilgi");
+    deletedIds.add("mat-5-lab-guvenlik-gorsel");
+
+    let curVer = 0;
+    try {
+        curVer = parseInt(localStorage.getItem("rotali_schema_version") || "0", 10) || 0;
+    } catch(e) {
+        curVer = 0;
+    }
+
+    const needsMigration = forceMigrate || (curVer < ROTALI_DATA_SCHEMA_VERSION);
+
+    // Map: id -> item
+    const map = new Map();
+
+    // 1. Önce kayıtlı kullanıcı materyallerini yükle
+    if (Array.isArray(rawList)) {
+        for (const raw of rawList) {
+            const item = sanitizeMaterialItem(raw);
+            if (!item || !item.id || deletedIds.has(item.id)) continue;
+            map.set(item.id, item);
+        }
+    }
+
+    // 2. Varsayılan (DEFAULT_CUSTOM_MATERIALS) havuzunu birleştir
+    for (const defRaw of DEFAULT_CUSTOM_MATERIALS) {
+        const defItem = sanitizeMaterialItem(defRaw);
+        if (!defItem || !defItem.id || deletedIds.has(defItem.id)) continue;
+
+        if (map.has(defItem.id)) {
+            // Zaten var; eğer şema yükseltmesi gerekiyorsa veya eski kayıt bozuk / eksik URL içeriyorsa güncelle
+            const existing = map.get(defItem.id);
+            if (needsMigration) {
+                // Güncelle: fileUrl, format, hasBlob, title ve category'yi default ile senkronize et ama kullanıcının özel notlarını koru
+                existing.fileUrl = defItem.fileUrl;
+                existing.format = defItem.format;
+                existing.hasBlob = defItem.hasBlob;
+                existing.category = defItem.category;
+                existing.title = defItem.title;
+                existing.unit = defItem.unit;
+                existing.grade = defItem.grade;
+                if (defItem.targetSection) existing.targetSection = defItem.targetSection;
+                if (defItem.desc && (!existing.desc || existing.desc.length < 5)) existing.desc = defItem.desc;
+                if (defItem.imageUrl && (!existing.imageUrl || existing.imageUrl === "#")) existing.imageUrl = defItem.imageUrl;
+                existing.updatedAt = "17.09.2026";
+            }
+        } else {
+            // Kullanıcı silmemiş ve listede yok, doğrudan ekle
+            map.set(defItem.id, defItem);
+        }
+    }
+
+    // 3. Benzersiz id ve görsel doğrulama
+    const result = [];
+    const seenIds = new Set();
+
+    for (const [id, item] of map.entries()) {
+        if (!item || deletedIds.has(id) || seenIds.has(id)) continue;
+        seenIds.add(id);
+
+        if (!item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
+            item.imageUrl = item.fileUrl;
+        }
+        result.push(item);
+    }
+
+    try {
+        localStorage.setItem("rotali_schema_version", String(ROTALI_DATA_SCHEMA_VERSION));
+    } catch(e) {}
+
+    return result;
+}
+
 function getCustomMaterialsList() {
     const deletedIds = new Set(getDeletedMaterialIds());
     deletedIds.add("mat-5-unite-bilgi");
     deletedIds.add("mat-5-lab-guvenlik-gorsel");
 
-    if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
+    let curVer = 0;
+    try {
+        curVer = parseInt(localStorage.getItem("rotali_schema_version") || "0", 10) || 0;
+    } catch(e) {}
+
+    // Bellek önbelleği geçerli mi ve şema sürümü güncel mi?
+    if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0 && curVer >= ROTALI_DATA_SCHEMA_VERSION) {
         ROTALI_MATERIALS_CACHE = ROTALI_MATERIALS_CACHE.filter(item => item && item.id && !deletedIds.has(item.id));
         return ROTALI_MATERIALS_CACHE;
     }
 
-    let customList = [];
+    let storedList = [];
     let hasStored = false;
     try {
         const stored = localStorage.getItem("rotali_custom_materials");
         if (stored !== null) {
             hasStored = true;
-            customList = JSON.parse(stored);
+            storedList = JSON.parse(stored);
         }
     } catch (e) {
-        customList = [];
+        storedList = [];
     }
 
-    if (!Array.isArray(customList)) customList = [];
+    if (!Array.isArray(storedList)) storedList = [];
 
-    const hasInitialized = localStorage.getItem("rotali_has_initialized_materials") === "true";
+    // Şema versiyonlama ve deterministic merge
+    const migratedList = migrateAndSanitizeMaterials(storedList, curVer < ROTALI_DATA_SCHEMA_VERSION || !hasStored);
+    saveCustomMaterialsSafe(migratedList);
 
-    // Başlangıç mock verileri SADECE ilk açılışta ve daha önce hiç materyal listesi oluşturulmamışsa yüklenir.
-    // Kullanıcı sildiyse veya liste boşaldıysa mock veriler ASLA tekrar yüklenmez!
-    if (!hasInitialized && !hasStored) {
-        customList = DEFAULT_CUSTOM_MATERIALS.filter(item => item && item.id && !deletedIds.has(item.id));
-        saveCustomMaterialsSafe(customList);
+    try {
+        localStorage.setItem("rotali_has_initialized_materials", "true");
+        localStorage.setItem("rotali_schema_version", String(ROTALI_DATA_SCHEMA_VERSION));
+    } catch(e) {}
+
+    ROTALI_MATERIALS_CACHE = migratedList;
+    return migratedList;
+}
+
+function findMaterialByIdOrTitle(id, title) {
+    const cleanId = String(id || "").trim();
+    const cleanTitle = String(title || "").trim().toLocaleLowerCase("tr-TR");
+
+    // 1. Önce ROTALI_MATERIALS_CACHE belleğinde ara
+    if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
+        if (cleanId) {
+            const m = ROTALI_MATERIALS_CACHE.find(x => x && x.id === cleanId);
+            if (m) return m;
+        }
+        if (cleanTitle) {
+            const m = ROTALI_MATERIALS_CACHE.find(x => x && String(x.title || "").trim().toLocaleLowerCase("tr-TR") === cleanTitle);
+            if (m) return m;
+        }
+    }
+
+    // 2. getCustomMaterialsList() üzerinden ara
+    if (typeof getCustomMaterialsList === "function") {
         try {
-            localStorage.setItem("rotali_has_initialized_materials", "true");
+            const list = getCustomMaterialsList();
+            if (Array.isArray(list)) {
+                if (cleanId) {
+                    const m = list.find(x => x && x.id === cleanId);
+                    if (m) return m;
+                }
+                if (cleanTitle) {
+                    const m = list.find(x => x && String(x.title || "").trim().toLocaleLowerCase("tr-TR") === cleanTitle);
+                    if (m) return m;
+                }
+            }
         } catch(e) {}
-    } else {
-        const cleanList = customList.filter(item => item && item.id && !deletedIds.has(item.id));
-        if (cleanList.length !== customList.length) {
-            customList = cleanList;
-            saveCustomMaterialsSafe(customList);
+    }
+
+    // 3. DEFAULT_CUSTOM_MATERIALS içinde ara
+    if (Array.isArray(DEFAULT_CUSTOM_MATERIALS)) {
+        if (cleanId) {
+            const m = DEFAULT_CUSTOM_MATERIALS.find(x => x && x.id === cleanId);
+            if (m) return m;
         }
+        if (cleanTitle) {
+            const m = DEFAULT_CUSTOM_MATERIALS.find(x => x && String(x.title || "").trim().toLocaleLowerCase("tr-TR") === cleanTitle);
+            if (m) return m;
+        }
+    }
+
+    return null;
+}
+
+function recoverAndRepairData() {
+    try {
+        console.warn("🔧 recoverAndRepairData() çalıştırılıyor, veriler güvenli duruma getiriliyor...");
+        ROTALI_MATERIALS_CACHE = null;
         try {
-            localStorage.setItem("rotali_has_initialized_materials", "true");
+            localStorage.removeItem("rotali_schema_version");
         } catch(e) {}
+        const list = getCustomMaterialsList();
+        saveCustomMaterialsSafe(list);
+        console.log(`✅ Veriler başarıyla onarıldı, ${list.length} materyal aktif.`);
+        return list;
+    } catch (err) {
+        console.error("recoverAndRepairData hatası:", err);
+        return [];
     }
-
-    // Benzersiz ID ve çakışma önleme (UUID güvencesi ile state bozulmasını engelle)
-    const seenIds = new Set();
-    const normalizedList = [];
-    let modified = false;
-
-    for (let item of customList) {
-        if (!item || typeof item !== "object") continue;
-        if (!item.id || typeof item.id !== "string" || item.id.trim() === "") {
-            item.id = generateUUID("mat-");
-            modified = true;
-        }
-        if (deletedIds.has(item.id)) {
-            modified = true;
-            continue;
-        }
-        if (seenIds.has(item.id)) {
-            item.id = generateUUID("mat-");
-            modified = true;
-        }
-        seenIds.add(item.id);
-
-        // Görsel URL güvencesi (fileUrl dataURL ise imageUrl olarak da kullan)
-        if (!item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
-            item.imageUrl = item.fileUrl;
-        }
-        normalizedList.push(item);
-    }
-
-    customList = normalizedList;
-    if (modified) {
-        saveCustomMaterialsSafe(customList);
-    }
-
-    ROTALI_MATERIALS_CACHE = customList;
-    return customList;
 }
 
 
@@ -1307,66 +1437,93 @@ function showToast(message, type = "success") {
 // DİNAMİK PORTAL ROUTER
 // -------------------------------------------------------------
 function handleRouteChange(options = {}) {
-    updateAdminNavUI();
-    let rawHash = window.location.hash.slice(1);
-    // Site ilk açıldığında veya adres çubuğunda hash olmadığında HER ZAMAN Anasayfa açılsın
-    const hash = rawHash || "home";
-    if (typeof localStorage !== "undefined" && hash && hash !== "home") {
-        try { localStorage.setItem("rotali_last_active_hash", hash); } catch(e) {}
-    }
-    const appEl = document.getElementById("app");
-    if (!appEl) return;
+    try {
+        updateAdminNavUI();
+        let rawHash = window.location.hash.slice(1);
+        // Site ilk açıldığında veya adres çubuğunda hash olmadığında HER ZAMAN Anasayfa açılsın
+        const hash = rawHash || "home";
+        if (typeof localStorage !== "undefined" && hash && hash !== "home") {
+            try { localStorage.setItem("rotali_last_active_hash", hash); } catch(e) {}
+        }
+        const appEl = document.getElementById("app");
+        if (!appEl) return;
 
-    if (!options || !options.preserveScroll) {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+        if (!options || !options.preserveScroll) {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
 
-    if (hash === "home" || hash === "") {
-        renderHomePage(appEl);
-    } else if (hash === "recent" || hash === "yeni-eklenenler") {
-        renderRecentMaterialsPage(appEl);
-    } else if (hash === "grades") {
-        renderGradesOverview(appEl);
-    } else if (hash.startsWith("grade/")) {
-        const gradeParam = hash.replace("grade/", "");
-        renderGradeDetail(appEl, gradeParam);
-    } else if (hash.startsWith("unit/")) {
-        const parts = hash.replace("unit/", "").split("/");
-        const unitId = parts[0];
-        const gradeNum = unitId.split("-")[0] || "5";
-        renderGradeDetail(appEl, `grade-${gradeNum}`);
-    } else if (hash === "lgs-pusulasi" || hash === "lgs") {
-        renderGradeDetail(appEl, "grade-8/lgs");
-    } else if (hash.startsWith("exams")) {
-        renderExamsPage(appEl, hash);
-    } else if (hash === "stem-lab") {
-        renderStemLabPage(appEl);
-    } else if (hash === "projects") {
-        renderProjectsPage(appEl);
-    } else if (hash === "teachers-room") {
-        renderLgsPusulasiPage(appEl);
-    } else if (hash === "student-portal") {
-        renderHomePage(appEl);
-    } else if (hash === "teacher-dashboard" || hash.startsWith("admin")) {
-        renderTeacherDashboardPage(appEl);
-    } else if (hash === "search") {
-        renderSearchPage(appEl);
-    } else if (hash.startsWith("quizzes")) {
-        renderQuizzesPage(appEl, hash);
-    } else if (hash === "flashcards") {
-        renderFlashcardsPage(appEl);
-    } else if (hash === "about") {
-        renderAboutPage(appEl);
-    } else if (hash === "contact") {
-        renderContactPage(appEl);
-    } else if (hash === "bookmarks") {
-        renderBookmarksPage(appEl);
-    } else {
-        renderNotFound(appEl);
-    }
+        if (hash === "home" || hash === "") {
+            renderHomePage(appEl);
+        } else if (hash === "recent" || hash === "yeni-eklenenler") {
+            renderRecentMaterialsPage(appEl);
+        } else if (hash === "grades") {
+            renderGradesOverview(appEl);
+        } else if (hash.startsWith("grade/")) {
+            const gradeParam = hash.replace("grade/", "");
+            renderGradeDetail(appEl, gradeParam);
+        } else if (hash.startsWith("unit/")) {
+            const parts = hash.replace("unit/", "").split("/");
+            const unitId = parts[0];
+            const gradeNum = unitId.split("-")[0] || "5";
+            renderGradeDetail(appEl, `grade-${gradeNum}`);
+        } else if (hash === "lgs-pusulasi" || hash === "lgs") {
+            renderGradeDetail(appEl, "grade-8/lgs");
+        } else if (hash.startsWith("exams")) {
+            renderExamsPage(appEl, hash);
+        } else if (hash === "stem-lab") {
+            renderStemLabPage(appEl);
+        } else if (hash === "projects") {
+            renderProjectsPage(appEl);
+        } else if (hash === "teachers-room") {
+            renderLgsPusulasiPage(appEl);
+        } else if (hash === "student-portal") {
+            renderHomePage(appEl);
+        } else if (hash === "teacher-dashboard" || hash.startsWith("admin")) {
+            renderTeacherDashboardPage(appEl);
+        } else if (hash === "search") {
+            renderSearchPage(appEl);
+        } else if (hash.startsWith("quizzes")) {
+            renderQuizzesPage(appEl, hash);
+        } else if (hash === "flashcards") {
+            renderFlashcardsPage(appEl);
+        } else if (hash === "about") {
+            renderAboutPage(appEl);
+        } else if (hash === "contact") {
+            renderContactPage(appEl);
+        } else if (hash === "bookmarks") {
+            renderBookmarksPage(appEl);
+        } else {
+            renderNotFound(appEl);
+        }
 
-    updateActiveNav(hash);
-    updateStudentHeader();
+        updateActiveNav(hash);
+        updateStudentHeader();
+    } catch (routeErr) {
+        console.error("Router hatası oluştu, otomatik onarılıyor:", routeErr);
+        if (typeof recoverAndRepairData === "function") {
+            recoverAndRepairData();
+        }
+        const appEl = document.getElementById("app");
+        if (appEl) {
+            try {
+                renderHomePage(appEl);
+            } catch (fallbackErr) {
+                console.error("Kurtarma sonrası render hatası:", fallbackErr);
+                appEl.innerHTML = `
+                    <div class="p-8 text-center bg-white rounded-3xl border border-red-200 max-w-xl mx-auto my-12 shadow-xl">
+                        <div class="w-16 h-16 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-3xl mx-auto mb-4 font-black">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <h2 class="text-xl font-black text-slate-900 mb-2">Sayfa Yüklenirken Bir Sorun Oluştu</h2>
+                        <p class="text-sm text-slate-600 mb-6">Veriler otomatik olarak sıfırlandı ve güvenli duruma getirildi. Lütfen sayfayı yenileyiniz.</p>
+                        <button onclick="window.location.reload()" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-md">
+                            Sayfayı Yenile
+                        </button>
+                    </div>
+                `;
+            }
+        }
+    }
 }
 
 function updateActiveNav(hash) {
@@ -3991,7 +4148,43 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
                                 const sec = getMaterialTargetSection(m);
                                 return sec === "lab" || m.category === "laboratuvar";
-                            }).map(item => `
+                            }).map(item => {
+                                const isVid = (item.category === "videolar") || (item.format && item.format.toLowerCase().includes("video"));
+                                const isGame = (item.category === "egitsel-oyunlar") || (item.format && item.format.toLowerCase().includes("oyun"));
+                                const isSim = (item.category === "simulasyon" || item.category === "simulasyonlar") || (item.format && item.format.toLowerCase().includes("simül"));
+
+                                let btnText = "Materyali İncele";
+                                let btnIcon = "fa-eye";
+                                let badgeText = "Görseli Aç";
+                                let badgeIcon = "fa-eye";
+                                let btnBg = "bg-emerald-600 hover:bg-emerald-700";
+
+                                if (isVid) {
+                                    btnText = "Videoyu İzle";
+                                    btnIcon = "fa-circle-play";
+                                    badgeText = "Videoyu Oynat";
+                                    badgeIcon = "fa-play";
+                                    btnBg = "bg-red-600 hover:bg-red-700";
+                                } else if (isGame) {
+                                    btnText = "Oyunu Başlat";
+                                    btnIcon = "fa-gamepad";
+                                    badgeText = "Oyuna Başla";
+                                    badgeIcon = "fa-gamepad";
+                                    btnBg = "bg-amber-600 hover:bg-amber-700";
+                                } else if (isSim) {
+                                    btnText = "Simülasyonu Başlat";
+                                    btnIcon = "fa-flask-vial";
+                                    badgeText = "Simülasyon";
+                                    badgeIcon = "fa-flask";
+                                    btnBg = "bg-teal-600 hover:bg-teal-700";
+                                }
+
+                                const safeTitle = String(item.title || "Laboratuvar Materyali").replace(/'/g, "\\'");
+                                const safeFile = String(item.fileName || item.title || "materyal.pdf").replace(/'/g, "\\'");
+                                const safeUrl = String(item.fileUrl || item.imageUrl || resolveMaterialCover(item) || "#").replace(/'/g, "\\'");
+                                const itemCat = String(item.category || "laboratuvar").replace(/'/g, "\\'");
+
+                                return `
                                 <div class="bg-white p-5 rounded-2xl border border-emerald-300 shadow-sm hover:border-emerald-500 transition-all flex flex-col justify-between group">
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
@@ -4000,20 +4193,20 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         </div>
                                         <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
                                         <!-- Görsel Kapak Kutusu -->
-                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')">
+                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')">
                                             <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-eye"></i> Görseli Aç
+                                                    <i class="fa-solid ${badgeIcon}"></i> ${badgeText}
                                                 </span>
                                             </div>
                                         </div>
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
                                     </div>
                                     <div>
-                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
-                                            <i class="fa-solid fa-play text-xs"></i>
-                                            <span>Materyali Aç & İncele</span>
+                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')" class="w-full py-2.5 ${btnBg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                            <i class="fa-solid ${btnIcon} text-xs"></i>
+                                            <span>${btnText}</span>
                                         </button>
                                         ${isAdmin ? `
                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -4027,7 +4220,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         ` : ''}
                                     </div>
                                 </div>
-                            `).join("")}
+                                `;
+                            }).join("")}
                             ${!deletedIds.includes(`lab-${grade.number}-guide`) ? `
                             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
                                 <div>
@@ -7983,21 +8177,12 @@ async function handleCrossDeviceImageUpload(inputEl, materialId) {
 
 
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
-    let found = null;
-    if (id) {
-        try {
-            const allCustom = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
-            found = allCustom.find(m => m.id === id);
-            if (!found && title) {
-                found = allCustom.find(m => (m.title || "").trim().toLowerCase() === title.trim().toLowerCase());
-            }
-            if (found) {
-                if (found.category) category = found.category;
-                if (found.title) title = found.title;
-                if (found.fileName && found.fileName !== "materyal.pdf") fileName = found.fileName;
-                if (found.fileUrl && found.fileUrl !== "#" && found.fileUrl !== "") fallbackUrl = found.fileUrl;
-            }
-        } catch(e) {}
+    const found = findMaterialByIdOrTitle(id, title);
+    if (found) {
+        if (found.category) category = found.category;
+        if (found.title) title = found.title;
+        if (found.fileName && found.fileName !== "materyal.pdf") fileName = found.fileName;
+        if (found.fileUrl && found.fileUrl !== "#" && found.fileUrl !== "") fallbackUrl = found.fileUrl;
     }
 
     const coverUrl = (found && (found.imageUrl || found.cover)) || "";
@@ -8028,7 +8213,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const checkCat = String((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
 
     // 1. 🎬 VİDEO İÇERİK KONTROLÜ
-    const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat === "MP4" ||
+    const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat.includes("VIDEO") || checkFormat === "MP4" ||
                     checkFile.endsWith(".mp4") || checkFile.endsWith(".webm") ||
                     (targetUrl && (targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be")));
 
@@ -8050,10 +8235,10 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
             return;
         } else {
             if (checkTitle.includes("güvenlik") || checkTitle.includes("sembol") || checkTitle.includes("laboratuvar")) {
-                openInPageVideoModal("https://www.youtube-nocookie.com/embed/E-0C1f0Ksqw", title || "Laboratuvar Güvenlik Sembolleri Videosu", false, id);
+                openInPageVideoModal("https://www.youtube.com/watch?v=E-0C1f0Ksqw", title || "Genel Güvenlik Sembolleri Video", false, id);
                 return;
             } else if (checkTitle.includes("lise") || checkTitle.includes("lgs") || checkTitle.includes("rehber")) {
-                openInPageVideoModal("https://www.youtube-nocookie.com/embed/5F2v_25gqj8", title || "Liseye Nasıl Gideceğiz Rehberlik Videosu", false, id);
+                openInPageVideoModal("https://www.youtube.com/watch?v=5F2v_25gqj8", title || "Liseye Nasıl Gideceğiz?", false, id);
                 return;
             } else {
                 openInPageVideoModal("", title || "Ders Videosu", false, id);
@@ -8077,7 +8262,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
 
     // 2. 🎮 EĞİTSEL OYUN VEYA ETKİNLİK
     if (checkCat === "egitsel-oyunlar" || checkCat.includes("oyun") || checkTitle.includes("oyun") || checkTitle.includes("eşleştirme") || checkTitle.includes("çark") || checkTitle.includes("cark") || checkTitle.includes("passaparola")) {
-        const gameKey = id || (found && found.id) || "";
+        const gameKey = (found && found.fileUrl && found.fileUrl.startsWith("http")) ? found.fileUrl : (id || (found && found.id) || "oyun-5-lab");
         openInteractiveGameModal(gameKey || targetUrl, title || (found && found.title) || "İnteraktif Fen Oyunu");
         return;
     }
@@ -8380,12 +8565,45 @@ const LAB_SAFETY_SYMBOLS = [
     }
 ];
 
+function extractYouTubeVideoId(url) {
+    if (!url || typeof url !== "string") return "";
+    const clean = url.trim();
+    // 1. Standart watch?v= veya &v=
+    const vMatch = clean.match(/[?&]v=([a-zA-Z0-9_-]{11})/);
+    if (vMatch && vMatch[1]) return vMatch[1];
+    // 2. youtu.be/ID
+    const beMatch = clean.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/);
+    if (beMatch && beMatch[1]) return beMatch[1];
+    // 3. embed/ID veya v/ID veya shorts/ID (youtube-nocookie.com dahil!)
+    const embedMatch = clean.match(/(?:youtube\.com|youtube-nocookie\.com)\/(?:embed|v|shorts)\/([a-zA-Z0-9_-]{11})/);
+    if (embedMatch && embedMatch[1]) return embedMatch[1];
+    // 4. Genel 11 karakterli ID regex
+    const genMatch = clean.match(/(?:youtu\.be\/|(?:youtube\.com|youtube-nocookie\.com)\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+    if (genMatch && genMatch[1]) return genMatch[1];
+    return "";
+}
+
 let currentPlayingVideoMaterialId = null;
 
 function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = false, materialId = "") {
     if (materialId) currentPlayingVideoMaterialId = materialId;
     if (window.speechSynthesis) {
         window.speechSynthesis.cancel();
+    }
+
+    // Otomatik video çözümleme (Eğer videoSrc boş, # veya eksikse)
+    if (!videoSrc || videoSrc === "#" || videoSrc === "null" || videoSrc === "") {
+        const found = findMaterialByIdOrTitle(materialId, videoTitle);
+        if (found && found.fileUrl && found.fileUrl !== "#" && found.fileUrl !== "") {
+            videoSrc = found.fileUrl;
+        } else {
+            const lowerT = String(videoTitle || "").toLowerCase();
+            if (lowerT.includes("güvenlik") || lowerT.includes("sembol") || lowerT.includes("laboratuvar")) {
+                videoSrc = "https://www.youtube.com/watch?v=E-0C1f0Ksqw";
+            } else if (lowerT.includes("lise") || lowerT.includes("lgs") || lowerT.includes("rehber")) {
+                videoSrc = "https://www.youtube.com/watch?v=5F2v_25gqj8";
+            }
+        }
     }
 
     let modal = document.getElementById("inpage-video-modal");
@@ -8402,17 +8620,9 @@ function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = fa
     let ytSrc = "";
     let isDirectVideo = false;
 
-    if (videoSrc && (videoSrc.includes("youtube") || videoSrc.includes("youtu.be"))) {
-        let ytId = "";
-        let match = videoSrc.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
-        if (match && match[1]) {
-            ytId = match[1];
-        } else if (videoSrc.includes("v=")) {
-            ytId = videoSrc.split("v=")[1].split("&")[0];
-        } else if (videoSrc.includes("youtu.be/")) {
-            ytId = videoSrc.split("youtu.be/")[1].split("?")[0];
-        }
-        if (ytId) ytSrc = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
+    const ytId = extractYouTubeVideoId(videoSrc);
+    if (ytId) {
+        ytSrc = `https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&rel=0`;
     } else if (videoSrc && (videoSrc.startsWith("blob:") || videoSrc.startsWith("data:video") || videoSrc.endsWith(".mp4") || videoSrc.endsWith(".webm") || (videoSrc.startsWith("http") && !videoSrc.includes("youtube")))) {
         ytSrc = videoSrc;
         isDirectVideo = true;
