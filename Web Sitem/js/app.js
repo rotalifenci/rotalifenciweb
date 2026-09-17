@@ -22,7 +22,7 @@ function getDeletedMaterialIds() {
         let list = stored ? JSON.parse(stored) : [];
         if (!Array.isArray(list)) list = [];
         // Kullanıcı isteğiyle kalıcı olarak kaldırılan id'ler
-        const hardDeleted = ["mat-1789495187673", "mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"];
+        const hardDeleted = ["mat-1789495187673", "mat-1789502325405", "mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"];
         hardDeleted.forEach(hd => { if (!list.includes(hd)) list.push(hd); });
         list = list.filter(id => typeof id === "string" && id.startsWith("mat-"));
         return list;
@@ -44,6 +44,9 @@ function addDeletedMaterialId(id) {
 
 function removeDeletedMaterialId(id) {
     if (!id) return;
+    // Kalıcı olarak silinmiş materyaller asla silinmişler listesinden çıkarılamaz!
+    const hardDeleted = ["mat-1789495187673", "mat-1789502325405", "mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"];
+    if (hardDeleted.includes(id)) return;
     try {
         const stored = localStorage.getItem("rotali_deleted_materials");
         if (stored) {
@@ -190,12 +193,7 @@ const CloudSyncManager = {
                 }
             }
 
-            // Buluttan gelen aktif materyallerin ID'lerini yerel silinmiş listesinden temizle
-            cloudMaterials.forEach(item => {
-                if (item && item.id) {
-                    removeDeletedMaterialId(item.id);
-                }
-            });
+            // Yerel silinmişler korunur - başka cihazdan silinen veya yerelde silinen id'ler diriltilmez!
 
             // Buluttan gelen silinmiş ID'leri yerel listeye ekle
             cloudDeletedIds.forEach(id => {
@@ -719,6 +717,49 @@ function matchesSubTabCategory(item, subTab) {
     return itemCat === target;
 }
 
+// -------------------------------------------------------------
+// 🖼️ AKILLI MATERYAL KAPAK GÖRSELİ ÇÖZÜCÜ (HER İÇERİK İÇİN GÖRSEL KAPAK)
+// -------------------------------------------------------------
+function resolveMaterialCover(item) {
+    if (!item) return "assets/kapak-5.jpg";
+    const rawImg = (item.imageUrl || "").trim();
+    const rawFile = (item.fileUrl || "").trim();
+    const title = (item.title || "").toLowerCase();
+    const desc = (item.desc || "").toLowerCase();
+    const unit = (item.unit || "").toLowerCase();
+    const cat = (item.category || "").toLowerCase();
+    const format = (item.format || "").toLowerCase();
+    const g = String(item.grade || "5").replace(/^grade-/, "").trim();
+
+    // 1. Doğrudan atanmış geçerli görsel varsa
+    if (rawImg && rawImg !== "#" && rawImg !== "null" && !rawImg.includes("cdn.eba.gov.tr") && !rawImg.includes("placeholder")) {
+        return rawImg;
+    }
+    // 2. fileUrl bir görsel ise
+    if (rawFile && rawFile !== "#" && rawFile !== "null" && !rawFile.includes("cdn.eba.gov.tr") &&
+        (rawFile.startsWith("data:image") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp") || rawFile.startsWith("assets/"))) {
+        return rawFile;
+    }
+    // 3. Laboratuvar / Güvenlik Sembolleri / Kurallar
+    if (cat === "laboratuvar" || title.includes("laboratuvar") || title.includes("lab ") || unit.includes("laboratuvar") ||
+        title.includes("güvenlik") || title.includes("malzeme") || title.includes("kural")) {
+        return "assets/lab-guvenligi.svg";
+    }
+    // 4. Ders Kitabı
+    if (title.includes("kitap") || title.includes("kitab") || cat === "ders-kitabi") {
+        return ["5", "6", "7", "8"].includes(g) ? `assets/kapak-${g}.jpg` : "assets/kapak-5.jpg";
+    }
+    // 5. İşlenecek Üniteler / Sınıf Konuları / Bilgilendirme
+    if (title.includes("ünite") || title.includes("unite") || title.includes("konuları") || title.includes("konulari") || title.includes("işlenecek") || title.includes("islenecek")) {
+        return (["5", "6", "7", "8"].includes(g) && g !== "5") ? `assets/kapak-${g}.jpg` : "assets/unite-bilgilendirmeleri-gorsel.png";
+    }
+    // 6. Sınıf düzeyine göre varsayılan kapak görseli
+    if (["5", "6", "7", "8"].includes(g)) {
+        return `assets/kapak-${g}.jpg`;
+    }
+    return "assets/kapak-5.jpg";
+}
+
 function getMaterialTargetSection(item) {
     if (!item) return "1";
     // 1. Doğrudan atanmış hedef bölüm
@@ -842,7 +883,15 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     ${item.title}
                                 </h4>
 
-<!-- Kapak görseli liste kartında gösterilmez; yalnızca içerik açıldığında görüntüleme sayfasında gösterilir -->
+                                <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
+                                <div class="mat-preview-box relative w-full h-72 sm:h-80 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
+                                    <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${itemGrade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                    <div class="absolute bottom-2.5 right-2.5">
+                                        <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                            <i class="fa-solid ${isVideo ? 'fa-play' : (isBook ? 'fa-book-open-reader' : 'fa-eye')}"></i> ${isVideo ? 'Videoyu Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görseli Aç')}
+                                        </span>
+                                    </div>
+                                </div>
 
                                 <!-- Açıklama -->
                                 <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
@@ -1194,8 +1243,19 @@ function showToast(message, type = "success") {
 // -------------------------------------------------------------
 function handleRouteChange(options = {}) {
     updateAdminNavUI();
-    const rawHash = window.location.hash.slice(1);
+    let rawHash = window.location.hash.slice(1);
+    // Sayfa yenilendiğinde tam olarak kalınan sayfayı/bölümü koru
+    if (!rawHash && typeof localStorage !== "undefined") {
+        const savedHash = localStorage.getItem("rotali_last_active_hash");
+        if (savedHash && savedHash !== "home" && savedHash !== "") {
+            window.location.hash = savedHash;
+            return;
+        }
+    }
     const hash = rawHash || "home";
+    if (typeof localStorage !== "undefined" && hash && hash !== "home") {
+        try { localStorage.setItem("rotali_last_active_hash", hash); } catch(e) {}
+    }
     const appEl = document.getElementById("app");
     if (!appEl) return;
 
@@ -1399,6 +1459,15 @@ function renderHomeRecentMaterialsSection() {
 
                             <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
                             <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">${item.title}</h4>
+                            <!-- Görsel Kapak Kutusu -->
+                            <div class="mat-preview-box relative w-full h-52 sm:h-60 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
+                                <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${item.grade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                <div class="absolute bottom-2.5 right-2.5">
+                                    <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                        <i class="fa-solid fa-eye"></i> İncele & Aç
+                                    </span>
+                                </div>
+                            </div>
                             <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
 
                             ${item.tags && item.tags.length > 0 ? `
@@ -1545,16 +1614,24 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                         <span class="text-[11px] font-bold text-slate-400">${item.createdAt || 'Yeni'}</span>
                                     </div>
 
-                                    <!-- Kapak görseli liste kartında gösterilmez; yalnızca içerik açıldığında görüntüleme sayfasında gösterilir -->
-
                                     <!-- İçerik Başlığı & Açıklaması -->
-                                    <div class="p-5">
+                                    <div class="p-5 pb-2">
                                         <div class="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider mb-2">
                                             ${item.format || 'FEN MATERYALİ'}
                                         </div>
                                         <h3 class="text-base font-black text-slate-900 leading-snug group-hover:text-red-600 transition-colors mb-2 line-clamp-2">
                                             ${item.title}
                                         </h3>
+
+                                        <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
+                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
+                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${item.grade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="absolute bottom-2.5 right-2.5">
+                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                    <i class="fa-solid ${item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i> ${item.category === 'videolar' ? 'Videoyu Oynat' : 'Görseli Aç'}
+                                                </span>
+                                            </div>
+                                        </div>
                                         <p class="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3 mb-4">
                                             ${item.desc || 'MEB müfredatına uygun fen bilimleri materyali.'}
                                         </p>
@@ -2930,7 +3007,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
             <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Varsayılan Olarak Ders Kitabı Aktif -->
             <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
                 <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
-                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="true" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer">
+                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'false' : 'true'}" class="notu-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 ${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'bg-white text-slate-800 hover:bg-slate-100 border border-slate-200 shadow-sm' : 'shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20'} active:scale-95 cursor-pointer">
                         <i class="fa-solid fa-book-open text-amber-400"></i>
                         <span>Ders Kitabı</span>
                     </button>
@@ -3002,6 +3079,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             <div>
                                                 <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200 mb-2 inline-block">${cb.format || 'PDF KİTAP'}</span>
                                                 <h6 class="text-sm font-black text-slate-900 mb-1">${cb.title}</h6>
+                                                <div class="mat-preview-box relative w-full h-48 sm:h-56 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2 rounded-xl overflow-hidden mb-2 border border-slate-200/80 cursor-pointer shadow-inner flex items-center justify-center" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || resolveMaterialCover(cb) || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')">
+                                                    <img src="${resolveMaterialCover(cb)}" alt="${cb.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-lg shadow-md" loading="lazy">
+                                                    <div class="absolute bottom-2 right-2">
+                                                        <span class="px-2 py-0.5 bg-slate-900/85 text-white text-[9px] font-black uppercase rounded shadow">Görseli Aç</span>
+                                                    </div>
+                                                </div>
                                                 <p class="text-xs text-slate-500 mb-3 line-clamp-2 font-medium">${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}</p>
                                             </div>
                                             <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
@@ -3096,6 +3179,15 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                     <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
                                                         ${item.title}
                                                     </h5>
+                                                    <!-- Görsel Kapak Kutusu -->
+                                                    <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-blue-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')">
+                                                        <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                        <div class="absolute bottom-2.5 right-2.5">
+                                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-blue-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                                <i class="fa-solid fa-eye"></i> İncele & Aç
+                                                            </span>
+                                                        </div>
+                                                    </div>
                                                     <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
                                                         ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
                                                     </p>
@@ -3157,6 +3249,15 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'İnteraktif'}</span>
                                             </div>
                                             <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
+                                            <!-- Görsel Kapak Kutusu -->
+                                            <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')">
+                                                <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                <div class="absolute bottom-2.5 right-2.5">
+                                                    <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                        <i class="fa-solid fa-eye"></i> Görseli Aç
+                                                    </span>
+                                                </div>
+                                            </div>
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
                                         </div>
                                         <div>
@@ -3420,6 +3521,15 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
                                                     ${item.title}
                                                 </h5>
+                                                <!-- Görsel Kapak Kutusu -->
+                                                <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${actionCall}">
+                                                    <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                    <div class="absolute bottom-2.5 right-2.5">
+                                                        <span class="px-2.5 py-1 bg-slate-900/85 hover:${cfg.btnBg} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                            <i class="${cfg.icon} text-xs"></i> İncele
+                                                        </span>
+                                                    </div>
+                                                </div>
                                                 <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4 font-medium">
                                                     ${item.desc || cfg.description}
                                                 </p>
@@ -3567,6 +3677,7 @@ window.toggleAccordionSection = function(sectionId) {
 window.filterDersNotuUnits = function(unitIndex) {
     const container = document.getElementById("ders-notu-accordion-group");
     if (!container) return;
+    try { sessionStorage.setItem("rotali_active_ders_notu_unit", String(unitIndex)); } catch(e) {}
 
     // 1. Buton stillerini güncelle
     const btns = container.querySelectorAll(".notu-filter-btn");
