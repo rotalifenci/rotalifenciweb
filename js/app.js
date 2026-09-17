@@ -3322,7 +3322,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
                     const allNotesForUnit = [...unitCustomNotes];
-                    if (!deletedIds.includes(standardNote.id) && standardNote.id !== "not-5-unite-bilgilendirmeleri") {
+                    // 🌟 KULLANICININ EKLEMEDİĞİ 2-7. ÜNİTELERDEKİ OTOMATİK İÇERİKLER KALDIRILDI
+                    if (unitNum === 1 && !unitCustomNotes.some(m => m.id === standardNote.id) && !deletedIds.includes(standardNote.id) && standardNote.id !== "not-5-unite-bilgilendirmeleri") {
                         allNotesForUnit.push(standardNote);
                     }
 
@@ -3338,8 +3339,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     <div>
                                         <div class="flex items-center gap-2 mb-0.5">
                                             <span class="text-xs font-black text-blue-600 uppercase tracking-wider">${grade.number}. Sınıf • ${unitNum}. Ünite</span>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-700 border border-blue-100">
-                                                ${allNotesForUnit.length} Ders Notu
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${allNotesForUnit.length > 0 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+                                                ${allNotesForUnit.length > 0 ? `${allNotesForUnit.length} Ders Notu` : 'Henüz İçerik Yok'}
                                             </span>
                                         </div>
                                         <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
@@ -3352,56 +3353,71 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                             <!-- Akordeon Gövdesi -->
                             <div id="${accordionId}" class="accordion-body-collapsible ${isOpenInitial ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                                    ${allNotesForUnit.map(item => {
-                                        const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
-                                        const isPdfReady = item.fileUrl && item.fileUrl !== "#";
-                                        return `
-                                            <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
-                                                <div>
-                                                    <div class="flex items-center justify-between gap-2 mb-3">
-                                                        <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
-                                                            ${item.format || item.badge || 'PDF FÖY'}
-                                                        </span>
-                                                        <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? 'Özel İçerik' : '4-6 Sayfa')}</span>
-                                                    </div>
-                                                    <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
-                                                        <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
-                                                    </div>
-                                                    <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
-                                                        ${item.title}
-                                                    </h5>
-                                                    <!-- Görsel Kapak Kutusu -->
-                                                    <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-blue-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')">
-                                                        <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                                        <div class="absolute bottom-2.5 right-2.5">
-                                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-blue-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                                <i class="fa-solid fa-eye"></i> İncele & Aç
+                                ${allNotesForUnit.length > 0 ? `
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        ${allNotesForUnit.map(item => {
+                                            const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
+                                            const isPdfReady = item.fileUrl && item.fileUrl !== "#";
+                                            return `
+                                                <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                                                    <div>
+                                                        <div class="flex items-center justify-between gap-2 mb-3">
+                                                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
+                                                                ${item.format || item.badge || 'PDF FÖY'}
                                                             </span>
+                                                            <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? 'Özel İçerik' : '4-6 Sayfa')}</span>
+                                                        </div>
+                                                        <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
+                                                            <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
+                                                        </div>
+                                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
+                                                            ${item.title}
+                                                        </h5>
+                                                        <!-- Görsel Kapak Kutusu -->
+                                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-blue-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')">
+                                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                            <div class="absolute bottom-2.5 right-2.5">
+                                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-blue-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                                    <i class="fa-solid fa-eye"></i> İncele & Aç
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
+                                                            ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
+                                                        </p>
+                                                    </div>
+                                                    <div>
+                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
+                                                            <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
+                                                            <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
+                                                        </button>
+                                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                            </button>
+                                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
                                                         </div>
                                                     </div>
-                                                    <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
-                                                        ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
-                                                    </p>
                                                 </div>
-                                                <div>
-                                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
-                                                        <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
-                                                        <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
-                                                    </button>
-                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                        </button>
-                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        `;
-                                    }).join("")}
-                                </div>
+                                            `;
+                                        }).join("")}
+                                    </div>
+                                ` : `
+                                    <div class="py-10 text-center bg-white rounded-3xl border border-dashed border-slate-200 p-6 flex flex-col items-center justify-center">
+                                        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3 shadow-inner">
+                                            <i class="fa-solid fa-folder-open"></i>
+                                        </div>
+                                        <h5 class="text-sm font-black text-slate-700 mb-1">Bu üniteye henüz ders notu eklenmedi</h5>
+                                        <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için ders notu veya föy eklediğinizde burada listelenecektir.</p>
+                                        ${isAdmin ? `
+                                            <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu', '${unitNum}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye Not Ekle
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                `}
                             </div>
                         </div>
                     `;
@@ -3677,7 +3693,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
                     const totalItems = [...unitCustoms];
-                    if (!unitCustoms.some(m => m.id === standardItem.id) && !deletedIds.includes(standardItem.id)) {
+                    // 🌟 KULLANICININ EKLEMEDİĞİ 2-7. ÜNİTELERDEKİ OTOMATİK İÇERİKLER KALDIRILDI
+                    if (unitNum === 1 && !unitCustoms.some(m => m.id === standardItem.id) && !deletedIds.includes(standardItem.id)) {
                         totalItems.push(standardItem);
                     }
 
@@ -3693,8 +3710,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     <div>
                                         <div class="flex items-center gap-2 mb-0.5">
                                             <span class="text-xs font-black ${cfg.colorText} uppercase tracking-wider">${grade.number}. Sınıf • ${unitNum}. Ünite</span>
-                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-slate-100 text-slate-700 border border-slate-200">
-                                                ${totalItems.length} İçerik
+                                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${totalItems.length > 0 ? 'bg-slate-100 text-slate-700 border border-slate-200' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
+                                                ${totalItems.length > 0 ? `${totalItems.length} İçerik` : 'Henüz İçerik Yok'}
                                             </span>
                                         </div>
                                         <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
@@ -3707,56 +3724,71 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                             <!-- Akordeon Gövdesi -->
                             <div id="${accordionId}" class="unit-card-body accordion-body-collapsible ${isOpenInitial ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    ${totalItems.map(item => {
-                                        const isCustom = !String(item.id).startsWith("std-");
-                                        const actionCall = isCustom
-                                            ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
-                                            : cfg.btnAction(item);
+                                ${totalItems.length > 0 ? `
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                        ${totalItems.map(item => {
+                                            const isCustom = !String(item.id).startsWith("std-");
+                                            const actionCall = isCustom
+                                                ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
+                                                : cfg.btnAction(item);
 
-                                        return `
-                                        <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group">
-                                            <div>
-                                                <div class="flex items-center justify-between gap-2 mb-2">
-                                                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border ${cfg.badgeStyle}">
-                                                        ${item.format || cfg.defaultFormat}
-                                                    </span>
-                                                    <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'MEB 2026'}</span>
-                                                </div>
-                                                <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
-                                                    ${item.title}
-                                                </h5>
-                                                <!-- Görsel Kapak Kutusu -->
-                                                <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${actionCall}">
-                                                    <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                                    <div class="absolute bottom-2.5 right-2.5">
-                                                        <span class="px-2.5 py-1 bg-slate-900/85 hover:${cfg.btnBg} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                            <i class="${cfg.icon} text-xs"></i> İncele
+                                            return `
+                                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group">
+                                                <div>
+                                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider border ${cfg.badgeStyle}">
+                                                            ${item.format || cfg.defaultFormat}
                                                         </span>
+                                                        <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'MEB 2026'}</span>
+                                                    </div>
+                                                    <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
+                                                        ${item.title}
+                                                    </h5>
+                                                    <!-- Görsel Kapak Kutusu -->
+                                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${actionCall}">
+                                                        <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                        <div class="absolute bottom-2.5 right-2.5">
+                                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:${cfg.btnBg} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                                <i class="${cfg.icon} text-xs"></i> İncele
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4 font-medium">
+                                                        ${item.desc || cfg.description}
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <button type="button" onclick="${actionCall}" class="w-full py-2.5 ${cfg.btnBg} text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                                        <i class="${cfg.icon} text-xs"></i>
+                                                        <span>${cfg.btnText}</span>
+                                                    </button>
+                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                        </button>
+                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
                                                     </div>
                                                 </div>
-                                                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4 font-medium">
-                                                    ${item.desc || cfg.description}
-                                                </p>
                                             </div>
-                                            <div>
-                                                <button type="button" onclick="${actionCall}" class="w-full py-2.5 ${cfg.btnBg} text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
-                                                    <i class="${cfg.icon} text-xs"></i>
-                                                    <span>${cfg.btnText}</span>
-                                                </button>
-                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                    </button>
-                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </div>
+                                            `;
+                                        }).join("")}
+                                    </div>
+                                ` : `
+                                    <div class="py-10 text-center bg-white rounded-3xl border border-dashed border-slate-200 p-6 flex flex-col items-center justify-center">
+                                        <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3 shadow-inner">
+                                            <i class="fa-solid fa-folder-open"></i>
                                         </div>
-                                        `;
-                                    }).join("")}
-                                </div>
+                                        <h5 class="text-sm font-black text-slate-700 mb-1">Bu üniteye henüz içerik eklenmedi</h5>
+                                        <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için materyal eklediğinizde bu alanda görüntülenecektir.</p>
+                                        ${isAdmin ? `
+                                            <button type="button" onclick="triggerUploadModal('${grade.number}', '${normSubTab}', '${unitNum}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye İçerik Ekle
+                                            </button>
+                                        ` : ''}
+                                    </div>
+                                `}
                             </div>
                         </div>
                     `;
