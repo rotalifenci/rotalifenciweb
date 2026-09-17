@@ -996,15 +996,6 @@ function getGradeSubSectionsData(gradeNumber) {
     return {
         // 1. DERS NOTLARI
         dersNotu: [
-            ...(gNum === 5 ? [{
-                id: "not-5-unite-bilgilendirmeleri",
-                title: "5. Sınıf Ünite Bilgilendirmeleri & Kazanım Rehberi",
-                unit: "Genel • Ünite Bilgilendirmeleri",
-                pages: "6 Sayfa",
-                desc: "5. sınıf tüm ünitelerin kazanım dağılımı, kavram yanılgıları ve veli/öğrenci rehberlik bilgilendirme dokümanı.",
-                badge: "PDF / Kazanım Föyü",
-                downloadCount: "2.450 Görüntüleme"
-            }] : []),
             ...unitTitles.map((uName, idx) => ({
                 id: `not-${gNum}-${idx+1}`,
                 title: `${gNum}. Sınıf ${idx+1}. Ünite: ${uName} Ders Notu`,

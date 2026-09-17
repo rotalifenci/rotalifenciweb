@@ -22,17 +22,22 @@ function getDeletedMaterialIds() {
         let list = stored ? JSON.parse(stored) : [];
         if (!Array.isArray(list)) list = [];
         // Kullanıcı isteğiyle kalıcı olarak kaldırılan id'ler
-        const hardDeleted = ["mat-1789495187673", "mat-1789502325405", "mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"];
+        const hardDeleted = [
+            "mat-1789495187673",
+            "mat-1789502325405",
+            "mat-5-lab-guvenlik-gorsel",
+            "mat-5-unite-bilgi",
+            "not-5-unite-bilgilendirmeleri"
+        ];
         hardDeleted.forEach(hd => { if (!list.includes(hd)) list.push(hd); });
-        list = list.filter(id => typeof id === "string" && id.startsWith("mat-"));
-        return list;
+        return list.filter(id => typeof id === "string" && id.trim().length > 0);
     } catch(e) {
-        return ["mat-1789495187673"];
+        return ["mat-1789495187673", "mat-1789502325405", "not-5-unite-bilgilendirmeleri"];
     }
 }
 
 function addDeletedMaterialId(id) {
-    if (!id || typeof id !== "string" || !id.startsWith("mat-")) return;
+    if (!id || typeof id !== "string" || !id.trim()) return;
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -45,7 +50,13 @@ function addDeletedMaterialId(id) {
 function removeDeletedMaterialId(id) {
     if (!id) return;
     // Kalıcı olarak silinmiş materyaller asla silinmişler listesinden çıkarılamaz!
-    const hardDeleted = ["mat-1789495187673", "mat-1789502325405", "mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi"];
+    const hardDeleted = [
+        "mat-1789495187673",
+        "mat-1789502325405",
+        "mat-5-lab-guvenlik-gorsel",
+        "mat-5-unite-bilgi",
+        "not-5-unite-bilgilendirmeleri"
+    ];
     if (hardDeleted.includes(id)) return;
     try {
         const stored = localStorage.getItem("rotali_deleted_materials");
@@ -423,23 +434,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         createdAt: "15.09.2026",
         updatedAt: "15.09.2026"
     },
-    {
-        id: "mat-1789502325405",
-        grade: "8",
-        category: "ders-notu",
-        title: "8.Sınıf Fen Bilimleri Ders Kitabı",
-        unit: "8. Sınıf Fen Bilimleri",
-        desc: "Milli Eğitim Bakanlığı 8. Sınıf Fen Bilimleri Ders Kitabı (MEB 2026-2027).",
-        fileName: "8.Sınıf Fen Bilimleri Ders Kitabı.pdf",
-        fileUrl: "#",
-        imageUrl: "assets/kapak-8.jpg",
-        format: "PDF",
-        hasBlob: true,
-        tags: ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
-        visibility: "public",
-        downloadCount: "Yeni",
-        createdAt: "15.09.2026"
-    },
+    
     {
         id: "mat-1789501786165",
         grade: "5",
@@ -524,23 +519,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         downloadCount: "3.480+",
         createdAt: "Yeni Yayınlandı"
     },
-    {
-        id: "mat-1789495187673",
-        grade: "5",
-        category: "ders-notu",
-        title: "5.Sınıf Fen Bilimleri Ders Kitabı-1",
-        unit: "5. Sınıf Fen Bilimleri",
-        desc: "Milli Eğitim Bakanlığı 5. Sınıf Fen Bilimleri Ders Kitabı 1. Kitap (MEB 2026-2027 Müfredatı).",
-        fileName: "fenbilimleri5-1.pdf",
-        fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf",
-        imageUrl: "assets/kapak-5.jpg",
-        format: "PDF",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "derskitabı", "fenbilimleri", "ortaokul"],
-        visibility: "public",
-        downloadCount: "5.100+",
-        createdAt: "15.09.2026"
-    },
+    
     {
         id: "mat-1789495365682",
         grade: "6",
@@ -3002,7 +2981,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
         const sec = getMaterialTargetSection(m);
         return sec === "lab" || m.category === "laboratuvar";
     });
-    const allLab = [...customLabItems, ...labItems];
+    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+    const allLab = [...customLabItems, ...labItems].filter(item => item && !deletedIds.includes(item.id));
 
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
@@ -3049,63 +3029,78 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     </button>
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                        ${String(grade.number) !== "6" ? `
-                        <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6">
-                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-sm">
-                                <i class="fa-solid fa-book-open"></i>
-                            </div>
-                            <div class="flex-1 text-center md:text-left">
-                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
-                                    <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-black uppercase border border-amber-200">MEB 2026-2027</span>
-                                    <span class="text-xs font-bold text-slate-400">${currentBook.pages}</span>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${String(grade.number) !== "6" ? `
+                            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                                <div>
+                                    <div class="flex items-center justify-between gap-2 mb-2">
+                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                                            MEB 2026-2027 • DERS KİTABI
+                                        </span>
+                                        <span class="text-[11px] font-bold text-slate-400">${currentBook.pages}</span>
+                                    </div>
+                                    <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-700 transition-colors">
+                                        ${currentBook.title}
+                                    </h5>
+                                    <!-- Görsel Kapak Kutusu (Kullanıcı görselindeki gibi) -->
+                                    <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })">
+                                        <img src="${currentBook.cover || 'assets/kapak-' + grade.number + '.jpg'}" alt="${currentBook.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <div class="absolute bottom-2.5 right-2.5">
+                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye"></i> GÖRSELİ AÇ
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
+                                        Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.
+                                    </p>
                                 </div>
-                                <h5 class="text-lg sm:text-xl font-black text-slate-900 mb-2">${currentBook.title}</h5>
-                                <p class="text-xs sm:text-sm text-slate-600 font-medium mb-4 leading-relaxed">
-                                    Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı. Görsel kapak ve tüm sayfaları indirmeden, kesintisiz dikey akış modunda doğrudan tarayıcınızda okuyabilirsiniz.
-                                </p>
-                                <div class="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                                    <button type="button" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })" class="px-6 py-3 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
+                                <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+                                    <button type="button" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })" class="flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
                                     </button>
                                 </div>
                             </div>
-                        </div>
-                        ` : ''}
+                            ` : ''}
 
-                        ${customBooks.length > 0 ? `
-                            <div class="${String(grade.number) !== '6' ? 'mt-4 pt-4 border-t border-slate-200' : ''}">
-                                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                    ${customBooks.map(cb => `
-                                        <div class="p-4 bg-white rounded-2xl border border-amber-200 shadow-sm flex flex-col justify-between">
-                                            <div>
-                                                <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase bg-amber-50 text-amber-800 border border-amber-200 mb-2 inline-block">${cb.format || 'PDF KİTAP'}</span>
-                                                <h6 class="text-sm font-black text-slate-900 mb-1">${cb.title}</h6>
-                                                <div class="mat-preview-box relative w-full h-48 sm:h-56 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2 rounded-xl overflow-hidden mb-2 border border-slate-200/80 cursor-pointer shadow-inner flex items-center justify-center" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || resolveMaterialCover(cb) || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')">
-                                                    <img src="${resolveMaterialCover(cb)}" alt="${cb.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-lg shadow-md" loading="lazy">
-                                                    <div class="absolute bottom-2 right-2">
-                                                        <span class="px-2 py-0.5 bg-slate-900/85 text-white text-[9px] font-black uppercase rounded shadow">Görseli Aç</span>
-                                                    </div>
-                                                </div>
-                                                <p class="text-xs text-slate-500 mb-3 line-clamp-2 font-medium">${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}</p>
-                                            </div>
-                                            <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                                <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                                    <i class="fa-solid fa-book-open"></i> Oku
-                                                </button>
-                                                ${isAdmin ? `
-                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2 px-2.5 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
-                                                        <i class="fa-solid fa-pen-to-square"></i>
-                                                    </button>
-                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2 px-2.5 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl cursor-pointer" title="Sil">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                ` : ''}
+                            ${customBooks.map(cb => `
+                                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                                    <div>
+                                        <div class="flex items-center justify-between gap-2 mb-2">
+                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                                                ${cb.format || 'PDF KİTAP'}
+                                            </span>
+                                            <span class="text-[11px] font-bold text-slate-400">Özel İçerik</span>
+                                        </div>
+                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-700 transition-colors">
+                                            ${cb.title}
+                                        </h5>
+                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || resolveMaterialCover(cb) || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')">
+                                            <img src="${resolveMaterialCover(cb)}" alt="${cb.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="absolute bottom-2.5 right-2.5">
+                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                    <i class="fa-solid fa-eye"></i> GÖRSELİ AÇ
+                                                </span>
                                             </div>
                                         </div>
-                                    `).join("")}
+                                        <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
+                                            ${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}
+                                        </p>
+                                    </div>
+                                    <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
+                                        <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+                                            <i class="fa-solid fa-book-open"></i> Oku
+                                        </button>
+                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl cursor-pointer" title="Sil">
+                                            <i class="fa-solid fa-trash"></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ` : ''}
+                            `).join("")}
+                        </div>
                     </div>
                 </div>
 
@@ -3133,7 +3128,11 @@ function renderGradeDersNotuAccordion(grade, subData) {
                         fileUrl: "#"
                     };
 
-                    const allNotesForUnit = [...unitCustomNotes, standardNote];
+                    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+                    const allNotesForUnit = [...unitCustomNotes];
+                    if (!deletedIds.includes(standardNote.id) && standardNote.id !== "not-5-unite-bilgilendirmeleri") {
+                        allNotesForUnit.push(standardNote);
+                    }
 
                     return `
                         <div data-unit="${unitNum}" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
@@ -3198,16 +3197,14 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
                                                         <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
                                                     </button>
-                                                    ${(isCustom && isAdmin) ? `
-                                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                            </button>
-                                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer" title="Sil">
-                                                                <i class="fa-solid fa-trash"></i>
-                                                            </button>
-                                                        </div>
-                                                    ` : ''}
+                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                        </button>
+                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                            <i class="fa-solid fa-trash"></i>
+                                                        </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         `;
@@ -3266,16 +3263,14 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <i class="fa-solid fa-play"></i>
                                                 <span>Etkinliği Başlat / İncele</span>
                                             </button>
-                                            ${(isCustom && isAdmin) ? `
-                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                    </button>
-                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer" title="Sil">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            ` : ''}
+                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                </button>
+                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 `;
@@ -6034,6 +6029,20 @@ function deleteCustomMaterial(id) {
     checkAdminAccess(async () => {
         if (!confirm("Bu materyali tamamen silmek istediğinize emin misiniz?")) return;
 
+        // Anında görsel tepki (DOM'dan anında kaldır)
+        try {
+            const btns = document.querySelectorAll(`[onclick*="${id}"]`);
+            btns.forEach(btn => {
+                const card = btn.closest('.notu-unit-card, .unit-accordion-card, .group, .bg-white');
+                if (card) {
+                    card.style.transition = 'all 0.25s ease';
+                    card.style.opacity = '0';
+                    card.style.transform = 'scale(0.9)';
+                    setTimeout(() => card.remove(), 250);
+                }
+            });
+        } catch(domErr) {}
+
         let customList = getCustomMaterialsList();
         addDeletedMaterialId(id);
         customList = customList.filter(item => item && item.id !== id);
@@ -6045,7 +6054,7 @@ function deleteCustomMaterial(id) {
             } catch(e) {}
         }
 
-        showToast("🗑️ Materyal başarıyla silindi.", "info");
+        showToast("🗑️ Materyal anında ve kalıcı olarak silindi.", "info");
 
         if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.deleteMaterial) {
             await CloudSyncManager.deleteMaterial(id, customList);
@@ -6053,7 +6062,7 @@ function deleteCustomMaterial(id) {
             await CloudSyncManager.uploadToCloud(customList, true);
         }
 
-        handleRouteChange();
+        handleRouteChange({ preserveScroll: true });
     });
 }
 window.deleteCustomMaterial = deleteCustomMaterial;

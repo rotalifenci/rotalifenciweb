@@ -2,7 +2,7 @@
 // Provides universal cloud sync for Rotalı Fenci materials across all devices (Mobile, Desktop, Smartboard)
 
 const GIST_ID = "a1bd259d8d4d9e04e93e4e038ef2b0c7";
-const PERMANENTLY_REMOVED_IDS = new Set(["mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi", "mat-1789495187673", "mat-1789502325405"]);
+const PERMANENTLY_REMOVED_IDS = new Set(["mat-5-lab-guvenlik-gorsel", "mat-5-unite-bilgi", "mat-1789495187673", "mat-1789502325405", "not-5-unite-bilgilendirmeleri"]);
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
 module.exports = async function handler(req, res) {
@@ -140,7 +140,7 @@ module.exports = async function handler(req, res) {
             }
 
             // Combine deleted IDs (strictly material IDs, never titles)
-            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.startsWith("mat-")));
+            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.trim().length > 0));
             PERMANENTLY_REMOVED_IDS.forEach(pid => allDeletedSet.add(pid));
             // Gelen veya mevcut silinmiş ID'ler kesinlikle silinmişler kümesinde kalır, asla diriltilmez!
             const allDeletedIds = Array.from(allDeletedSet);
