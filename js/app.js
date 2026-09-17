@@ -27,7 +27,15 @@ function getDeletedMaterialIds() {
             "mat-1789502325405",
             "mat-5-lab-guvenlik-gorsel",
             "mat-5-unite-bilgi",
-            "not-5-unite-bilgilendirmeleri"
+            "not-5-unite-bilgilendirmeleri",
+            "std-ders-sunumu-5-1",
+            "std-ders-sunumu-6-1",
+            "std-ders-sunumu-7-1",
+            "std-ders-sunumu-8-1",
+            "foy-5-1",
+            "foy-6-1",
+            "foy-7-1",
+            "foy-8-1"
         ];
         hardDeleted.forEach(hd => { if (!list.includes(hd)) list.push(hd); });
         return list.filter(id => typeof id === "string" && id.trim().length > 0);
@@ -69,7 +77,15 @@ function removeDeletedMaterialId(id) {
         "mat-1789502325405",
         "mat-5-lab-guvenlik-gorsel",
         "mat-5-unite-bilgi",
-        "not-5-unite-bilgilendirmeleri"
+        "not-5-unite-bilgilendirmeleri",
+        "std-ders-sunumu-5-1",
+        "std-ders-sunumu-6-1",
+        "std-ders-sunumu-7-1",
+        "std-ders-sunumu-8-1",
+        "foy-5-1",
+        "foy-6-1",
+        "foy-7-1",
+        "foy-8-1"
     ];
     if (hardDeleted.includes(id)) return;
     try {
@@ -708,7 +724,7 @@ function matchesSubTabCategory(item, subTab) {
 // -------------------------------------------------------------
 function resolveMaterialCover(item) {
     if (!item) return "assets/kapak-5.jpg";
-    const rawImg = (item.imageUrl || "").trim();
+    const rawImg = (item.kapakResmi || item.imageUrl || "").trim();
     const rawFile = (item.fileUrl || "").trim();
     const title = (item.title || "").toLowerCase();
     const desc = (item.desc || "").toLowerCase();
@@ -2865,9 +2881,16 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     let gradeId = parts[0] || "grade-8";
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
 
-    // Aktif alt sekmeyi hafızada tut ve geri yükle (Sayfa yenilense veya başka bölümden dönülse bile kalınan sekme korunur)
+    // Aktif alt sekmeyi hafızada tut ve geri yükle (Doğrudan sınıfa tıklandığında Ders Notu & Ders Kitabı açılır)
     const subTabKey = `rotali_active_subtab_${grade.id}`;
-    let subTab = parts[1] || (typeof sessionStorage !== "undefined" && sessionStorage.getItem(subTabKey)) || "ders-notu";
+    let subTab = parts[1] || "ders-notu";
+    if (typeof sessionStorage !== "undefined") {
+        sessionStorage.setItem(subTabKey, subTab);
+        if (subTab === "ders-notu" && (!parts[1] || parts[1] === "ders-notu")) {
+            sessionStorage.setItem(`rotali_active_ders_notu_unit_${grade.number}`, "kitap");
+            sessionStorage.setItem('rotali_active_ders_notu_unit', "kitap");
+        }
+    }
     if (subTab === "uniteler") subTab = "ders-notu";
     if (typeof sessionStorage !== "undefined") {
         try { sessionStorage.setItem(subTabKey, subTab); } catch(e) {}
@@ -3349,12 +3372,14 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
                                             <i class="fa-solid fa-book-open"></i> Oku
                                         </button>
-                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
-                                            <i class="fa-solid fa-pen-to-square"></i>
-                                        </button>
-                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl cursor-pointer" title="Sil">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
+                                        ${isAdmin ? `
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
+                                                <i class="fa-solid fa-pen-to-square"></i>
+                                            </button>
+                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl cursor-pointer" title="Sil">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        ` : ''}
                                     </div>
                                 </div>
                             `).join("")}
@@ -3387,11 +3412,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     };
 
                     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK MATERYALLER GÖSTERİLİR
                     const allNotesForUnit = [...unitCustomNotes];
-                    // 🌟 KULLANICININ EKLEMEDİĞİ 2-7. ÜNİTELERDEKİ OTOMATİK İÇERİKLER KALDIRILDI
-                    if (unitNum === 1 && !unitCustomNotes.some(m => m.id === standardNote.id) && !deletedIds.includes(standardNote.id) && standardNote.id !== "not-5-unite-bilgilendirmeleri") {
-                        allNotesForUnit.push(standardNote);
-                    }
 
                     const isThisUnitActive = activeUnit === String(unitNum);
                     return `
@@ -3458,14 +3480,16 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                             <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
                                                             <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
                                                         </button>
-                                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                            </button>
-                                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                                <i class="fa-solid fa-trash"></i>
-                                                            </button>
-                                                        </div>
+                                                        ${isAdmin ? `
+                                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                                </button>
+                                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                                    <i class="fa-solid fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        ` : ''}
                                                     </div>
                                                 </div>
                                             `;
@@ -3538,14 +3562,16 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <i class="fa-solid fa-play"></i>
                                                 <span>Etkinliği Başlat / İncele</span>
                                             </button>
-                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                </button>
-                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
+                                            ${isAdmin ? `
+                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ` : ''}
                                         </div>
                                     </div>
                                 `;
@@ -3753,21 +3779,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         return targetSec === String(unitNum);
                     });
 
-                    // Standart Müfredat Mock / Temel Verisi
-                    const standardItem = {
-                        id: `std-${normSubTab}-${grade.number}-${unitNum}`,
-                        title: `${grade.number}. Sınıf ${uTitle} ${cfg.title.split(" ").slice(-2).join(" ")}`,
-                        desc: `MEB 2026-2027 müfredatına uygun ${unitNum}. ünite ${normSubTab.replace("-", " ")} modülü.`,
-                        format: cfg.defaultFormat,
-                        fileUrl: "#"
-                    };
-
                     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK İÇERİKLER GÖSTERİLİR (SAHTE/BOŞ MOCK İÇERİK EKLENMEZ)
                     const totalItems = [...unitCustoms];
-                    // 🌟 KULLANICININ EKLEMEDİĞİ 2-7. ÜNİTELERDEKİ OTOMATİK İÇERİKLER KALDIRILDI
-                    if (unitNum === 1 && !unitCustoms.some(m => m.id === standardItem.id) && !deletedIds.includes(standardItem.id)) {
-                        totalItems.push(standardItem);
-                    }
 
                     return `
                         <div data-unit="${unitNum}" class="unit-accordion-card ${unitNum === 1 ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
@@ -3833,14 +3847,16 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                         <i class="${cfg.icon} text-xs"></i>
                                                         <span>${cfg.btnText}</span>
                                                     </button>
-                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                        </button>
-                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
+                                                    ${isAdmin ? `
+                                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                            </button>
+                                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                                <i class="fa-solid fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    ` : ''}
                                                 </div>
                                             </div>
                                             `;
@@ -9264,6 +9280,93 @@ function processSelectedFile(file) {
 
     previewCard.classList.remove("hidden");
     previewCard.classList.add("block");
+
+    // 🌟 OTOMATİK KAPAK RESMİ ALGILAMA (PDF İlk Sayfası, Görsel veya Video Karesi)
+    autoExtractCoverFromFile(file, ext);
+}
+
+// 🖼️ AKILLI VE OTOMATİK KAPAK RESMİ ÇIKARICI (PDF Sayfası, Görsel veya Video Karesi)
+async function autoExtractCoverFromFile(file, ext) {
+    const previewImg = document.getElementById("cover-preview-img");
+    const previewBox = document.getElementById("cover-preview-box");
+    const btnText = document.getElementById("cover-file-btn-text");
+
+    let autoCover = null;
+
+    // A) Görsel dosyası ise (Doğrudan sıkıştır ve ata)
+    if (file.type && file.type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "svg", "gif"].includes(ext)) {
+        try {
+            const compressed = await compressImageIfNeeded(file);
+            autoCover = compressed || await readFileAsDataURL(file);
+        } catch(e) {
+            try { autoCover = await readFileAsDataURL(file); } catch(e2) {}
+        }
+    }
+    // B) PDF Dosyası ise (pdf.js kullanarak ilk sayfayı canvas'a render et ve kapak yap)
+    else if (ext === "pdf" || (file.type && file.type === "application/pdf")) {
+        try {
+            if (typeof pdfjsLib !== "undefined") {
+                const arrayBuffer = await file.arrayBuffer();
+                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+                const pdf = await loadingTask.promise;
+                const page = await pdf.getPage(1);
+                const origViewport = page.getViewport({ scale: 1.0 });
+                const scale = Math.min(600 / origViewport.width, 1.5);
+                const viewport = page.getViewport({ scale: scale });
+                const canvas = document.createElement("canvas");
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                const ctx = canvas.getContext("2d");
+                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+                autoCover = canvas.toDataURL("image/jpeg", 0.85);
+            }
+        } catch(pdfErr) {
+            console.warn("PDF kapak sayfası oluşturulamadı:", pdfErr);
+        }
+    }
+    // C) Video Dosyası ise (1. saniyedeki kareyi yakala)
+    else if (file.type && file.type.startsWith("video/") || ["mp4", "webm", "ogg", "mov"].includes(ext)) {
+        try {
+            autoCover = await new Promise((resolve) => {
+                const video = document.createElement("video");
+                video.preload = "metadata";
+                video.src = URL.createObjectURL(file);
+                video.muted = true;
+                video.playsInline = true;
+                video.currentTime = 1.0;
+                video.onloadeddata = () => {
+                    setTimeout(() => {
+                        try {
+                            const canvas = document.createElement("canvas");
+                            canvas.width = video.videoWidth || 640;
+                            canvas.height = video.videoHeight || 360;
+                            const ctx = canvas.getContext("2d");
+                            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            URL.revokeObjectURL(video.src);
+                            resolve(canvas.toDataURL("image/jpeg", 0.82));
+                        } catch(cvErr) {
+                            resolve(null);
+                        }
+                    }, 250);
+                };
+                video.onerror = () => resolve(null);
+                setTimeout(() => resolve(null), 3000);
+            });
+        } catch(vidErr) {
+            console.warn("Video kapağı yakalanamadı:", vidErr);
+        }
+    }
+
+    // Kullanıcı henüz manuel bir kapak seçmediyse veya otomatik kapak oluştuysa arayüze ve state'e yansıt
+    if (autoCover) {
+        currentUploadedCoverDataUrl = autoCover;
+        if (previewImg) previewImg.src = autoCover;
+        if (previewBox) {
+            previewBox.classList.remove("hidden");
+            previewBox.classList.add("flex");
+        }
+        if (btnText) btnText.innerText = "Otomatik Kapak Algılandı (Değiştirebilirsiniz)";
+    }
 }
 
 
@@ -9674,6 +9777,7 @@ async function handleAdvMaterialSubmit(e) {
                     fileName: finalFileName,
                     fileUrl: fileDataUrl || externalUrl || "#",
                     imageUrl: chosenCover || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
+                    kapakResmi: chosenCover || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
                     format: fileFormat,
                     hasBlob: hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
