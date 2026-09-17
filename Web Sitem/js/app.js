@@ -120,12 +120,12 @@ const CloudSyncManager = {
             }
         });
 
-        // Sayfa açıkken her 8 saniyede bir sessiz arka plan kontrolü (Mobil ve web arası tam anlık eşitleme)
+        // Sayfa açıkken 30 saniyede bir sessiz arka plan kontrolü (Gereksiz render ve arayüz sıfırlamasını önler)
         setInterval(() => {
             if (document.visibilityState === "visible" || !document.hidden) {
                 this.syncWithCloud(false);
             }
-        }, 8000);
+        }, 30000);
     },
 
     // Bulut ile iki yönlü akıllı eşitleme (Bulut öncelikli - Cloud First Source of Truth)
@@ -273,12 +273,13 @@ const CloudSyncManager = {
                 }
             });
 
-            // 4. Fark var mı kontrol et (Gereksiz render ve localStorage yazımını önle)
+            // 4. Fark var mı kontrol et (Gereksiz render ve localStorage yazımını önle - ID'ye göre sıralayarak karşılaştır)
+            const sortById = (a, b) => String(a.id || "").localeCompare(String(b.id || ""));
             const prevCount = Array.isArray(ROTALI_MATERIALS_CACHE) ? ROTALI_MATERIALS_CACHE.length : -1;
-            const currentSerialized = JSON.stringify(finalMergedList.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
-            const prevSerialized = Array.isArray(ROTALI_MATERIALS_CACHE) 
-                ? JSON.stringify(ROTALI_MATERIALS_CACHE.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })))
-                : "";
+            const sortedFinal = [...finalMergedList].sort(sortById);
+            const sortedPrev = Array.isArray(ROTALI_MATERIALS_CACHE) ? [...ROTALI_MATERIALS_CACHE].sort(sortById) : [];
+            const currentSerialized = JSON.stringify(sortedFinal.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
+            const prevSerialized = JSON.stringify(sortedPrev.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
 
             const hasChanged = currentSerialized !== prevSerialized;
 
@@ -287,8 +288,9 @@ const CloudSyncManager = {
                 saveCustomMaterialsSafe(finalMergedList);
                 console.log(`🔄 Senkronizasyon güncellendi: ${finalMergedList.length} materyal aktif.`);
 
-                // Sayfadaki arayüzü anında güncelle (Kullanıcı aşağı kaydırmışsa kaydırma konumunu bozma)
-                if (typeof handleRouteChange === "function") {
+                // Kullanıcı o sırada bir modalda veya okuyucudaysa arayüzü sıfırlama!
+                const isModalOpen = document.getElementById("edit-material-modal") || document.getElementById("material-upload-modal") || document.getElementById("digital-book-modal") || document.getElementById("inpage-document-modal");
+                if (!isModalOpen && typeof handleRouteChange === "function") {
                     handleRouteChange({ preserveScroll: true });
                 }
             }
@@ -2832,11 +2834,15 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     // Parse gradeId and subTab: e.g. "grade-5/ders-notu" or "grade-5"
     let parts = (gradeIdWithTab || "grade-8").split("/");
     let gradeId = parts[0] || "grade-8";
-    let subTab = parts[1] || "ders-notu";
-    if (subTab === "uniteler") subTab = "ders-notu";
-
-    // Find grade in PORTAL_GRADES
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
+
+    // Aktif alt sekmeyi hafızada tut ve geri yükle (Sayfa yenilense veya başka bölümden dönülse bile kalınan sekme korunur)
+    const subTabKey = `rotali_active_subtab_${grade.id}`;
+    let subTab = parts[1] || (typeof sessionStorage !== "undefined" && sessionStorage.getItem(subTabKey)) || "ders-notu";
+    if (subTab === "uniteler") subTab = "ders-notu";
+    if (typeof sessionStorage !== "undefined") {
+        try { sessionStorage.setItem(subTabKey, subTab); } catch(e) {}
+    }
     const subData = getGradeSubSectionsData(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
         // Aktif Sekmeye Göre Üst Başlık ve Açıklama (Kullanıcı Talebi: Sekme Bilgisi 8 Butonun Üstündeki Alana Taşındı)
@@ -3053,6 +3059,11 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
 }
 
 function switchGradeSubTab(gradeId, tabName) {
+    if (typeof sessionStorage !== "undefined") {
+        try {
+            sessionStorage.setItem(`rotali_active_subtab_${gradeId}`, tabName);
+        } catch(e) {}
+    }
     window.location.hash = `grade/${gradeId}/${tabName}`;
 }
 
@@ -3145,20 +3156,30 @@ function renderGradeDersNotuAccordion(grade, subData) {
     };
     const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
 
-    // Özel Ders Kitabı Materyalleri
+    // Özel Ders Kitabı Materyalleri (Ana kitap 'currentBook' olarak zaten çizildiği için book-* hariç tutulmalıdır)
     const customBooks = customList.filter(m => {
         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         if (gClean !== "all" && gClean !== String(grade.number)) return false;
+        if (m.id && m.id.startsWith("book-")) return false; // 🚫 book-8 gibi ana kitaplar customBooks'ta tekrar basılmamalı!
         return getMaterialTargetSection(m) === "kitap";
     });
 
-    // Özel Laboratuvar Materyalleri
+    // Özel Laboratuvar Materyalleri (lab-*-guide ve lab-*-sim ayrı kart olarak yönetilir)
+    const labGuideItem = customList.find(m => m && m.id === `lab-${grade.number}-guide`) || {};
+    const labSimItem = customList.find(m => m && m.id === `lab-${grade.number}-sim`) || {};
+
     const customLabItems = customList.filter(m => {
         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         if (gClean !== "all" && gClean !== String(grade.number)) return false;
+        if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
         const sec = getMaterialTargetSection(m);
         return sec === "lab" || m.category === "laboratuvar";
     });
+
+    // Aktif açık olan üniteyi veya bölümü hatırla (Sayfa yenilendiğinde ilk bölüme atmasını önler)
+    const activeUnit = (typeof sessionStorage !== 'undefined' && (sessionStorage.getItem(`rotali_active_ders_notu_unit_${grade.number}`) || sessionStorage.getItem('rotali_active_ders_notu_unit'))) || "kitap";
+    const isKitapActive = activeUnit === "kitap";
+    const isLabActive = activeUnit === "lab";
     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
     const allLab = [...customLabItems, ...labItems].filter(item => item && !deletedIds.includes(item.id));
 
@@ -3167,7 +3188,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
             <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Kaydırmasız, Tam Yatay Sıraya Sığan Izgara -->
             <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-2 sm:p-3 mb-6 shadow-sm">
                 <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-flow-col lg:auto-cols-fr gap-1 sm:gap-1.5 w-full">
-                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'false' : 'true'}" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm' : 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20'} active:scale-95 cursor-pointer">
+                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="${isKitapActive ? 'true' : 'false'}" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isKitapActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm'} active:scale-95 cursor-pointer">
                         <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
                             <i class="fa-solid fa-book-open text-amber-400 text-[10px] sm:text-xs shrink-0"></i>
                             <span class="truncate">Ders Kitabı</span>
@@ -3177,14 +3198,15 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     ${unitList.map((uTitle, idx) => {
                         const num = idx + 1;
                         const uName = uTitle.includes(":") ? uTitle.split(":")[1].trim() : uTitle;
+                        const isThisUnitActive = activeUnit === String(num);
                         return `
-                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" data-active="false" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer">
+                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" data-active="${isThisUnitActive ? 'true' : 'false'}" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isThisUnitActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
                             <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">${num}. Ünite</span>
-                            <span class="text-[9px] sm:text-[10px] font-medium text-slate-500 truncate w-full" title="${uName}">${uName}</span>
+                            <span class="text-[9px] sm:text-[10px] font-medium ${isThisUnitActive ? 'text-slate-300' : 'text-slate-500'} truncate w-full" title="${uName}">${uName}</span>
                         </button>
                         `;
                     }).join("")}
-                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" data-active="false" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
+                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" data-active="${isLabActive ? 'true' : 'false'}" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isLabActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm'} active:scale-95 cursor-pointer">
                         <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
                             <i class="fa-solid fa-flask-vial text-emerald-600 text-[10px] sm:text-xs shrink-0"></i>
                             <span class="truncate">Laboratuvar</span>
@@ -3198,7 +3220,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
             <div class="space-y-4">
 
                 <!-- 📖 DERS KİTABI BÖLÜMÜ -->
-                <div data-unit="kitap" class="notu-unit-card border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                <div data-unit="kitap" class="notu-unit-card ${isKitapActive ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                     <button type="button" onclick="toggleAccordionSection('notu-sec-kitap')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
@@ -3212,12 +3234,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 <h4 class="text-base sm:text-lg font-black text-slate-900">Ders Kitabı & Ünite PDF'leri</h4>
                             </div>
                         </div>
-                        <div id="notu-sec-kitap-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
+                        <div id="notu-sec-kitap-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 ${isKitapActive ? 'rotate-180' : ''}">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
 
-                    <div id="notu-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                    <div id="notu-sec-kitap" class="accordion-body-collapsible ${isKitapActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                                 <div>
@@ -3327,8 +3349,9 @@ function renderGradeDersNotuAccordion(grade, subData) {
                         allNotesForUnit.push(standardNote);
                     }
 
+                    const isThisUnitActive = activeUnit === String(unitNum);
                     return `
-                        <div data-unit="${unitNum}" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                        <div data-unit="${unitNum}" class="notu-unit-card ${isThisUnitActive ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                             <!-- Akordeon Başlığı -->
                             <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                                 <div class="flex items-center gap-3 sm:gap-4">
@@ -3346,13 +3369,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
                                     </div>
                                 </div>
-                                <div id="${accordionId}-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 ${isOpenInitial ? 'rotate-180' : ''}">
+                                <div id="${accordionId}-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 ${isThisUnitActive ? 'rotate-180' : ''}">
                                     <i class="fa-solid fa-chevron-down text-xs"></i>
                                 </div>
                             </button>
 
                             <!-- Akordeon Gövdesi -->
-                            <div id="${accordionId}" class="accordion-body-collapsible ${isOpenInitial ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                            <div id="${accordionId}" class="accordion-body-collapsible ${isThisUnitActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                                 ${allNotesForUnit.length > 0 ? `
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         ${allNotesForUnit.map(item => {
@@ -3424,7 +3447,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                 }).join("")}
 
                 <!-- 🧪 LABORATUVAR BÖLÜMÜ -->
-                <div data-unit="lab" class="notu-unit-card hidden border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                <div data-unit="lab" class="notu-unit-card ${isLabActive ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                     <button type="button" onclick="toggleAccordionSection('notu-sec-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                         <div class="flex items-center gap-3.5 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 shadow-sm text-xl">
@@ -3438,12 +3461,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 <h4 class="text-base sm:text-lg font-black text-slate-900">Laboratuvar, Deneyler & PhET Simülasyonları</h4>
                             </div>
                         </div>
-                        <div id="notu-sec-lab-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 rotate-180">
+                        <div id="notu-sec-lab-icon" class="accordion-icon-rotatable w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 transition-transform duration-300 ${isLabActive ? 'rotate-180' : ''}">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
 
-                    <div id="notu-sec-lab" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                    <div id="notu-sec-lab" class="accordion-body-collapsible ${isLabActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             ${allLab.map(item => {
                                 const isCustom = !String(item.id).startsWith("lab-");
@@ -3850,34 +3873,52 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     </div>
                                 </div>
                             `).join("")}
-                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">Deney Föyü</span>
                                         <span class="text-[11px] font-bold text-slate-400">MEB Uyumlu</span>
                                     </div>
-                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu</h5>
-                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.</p>
+                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`}</h5>
+                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
                                 </div>
-                                <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', 'assets/lab-guvenligi.svg', '${grade.number}. Sınıf Laboratuvar Rehberi', 'laboratuvar', '${grade.number}. Sınıf Laboratuvar Rehberi')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
-                                    <i class="fa-solid fa-eye text-xs"></i>
-                                    <span>Kılavuzu Aç & İncele</span>
-                                </button>
+                                <div>
+                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
+                                        <i class="fa-solid fa-eye text-xs"></i>
+                                        <span>Kılavuzu Aç & İncele</span>
+                                    </button>
+                                    ${isAdmin ? `
+                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-guide')" class="w-full py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95">
+                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
                             </div>
 
-                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between">
+                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
                                 <div>
                                     <div class="flex items-center justify-between mb-2">
                                         <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">PhET Simülasyon</span>
                                         <span class="text-[11px] font-bold text-slate-400">3D İnteraktif</span>
                                     </div>
-                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü</h5>
-                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.</p>
+                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
+                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">${labSimItem.desc || 'Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.'}</p>
                                 </div>
-                                <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', 'https://phet.colorado.edu', '${grade.number}. Sınıf Fen Simülasyonu', 'laboratuvar', '${grade.number}. Sınıf Fen Simülasyonu')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm">
-                                    <i class="fa-solid fa-play text-xs"></i>
-                                    <span>Simülasyonu Başlat</span>
-                                </button>
+                                <div>
+                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
+                                        <i class="fa-solid fa-play text-xs"></i>
+                                        <span>Simülasyonu Başlat</span>
+                                    </button>
+                                    ${isAdmin ? `
+                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-sim')" class="w-full py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95">
+                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3914,7 +3955,13 @@ window.toggleAccordionSection = function(sectionId) {
 window.filterDersNotuUnits = function(unitIndex) {
     const container = document.getElementById("ders-notu-accordion-group");
     if (!container) return;
-    try { sessionStorage.setItem("rotali_active_ders_notu_unit", String(unitIndex)); } catch(e) {}
+    try { 
+        sessionStorage.setItem("rotali_active_ders_notu_unit", String(unitIndex)); 
+        const match = window.location.hash.match(/grade-(\d)/);
+        if (match && match[1]) {
+            sessionStorage.setItem(`rotali_active_ders_notu_unit_${match[1]}`, String(unitIndex));
+        }
+    } catch(e) {}
 
     // 1. Buton stillerini güncelle
     const btns = container.querySelectorAll(".notu-filter-btn");
@@ -6342,6 +6389,35 @@ function editCustomMaterial(id) {
                     cover: bInfo.cover || `assets/kapak-${g}.jpg`,
                     imageUrl: bInfo.cover || `assets/kapak-${g}.jpg`
                 };
+            } else if (id && id.startsWith("lab-")) {
+                const parts = id.split("-");
+                const grade = parts[1] || "5";
+                const type = parts[2] || "guide";
+                if (type === "guide") {
+                    mat = {
+                        id: id,
+                        title: `${grade}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`,
+                        grade: grade,
+                        category: "laboratuvar",
+                        unit: "Laboratuvar",
+                        targetSection: "lab",
+                        format: "GÖRSEL FÖY",
+                        desc: "Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.",
+                        fileUrl: "assets/lab-guvenligi.svg"
+                    };
+                } else {
+                    mat = {
+                        id: id,
+                        title: `${grade}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`,
+                        grade: grade,
+                        category: "laboratuvar",
+                        unit: "Laboratuvar",
+                        targetSection: "lab",
+                        format: "SİMÜLASYON",
+                        desc: "Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.",
+                        fileUrl: "https://phet.colorado.edu"
+                    };
+                }
             } else if (id && id.startsWith("std-")) {
                 const parts = id.split("-");
                 const unit = parts[parts.length - 1] || "1";
@@ -6750,6 +6826,12 @@ async function openDigitalBookModal(options = {}) {
                         <span class="hidden sm:inline">Düzenle</span>
                     </button>
                 ` : ''}
+                ${fileUrl && fileUrl.startsWith("http") ? `
+                    <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="MEB EBA Resmî Sunucusundan Doğrudan Aç">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        <span class="hidden md:inline">Yeni Sekmede Aç</span>
+                    </a>
+                ` : ''}
                 <!-- Kapat Butonu -->
                 <button type="button" onclick="closeDigitalBookModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shadow-md cursor-pointer ml-1" title="Kapat (ESC)">
                     <i class="fa-solid fa-xmark text-sm"></i>
@@ -6997,8 +7079,8 @@ async function tryLoadPdfDocument(id, fileUrl) {
         } else if (typeof pdfData === "string") {
             loadingTask = window.pdfjsLib.getDocument({
                 url: pdfData,
-                rangeChunkSize: 65536,
-                disableAutoFetch: false,
+                rangeChunkSize: 131072, // 128KB parçalar
+                disableAutoFetch: true, // ⚡ 100MB MEB kitaplarının tamamını indirmeyi beklemez, sayfayı 1 saniyede açar!
                 disableStream: false,
                 ...cMapOptions
             });
@@ -7067,6 +7149,7 @@ async function setupVerticalPdfSlots(pdf) {
     const targetWidth = Math.round(baseVp.width * baseFitScale * zoom);
     const targetHeight = Math.round(baseVp.height * baseFitScale * zoom);
 
+    const fragment = document.createDocumentFragment();
     for (let p = 1; p <= pdf.numPages; p++) {
         const slot = document.createElement("div");
         slot.id = `pdf-page-slot-${p}`;
@@ -7093,8 +7176,9 @@ async function setupVerticalPdfSlots(pdf) {
                 <canvas id="pdf-canvas-${p}" class="block bg-white"></canvas>
             </div>
         `;
-        container.appendChild(slot);
+        fragment.appendChild(slot);
     }
+    container.appendChild(fragment);
 
     // 2. Sayfaların ekrana girdikçe çizilmesi için IntersectionObserver kur
     setupPdfIntersectionObserver();
@@ -7608,11 +7692,18 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 3. 🖼️ GÖRSEL / KAPAK İÇERİĞİ (JPG, PNG, WEBP, SVG veya DataURL Kapak Görseli)
-    const isImageContent = (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-") || targetUrl.includes("assets/"))) ||
+    // 3. 🖼️ GÖRSEL / KAPAK İÇERİĞİ (PDF dokümanları asla görsel olarak açılmamalıdır)
+    const isPdfContent = checkFormat === "PDF" ||
+                         checkFile.endsWith(".pdf") ||
+                         (targetUrl && (targetUrl.toLowerCase().endsWith(".pdf") || targetUrl.toLowerCase().includes(".pdf?") || targetUrl.toLowerCase().includes(".pdf#"))) ||
+                         (targetUrl && targetUrl.startsWith("data:application/pdf"));
+
+    const isImageContent = !isPdfContent && (
+                           (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-"))) ||
                            ["JPG", "JPEG", "PNG", "WEBP", "SVG", "GÖRSEL", "RESİM"].includes(checkFormat) ||
                            checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || checkFile.endsWith(".webp") || checkFile.endsWith(".svg") ||
-                           (!targetUrl.includes(".pdf") && coverUrl.startsWith("data:image"));
+                           (!targetUrl.includes(".pdf") && coverUrl.startsWith("data:image"))
+    );
 
     if (isImageContent) {
         const activeImg = targetUrl || coverUrl;
