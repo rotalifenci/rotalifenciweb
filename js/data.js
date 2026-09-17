@@ -68,16 +68,16 @@ const PORTAL_GRADES = [
         color: "from-amber-500 to-orange-600",
         badgeBg: "bg-amber-50 text-amber-700 border-amber-200",
         accentColor: "#f59e0b",
-        description: "Güneş Sistemi ve Ötesi; Hücre ve Bölünmeler; Kuvvet ve Enerji; Saf Madde ve Karışımlar; Işığın Madde ile Etkileşimi.",
+        description: "Uzay Çağı; Kuvvet ve Enerjiyi Keşfedelim; Vücudumuzdaki Sistemler; Işığın Kırılması ve Mercekler; Maddenin Doğasına Yolculuk; Elektriklenme; Sürdürülebilir Yaşam ve Geri Dönüşüm.",
         unitCount: 7,
         units: [
-            { id: "7-unit-1", code: "F.7.1", name: "Güneş Sistemi ve Ötesi", icon: "fa-solid fa-satellite", topics: 2, hours: 14 },
-            { id: "7-unit-2", code: "F.7.2", name: "Hücre ve Bölünmeler", icon: "fa-solid fa-dna", topics: 3, hours: 22, featured: true },
-            { id: "7-unit-3", code: "F.7.3", name: "Kuvvet ve Enerji", icon: "fa-solid fa-arrows-spin", topics: 3, hours: 20 },
-            { id: "7-unit-4", code: "F.7.4", name: "Saf Madde ve Karışımlar", icon: "fa-solid fa-atom", topics: 4, hours: 22 },
-            { id: "7-unit-5", code: "F.7.5", name: "Işığın Madde ile Etkileşimi", icon: "fa-solid fa-glasses", topics: 3, hours: 16 },
-            { id: "7-unit-6", code: "F.7.6", name: "Canlılarda Üreme, Büyüme ve Gelişme", icon: "fa-solid fa-seedling", topics: 2, hours: 14 },
-            { id: "7-unit-7", code: "F.7.7", name: "Elektrik Devreleri", icon: "fa-solid fa-microchip", topics: 2, hours: 12 }
+            { id: "7-unit-1", code: "F.7.1", name: "Uzay Çağı", icon: "fa-solid fa-satellite", topics: 2, hours: 14 },
+            { id: "7-unit-2", code: "F.7.2", name: "Kuvvet ve Enerjiyi Keşfedelim", icon: "fa-solid fa-arrows-spin", topics: 3, hours: 20, featured: true },
+            { id: "7-unit-3", code: "F.7.3", name: "Vücudumuzdaki Sistemler", icon: "fa-solid fa-dna", topics: 3, hours: 22 },
+            { id: "7-unit-4", code: "F.7.4", name: "Işığın Kırılması ve Mercekler", icon: "fa-solid fa-glasses", topics: 3, hours: 16 },
+            { id: "7-unit-5", code: "F.7.5", name: "Maddenin Doğasına Yolculuk", icon: "fa-solid fa-atom", topics: 4, hours: 22 },
+            { id: "7-unit-6", code: "F.7.6", name: "Elektriklenme", icon: "fa-solid fa-bolt", topics: 2, hours: 14 },
+            { id: "7-unit-7", code: "F.7.7", name: "Sürdürülebilir Yaşam ve Geri Dönüşüm", icon: "fa-solid fa-recycle", topics: 2, hours: 12 }
         ]
     },
     {
@@ -989,7 +989,7 @@ function getGradeSubSectionsData(gradeNumber) {
     const unitTitles = {
         5: ["Güneş, Dünya ve Ay", "Canlılar Dünyası", "Kuvvetin Ölçülmesi", "Madde ve Değişim", "Işığın Yayılması", "İnsan ve Çevre", "Elektrik Devreleri"],
         6: ["Güneş Sistemi ve Tutulmalar", "Vücudumuzdaki Sistemler", "Kuvvet ve Hareket", "Madde ve Isı", "Ses ve Özellikleri", "Sistemler ve Sağlığı", "Elektriğin İletimi"],
-        7: ["Güneş Sistemi ve Ötesi", "Hücre ve Bölünmeler", "Kuvvet ve Enerji", "Saf Madde ve Karışımlar", "Işığın Madde ile Etkileşimi", "Canlılarda Üreme", "Elektrik Devreleri"],
+        7: ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
         8: ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç (Katı-Sıvı-Gaz)", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri", "Elektrik Yükleri"]
     }[gNum] || ["1. Ünite", "2. Ünite", "3. Ünite", "4. Ünite", "5. Ünite", "6. Ünite", "7. Ünite"];
 
@@ -1144,7 +1144,7 @@ const ENRICHED_GRADE_CONTENT = {
     "7": {
         unitSummaries: [
             {
-                unit: "1. Ünite: Güneş Sistemi ve Ötesi",
+                unit: "1. Ünite: Uzay Çağı",
                 highlights: [
                     "🚀 **Uzay Teknolojileri:** Yapay uydular (Haberleşme: Türksat 4A/5A/5B, Gözlem: Göktürk-1/2, Rasat). Ömrü biten uydular ve roket parçaları 'Uzay Kirliliği' oluşturur.",
                     "🔭 **Teleskoplar:** Aynalı, Mercekli ve Radyo teleskopları. Dünyanın atmosferik olumsuzluklarından etkilenmemek için Hubble ve James Webb uzay teleskopları uzaya fırlatılmıştır.",
@@ -1152,19 +1152,19 @@ const ENRICHED_GRADE_CONTENT = {
                 ]
             },
             {
-                unit: "2. Ünite: Hücre ve Bölünmeler",
-                highlights: [
-                    "🔬 **Organeller:** Mitokondri (Enerji/ATP), Kloroplast (Bitkide fotosentez), Ribozom (Protein), Golgi (Salgı ve paketleme), ER (Taşıma), Lizozom (Hücre içi sindirim), Sentrozom (Hayvanda bölünme iğ iplikleri).",
-                    "🧬 **Mitoz:** Vücut hücrelerinde görülür. 2n ➔ 2n (2 yavru hücre). Kromozom sayısı ve genetik yapı değişmez. Tek hücrelilerde üreme, çok hücrelilerde büyüme, onarım ve gelişmeyi sağlar.",
-                    "🌱 **Mayoz:** Üreme ana hücrelerinde (2n) görülür, üreme hücreleri (n - sperm, yumurta, polen) oluşur. Kromozom sayısı yarıya iner (2n ➔ n, 4 yavru hücre). Parça değişimi (Crossing-over) sayesinde kalıtsal çeşitlilik oluşur."
-                ]
-            },
-            {
-                unit: "3. Ünite: Kuvvet ve Enerji",
+                unit: "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
                 highlights: [
                     "⚖️ **Kütle vs Ağırlık:** Kütle değişmeyen madde miktarıdır (kg/g, eşit kollu terazi ile ölçülür). Ağırlık bir kuvvettir ($G = m \\cdot g$, Newton, dinamometre ile ölçülür; yerçekimine göre değişir).",
                     "⚙️ **Fiziksel İş (W):** Bir kuvvetin iş yapabilmesi için cisme kendi doğrultusunda yol aldırması şarttır ($W = F \\cdot \\Delta x$).",
                     "⚡ **Mekanik Enerjinin Korunumu:** Sürtünmesiz ortamda Kinetik Enerji ($E_k = \\frac{1}{2}mv^2$) ile Çekim Potansiyel Enerjisi ($E_p = mgh$) birbirine dönüşür, toplam mekanik enerji sabit kalır!"
+                ]
+            },
+            {
+                unit: "3. Ünite: Vücudumuzdaki Sistemler",
+                highlights: [
+                    "🔬 **Organeller:** Mitokondri (Enerji/ATP), Kloroplast (Bitkide fotosentez), Ribozom (Protein), Golgi (Salgı ve paketleme), ER (Taşıma), Lizozom (Hücre içi sindirim), Sentrozom (Hayvanda bölünme iğ iplikleri).",
+                    "🧬 **Mitoz:** Vücut hücrelerinde görülür. 2n ➔ 2n (2 yavru hücre). Kromozom sayısı ve genetik yapı değişmez. Tek hücrelilerde üreme, çok hücrelilerde büyüme, onarım ve gelişmeyi sağlar.",
+                    "🌱 **Mayoz:** Üreme ana hücrelerinde (2n) görülür, üreme hücreleri (n - sperm, yumurta, polen) oluşur. Kromozom sayısı yarıya iner (2n ➔ n, 4 yavru hücre). Parça değişimi (Crossing-over) sayesinde kalıtsal çeşitlilik oluşur."
                 ]
             }
         ]

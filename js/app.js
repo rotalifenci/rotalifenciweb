@@ -114,7 +114,7 @@ function removeDeletedMaterialId(id) {
 
 const CloudSyncManager = {
     // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder
-    apiEndpoint: (typeof window !== "undefined" && window.location && window.location.hostname.includes("vercel.app")) 
+    apiEndpoint: (typeof window !== "undefined" && window.location && typeof window.location.hostname === "string" && window.location.hostname.includes("vercel.app")) 
         ? "/api/sync" 
         : "https://rotalifenci.vercel.app/api/sync",
     fallbackGistUrl: "https://gist.githubusercontent.com/rotalifenci/a1bd259d8d4d9e04e93e4e038ef2b0c7/raw/materials.json",
@@ -469,7 +469,7 @@ const CloudSyncManager = {
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
-const ROTALI_DATA_SCHEMA_VERSION = 20260917_03;
+const ROTALI_DATA_SCHEMA_VERSION = 20260918_01;
 
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;
@@ -502,18 +502,18 @@ const DEFAULT_CUSTOM_MATERIALS = [
         grade: "7",
         category: "ders-notu",
         title: "7. Sınıf 1. Ünite Notu",
-        unit: "1. Ünite: Güneş Sistemi ve Ötesi",
-        desc: "7. Sınıf 1. Ünite: Güneş Sistemi ve Ötesi kapsamlı ders notu ve özet föyü.",
+        unit: "1. Ünite: Uzay Çağı",
+        desc: "7. Sınıf 1. Ünite: Uzay Çağı kapsamlı ders notu ve özet föyü.",
         fileName: "7.1. Ders Notu.pdf",
         fileUrl: "assets/docs/7-1-ders-notu.pdf",
         imageUrl: "assets/kapak-7.jpg",
         format: "PDF",
         hasBlob: false,
-        tags: ["MEB 2026-2027", "7.sınıf", "dersnotu", "fen"],
+        tags: ["MEB 2026-2027", "7.sınıf", "dersnotu", "fen", "uzay cagi"],
         visibility: "public",
         downloadCount: "1.850+",
         createdAt: "16.09.2026",
-        updatedAt: "16.09.2026"
+        updatedAt: "18.09.2026"
     },
     {
         id: "mat-8-liseye-nasil-gidecegiz",
@@ -3418,13 +3418,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
             "7. Ünite: Elektriğin İletimi"
         ],
         "7": [
-            "1. Ünite: Güneş Sistemi ve Ötesi",
-            "2. Ünite: Hücre ve Bölünmeler",
-            "3. Ünite: Kuvvet ve Enerji",
-            "4. Ünite: Saf Madde ve Karışımlar",
-            "5. Ünite: Işığın Madde ile Etkileşimi",
-            "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
-            "7. Ünite: Elektrik Devreleri"
+            "1. Ünite: Uzay Çağı",
+            "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+            "3. Ünite: Vücudumuzdaki Sistemler",
+            "4. Ünite: Işığın Kırılması ve Mercekler",
+            "5. Ünite: Maddenin Doğasına Yolculuk",
+            "6. Ünite: Elektriklenme",
+            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
         ],
         "8": [
             "1. Ünite: Mevsimler ve İklim",
@@ -3817,6 +3817,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const gNum = String(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
 
     // Resmi MEB 7 Ünitesi
     const unitTitlesMap = {
@@ -3839,13 +3840,13 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             "7. Ünite: Elektriğin İletimi"
         ],
         "7": [
-            "1. Ünite: Güneş Sistemi ve Ötesi",
-            "2. Ünite: Hücre ve Bölünmeler",
-            "3. Ünite: Kuvvet ve Enerji",
-            "4. Ünite: Saf Madde ve Karışımlar",
-            "5. Ünite: Işığın Madde ile Etkileşimi",
-            "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
-            "7. Ünite: Elektrik Devreleri"
+            "1. Ünite: Uzay Çağı",
+            "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+            "3. Ünite: Vücudumuzdaki Sistemler",
+            "4. Ünite: Işığın Kırılması ve Mercekler",
+            "5. Ünite: Maddenin Doğasına Yolculuk",
+            "6. Ünite: Elektriklenme",
+            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
         ],
         "8": [
             "1. Ünite: Mevsimler ve İklim",
@@ -3883,7 +3884,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnText: "Videoyu Oynat",
             badgeStyle: "bg-rose-50 text-rose-700 border-rose-200",
             defaultFormat: "HD VİDEO",
-            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'videolar', '${item.title.replace(/'/g, "\\\\'")}')`
+            btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'videolar', '${String(item && item.title || '').replace(/'/g, "\\'")}')`
         },
         "etkinlikler": {
             title: `${grade.number}. Sınıf Çalışma Föyleri & Etkinlikler`,
@@ -3895,7 +3896,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnText: "Föyü Aç & İncele",
             badgeStyle: "bg-emerald-50 text-emerald-700 border-emerald-200",
             defaultFormat: "PDF FÖY",
-            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'etkinlikler', '${item.title.replace(/'/g, "\\\\'")}')`
+            btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'etkinlikler', '${String(item && item.title || '').replace(/'/g, "\\'")}')`
         },
         "soru-bankasi": {
             title: `${grade.number}. Sınıf Soru Bankası & Testler`,
@@ -3907,7 +3908,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnText: "Testi Başlat",
             badgeStyle: "bg-indigo-50 text-indigo-700 border-indigo-200",
             defaultFormat: "TEST HAVUZU",
-            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'soru-bankasi', '${item.title.replace(/'/g, "\\\\'")}')`
+            btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'soru-bankasi', '${String(item && item.title || '').replace(/'/g, "\\'")}')`
         },
         "denemeler": {
             title: `${grade.number}. Sınıf Ünite Denemeleri & Ortak Sınavlar`,
@@ -3919,7 +3920,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnText: "Denemeyi Başlat",
             badgeStyle: "bg-purple-50 text-purple-700 border-purple-200",
             defaultFormat: "DENEME SINAVI",
-            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'denemeler', '${item.title.replace(/'/g, "\\\\'")}')`
+            btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'denemeler', '${String(item && item.title || '').replace(/'/g, "\\'")}')`
         },
         "egitsel-oyunlar": {
             title: `${grade.number}. Sınıf Eğitsel Oyunlar & Simülasyonlar`,
@@ -3931,7 +3932,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnText: "Oyunu Başlat",
             badgeStyle: "bg-fuchsia-50 text-fuchsia-700 border-fuchsia-200",
             defaultFormat: "İNTERAKTİF OYUN",
-            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\\\'")}')`
+            btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${String(item && item.title || '').replace(/'/g, "\\'")}')`
         },
         "bilim-insanlari": {
             title: `${grade.number}. Sınıf Bilimin Rotasını Çizenler`,
@@ -3943,7 +3944,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnText: "Keşfi İncele",
             badgeStyle: "bg-cyan-50 text-cyan-700 border-cyan-200",
             defaultFormat: "BİYOGRAFİ",
-            btnAction: (item) => `openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.title.replace(/'/g, "\\\\'")}', 'bilim-insanlari', '${item.title.replace(/'/g, "\\\\'")}')`
+            btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'bilim-insanlari', '${String(item && item.title || '').replace(/'/g, "\\'")}')`
         }
     };
 
@@ -6274,13 +6275,13 @@ const GRADE_UNITS_MAP = {
         "7. Ünite: Elektriğin İletimi"
     ],
     "7": [
-        "1. Ünite: Güneş Sistemi ve Ötesi",
-        "2. Ünite: Hücre ve Bölünmeler",
-        "3. Ünite: Kuvvet ve Enerji",
-        "4. Ünite: Saf Madde ve Karışımlar",
-        "5. Ünite: Işığın Madde ile Etkileşimi",
-        "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
-        "7. Ünite: Elektrik Devreleri"
+        "1. Ünite: Uzay Çağı",
+        "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+        "3. Ünite: Vücudumuzdaki Sistemler",
+        "4. Ünite: Işığın Kırılması ve Mercekler",
+        "5. Ünite: Maddenin Doğasına Yolculuk",
+        "6. Ünite: Elektriklenme",
+        "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
     ],
     "8": [
         "1. Ünite: Mevsimler ve İklim",
@@ -7294,7 +7295,7 @@ async function openDigitalBookModal(options = {}) {
         const idLower = String(id || "").toLowerCase();
         const fileLower = String(options.fileName || "").toLowerCase();
         const titleLower = String(bookTitle || "").toLowerCase();
-        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || fileLower.includes("7-1-ders-notu") || titleLower.includes("7. sınıf 1. ünite") || titleLower.includes("güneş sistemi ve ötesi")) {
+        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || fileLower.includes("7-1-ders-notu") || titleLower.includes("7. sınıf 1. ünite") || titleLower.includes("güneş sistemi ve ötesi") || titleLower.includes("uzay çağı") || titleLower.includes("uzay cagi")) {
             fileUrl = "assets/docs/7-1-ders-notu.pdf";
         }
     }
@@ -7531,7 +7532,7 @@ async function tryLoadPdfDocument(id, fileUrl) {
     const fileLower = String(bookInfo.fileName || "").toLowerCase();
     const titleLower = String(bookInfo.title || "").toLowerCase();
     if (!pdfData && (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null")) {
-        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || fileLower.includes("7-1-ders-notu") || titleLower.includes("7. sınıf 1. ünite") || titleLower.includes("güneş sistemi ve ötesi")) {
+        if (idLower === "not-7-1" || fileLower.includes("7.1. ders notu") || fileLower.includes("7-1-ders-notu") || titleLower.includes("7. sınıf 1. ünite") || titleLower.includes("güneş sistemi ve ötesi") || titleLower.includes("uzay çağı") || titleLower.includes("uzay cagi")) {
             fileUrl = "assets/docs/7-1-ders-notu.pdf";
         }
     }
