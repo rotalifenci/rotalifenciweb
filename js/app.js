@@ -6775,19 +6775,98 @@ function getFallbackPagesForGrade(grade, title, coverUrl = "") {
     const activeCover = coverUrl || (["5", "6", "7", "8"].includes(g) ? `assets/kapak-${g}.jpg` : "assets/kapak-5.jpg");
 
     if (!isBook) {
+        let enrichContent = "";
+        try {
+            if (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[g]) {
+                const summaries = ENRICHED_GRADE_CONTENT[g].unitSummaries || [];
+                if (summaries.length > 0) {
+                    enrichContent = summaries.map(s => `
+                        <div class="mb-4 p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                            <h4 class="font-black text-slate-800 text-sm mb-2 text-red-600">${s.unit}</h4>
+                            <ul class="space-y-1.5 text-xs text-slate-700">
+                                ${(s.highlights || []).map(h => `<li class="flex items-start gap-1.5"><span class="text-red-500 font-bold">•</span><span>${h}</span></li>`).join("")}
+                            </ul>
+                        </div>
+                    `).join("");
+                }
+            }
+        } catch(e) {}
+
         return [
             {
                 pageNum: 1,
-                title: title || "Ders Notu & PDF Föy",
+                title: title || "Ders Dokümanı & Özet Föy",
                 html: `
-                    <div class="flex flex-col items-center justify-center p-6 text-center select-none max-w-lg mx-auto bg-slate-900/60 rounded-3xl border border-slate-700 shadow-2xl">
-                        <div class="w-16 h-16 rounded-2xl bg-red-600/20 text-red-500 flex items-center justify-center text-3xl mb-4">
-                            <i class="fa-solid fa-file-pdf"></i>
+                    <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 select-none text-slate-800">
+                        <div class="p-5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-2xl shadow-md mb-5">
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-[10px] font-black uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">${g}. Sınıf MEB Müfredatı</span>
+                                <span class="text-[10px] font-black uppercase tracking-wider bg-amber-400/30 text-amber-200 px-2 py-0.5 rounded-full">Ders Dokümanı</span>
+                            </div>
+                            <h3 class="text-lg sm:text-xl font-black">${title}</h3>
                         </div>
-                        <h3 class="text-base sm:text-lg font-black text-white mb-2">${title}</h3>
-                        <p class="text-xs text-slate-400 mb-4">MEB müfredatına uygun ünite dokümanı açılıyor...</p>
-                        <div class="p-3 bg-slate-800/80 rounded-xl border border-slate-700 text-xs text-amber-300 font-bold">
-                            <i class="fa-solid fa-circle-info mr-1"></i> Fare tekerleği veya parmağınızla aşağı-yukarı kaydırabilirsiniz.
+                        <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 text-amber-950 text-xs mb-4">
+                            <div class="flex items-center gap-2 font-black text-amber-900 mb-1">
+                                <i class="fa-solid fa-circle-info"></i> İnteraktif Okuma Akışı
+                            </div>
+                            <p class="leading-relaxed">Dokümanın sayfaları dikey akış düzeninde sıralanmıştır. Fare tekerleğiyle veya parmağınızla aşağı kaydırarak diğer bölümlere geçebilirsiniz.</p>
+                        </div>
+                        ${enrichContent ? `
+                            <div class="mt-4">
+                                <h4 class="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">Kazanım ve Konu Özeti</h4>
+                                ${enrichContent}
+                            </div>
+                        ` : `
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-700 leading-relaxed">
+                                <h4 class="font-black text-slate-900 mb-2">Kazanım Pekiştirme Notu:</h4>
+                                <p>Bu ünite kapsamındaki formüller, deney analizleri ve beceri temelli soru çözümleri aşağıda listelenmektedir.</p>
+                            </div>
+                        `}
+                    </div>
+                `
+            },
+            {
+                pageNum: 2,
+                title: "Kavram Eşleştirme & Önemli Notlar",
+                html: `
+                    <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 select-none text-slate-800">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-lightbulb text-amber-500"></i> Kavram ve Tanım Rehberi
+                            </h3>
+                            <span class="text-xs font-bold text-slate-400">${g}. Sınıf Fen</span>
+                        </div>
+                        <div class="space-y-3 text-xs sm:text-sm">
+                            <div class="p-3.5 bg-blue-50/70 rounded-2xl border border-blue-200 text-blue-950">
+                                <span class="font-black block text-blue-900 mb-1">📌 Bağımsız ve Bağımlı Değişken Taktikleri:</span>
+                                <p class="text-xs text-slate-700 leading-relaxed">Deney sorularında araştırmacının kendi isteğiyle değiştirdiği faktör <strong>bağımsız değişken</strong>, buna bağlı olarak değişen sonuç ise <strong>bağımlı değişken</strong>dir. Kontrol edilen değişkenler ise her iki düzenekte sabit tutulan unsurlardır.</p>
+                            </div>
+                            <div class="p-3.5 bg-emerald-50/70 rounded-2xl border border-emerald-200 text-emerald-950">
+                                <span class="font-black block text-emerald-900 mb-1">🔬 Deney ve Gözlem İlkeleri:</span>
+                                <p class="text-xs text-slate-700 leading-relaxed">Hipotez doğrulanırken yalnızca tek bir değişken farklı tutulmalıdır. İki değişken aynı anda değiştirilirse deneyin sonucu bilimsel olarak geçerli sayılamaz.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 3,
+                title: "Beceri Temelli Sorular & Çözüm Stratejileri",
+                html: `
+                    <div class="max-w-2xl mx-auto py-4 px-2 sm:px-6 select-none text-slate-800">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-3 mb-4">
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-circle-question text-red-600"></i> Beceri Temelli Örnek Soru & Yorum
+                            </h3>
+                            <span class="text-xs font-bold text-red-600">MEB / LGS Formatı</span>
+                        </div>
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-xs text-slate-800 space-y-3">
+                            <div class="font-black text-slate-900 text-sm">💡 Soru Kökü Analiz Taktiği:</div>
+                            <p class="leading-relaxed">Yeni nesil sorularda grafik veya tablo verildiğinde önce eksen başlıklarını ve ölçü birimlerini inceleyin. Seçeneklerde 'kesinlikle', 'her zaman' gibi iddialı ifadeler varsa deneyi dikkatlice tekrar kontrol edin.</p>
+                            <div class="pt-2 border-t border-slate-200 flex items-center justify-between">
+                                <span class="text-slate-500 font-bold">Rotalı Fenci Başarı İpucu</span>
+                                <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 font-black rounded-full text-[10px]">Tam İsabet</span>
+                            </div>
                         </div>
                     </div>
                 `
@@ -7012,7 +7091,7 @@ async function openDigitalBookModal(options = {}) {
     const coverUrl = options.cover || options.imageUrl || (["5", "6", "7", "8"].includes(grade) ? `assets/kapak-${grade}.jpg` : "assets/kapak-5.jpg");
 
     // EBA CDN otomatik fallback
-    if ((!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") && ["5", "6", "7"].includes(grade)) {
+    if ((!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") && ["5", "6", "7", "8"].includes(grade)) {
         fileUrl = `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${grade}-1.pdf`;
     }
 
@@ -7351,6 +7430,7 @@ async function tryLoadPdfDocument(id, fileUrl) {
             }
         } else {
             if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
+            renderFallbackVerticalPages();
         }
         return;
     }
@@ -7407,24 +7487,25 @@ async function tryLoadPdfDocument(id, fileUrl) {
         await setupVerticalPdfSlots(pdf);
     } catch (err) {
         console.warn("PDF.js yükleme hatası:", err);
-        if (statusEl) statusEl.innerText = "Bağlantı Uyarısı";
+        if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
         const container = document.getElementById("book-pages-container");
         if (container) {
-            const externalLink = (typeof fileUrl === "string" && fileUrl.startsWith("http")) ? fileUrl : (["5", "6", "7"].includes(String(DigitalBookState.bookInfo.grade)) ? `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${DigitalBookState.bookInfo.grade}-1.pdf` : "");
-            container.innerHTML = `
-                <div class="flex flex-col items-center justify-center py-20 px-6 text-center gap-5 max-w-md mx-auto">
-                    <div class="w-20 h-20 rounded-3xl bg-red-600/20 text-red-400 flex items-center justify-center text-4xl shadow-xl border border-red-500/30">
-                        <i class="fa-solid fa-book-open"></i>
+            const externalLink = (typeof fileUrl === "string" && fileUrl.startsWith("http")) ? fileUrl : (["5", "6", "7", "8"].includes(String(DigitalBookState.bookInfo.grade)) ? `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${DigitalBookState.bookInfo.grade}-1.pdf` : "");
+            renderFallbackVerticalPages();
+            if (externalLink) {
+                const noticeBanner = document.createElement("div");
+                noticeBanner.className = "p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[760px] text-amber-200 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 mb-4 shadow-lg";
+                noticeBanner.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-cloud-arrow-down text-xl text-amber-400"></i>
+                        <span>MEB resmî sunucusundaki orijinal kitabı yeni sekmede doğrudan açabilirsiniz.</span>
                     </div>
-                    <h3 class="text-lg font-black text-white">${DigitalBookState.bookInfo.title}</h3>
-                    <p class="text-xs text-slate-400 leading-relaxed">Tarayıcınız PDF akışını doğrudan yükleyemedi. Aşağıdaki bağlantıdan resmî MEB sunucusu üzerinden doğrudan açabilirsiniz.</p>
-                    ${externalLink ? `
-                        <a href="${externalLink}" target="_blank" rel="noopener noreferrer" class="px-6 py-3.5 bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-700 hover:to-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-lg flex items-center gap-2">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i> <span>Kitabı Yeni Sekmede Aç (EBA)</span>
-                        </a>
-                    ` : ''}
-                </div>
-            `;
+                    <a href="${externalLink}" target="_blank" rel="noopener noreferrer" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md shrink-0 flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i> MEB'den Aç
+                    </a>
+                `;
+                container.insertBefore(noticeBanner, container.firstChild);
+            }
         }
     }
 }
@@ -7981,12 +8062,24 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
+    // 1.5 🔬 İNTERAKTİF SİMÜLASYON & PHET LABORATUVARI
+    const isSimulation = checkFormat.includes("SİMÜLASYON") || checkFormat.includes("SIMULASYON") ||
+                         checkCat === "simulasyon" || checkCat === "simulasyonlar" ||
+                         checkTitle.includes("simülasyon") || checkTitle.includes("simulasyon") || checkTitle.includes("simülatör") || checkTitle.includes("simulatör") ||
+                         (id && String(id).includes("-sim")) ||
+                         (targetUrl && (targetUrl.includes("phet.colorado.edu") || targetUrl.includes("sims/html")));
+
+    if (isSimulation && !checkTitle.includes("kılavuz") && !checkTitle.includes("kilavuz") && !checkTitle.includes("rehber") && !checkFile.endsWith(".pdf")) {
+        const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
+        openInteractiveSimulationModal(targetUrl, title || (found && found.title) || "İnteraktif Laboratuvar Simülasyonu", gradeStr, id);
+        return;
+    }
+
     // 2. 🎮 EĞİTSEL OYUN VEYA ETKİNLİK
-    if (checkCat === "egitsel-oyunlar" || checkCat.includes("oyun") || checkTitle.includes("oyun") || checkTitle.includes("eşleştirme")) {
-        if (!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") {
-            openInteractiveGameModal('oyun-5-lab', title || "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu");
-            return;
-        }
+    if (checkCat === "egitsel-oyunlar" || checkCat.includes("oyun") || checkTitle.includes("oyun") || checkTitle.includes("eşleştirme") || checkTitle.includes("çark") || checkTitle.includes("cark") || checkTitle.includes("passaparola")) {
+        const gameKey = id || (found && found.id) || "";
+        openInteractiveGameModal(gameKey || targetUrl, title || (found && found.title) || "İnteraktif Fen Oyunu");
+        return;
     }
 
     // 3. 🖼️ GÖRSEL / KAPAK İÇERİĞİ (PDF dokümanları asla görsel olarak açılmamalıdır)
@@ -8016,7 +8109,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
 
     if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
-        if (["5", "6", "7"].includes(gradeStr)) {
+        if (["5", "6", "7", "8"].includes(gradeStr)) {
             pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
         }
     }
@@ -8746,6 +8839,125 @@ const INTERACTIVE_GAMES_POOL = {
             { q: "Salgı maddelerinin (tükürük, ter, süt) üretilmesini ve paketlenmesini sağlar.", options: ["Golgi Cisimciği", "Endoplazmik Retikulum", "Sentrioller", "Koful"], answer: 0, icon: "fa-solid fa-box" },
             { q: "Hücre içi sindirimden sorumludur. Yaşlanmış organelleri ve mikropları parçalar.", options: ["Lizozom", "Ribozom", "Plastid", "Çekirdekçik"], answer: 0, icon: "fa-solid fa-scissors" }
         ]
+    },
+    "oyun-5-gunes": {
+        title: "☀️ 5. Sınıf Güneş, Dünya ve Ay Yörünge ve Evreler Oyunu",
+        grade: "5. Sınıf",
+        desc: "Güneş, Dünya ve Ay'ın dönme-dolanma hareketleri ile Ay'ın ana evrelerini keşfet!",
+        questions: [
+            { q: "Ay'ın gökyüzünde tamamen aydınlık ve parlak bir daire olarak görüldüğü ana evre hangisidir?", options: ["Dolunay", "Yeni Ay", "İlk Dördün", "Son Dördün"], answer: 0, icon: "fa-solid fa-circle" },
+            { q: "Ay'ın Dünya etrafındaki bir tam dolanma süresi yaklaşık kaç gündür?", options: ["29.5 Gün (Yaklaşık 1 Ay)", "365 Gün", "24 Saat", "7 Gün"], answer: 0, icon: "fa-solid fa-calendar-days" },
+            { q: "Dünya'dan bakıldığında neden daima Ay'ın aynı yüzü görülür?", options: ["Ay'ın kendi ekseninde dönme süresi ile Dünya etrafında dolanma süresi eşit olduğu için", "Ay hiç dönmediği için", "Dünya sadece Güneş etrafında dolandığı için", "Güneş ışınları tek yönden geldiği için"], answer: 0, icon: "fa-solid fa-arrows-rotate" },
+            { q: "Ay'ın yüzeyinde meteor çarpmaları sonucu oluşan dev çukurlara ne ad verilir?", options: ["Krater", "Kanyon", "Magma", "Fay Hattı"], answer: 0, icon: "fa-solid fa-meteor" },
+            { q: "Ay'ın gökyüzünde 'D' harfi şeklinde aydınlık görüldüğü ana evre hangisidir?", options: ["İlk Dördün", "Son Dördün", "Yeni Ay", "Hilal"], answer: 0, icon: "fa-solid fa-moon" }
+        ]
+    },
+    "oyun-5-canlilar": {
+        title: "🌿 5. Sınıf Canlılar Dünyası ve Sınıflandırma Oyunu",
+        grade: "5. Sınıf",
+        desc: "Hayvanlar, bitkiler, mantarlar ve mikroskobik canlıları doğru gruplara ayır!",
+        questions: [
+            { q: "Kendi besinini üretemeyen, nemli yerlerde yaşayan ve şapkalı/küf/maya çeşitleri olan canlı grubu hangisidir?", options: ["Mantarlar", "Çiçekli Bitkiler", "Omurgalı Hayvanlar", "Algler"], answer: 0, icon: "fa-solid fa-seedling" },
+            { q: "Aşağıdaki canlılardan hangisi omurgalı bir hayvandır?", options: ["Yarasa (Uçan Memeli)", "Kelebek", "Salyangoz", "Denizanası"], answer: 0, icon: "fa-solid fa-paw" },
+            { q: "Sütü mayalayarak yoğurda dönüştüren yararlı mikroskobik canlı hangisidir?", options: ["Yararlı Bakteriler", "Küf Mantarı", "Amip", "Virüs"], answer: 0, icon: "fa-solid fa-microscope" },
+            { q: "Aşağıdakilerden hangisi çiçeksiz bir bitkidir?", options: ["Eğrelti Otu", "Lale", "Gül", "Papatya"], answer: 0, icon: "fa-solid fa-clover" }
+        ]
+    },
+    "oyun-5-cark": {
+        title: "🎡 5. Sınıf Fen Çarkıfeleği & Terim Yarışması",
+        grade: "5. Sınıf",
+        desc: "Çarkı çevir, temel fen terimlerini bilip puanları topla!",
+        questions: [
+            { q: "Kuvvetin büyüklüğünü ölçen dinamometrenin birimi nedir?", options: ["Newton (N)", "Joule (J)", "Pascal (Pa)", "Kilogram (kg)"], answer: 0, icon: "fa-solid fa-gauge" },
+            { q: "Maddenin ısı alarak katı halden doğrudan gaz hale geçmesine ne ad verilir?", options: ["Süblimleşme", "Kırağılaşma", "Buharlaşma", "Erime"], answer: 0, icon: "fa-solid fa-temperature-arrow-up" },
+            { q: "Işığın düzgün ve pürüzsüz yüzeylerden yansımasına ne ad verilir?", options: ["Düzgün Yansıma", "Dağınık Yansıma", "Soğurulma", "Kırılma"], answer: 0, icon: "fa-solid fa-sun" },
+            { q: "Elektrik devresinde akımı açıp kapatmaya yarayan eleman hangisidir?", options: ["Anahtar", "Pil", "Bağlantı Kablosu", "Duy"], answer: 0, icon: "fa-solid fa-toggle-on" }
+        ]
+    },
+    "oyun-6-organ": {
+        title: "🫀 6. Sınıf Vücudumuzdaki Sistemler & Organ Eşleştirme Turnuvası",
+        grade: "6. Sınıf",
+        desc: "Dolaşım, sindirim, solunum ve boşaltım organlarını görevleriyle eşleştir!",
+        questions: [
+            { q: "Besinlerin kana geçebilecek kadar küçük parçalara ayrılıp emildiği sindirim organı hangisidir?", options: ["İnce Bağırsak", "Mide", "Yutak", "Kalın Bağırsak"], answer: 0, icon: "fa-solid fa-bowl-food" },
+            { q: "Kanı tüm vücuda pompalayan ve 4 odacıktan oluşan dolaşım organı hangisidir?", options: ["Kalp", "Akciğer", "Karaciğer", "Böbrek"], answer: 0, icon: "fa-solid fa-heart-pulse" },
+            { q: "Kandaki atık maddeleri süzerek idrar oluşturan temel boşaltım organı hangisidir?", options: ["Böbrek", "Üreter", "İdrar Kesesi", "Pankreas"], answer: 0, icon: "fa-solid fa-filter" },
+            { q: "Oksijen ile karbondioksit gaz alışverişinin gerçekleştiği solunum organı hangisidir?", options: ["Akciğer (Alveoller)", "Soluk Borusu", "Gırtlak", "Burun"], answer: 0, icon: "fa-solid fa-lungs" }
+        ]
+    },
+    "oyun-6-gezegen": {
+        title: "🪐 6. Sınıf Güneş Sistemi & Tutulmalar 3D Uzay Keşfi",
+        grade: "6. Sınıf",
+        desc: "İç ve dış gezegenleri sırala, Güneş ve Ay tutulması modellerini öğren!",
+        questions: [
+            { q: "Güneş Sistemi'nin en büyük gezegeni hangisidir?", options: ["Jüpiter", "Satürn", "Neptün", "Dünya"], answer: 0, icon: "fa-solid fa-globe" },
+            { q: "Güneş tutulması sırasında Ay hangi evrededir?", options: ["Yeni Ay", "Dolunay", "İlk Dördün", "Son Dördün"], answer: 0, icon: "fa-solid fa-circle" },
+            { q: "Ay tutulmasında gök cisimlerinin sıralanışı nasıldır?", options: ["Güneş - Dünya - Ay", "Güneş - Ay - Dünya", "Dünya - Güneş - Ay", "Ay - Güneş - Dünya"], answer: 0, icon: "fa-solid fa-ellipsis" },
+            { q: "Güneş'e en yakın gezegen hangisidir?", options: ["Merkür", "Venüs", "Mars", "Dünya"], answer: 0, icon: "fa-solid fa-sun" }
+        ]
+    },
+    "oyun-6-cark": {
+        title: "🎡 6. Sınıf Fen Çarkıfeleği & Terim Yarışması",
+        grade: "6. Sınıf",
+        desc: "Çarkı çevir, 6. sınıf fen sorularını çözüp şampiyon ol!",
+        questions: [
+            { q: "Bir cisme etki eden kuvvetlerin toplamına (bileşke kuvvet) ne denir?", options: ["Net (Bileşke) Kuvvet (R)", "Dengeli Kuvvet", "Kütle", "Sürtünme"], answer: 0, icon: "fa-solid fa-arrows-to-dot" },
+            { q: "Ses dalgaları hangi ortamda en hızlı yayılır?", options: ["Katı", "Sıvı", "Gaz", "Boşluk (Yayılmaz)"], answer: 0, icon: "fa-solid fa-volume-high" },
+            { q: "Isıyı en iyi ileten maddelere ne ad verilir?", options: ["Isı İletkeni (Bakır, Alüminyum)", "Isı Yalıtkanı", "Yarı İletken", "Plastik"], answer: 0, icon: "fa-solid fa-fire" }
+        ]
+    },
+    "oyun-7-galileo": {
+        title: "🔭 7. Sınıf Bilimin Rotası: Galileo ve Teleskop Keşif Oyunu",
+        grade: "7. Sınıf",
+        desc: "Galileo ile gökyüzünü tara, teleskop türlerini ve derin uzayı keşfet!",
+        questions: [
+            { q: "Gökyüzünü ilk kez teleskopla inceleyerek Jüpiter'in 4 uydusunu ve Ay kraterlerini gözlemleyen bilim insanı kimdir?", options: ["Galileo Galilei", "Isaac Newton", "Ali Kuşçu", "Copernicus"], answer: 0, icon: "fa-solid fa-user-astronaut" },
+            { q: "Işığı toplayıp odaklayarak gök cisimlerini ayrıntılı gösteren optik alet hangisidir?", options: ["Teleskop", "Mikroskop", "Periskop", "Steteskop"], answer: 0, icon: "fa-solid fa-eye" },
+            { q: "Uzay kirliliğini önlemek için hangisi yapılmalıdır?", options: ["Ömrü tükenen yapay uyduların kontrollü şekilde Dünya atmosferinde imha edilmesi", "Uzaya daha çok çöp atılması", "Radyo sinyallerinin kesilmesi", "Uyduların uzayda bırakılması"], answer: 0, icon: "fa-solid fa-satellite" }
+        ]
+    },
+    "oyun-7-cark": {
+        title: "🎡 7. Sınıf Fen Çarkıfeleği & Terim Yarışması",
+        grade: "7. Sınıf",
+        desc: "Çarkı çevir, 7. sınıf fen terimlerini bilip liderliği yakala!",
+        questions: [
+            { q: "Kinetik enerji hangi iki değişkene doğrudan bağlıdır?", options: ["Kütle ve Sürat", "Ağırlık ve Yükseklik", "Zaman ve Hacim", "Kuvvet ve Sıcaklık"], answer: 0, icon: "fa-solid fa-bolt" },
+            { q: "Işığın bir ortamdan diğerine geçerken yön değiştirmesi olayına ne denir?", options: ["Işığın Kırılması", "Işığın Yansıması", "Işığın Soğurulması", "Aydınlanma"], answer: 0, icon: "fa-solid fa-wand-magic" },
+            { q: "Homojen karışımların diğer adı nedir?", options: ["Çözelti", "Süspansiyon", "Emülsiyon", "Kolloid"], answer: 0, icon: "fa-solid fa-vial" }
+        ]
+    },
+    "oyun-8-basinc": {
+        title: "⚙️ 8. Sınıf Sıvı ve Gaz Basıncı Sanal Deney Simülatörü",
+        grade: "8. Sınıf (LGS)",
+        desc: "Sıvı ve gaz basıncı değişkenlerini canlı test et, LGS sorularını hatasız çöz!",
+        questions: [
+            { q: "Katı basıncını artırmak için ne yapılmalıdır?", options: ["Ağırlığı artırmak veya temas yüzeyini küçültmek", "Ağırlığı azaltmak", "Temas yüzeyini genişletmek", "Yoğunluğu azaltmak"], answer: 0, icon: "fa-solid fa-weight-hanging" },
+            { q: "Sıvı basıncı formülü (P = h . d . g) gereği hangi değişkenlere bağlıdır?", options: ["Derinlik (h) ve Sıvı Yoğunluğu (d)", "Kabın şekli ve sıvı hacmi", "Kabın taban alanı ve sıvı miktarı", "Kabın genişliği"], answer: 0, icon: "fa-solid fa-water" },
+            { q: "Kapalı kaptaki sıvıların uygulanan basıncı her yöne aynen iletmesi ilkesine ne denir?", options: ["Pascal Prensibi", "Torricelli İlkesi", "Bernoulli Kuralı", "Arşimet Yasası"], answer: 0, icon: "fa-solid fa-arrows-spin" },
+            { q: "Açık hava basıncını ilk kez cıvalı barometre ile deniz seviyesinde (76 cm-Hg) ölçen bilim insanı kimdir?", options: ["Torricelli", "Pascal", "Newton", "Mendeleyev"], answer: 0, icon: "fa-solid fa-compass" }
+        ]
+    },
+    "oyun-8-dna": {
+        title: "🧬 8. Sınıf DNA Çift Sarmal & Nükleotid Eşleştirme Oyunu",
+        grade: "8. Sınıf (LGS)",
+        desc: "Adenin-Timin, Guanin-Sitozin eşleşmelerini hatasız yap ve DNA zincirini tamamla!",
+        questions: [
+            { q: "DNA çift zincirinde Adenin (A) nükleotidinin karşısına daima hangi organik baz gelir?", options: ["Timin (T)", "Guanin (G)", "Sitozin (C)", "Urasil (U)"], answer: 0, icon: "fa-solid fa-dna" },
+            { q: "DNA'nın en küçük görev birimi nedir?", options: ["Gen", "Nükleotid", "Kromozom", "Çekirdek"], answer: 0, icon: "fa-solid fa-cubes" },
+            { q: "Kromozom, DNA, Gen ve Nükleotid yapılarının büyükten küçüğe doğru sıralaması nedir?", options: ["KediGen (Kromozom > DNA > Gen > Nükleotid)", "Nükleotid > Gen > DNA > Kromozom", "DNA > Kromozom > Gen > Nükleotid", "Gen > DNA > Nükleotid > Kromozom"], answer: 0, icon: "fa-solid fa-arrow-down-wide-short" },
+            { q: "Çevresel etkilerle vücut hücrelerindeki genlerin işleyişinde meydana gelen kalıtsal olmayan değişikliklere ne ad verilir?", options: ["Modifikasyon (Örn: Güneşte bronzlaşma)", "Mutasyon", "Adaptasyon", "Doğal Seçilim"], answer: 0, icon: "fa-solid fa-shuffle" }
+        ]
+    },
+    "oyun-8-cark": {
+        title: "🎡 8. Sınıf LGS Fen Çarkıfeleği & Hızlı Soru Çözümü",
+        grade: "8. Sınıf (LGS)",
+        desc: "LGS çıkmış soru tiplerini çarkıfelek formatında çöz!",
+        questions: [
+            { q: "21 Haziran tarihinde Kuzey Yarımküre'de hangi mevsim başlar?", options: ["Yaz (En uzun gündüz)", "Kış", "İlkbahar", "Sonbahar"], answer: 0, icon: "fa-solid fa-sun" },
+            { q: "Sulu çözeltilerinde H+ (hidrojen) iyonu veren ve pH değeri 0-7 arasında olan maddelere ne denir?", options: ["Asit (Turnusolu kırmızıya çevirir)", "Baz", "Tuz", "Nötr Madde"], answer: 0, icon: "fa-solid fa-flask" },
+            { q: "Kimyasal tepkimelerde daima korunan nicelik hangisidir?", options: ["Toplam Kütle ve Atom Sayısı/Cinsi", "Molekül Sayısı", "Fiziksel Hal", "Hacim"], answer: 0, icon: "fa-solid fa-scale-balanced" },
+            { q: "Kuvvetten kazanç sağlayan bir basit makinede yoldan ne olur?", options: ["Yoldan aynı oranda kayıp olur", "Yoldan da kazanç olur", "Yol değişmez", "İşten kazanç sağlanır"], answer: 0, icon: "fa-solid fa-gears" }
+        ]
     }
 };
 
@@ -8770,7 +8982,14 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
     // Determine if it's a built-in interactive game or external URL
-    const rawGameData = INTERACTIVE_GAMES_POOL[gameKeyOrUrl] || (gameKeyOrUrl && gameKeyOrUrl.includes("lab") ? INTERACTIVE_GAMES_POOL["oyun-5-lab"] : (gameKeyOrUrl && gameKeyOrUrl.includes("passaparola") ? INTERACTIVE_GAMES_POOL["oyun-8-passaparola"] : (gameKeyOrUrl && gameKeyOrUrl.includes("hucre") ? INTERACTIVE_GAMES_POOL["oyun-7-hucre"] : null)));
+    const rawGameData = INTERACTIVE_GAMES_POOL[gameKeyOrUrl] ||
+        (function() {
+            if (!gameKeyOrUrl) return null;
+            const str = String(gameKeyOrUrl).toLowerCase();
+            const matchingKey = Object.keys(INTERACTIVE_GAMES_POOL).find(k => str.includes(k) || (k.startsWith("oyun-") && str.includes(k.replace("oyun-", ""))));
+            return matchingKey ? INTERACTIVE_GAMES_POOL[matchingKey] : null;
+        })() ||
+        (gameKeyOrUrl && gameKeyOrUrl.includes("lab") ? INTERACTIVE_GAMES_POOL["oyun-5-lab"] : (gameKeyOrUrl && gameKeyOrUrl.includes("passaparola") ? INTERACTIVE_GAMES_POOL["oyun-8-passaparola"] : (gameKeyOrUrl && gameKeyOrUrl.includes("hucre") ? INTERACTIVE_GAMES_POOL["oyun-7-hucre"] : null)));
 
     if (rawGameData) {
         // Rastgele şık dizilimi ve soru sıralaması (Cevapların sürekli A şıkkı çıkmasını engeller)
@@ -8854,6 +9073,232 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
 function closeInteractiveGameModal() {
     const modal = document.getElementById("interactive-game-modal");
     if (modal) modal.classList.add("hidden");
+}
+
+// -------------------------------------------------------------
+// 🔬 İNTERAKTİF LABORATUVAR & PHET 3D SİMÜLASYON MODALI
+// (100dvh Mobil Uyumlu, Pinned Close Butonlu, Tam Ekran Simülatör)
+// -------------------------------------------------------------
+let currentSimulationState = {
+    url: "",
+    title: "",
+    grade: "5",
+    activeTab: "phet" // 'phet' | 'canvas-lab'
+};
+
+function openInteractiveSimulationModal(targetUrl, title = "Fen Laboratuvarı Simülasyonu", grade = "5", id = "") {
+    const gClean = String(grade || "5").replace(/^grade-/, "").trim();
+    
+    // Sınıf seviyesine göre en uygun PhET HTML5 simülasyonu URL'si
+    const defaultGradeSims = {
+        "5": "https://phet.colorado.edu/sims/html/gravity-and-orbits/latest/gravity-and-orbits_all.html",
+        "6": "https://phet.colorado.edu/sims/html/forces-and-motion-basics/latest/forces-and-motion-basics_all.html",
+        "7": "https://phet.colorado.edu/sims/html/energy-skate-park-basics/latest/energy-skate-park-basics_all.html",
+        "8": "https://phet.colorado.edu/sims/html/under-pressure/latest/under-pressure_all.html"
+    };
+
+    let embedUrl = (targetUrl && targetUrl !== "#" && targetUrl.startsWith("http") && !targetUrl.endsWith("phet.colorado.edu"))
+        ? targetUrl
+        : (defaultGradeSims[gClean] || defaultGradeSims["5"]);
+
+    currentSimulationState = {
+        url: embedUrl,
+        title: title || `${gClean}. Sınıf Fen Laboratuvarı Simülasyonu`,
+        grade: gClean,
+        activeTab: "phet"
+    };
+
+    let modal = document.getElementById("interactive-sim-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "interactive-sim-modal";
+        modal.className = "fixed inset-0 z-[9990] bg-slate-950 flex flex-col justify-between select-none animate-in fade-in duration-150 overflow-hidden w-full max-w-full";
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
+        document.body.appendChild(modal);
+    } else {
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
+        modal.classList.remove("hidden");
+    }
+
+    renderSimulationModalContent(modal);
+
+    // ESC tuşu dinleyicisi
+    if (!window._simModalEscBound) {
+        window.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                const m = document.getElementById("interactive-sim-modal");
+                if (m && !m.classList.contains("hidden")) {
+                    closeInteractiveSimulationModal();
+                }
+            }
+        });
+        window._simModalEscBound = true;
+    }
+}
+
+function closeInteractiveSimulationModal() {
+    const modal = document.getElementById("interactive-sim-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+}
+
+function switchSimulationTab(tab) {
+    currentSimulationState.activeTab = tab;
+    const modal = document.getElementById("interactive-sim-modal");
+    if (modal) {
+        renderSimulationModalContent(modal);
+    }
+}
+
+function renderSimulationModalContent(modal) {
+    const { url, title, grade, activeTab } = currentSimulationState;
+
+    modal.innerHTML = `
+        <!-- 🔴 MOBİLDE HER ZAMAN GÖRÜNÜR SABİT ÇIKIŞ TUŞU (z-[9999]) -->
+        <button type="button" onclick="closeInteractiveSimulationModal()" class="fixed top-2.5 right-2.5 sm:top-3.5 sm:right-4 z-[9999] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center font-black shadow-2xl backdrop-blur-md border border-white/20 active:scale-95 cursor-pointer" title="Simülasyonu Kapat (ESC)">
+            <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+
+        <!-- ÜST KONTROL ÇUBUĞU (TOOLBAR) -->
+        <div class="px-3 sm:px-6 py-2.5 bg-slate-900 border-b border-slate-800 text-white flex items-center justify-between shrink-0 gap-2 sm:gap-4 shadow-xl z-20" style="padding-top: max(8px, env(safe-area-inset-top, 8px));">
+            <!-- Sol: Başlık & Rozet -->
+            <div class="flex items-center gap-2.5 min-w-0 pr-12 sm:pr-0">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-600 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
+                    <i class="fa-solid fa-atom"></i>
+                </div>
+                <div class="min-w-0">
+                    <h3 class="text-xs sm:text-sm font-black truncate max-w-[140px] sm:max-w-xs md:max-w-md text-white">${title}</h3>
+                    <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
+                        <span class="px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/80">${grade}. SINIF</span>
+                        <span class="text-slate-400 hidden sm:inline">İnteraktif Laboratuvar Simülatörü</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orta: Sekme Değiştirici -->
+            <div class="flex items-center gap-1 bg-slate-800/90 p-1 rounded-2xl border border-slate-700 shadow-inner">
+                <button type="button" onclick="switchSimulationTab('phet')" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeTab === 'phet' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}">
+                    <i class="fa-solid fa-flask"></i> <span class="hidden sm:inline">PhET 3D</span>
+                </button>
+                <button type="button" onclick="switchSimulationTab('canvas-lab')" class="px-2.5 sm:px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 ${activeTab === 'canvas-lab' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-400 hover:text-white'}">
+                    <i class="fa-solid fa-sliders"></i> <span class="hidden sm:inline">Sanal Deney Seti</span>
+                </button>
+            </div>
+
+            <!-- Sağ: Dış Bağlantı & Kapat -->
+            <div class="flex items-center gap-1.5 mr-10 sm:mr-12">
+                ${url && url.startsWith("http") ? `
+                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="hidden md:flex px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 items-center gap-1.5 text-xs font-black transition-all shadow-sm border border-slate-700" title="Tam Ekran Yeni Sekmede Aç">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                        <span>Yeni Sekme</span>
+                    </a>
+                ` : ''}
+            </div>
+        </div>
+
+        <!-- ORTA SİMÜLASYON ALANI (100dvh esnek taşıyıcı) -->
+        <div class="relative flex-1 bg-slate-950 overflow-hidden w-full h-full p-2 sm:p-4 flex flex-col items-center justify-center">
+            ${activeTab === 'phet' ? `
+                <div class="w-full h-full rounded-2xl overflow-hidden bg-slate-900 border border-slate-800 shadow-2xl relative">
+                    <iframe src="${url}" class="w-full h-full border-0" allow="fullscreen; autoplay; accelerometer; gyroscope" allowfullscreen></iframe>
+                </div>
+            ` : `
+                <div class="w-full h-full max-w-4xl bg-slate-900 rounded-3xl border border-slate-800 p-4 sm:p-6 flex flex-col justify-between overflow-y-auto">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                        <div>
+                            <h4 class="text-base sm:text-lg font-black text-white flex items-center gap-2">
+                                <i class="fa-solid fa-microscope text-emerald-400"></i>
+                                <span>${grade}. Sınıf Canlı Değişken Analiz Laboratuvarı</span>
+                            </h4>
+                            <p class="text-xs text-slate-400">Değişkenleri kaydırarak formül ve deney sonuçlarını anında gözlemleyin.</p>
+                        </div>
+                        <span class="px-2.5 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-black rounded-lg border border-emerald-500/30">CANLI HESAPLAMA</span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 items-center">
+                        <!-- Kontrol Sürgüleri -->
+                        <div class="space-y-4 bg-slate-950/80 p-4 sm:p-5 rounded-2xl border border-slate-800 text-white">
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-slate-300">Sıvı Yoğunluğu (d)</span>
+                                    <span id="lab-density-val" class="text-emerald-400 font-black">1.0 g/cm³ (Su)</span>
+                                </div>
+                                <input type="range" min="0.5" max="3.0" step="0.1" value="1.0" oninput="updateLabSimulationValues()" id="lab-density-slider" class="w-full accent-emerald-500 cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-slate-300">Derinlik (h)</span>
+                                    <span id="lab-depth-val" class="text-cyan-400 font-black">10 cm</span>
+                                </div>
+                                <input type="range" min="2" max="50" step="1" value="10" oninput="updateLabSimulationValues()" id="lab-depth-slider" class="w-full accent-cyan-500 cursor-pointer">
+                            </div>
+
+                            <div>
+                                <div class="flex justify-between text-xs font-bold mb-1">
+                                    <span class="text-slate-300">Yerçekimi İvmesi (g)</span>
+                                    <span id="lab-gravity-val" class="text-amber-400 font-black">10 N/kg (Dünya)</span>
+                                </div>
+                                <input type="range" min="1.6" max="25" step="0.2" value="10" oninput="updateLabSimulationValues()" id="lab-gravity-slider" class="w-full accent-amber-500 cursor-pointer">
+                            </div>
+
+                            <div class="p-3 bg-slate-900 rounded-xl border border-slate-700/80 text-[11px] text-slate-300 leading-relaxed">
+                                💡 <strong>Bilimsel Sonuç:</strong> Sıvı basıncı formülü <code>P = h . d . g</code> dir. Derinlik veya sıvı yoğunluğu arttıkça tabana etki eden sıvı basıncı doğru orantılı olarak artar. Kabın şekli veya sıvı hacmi basıncı etkilemez!
+                            </div>
+                        </div>
+
+                        <!-- Canlı Görsel Gösterge -->
+                        <div class="flex flex-col items-center justify-center p-6 bg-slate-950/80 rounded-2xl border border-slate-800 text-center">
+                            <div class="text-xs font-black uppercase text-slate-400 tracking-wider mb-2">Hesaplanan Sıvı Basıncı (P)</div>
+                            <div id="lab-calculated-pressure" class="text-4xl sm:text-5xl font-black text-emerald-400 mb-2">100 Pa</div>
+                            <div class="w-full max-w-[220px] h-32 bg-slate-900 rounded-2xl border-2 border-emerald-500/50 p-2 relative flex flex-col justify-end overflow-hidden mb-3">
+                                <div id="lab-liquid-box" class="w-full bg-gradient-to-t from-emerald-600/80 to-cyan-500/80 rounded-xl transition-all duration-150 flex items-center justify-center text-white font-black text-xs" style="height: 40%;">
+                                    <span id="lab-liquid-label">h: 10cm</span>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-slate-400">Deneysel Pascal Değeri</span>
+                        </div>
+                    </div>
+                </div>
+            `}
+        </div>
+    `;
+}
+
+function updateLabSimulationValues() {
+    const dSlider = document.getElementById("lab-density-slider");
+    const hSlider = document.getElementById("lab-depth-slider");
+    const gSlider = document.getElementById("lab-gravity-slider");
+
+    if (!dSlider || !hSlider || !gSlider) return;
+
+    const d = parseFloat(dSlider.value);
+    const h = parseFloat(hSlider.value);
+    const g = parseFloat(gSlider.value);
+
+    const dValEl = document.getElementById("lab-density-val");
+    if (dValEl) dValEl.innerText = d.toFixed(1) + " g/cm³";
+
+    const hValEl = document.getElementById("lab-depth-val");
+    if (hValEl) hValEl.innerText = h + " cm";
+
+    const gValEl = document.getElementById("lab-gravity-val");
+    if (gValEl) gValEl.innerText = g.toFixed(1) + " N/kg";
+
+    const p = Math.round(h * d * g);
+    const pressureEl = document.getElementById("lab-calculated-pressure");
+    if (pressureEl) pressureEl.innerText = p + " Pa";
+
+    const liquidBox = document.getElementById("lab-liquid-box");
+    if (liquidBox) {
+        const pct = Math.min(95, Math.max(10, (h / 50) * 100));
+        liquidBox.style.height = pct + "%";
+    }
+
+    const liquidLabel = document.getElementById("lab-liquid-label");
+    if (liquidLabel) liquidLabel.innerText = "h: " + h + "cm";
 }
 
 function renderInteractiveGameScreen(modal) {
