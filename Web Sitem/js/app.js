@@ -9543,14 +9543,15 @@ async function handleAdvMaterialSubmit(e) {
         } else {
             const newMaterial = {
                 id: materialId,
-                grade: grade,
+                grade: String(grade).replace(/^grade-/, ""),
                 category: category,
+                targetSection: targetSection,
                 title: title,
                 unit: unit,
                 desc: desc,
                 fileName: finalFileName,
                 fileUrl: fileDataUrl || externalUrl || "#",
-                imageUrl: chosenCover || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp"))) ? externalUrl : ""),
+                imageUrl: chosenCover || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
                 format: fileFormat,
                 hasBlob: hasBlob,
                 tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
