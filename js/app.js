@@ -2986,32 +2986,32 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
-            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Varsayılan Olarak Ders Kitabı Aktif -->
-            <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
-                <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
-                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'false' : 'true'}" class="notu-filter-btn min-w-[130px] sm:min-w-[155px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 ${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm' : 'shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20'} active:scale-95 cursor-pointer shrink-0">
-                        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider">
-                            <i class="fa-solid fa-book-open text-amber-400"></i>
-                            <span>Ders Kitabı</span>
+            <!-- 🌟 HIZLI ÜNİTE SIRALAMASI: Kaydırmasız, Tam Yatay Sıraya Sığan Izgara -->
+            <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-2 sm:p-3 mb-6 shadow-sm">
+                <div class="grid grid-cols-3 sm:grid-cols-5 lg:grid-flow-col lg:auto-cols-fr gap-1 sm:gap-1.5 w-full">
+                    <button type="button" onclick="filterDersNotuUnits('kitap')" data-unit="kitap" data-active="${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'false' : 'true'}" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${(typeof sessionStorage !== 'undefined' && sessionStorage.getItem('rotali_active_ders_notu_unit') && sessionStorage.getItem('rotali_active_ders_notu_unit') !== 'kitap') ? 'bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm' : 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20'} active:scale-95 cursor-pointer">
+                        <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
+                            <i class="fa-solid fa-book-open text-amber-400 text-[10px] sm:text-xs shrink-0"></i>
+                            <span class="truncate">Ders Kitabı</span>
                         </div>
-                        <span class="text-[10px] sm:text-[11px] font-semibold opacity-75">MEB Resmi Kitap</span>
+                        <span class="text-[9px] sm:text-[10px] font-semibold opacity-75 truncate w-full">MEB Kitap</span>
                     </button>
                     ${unitList.map((uTitle, idx) => {
                         const num = idx + 1;
                         const uName = uTitle.includes(":") ? uTitle.split(":")[1].trim() : uTitle;
                         return `
-                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" data-active="false" class="notu-filter-btn min-w-[135px] sm:min-w-[160px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer shrink-0">
-                            <span class="text-xs sm:text-sm font-black uppercase tracking-wider">${num}. Ünite</span>
-                            <span class="text-[10px] sm:text-[11px] font-medium text-slate-500 line-clamp-1 truncate max-w-[150px]">${uName}</span>
+                        <button type="button" onclick="filterDersNotuUnits('${num}')" data-unit="${num}" data-active="false" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer">
+                            <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">${num}. Ünite</span>
+                            <span class="text-[9px] sm:text-[10px] font-medium text-slate-500 truncate w-full" title="${uName}">${uName}</span>
                         </button>
                         `;
                     }).join("")}
-                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" data-active="false" class="notu-filter-btn min-w-[130px] sm:min-w-[155px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer shrink-0">
-                        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider">
-                            <i class="fa-solid fa-flask-vial text-emerald-600"></i>
-                            <span>Laboratuvar</span>
+                    <button type="button" onclick="filterDersNotuUnits('lab')" data-unit="lab" data-active="false" class="notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
+                        <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
+                            <i class="fa-solid fa-flask-vial text-emerald-600 text-[10px] sm:text-xs shrink-0"></i>
+                            <span class="truncate">Laboratuvar</span>
                         </div>
-                        <span class="text-[10px] sm:text-[11px] font-semibold text-emerald-700/80">Deney & Simülasyon</span>
+                        <span class="text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full">Deneyler</span>
                     </button>
                 </div>
             </div>
@@ -3442,29 +3442,28 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     return `
         <div id="${containerId}" class="mb-10 animate-in fade-in duration-300">
             <!-- 1. HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler (BÜYÜTÜLMÜŞ & NUMARA KUTUSU KALDIRILMIŞ) -->
-            <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-3 sm:p-4 mb-6 shadow-sm">
-                <div class="flex items-center gap-2.5 sm:gap-3 overflow-x-auto custom-scrollbar py-1">
+            <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-2 sm:p-3 mb-6 shadow-sm">
+                <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-flow-col lg:auto-cols-fr gap-1 sm:gap-1.5 w-full">
                     ${unitList.map((uTitle, idx) => {
                         const num = idx + 1;
                         const uName = uTitle.includes(":") ? uTitle.split(":")[1].trim() : uTitle;
                         const isActive = (idx === 0);
                         return `
-                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn min-w-[135px] sm:min-w-[160px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer shrink-0">
-                            <span class="text-xs sm:text-sm font-black uppercase tracking-wider ${isActive ? 'text-white' : 'text-slate-800'}">${num}. Ünite</span>
-                            <span class="text-[10px] sm:text-[11px] font-medium ${isActive ? 'text-slate-300' : 'text-slate-500'} line-clamp-1 truncate max-w-[150px]">${uName}</span>
+                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
+                            <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isActive ? 'text-white' : 'text-slate-800'}">${num}. Ünite</span>
+                            <span class="text-[9px] sm:text-[10px] font-medium ${isActive ? 'text-slate-300' : 'text-slate-500'} truncate w-full" title="${uName}">${uName}</span>
                         </button>
                         `;
                     }).join("")}
                     ${hasLabSection ? `
-                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab')" data-unit="lab" class="unit-filter-btn min-w-[130px] sm:min-w-[155px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer shrink-0">
-                        <div class="flex items-center gap-1.5 text-xs sm:text-sm font-black uppercase tracking-wider">
-                            <i class="fa-solid fa-flask-vial text-emerald-600"></i>
-                            <span>Laboratuvar</span>
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab')" data-unit="lab" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
+                        <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
+                            <i class="fa-solid fa-flask-vial text-emerald-600 text-[10px] sm:text-xs shrink-0"></i>
+                            <span class="truncate">Laboratuvar</span>
                         </div>
-                        <span class="text-[10px] sm:text-[11px] font-semibold text-emerald-700/80">Deney & Simülasyon</span>
+                        <span class="text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full">Deneyler</span>
                     </button>
                     ` : ''}
-                    
                 </div>
             </div>
 
@@ -3711,19 +3710,19 @@ window.filterDersNotuUnits = function(unitIndex) {
         const descSpan = b.querySelector("span:last-child");
         if (bUnit === String(unitIndex)) {
             b.setAttribute("data-active", "true");
-            b.className = "notu-filter-btn min-w-[135px] sm:min-w-[160px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer shrink-0";
-            if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-medium text-slate-300 line-clamp-1 truncate max-w-[150px]";
+            b.className = "notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
+            if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-300 truncate w-full";
         } else {
             b.removeAttribute("data-active");
             if (bUnit === "kitap") {
-                b.className = "notu-filter-btn min-w-[130px] sm:min-w-[155px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer shrink-0";
-                if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-semibold text-amber-700/80";
+                b.className = "notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-amber-50 text-amber-800 hover:bg-amber-100 border border-amber-200 shadow-sm active:scale-95 cursor-pointer";
+                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-amber-700/80 truncate w-full";
             } else if (bUnit === "lab") {
-                b.className = "notu-filter-btn min-w-[130px] sm:min-w-[155px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer shrink-0";
-                if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-semibold text-emerald-700/80";
+                b.className = "notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
+                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full";
             } else {
-                b.className = "notu-filter-btn min-w-[135px] sm:min-w-[160px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer shrink-0";
-                if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-medium text-slate-500 line-clamp-1 truncate max-w-[150px]";
+                b.className = "notu-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-500 truncate w-full";
             }
         }
     });
@@ -3761,16 +3760,16 @@ window.filterUnitHubSection = function(containerId, unitIndex) {
         const descSpan = b.querySelector("span:last-child");
         if (targetUnit !== "all" && bUnit === String(targetUnit)) {
             b.setAttribute("data-active", "true");
-            b.className = "unit-filter-btn min-w-[135px] sm:min-w-[160px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 shadow-md bg-slate-900 text-white scale-105 ring-2 ring-slate-900/20 active:scale-95 cursor-pointer shrink-0";
-            if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-medium text-slate-300 line-clamp-1 truncate max-w-[150px]";
+            b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
+            if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-300 truncate w-full";
         } else {
             b.removeAttribute("data-active");
             if (bUnit === "lab") {
-                b.className = "unit-filter-btn min-w-[130px] sm:min-w-[155px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer shrink-0";
-                if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-semibold text-emerald-700/80";
+                b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
+                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full";
             } else {
-                b.className = "unit-filter-btn min-w-[135px] sm:min-w-[160px] px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl text-left transition-all flex flex-col justify-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer shrink-0";
-                if (descSpan) descSpan.className = "text-[10px] sm:text-[11px] font-medium text-slate-500 line-clamp-1 truncate max-w-[150px]";
+                b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm active:scale-95 cursor-pointer";
+                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-500 truncate w-full";
             }
         }
     });
