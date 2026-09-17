@@ -2239,12 +2239,14 @@ function renderScientistsModule(gradeNumber) {
                         🏆 İlham Veren Başarı Hikayeleri
                     </span>
                     ${localStorage.getItem("rotali_is_admin") === "true" ? `
-                        <button type="button" onclick="triggerUploadModal('${gradeNumber}', 'ders-notu')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95">
+                        <button type="button" onclick="triggerUploadModal('${gradeNumber}', 'bilim-insanlari')" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-red-600/20 active:scale-95">
                             <i class="fa-solid fa-plus"></i> + Bilim Notu Ekle
                         </button>
                     ` : ''}
                 </div>
             </div>
+
+            ${renderCustomMaterialsSection(gradeNumber, "bilim-insanlari")}
 
             <!-- Bilim İnsanları Kartları -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -3047,6 +3049,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     </button>
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
+                        ${String(grade.number) !== "6" ? `
                         <div class="p-6 bg-white rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center gap-6">
                             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-3xl sm:text-4xl shrink-0 shadow-sm">
                                 <i class="fa-solid fa-book-open"></i>
@@ -3067,12 +3070,10 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 </div>
                             </div>
                         </div>
+                        ` : ''}
 
                         ${customBooks.length > 0 ? `
-                            <div class="mt-4 pt-4 border-t border-slate-200">
-                                <h6 class="text-xs font-black uppercase tracking-wider text-amber-900 mb-3 flex items-center gap-2">
-                                    <i class="fa-solid fa-book-bookmark text-amber-600"></i> Bu Sınıfa Eklenen Ders Kitabı & Bölüm Materyalleri
-                                </h6>
+                            <div class="${String(grade.number) !== '6' ? 'mt-4 pt-4 border-t border-slate-200' : ''}">
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                     ${customBooks.map(cb => `
                                         <div class="p-4 bg-white rounded-2xl border border-amber-200 shadow-sm flex flex-col justify-between">
@@ -3426,6 +3427,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const normSubTab = (subTab === "oyunlar") ? "egitsel-oyunlar" : ((subTab === "uniteler" || subTab === "bilimin-rotasi") ? "bilim-insanlari" : subTab);
     const cfg = sectionConfigs[normSubTab] || sectionConfigs["ders-sunumu"];
 
+    const allowedLabTabs = ["videolar", "etkinlikler", "egitsel-oyunlar"];
+    const hasLabSection = allowedLabTabs.includes(normSubTab);
+
     const containerId = `hub-container-${normSubTab}-${grade.number}`;
 
 
@@ -3439,10 +3443,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             <span>${idx+1}. Ünite</span>
                         </button>
                     `).join("")}
+                    ${hasLabSection ? `
                     <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab')" data-unit="lab" class="unit-filter-btn px-5 sm:px-6 py-3 sm:py-3.5 rounded-2xl text-xs sm:text-sm font-black uppercase tracking-wider whitespace-nowrap transition-all flex items-center gap-2 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95">
                         <i class="fa-solid fa-flask-vial text-emerald-600"></i>
                         <span>Laboratuvar</span>
                     </button>
+                    ` : ''}
                     
                 </div>
             </div>
@@ -3474,7 +3480,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         fileUrl: "#"
                     };
 
-                    const totalItems = [...unitCustoms, standardItem];
+                    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+                    const totalItems = [...unitCustoms];
+                    if (!unitCustoms.some(m => m.id === standardItem.id) && !deletedIds.includes(standardItem.id)) {
+                        totalItems.push(standardItem);
+                    }
 
                     return `
                         <div data-unit="${unitNum}" class="unit-accordion-card ${unitNum === 1 ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
@@ -3539,16 +3549,14 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     <i class="${cfg.icon} text-xs"></i>
                                                     <span>${cfg.btnText}</span>
                                                 </button>
-                                                ${(isCustom && isAdmin) ? `
-                                                    <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                        </button>
-                                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer">
-                                                            <i class="fa-solid fa-trash"></i>
-                                                        </button>
-                                                    </div>
-                                                ` : ''}
+                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                         `;
@@ -3559,7 +3567,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     `;
                 }).join("")}
 
-                <!-- 8. LABORATUVAR & DENEYLER AKORDEONU (KULLANICI TALEBİYLE EKLENDİ) -->
+                ${hasLabSection ? `
+                <!-- 8. LABORATUVAR & DENEYLER AKORDEONU -->
                 <div data-unit="lab" class="unit-accordion-card hidden border border-emerald-200/90 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400 hover:shadow-md">
                     <button type="button" onclick="toggleAccordionSection('${containerId}-unit-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-emerald-50/40">
                         <div class="flex items-center gap-3 sm:gap-4">
@@ -3646,6 +3655,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         </div>
                     </div>
                 </div>
+                ` : ''}
             </div>
         </div>
     `;
@@ -3885,8 +3895,13 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         return renderGradeDersNotuAccordion(grade, subData);
     }
 
-    // 2. 🌟 DİĞER 7 ANA BÖLÜM (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
-    if (["ders-sunumu", "videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar", "bilim-insanlari", "uniteler", "bilimin-rotasi"].includes(subTab)) {
+    // 🔭 BİLİMİN ROTASINI ÇİZENLER (Keşif Kartları ve Bilim İnsanları Modülü)
+    if (subTab === "bilim-insanlari" || subTab === "uniteler" || subTab === "bilimin-rotasi") {
+        return renderScientistsModule(grade.number);
+    }
+
+    // 2. 🌟 DİĞER 6 ANA BÖLÜM (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
+    if (["ders-sunumu", "videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar"].includes(subTab)) {
         return renderGradeUnitBasedHub(grade, subData, subTab);
     }
 
@@ -6047,7 +6062,36 @@ window.triggerDeleteMaterial = deleteCustomMaterial;
 function editCustomMaterial(id) {
     checkAdminAccess(() => {
         const customList = getCustomMaterialsList();
-        const mat = customList.find(item => item.id === id);
+        let mat = customList.find(item => item && item.id === id);
+        if (!mat) {
+            // Standart veya yerleşik ünite materyallerini de düzenlenebilir yap
+            if (id && id.startsWith("std-")) {
+                const parts = id.split("-");
+                const unit = parts[parts.length - 1] || "1";
+                const grade = parts[parts.length - 2] || "5";
+                const cat = parts.slice(1, -2).join("-") || "ders-sunumu";
+
+                let title = `${grade}. Sınıf ${unit}. Ünite Ders Sunumları`;
+                const btn = document.querySelector(`[onclick*="${id}"]`);
+                const card = btn ? btn.closest('.group, .bg-white') : null;
+                if (card) {
+                    const h5 = card.querySelector('h5');
+                    if (h5 && h5.textContent.trim()) title = h5.textContent.trim();
+                }
+
+                mat = {
+                    id: id,
+                    title: title,
+                    grade: grade,
+                    category: cat,
+                    unit: `${unit}. Ünite`,
+                    targetSection: unit,
+                    format: "PPTX / SLAYT",
+                    desc: "MEB müfredatına uygun akıllı tahta ders sunumu ve slaytları.",
+                    fileUrl: ""
+                };
+            }
+        }
         if (!mat) {
             showToast("Materyal bulunamadı!", "error");
             return;
