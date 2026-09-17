@@ -94,6 +94,72 @@ module.exports = async function handler(req, res) {
     if (req.method === "POST") {
         try {
             const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+            
+            // ⚡ HAFİF VE ANLIK SİLME ENDPOINT'İ (Action: 'delete')
+            // Tüm 4.2 MB veriyi göndermeye gerek kalmadan 50 baytlık istekle Gist'ten anında siler
+            if (body && (body.action === "delete" || body.deleteId || (body.deleteIds && Array.isArray(body.deleteIds)))) {
+                const toDelete = [];
+                if (body.deleteId && typeof body.deleteId === "string") toDelete.push(body.deleteId);
+                if (Array.isArray(body.deleteIds)) toDelete.push(...body.deleteIds);
+                if (Array.isArray(body.deletedIds)) toDelete.push(...body.deletedIds);
+
+                let currentMats = [];
+                let currentDels = [];
+                try {
+                    const gistApiUrl = "https://api.github.com/gists/" + GIST_ID;
+                    const h = { "User-Agent": "RotaliFenci-App", "Accept": "application/vnd.github+json" };
+                    if (GITHUB_TOKEN && GITHUB_TOKEN.trim().length > 5) h["Authorization"] = "Bearer " + GITHUB_TOKEN.trim();
+                    const gResp = await fetch(gistApiUrl, { headers: h });
+                    if (gResp.ok) {
+                        const gData = await gResp.json();
+                        const fObj = gData.files && gData.files["materials.json"];
+                        if (fObj && fObj.content && !fObj.truncated) {
+                            try {
+                                const parsed = JSON.parse(fObj.content);
+                                currentMats = Array.isArray(parsed.materials) ? parsed.materials : [];
+                                currentDels = Array.isArray(parsed.deletedIds) ? parsed.deletedIds : [];
+                            } catch(e) {}
+                        }
+                    }
+                } catch(readErr) {}
+
+                const allDelSet = new Set([...currentDels, ...toDelete].filter(id => typeof id === "string" && id.trim().length > 0));
+                PERMANENTLY_REMOVED_IDS.forEach(pid => allDelSet.add(pid));
+                const updatedDels = Array.from(allDelSet);
+                const updatedMats = currentMats.filter(m => m && m.id && !allDelSet.has(m.id));
+
+                const patchPayload = {
+                    description: "Rotalı Fenci - Cloud Sync Database",
+                    files: {
+                        "materials.json": {
+                            content: JSON.stringify({
+                                updatedAt: new Date().toISOString(),
+                                deletedIds: updatedDels,
+                                materials: updatedMats
+                            })
+                        }
+                    }
+                };
+
+                const patchUrl = "https://api.github.com/gists/" + GIST_ID;
+                const h = {
+                    "User-Agent": "RotaliFenci-App",
+                    "Accept": "application/vnd.github+json",
+                    "Content-Type": "application/json"
+                };
+                if (GITHUB_TOKEN && GITHUB_TOKEN.trim().length > 5) h["Authorization"] = "Bearer " + GITHUB_TOKEN.trim();
+                
+                await fetch(patchUrl, { method: "PATCH", headers: h, body: JSON.stringify(patchPayload) });
+
+                return res.status(200).json({
+                    success: true,
+                    action: "deleted",
+                    deletedCount: toDelete.length,
+                    deletedIds: updatedDels,
+                    remainingCount: updatedMats.length
+                });
+            }
+
             const incomingMaterials = body ? body.materials : null;
             const incomingDeletedIds = (body && Array.isArray(body.deletedIds)) ? body.deletedIds : [];
             const isReplace = body && body.replace === true;

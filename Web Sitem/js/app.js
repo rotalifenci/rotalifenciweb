@@ -206,9 +206,9 @@ const CloudSyncManager = {
 
             // Yerel silinmişler korunur - başka cihazdan silinen veya yerelde silinen id'ler diriltilmez!
 
-            // Buluttan gelen silinmiş ID'leri yerel listeye ekle
+            // Buluttan gelen silinmiş ID'leri yerel listeye ekle (Tüm ID türleri: mat-, not-, std-, foy-, book-, lab-)
             cloudDeletedIds.forEach(id => {
-                if (typeof id === "string" && id.startsWith("mat-")) {
+                if (typeof id === "string" && id.trim().length > 0) {
                     addDeletedMaterialId(id);
                 }
             });
@@ -389,7 +389,36 @@ const CloudSyncManager = {
 
     async deleteMaterial(id, updatedList) {
         addDeletedMaterialId(id);
-        return await this.uploadToCloud(updatedList, true);
+        
+        // ⚡ HAFİF VE ANLIK BULUT SİLME (50 Baytlık Doğrudan İstek)
+        const deletePayload = {
+            action: "delete",
+            deleteId: id
+        };
+
+        try {
+            let res = await fetch(this.apiEndpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(deletePayload)
+            });
+
+            if (!res || !res.ok) {
+                const fallbackUrl = "https://rotalifenci.vercel.app/api/sync";
+                if (this.apiEndpoint !== fallbackUrl) {
+                    await fetch(fallbackUrl, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(deletePayload)
+                    });
+                }
+            }
+            console.log(`✅ Materyal buluttan anında silindi: ${id}`);
+            return true;
+        } catch(delErr) {
+            console.warn("Buluttan hafif silme isteği uyarısı, uploadToCloud ile deneniyor:", delErr);
+            return await this.uploadToCloud(updatedList, true);
+        }
     }
 };
 
@@ -518,60 +547,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         visibility: "public",
         downloadCount: "3.480+",
         createdAt: "Yeni Yayınlandı"
-    },
-    
-    {
-        id: "mat-1789495365682",
-        grade: "6",
-        category: "ders-notu",
-        title: "6.Sınıf Fen Bilimleri Ders Kitabı-1",
-        unit: "6. Sınıf Fen Bilimleri",
-        desc: "Milli Eğitim Bakanlığı 6. Sınıf Fen Bilimleri Ders Kitabı 1. Kitap (MEB 2026-2027 Müfredatı).",
-        fileName: "fenbilimleri6-1.pdf",
-        fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf",
-        imageUrl: "assets/kapak-6.jpg",
-        format: "PDF",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "fenbilimleri", "derskitabı", "ortaokul"],
-        visibility: "public",
-        downloadCount: "4.800+",
-        createdAt: "15.09.2026"
-    },
-    {
-        id: "mat-1789495424636",
-        grade: "7",
-        category: "ders-notu",
-        title: "7.Sınıf Fen Bilimleri Ders Kitabı-1",
-        unit: "7. Sınıf Fen Bilimleri",
-        desc: "Milli Eğitim Bakanlığı 7. Sınıf Fen Bilimleri Ders Kitabı 1. Kitap (MEB 2026-2027 Müfredatı).",
-        fileName: "fenbilimleri7-1.pdf",
-        fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri7-1.pdf",
-        imageUrl: "assets/kapak-7.jpg",
-        format: "PDF",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "fenbilimleri", "derskitabı", "ortaokul"],
-        visibility: "public",
-        downloadCount: "4.200+",
-        createdAt: "15.09.2026"
-    },
-    {
-        id: "mat-8-ders-kitabi-1",
-        grade: "8",
-        category: "ders-notu",
-        title: "8.Sınıf Fen Bilimleri Ders Kitabı-1",
-        unit: "8. Sınıf Fen Bilimleri (LGS)",
-        desc: "Milli Eğitim Bakanlığı 8. Sınıf Fen Bilimleri Ders Kitabı (MEB 2026-2027 Müfredatı & LGS Hazırlık).",
-        fileName: "fenbilimleri8-1.pdf",
-        fileUrl: "#",
-        imageUrl: "assets/kapak-8.jpg",
-        format: "PDF",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "fenbilimleri", "derskitabı", "LGS", "ortaokul"],
-        visibility: "public",
-        downloadCount: "6.900+",
-        createdAt: "15.09.2026"
-    }
-];
+    }];
 
 function saveCustomMaterialsSafe(list) {
     if (!Array.isArray(list)) return;
@@ -2197,8 +2173,187 @@ const SCIENTISTS_DATA = {
     ]
 };
 
+
+// 🔭 BİLİM İNSANLARI VERİ OKUYUCU (Yönetici Özelleştirmeleri ile Birlikte)
+function getScientistsData(gradeNumber) {
+    const gStr = String(gradeNumber || "8");
+    const baseList = (SCIENTISTS_DATA[gStr] || SCIENTISTS_DATA["8"]).map(s => ({ ...s }));
+    try {
+        const stored = localStorage.getItem("rotali_custom_scientists");
+        if (stored) {
+            const customMap = JSON.parse(stored);
+            const gradeCustoms = customMap[gStr] || {};
+            baseList.forEach(sci => {
+                if (gradeCustoms[sci.name]) {
+                    Object.assign(sci, gradeCustoms[sci.name]);
+                }
+            });
+        }
+    } catch(e) {}
+    return baseList;
+}
+
+// 🔭 BİLİM İNSANI DÜZENLEME MODALI (YÖNETİCİYE ÖZEL)
+function openScientistEditModal(scientistName, gradeNumber = "8") {
+    checkAdminAccess(() => {
+        const gStr = String(gradeNumber || "8");
+        const list = getScientistsData(gStr);
+        let sci = list.find(s => s.name.toLowerCase() === scientistName.toLowerCase() || s.name.includes(scientistName) || scientistName.includes(s.name));
+        if (!sci) {
+            const all = Object.values(SCIENTISTS_DATA).flat();
+            sci = all.find(s => s.name.toLowerCase() === scientistName.toLowerCase() || s.name.includes(scientistName)) || {
+                name: scientistName,
+                title: "Bilim İnsanı",
+                years: "",
+                badge: "BİLİMİN ROTASI",
+                icon: "fa-solid fa-atom",
+                color: "from-red-600 to-rose-700",
+                curriculumLink: "MEB Müfredatı",
+                discovery: "",
+                quote: "",
+                funFact: ""
+            };
+        }
+
+        let editModal = document.getElementById("scientist-edit-modal");
+        if (!editModal) {
+            editModal = document.createElement("div");
+            editModal.id = "scientist-edit-modal";
+            editModal.className = "fixed inset-0 z-[60] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all";
+            document.body.appendChild(editModal);
+        }
+
+        editModal.innerHTML = `
+            <div class="bg-white rounded-3xl max-w-2xl w-full border border-slate-200 shadow-2xl relative max-h-[92vh] overflow-y-auto custom-scrollbar p-6 sm:p-8" onclick="event.stopPropagation()">
+                <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-200">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center text-lg shadow-sm">
+                            <i class="fa-solid fa-pen-to-square"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black text-slate-900 leading-tight">Bilim İnsanı Kartını Düzenle</h3>
+                            <p class="text-xs text-slate-500 font-bold">${gStr}. Sınıf • ${sci.name}</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="closeScientistEditModal()" class="w-9 h-9 rounded-full bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 flex items-center justify-center font-black transition-all">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <form id="scientist-edit-form" onsubmit="saveScientistEdit(event, '${sci.name.replace(/'/g, "\\'")}', '${gStr}')" class="space-y-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">Bilim İnsanı Adı</label>
+                            <input type="text" id="edit-sci-name" value="${sci.name}" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-bold text-slate-900 focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">Unvan / Rol</label>
+                            <input type="text" id="edit-sci-title" value="${sci.title || ''}" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">Yaşadığı Yıllar</label>
+                            <input type="text" id="edit-sci-years" value="${sci.years || ''}" placeholder="Örn: 1564 - 1642" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:outline-none focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">Ünite / Rozet Adı</label>
+                            <input type="text" id="edit-sci-badge" value="${sci.badge || ''}" placeholder="Örn: GÜNEŞ, DÜNYA VE AY" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:outline-none focus:border-red-500">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">MEB Müfredat İlişkisi & Kazanım</label>
+                        <input type="text" id="edit-sci-curriculum" value="${sci.curriculumLink || ''}" placeholder="Örn: Ay Yüzeyi, Güneş Lekeleri" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:outline-none focus:border-red-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">Büyük Keşfi & Bilimsel Çalışması</label>
+                        <textarea id="edit-sci-discovery" rows="3" required class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium text-slate-800 focus:outline-none focus:border-red-500">${sci.discovery || ''}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">İlham Veren Sözü</label>
+                        <input type="text" id="edit-sci-quote" value="${sci.quote || ''}" placeholder="Örn: Ve yine de dönüyor..." class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 focus:outline-none focus:border-red-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-black uppercase tracking-wider text-slate-700 mb-1">Biliyor Muydunuz? (İlginç Bilgi)</label>
+                        <textarea id="edit-sci-funfact" rows="2" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm font-medium text-slate-800 focus:outline-none focus:border-red-500">${sci.funFact || ''}</textarea>
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-200 flex items-center justify-end gap-3">
+                        <button type="button" onclick="closeScientistEditModal()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs uppercase rounded-xl transition-all">
+                            İptal
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-600/20 active:scale-95">
+                            <i class="fa-solid fa-floppy-disk mr-1"></i> Değişiklikleri Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+        editModal.style.display = "flex";
+        editModal.classList.remove("hidden");
+    });
+}
+
+function closeScientistEditModal() {
+    const m = document.getElementById("scientist-edit-modal");
+    if (m) {
+        m.style.display = "none";
+        m.classList.add("hidden");
+    }
+}
+
+function saveScientistEdit(e, originalName, gradeNumber) {
+    e.preventDefault();
+    checkAdminAccess(() => {
+        const gStr = String(gradeNumber || "8");
+        const updated = {
+            name: document.getElementById("edit-sci-name").value.trim(),
+            title: document.getElementById("edit-sci-title").value.trim(),
+            years: document.getElementById("edit-sci-years").value.trim(),
+            badge: document.getElementById("edit-sci-badge").value.trim(),
+            curriculumLink: document.getElementById("edit-sci-curriculum").value.trim(),
+            discovery: document.getElementById("edit-sci-discovery").value.trim(),
+            quote: document.getElementById("edit-sci-quote").value.trim(),
+            funFact: document.getElementById("edit-sci-funfact").value.trim()
+        };
+
+        let customMap = {};
+        try {
+            const stored = localStorage.getItem("rotali_custom_scientists");
+            if (stored) customMap = JSON.parse(stored);
+        } catch(err) {}
+
+        if (!customMap[gStr]) customMap[gStr] = {};
+        customMap[gStr][originalName] = updated;
+        if (updated.name !== originalName) {
+            customMap[gStr][updated.name] = updated;
+        }
+
+        try {
+            localStorage.setItem("rotali_custom_scientists", JSON.stringify(customMap));
+        } catch(err) {}
+
+        closeScientistEditModal();
+        showToast("✅ Bilim insanı keşif kartı başarıyla güncellendi!", "success");
+        if (typeof handleRouteChange === "function") {
+            handleRouteChange({ preserveScroll: true });
+        }
+    });
+}
+
+window.openScientistEditModal = openScientistEditModal;
+window.triggerEditScientist = openScientistEditModal;
+window.closeScientistEditModal = closeScientistEditModal;
+window.saveScientistEdit = saveScientistEdit;
+
 function renderScientistsModule(gradeNumber) {
-    const list = SCIENTISTS_DATA[String(gradeNumber)] || SCIENTISTS_DATA["8"];
+    const list = getScientistsData(gradeNumber);
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
     return `
         <div class="mb-10 animate-in fade-in duration-300">
@@ -2269,11 +2424,18 @@ function renderScientistsModule(gradeNumber) {
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider">${sci.badge}</span>
-                            <button onclick="openScientistModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="px-4 py-2 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md shadow-red-600/25 flex items-center gap-1.5 hover:scale-105 transform">
-                                <i class="fa-solid fa-atom"></i> Keşif Kartını Oku →
-                            </button>
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                            <span class="text-[11px] font-black text-slate-400 uppercase tracking-wider truncate">${sci.badge}</span>
+                            <div class="flex items-center gap-1.5 shrink-0">
+                                ${isAdmin ? `
+                                    <button type="button" onclick="event.stopPropagation(); openScientistEditModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="py-1.5 px-2.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs rounded-xl transition-all flex items-center gap-1 shadow-xs active:scale-95 cursor-pointer" title="Bilim İnsanı Kartını Düzenle">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                ` : ''}
+                                <button type="button" onclick="openScientistModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="px-3.5 py-1.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-700 hover:to-rose-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md shadow-red-600/25 flex items-center gap-1.5 hover:scale-105 transform cursor-pointer">
+                                    <i class="fa-solid fa-atom"></i> Oku →
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `).join("")}
@@ -2297,10 +2459,14 @@ function openScientistModal(scientistName, gradeNumber = "8") {
         document.body.appendChild(modal);
     }
 
-    // Bilim insanını bul
-    let sci = null;
-    const allScientists = Object.values(SCIENTISTS_DATA).flat();
-    sci = allScientists.find(s => s.name.toLowerCase().includes(scientistName.toLowerCase()) || scientistName.toLowerCase().includes(s.name.toLowerCase())) || allScientists[0];
+    // Bilim insanını bul (Özelleştirilmiş verilerle birlikte)
+    const gradeScientists = getScientistsData(gradeNumber);
+    let sci = gradeScientists.find(s => s.name.toLowerCase().includes(scientistName.toLowerCase()) || scientistName.toLowerCase().includes(s.name.toLowerCase()));
+    if (!sci) {
+        const allScientists = Object.values(SCIENTISTS_DATA).flat();
+        sci = allScientists.find(s => s.name.toLowerCase().includes(scientistName.toLowerCase()) || scientistName.toLowerCase().includes(s.name.toLowerCase())) || allScientists[0];
+    }
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
     // Detaylı Bilimsel İçerik Üretimi (Bilim insanına özel zengin eğitim notu)
     let detailedNotes = "";
@@ -2448,10 +2614,15 @@ function openScientistModal(scientistName, gradeNumber = "8") {
 
                 <!-- Alt Butonlar -->
                 <div class="pt-3 border-t border-slate-100 flex flex-wrap gap-3">
-                    <button type="button" onclick="window.print()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2">
+                    ${isAdmin ? `
+                        <button type="button" onclick="closeScientistModal(); openScientistEditModal('${sci.name.replace(/'/g, "\\'")}', '${gradeNumber}')" class="py-3 px-4 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-sm cursor-pointer">
+                            <i class="fa-solid fa-pen-to-square"></i> Kartı Düzenle
+                        </button>
+                    ` : ''}
+                    <button type="button" onclick="window.print()" class="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-800 font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-print"></i> Keşif Kartını Yazdır (A4)
                     </button>
-                    <button type="button" onclick="closeScientistModal()" class="py-3 px-6 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all">
+                    <button type="button" onclick="closeScientistModal()" class="py-3 px-6 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all cursor-pointer">
                         Kapat
                     </button>
                 </div>
@@ -2903,7 +3074,14 @@ function renderGradeDersNotuAccordion(grade, subData) {
         "7": { title: "7. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "240 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri7-1.pdf", cover: "assets/kapak-7.jpg" },
         "8": { title: "8. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "256 Sayfa", fileUrl: "#", cover: "assets/kapak-8.jpg" }
     };
-    const currentBook = textbookMap[gNum] || textbookMap["8"];
+    const baseBook = textbookMap[gNum] || textbookMap["8"];
+    const customBookOverride = customList.find(m => m && (m.id === `book-${gNum}` || m.id === `book-${grade.number}`));
+    const currentBook = customBookOverride ? {
+        title: customBookOverride.title || baseBook.title,
+        pages: customBookOverride.pages || baseBook.pages,
+        fileUrl: customBookOverride.fileUrl || customBookOverride.url || baseBook.fileUrl,
+        cover: resolveMaterialCover(customBookOverride) || baseBook.cover
+    } : baseBook;
 
     // Laboratuvar & Deneyler
     const labItemsMap = {
@@ -3041,7 +3219,6 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${String(grade.number) !== "6" ? `
                             <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                                 <div>
                                     <div class="flex items-center justify-between gap-2 mb-2">
@@ -3070,9 +3247,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     <button type="button" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })" class="flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
                                     </button>
+                                    ${isAdmin ? `
+                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('book-${grade.number}')" class="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1 shadow-xs active:scale-95" title="Ders Kitabını Düzenle">
+                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                        </button>
+                                    ` : ''}
                                 </div>
                             </div>
-                            ` : ''}
 
                             ${customBooks.map(cb => `
                                 <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
@@ -6101,8 +6282,35 @@ function editCustomMaterial(id) {
         const customList = getCustomMaterialsList();
         let mat = customList.find(item => item && item.id === id);
         if (!mat) {
-            // Standart veya yerleşik ünite materyallerini de düzenlenebilir yap
-            if (id && id.startsWith("std-")) {
+            // Ders Kitabı için düzenleme desteği
+            if (id && id.startsWith("book-")) {
+                const g = id.replace("book-", "");
+                const textbookMap = {
+                    "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
+                    "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
+                    "7": { title: "7. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "240 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri7-1.pdf", cover: "assets/kapak-7.jpg" },
+                    "8": { title: "8. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "256 Sayfa", fileUrl: "#", cover: "assets/kapak-8.jpg" }
+                };
+                const bInfo = textbookMap[g] || textbookMap["8"] || {
+                    title: `${g}. Sınıf Fen Bilimleri MEB Ders Kitabı`,
+                    pages: "200 Sayfa",
+                    fileUrl: "",
+                    cover: `assets/kapak-${g}.jpg`
+                };
+                mat = {
+                    id: id,
+                    title: bInfo.title,
+                    grade: g,
+                    category: "ders-notu",
+                    unit: "Ders Kitabı",
+                    targetSection: "kitap",
+                    format: "PDF KİTAP",
+                    desc: "Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.",
+                    fileUrl: bInfo.fileUrl || "",
+                    cover: bInfo.cover || `assets/kapak-${g}.jpg`,
+                    imageUrl: bInfo.cover || `assets/kapak-${g}.jpg`
+                };
+            } else if (id && id.startsWith("std-")) {
                 const parts = id.split("-");
                 const unit = parts[parts.length - 1] || "1";
                 const grade = parts[parts.length - 2] || "5";
@@ -6504,6 +6712,12 @@ async function openDigitalBookModal(options = {}) {
                     </button>
                 </div>
 
+                ${localStorage.getItem("rotali_is_admin") === "true" ? `
+                    <button type="button" onclick="closeDigitalBookModal(); triggerEditMaterial('book-${grade}')" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-1 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Kitap Bilgilerini Düzenle">
+                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                        <span class="hidden sm:inline">Düzenle</span>
+                    </button>
+                ` : ''}
                 <!-- Kapat Butonu -->
                 <button type="button" onclick="closeDigitalBookModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shadow-md cursor-pointer ml-1" title="Kapat (ESC)">
                     <i class="fa-solid fa-xmark text-sm"></i>
