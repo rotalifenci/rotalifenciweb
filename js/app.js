@@ -806,6 +806,11 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
     const items = customList.filter(item => {
+        if (!item || !item.id) return false;
+        // MEB Ders Kitapları ana kart olarak zaten render edilir, listede mükerrer çıkmasını önle
+        if (item.id === "book-5" || item.id === "book-6" || item.id === "book-7" || item.id === "book-8") return false;
+        if (item.id === "lab-5-guide" || item.id === "lab-5-sim") return false;
+
         const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         const normTargetGrade = String(gradeNumber || "").replace(/^grade-/, "").trim().toLowerCase();
         const gradeMatch = (normTargetGrade === "all" || normItemGrade === "all" || normItemGrade === normTargetGrade);
@@ -1266,14 +1271,7 @@ function showToast(message, type = "success") {
 function handleRouteChange(options = {}) {
     updateAdminNavUI();
     let rawHash = window.location.hash.slice(1);
-    // Sayfa yenilendiğinde tam olarak kalınan sayfayı/bölümü koru
-    if (!rawHash && typeof localStorage !== "undefined") {
-        const savedHash = localStorage.getItem("rotali_last_active_hash");
-        if (savedHash && savedHash !== "home" && savedHash !== "") {
-            window.location.hash = savedHash;
-            return;
-        }
-    }
+    // Site ilk açıldığında veya adres çubuğunda hash olmadığında HER ZAMAN Anasayfa açılsın
     const hash = rawHash || "home";
     if (typeof localStorage !== "undefined" && hash && hash !== "home") {
         try { localStorage.setItem("rotali_last_active_hash", hash); } catch(e) {}
@@ -6494,10 +6492,11 @@ function editCustomMaterial(id) {
     checkAdminAccess(() => {
         const customList = getCustomMaterialsList();
         let mat = customList.find(item => item && item.id === id);
+
         if (!mat) {
-            // Ders Kitabı için düzenleme desteği
+            // 1. MEB Ders Kitabı (book-5, book-6, book-7, book-8)
             if (id && id.startsWith("book-")) {
-                const g = id.replace("book-", "");
+                const g = id.replace("book-", "").trim();
                 const textbookMap = {
                     "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
                     "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
@@ -6523,7 +6522,9 @@ function editCustomMaterial(id) {
                     cover: bInfo.cover || `assets/kapak-${g}.jpg`,
                     imageUrl: bInfo.cover || `assets/kapak-${g}.jpg`
                 };
-            } else if (id && id.startsWith("lab-")) {
+            }
+            // 2. Laboratuvar Kılavuz & Simülasyon
+            else if (id && id.startsWith("lab-")) {
                 const parts = id.split("-");
                 const grade = parts[1] || "5";
                 const type = parts[2] || "guide";
@@ -6532,59 +6533,159 @@ function editCustomMaterial(id) {
                         id: id,
                         title: `${grade}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`,
                         grade: grade,
-                        category: "laboratuvar",
+                        category: "ders-notu",
                         unit: "Laboratuvar",
                         targetSection: "lab",
                         format: "GÖRSEL FÖY",
                         desc: "Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.",
-                        fileUrl: "assets/lab-guvenligi.svg"
+                        fileUrl: "assets/lab-guvenligi.svg",
+                        imageUrl: "assets/lab-guvenligi.svg",
+                        cover: "assets/lab-guvenligi.svg"
                     };
                 } else {
                     mat = {
                         id: id,
                         title: `${grade}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`,
                         grade: grade,
-                        category: "laboratuvar",
+                        category: "ders-notu",
                         unit: "Laboratuvar",
                         targetSection: "lab",
                         format: "SİMÜLASYON",
                         desc: "Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.",
-                        fileUrl: "https://phet.colorado.edu"
+                        fileUrl: "https://phet.colorado.edu",
+                        imageUrl: "assets/lab-guvenligi.svg",
+                        cover: "assets/lab-guvenligi.svg"
                     };
                 }
-            } else if (id && id.startsWith("std-")) {
+            }
+            // 3. Standart Sunum veya Ünite Materyali (std-...)
+            else if (id && id.startsWith("std-")) {
                 const parts = id.split("-");
                 const unit = parts[parts.length - 1] || "1";
                 const grade = parts[parts.length - 2] || "5";
                 const cat = parts.slice(1, -2).join("-") || "ders-sunumu";
-
-                let title = `${grade}. Sınıf ${unit}. Ünite Ders Sunumları`;
-                const btn = document.querySelector(`[onclick*="${id}"]`);
-                const card = btn ? btn.closest('.group, .bg-white') : null;
-                if (card) {
-                    const h5 = card.querySelector('h5');
-                    if (h5 && h5.textContent.trim()) title = h5.textContent.trim();
-                }
-
                 mat = {
                     id: id,
-                    title: title,
+                    title: `${grade}. Sınıf ${unit}. Ünite Ders Sunumları`,
                     grade: grade,
                     category: cat,
                     unit: `${unit}. Ünite`,
                     targetSection: unit,
                     format: "PPTX / SLAYT",
                     desc: "MEB müfredatına uygun akıllı tahta ders sunumu ve slaytları.",
-                    fileUrl: ""
+                    fileUrl: "",
+                    imageUrl: `assets/kapak-${grade}.jpg`
+                };
+            }
+            // 4. PORTAL_GRADES altındaki tüm alt sekmeler (dersNotu, dersSunumu, videolar, etkinlikler, soruBankasi, denemeler, egitselOyunlar)
+            else if (typeof PORTAL_GRADES !== "undefined" && Array.isArray(PORTAL_GRADES)) {
+                for (const pg of PORTAL_GRADES) {
+                    const subData = getGradeSubSectionsData(pg.number);
+                    if (!subData) continue;
+                    const catMap = {
+                        dersNotu: "ders-notu",
+                        dersSunumu: "ders-sunumu",
+                        videolar: "videolar",
+                        etkinlikler: "etkinlikler",
+                        soruBankasi: "soru-bankasi",
+                        denemeler: "denemeler",
+                        egitselOyunlar: "egitsel-oyunlar"
+                    };
+                    for (const [ck, catVal] of Object.entries(catMap)) {
+                        const list = subData[ck];
+                        if (Array.isArray(list)) {
+                            const found = list.find(x => x && (x.id === id || String(x.id).includes(id)));
+                            if (found) {
+                                mat = {
+                                    id: found.id || id,
+                                    title: found.title || `${pg.number}. Sınıf Materyali`,
+                                    grade: String(pg.number),
+                                    category: catVal,
+                                    unit: found.unit || `${pg.number}. Sınıf`,
+                                    targetSection: found.targetSection || "1",
+                                    format: found.format || found.badge || "DOKÜMAN",
+                                    desc: found.desc || found.description || "",
+                                    fileUrl: found.fileUrl || found.imageUrl || "",
+                                    imageUrl: found.imageUrl || found.cover || `assets/kapak-${pg.number}.jpg`
+                                };
+                                break;
+                            }
+                        }
+                    }
+                    if (mat) break;
+                }
+            }
+        }
+
+        // 5. DOM üzerinden kart bilgilerini otomatik yakalama (Tüm sayfalardaki özel/statik kartlar için evrensel yakalayıcı)
+        if (!mat) {
+            const btn = document.querySelector(`[onclick*="'${id}'"]`) || document.querySelector(`[onclick*="\"${id}\""]`);
+            if (btn) {
+                const card = btn.closest('.group, .bg-white, .rounded-3xl, .rounded-2xl') || btn.parentElement;
+                const titleEl = card ? (card.querySelector('h3, h4, h5') || card.querySelector('.font-black')) : null;
+                const descEl = card ? card.querySelector('p') : null;
+                const imgEl = card ? card.querySelector('img') : null;
+                const badgeEl = card ? card.querySelector('.uppercase, .badge') : null;
+
+                const hash = (window.location.hash || "").replace(/^#/, "");
+                const gMatch = hash.match(/grade-(\d)/);
+                const gradeVal = gMatch ? gMatch[1] : "8";
+                const parts = hash.split("/");
+                const catVal = parts[2] || "ders-notu";
+
+                mat = {
+                    id: id,
+                    title: titleEl ? titleEl.textContent.trim() : "Ders Materyali",
+                    grade: gradeVal,
+                    category: catVal,
+                    unit: `${gradeVal}. Sınıf Fen Bilimleri`,
+                    targetSection: "1",
+                    format: badgeEl ? badgeEl.textContent.trim() : "DOKÜMAN",
+                    desc: descEl ? descEl.textContent.trim() : "",
+                    fileUrl: "",
+                    imageUrl: imgEl ? imgEl.src : `assets/kapak-${gradeVal}.jpg`
                 };
             }
         }
+
+        // 6. Son çare güvenli nesne
         if (!mat) {
-            showToast("Materyal bulunamadı!", "error");
-            return;
+            mat = {
+                id: id || `mat-${Date.now()}`,
+                title: "Ders İçeriği",
+                grade: "8",
+                category: "ders-notu",
+                unit: "8. Sınıf Fen Bilimleri",
+                targetSection: "1",
+                format: "PDF",
+                desc: "",
+                fileUrl: "",
+                imageUrl: "assets/kapak-8.jpg"
+            };
         }
-        const cleanGrade = String(mat.grade || "8").replace(/^grade-/, "");
-        openMaterialUploadModal(cleanGrade, mat.category || "ders-notu", mat);
+
+        // Veri temizleme ve kategori normalizasyonu
+        let rawGrade = String(mat.grade || "8").replace(/^grade-/, "").replace(/\. Sınıf/i, "").trim();
+        const cleanGrade = (["5", "6", "7", "8", "all"].includes(rawGrade)) ? rawGrade : "8";
+
+        let normCat = mat.category || "ders-notu";
+        if (normCat === "laboratuvar" || normCat === "ders-kitabi" || normCat === "kitap") normCat = "ders-notu";
+        if (normCat === "oyunlar") normCat = "egitsel-oyunlar";
+
+        // Hedef bölüm temizleme
+        if (!mat.targetSection) {
+            const uStr = (mat.unit || "").toLowerCase();
+            const tStr = (mat.title || "").toLowerCase();
+            if (uStr.includes("kitap") || tStr.includes("kitap") || tStr.includes("kitab")) mat.targetSection = "kitap";
+            else if (uStr.includes("lab") || tStr.includes("lab")) mat.targetSection = "lab";
+            else {
+                const m = uStr.match(/(\d+)\s*\.\s*ünite/i) || tStr.match(/(\d+)\s*\.\s*ünite/i);
+                if (m && m[1]) mat.targetSection = m[1];
+                else mat.targetSection = "1";
+            }
+        }
+
+        openMaterialUploadModal(cleanGrade, normCat, mat);
     });
 }
 window.editCustomMaterial = editCustomMaterial;
@@ -6886,13 +6987,21 @@ async function openDigitalBookModal(options = {}) {
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "digital-book-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950 flex flex-col justify-between select-none animate-in fade-in duration-150 overflow-hidden";
+        modal.className = "fixed inset-0 z-[9990] bg-slate-950 flex flex-col justify-between select-none animate-in fade-in duration-150 overflow-hidden w-full max-w-full";
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
         document.body.appendChild(modal);
+    } else {
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
     }
 
     modal.innerHTML = `
+        <!-- 🔴 MOBİLDE HER ZAMAN GÖRÜNÜR SABİT ÇIKIŞ TUŞU (Yüksek z-index ile adres çubuğunun altında asla kalmaz) -->
+        <button type="button" onclick="closeDigitalBookModal()" class="fixed top-2.5 right-2.5 sm:top-3.5 sm:right-4 z-[9999] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center font-black shadow-2xl backdrop-blur-md border border-white/20 active:scale-95 cursor-pointer" title="Kitabı Kapat (ESC)">
+            <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+
         <!-- ÜST KONTROL ÇUBUĞU (TOOLBAR) -->
-        <div class="px-2 sm:px-6 py-2 bg-slate-900 border-b border-slate-800 text-white flex items-center justify-between shrink-0 gap-1.5 sm:gap-4 shadow-xl z-20">
+        <div class="px-2 sm:px-6 py-2 bg-slate-900 border-b border-slate-800 text-white flex items-center justify-between shrink-0 gap-1.5 sm:gap-4 shadow-xl z-20" style="padding-top: max(8px, env(safe-area-inset-top, 8px));">
             <!-- Sol: Başlık & Rozet -->
             <div class="flex items-center gap-2 min-w-0">
                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-red-600 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
@@ -7868,6 +7977,60 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     });
 }
 
+let inPageModalZoom = 1.0;
+let inPageModalPanX = 0;
+let inPageModalPanY = 0;
+let inPageIsDragging = false;
+let inPageDragStartX = 0;
+let inPageDragStartY = 0;
+
+function changeImageModalZoom(delta) {
+    inPageModalZoom = Math.max(0.5, Math.min(4.0, inPageModalZoom + delta));
+    applyImageModalTransform();
+}
+
+function resetImageModalZoom() {
+    inPageModalZoom = 1.0;
+    inPageModalPanX = 0;
+    inPageModalPanY = 0;
+    applyImageModalTransform();
+}
+
+function applyImageModalTransform() {
+    const img = document.getElementById("inpage-modal-zoom-img");
+    const text = document.getElementById("inpage-zoom-level-text");
+    if (img) {
+        img.style.transform = `translate(${inPageModalPanX}px, ${inPageModalPanY}px) scale(${inPageModalZoom})`;
+    }
+    if (text) {
+        text.textContent = `%${Math.round(inPageModalZoom * 100)}`;
+    }
+}
+
+function initImagePanDragListeners() {
+    const container = document.getElementById("inpage-modal-zoom-container");
+    if (!container) return;
+
+    container.onmousedown = (e) => {
+        inPageIsDragging = true;
+        inPageDragStartX = e.clientX - inPageModalPanX;
+        inPageDragStartY = e.clientY - inPageModalPanY;
+        container.style.cursor = "grabbing";
+    };
+
+    window.onmousemove = (e) => {
+        if (!inPageIsDragging) return;
+        inPageModalPanX = e.clientX - inPageDragStartX;
+        inPageModalPanY = e.clientY - inPageDragStartY;
+        applyImageModalTransform();
+    };
+
+    window.onmouseup = () => {
+        inPageIsDragging = false;
+        if (container) container.style.cursor = "grab";
+    };
+}
+
 function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false, externalPdf = "") {
     inPageModalZoom = 1.0;
     inPageModalPanX = 0;
@@ -7878,11 +8041,14 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "inpage-document-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-200";
+        modal.className = "fixed inset-0 z-[9990] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-1 sm:p-4 transition-all duration-200 overflow-hidden";
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
         modal.onclick = function(e) {
             if (e.target === this) closeInPageDocumentModal();
         };
         document.body.appendChild(modal);
+    } else {
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
     }
 
     const lowerUrl = (docUrl || "").toLowerCase();
@@ -7897,7 +8063,11 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     let contentHtml = "";
     if (isImageDoc) {
         contentHtml = `
-            <div class="bg-slate-950 rounded-2xl sm:rounded-3xl w-fit max-w-[96vw] max-h-[96vh] shadow-2xl border border-slate-800 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto select-none" onclick="event.stopPropagation()">
+            <!-- 🔴 MOBİLDE HER ZAMAN GÖRÜNÜR SABİT ÇIKIŞ TUŞU -->
+            <button type="button" onclick="closeInPageDocumentModal()" class="fixed top-2.5 right-2.5 sm:top-3.5 sm:right-4 z-[9999] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center font-black shadow-2xl backdrop-blur-md border border-white/20 active:scale-95 cursor-pointer" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+            <div class="bg-slate-950 rounded-2xl sm:rounded-3xl w-fit max-w-[98vw] sm:max-w-[96vw] shadow-2xl border border-slate-800 flex flex-col overflow-hidden animate-in zoom-in-95 duration-200 mx-auto select-none" style="max-height: calc(100dvh - 16px); max-height: calc(100vh - 16px);" onclick="event.stopPropagation()">
                 <!-- Üst Başlık & Büyüt/Küçült ve Kapat Butonları -->
                 <div class="px-3.5 py-2 bg-slate-900 text-white flex items-center justify-between shrink-0 gap-2 sm:gap-4 border-b border-slate-800">
                     <div class="flex items-center gap-2 min-w-0">
@@ -7954,7 +8124,11 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
         `;
     } else {
         contentHtml = `
-            <div class="bg-slate-900 rounded-2xl sm:rounded-3xl max-w-5xl w-full h-[85vh] sm:h-[88vh] overflow-hidden shadow-2xl border border-slate-700 flex flex-col animate-in zoom-in-95 duration-200 mx-2" onclick="event.stopPropagation()">
+            <!-- 🔴 MOBİLDE HER ZAMAN GÖRÜNÜR SABİT ÇIKIŞ TUŞU -->
+            <button type="button" onclick="closeInPageDocumentModal()" class="fixed top-2.5 right-2.5 sm:top-3.5 sm:right-4 z-[9999] w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center font-black shadow-2xl backdrop-blur-md border border-white/20 active:scale-95 cursor-pointer" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+            <div class="bg-slate-900 rounded-2xl sm:rounded-3xl max-w-5xl w-full overflow-hidden shadow-2xl border border-slate-700 flex flex-col animate-in zoom-in-95 duration-200 mx-2" style="height: calc(100dvh - 20px); height: calc(100vh - 20px); max-height: calc(100dvh - 20px);" onclick="event.stopPropagation()">
                 <!-- Üst Başlık & Kapat Barı -->
                 <div class="px-4 py-2.5 sm:px-5 sm:py-3.5 bg-slate-800 text-white flex items-center justify-between shrink-0 border-b border-slate-700 gap-3">
                     <div class="flex items-center gap-2 min-w-0">
@@ -8889,10 +9063,14 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
 
     currentUploadedFile = null;
     currentTagsList = editMaterial && editMaterial.tags ? [...editMaterial.tags] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"];
-    const targetGradeClean = editMaterial ? String(editMaterial.grade || "").replace(/^grade-/, "") : String(prefillGrade || "8").replace(/^grade-/, "");
+    const targetGradeClean = editMaterial ? String(editMaterial.grade || "").replace(/^grade-/, "").replace(/\. Sınıf/i, "").trim() : String(prefillGrade || "8").replace(/^grade-/, "").replace(/\. Sınıf/i, "").trim();
     const isEditing = !!editMaterial;
     if (editMaterial) editingMaterialId = editMaterial.id;
     else editingMaterialId = null;
+
+    let activeEditCategory = isEditing ? (editMaterial.category || "ders-notu") : (prefillTab || "ders-notu");
+    if (activeEditCategory === "laboratuvar" || activeEditCategory === "ders-kitabi" || activeEditCategory === "kitap") activeEditCategory = "ders-notu";
+    if (activeEditCategory === "oyunlar") activeEditCategory = "egitsel-oyunlar";
 
     let preselectedSection = "1";
     if (isEditing && editMaterial) {
@@ -8985,16 +9163,16 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${(isEditing ? editMaterial.category === 'ders-notu' : prefillTab === 'ders-notu') ? 'selected' : ''}>📝 Ünite Ders Notları & PDF Föy</option>
-                                <option value="ders-sunumu" ${(isEditing ? editMaterial.category === 'ders-sunumu' : prefillTab === 'ders-sunumu') ? 'selected' : ''}>📊 Ders Sunumu</option>
-                                <option value="videolar" ${(isEditing ? editMaterial.category === 'videolar' : prefillTab === 'videolar') ? 'selected' : ''}>🎥 Videolar</option>
-                                <option value="etkinlikler" ${(isEditing ? editMaterial.category === 'etkinlikler' : prefillTab === 'etkinlikler') ? 'selected' : ''}>🧩 Etkinlikler</option>
-                                <option value="soru-bankasi" ${(isEditing ? editMaterial.category === 'soru-bankasi' : prefillTab === 'soru-bankasi') ? 'selected' : ''}>📚 Soru Bankası</option>
-                                <option value="denemeler" ${(isEditing ? editMaterial.category === 'denemeler' : prefillTab === 'denemeler') ? 'selected' : ''}>🎯 Denemeler</option>
-                                <option value="egitsel-oyunlar" ${(isEditing ? editMaterial.category === 'egitsel-oyunlar' : prefillTab === 'egitsel-oyunlar') ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
-                                <option value="lgs" ${(isEditing ? editMaterial.category === 'lgs' : prefillTab === 'lgs') ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
-                                <option value="bilim-insanlari" ${(isEditing ? editMaterial.category === 'bilim-insanlari' : prefillTab === 'bilim-insanlari') ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
-                                <option value="projeler" ${(isEditing ? editMaterial.category === 'projeler' : prefillTab === 'projeler') ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
+                                <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ünite Ders Notları & PDF Föy</option>
+                                <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu</option>
+                                <option value="videolar" ${activeEditCategory === 'videolar' ? 'selected' : ''}>🎥 Videolar</option>
+                                <option value="etkinlikler" ${activeEditCategory === 'etkinlikler' ? 'selected' : ''}>🧩 Etkinlikler</option>
+                                <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Soru Bankası</option>
+                                <option value="denemeler" ${activeEditCategory === 'denemeler' ? 'selected' : ''}>🎯 Denemeler</option>
+                                <option value="egitsel-oyunlar" ${activeEditCategory === 'egitsel-oyunlar' ? 'selected' : ''}>🎮 Eğitsel Oyunlar</option>
+                                <option value="lgs" ${activeEditCategory === 'lgs' ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
+                                <option value="bilim-insanlari" ${activeEditCategory === 'bilim-insanlari' ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>
+                                <option value="projeler" ${activeEditCategory === 'projeler' ? 'selected' : ''}>🚀 TÜBİTAK & Projeler</option>
                             </select>
                         </div>
 
@@ -9132,16 +9310,16 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">veya Kapak Resmi Linki (URL)</label>
                             <div class="relative">
-                                <input type="url" id="adv-cover-url-input" oninput="handleCoverUrlInput(this.value)" value="${isEditing && editMaterial.imageUrl ? editMaterial.imageUrl : ''}" placeholder="https://.../kapak.jpg veya YouTube afişi" class="w-full p-2.5 sm:p-3 pl-8 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-amber-500 shadow-sm">
+                                <input type="url" id="adv-cover-url-input" oninput="handleCoverUrlInput(this.value)" value="${isEditing && (editMaterial.imageUrl || editMaterial.cover) ? (editMaterial.imageUrl || editMaterial.cover) : ''}" placeholder="https://.../kapak.jpg veya YouTube afişi" class="w-full p-2.5 sm:p-3 pl-8 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-amber-500 shadow-sm">
                                 <i class="fa-solid fa-link absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Kapak Resmi Canlı Önizleme Kartı -->
-                    <div id="cover-preview-box" class="${isEditing && editMaterial.imageUrl ? 'flex' : 'hidden'} items-center gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm animate-in fade-in duration-200">
+                    <div id="cover-preview-box" class="${isEditing && (editMaterial.imageUrl || editMaterial.cover) ? 'flex' : 'hidden'} items-center gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm animate-in fade-in duration-200">
                         <div class="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
-                            <img id="cover-preview-img" src="${isEditing && editMaterial.imageUrl ? editMaterial.imageUrl : ''}" alt="Kapak Önizleme" class="w-full h-full object-cover">
+                            <img id="cover-preview-img" src="${isEditing && (editMaterial.imageUrl || editMaterial.cover) ? (editMaterial.imageUrl || editMaterial.cover) : ''}" alt="Kapak Önizleme" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 min-w-0">
                             <div class="text-xs font-black text-slate-800 truncate" id="cover-preview-title">Kapak Resmi Hazır</div>
@@ -9195,8 +9373,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     if (isEditing && editMaterial.unit) {
         const unitSelect = document.getElementById("adv-unit-select");
         if (unitSelect) {
-            let exists = Array.from(unitSelect.options).some(opt => opt.value === editMaterial.unit);
-            if (!exists) {
+            let exists = (unitSelect.options && unitSelect.options.length) ? Array.from(unitSelect.options).some(opt => opt && opt.value === editMaterial.unit) : false;
+            if (!exists && typeof unitSelect.appendChild === "function") {
                 const newOpt = document.createElement("option");
                 newOpt.value = editMaterial.unit;
                 newOpt.textContent = editMaterial.unit;
@@ -9208,6 +9386,14 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     }
 
     renderTagsBadges();
+
+    // Düzenlenen materyal bir web/drive/youtube bağlantısıysa otomatik olarak Link sekmesine geç
+    if (isEditing && editMaterial && editMaterial.fileUrl && editMaterial.fileUrl.startsWith("http")) {
+        switchUploadMethod('link');
+        const linkInp = document.getElementById("adv-link-input");
+        if (linkInp) linkInp.value = editMaterial.fileUrl;
+    }
+
     modal.style.display = "flex";
     modal.classList.remove("hidden");
 }
