@@ -982,6 +982,26 @@ function initPortal() {
         });
     }
 
+    // Üst menü veya mobil menüdeki sınıf butonuna doğrudan tıklandığında Ders Notu -> Ders Kitabı açılsın
+    document.addEventListener("click", (e) => {
+        const link = e.target.closest('a[href^="#grade/grade-"]');
+        if (!link) return;
+        if (link.classList.contains("nav-link") || link.classList.contains("mobile-bottom-tab") || (link.closest && link.closest("#mobile-menu"))) {
+            const href = link.getAttribute("href") || "";
+            const m = href.match(/grade-(\d)/);
+            if (m && m[1]) {
+                const gNum = m[1];
+                try {
+                    localStorage.setItem(`rotali_active_ders_notu_unit_${gNum}`, "kitap");
+                    sessionStorage.setItem(`rotali_active_ders_notu_unit_${gNum}`, "kitap");
+                    localStorage.setItem("rotali_active_ders_notu_unit", "kitap");
+                    localStorage.setItem(`rotali_active_subtab_grade-${gNum}`, "ders-notu");
+                    sessionStorage.setItem(`rotali_active_subtab_grade-${gNum}`, "ders-notu");
+                } catch(err) {}
+            }
+        }
+    });
+
     // ESC Tuşu ile Akıllı Tahta Modundan Çıkış
     window.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && AppState.isSmartboardMode) {
@@ -2881,20 +2901,19 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     let gradeId = parts[0] || "grade-8";
     const grade = PORTAL_GRADES.find(g => g.id === gradeId || g.slug === gradeId || String(g.number) === gradeId) || PORTAL_GRADES[3];
 
-    // Aktif alt sekmeyi hafızada tut ve geri yükle (Doğrudan sınıfa tıklandığında Ders Notu & Ders Kitabı açılır)
+    // Aktif alt sekmeyi hafızada tut ve geri yükle (Kullanıcı yenilediğinde kalınan sekme kalır)
     const subTabKey = `rotali_active_subtab_${grade.id}`;
-    let subTab = parts[1] || "ders-notu";
-    if (typeof sessionStorage !== "undefined") {
-        sessionStorage.setItem(subTabKey, subTab);
-        if (subTab === "ders-notu" && (!parts[1] || parts[1] === "ders-notu")) {
-            sessionStorage.setItem(`rotali_active_ders_notu_unit_${grade.number}`, "kitap");
-            sessionStorage.setItem('rotali_active_ders_notu_unit', "kitap");
-        }
-    }
+    let savedSubTab = null;
+    try {
+        savedSubTab = localStorage.getItem(subTabKey) || sessionStorage.getItem(subTabKey);
+    } catch(e) {}
+    let subTab = parts[1] || savedSubTab || "ders-notu";
     if (subTab === "uniteler") subTab = "ders-notu";
-    if (typeof sessionStorage !== "undefined") {
-        try { sessionStorage.setItem(subTabKey, subTab); } catch(e) {}
-    }
+    try {
+        localStorage.setItem(subTabKey, subTab);
+        sessionStorage.setItem(subTabKey, subTab);
+        localStorage.setItem("rotali_last_active_hash", `grade/${grade.id}/${subTab}`);
+    } catch(e) {}
     const subData = getGradeSubSectionsData(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
         // Aktif Sekmeye Göre Üst Başlık ve Açıklama (Kullanıcı Talebi: Sekme Bilgisi 8 Butonun Üstündeki Alana Taşındı)
@@ -3118,12 +3137,15 @@ function switchGradeSubTab(gradeId, tabName, event) {
         }
         event.preventDefault();
     }
-    if (typeof sessionStorage !== "undefined") {
-        try {
-            sessionStorage.setItem(`rotali_active_subtab_${gradeId}`, tabName);
-        } catch(e) {}
-    }
+    const subTabKey = `rotali_active_subtab_${gradeId}`;
+    try {
+        localStorage.setItem(subTabKey, tabName);
+        sessionStorage.setItem(subTabKey, tabName);
+    } catch(e) {}
     const targetHash = `grade/${gradeId}/${tabName}`;
+    try {
+        localStorage.setItem("rotali_last_active_hash", targetHash);
+    } catch(e) {}
     const currentHash = (window.location.hash || "").replace(/^#/, "");
     if (currentHash === targetHash) {
         if (typeof handleRouteChange === "function") {
@@ -3243,8 +3265,15 @@ function renderGradeDersNotuAccordion(grade, subData) {
         return sec === "lab" || m.category === "laboratuvar";
     });
 
-    // Aktif açık olan üniteyi veya bölümü hatırla (Sayfa yenilendiğinde ilk bölüme atmasını önler)
-    const activeUnit = (typeof sessionStorage !== 'undefined' && (sessionStorage.getItem(`rotali_active_ders_notu_unit_${grade.number}`) || sessionStorage.getItem('rotali_active_ders_notu_unit'))) || "kitap";
+    // Aktif açık olan üniteyi veya bölümü hatırla (Sayfa yenilendiğinde ilk bölüme atmasını kesin olarak önler)
+    let savedUnit = null;
+    try {
+        savedUnit = localStorage.getItem(`rotali_active_ders_notu_unit_${grade.number}`) ||
+                    sessionStorage.getItem(`rotali_active_ders_notu_unit_${grade.number}`) ||
+                    localStorage.getItem('rotali_active_ders_notu_unit') ||
+                    sessionStorage.getItem('rotali_active_ders_notu_unit');
+    } catch(e) {}
+    const activeUnit = savedUnit || "kitap";
     const isKitapActive = activeUnit === "kitap";
     const isLabActive = activeUnit === "lab";
     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
@@ -3732,6 +3761,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
     const containerId = `hub-container-${normSubTab}-${grade.number}`;
 
+    // Aktif açık olan üniteyi veya laboratuvarı hatırla (Sayfa yenilendiğinde ilk bölüme atmasını kesin olarak önler)
+    const hubStorageKey = `rotali_active_hub_unit_${grade.number}_${normSubTab}`;
+    let savedHubUnit = null;
+    try {
+        savedHubUnit = localStorage.getItem(hubStorageKey) ||
+                       sessionStorage.getItem(hubStorageKey) ||
+                       localStorage.getItem(`rotali_active_hub_unit_${grade.number}`) ||
+                       sessionStorage.getItem(`rotali_active_hub_unit_${grade.number}`);
+    } catch(e) {}
+    const activeHubUnit = savedHubUnit || "1";
+    const isLabActive = (activeHubUnit === "lab");
 
     return `
         <div id="${containerId}" class="mb-10 animate-in fade-in duration-300">
@@ -3741,16 +3781,16 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     ${unitList.map((uTitle, idx) => {
                         const num = idx + 1;
                         const uName = uTitle.includes(":") ? uTitle.split(":")[1].trim() : uTitle;
-                        const isActive = (idx === 0);
+                        const isActive = (String(num) === String(activeHubUnit));
                         return `
-                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
+                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}', '${grade.number}', '${normSubTab}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
                             <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isActive ? 'text-white' : 'text-slate-800'}">${num}. Ünite</span>
                             <span class="text-[9px] sm:text-[10px] font-medium ${isActive ? 'text-slate-300' : 'text-slate-500'} truncate w-full" title="${uName}">${uName}</span>
                         </button>
                         `;
                     }).join("")}
                     ${hasLabSection ? `
-                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab')" data-unit="lab" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer">
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab', '${grade.number}', '${normSubTab}')" data-unit="lab" data-active="${isLabActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isLabActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm'} active:scale-95 cursor-pointer">
                         <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
                             <i class="fa-solid fa-flask-vial text-emerald-600 text-[10px] sm:text-xs shrink-0"></i>
                             <span class="truncate">Laboratuvar</span>
@@ -3768,7 +3808,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                 ${unitList.map((uTitle, idx) => {
                     const unitNum = idx + 1;
                     const accordionId = `${containerId}-unit-${unitNum}`;
-                    const isOpenInitial = (unitNum === 1);
+                    const isOpenInitial = (String(unitNum) === String(activeHubUnit));
 
                     // Bu üniteyle KESİNLİKLE VE SADECE eşleşen özel materyaller
                     const unitCustoms = customList.filter(m => {
@@ -3784,7 +3824,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     const totalItems = [...unitCustoms];
 
                     return `
-                        <div data-unit="${unitNum}" class="unit-accordion-card ${unitNum === 1 ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                        <div data-unit="${unitNum}" class="unit-accordion-card ${isOpenInitial ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                             <!-- Akordeon Başlığı -->
                             <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
                                 <div class="flex items-center gap-3 sm:gap-4">
@@ -3883,7 +3923,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                 ${hasLabSection ? `
                 <!-- 8. LABORATUVAR & DENEYLER AKORDEONU -->
-                <div data-unit="lab" class="unit-accordion-card hidden border border-emerald-200/90 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400 hover:shadow-md">
+                <div data-unit="lab" class="unit-accordion-card ${isLabActive ? '' : 'hidden'} border border-emerald-200/90 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400 hover:shadow-md">
                     <button type="button" onclick="toggleAccordionSection('${containerId}-unit-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-emerald-50/40">
                         <div class="flex items-center gap-3 sm:gap-4">
                             <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm text-xl">
@@ -3897,12 +3937,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar</h4>
                             </div>
                         </div>
-                        <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 transition-transform duration-300">
+                        <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 transition-transform duration-300 ${isLabActive ? 'rotate-180' : ''}">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
 
-                    <div id="${containerId}-unit-lab" class="unit-card-body accordion-body-collapsible hidden border-t border-emerald-100 p-4 sm:p-6 bg-slate-50/50">
+                    <div id="${containerId}-unit-lab" class="unit-card-body accordion-body-collapsible ${isLabActive ? '' : 'hidden'} border-t border-emerald-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                             ${customList.filter(m => {
                                 const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
@@ -4047,9 +4087,11 @@ window.filterDersNotuUnits = function(unitIndex) {
     const container = document.getElementById("ders-notu-accordion-group");
     if (!container) return;
     try { 
+        localStorage.setItem("rotali_active_ders_notu_unit", String(unitIndex)); 
         sessionStorage.setItem("rotali_active_ders_notu_unit", String(unitIndex)); 
         const match = window.location.hash.match(/grade-(\d)/);
         if (match && match[1]) {
+            localStorage.setItem(`rotali_active_ders_notu_unit_${match[1]}`, String(unitIndex));
             sessionStorage.setItem(`rotali_active_ders_notu_unit_${match[1]}`, String(unitIndex));
         }
     } catch(e) {}
@@ -4094,22 +4136,33 @@ window.filterDersNotuUnits = function(unitIndex) {
     });
 };
 
-window.filterUnitHubSection = function(containerId, unitIndex) {
+window.filterUnitHubSection = function(containerId, unitIndex, gradeNum, subTabKey) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const clickedBtn = container.querySelector(`.unit-filter-btn[data-unit="${unitIndex}"]`);
-    const isCurrentlyActive = clickedBtn && clickedBtn.getAttribute("data-active") === "true";
-
-    // Tekrar tıklandığında filtreyi kaldır (tümünü göster)
-    const targetUnit = isCurrentlyActive ? "all" : unitIndex;
+    // Aktif ünite seçimini anında localStorage ve sessionStorage içine kaydet
+    try {
+        if (gradeNum && subTabKey) {
+            localStorage.setItem(`rotali_active_hub_unit_${gradeNum}_${subTabKey}`, String(unitIndex));
+            sessionStorage.setItem(`rotali_active_hub_unit_${gradeNum}_${subTabKey}`, String(unitIndex));
+        } else {
+            const parts = containerId.split("-");
+            if (parts.length >= 4) {
+                const subT = parts[2];
+                const gN = parts[3];
+                localStorage.setItem(`rotali_active_hub_unit_${gN}_${subT}`, String(unitIndex));
+                sessionStorage.setItem(`rotali_active_hub_unit_${gN}_${subT}`, String(unitIndex));
+            }
+        }
+        localStorage.setItem(`rotali_active_hub_unit_${containerId}`, String(unitIndex));
+    } catch(e) {}
 
     // 1. Buton stillerini güncelle
     const btns = container.querySelectorAll(".unit-filter-btn");
     btns.forEach(b => {
         const bUnit = b.getAttribute("data-unit");
         const descSpan = b.querySelector("span:last-child");
-        if (targetUnit !== "all" && bUnit === String(targetUnit)) {
+        if (bUnit === String(unitIndex)) {
             b.setAttribute("data-active", "true");
             b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20 active:scale-95 cursor-pointer";
             if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-300 truncate w-full";
@@ -4125,30 +4178,20 @@ window.filterUnitHubSection = function(containerId, unitIndex) {
         }
     });
 
-    // 2. Ünite ve Laboratuvar akordeonlarını filtrele
+    // 2. Sadece seçilen üniteyi veya laboratuvarı göster, diğerlerini gizle
     const unitCards = container.querySelectorAll(".unit-accordion-card");
     unitCards.forEach(card => {
         const cardUnit = card.getAttribute("data-unit");
-        if (targetUnit === "all" || cardUnit === String(targetUnit)) {
+        if (cardUnit === String(unitIndex)) {
             card.classList.remove("hidden");
-            if (targetUnit !== "all") {
-                const body = card.querySelector(".unit-card-body");
-                const icon = card.querySelector(".unit-card-icon");
-                if (body) body.classList.remove("hidden");
-                if (icon) icon.classList.add("rotate-180");
-            }
+            const body = card.querySelector(".unit-card-body");
+            const icon = card.querySelector(".unit-card-icon");
+            if (body) body.classList.remove("hidden");
+            if (icon) icon.classList.add("rotate-180");
         } else {
             card.classList.add("hidden");
         }
     });
-
-    // Yumuşak kaydırma
-    if (targetUnit !== "all") {
-        const targetCard = container.querySelector(`.unit-accordion-card[data-unit="${targetUnit}"]`);
-        if (targetCard) {
-            targetCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        }
-    }
 };
 
 window.expandAllAccordions = function(groupId) {
