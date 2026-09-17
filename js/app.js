@@ -3916,7 +3916,16 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || 'ÖZEL FÖY'}</span>
                                             <span class="text-[11px] font-bold text-slate-400">Yüklendi</span>
                                         </div>
-                                        <h5 class="text-sm font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
+                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
+                                        <!-- Görsel Kapak Kutusu -->
+                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')">
+                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="absolute bottom-2.5 right-2.5">
+                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                    <i class="fa-solid fa-eye"></i> Görseli Aç
+                                                </span>
+                                            </div>
+                                        </div>
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
                                     </div>
                                     <div>
@@ -3943,11 +3952,20 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">Deney Föyü</span>
                                         <span class="text-[11px] font-bold text-slate-400">MEB Uyumlu</span>
                                     </div>
-                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`}</h5>
-                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
+                                    <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`}</h5>
+                                    <!-- Görsel Kapak Kutusu -->
+                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}')">
+                                        <img src="${resolveMaterialCover(labGuideItem) || 'assets/lab-guvenligi.svg'}" alt="${labGuideItem.title || 'Laboratuvar Rehberi'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <div class="absolute bottom-2.5 right-2.5">
+                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                <i class="fa-solid fa-eye"></i> Kılavuzu Aç
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
                                 </div>
                                 <div>
-                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
+                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
                                         <i class="fa-solid fa-eye text-xs"></i>
                                         <span>Kılavuzu Aç & İncele</span>
                                     </button>
@@ -3967,11 +3985,20 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">PhET Simülasyon</span>
                                         <span class="text-[11px] font-bold text-slate-400">3D İnteraktif</span>
                                     </div>
-                                    <h5 class="text-sm font-black text-slate-900 mb-1.5">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
-                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed">${labSimItem.desc || 'Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.'}</p>
+                                    <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
+                                    <!-- Görsel Kapak Kutusu -->
+                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')">
+                                        <img src="${resolveMaterialCover(labSimItem)}" alt="${labSimItem.title || 'PhET Simülasyon'}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <div class="absolute bottom-2.5 right-2.5">
+                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                <i class="fa-solid fa-play"></i> Simülasyonu Aç
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labSimItem.desc || 'Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.'}</p>
                                 </div>
                                 <div>
-                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
+                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
                                         <i class="fa-solid fa-play text-xs"></i>
                                         <span>Simülasyonu Başlat</span>
                                     </button>
