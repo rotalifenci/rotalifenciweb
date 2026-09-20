@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-100 text-slate-900 font-sans min-h-screen antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+/* Editorial Drop Cap helper */
+.editorial-drop-cap::first-letter {
+  float: left;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: 3.6rem;
+  line-height: 0.8;
+  padding-top: 4px;
+  padding-right: 10px;
+  padding-bottom: 2px;
+  font-weight: 700;
+  color: #0F172A;
+}
+
+/* Custom Scrollbar for Magazine Thumbs and Form */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   MİLİMETRİK A4 SAYFA MARJLARI VE SABİT FOOTER MİMARİSİ
+   Kapsayıcı: 210mm x 297mm, overflow: hidden, position: relative
+   Footer: absolute, bottom: 20mm, left: 18mm, right: 18mm, height: 15mm
+   İçerik (Main): height: calc(100% - 40mm), overflow: hidden, display: block
+   ───────────────────────────────────────────────────────────── */
+
+/* Baskı (Print) Stillerini Ez (Override) */
+@page {
+  size: A4;
+  margin: 0mm !important;
+}
+
+/* Sayfa konteynerine (A4 alanına) doğrudan CSS ile kesin milimetrik ölçüleri zorunlu ekle */
+.print-page,
+.a4-page-renderer,
+#active-preview-page,
+.a4-container {
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  position: relative !important;
+  width: 210mm !important;
+  height: 297mm !important;
+  max-width: 210mm !important;
+  max-height: 297mm !important;
+  padding-top: 16mm !important;
+  padding-bottom: 20mm !important;
+  padding-left: 18mm !important;
+  padding-right: 18mm !important;
+}
+
+/* İçerik Taşma Koruması: Metin alanının footer'ı ezmesini engellemek için */
+.print-page main,
+.a4-page-renderer main,
+#active-preview-page main {
+  height: calc(100% - 40mm) !important;
+  max-height: calc(100% - 40mm) !important;
+  overflow: hidden !important;
+  box-sizing: border-box !important;
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Korumalı Alt Bilgi (Footer): Sayfa altına mutlak olarak sabitlenmiş, asla kesilmez */
+.print-page footer,
+.a4-page-renderer footer,
+#active-preview-page footer {
+  position: absolute !important;
+  bottom: 20mm !important;
+  left: 18mm !important;
+  right: 18mm !important;
+  height: 15mm !important;
+  box-sizing: border-box !important;
+  z-index: 30 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+@media print {
+  html, body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    margin: 0mm !important;
+    padding: 0mm !important;
+    width: 210mm !important;
+    height: 297mm !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Yalnızca ekran yönetim butonlarını gizle, dergi sayfa içi header/footer'ı koru */
+  .no-print, button:not(.keep-print) {
+    display: none !important;
+  }
+
+  .print-page,
+  .a4-page-renderer,
+  #active-preview-page {
+    width: 210mm !important;
+    height: 297mm !important;
+    max-width: 210mm !important;
+    max-height: 297mm !important;
+    box-sizing: border-box !important;
+    padding-top: 16mm !important;
+    padding-bottom: 20mm !important;
+    padding-left: 18mm !important;
+    padding-right: 18mm !important;
+    box-shadow: none !important;
+    border: none !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    position: relative !important;
+  }
+
+  .a4-page-renderer header,
+  .print-page header {
+    display: flex !important;
+  }
+
+  .a4-page-renderer main,
+  .print-page main {
+    height: calc(100% - 40mm) !important;
+    overflow: hidden !important;
+    display: block !important;
+  }
+
+  .a4-page-renderer footer,
+  .print-page footer {
+    display: flex !important;
+    position: absolute !important;
+    bottom: 20mm !important;
+    left: 18mm !important;
+    right: 18mm !important;
+    height: 15mm !important;
+    box-sizing: border-box !important;
+    z-index: 50 !important;
+  }
+}
