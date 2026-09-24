@@ -188,26 +188,42 @@ const CloudSyncManager = {
             let cloudMaterials = [];
             let cloudDeletedIds = [];
             let fetchSuccess = false;
+
+            // 🌟 0. ÖNCELİK: Supabase Bulut Veritabanı (Çoklu cihaz senkronizasyonu)
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                try {
+                    const sbMaterials = await RotaliCloud.fetchMaterials();
+                    if (Array.isArray(sbMaterials) && sbMaterials.length > 0) {
+                        cloudMaterials = sbMaterials;
+                        fetchSuccess = true;
+                    }
+                } catch(sbErr) {
+                    console.warn("Supabase sync fetch error:", sbErr);
+                }
+            }
+
             const noCacheHeaders = {
                 "Cache-Control": "no-cache, no-store, must-revalidate",
                 "Pragma": "no-cache"
             };
 
-            // Önce API endpoint dene
-            try {
-                const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}&r=${Math.random()}`, {
-                    headers: noCacheHeaders
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && Array.isArray(data.materials)) {
-                        cloudMaterials = data.materials;
-                        cloudDeletedIds = Array.isArray(data.deletedIds) ? data.deletedIds : [];
-                        fetchSuccess = true;
+            // Önce API endpoint dene (Gist / Vercel fallback)
+            if (!fetchSuccess) {
+                try {
+                    const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}&r=${Math.random()}`, {
+                        headers: noCacheHeaders
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && Array.isArray(data.materials)) {
+                            cloudMaterials = data.materials;
+                            cloudDeletedIds = Array.isArray(data.deletedIds) ? data.deletedIds : [];
+                            fetchSuccess = true;
+                        }
                     }
+                } catch(apiErr) {
+                    console.warn("api/sync fetch error, trying fallback:", apiErr);
                 }
-            } catch(apiErr) {
-                console.warn("api/sync fetch error, trying fallback:", apiErr);
             }
 
             // Fallback: Canlı rotalifenci.vercel.app/api/sync
@@ -385,6 +401,18 @@ const CloudSyncManager = {
                 return copy;
             });
 
+            // 🌟 Supabase Bulut Veritabanı ile Anında Eşitle
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                try {
+                    for (const m of cleanMaterials) {
+                        await RotaliCloud.saveMaterial(m);
+                    }
+                    console.log("☁️ Supabase bulut veritabanına tüm materyaller başarıyla eşitlendi.");
+                } catch(sbErr) {
+                    console.warn("Supabase uploadToCloud error:", sbErr);
+                }
+            }
+
             const payload = {
                 materials: cleanMaterials,
                 deletedIds: deletedIds,
@@ -434,6 +462,13 @@ const CloudSyncManager = {
     async deleteMaterial(id, updatedList) {
         addDeletedMaterialId(id);
         
+        // 🌟 Supabase Bulut Veritabanından ve Storage'dan Sil
+        if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            try {
+                await RotaliCloud.deleteMaterial(id);
+            } catch(e) {}
+        }
+
         // ⚡ HAFİF VE ANLIK BULUT SİLME (50 Baytlık Doğrudan İstek)
         const deletePayload = {
             action: "delete",
@@ -4859,13 +4894,37 @@ window.rotaliFileManager = function() {
 
         init() {
             this.loadInitialFiles();
+            // ⚡ Gerçek zamanlı bulut dinleyicisi (Diğer cihazlardan eklenenler anında gelsin)
+            if (!this._hasCloudListener) {
+                this._hasCloudListener = true;
+                window.addEventListener('rotali-cloud-sync', () => {
+                    this.loadInitialFiles();
+                });
+            }
         },
 
-        loadInitialFiles() {
+        async loadInitialFiles() {
             this.isLoading = true;
             try {
+                let mats = [];
+                // 1. Önce Supabase bulut veritabanından güncel verileri çek
+                if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                    try {
+                        const cloudData = await RotaliCloud.fetchMaterials();
+                        if (Array.isArray(cloudData) && cloudData.length > 0) {
+                            mats = cloudData;
+                        }
+                    } catch(cErr) {
+                        console.warn("RotaliCloud fetch error:", cErr);
+                    }
+                }
+
+                // 2. Bulutta henüz yoksa veya yapılandırılmamışsa yerel listeden yükle
+                if (mats.length === 0) {
+                    mats = (typeof getCustomMaterialsList === "function" ? getCustomMaterialsList() : []) || [];
+                }
+
                 const loaded = [];
-                const mats = (typeof getCustomMaterialsList === "function" ? getCustomMaterialsList() : []) || [];
                 mats.forEach(m => {
                     if (!m) return;
                     const fmt = String(m.format || 'PDF').toUpperCase();
@@ -4888,13 +4947,14 @@ window.rotaliFileManager = function() {
                         title: m.title || m.fileName || 'Dosya',
                         format: fmt,
                         typeCategory: typeCategory,
-                        size: m.size || 'MEB Arşivi',
-                        date: m.createdAt || m.updatedAt || '17.09.2026',
+                        size: m.size || (m.isCloud ? 'Bulut Arşivi' : 'MEB Arşivi'),
+                        date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('tr-TR') : (m.updatedAt || '17.09.2026'),
                         url: m.fileUrl || m.imageUrl || '#',
                         blobUrl: null,
                         category: m.category || '',
                         grade: m.grade || '5',
-                        isLocal: false
+                        isLocal: !m.isCloud,
+                        isCloud: !!m.isCloud
                     });
                 });
                 this.files = loaded;
@@ -4919,47 +4979,78 @@ window.rotaliFileManager = function() {
             this.processFileList(droppedFiles);
         },
 
-        processFileList(fileList) {
-            Array.from(fileList).forEach(file => {
-                // 1. Benzersiz Kimliklendirme
-                const uniqueId = 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
-                // 2. Bağımsız Bellek Yönetimi (Ayrı Blob URL per dosya)
-                const blobUrl = URL.createObjectURL(file);
-                const ext = file.name.split('.').pop().toUpperCase();
+        async processFileList(fileList) {
+            this.isLoading = true;
+            try {
+                for (const file of Array.from(fileList)) {
+                    // 1. Benzersiz Kimliklendirme
+                    const uniqueId = 'mat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+                    const ext = file.name.split('.').pop().toUpperCase();
 
-                let typeCat = 'dokuman';
-                if (['PPTX', 'PPT'].includes(ext)) typeCat = 'sunum';
-                else if (['PNG', 'JPG', 'JPEG', 'WEBP', 'SVG', 'GIF'].includes(ext)) typeCat = 'gorsel';
-                else if (['MP4', 'WEBM', 'MKV', 'MOV'].includes(ext)) typeCat = 'video';
-                else if (['ZIP', 'RAR', '7Z', 'TAR', 'GZ'].includes(ext)) typeCat = 'arsiv';
+                    let typeCat = 'dokuman';
+                    if (['PPTX', 'PPT'].includes(ext)) typeCat = 'sunum';
+                    else if (['PNG', 'JPG', 'JPEG', 'WEBP', 'SVG', 'GIF'].includes(ext)) typeCat = 'gorsel';
+                    else if (['MP4', 'WEBM', 'MKV', 'MOV'].includes(ext)) typeCat = 'video';
+                    else if (['ZIP', 'RAR', '7Z', 'TAR', 'GZ'].includes(ext)) typeCat = 'arsiv';
 
-                const newFile = {
-                    id: uniqueId,
-                    name: file.name,
-                    title: file.name.replace(/\.[^/.]+$/, ""),
-                    format: ext,
-                    typeCategory: typeCat,
-                    size: this.formatFileSize(file.size),
-                    date: new Date().toLocaleDateString('tr-TR'),
-                    url: blobUrl,
-                    blobUrl: blobUrl,
-                    rawFile: file,
-                    isLocal: true
-                };
+                    let finalUrl = URL.createObjectURL(file);
+                    let isCloudStored = false;
 
-                this.files.unshift(newFile);
+                    // 2. Bulut Depolama (Storage) Yüklemesi
+                    if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                        try {
+                            if (typeof showToast === 'function') {
+                                showToast(`☁️ "${file.name}" bulut depolamaya yükleniyor...`, 'info');
+                            }
+                            const upRes = await RotaliCloud.uploadFile(file, 'materials');
+                            if (upRes && upRes.publicUrl) {
+                                finalUrl = upRes.publicUrl;
+                                isCloudStored = true;
+                            }
+                        } catch(upErr) {
+                            console.warn("Storage upload error, using local fallback:", upErr);
+                        }
+                    }
 
-                if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
-                    RotaliDB.saveFile(uniqueId, file, file.name, file.type).catch(console.error);
+                    const newFile = {
+                        id: uniqueId,
+                        name: file.name,
+                        title: file.name.replace(/\.[^/.]+$/, ""),
+                        format: ext,
+                        typeCategory: typeCat,
+                        size: this.formatFileSize(file.size),
+                        date: new Date().toLocaleDateString('tr-TR'),
+                        url: finalUrl,
+                        fileUrl: finalUrl,
+                        blobUrl: isCloudStored ? null : finalUrl,
+                        rawFile: file,
+                        isLocal: !isCloudStored,
+                        isCloud: isCloudStored
+                    };
+
+                    this.files.unshift(newFile);
+
+                    // 3. Bulut Veritabanına Anında Kaydet (Diğer tüm cihazlarda anında görünür)
+                    if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                        await RotaliCloud.saveMaterial(newFile);
+                    }
+
+                    if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
+                        RotaliDB.saveFile(uniqueId, file, file.name, file.type).catch(console.error);
+                    }
                 }
-            });
 
-            if (typeof showToast === "function") {
-                showToast(`✅ ${fileList.length} dosya başarıyla yüklendi!`, "success");
+                if (typeof showToast === "function") {
+                    showToast(`✅ ${fileList.length} dosya başarıyla yüklendi ve senkronize edildi!`, "success");
+                }
+            } catch(procErr) {
+                console.error("processFileList error:", procErr);
+            } finally {
+                this.isLoading = false;
             }
         },
 
-        addWebLink() {
+        async addWebLink() {
             let rawUrl = (this.newLinkUrl || '').trim();
             if (!rawUrl) {
                 this.linkError = 'Lütfen bir web bağlantısı giriniz.';
@@ -5018,14 +5109,26 @@ window.rotaliFileManager = function() {
                 size: 'Web Linki',
                 date: new Date().toLocaleDateString('tr-TR'),
                 url: rawUrl,
+                fileUrl: rawUrl,
                 blobUrl: null,
-                isLocal: true,
-                isLink: true
+                isLocal: false,
+                isLink: true,
+                isCloud: true
             };
 
             this.files.unshift(newFile);
             this.newLinkUrl = '';
             this.newLinkTitle = '';
+
+            // Bulut Veritabanına Anında Kaydet (Telefon ve bilgisayar anında görür)
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                const saved = await RotaliCloud.saveMaterial(newFile);
+                if (saved && typeof showToast === 'function') {
+                    showToast('✅ Web bağlantısı buluta kaydedildi (tüm cihazlarda anında aktif)!', 'success');
+                    return;
+                }
+            }
+
             if (typeof showToast === 'function') {
                 showToast('✅ Web bağlantısı başarıyla eklendi!', 'success');
             }
@@ -5118,7 +5221,7 @@ window.rotaliFileManager = function() {
             this.selectedFile = null;
         },
 
-        deleteFile(id) {
+        async deleteFile(id) {
             const idx = this.files.findIndex(f => f.id === id);
             if (idx !== -1) {
                 const f = this.files[idx];
@@ -5126,7 +5229,13 @@ window.rotaliFileManager = function() {
                     try { URL.revokeObjectURL(f.blobUrl); } catch(e) {}
                 }
                 this.files.splice(idx, 1);
-                if (typeof showToast === "function") showToast("Dosya listeden kaldırıldı.", "info");
+
+                // Bulut Veritabanından ve Storage'dan Sil
+                if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                    await RotaliCloud.deleteMaterial(id);
+                }
+
+                if (typeof showToast === "function") showToast("Dosya buluttan ve listeden kaldırıldı.", "info");
             }
         }
     };
@@ -7289,6 +7398,9 @@ function updateAdminNavUI() {
         if (isAdmin) {
             topContainer.innerHTML = `
                 <div class="flex items-center gap-1.5 animate-in fade-in duration-200">
+                    <button type="button" onclick="if (window.RotaliCloud) RotaliCloud.openSettingsModal()" class="px-3 py-1.5 rounded-xl bg-indigo-900/80 hover:bg-indigo-800 text-indigo-200 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-indigo-700/60 active:scale-95 cursor-pointer" title="☁️ Supabase Bulut Veritabanı ve Depolama Ayarları">
+                        <i class="fa-solid fa-cloud"></i> <span class="hidden md:inline">Bulut Ayarları</span>
+                    </button>
                     <button type="button" onclick="triggerManualCloudSync(this)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-slate-700 active:scale-95 cursor-pointer" title="☁️ Canlı Bulut Eşitlemesini Çalıştır">
                         <i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden md:inline">Bulut Eşitle</span>
                     </button>
@@ -11667,19 +11779,37 @@ async function handleAdvMaterialSubmit(e) {
             fileFormat = finalFileName.split('.').pop().toUpperCase();
             hasBlob = true;
 
-            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda kota aşmadan anında açılır)
-            try {
-                const compressed = await compressImageIfNeeded(currentUploadedFile);
-                if (compressed) {
-                    fileDataUrl = compressed;
-                } else if (currentUploadedFile.size <= 10 * 1024 * 1024) {
-                    fileDataUrl = await readFileAsDataURL(currentUploadedFile);
-                }
-            } catch(e) {
-                console.warn("DataURL conversion error:", e);
+            // 🌟 1. Supabase Storage Bulut Depolamasına Yükle (PDF, Görsel, PPTX, Video)
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
                 try {
-                    fileDataUrl = await readFileAsDataURL(currentUploadedFile);
-                } catch(err2) {}
+                    submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> Bulut Depolamaya Yükleniyor...`;
+                    const upRes = await RotaliCloud.uploadFile(currentUploadedFile, 'materials');
+                    if (upRes && upRes.publicUrl) {
+                        externalUrl = upRes.publicUrl;
+                        fileDataUrl = upRes.publicUrl;
+                        hasBlob = false;
+                        console.log("☁️ Supabase Storage CDN URL:", externalUrl);
+                    }
+                } catch(cErr) {
+                    console.warn("Storage upload warning, fallback to local:", cErr);
+                }
+            }
+
+            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda kota aşmadan anında açılır)
+            if (!externalUrl) {
+                try {
+                    const compressed = await compressImageIfNeeded(currentUploadedFile);
+                    if (compressed) {
+                        fileDataUrl = compressed;
+                    } else if (currentUploadedFile.size <= 10 * 1024 * 1024) {
+                        fileDataUrl = await readFileAsDataURL(currentUploadedFile);
+                    }
+                } catch(e) {
+                    console.warn("DataURL conversion error:", e);
+                    try {
+                        fileDataUrl = await readFileAsDataURL(currentUploadedFile);
+                    } catch(err2) {}
+                }
             }
 
             // IndexedDB'ye de kaydet
