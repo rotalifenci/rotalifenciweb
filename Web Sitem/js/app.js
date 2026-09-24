@@ -4852,6 +4852,10 @@ window.rotaliFileManager = function() {
         selectedFile: null,
         isDragging: false,
         isLoading: false,
+        uploadMethod: 'file', // 'file' | 'link'
+        newLinkUrl: '',
+        newLinkTitle: '',
+        linkError: '',
 
         init() {
             this.loadInitialFiles();
@@ -4955,6 +4959,78 @@ window.rotaliFileManager = function() {
             }
         },
 
+        addWebLink() {
+            let rawUrl = (this.newLinkUrl || '').trim();
+            if (!rawUrl) {
+                this.linkError = 'Lütfen bir web bağlantısı giriniz.';
+                return;
+            }
+            // Katı kurallar kaldırıldı: https:// veya http:// ile başlayan geçerli ve güvenli her link kabul edilir!
+            if (!/^https?:\/\//i.test(rawUrl)) {
+                if (/^[\w.-]+\.[a-zA-Z]{2,}/.test(rawUrl)) {
+                    rawUrl = 'https://' + rawUrl;
+                } else {
+                    this.linkError = 'Lütfen "https://" ile başlayan geçerli bir web linki giriniz.';
+                    return;
+                }
+            }
+            this.linkError = '';
+
+            let fmt = 'Web Bağlantısı';
+            let typeCat = 'dokuman';
+            const lowerUrl = rawUrl.toLowerCase();
+
+            if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+                fmt = 'YouTube Video';
+                typeCat = 'video';
+            } else if (lowerUrl.includes('drive.google.com')) {
+                fmt = 'Google Drive';
+                typeCat = 'dokuman';
+            } else if (lowerUrl.includes('canva.com')) {
+                fmt = 'Canva';
+                typeCat = 'sunum';
+            } else if (lowerUrl.includes('gemini') || lowerUrl.includes('kacis') || lowerUrl.includes('kaçış') || lowerUrl.includes('escape') || lowerUrl.endsWith('.html')) {
+                fmt = 'Eğitsel Oyun';
+                typeCat = 'gorsel';
+            } else if (lowerUrl.endsWith('.pdf')) {
+                fmt = 'PDF';
+                typeCat = 'dokuman';
+            } else if (lowerUrl.endsWith('.pptx') || lowerUrl.endsWith('.ppt')) {
+                fmt = 'PPTX';
+                typeCat = 'sunum';
+            } else if (lowerUrl.endsWith('.mp4') || lowerUrl.endsWith('.webm')) {
+                fmt = 'MP4';
+                typeCat = 'video';
+            } else if (lowerUrl.endsWith('.zip') || lowerUrl.endsWith('.rar')) {
+                fmt = 'ZIP';
+                typeCat = 'arsiv';
+            }
+
+            const cleanTitle = (this.newLinkTitle || '').trim() || (fmt !== 'Web Bağlantısı' ? fmt : rawUrl);
+            const uniqueId = 'link-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+
+            const newFile = {
+                id: uniqueId,
+                name: cleanTitle,
+                title: cleanTitle,
+                format: fmt,
+                typeCategory: typeCat,
+                size: 'Web Linki',
+                date: new Date().toLocaleDateString('tr-TR'),
+                url: rawUrl,
+                blobUrl: null,
+                isLocal: true,
+                isLink: true
+            };
+
+            this.files.unshift(newFile);
+            this.newLinkUrl = '';
+            this.newLinkTitle = '';
+            if (typeof showToast === 'function') {
+                showToast('✅ Web bağlantısı başarıyla eklendi!', 'success');
+            }
+        },
+
         formatFileSize(bytes) {
             if (!bytes || bytes === 0) return '0 B';
             const k = 1024;
@@ -4985,6 +5061,21 @@ window.rotaliFileManager = function() {
 
             const fmt = (target.format || '').toUpperCase();
             const cat = target.typeCategory;
+            const targetUrl = target.blobUrl || target.url;
+
+            // Web linki kontrolü
+            if (target.isLink || fmt === 'WEB BAĞLANTISI' || fmt === 'EĞİTSEL OYUN' || (targetUrl && (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) && !target.blobUrl)) {
+                if (targetUrl.includes('gemini') || (target.title && (target.title.toLowerCase().includes('kaçış') || target.title.toLowerCase().includes('kacis')))) {
+                    openInteractiveGameModal('oyun-lab-kacis', target.title || 'Laboratuvar Kaçış Odası');
+                    return;
+                }
+                if (cat === 'video' || ['MP4', 'WEBM', 'YOUTUBE VIDEO'].includes(fmt)) {
+                    openInPageVideoModal(targetUrl, target.title, false, target.id);
+                    return;
+                }
+                window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                return;
+            }
 
             if (cat === 'sunum' || cat === 'arsiv' || ['PPTX', 'PPT', 'DOCX', 'DOC', 'XLSX', 'XLS', 'ZIP', 'RAR'].includes(fmt)) {
                 openOfficeDocumentAction({
@@ -5080,9 +5171,23 @@ function renderFileManagerPage(container) {
                 </div>
             </div>
 
-            <!-- Sürükle Bırak / Yükleme Alanı -->
+            <!-- Sürükle Bırak / Yükleme & Link Ekleme Alanı -->
             <div class="mb-8">
+                <!-- Sekme Değiştirici -->
+                <div class="flex items-center justify-center mb-4">
+                    <div class="inline-flex items-center p-1 bg-slate-200/90 rounded-2xl text-xs font-black shadow-inner">
+                        <button type="button" @click="uploadMethod = 'file'" :class="uploadMethod === 'file' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'" class="px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-cloud-arrow-up text-red-600"></i> 📁 Dosya Yükle
+                        </button>
+                        <button type="button" @click="uploadMethod = 'link'" :class="uploadMethod === 'link' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'" class="px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-link text-indigo-600"></i> 🔗 Web / Drive Linki
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Dosya Yükleme Alanı -->
                 <div 
+                    x-show="uploadMethod === 'file'"
                     class="border-2 border-dashed rounded-3xl p-6 sm:p-10 text-center transition-all cursor-pointer relative overflow-hidden group"
                     :class="isDragging ? 'border-red-500 bg-red-50/70 scale-[1.01]' : 'border-slate-300 hover:border-red-400 bg-white'"
                     x-on:dragover.prevent="isDragging = true"
@@ -5115,6 +5220,59 @@ function renderFileManagerPage(container) {
                         <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 text-[11px] font-black uppercase">MP4 VİDEO</span>
                         <span class="px-2.5 py-1 rounded-lg bg-violet-100 text-violet-700 text-[11px] font-black uppercase">GÖRSEL</span>
                         <span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 text-[11px] font-black uppercase">ZIP / ARŞİV</span>
+                    </div>
+                </div>
+
+                <!-- 2. Web / Drive Linki Ekleme Alanı -->
+                <div x-show="uploadMethod === 'link'" class="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="max-w-2xl mx-auto space-y-4">
+                        <div class="text-center mb-2">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mx-auto mb-2 shadow-xs">
+                                <i class="fa-solid fa-link"></i>
+                            </div>
+                            <h3 class="text-base font-black text-slate-900">Web / Drive / Çevrimiçi İçerik Bağlantısı Ekle</h3>
+                            <p class="text-xs text-slate-500 font-medium">Google Drive, YouTube, Canva, Gemini Canvas, interaktif web oyunları veya güvenli herhangi bir web bağlantısı (https://...)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Web Bağlantısı (URL) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    x-model="newLinkUrl" 
+                                    @keydown.enter="addWebLink()" 
+                                    placeholder="https://... (Örn: Drive, YouTube, Gemini Canvas, Simülasyon, Web Oyunu vb.)" 
+                                    class="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-xs"
+                                >
+                                <i class="fa-solid fa-globe absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">İçerik Başlığı (İsteğe Bağlı)</label>
+                            <input 
+                                type="text" 
+                                x-model="newLinkTitle" 
+                                @keydown.enter="addWebLink()" 
+                                placeholder="Örn: Laboratuvar Güvenlik Kaçış Odası Oyunu" 
+                                class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-xs"
+                            >
+                        </div>
+
+                        <div x-show="linkError" class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span x-text="linkError"></span>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button 
+                                type="button" 
+                                @click="addWebLink()" 
+                                class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-600/20 flex items-center gap-2 cursor-pointer"
+                            >
+                                <i class="fa-solid fa-plus"></i> Bağlantıyı Ekle
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -10021,8 +10179,35 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     const titleStr = String(gameTitle || "").toLowerCase();
 
     // Kaçış Odası veya Gemini ise kesinlikle yerel Kaçış Odası oyunumuzu hedefle
-    if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini")) {
-        resolvedKey = "oyun-lab-kacis";
+    if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 rounded-3xl max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-3 sm:p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
+                            <i class="fa-solid fa-door-open"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-amber-400">🚪 Acil Durum: Laboratuvardan Kaçış</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">Güvenlik Sembolleri ve Deney Görevleri • Kesintisiz Yerel Kaçış Oyunu</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/laboratuvar-kacis-odasi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        return;
     }
 
     // Determine if it's a built-in interactive game or external URL
@@ -10845,9 +11030,9 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
 
                     <!-- Embed Link -->
                     <div id="upload-method-link-container" class="hidden space-y-2">
-                        <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
+                        <label class="block text-[11px] font-black text-slate-700 uppercase">Web / Drive Linki (Google Drive, YouTube, Canva, Gemini veya Güvenli Herhangi Bir Bağlantı)</label>
                         <div class="relative">
-                            <input type="url" id="adv-link-input" oninput="handleAdvLinkInput(this.value)" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <input type="text" inputmode="url" id="adv-link-input" oninput="handleAdvLinkInput(this.value)" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://... (Örn: Drive, YouTube, Canva, Gemini Canvas veya herhangi bir web bağlantısı)" class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
                             <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         </div>
                     </div>
@@ -11504,11 +11689,29 @@ async function handleAdvMaterialSubmit(e) {
                 console.warn("IDB Save error:", idbErr);
             }
         } else if (linkVal) {
-            if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) fileFormat = "YouTube Video";
-            else if (linkVal.includes("drive.google.com")) fileFormat = "Google Drive";
-            else if (linkVal.includes("canva.com")) fileFormat = "Canva";
+            let cleanLink = linkVal.trim();
+            if (!/^https?:\/\//i.test(cleanLink) && /^[\w.-]+\.[a-zA-Z]{2,}/.test(cleanLink)) {
+                cleanLink = 'https://' + cleanLink;
+            }
+            externalUrl = cleanLink;
+            const lLower = cleanLink.toLowerCase();
+            if (lLower.includes("youtube.com") || lLower.includes("youtu.be")) fileFormat = "YouTube Video";
+            else if (lLower.includes("drive.google.com")) fileFormat = "Google Drive";
+            else if (lLower.includes("canva.com")) fileFormat = "Canva";
+            else if (lLower.includes("gemini") || lLower.includes("kacis") || lLower.includes("kaçış") || lLower.includes("escape") || lLower.endsWith(".html")) fileFormat = "Eğitsel Oyun";
+            else if (lLower.endsWith(".pdf")) fileFormat = "PDF";
+            else if (lLower.endsWith(".pptx") || lLower.endsWith(".ppt")) fileFormat = "PPTX";
+            else if (lLower.endsWith(".docx") || lLower.endsWith(".doc")) fileFormat = "Word";
+            else if (lLower.endsWith(".mp4") || lLower.endsWith(".webm")) fileFormat = "Video";
             else fileFormat = "Web Bağlantısı";
-            finalFileName = linkVal;
+            finalFileName = title || cleanLink;
+        } else if (!editingMaterialId) {
+            showToast("⚠️ Lütfen bir dosya yükleyin veya geçerli bir Web / Drive Linki girin!", "warning");
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Yayınla & Kaydet</span>`;
+            }
+            return;
         }
 
         if (editingMaterialId) {
@@ -11522,10 +11725,10 @@ async function handleAdvMaterialSubmit(e) {
                     title: title,
                     unit: unit,
                     desc: desc,
-                    fileName: currentUploadedFile ? finalFileName : customList[idx].fileName,
+                    fileName: currentUploadedFile ? finalFileName : (linkVal ? finalFileName : customList[idx].fileName),
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
                     imageUrl: chosenCover || (customList[idx].imageUrl || (externalUrl && !externalUrl.startsWith("data:") ? externalUrl : "")),
-                    format: fileFormat || customList[idx].format,
+                    format: (currentUploadedFile || linkVal) ? fileFormat : customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
                     visibility: visibility,
