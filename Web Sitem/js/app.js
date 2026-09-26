@@ -506,7 +506,7 @@ const CloudSyncManager = {
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
-const ROTALI_DATA_SCHEMA_VERSION = 20260924_08;
+const ROTALI_DATA_SCHEMA_VERSION = 20260927_07;
 
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;
@@ -739,11 +739,19 @@ function migrateAndSanitizeMaterials(rawList, forceMigrate = false) {
     // Map: id -> item
     const map = new Map();
 
-    // 1. Önce kayıtlı kullanıcı materyallerini yükle
+    // 1. Önce kayıtlı kullanıcı materyallerini yükle (Hayalet ve sahte sistem şablonları elenir)
+    const ghostSystemIds = new Set([
+        "std-ders-sunumu-5-1", "std-ders-sunumu-6-1", "std-ders-sunumu-7-1", "std-ders-sunumu-8-1",
+        "mat-5-unite-bilgi", "mat-5-lab-guvenlik-gorsel", "not-5-unite-bilgilendirmeleri"
+    ]);
+
     if (Array.isArray(rawList)) {
         for (const raw of rawList) {
             const item = sanitizeMaterialItem(raw);
             if (!item || !item.id || deletedIds.has(item.id)) continue;
+            if (ghostSystemIds.has(item.id)) continue;
+            // Dosyası olmayan sahte sistem föyleri/sunumları temizlenir
+            if ((item.id.startsWith("foy-") || item.id.startsWith("std-") || item.id.startsWith("not-5-")) && (!item.fileUrl || item.fileUrl === "#" || item.fileUrl.trim() === "")) continue;
             map.set(item.id, item);
         }
     }
@@ -1204,7 +1212,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     <span>${actionUI.text}</span>
                                 </button>
 
-                                ${isAdmin ? `
+                                ${(isAdmin || subTab === "projeler" || subTab === "proje") ? `
                                     <div class="flex items-center gap-1.5 mt-2">
                                         <button type="button" onclick="moveCustomMaterial('${item.id}', -1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Yukarı Taşı">
                                             <i class="fa-solid fa-arrow-up"></i>
@@ -2290,7 +2298,6 @@ function renderGradesOverview(container) {
                 <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Eğitsel Oyunlar.</p>
             </div>
 
-            ${renderCustomMaterialsSection("all", "projeler")}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 ${PORTAL_GRADES.map(g => `
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
@@ -3292,12 +3299,33 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
 
     const allCustomMaterials = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const getTabCustomCount = (tabKey) => {
+        const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
         return allCustomMaterials.filter(item => {
+            if (!item || !item.id || deletedIds.has(item.id)) return false;
+
             const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
             const normTargetGrade = String(grade.number || "").replace(/^grade-/, "").trim().toLowerCase();
             const gradeMatch = (normTargetGrade === "all" || normItemGrade === "all" || normItemGrade === normTargetGrade);
             if (!gradeMatch) return false;
-            return matchesSubTabCategory(item, tabKey);
+
+            if (!matchesSubTabCategory(item, tabKey)) return false;
+
+            // Standart sistem şablonu veya mock ID'leri gerçek dosya olmadıkça kullanıcı içeriği sayılmaz
+            const id = String(item.id);
+            const isSystemPlaceholder = id.startsWith("std-") || id.startsWith("foy-") || id.startsWith("book-") || id.startsWith("lab-") || id.startsWith("default-") || id === "not-5-unite-bilgilendirmeleri";
+            
+            const hasRealFile = (item.fileUrl && item.fileUrl !== "#" && item.fileUrl.trim() !== "" && !item.fileUrl.startsWith("assets/lab-guvenligi")) || !!item.hasBlob;
+            
+            if (isSystemPlaceholder && !hasRealFile) {
+                return false;
+            }
+
+            // Dosya veya içerik yoksa sayma
+            if (!hasRealFile && (!item.imageUrl || item.imageUrl === "#" || item.imageUrl.trim() === "")) {
+                return false;
+            }
+
+            return true;
         }).length;
     };
 
@@ -3356,60 +3384,88 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
 
                             <!-- 3. Videolar -->
                             <a href="#grade/${grade.id}/videolar" onclick="switchGradeSubTab('${grade.id}', 'videolar', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'videolar' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'videolar' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'videolar' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-circle-play"></i>
+                                    ${getTabCustomCount('videolar') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🎥 VİDEOLAR</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🎥 VİDEOLAR</span>
+                                    ${getTabCustomCount('videolar') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'videolar' ? 'bg-rose-100 text-rose-800' : 'bg-white/30 text-white'}">${getTabCustomCount('videolar')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 4. Etkinlikler -->
                             <a href="#grade/${grade.id}/etkinlikler" onclick="switchGradeSubTab('${grade.id}', 'etkinlikler', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'etkinlikler' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-puzzle-piece"></i>
+                                    ${getTabCustomCount('etkinlikler') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🧩 ETKİNLİKLER</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🧩 ETKİNLİKLER</span>
+                                    ${getTabCustomCount('etkinlikler') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'etkinlikler' ? 'bg-emerald-100 text-emerald-800' : 'bg-white/30 text-white'}">${getTabCustomCount('etkinlikler')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 5. Soru Bankası -->
                             <a href="#grade/${grade.id}/soru-bankasi" onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'soru-bankasi' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'soru-bankasi' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'soru-bankasi' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-book-open-reader"></i>
+                                    ${getTabCustomCount('soru-bankasi') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-indigo-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">📚 SORU BANKASI</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>📚 SORU BANKASI</span>
+                                    ${getTabCustomCount('soru-bankasi') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'soru-bankasi' ? 'bg-indigo-100 text-indigo-800' : 'bg-white/30 text-white'}">${getTabCustomCount('soru-bankasi')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 6. Denemeler -->
                             <a href="#grade/${grade.id}/denemeler" onclick="switchGradeSubTab('${grade.id}', 'denemeler', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'denemeler' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'denemeler' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'denemeler' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-bullseye"></i>
+                                    ${getTabCustomCount('denemeler') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-purple-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🎯 DENEMELER</span>
+                                    ${getTabCustomCount('denemeler') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'denemeler' ? 'bg-purple-100 text-purple-800' : 'bg-white/30 text-white'}">${getTabCustomCount('denemeler')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 7. Eğitsel Oyunlar -->
                             <a href="#grade/${grade.id}/egitsel-oyunlar" onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-gamepad"></i>
+                                    ${getTabCustomCount('egitsel-oyunlar') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-fuchsia-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🎮 EĞİTSEL OYUNLAR</span>
+                                    ${getTabCustomCount('egitsel-oyunlar') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-100 text-fuchsia-800' : 'bg-white/30 text-white'}">${getTabCustomCount('egitsel-oyunlar')}</span>` : ''}
+                                </span>
                             </a>
 
                             ${grade.number === 8 || grade.isLGS ? `
                             <!-- 8. LGS Pusulası (8. Sınıfa Özel) -->
                             <a href="#grade/${grade.id}/lgs" onclick="switchGradeSubTab('${grade.id}', 'lgs', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-graduation-cap"></i>
+                                    ${getTabCustomCount('lgs') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🧭 LGS PUSULASI</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🧭 LGS PUSULASI</span>
+                                    ${getTabCustomCount('lgs') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-100 text-red-800' : 'bg-white/30 text-white'}">${getTabCustomCount('lgs')}</span>` : ''}
+                                </span>
                             </a>
                             ` : ''}
 
                             <!-- Bilimin Rotasını Çizenler (EN SONDA) -->
                             <a href="#grade/${grade.id}/bilim-insanlari" onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'bilim-insanlari' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-telescope"></i>
+                                    ${getTabCustomCount('bilim-insanlari') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🔭 BİLİMİN ROTASINI ÇİZENLER</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🔭 BİLİMİN ROTASINI ÇİZENLER</span>
+                                    ${getTabCustomCount('bilim-insanlari') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'bilim-insanlari' ? 'bg-amber-100 text-amber-800' : 'bg-white/30 text-white'}">${getTabCustomCount('bilim-insanlari')}</span>` : ''}
+                                </span>
                             </a>
                         </div>
                     </div>
@@ -5578,9 +5634,28 @@ function restoreHiddenProjects() {
     if (appEl) renderProjectsPage(appEl);
 }
 
+function getProjectCategoriesWithCustom() {
+    let customOverrides = {};
+    try {
+        customOverrides = JSON.parse(localStorage.getItem("rotali_project_categories_custom") || "{}");
+    } catch(e) {}
+
+    return PROJECT_CENTER_DATA.categories.map(cat => {
+        const ovr = customOverrides[cat.id];
+        if (!ovr) return { ...cat };
+        return {
+            ...cat,
+            name: ovr.name || cat.name,
+            badge: ovr.badge || cat.badge,
+            ideas: Array.isArray(ovr.ideas) && ovr.ideas.length > 0 ? ovr.ideas : cat.ideas
+        };
+    });
+}
+
 function renderProjectsPage(container) {
     const hiddenProjects = getHiddenProjects();
-    const visibleCategories = PROJECT_CENTER_DATA.categories.filter(c => !hiddenProjects.includes(c.id));
+    const allCategories = getProjectCategoriesWithCustom();
+    const visibleCategories = allCategories.filter(c => !hiddenProjects.includes(c.id));
 
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -5606,14 +5681,14 @@ function renderProjectsPage(container) {
                 </div>
                 <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
                     ${hiddenProjects.length > 0 ? `
-                        <button type="button" onclick="restoreHiddenProjects()" class="px-3.5 py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
+                        <button type="button" onclick="restoreHiddenProjects()" class="px-3.5 py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
                             <i class="fa-solid fa-rotate-left text-amber-600"></i>
                             <span>Gizlenenleri Geri Getir (${hiddenProjects.length})</span>
                         </button>
                     ` : ''}
-                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'projeler')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-orange-500/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'TÜBİTAK & Projeler')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
                         <i class="fa-solid fa-plus-circle text-sm"></i>
-                        <span>Yeni Proje / Şablon Ekle</span>
+                        <span>➕ Yeni Proje / Şablon Ekle</span>
                     </button>
                 </div>
             </div>
@@ -5626,19 +5701,25 @@ function renderProjectsPage(container) {
                 ${visibleCategories.map(cat => `
                     <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between relative group hover:shadow-xl transition-all duration-300">
                         <div>
-                            <!-- Kart Üst Bar & Ekle/Çıkar Butonları -->
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs">${cat.badge}</span>
+                            <!-- Kart Üst Bar & Ekle/Düzenle/Çıkar Butonları -->
+                            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs border border-amber-200">${cat.badge}</span>
                                 
                                 <div class="flex items-center gap-1.5">
-                                    <!-- Bu Projeye Dosya Ekle -->
-                                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'projeler')" class="px-2.5 py-1 bg-amber-100/80 hover:bg-amber-200 text-amber-900 rounded-lg text-[11px] font-black transition-colors flex items-center gap-1 cursor-pointer" title="Bu projeye özel rapor, şablon veya dosya ekle">
+                                    <!-- Ekle -->
+                                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, '${cat.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projeye dosya veya rapor ekle">
                                         <i class="fa-solid fa-plus text-xs"></i>
                                         <span>Ekle</span>
                                     </button>
 
-                                    <!-- Bölümden Çıkar / Gizle -->
-                                    <button type="button" onclick="hideProjectCard('${cat.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-lg text-[11px] font-black transition-colors flex items-center gap-1 cursor-pointer" title="Bu proje kartını bölümden çıkar">
+                                    <!-- Düzenle -->
+                                    <button type="button" onclick="openEditProjectCategoryModal('${cat.id}')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projenin başlığını veya içeriğini düzenle">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                        <span>Düzenle</span>
+                                    </button>
+
+                                    <!-- Çıkar -->
+                                    <button type="button" onclick="hideProjectCard('${cat.id}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer border border-slate-200 active:scale-95" title="Bu proje kartını bölümden çıkar">
                                         <i class="fa-solid fa-trash-can text-xs"></i>
                                         <span>Çıkar</span>
                                     </button>
@@ -5646,7 +5727,7 @@ function renderProjectsPage(container) {
                             </div>
 
                             <h3 class="text-lg sm:text-xl font-black text-slate-900 mb-4 flex items-center gap-2.5">
-                                <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shrink-0">
+                                <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shrink-0 shadow-sm">
                                     <i class="${cat.icon}"></i>
                                 </span>
                                 <span>${cat.name}</span>
@@ -5654,7 +5735,7 @@ function renderProjectsPage(container) {
 
                             <div class="space-y-2 mb-6">
                                 ${cat.steps.map(s => `
-                                    <div class="p-3 bg-slate-50 rounded-xl text-xs">
+                                    <div class="p-3 bg-slate-50 rounded-xl text-xs border border-slate-100">
                                         <span class="font-black text-slate-800 block">${s.step}</span>
                                         <span class="text-slate-500">${s.detail}</span>
                                     </div>
@@ -5669,18 +5750,131 @@ function renderProjectsPage(container) {
                             </div>
                         </div>
 
-                        <!-- Şablon İncele & İndir Butonu -->
-                        <div class="space-y-2 pt-2 border-t border-slate-100">
-                            <button onclick="openProjectTemplateModal('${cat.id}')" class="w-full py-3.5 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                        <!-- Şablon İncele & İndir Butonu ve Hızlı Ekle / Düzenle Butonları -->
+                        <div class="space-y-2 pt-3 border-t border-slate-100">
+                            <button onclick="openProjectTemplateModal('${cat.id}')" class="w-full py-3 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95">
                                 <i class="fa-solid fa-file-lines text-amber-400"></i>
                                 <span>Proje Rapor Şablonunu İncele & İndir (DOCX/PDF)</span>
                             </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, '${cat.name.replace(/'/g, "\\'")}')" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                                    <i class="fa-solid fa-plus-circle"></i>
+                                    <span>➕ Dosya Ekle</span>
+                                </button>
+                                <button type="button" onclick="openEditProjectCategoryModal('${cat.id}')" class="py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    <span>✏️ Düzenle</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 `).join("")}
             </div>
         </div>
     `;
+}
+
+// ✏️ PROJE KARTINI DÜZENLEME MODALI (Başlık, Rozet ve Fikirler)
+function openEditProjectCategoryModal(catId) {
+    const allCategories = getProjectCategoriesWithCustom();
+    const cat = allCategories.find(c => c.id === catId);
+    if (!cat) return;
+
+    let modal = document.getElementById("edit-project-category-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "edit-project-category-modal";
+        modal.className = "fixed inset-0 z-[9995] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 animate-in fade-in";
+        modal.onclick = function(e) {
+            if (e.target === this) closeEditProjectCategoryModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    const ideasText = Array.isArray(cat.ideas) ? cat.ideas.join("\n") : "";
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 relative animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-base shadow-sm">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </span>
+                    <div>
+                        <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">Proje Kartını Düzenle</h4>
+                        <p class="text-xs text-slate-400">Proje başlığını, rozetini ve örnek fikirleri güncelleyin</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditProjectCategoryModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveProjectCategory(event, '${cat.id}')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">Proje / Yarışma Başlığı</label>
+                    <input type="text" id="edit-cat-name" value="${cat.name.replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">Kategori / Rozet (Örn: Ulusal Yarışma)</label>
+                    <input type="text" id="edit-cat-badge" value="${(cat.badge || 'Ulusal Yarışma').replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">Örnek Proje Fikirleri (Her satıra 1 fikir)</label>
+                    <textarea id="edit-cat-ideas" rows="4" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">${ideasText}</textarea>
+                </div>
+
+                <div class="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="hideProjectCard('${cat.id}'); closeEditProjectCategoryModal();" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-trash-can"></i> Kartı Gizle
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeEditProjectCategoryModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer">
+                            İptal
+                        </button>
+                        <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-colors flex items-center gap-1.5 shadow-md shadow-amber-500/25 cursor-pointer">
+                            <i class="fa-solid fa-check"></i> Kaydet
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+}
+
+function closeEditProjectCategoryModal() {
+    const modal = document.getElementById("edit-project-category-modal");
+    if (modal) {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+    }
+}
+
+function handleSaveProjectCategory(e, catId) {
+    if (e) e.preventDefault();
+    const name = document.getElementById("edit-cat-name")?.value.trim();
+    const badge = document.getElementById("edit-cat-badge")?.value.trim();
+    const ideasRaw = document.getElementById("edit-cat-ideas")?.value || "";
+    const ideas = ideasRaw.split("\n").map(s => s.trim()).filter(Boolean);
+
+    try {
+        const saved = JSON.parse(localStorage.getItem("rotali_project_categories_custom") || "{}");
+        saved[catId] = { name, badge, ideas };
+        localStorage.setItem("rotali_project_categories_custom", JSON.stringify(saved));
+        if (typeof showToast === "function") {
+            showToast("✅ Proje bilgileri başarıyla güncellendi!", "success");
+        }
+    } catch(err) {
+        console.error("Proje kaydetme hatası:", err);
+    }
+
+    closeEditProjectCategoryModal();
+    const appEl = document.getElementById("app");
+    if (appEl) renderProjectsPage(appEl);
 }
 
 // 📄 PROJE RAPOR ŞABLONU MODALI (İnceleme, Word İndirme & PDF Yazdırma)
