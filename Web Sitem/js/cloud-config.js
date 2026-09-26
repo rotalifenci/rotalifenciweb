@@ -8,8 +8,8 @@
     // Aşağıdaki alanlara Supabase bilgilerinizi yazabilir veya
     // Sitedeki "Yönetici Paneli > Bulut Ayarları" penceresinden doğrudan girebilirsiniz.
     const DEFAULT_CONFIG = {
-        supabaseUrl: "", // Örn: https://xyzcompany.supabase.co
-        supabaseAnonKey: "", // Örn: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        supabaseUrl: "https://dlzlpstheykhrfeijiri.supabase.co",
+        supabaseAnonKey: "", // anon public key buraya gelecek
         bucketName: "rotali-files",
         tableName: "materials"
     };
