@@ -224,11 +224,34 @@
 
             console.log(`📤 Dosya Supabase Storage'a yükleniyor (${currentConfig.bucketName}): ${uniquePath}`);
 
+            const mimeType = file.type || (function(ext) {
+                switch(ext) {
+                    case "pdf": return "application/pdf";
+                    case "pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                    case "ppt": return "application/vnd.ms-powerpoint";
+                    case "docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                    case "doc": return "application/msword";
+                    case "xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                    case "xls": return "application/vnd.ms-excel";
+                    case "jpg": case "jpeg": return "image/jpeg";
+                    case "png": return "image/png";
+                    case "webp": return "image/webp";
+                    case "svg": return "image/svg+xml";
+                    case "mp4": return "video/mp4";
+                    case "webm": return "video/webm";
+                    case "mp3": return "audio/mpeg";
+                    case "zip": return "application/zip";
+                    case "rar": return "application/x-rar-compressed";
+                    default: return "application/octet-stream";
+                }
+            })(fileExt.toLowerCase());
+
             const { data, error } = await client.storage
                 .from(currentConfig.bucketName)
                 .upload(uniquePath, file, {
                     cacheControl: "3600",
-                    upsert: false
+                    upsert: false,
+                    contentType: mimeType
                 });
 
             if (error) {

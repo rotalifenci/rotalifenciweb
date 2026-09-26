@@ -391,8 +391,8 @@ const CloudSyncManager = {
                         copy.fileUrl = cached.fileUrl;
                     }
                 }
-                // 5MB üstü DataURL'leri buluta gönderme (Gist boyut sınırı)
-                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
+                // Sadece eski Gist/Vercel senkronizasyonunda 5MB üstü DataURL'ler sınırlandırılır (Supabase Storage varsa kısıtlama yapılmaz)
+                if (!window.RotaliCloud?.isConfigured() && copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
                     copy.fileUrl = "";
                     copy.hasBlob = true; // Bu cihazda IndexedDB'de saklanır işareti
                 }
@@ -8360,38 +8360,44 @@ async function tryLoadPdfDocument(id, fileUrl) {
     }
 
     if (!pdfData) {
-        // hasBlob = true ise ve gerçekten hiçbir veri bulunamadıysa dosya seçme opsiyonu sun
-        const hasRemoteBlob = bookInfo.hasBlob || (function() {
-            try {
-                if (Array.isArray(ROTALI_MATERIALS_CACHE) && id) {
-                    const m = ROTALI_MATERIALS_CACHE.find(c => c && c.id === id);
-                    return m && m.hasBlob;
-                }
-            } catch(e) {}
-            return false;
-        })();
+        // 🌟 1. ÖNCELİK: Görsel İçerik veya Kapak Resmi Varsa DOĞRUDAN GÖRÜNTÜLE
+        // Eğer materyal bir resim/görsel içeriyorsa (örneğin telefonla eklenen afiş, resim notu veya TÜBİTAK görseli),
+        // "Bu Cihazda Dosya Bulunamadı" demek yerine görsel görüntüleyicide aç!
+        const foundMat = (Array.isArray(ROTALI_MATERIALS_CACHE) && id) ? ROTALI_MATERIALS_CACHE.find(c => c && c.id === id) : null;
+        const candidateImg = (bookInfo && (bookInfo.imageUrl || bookInfo.coverUrl || bookInfo.kapakResmi)) ||
+                             (foundMat && (foundMat.imageUrl || foundMat.coverUrl || foundMat.kapakResmi));
 
-        if (hasRemoteBlob) {
+        if (candidateImg && (candidateImg.startsWith("data:image") || (!candidateImg.includes("assets/kapak-") && !candidateImg.toLowerCase().endsWith(".pdf")))) {
+            closeDigitalBookModal();
+            openInPageDocumentModal(candidateImg, (bookInfo && bookInfo.title) || (foundMat && foundMat.title) || "Ders Dokümanı / Görseli", (bookInfo && bookInfo.fileName) || (foundMat && foundMat.fileName) || "gorsel.jpg", true);
+            return;
+        }
+
+        // hasBlob = true ise veya veri bulunamadıysa dosya seçme opsiyonu sun
+        const hasRemoteBlob = bookInfo.hasBlob || (foundMat && foundMat.hasBlob);
+
+        if (hasRemoteBlob || !pdfData) {
             // Dosya başka cihazda mevcut ama bu cihazda yok - dosya seçme butonu göster
-            if (statusEl) statusEl.innerText = "Bu cihazda dosya bulunamadı";
+            if (statusEl) statusEl.innerText = "Dosyayı Eşitle / Aç";
             const container = document.getElementById("book-pages-container");
             if (container) {
                 container.innerHTML = `
                     <div class="flex flex-col items-center justify-center py-16 px-6 text-center gap-5">
-                        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-red-500/20 flex items-center justify-center text-4xl text-amber-400 shadow-lg border border-amber-500/30">
+                        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-red-500/20 flex items-center justify-center text-4xl text-amber-400 shadow-lg border border-amber-500/30 animate-pulse">
                             <i class="fa-solid fa-cloud-arrow-down"></i>
                         </div>
-                        <h3 class="text-lg font-black text-white">Bu Cihazda Dosya Bulunamadı</h3>
-                        <p class="text-sm text-slate-400 max-w-md leading-relaxed">
-                            Bu doküman başka bir cihazdan yüklenmiş. PDF dosyasını bu cihazdan da açabilmek için aşağıdaki butona tıklayarak dosyayı seçin.
-                            <br><span class="text-amber-400 font-bold">Dosya bir kez seçildiğinde bu cihaza kaydedilir ve her zaman açılır.</span>
+                        <h3 class="text-xl font-black text-white">Bu Cihazda Dosya Bulunamadı</h3>
+                        <p class="text-sm text-slate-300 max-w-md leading-relaxed">
+                            Bu doküman başka bir cihazdan yüklenmiş. Dosyayı (<strong>PDF, Word, PPTX, Excel, Görsel vb.</strong>) seçerek bu cihazda açabilir ve <strong>tek tıkla tüm cihazlarınıza (telefon, PC, tahta) eşitleyebilirsiniz</strong>.
                         </p>
-                        <label class="cursor-pointer px-6 py-3 bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95">
-                            <i class="fa-solid fa-file-arrow-up"></i>
-                            <span>PDF Dosyasını Seç</span>
-                            <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${id}')">
+                        <label class="cursor-pointer px-6 py-3.5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center gap-2.5 active:scale-95">
+                            <i class="fa-solid fa-file-arrow-up text-base"></i>
+                            <span>Dosyayı Seç ve Tüm Cihazlara Eşitle</span>
+                            <input type="file" accept="*/*" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${id}')">
                         </label>
-                        <p class="text-[10px] text-slate-500 mt-2">Aynı PDF dosyasını (${bookInfo.fileName || 'dosya.pdf'}) seçmeniz yeterli.</p>
+                        <p class="text-[11px] text-slate-400 mt-2 font-medium">
+                            ${bookInfo.fileName ? `Aranan dosya: <span class="text-amber-400 font-bold">${bookInfo.fileName}</span>` : 'Tüm dosya formatları desteklenmektedir.'}
+                        </p>
                     </div>
                 `;
             }
@@ -8851,49 +8857,100 @@ function closeDigitalBookModal() {
     }
 }
 
-// 🔄 ÇAPRAZ CİHAZ DOSYA YÜKLEMESİ - Başka cihazdan eklenen dosyayı bu cihaza da kaydet
+// 🔄 ÇAPRAZ CİHAZ DOSYA YÜKLEMESİ - Başka cihazdan eklenen dosyayı bu cihaza ve buluta kaydet (Tüm dosya türleri)
 async function handleCrossDevicePdfUpload(inputEl, materialId) {
     if (!inputEl || !inputEl.files || !inputEl.files[0]) return;
     const file = inputEl.files[0];
-    
-    // 1. IndexedDB'ye kaydet (Bu cihazda kalıcı olsun)
+    const fileName = file.name || "dosya";
+    const ext = fileName.split('.').pop().toLowerCase();
+    const item = Array.isArray(ROTALI_MATERIALS_CACHE) ? ROTALI_MATERIALS_CACHE.find(m => m && m.id === materialId) : null;
+    const itemTitle = (item && item.title) || fileName;
+
+    const statusEl = document.getElementById("book-modal-status");
+    if (statusEl) statusEl.innerText = "Dosya Buluta Eşitleniyor...";
+    if (typeof showToast === "function") {
+        showToast("☁️ Dosya yükleniyor ve tüm cihazlarınıza eşitleniyor...", "info");
+    }
+
+    let cloudPublicUrl = null;
+
+    // 1. Supabase Bulut Depolamasına (Storage) Yükle (Tüm Cihazlarda Kalıcı Olsun)
+    if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+        try {
+            const upRes = await RotaliCloud.uploadFile(file, "materials");
+            if (upRes && upRes.publicUrl) {
+                cloudPublicUrl = upRes.publicUrl;
+                console.log("☁️ Supabase Storage Çapraz Cihaz Yüklemesi Başarılı:", cloudPublicUrl);
+            }
+        } catch(sbErr) {
+            console.warn("Supabase Storage yükleme uyarısı:", sbErr);
+        }
+    }
+
+    // 2. IndexedDB'ye kaydet (Bu cihazda çevrimdışı da kalıcı olsun)
     if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
         try {
-            await RotaliDB.saveFile(materialId, file, file.name, file.type || "application/pdf");
-            if (typeof showToast === "function") {
-                showToast("✅ Dosya bu cihaza kaydedildi! Artık her zaman açılacak.", "success");
-            }
+            await RotaliDB.saveFile(materialId, file, fileName, file.type || "application/octet-stream");
         } catch(err) {
             console.warn("IDB save error:", err);
         }
     }
 
-    // 2. DataURL oluştur ve bellek önbelleğine ekle (Bulut sync için)
-    try {
-        if (file.size <= 5 * 1024 * 1024 && Array.isArray(ROTALI_MATERIALS_CACHE)) {
-            const dataUrl = await readFileAsDataURL(file);
-            const item = ROTALI_MATERIALS_CACHE.find(m => m && m.id === materialId);
-            if (item && dataUrl) {
-                item.fileUrl = dataUrl;
-                item.hasBlob = true;
-                saveCustomMaterialsSafe(ROTALI_MATERIALS_CACHE);
-                // Buluta da gönder ki diğer cihazlar da açabilsin
-                if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-                    CloudSyncManager.uploadToCloud(ROTALI_MATERIALS_CACHE, true);
-                }
-            }
-        }
-    } catch(e) {}
-
-    // 3. Okuyucuyu dosya ile yeniden başlat
+    // 3. Materyal kaydını güncelle ve buluta yaz
     const blobUrl = URL.createObjectURL(file);
+    const activeUrl = cloudPublicUrl || blobUrl;
+
+    if (item) {
+        item.fileUrl = cloudPublicUrl || (file.size <= 5 * 1024 * 1024 ? await readFileAsDataURL(file).catch(() => blobUrl) : blobUrl);
+        item.fileName = fileName;
+        item.hasBlob = !cloudPublicUrl;
+        saveCustomMaterialsSafe(ROTALI_MATERIALS_CACHE);
+
+        if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            try {
+                await RotaliCloud.saveMaterial(item);
+            } catch(e) {}
+        }
+    }
+
+    if (typeof showToast === "function") {
+        showToast("✅ Dosya başarıyla eşitlendi! Artık tüm cihazlardan anında açılacak.", "success");
+    }
+
+    // 4. DOSYA TÜRÜNE GÖRE UYGUN GÖRÜNTÜLEYİCİYİ AÇ
+    // A) Sunum & Ofis Dosyaları (PPTX, DOCX, XLSX, ZIP)
+    if (["pptx", "ppt", "docx", "doc", "xlsx", "xls", "zip", "rar", "7z"].includes(ext)) {
+        closeDigitalBookModal();
+        await openOfficeDocumentAction({
+            id: materialId,
+            title: itemTitle,
+            fileName: fileName,
+            fileUrl: activeUrl,
+            format: ext.toUpperCase()
+        });
+        return;
+    }
+
+    // B) Görseller (JPG, PNG, WEBP, SVG)
+    if (["jpg", "jpeg", "png", "webp", "svg", "gif"].includes(ext) || (file.type && file.type.startsWith("image/"))) {
+        closeDigitalBookModal();
+        openInPageDocumentModal(activeUrl, itemTitle, fileName, true);
+        return;
+    }
+
+    // C) Videolar (MP4, WebM)
+    if (["mp4", "webm", "ogg"].includes(ext) || (file.type && file.type.startsWith("video/"))) {
+        closeDigitalBookModal();
+        openInPageVideoModal(activeUrl, itemTitle, true, materialId);
+        return;
+    }
+
+    // D) PDF Dokümanı (PDF.js okuyucuda yükle)
     try {
         const ab = await file.arrayBuffer();
         const pdfData = new Uint8Array(ab);
-        
-        // PDF.js ile yeniden yükle
+
         if (window.pdfjsLib) {
-            const statusEl = document.getElementById("book-modal-status");
             if (statusEl) statusEl.innerText = "Doküman Yükleniyor...";
 
             const cMapOptions = {
@@ -8922,10 +8979,9 @@ async function handleCrossDevicePdfUpload(inputEl, materialId) {
         }
     } catch(err) {
         console.warn("Cross-device PDF load error:", err);
-        // Fallback: blob URL ile iframe göster
         const container = document.getElementById("book-pages-container");
         if (container) {
-            container.innerHTML = `<iframe src="${blobUrl}" class="w-full h-[80vh] rounded-xl border-0"></iframe>`;
+            container.innerHTML = `<iframe src="${activeUrl}" class="w-full h-[80vh] rounded-xl border-0"></iframe>`;
         }
     }
 }
@@ -9088,7 +9144,9 @@ function renderOfficeDocumentModal(item) {
         badgeText = "ARŞİV DOSYASI";
     }
 
+    const hasDownload = item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "" && item.downloadUrl !== "null";
     const isWebUrl = item.rawUrl && item.rawUrl.startsWith("http") && !item.rawUrl.includes("localhost") && !item.rawUrl.includes("127.0.0.1");
+    const googleDocsViewerUrl = isWebUrl ? `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true` : "";
 
     modal.innerHTML = `
         <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-white shadow-2xl relative animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
@@ -9122,17 +9180,35 @@ function renderOfficeDocumentModal(item) {
 
             <!-- Aksiyon Butonları -->
             <div class="space-y-3">
-                <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="w-full py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black text-sm uppercase rounded-2xl shadow-xl hover:shadow-orange-500/30 transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer">
-                    <i class="fa-solid fa-download text-base"></i>
-                    <span>${isPPT ? 'Sunumu İndir / Cihazda Aç' : 'Dosyayı İndir / Cihazda Aç'}</span>
-                </button>
+                ${hasDownload ? `
+                    <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="w-full py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black text-sm uppercase rounded-2xl shadow-xl hover:shadow-orange-500/30 transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-download text-base"></i>
+                        <span>${isPPT ? 'Sunumu İndir / Cihazda Aç' : 'Dosyayı İndir / Cihazda Aç'}</span>
+                    </button>
 
-                ${isWebUrl ? `
-                    <a href="https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(item.rawUrl)}" target="_blank" rel="noopener noreferrer" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase rounded-2xl border border-slate-700 transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                        <span>Office Online ile Önizle</span>
-                    </a>
-                ` : ''}
+                    ${isWebUrl ? `
+                        <button type="button" onclick="closeOfficeDocumentModal(); openInPageDocumentModal('${googleDocsViewerUrl}', '${item.title.replace(/'/g, "\\'")}', '${item.fileName.replace(/'/g, "\\'")}', false, '${item.rawUrl.replace(/'/g, "\\'")}')" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-brands fa-google text-sm"></i>
+                            <span>Google Dokümanlar ile Canlı Önizle</span>
+                        </button>
+
+                        <a href="https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(item.rawUrl)}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase rounded-2xl border border-slate-700 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <span>Office Online'da Aç</span>
+                        </a>
+                    ` : ''}
+                ` : `
+                    <div class="bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 text-center space-y-3">
+                        <p class="text-xs text-amber-300 font-bold leading-relaxed">
+                            Bu dosya başka bir cihazdan eklenmiş. Dosyayı seçerek bu cihazda açabilir ve <strong>tek tıkla tüm cihazlarınıza eşitleyebilirsiniz</strong>.
+                        </p>
+                        <label class="cursor-pointer px-5 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95">
+                            <i class="fa-solid fa-file-arrow-up text-sm"></i>
+                            <span>Dosyayı Seç ve Eşitle</span>
+                            <input type="file" accept="*/*" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${item.id}')">
+                        </label>
+                    </div>
+                `}
 
                 <button type="button" onclick="closeOfficeDocumentModal()" class="w-full py-2.5 bg-transparent hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-xs rounded-xl transition-all cursor-pointer">
                     Kapat
@@ -9197,6 +9273,27 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         targetUrl === "oyun-lab-kacis" || (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) ||
         (fallbackUrl && (fallbackUrl.includes("gemini.google") || fallbackUrl.includes("share.gemini.google")))) {
         openInteractiveGameModal("oyun-lab-kacis", title || (found && found.title) || "Laboratuvar Kaçış Odası");
+        return;
+    }
+
+    // 🌐 GOOGLE DRIVE VE DOCS BAĞLANTILARI (Önizleme moduyla doğrudan aç)
+    if (targetUrl && (targetUrl.includes("drive.google.com") || targetUrl.includes("docs.google.com"))) {
+        let drivePreview = targetUrl;
+        const fileIdMatch = targetUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || targetUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        if (fileIdMatch && fileIdMatch[1]) {
+            drivePreview = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+        }
+        openInPageDocumentModal(drivePreview, title || (found && found.title) || "Google Drive Dokümanı", fileName, false, targetUrl);
+        return;
+    }
+
+    // 🎨 CANVA TASARIM VE SUNUM BAĞLANTILARI
+    if (targetUrl && targetUrl.includes("canva.com")) {
+        let canvaEmbed = targetUrl;
+        if (!canvaEmbed.includes("view?embed")) {
+            canvaEmbed = canvaEmbed.replace(/\/view(\?.*)?$/, "/view?embed");
+        }
+        openInPageDocumentModal(canvaEmbed, title || (found && found.title) || "Canva Tasarımı", fileName, false, targetUrl);
         return;
     }
 
@@ -9282,16 +9379,11 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 
     // 3. 🖼️ GÖRSEL / AFİŞ / LABORATUVAR MALZEMELERİ İÇERİĞİ
-    // (Format PDF seçilmiş olsa dahi, fileUrl "#" olup imageUrl olan veya görsel formatlı materyaller burada açılır)
-    const isPdfContent = (checkFormat === "PDF" || checkFile.endsWith(".pdf") || (targetUrl && targetUrl.toLowerCase().includes(".pdf")) || (targetUrl && targetUrl.startsWith("data:application/pdf"))) && (targetUrl && targetUrl !== "#");
-
-    const isImageContent = !isPdfContent && (
-                           (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-"))) ||
+    // (Görsel formatlı materyaller veya fileUrl olmayıp kapak görseli bulunan ders notları)
+    const isImageContent = (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-"))) ||
                            ["JPG", "JPEG", "PNG", "WEBP", "SVG", "GÖRSEL", "RESİM"].includes(checkFormat) ||
                            checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || checkFile.endsWith(".webp") || checkFile.endsWith(".svg") ||
-                           (coverUrl && coverUrl.startsWith("data:image")) ||
-                           (coverUrl && (targetUrl === "#" || !targetUrl))
-    );
+                           ((!targetUrl || targetUrl === "#" || targetUrl === "") && coverUrl && (coverUrl.startsWith("data:image") || !coverUrl.includes("assets/kapak-")));
 
     if (isImageContent) {
         const activeImg = (targetUrl && targetUrl !== "#" && !targetUrl.includes(".pdf")) ? targetUrl : coverUrl;
@@ -9301,7 +9393,14 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 4. 📚 PDF DERS NOTU & MEB DERS KİTABI -> Dijital Kitap Okuyucuda Aç
+    // 4. 🌐 GENEL WEB SAYFASI / HARİCİ BAĞLANTI (PDF veya ofis olmayan URL'ler)
+    const isWebLink = targetUrl && targetUrl.startsWith("http") && !targetUrl.toLowerCase().includes(".pdf") && !targetUrl.toLowerCase().includes(".pptx") && !targetUrl.toLowerCase().includes(".docx");
+    if (isWebLink) {
+        openInPageDocumentModal(targetUrl, title || (found && found.title) || "Web Bağlantısı", fileName, false, targetUrl);
+        return;
+    }
+
+    // 5. 📚 PDF DERS NOTU & MEB DERS KİTABI -> Dijital Kitap Okuyucuda Aç
     const isRealBook = (id && String(id).startsWith("book-")) || checkTitle.includes("kitap") || checkTitle.includes("kitab") || checkCat === "ders-kitabi";
     let pdfTarget = targetUrl;
     const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
@@ -9492,21 +9591,29 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                 <div class="px-4 py-2.5 sm:px-5 sm:py-3.5 bg-slate-800 text-white flex items-center justify-between shrink-0 border-b border-slate-700 gap-3">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs sm:text-sm font-black shrink-0">
-                            <i class="fa-solid fa-file-pdf"></i>
+                            <i class="fa-solid fa-file-lines"></i>
                         </span>
                         <div class="min-w-0">
                             <h3 class="text-xs sm:text-sm font-black truncate">${docTitle}</h3>
-                            <span class="text-[10px] text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
+                            <span class="text-[10px] text-slate-400">Rotalı Fenci Belge & Link Görüntüleyici</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
+                    <div class="flex items-center gap-2 shrink-0">
+                        ${docUrl && docUrl.startsWith("http") ? `
+                            <a href="${docUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-sm" title="Yeni Sekmede / Tam Ekran Aç">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                                <span class="hidden sm:inline">Yeni Sekmede Aç</span>
+                            </a>
+                        ` : ''}
+                        <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Belge Alanı -->
-                <div class="flex-1 bg-slate-950 p-2 overflow-hidden">
-                    <iframe src="${docUrl}" class="w-full h-full rounded-xl sm:rounded-2xl border-0 bg-white"></iframe>
+                <div class="flex-1 bg-slate-950 p-2 overflow-hidden relative">
+                    <iframe src="${docUrl}" class="w-full h-full rounded-xl sm:rounded-2xl border-0 bg-white" allow="autoplay; fullscreen; encrypted-media" loading="lazy"></iframe>
                 </div>
             </div>
         `;
