@@ -945,8 +945,11 @@ function matchesSubTabCategory(item, subTab) {
     if (target === "lgs" || target === "lgs-pusulasi") {
         return itemCat === "lgs" || itemCat === "lgs-pusulasi";
     }
-    if (target === "projeler") {
-        return itemCat === "projeler" || itemCat === "proje";
+    if (target === "projeler" || target === "proje") {
+        const itemSec = String(item.targetSection || "").toLowerCase();
+        const itemUnit = String(item.unit || "").toLowerCase();
+        const itemTitle = String(item.title || "").toLowerCase();
+        return itemCat === "projeler" || itemCat === "proje" || itemSec === "projeler" || itemUnit.includes("proje") || itemUnit.includes("tübitak") || itemTitle.includes("tübitak") || itemTitle.includes("2204") || itemTitle.includes("4006") || itemTitle.includes("teknofest");
     }
 
     return itemCat === target;
@@ -1005,6 +1008,11 @@ function getMaterialTargetSection(item) {
     const title = (item.title || "").toLowerCase();
     const unit = (item.unit || "").toLowerCase();
     const cat = (item.category || "").toLowerCase();
+
+    // 1.5. Projeler & TÜBİTAK
+    if (cat === "projeler" || cat === "proje" || unit.includes("proje") || unit.includes("tübitak") || unit.includes("teknofest") || title.includes("tübitak") || title.includes("2204") || title.includes("4006") || title.includes("teknofest") || title.includes("etwinning")) {
+        return "projeler";
+    }
 
     // 2. Ders Kitabı
     if (title.includes("ders kitabı") || title.includes("ders kitabi") || unit.includes("ders kitabı") || unit.includes("ders kitabi") || (title.includes("kitap") && !title.includes("ünite"))) {
@@ -5537,10 +5545,47 @@ function renderFileManagerPage(container) {
 // -------------------------------------------------------------
 // 7. 🏆 PROJE MERKEZİ (TÜBİTAK, TEKNOFEST, eTwinning)
 // -------------------------------------------------------------
+
+function getHiddenProjects() {
+    try {
+        const raw = localStorage.getItem("rotali_hidden_projects");
+        return raw ? JSON.parse(raw) : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function hideProjectCard(projectId) {
+    if (!confirm("Bu proje kartını bölümden çıkarmak istediğinize emin misiniz?\n(Daha sonra 'Gizlenenleri Geri Getir' butonuyla dilediğiniz zaman geri yükleyebilirsiniz)")) return;
+    const hidden = getHiddenProjects();
+    if (!hidden.includes(projectId)) {
+        hidden.push(projectId);
+        localStorage.setItem("rotali_hidden_projects", JSON.stringify(hidden));
+    }
+    if (typeof showToast === "function") {
+        showToast("🗑️ Proje kartı bölümden çıkarıldı.", "info");
+    }
+    const appEl = document.getElementById("app");
+    if (appEl) renderProjectsPage(appEl);
+}
+
+function restoreHiddenProjects() {
+    localStorage.removeItem("rotali_hidden_projects");
+    if (typeof showToast === "function") {
+        showToast("✅ Çıkarılan tüm proje kartları başarıyla geri getirildi!", "success");
+    }
+    const appEl = document.getElementById("app");
+    if (appEl) renderProjectsPage(appEl);
+}
+
 function renderProjectsPage(container) {
+    const hiddenProjects = getHiddenProjects();
+    const visibleCategories = PROJECT_CENTER_DATA.categories.filter(c => !hiddenProjects.includes(c.id));
+
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="mb-10 text-center max-w-3xl mx-auto">
+            <!-- Üst Başlık -->
+            <div class="mb-8 text-center max-w-3xl mx-auto">
                 <span class="px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black tracking-wider uppercase inline-block mb-3">
                     BİLİMSEL ÜRETİM & YARIŞMALAR
                 </span>
@@ -5548,16 +5593,64 @@ function renderProjectsPage(container) {
                 <p class="text-sm text-slate-600 font-medium">TÜBİTAK 2204-B, TÜBİTAK 4006, TEKNOFEST ve eTwinning için proje şablonları, basamakları ve örnek fikirler.</p>
             </div>
 
+            <!-- 🛠️ EKLEME & ÇIKARMA YÖNETİM ALANI -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-200 p-5 rounded-3xl shadow-sm">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black text-slate-900">Proje & Doküman Yönetimi</h3>
+                        <p class="text-xs text-slate-500 font-medium">Bu bölüme dilediğiniz TÜBİTAK/TEKNOFEST dokümanını veya şablonunu ekleyebilir; istemediklerinizi çıkarabilirsiniz.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+                    ${hiddenProjects.length > 0 ? `
+                        <button type="button" onclick="restoreHiddenProjects()" class="px-3.5 py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm">
+                            <i class="fa-solid fa-rotate-left text-amber-600"></i>
+                            <span>Gizlenenleri Geri Getir (${hiddenProjects.length})</span>
+                        </button>
+                    ` : ''}
+                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'projeler')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-orange-500/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-plus-circle text-sm"></i>
+                        <span>Yeni Proje / Şablon Ekle</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kullanıcının Eklediği Özel Proje Materyalleri -->
             ${renderCustomMaterialsSection("all", "projeler")}
+
+            <!-- Proje Kategorileri Kartları -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                ${PROJECT_CENTER_DATA.categories.map(cat => `
-                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
+                ${visibleCategories.map(cat => `
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between relative group hover:shadow-xl transition-all duration-300">
                         <div>
+                            <!-- Kart Üst Bar & Ekle/Çıkar Butonları -->
                             <div class="flex items-center justify-between mb-4">
                                 <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs">${cat.badge}</span>
-                                <i class="${cat.icon} text-amber-500 text-xl"></i>
+                                
+                                <div class="flex items-center gap-1.5">
+                                    <!-- Bu Projeye Dosya Ekle -->
+                                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'projeler')" class="px-2.5 py-1 bg-amber-100/80 hover:bg-amber-200 text-amber-900 rounded-lg text-[11px] font-black transition-colors flex items-center gap-1 cursor-pointer" title="Bu projeye özel rapor, şablon veya dosya ekle">
+                                        <i class="fa-solid fa-plus text-xs"></i>
+                                        <span>Ekle</span>
+                                    </button>
+
+                                    <!-- Bölümden Çıkar / Gizle -->
+                                    <button type="button" onclick="hideProjectCard('${cat.id}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-lg text-[11px] font-black transition-colors flex items-center gap-1 cursor-pointer" title="Bu proje kartını bölümden çıkar">
+                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                        <span>Çıkar</span>
+                                    </button>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-black text-slate-900 mb-4">${cat.name}</h3>
+
+                            <h3 class="text-lg sm:text-xl font-black text-slate-900 mb-4 flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shrink-0">
+                                    <i class="${cat.icon}"></i>
+                                </span>
+                                <span>${cat.name}</span>
+                            </h3>
 
                             <div class="space-y-2 mb-6">
                                 ${cat.steps.map(s => `
@@ -5576,14 +5669,232 @@ function renderProjectsPage(container) {
                             </div>
                         </div>
 
-                        <button onclick="window.print()" class="w-full py-3 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase rounded-xl transition-colors">
-                            Proje Rapor Şablonunu Görüntüle (DOCX/PDF)
-                        </button>
+                        <!-- Şablon İncele & İndir Butonu -->
+                        <div class="space-y-2 pt-2 border-t border-slate-100">
+                            <button onclick="openProjectTemplateModal('${cat.id}')" class="w-full py-3.5 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-file-lines text-amber-400"></i>
+                                <span>Proje Rapor Şablonunu İncele & İndir (DOCX/PDF)</span>
+                            </button>
+                        </div>
                     </div>
                 `).join("")}
             </div>
         </div>
     `;
+}
+
+// 📄 PROJE RAPOR ŞABLONU MODALI (İnceleme, Word İndirme & PDF Yazdırma)
+function openProjectTemplateModal(catId) {
+    const cat = PROJECT_CENTER_DATA.categories.find(c => c.id === catId) || PROJECT_CENTER_DATA.categories[0];
+    if (!cat) return;
+
+    let modal = document.getElementById("project-template-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "project-template-modal";
+        modal.className = "fixed inset-0 z-[9990] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300 animate-in fade-in";
+        modal.onclick = function(e) {
+            if (e.target === this) closeProjectTemplateModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl max-w-3xl w-full border border-slate-200 shadow-2xl relative animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col overflow-hidden" onclick="event.stopPropagation()">
+            <!-- Üst Bar -->
+            <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0">
+                        <i class="${cat.icon}"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">${cat.badge} • Resmî Rapor Formatı</span>
+                        <h3 class="text-sm sm:text-base font-black text-white truncate max-w-md">${cat.name}</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="closeProjectTemplateModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Kapat (ESC)">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- İçerik Alanı -->
+            <div class="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar text-slate-800 text-xs sm:text-sm">
+                <!-- Bilgilendirme Kartı -->
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-base mt-0.5 shrink-0"></i>
+                    <div>
+                        <h4 class="font-black text-slate-900 mb-0.5">Resmî Bilimsel Rapor Şablon Rehberi</h4>
+                        <p class="text-slate-600 leading-relaxed text-xs">
+                            Aşağıdaki standart başlıklar TÜBİTAK 2204-B ve bilimsel yarışma kurallarına göre hazırlanmıştır. <strong>Word (.doc)</strong> butonuna tıklayarak bilgisayarınıza veya telefonunuza şablon olarak indirebilir, doğrudan doldurabilirsiniz.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Şablon Bölümleri -->
+                <div class="space-y-4">
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">1. PROJE BAŞLIĞI</span>
+                        <p class="text-slate-600">Özgün, kısa, ilgi çekici ve araştırmanın içeriğini doğrudan yansıtan başlık.</p>
+                        <div class="mt-2 p-2.5 bg-white border border-dashed border-slate-300 rounded-xl text-slate-400 italic text-[11px]">
+                            Örnek: "Meyve Kabuklarından Biyo-Çözünür Poşet Geliştirilmesi ve Toprak Çözünme Analizi"
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">2. PROJE ÖZETİ (150 - 250 Kelime)</span>
+                        <p class="text-slate-600">Araştırmanın amacı, kurulan hipotez, uygulanan yöntem, elde edilen temel bulgular ve varılan sonuçların kısa bir sentezi.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">3. PROBLEM TANIMI & HİPOTEZ</span>
+                        <p class="text-slate-600">
+                            <strong>Problem:</strong> Çözülmek istenen fen/çevre sorunu.<br>
+                            <strong>Hipotez:</strong> Sınanabilir, ölçülebilir varsayım.<br>
+                            <strong>Değişkenler:</strong> Bağımsız değişken, Bağımlı değişken, Kontrol edilen (sabit) değişkenler.
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">4. PROJENİN AMACI & GEREKÇESİ</span>
+                        <p class="text-slate-600">Bu araştırma neden yapıldı? Çevreye, eğitime veya bilime ne gibi bir katkı sağlayacak?</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">5. YÖNTEM & DENEY DÜZENEĞİ</span>
+                        <p class="text-slate-600">Kullanılan laboratuvar malzemeleri, ölçüm araçları, deney aşamaları ve adım adım veri toplama süreci.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">6. BULGULAR & VERİ ANALİZİ</span>
+                        <p class="text-slate-600">Elde edilen sayısal verilerin tabloları, grafikler ve fotoğraf kayıtları.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">7. SONUÇ & TARTIŞMA</span>
+                        <p class="text-slate-600">Hipotez doğrulandı mı? Sonuçların günlük hayatta kullanımı ve gelecekteki araştırmacılara öneriler.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">8. KAYNAKÇA (APA)</span>
+                        <p class="text-slate-600">Yararlanılan bilimsel makaleler, ders kitapları ve resmî akademik web siteleri.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Aksiyon Barı -->
+            <div class="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="downloadProjectTemplateDocx('${cat.name.replace(/'/g, "\\'")}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-file-word text-sm"></i>
+                        <span>Word (.doc) İndir</span>
+                    </button>
+                    <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Yazdır / PDF</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeProjectTemplateModal(); openMaterialUploadModal('projeler', 'projeler', null, 'projeler')" class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Bu Projeye Özel Dosya Ekle</span>
+                    </button>
+                    <button type="button" onclick="closeProjectTemplateModal()" class="px-3.5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+}
+
+function closeProjectTemplateModal() {
+    const modal = document.getElementById("project-template-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+}
+
+// 📥 WORD BELGESİ (DOC/DOCX) ÜRETİCİSİ VE İNDİRİCİSİ
+function downloadProjectTemplateDocx(projectName = "Proje") {
+    const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset='utf-8'>
+            <title>${projectName} Rapor Şablonu</title>
+            <style>
+                body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #1e293b; margin: 30px; }
+                h1 { font-size: 18pt; text-align: center; color: #b45309; margin-bottom: 4px; text-transform: uppercase; }
+                h2 { font-size: 13pt; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-top: 18px; margin-bottom: 6px; }
+                p { margin: 6px 0; }
+                .subtitle { text-align: center; font-size: 10pt; color: #64748b; margin-bottom: 25px; }
+                table.info-box { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                table.info-box td { border: 1px solid #cbd5e1; padding: 6px 10px; font-size: 10pt; }
+                .label { background-color: #f8fafc; font-weight: bold; width: 25%; }
+                .note-box { background-color: #fffbeb; border: 1px solid #fde68a; padding: 10px; border-radius: 6px; font-size: 10pt; margin-bottom: 15px; }
+            </style>
+        </head>
+        <body>
+            <h1>${projectName}</h1>
+            <div class='subtitle'>Rotalı Fenci • Bilimsel Araştırma Projesi Resmî Rapor Formatı</div>
+
+            <table class='info-box'>
+                <tr><td class='label'>Proje Adı</td><td>[Buraya projenizin tam adını yazınız]</td></tr>
+                <tr><td class='label'>Proje Alanı / Dalı</td><td>Fen Bilimleri / Biyoloji / Fizik / Kimya / Çevre</td></tr>
+                <tr><td class='label'>Öğrenci(ler)</td><td>[Adı Soyadı, Sınıfı, Okul Numarası]</td></tr>
+                <tr><td class='label'>Danışman Öğretmen</td><td>[Danışman Fen Bilimleri Öğretmeni Adı Soyadı]</td></tr>
+                <tr><td class='label'>Okul Adı</td><td>[Okulunuzun Tam Adı ve İli / İlçesi]</td></tr>
+            </table>
+
+            <h2>1. PROJE ÖZETİ (150 - 250 KELİME)</h2>
+            <p>[Projenizin amacını, test edilen hipotezi, veri toplama yöntemini ve elde edilen en önemli sonucu bu bölüme kısaca özetleyiniz.]</p>
+
+            <h2>2. PROBLEM VE HİPOTEZ</h2>
+            <p><strong>Araştırma Problemi:</strong> [Çözmek istediğiniz bilimsel veya çevresel problem nedir?]</p>
+            <p><strong>Hipotez Cümlesi:</strong> [Ölçülebilir ve sınanabilir hipotezinizi yazınız. Örn: 'X maddesi eklendiğinde Y reaksiyon hızı artacaktır.']</p>
+            <p><strong>Bağımsız Değişken:</strong> [Deneyde sizin değiştirdiğiniz etken]</p>
+            <p><strong>Bağımlı Değişken:</strong> [Bağımsız değişkene bağlı olarak değişen/ölçülen sonuç]</p>
+            <p><strong>Kontrol Edilen Değişkenler:</strong> [Deney boyunca sabit tutulan tüm şartlar (sıcaklık, ışık, miktar vb.)]</p>
+
+            <h2>3. PROJENİN AMACI VE GEREKÇESİ</h2>
+            <p>[Bu çalışmayı yapmaya sizi yönlendiren ihtiyaç nedir? Projenin topluma, bilime veya çevreye faydaları nelerdir?]</p>
+
+            <h2>4. YÖNTEM VE DENEY DÜZENEĞİ</h2>
+            <p><strong>Kullanılan Malzemeler:</strong> [Deneyde kullanılan tüm laboratuvar ve sarf malzemeleri]</p>
+            <p><strong>Deney Protokolü & Adımları:</strong> [1. Adım, 2. Adım şeklinde kontrollü deneyin nasıl yapıldığını açıklayınız]</p>
+
+            <h2>5. BULGULAR VE VERİ ANALİZİ</h2>
+            <p>[Deney ölçümlerinizi tablo ve grafiklerle gösteriniz. Ölçülen değerleri ve karşılaştırmaları belirtiniz.]</p>
+
+            <h2>6. SONUÇ VE DEĞERLENDİRME</h2>
+            <p>[Kurulan hipotez doğrulandı mı? Sonuçlardan hangi bilimsel çıkarımlar yapıldı? Bu proje gelecekte nasıl geliştirilebilir?]</p>
+
+            <h2>7. KAYNAKÇA</h2>
+            <p>1. [Yazar Soyadı, Adı. (Yıl). Kitap veya Makale Adı. Yayınevi/Dergi.]</p>
+            <p>2. [TÜBİTAK Bilim ve Teknik Dergisi, Sayı/Yıl.]</p>
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const cleanName = (projectName || "Proje").replace(/[^a-zA-Z0-9çÇğĞıİöÖşŞüÜ_-]/g, "_");
+    a.download = `${cleanName}_Rapor_Sablonu.doc`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+    }, 500);
+
+    if (typeof showToast === "function") {
+        showToast("📥 Word (.doc) rapor şablonu indirildi!", "success");
+    }
 }
 
 // -------------------------------------------------------------
@@ -11105,7 +11416,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             <label class="block text-xs font-black uppercase text-slate-700">Hedef Sınıf / Seviye (Çoklu Seçim)</label>
                             <span class="text-[11px] text-slate-500 font-medium">Birden fazla sınıf işaretleyebilirsiniz</span>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="adv-grades-container">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="adv-grades-container">
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
                                 <input type="checkbox" name="adv_grade_checkbox" value="5" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === '5' ? 'checked' : ''}>
                                 <span>5. Sınıf</span>
@@ -11119,12 +11430,16 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <span>7. Sınıf</span>
                             </label>
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
-                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','all'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
+                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','all','projeler'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
                                 <span>8. Sınıf & LGS</span>
                             </label>
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
                                 <input type="checkbox" name="adv_grade_checkbox" value="all" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === 'all' ? 'checked' : ''}>
                                 <span>Genel</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-amber-300 rounded-xl cursor-pointer hover:border-amber-500 hover:bg-amber-50/50 transition-all text-xs font-bold text-amber-900 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="projeler" onchange="handleProjectGradeCheckbox(this)" class="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500 cursor-pointer" ${(targetGradeClean === 'projeler' || prefillTab === 'projeler' || preselectedSection === 'projeler' || activeEditCategory === 'projeler') ? 'checked' : ''}>
+                                <span>🚀 Projeler</span>
                             </label>
                         </div>
                         <input type="hidden" id="adv-grade-select" value="${targetGradeClean || '8'}">
@@ -11134,7 +11449,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <!-- Alt Kategori (Materyal Türü / Sekme) -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
-                            <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <select id="adv-category-select" onchange="handleAdvCategoryChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
                                 <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ünite Ders Notları & PDF Föy</option>
                                 <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu</option>
                                 <option value="videolar" ${activeEditCategory === 'videolar' ? 'selected' : ''}>🎥 Videolar</option>
@@ -11148,7 +11463,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             </select>
                         </div>
 
-                        <!-- Hedef Bölüm / Ünite (Ders Kitabı, 1-7. Ünite, Laboratuvar) -->
+                        <!-- Hedef Bölüm / Ünite (Ders Kitabı, 1-7. Ünite, Laboratuvar, Projeler) -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Bölüm / Ünite</label>
                             <select id="adv-section-select" onchange="handleTargetSectionChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
@@ -11161,6 +11476,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="6" ${preselectedSection === '6' ? 'selected' : ''}>6. Ünite</option>
                                 <option value="7" ${preselectedSection === '7' ? 'selected' : ''}>7. Ünite</option>
                                 <option value="lab" ${preselectedSection === 'lab' ? 'selected' : ''}>🧪 Laboratuvar</option>
+                                <option value="projeler" ${(preselectedSection === 'projeler' || activeEditCategory === 'projeler') ? 'selected' : ''}>🚀 Projeler & TÜBİTAK</option>
                             </select>
                         </div>
                     </div>
@@ -11370,9 +11686,43 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     modal.classList.remove("hidden");
 }
 
+const PROJECT_UNITS_LIST = [
+    "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "TÜBİTAK 4006 Bilim Fuarları Destekleme Programı",
+    "TEKNOFEST Havacılık, Uzay ve Teknoloji Projeleri",
+    "eTwinning & Uluslararası Fen Projeleri",
+    "Proje Rapor Şablonları & Kılavuzlar (DOCX/PDF)",
+    "Örnek Fen Bilimleri Proje Fikirleri & Sunumlar"
+];
+
+function handleProjectGradeCheckbox(checkboxEl) {
+    if (!checkboxEl) return;
+    const catSelect = document.getElementById("adv-category-select");
+    const secSelect = document.getElementById("adv-section-select");
+    if (checkboxEl.checked) {
+        if (catSelect) catSelect.value = "projeler";
+        if (secSelect) secSelect.value = "projeler";
+        handleTargetSectionChange("projeler");
+    } else {
+        updateCascadingUnits();
+    }
+}
+
+function handleAdvCategoryChange(cat) {
+    const secSelect = document.getElementById("adv-section-select");
+    if (!secSelect) return;
+    if (cat === "projeler") {
+        secSelect.value = "projeler";
+        handleTargetSectionChange("projeler");
+        const projBox = document.querySelector('input[name="adv_grade_checkbox"][value="projeler"]');
+        if (projBox) projBox.checked = true;
+    }
+}
+
 function updateCascadingUnits(forceGrade) {
     const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
-    const firstChecked = checkedBoxes.length > 0 ? checkedBoxes[0].value : "8";
+    const checkedValues = Array.from(checkedBoxes).map(cb => cb.value);
+    const firstChecked = checkedValues.length > 0 ? checkedValues[0] : "8";
     const selectedGrade = forceGrade || firstChecked;
 
     const hiddenGradeInput = document.getElementById("adv-grade-select");
@@ -11380,7 +11730,17 @@ function updateCascadingUnits(forceGrade) {
 
     const unitSelect = document.getElementById("adv-unit-select");
     const sectionSelect = document.getElementById("adv-section-select");
+    const categorySelect = document.getElementById("adv-category-select");
     if (!unitSelect) return;
+
+    const isProjectMode = checkedValues.includes("projeler") || selectedGrade === "projeler" || (sectionSelect && sectionSelect.value === "projeler") || (categorySelect && categorySelect.value === "projeler");
+
+    if (isProjectMode) {
+        unitSelect.innerHTML = PROJECT_UNITS_LIST.map(u => `<option value="${u}">${u}</option>`).join("");
+        if (sectionSelect) sectionSelect.value = "projeler";
+        if (categorySelect && categorySelect.value !== "projeler") categorySelect.value = "projeler";
+        return;
+    }
 
     const units = GRADE_UNITS_MAP[selectedGrade] || GRADE_UNITS_MAP["8"];
 
@@ -11388,6 +11748,7 @@ function updateCascadingUnits(forceGrade) {
         <option value="Ders Kitabı">📖 MEB Ders Kitabı & Ünite PDF'leri</option>
         ${units.map(u => `<option value="${u}">${u}</option>`).join("")}
         <option value="Laboratuvar">🧪 Laboratuvar / Deneyler & Simülasyonlar</option>
+        <option value="TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri">🚀 TÜBİTAK & Projeler</option>
     `;
 
     if (sectionSelect) {
@@ -11397,11 +11758,18 @@ function updateCascadingUnits(forceGrade) {
 
 function handleTargetSectionChange(sec) {
     const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
-    const g = checkedBoxes.length > 0 ? checkedBoxes[0].value : (document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "8");
+    const checkedValues = Array.from(checkedBoxes).map(cb => cb.value);
+    const g = checkedValues.length > 0 ? checkedValues[0] : (document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "8");
     const unitSelect = document.getElementById("adv-unit-select");
+    const categorySelect = document.getElementById("adv-category-select");
     if (!unitSelect) return;
 
-    if (sec === "kitap") {
+    if (sec === "projeler") {
+        if (categorySelect && categorySelect.value !== "projeler") categorySelect.value = "projeler";
+        unitSelect.innerHTML = PROJECT_UNITS_LIST.map(u => `<option value="${u}">${u}</option>`).join("");
+        const projBox = document.querySelector('input[name="adv_grade_checkbox"][value="projeler"]');
+        if (projBox) projBox.checked = true;
+    } else if (sec === "kitap") {
         unitSelect.value = "Ders Kitabı";
     } else if (sec === "lab") {
         unitSelect.value = "Laboratuvar";
@@ -11824,14 +12192,19 @@ async function handleAdvMaterialSubmit(e) {
     }
     const primaryGrade = selectedGrades[0];
     const grade = primaryGrade;
-    const category = categorySelect ? categorySelect.value : "ders-notu";
+    let category = categorySelect ? categorySelect.value : "ders-notu";
     const sectionSelect = document.getElementById("adv-section-select");
-    const targetSection = sectionSelect ? sectionSelect.value : "1";
+    let targetSection = sectionSelect ? sectionSelect.value : "1";
+    if (selectedGrades.includes("projeler") || category === "projeler" || targetSection === "projeler") {
+        targetSection = "projeler";
+        category = "projeler";
+    }
     const customTopic = customTopicInput ? customTopicInput.value.trim() : "";
     let unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${primaryGrade}. Sınıf Fen Bilimleri`);
     if (!customTopic) {
         if (targetSection === "kitap") unit = "Ders Kitabı & Ünite PDF'leri";
         else if (targetSection === "lab") unit = "Laboratuvar & Deneyler";
+        else if (targetSection === "projeler" || category === "projeler") unit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
     }
     const desc = descInput && descInput.value.trim() ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
     const linkVal = linkInput ? linkInput.value.trim() : "";
@@ -11981,6 +12354,7 @@ async function handleAdvMaterialSubmit(e) {
                 if (!extraUnit) {
                     if (targetSection === "kitap") extraUnit = "Ders Kitabı & Ünite PDF'leri";
                     else if (targetSection === "lab") extraUnit = "Laboratuvar & Deneyler";
+                    else if (targetSection === "projeler") extraUnit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
                     else {
                         const secIdx = parseInt(targetSection, 10) - 1;
                         const gUnits = GRADE_UNITS_MAP[extraGrade] || GRADE_UNITS_MAP["8"];
@@ -12019,6 +12393,8 @@ async function handleAdvMaterialSubmit(e) {
                         itemUnit = "Ders Kitabı & Ünite PDF'leri";
                     } else if (targetSection === "lab") {
                         itemUnit = "Laboratuvar & Deneyler";
+                    } else if (targetSection === "projeler") {
+                        itemUnit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
                     } else {
                         const secIdx = parseInt(targetSection, 10) - 1;
                         const gUnits = GRADE_UNITS_MAP[g] || GRADE_UNITS_MAP["8"];
