@@ -190,12 +190,14 @@ const CloudSyncManager = {
             let fetchSuccess = false;
 
             // 🌟 0. ÖNCELİK: Supabase Bulut Veritabanı (Çoklu cihaz senkronizasyonu)
+            let isSupabaseSource = false;
             if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
                 try {
                     const sbMaterials = await RotaliCloud.fetchMaterials();
-                    if (Array.isArray(sbMaterials) && sbMaterials.length > 0) {
+                    if (Array.isArray(sbMaterials)) {
                         cloudMaterials = sbMaterials;
                         fetchSuccess = true;
+                        isSupabaseSource = true;
                     }
                 } catch(sbErr) {
                     console.warn("Supabase sync fetch error:", sbErr);
@@ -353,8 +355,8 @@ const CloudSyncManager = {
                 }
             }
 
-            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa, buluta gönder
-            if (hasNewLocalToUpload) {
+            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa veya Supabase henüz boşsa, buluta gönder
+            if (hasNewLocalToUpload || (isSupabaseSource && cloudMaterials.length === 0 && localMaterials.length > 0)) {
                 await this.uploadToCloud(finalMergedList, false);
             }
 
@@ -3287,29 +3289,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
             const normTargetGrade = String(grade.number || "").replace(/^grade-/, "").trim().toLowerCase();
             const gradeMatch = (normTargetGrade === "all" || normItemGrade === "all" || normItemGrade === normTargetGrade);
             if (!gradeMatch) return false;
-
-            const itemCat = String(item.category || "").trim().toLowerCase();
-            const itemFormat = String(item.format || "").trim().toLowerCase();
-            const itemTitle = String(item.title || "").trim().toLowerCase();
-
-            if (tabKey === "ders-notu") {
-                return (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")) || itemTitle.includes("konu") || itemTitle.includes("özet") || itemTitle.includes("not") || itemTitle.includes("ünite") || itemTitle.includes("müfredat") || itemTitle.includes("kitap") || (itemCat === "ders-sunumu" && (itemTitle.includes("konu") || itemTitle.includes("ünite") || itemFormat.includes("pdf"))));
-            } else if (tabKey === "ders-sunumu") {
-                return (itemCat === "ders-sunumu" || itemCat === "sunum" || itemFormat.includes("ppt") || itemFormat.includes("slayt") || itemTitle.includes("sunum") || itemTitle.includes("slayt") || (itemTitle.includes("konu") && itemFormat.includes("pdf")));
-            } else if (tabKey === "videolar") {
-                return (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video") || itemFormat.includes("mp4"));
-            } else if (tabKey === "etkinlikler") {
-                return (itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy");
-            } else if (tabKey === "soru-bankasi") {
-                return (itemCat === "soru-bankasi" || itemCat === "soru" || itemCat === "test");
-            } else if (tabKey === "denemeler") {
-                return (itemCat === "denemeler" || itemCat === "deneme");
-            } else if (tabKey === "egitsel-oyunlar") {
-                return (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemFormat.includes("oyun") || itemTitle.includes("oyun"));
-            } else if (tabKey === "lgs") {
-                return (itemCat === "lgs" || itemCat === "lgs-pusulasi" || itemTitle.includes("lgs"));
-            }
-            return itemCat === tabKey;
+            return matchesSubTabCategory(item, tabKey);
         }).length;
     };
 
@@ -7261,9 +7241,9 @@ function triggerEditFoy(gradeNumber, foyId, defaultTitle, defaultUnit, defaultDe
     });
 }
 
-function triggerUploadModal(gradeNumber = "8", subTab = "ders-notu") {
+function triggerUploadModal(gradeNumber = "8", subTab = "ders-notu", unitNum = "1") {
     checkAdminAccess(() => {
-        openMaterialUploadModal(gradeNumber, subTab);
+        openMaterialUploadModal(gradeNumber, subTab, null, unitNum);
     });
 }
 
@@ -10934,7 +10914,7 @@ function handleGameAnswer(selectedIdx) {
 }
 
 
-function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", editMaterial = null) {
+function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", editMaterial = null, prefillSection = "1") {
     let modal = document.getElementById("material-upload-modal");
     if (!modal) {
         modal = document.createElement("div");
@@ -10957,7 +10937,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     if (activeEditCategory === "laboratuvar" || activeEditCategory === "ders-kitabi" || activeEditCategory === "kitap") activeEditCategory = "ders-notu";
     if (activeEditCategory === "oyunlar") activeEditCategory = "egitsel-oyunlar";
 
-    let preselectedSection = "1";
+    let preselectedSection = (editMaterial && editMaterial.targetSection) ? String(editMaterial.targetSection) : String(prefillSection || "1");
     if (isEditing && editMaterial) {
         if (editMaterial.targetSection) {
             preselectedSection = String(editMaterial.targetSection);

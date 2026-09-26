@@ -20,9 +20,10 @@
             const raw = localStorage.getItem("rotali_supabase_config");
             if (raw) {
                 const parsed = JSON.parse(raw);
+                const k = (parsed.supabaseAnonKey || "").trim();
                 return {
                     supabaseUrl: (parsed.supabaseUrl || "").trim() || DEFAULT_CONFIG.supabaseUrl,
-                    supabaseAnonKey: (parsed.supabaseAnonKey || "").trim() || DEFAULT_CONFIG.supabaseAnonKey,
+                    supabaseAnonKey: (k.startsWith("sb_") || k.startsWith("eyJ")) ? k : DEFAULT_CONFIG.supabaseAnonKey,
                     bucketName: (parsed.bucketName || "").trim() || DEFAULT_CONFIG.bucketName,
                     tableName: (parsed.tableName || "").trim() || DEFAULT_CONFIG.tableName
                 };
@@ -252,6 +253,54 @@
             };
         },
 
+        // 🔄 YERELDEKİ (TELEFON / BİLGİSAYAR) TÜM MATERYALLERİ BULUTA EŞİTLE
+        async syncAllLocalToCloud() {
+            const client = this.getClient();
+            if (!client) return false;
+
+            try {
+                let localList = [];
+                try {
+                    const raw = localStorage.getItem("rotali_custom_materials");
+                    if (raw) localList = JSON.parse(raw);
+                } catch(e) {}
+
+                if (!Array.isArray(localList) || localList.length === 0) return true;
+
+                // Buluttaki mevcut id'leri çek
+                const { data: existingRows, error } = await client
+                    .from(currentConfig.tableName)
+                    .select("id");
+
+                if (error) {
+                    console.warn("syncAllLocalToCloud select error:", error);
+                    return false;
+                }
+                
+                const cloudIds = new Set((existingRows || []).map(r => r.id));
+
+                let uploadedCount = 0;
+                for (const item of localList) {
+                    if (!item || !item.id) continue;
+                    // Eğer bulutta yoksa buluta aktar
+                    if (!cloudIds.has(item.id)) {
+                        console.log(`📤 Yerel materyal buluta aktarılıyor: "${item.title || item.id}"...`);
+                        await this.saveMaterial(item);
+                        uploadedCount++;
+                    }
+                }
+
+                if (uploadedCount > 0) {
+                    console.log(`✅ ${uploadedCount} yerel materyal başarıyla Supabase buluta aktarıldı!`);
+                    window.dispatchEvent(new CustomEvent("rotali-cloud-sync"));
+                }
+                return true;
+            } catch(e) {
+                console.warn("syncAllLocalToCloud hata:", e);
+                return false;
+            }
+        },
+
         // ⚡ GERÇEK ZAMANLI (REALTIME) SENKRONİZASYON DİNLEYİCİSİ
         // Bir cihazdan veri eklendiğinde veya silindiğinde diğer cihazları anında tetikler
         setupRealtimeListener(onDataChange) {
@@ -422,14 +471,19 @@
         }
     };
 
-    // İlk yüklemede istemciyi başlat
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", () => {
-            initClient();
+    // İlk yüklemede istemciyi başlat ve yerel verileri buluta eşitle
+    function startCloudService() {
+        if (initClient()) {
             RotaliCloud.setupRealtimeListener();
-        });
+            setTimeout(() => {
+                RotaliCloud.syncAllLocalToCloud();
+            }, 800);
+        }
+    }
+
+    if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startCloudService);
     } else {
-        initClient();
-        RotaliCloud.setupRealtimeListener();
+        startCloudService();
     }
 })();
