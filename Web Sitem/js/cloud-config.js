@@ -9,7 +9,7 @@
     // Sitedeki "Yönetici Paneli > Bulut Ayarları" penceresinden doğrudan girebilirsiniz.
     const DEFAULT_CONFIG = {
         supabaseUrl: "https://dlzlpstheykhrfeijiri.supabase.co",
-        supabaseAnonKey: "", // anon public key buraya gelecek
+        supabaseAnonKey: "sb_publishable_N5ejkDHwTvMiFZfUZnjXNw_j_uqjkZi",
         bucketName: "rotali-files",
         tableName: "materials"
     };
