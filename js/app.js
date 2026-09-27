@@ -12131,7 +12131,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             <label class="block text-xs font-black uppercase text-slate-700">Hedef Sınıf / Seviye (Çoklu Seçim)</label>
                             <span class="text-[11px] text-slate-500 font-medium">Birden fazla sınıf işaretleyebilirsiniz</span>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="adv-grades-container">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2" id="adv-grades-container">
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
                                 <input type="checkbox" name="adv_grade_checkbox" value="5" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === '5' ? 'checked' : ''}>
                                 <span>5. Sınıf</span>
@@ -12145,12 +12145,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <span>7. Sınıf</span>
                             </label>
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
-                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','all','projeler'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
+                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','projeler'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
                                 <span>8. Sınıf & LGS</span>
-                            </label>
-                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
-                                <input type="checkbox" name="adv_grade_checkbox" value="all" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === 'all' ? 'checked' : ''}>
-                                <span>Genel</span>
                             </label>
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-amber-300 rounded-xl cursor-pointer hover:border-amber-500 hover:bg-amber-50/50 transition-all text-xs font-bold text-amber-900 shadow-sm">
                                 <input type="checkbox" name="adv_grade_checkbox" value="projeler" onchange="handleProjectGradeCheckbox(this)" class="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500 cursor-pointer" ${(targetGradeClean === 'projeler' || prefillTab === 'projeler' || preselectedSection === 'projeler' || activeEditCategory === 'projeler') ? 'checked' : ''}>
@@ -12165,8 +12161,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" onchange="handleAdvCategoryChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ders Notu (PDF Föy)</option>
-                                <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu (PPTX Slayt)</option>
+                                <option value="ders-notu" ${(activeEditCategory === 'ders-notu' || activeEditCategory === 'ders-sunumu') ? 'selected' : ''}>📝 Ders Notu / Sunumu</option>
                                 <option value="videolar" ${activeEditCategory === 'videolar' ? 'selected' : ''}>🎥 Videolar</option>
                                 <option value="etkinlikler" ${activeEditCategory === 'etkinlikler' ? 'selected' : ''}>🧩 Etkinlikler</option>
                                 <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Soru Bankası</option>
