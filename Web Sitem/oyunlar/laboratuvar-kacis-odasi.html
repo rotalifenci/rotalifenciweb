@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Çılgın Profesörün Labirenti - İnteraktif Kaçış ve Güvenlik Oyunu</title>
+    <title>Çılgın Profesörün Labirenti - Kaçış ve Güvenlik Oyunu</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,13 +33,13 @@
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
 
         .glass-panel {
-            background: rgba(15, 23, 42, 0.85);
+            background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.7);
         }
 
-        /* Sanal D-Pad (Akıllı Tahta & Mobil Butonları) */
+        /* Sanal D-Pad (Akıllı Tahta & Mobil Tuşları) */
         .d-btn {
             background: rgba(30, 41, 59, 0.85);
             border: 2px solid rgba(255, 255, 255, 0.2);
@@ -60,54 +60,45 @@
             border-color: #f59e0b;
         }
 
-        /* Afiş Konteyneri & Hitboxlar */
-        .image-map-container {
-            position: relative;
-            width: 100%;
-            max-width: 680px;
-            margin: 0 auto;
-            border: 3px solid #334155;
-            border-radius: 16px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+        /* 🎴 Tek Tek Sıralanan Seçenek Kartları */
+        .choice-card {
             background: #ffffff;
+            color: #0f172a;
+            border: 3px solid #e2e8f0;
+            border-radius: 1.25rem;
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            text-align: center;
             overflow: hidden;
         }
-        .image-map-container img {
-            width: 100%;
-            height: auto;
-            display: block;
-            pointer-events: none;
+        .choice-card:hover {
+            transform: translateY(-6px) scale(1.03);
+            border-color: #3b82f6;
+            box-shadow: 0 18px 30px -5px rgba(59, 130, 246, 0.4);
+        }
+        .choice-card:active {
+            transform: scale(0.96);
         }
 
-        .hitbox {
-            position: absolute;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s ease;
-            z-index: 30;
-            background-color: rgba(255, 255, 255, 0.01);
-            border: 2px solid transparent;
+        .choice-card.correct {
+            border-color: #22c55e !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 30px rgba(34, 197, 94, 0.7) !important;
+            transform: scale(1.05);
         }
-        .hitbox:hover {
-            background-color: rgba(59, 130, 246, 0.3);
-            border: 2px dashed #3b82f6;
-            box-shadow: 0 0 15px rgba(59, 130, 246, 0.6);
-            transform: scale(1.02);
+        .choice-card.wrong {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.7) !important;
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
-
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.9); background-color: rgba(34, 197, 94, 0.7); }
-            70% { box-shadow: 0 0 0 25px rgba(34, 197, 94, 0); background-color: rgba(34, 197, 94, 0.3); }
-            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); background-color: transparent; }
-        }
-        @keyframes pulse-red {
-            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.9); background-color: rgba(239, 68, 68, 0.7); }
-            70% { box-shadow: 0 0 0 25px rgba(239, 68, 68, 0); background-color: rgba(239, 68, 68, 0.3); }
-            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); background-color: transparent; }
-        }
-
-        .hitbox.correct { animation: pulse-green 0.9s cubic-bezier(0.2, 0.8, 0.2, 1); border: 3px solid #22c55e !important; }
-        .hitbox.wrong { animation: pulse-red 0.8s cubic-bezier(0.2, 0.8, 0.2, 1); border: 3px solid #ef4444 !important; }
 
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -115,24 +106,6 @@
             40%, 80% { transform: translateX(10px); }
         }
         .animate-shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-
-        /* Yanıp Sönen İpucu */
-        @keyframes hint-glow {
-            0%, 100% { border-color: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
-            50% { border-color: #ef4444; box-shadow: 0 0 25px #ef4444; }
-        }
-        .hitbox.show-hint {
-            border: 3px dashed #f59e0b !important;
-            background-color: rgba(245, 158, 11, 0.35) !important;
-            animation: hint-glow 1s infinite alternate;
-        }
-
-        /* Lazer Kapı Animasyonu */
-        @keyframes laser-glow {
-            0%, 100% { filter: drop-shadow(0 0 6px #ef4444); opacity: 0.9; }
-            50% { filter: drop-shadow(0 0 18px #f59e0b); opacity: 0.6; }
-        }
-        .laser-active { animation: laser-glow 1.2s infinite; }
     </style>
 </head>
 <body class="flex flex-col h-screen w-screen overflow-hidden select-none bg-slate-950">
@@ -168,7 +141,7 @@
                 <span id="doors-stat" class="font-orbitron font-bold text-xs sm:text-sm text-emerald-400">0 / 4</span>
             </div>
             <div class="h-6 w-px bg-slate-700 hidden sm:block"></div>
-            <!-- Toplanan Deney Tüpleri (Puan) -->
+            <!-- Puan -->
             <div class="flex items-center gap-1.5">
                 <i class="fa-solid fa-vial text-xs sm:text-sm text-amber-400"></i>
                 <span class="text-[10px] text-slate-400 hidden md:inline">Puan:</span>
@@ -190,13 +163,12 @@
         </div>
     </header>
 
-    <!-- 🕹️ OYUN ALANI (CANVAS + HARİTA + D-PAD) -->
+    <!-- 🕹️ LABİRENT ALANI -->
     <main class="flex-1 relative w-full h-[calc(100vh-4rem)] overflow-hidden flex items-center justify-center bg-slate-950">
-        
-        <!-- Labirent Çizim Tuvali -->
+        <!-- Tuval -->
         <canvas id="maze-canvas" class="block bg-slate-950 shadow-2xl cursor-crosshair"></canvas>
 
-        <!-- Mini Harita (Sağ Üst Köşede Radar) -->
+        <!-- Mini Harita Radarı (Sağ Üst) -->
         <div class="absolute top-3 right-3 glass-panel rounded-xl p-2 border border-slate-700/80 shadow-2xl pointer-events-none hidden sm:block z-10">
             <div class="text-[9px] font-orbitron font-black text-amber-400 mb-1 flex items-center justify-between">
                 <span>LABİRENT RADARI</span>
@@ -205,54 +177,49 @@
             <canvas id="minimap-canvas" width="120" height="90" class="rounded-lg bg-slate-900 border border-slate-800"></canvas>
         </div>
 
-        <!-- Yönlendirme & Görev Uyarı Rozeti (Sol Üst) -->
+        <!-- Görev İpucu Rozeti (Sol Üst) -->
         <div id="mission-hud" class="absolute top-3 left-3 glass-panel rounded-xl px-3.5 py-2 border border-slate-700/80 shadow-2xl pointer-events-none z-10 max-w-[280px] sm:max-w-xs transition-all">
             <span class="text-[10px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5">
                 <i class="fa-solid fa-compass animate-spin text-amber-400" style="animation-duration: 6s;"></i>
                 <span id="hud-zone-title">1. Bölge: Cam Malzemeler</span>
             </span>
             <p id="hud-hint" class="text-xs text-slate-200 font-semibold mt-0.5 leading-snug">
-                Labirentte ilerle ve <strong class="text-amber-300">1. Güvenlik Kapısı</strong>'na ulaş!
+                Labirentte ilerle ve <strong class="text-amber-300">1. Kapı</strong>'ya ulaş!
             </p>
         </div>
 
-        <!-- 🎮 SANAL D-PAD KONTROLLERİ (Akıllı Tahta & Dokunmatik Ekranlar İçin) -->
+        <!-- 🎮 SANAL D-PAD (Akıllı Tahta & Dokunmatik Butonlar) -->
         <div id="virtual-dpad" class="absolute bottom-4 right-4 z-20 flex flex-col items-center gap-1.5 select-none pointer-events-auto">
-            <!-- Yukarı -->
             <button class="d-btn w-12 h-12 sm:w-14 sm:h-14" onpointerdown="startMove('up')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Yukarı">
                 <i class="fa-solid fa-chevron-up"></i>
             </button>
             <div class="flex items-center gap-1.5">
-                <!-- Sol -->
                 <button class="d-btn w-12 h-12 sm:w-14 sm:h-14" onpointerdown="startMove('left')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Sol">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
-                <!-- Merkez / Etkileşim Butonu -->
-                <button class="d-btn w-12 h-12 sm:w-14 sm:h-14 bg-amber-600/80 border-amber-400 text-slate-950 font-black text-sm" onpointerdown="interactCurrentTile()" title="Kapıyı Aç / Etkileşim">
+                <button class="d-btn w-12 h-12 sm:w-14 sm:h-14 bg-amber-600/80 border-amber-400 text-slate-950 font-black text-sm" onpointerdown="interactCurrentTile()" title="Kapıyı Aç">
                     <i class="fa-solid fa-key"></i>
                 </button>
-                <!-- Sağ -->
                 <button class="d-btn w-12 h-12 sm:w-14 sm:h-14" onpointerdown="startMove('right')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Sağ">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
-            <!-- Aşağı -->
             <button class="d-btn w-12 h-12 sm:w-14 sm:h-14" onpointerdown="startMove('down')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Aşağı">
                 <i class="fa-solid fa-chevron-down"></i>
             </button>
         </div>
 
-        <!-- Klavye Kullanım Hatırlatması (Sol Altta) -->
+        <!-- Klavye Hatırlatması -->
         <div class="absolute bottom-3 left-3 text-[11px] text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 pointer-events-none hidden md:flex items-center gap-2">
             <i class="fa-solid fa-keyboard text-amber-400"></i>
-            <span>Klavyedeki <strong>Yön Tuşları</strong> veya <strong>W, A, S, D</strong> ile hareket edebilirsiniz.</span>
+            <span>Klavyedeki <strong>Yön Tuşları</strong> veya <strong>W, A, S, D</strong> ile yürüyebilirsiniz.</span>
         </div>
     </main>
 
-    <!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ MODAL (AFİŞ ÜZERİNDEN ETKİLEŞİMLİ ŞİFRE ÇÖZME) -->
-    <div id="modal-door-puzzle" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 hidden flex-col items-center justify-between p-2 sm:p-4 overflow-y-auto animate-in fade-in duration-200">
+    <!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ (GÖRSELLERİN TEK TEK SIRALANDIĞI KART SEÇİM EKRANI) -->
+    <div id="modal-door-puzzle" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 hidden flex-col items-center justify-between p-3 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
         
-        <!-- Modal Üst Çubuk -->
+        <!-- Üst Başlık & Şifre Slotları -->
         <div class="glass-panel w-full max-w-4xl rounded-2xl p-3 sm:p-4 flex items-center justify-between gap-3 shrink-0 mb-3">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl font-black shadow-lg">
@@ -260,11 +227,11 @@
                 </div>
                 <div>
                     <span id="puzzle-badge" class="text-[10px] font-black uppercase text-amber-400 tracking-wider">Lazer Güvenlik Kapısı</span>
-                    <h2 id="puzzle-door-title" class="text-base sm:text-xl font-orbitron font-black text-white">1. GÜVENLİK KAPISI PROTOKOLÜ</h2>
+                    <h2 id="puzzle-door-title" class="text-sm sm:text-lg font-orbitron font-black text-white">1. GÜVENLİK KAPISI PROTOKOLÜ</h2>
                 </div>
             </div>
 
-            <!-- Toplanan Şifre -->
+            <!-- Şifre Slotları -->
             <div class="flex items-center gap-2 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-700">
                 <span class="text-slate-400 text-xs font-bold hidden sm:inline">Şifre:</span>
                 <div id="door-code-slots" class="flex gap-1.5">
@@ -272,47 +239,64 @@
                 </div>
             </div>
 
-            <button type="button" onclick="closeDoorPuzzle()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-black transition-all" title="Labirente Geri Dön">
+            <button type="button" onclick="closeDoorPuzzle()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center font-black transition-all" title="Labirente Dön">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
         </div>
 
         <!-- Aktif Soru / Görev Kutusu -->
-        <div id="door-question-box" class="w-full max-w-3xl bg-slate-900/95 border-2 border-dashed border-amber-500 rounded-2xl p-3 sm:p-4 mb-3 text-center shadow-xl relative transition-all shrink-0">
-            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-500 text-slate-950 px-3 py-0.5 rounded-full font-black text-xs uppercase tracking-wider shadow">
+        <div id="door-question-box" class="w-full max-w-3xl bg-slate-900/95 border-2 border-dashed border-amber-500 rounded-2xl p-3 sm:p-4 mb-4 text-center shadow-xl relative transition-all shrink-0">
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-amber-500 text-slate-950 px-3.5 py-0.5 rounded-full font-black text-xs uppercase tracking-wider shadow">
                 <i class="fa-solid fa-crosshairs mr-1"></i> <span id="door-q-counter">GÖREV 1 / 3</span>
             </div>
-            <h3 id="door-question-text" class="text-xs sm:text-base font-bold text-white leading-relaxed mt-1">
+            <h3 id="door-question-text" class="text-sm sm:text-lg font-bold text-white leading-relaxed mt-1">
                 Soru yükleniyor...
             </h3>
-            <div class="mt-2 flex items-center justify-center gap-3">
-                <button onclick="useDoorHint()" class="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all flex items-center gap-1.5">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> İpucu Al (-15sn)
-                </button>
+            <p class="text-[11px] text-amber-300/80 font-medium mt-1">
+                Aşağıdaki seçeneklerden doğru olan görsele tıklayarak şifre kodunu bulun:
+            </p>
+        </div>
+
+        <!-- 🎴 GÖRSELLERİN TEK TEK SIRALANDIĞI SEÇENEK ALANI (Responsive Grid) -->
+        <div class="w-full max-w-3xl my-auto px-1 sm:px-2">
+            <div id="cards-container" class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+                <!-- JS tarafından büyük, ayrı ayrı tıklanabilir kartlar enjekte edilecek -->
             </div>
         </div>
 
         <!-- Şifre Tamamlandığında Çıkan Kapıyı Aç Butonu -->
-        <div id="door-unlock-btn-container" class="hidden w-full max-w-3xl mb-3 shrink-0 animate-bounce">
+        <div id="door-unlock-btn-container" class="hidden w-full max-w-3xl mt-4 shrink-0 animate-bounce">
             <button onclick="openNumpadModal()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-2xl text-base sm:text-lg shadow-[0_0_30px_rgba(34,197,94,0.6)] active:scale-95 transition-all flex items-center justify-center gap-3">
                 <i class="fa-solid fa-key text-xl"></i>
                 <span>TÜM KODLAR BULUNDU! ŞİFREYİ GİR VE KAPIDAN GEÇ</span>
             </button>
         </div>
 
-        <!-- Afiş ve Hitbox Alanı -->
-        <div class="image-map-container my-auto" id="door-image-container">
-            <img id="door-poster-img" src="afis-malzemeler.png" alt="Laboratuvar Afişi" draggable="false" onerror="handleImageFallback(this)">
-            <div id="door-hitboxes"></div>
+        <!-- Alt Referans Çubuğu (İsteğe Bağlı Tam Afiş Önizleme) -->
+        <div class="mt-3 flex items-center justify-between w-full max-w-3xl text-[11px] text-slate-400 shrink-0 px-2">
+            <button onclick="toggleFullPosterModal()" class="text-blue-400 hover:text-blue-300 underline font-bold flex items-center gap-1.5 cursor-pointer">
+                <i class="fa-solid fa-image"></i>
+                <span>Tam Afişi İncele (İpucu)</span>
+            </button>
+            <span>Doğru cevaba tıklandığında kod otomatik alınır.</span>
         </div>
+    </div>
 
-        <p class="text-[11px] text-slate-400 text-center mt-2 shrink-0">
-            Afişte tarif edilen nesneye tıklayarak şifrenin hanesini bulun.
-        </p>
+    <!-- 🖼️ TAM AFİŞ İNCELEME MODALI (Referans) -->
+    <div id="modal-full-poster" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[65] hidden flex-col items-center justify-center p-3 sm:p-6 animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between w-full max-w-2xl mb-2">
+            <h3 class="text-sm sm:text-base font-orbitron font-bold text-amber-400">REFERANS LABORATUVAR AFİŞİ</h3>
+            <button onclick="toggleFullPosterModal()" class="w-8 h-8 rounded-full bg-slate-800 text-white flex items-center justify-center text-sm">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border-2 border-slate-700 bg-white">
+            <img id="ref-poster-img" src="afis-malzemeler.png" class="w-full h-auto block" alt="Referans Afiş">
+        </div>
     </div>
 
     <!-- 🔢 NUMPAD ŞİFRE GİRİŞ MODALI -->
-    <div id="modal-numpad" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[60] hidden items-center justify-center opacity-0 transition-opacity duration-200 p-4">
+    <div id="modal-numpad" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[70] hidden items-center justify-center opacity-0 transition-opacity duration-200 p-4">
         <div class="bg-slate-900 border-2 border-amber-500/80 rounded-3xl p-6 max-w-xs w-full flex flex-col items-center shadow-[0_0_50px_rgba(245,158,11,0.3)] transform scale-95 transition-transform duration-200" id="numpad-box">
             
             <div class="flex items-center justify-between w-full mb-3">
@@ -324,12 +308,10 @@
                 </button>
             </div>
             
-            <!-- Dijital Ekran -->
             <div id="numpad-display" class="w-full bg-slate-950 border-2 border-slate-700 rounded-2xl h-14 flex items-center justify-center text-3xl font-orbitron tracking-[0.4em] text-emerald-400 mb-4 shadow-inner">
                 ____
             </div>
 
-            <!-- Tuş Takımı -->
             <div class="grid grid-cols-3 gap-2 w-full mb-4">
                 <button onclick="numpadPress(1)" class="bg-slate-800 hover:bg-slate-700 text-white text-xl font-bold py-3 rounded-xl shadow transition-colors">1</button>
                 <button onclick="numpadPress(2)" class="bg-slate-800 hover:bg-slate-700 text-white text-xl font-bold py-3 rounded-xl shadow transition-colors">2</button>
@@ -387,11 +369,11 @@
     </div>
 
     <!-- ❓ NASIL OYNANIR REHBERİ -->
-    <div id="modal-help" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[70] hidden items-center justify-center p-4">
+    <div id="modal-help" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[75] hidden items-center justify-center p-4">
         <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl">
             <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-800">
                 <h3 class="text-base font-orbitron font-bold text-amber-400 flex items-center gap-2">
-                    <i class="fa-solid fa-circle-question"></i> Labirent Nasıl Oynanır?
+                    <i class="fa-solid fa-circle-question"></i> Nasıl Oynanır?
                 </h3>
                 <button onclick="closeHelpModal()" class="text-slate-400 hover:text-white w-7 h-7 rounded-full bg-slate-800 flex items-center justify-center text-xs">
                     <i class="fa-solid fa-xmark"></i>
@@ -400,19 +382,19 @@
             <div class="space-y-3 text-xs text-slate-300 leading-relaxed">
                 <div class="flex items-start gap-2.5">
                     <div class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 font-bold flex items-center justify-center shrink-0">1</div>
-                    <p><strong class="text-white">Hareket Et:</strong> Klavyedeki yön tuşları, W-A-S-D veya ekrandaki sanal ok butonlarıyla karakterini labirentte yürüt.</p>
+                    <p><strong class="text-white">Hareket Et:</strong> Yön tuşları veya ekrandaki ok butonlarıyla karakterini labirentte yürüt.</p>
                 </div>
                 <div class="flex items-start gap-2.5">
                     <div class="w-6 h-6 rounded-lg bg-red-500/20 text-red-400 font-bold flex items-center justify-center shrink-0">2</div>
-                    <p><strong class="text-white">Kilitli Kapılar:</strong> Labirentte karşına 4 adet kırmızı güvenlik kapısı çıkacak. Kapının önüne geldiğinde şifre ekranı otomatik açılır.</p>
+                    <p><strong class="text-white">Kapılara Ulaş:</strong> Kilitli güvenlik kapılarının önüne geldiğinde görev ekranı açılır.</p>
                 </div>
                 <div class="flex items-start gap-2.5">
-                    <div class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center shrink-0">3</div>
-                    <p><strong class="text-white">Afişten Şifreyi Çöz:</strong> Soruda istenen laboratuvar malzemesini veya güvenlik sembolünü afiş üzerinde bulup tıkla ve kapı şifresini al.</p>
+                    <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0">3</div>
+                    <p><strong class="text-white">Tek Tek Sıralanan Kartlar:</strong> Ekranda beliren büyük görsel kartlardan soruya uygun olana tıkla ve şifreyi çöz!</p>
                 </div>
                 <div class="flex items-start gap-2.5">
-                    <div class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0">4</div>
-                    <p><strong class="text-white">Çıkış Portalı:</strong> 4 kapıyı da aştıktan sonra labirentin sonundaki yeşil çıkış portalına ulaş ve oyunu tamamla!</p>
+                    <div class="w-6 h-6 rounded-lg bg-blue-500/20 text-blue-400 font-bold flex items-center justify-center shrink-0">4</div>
+                    <p><strong class="text-white">Çıkış Portalı:</strong> 4 kapıyı açtıktan sonra labirentin sonundaki yeşil çıkış portalına git ve kazan!</p>
                 </div>
             </div>
             <button onclick="closeHelpModal()" class="w-full mt-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all">
@@ -421,8 +403,8 @@
         </div>
     </div>
 
-    <!-- 📢 HIZLI BİLDİRİM (TOAST) -->
-    <div id="toast-msg" class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-24 opacity-0 font-bold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 z-[90] flex items-center text-xs sm:text-sm pointer-events-none">
+    <!-- 📢 TOAST BİLDİRİMİ -->
+    <div id="toast-msg" class="fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-24 opacity-0 font-bold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 z-[95] flex items-center text-xs sm:text-sm pointer-events-none">
         <i id="toast-icon" class="mr-2 text-lg"></i>
         <span id="toast-text">Mesaj</span>
     </div>
@@ -544,115 +526,177 @@
         }
 
         // ==========================================
-        // 🗺️ AFİŞ VERİLERİ (Laboratuvar Malzemeleri & Güvenlik Sembolleri)
+        // 🎴 4 KAPI İÇİN TEK TEK SIRALANAN KART VERİLERİ
         // ==========================================
-        const MALZEMELER_HITBOXES = [
-            { id: "e-beher", name: "Beherglas", top: "16.5%", left: "2.5%", width: "15%", height: "10.8%" },
-            { id: "e-silindir", name: "Dereceli Silindir (Mezür)", top: "16.5%", left: "18.5%", width: "15%", height: "10.8%" },
-            { id: "e-tup", name: "Deney Tüpü", top: "16.5%", left: "34.5%", width: "15%", height: "10.8%" },
-            { id: "e-ampul", name: "Ampul", top: "16.5%", left: "50.5%", width: "15%", height: "10.8%" },
-            { id: "e-lam", name: "Lam", top: "16.5%", left: "66.5%", width: "15%", height: "10.8%" },
-            { id: "e-lamel", name: "Lamel", top: "16.5%", left: "82.5%", width: "15%", height: "10.8%" },
-            { id: "e-termometre", name: "Termometre", top: "32.5%", left: "2.5%", width: "13%", height: "9.0%" },
-            { id: "e-buyutec", name: "Büyüteç", top: "32.5%", left: "16.5%", width: "13%", height: "9.0%" },
-            { id: "e-bisturi", name: "Bistüri", top: "32.5%", left: "30.5%", width: "13%", height: "9.0%" },
-            { id: "e-dinamometre", name: "Dinamometre", top: "42.5%", left: "2.5%", width: "15%", height: "9.5%" },
-            { id: "e-isi-iletim", name: "Isı İletim Aleti", top: "42.5%", left: "18.5%", width: "15%", height: "9.5%" },
-            { id: "e-dijital-terazi", name: "Dijital Terazi", top: "42.5%", left: "50.5%", width: "15%", height: "9.5%" },
-            { id: "e-terazi", name: "Eşit Kollu Terazi", top: "42.5%", left: "66.5%", width: "15%", height: "9.5%" },
-            { id: "e-mikroskop", name: "Mikroskop", top: "42.5%", left: "82.5%", width: "15%", height: "9.5%" },
-            { id: "e-guc-kaynagi", name: "Güç Kaynağı", top: "56.5%", left: "2.5%", width: "13%", height: "9.8%" },
-            { id: "e-kablo", name: "Bağlantı Kablosu", top: "56.5%", left: "16.5%", width: "13%", height: "9.8%" },
-            { id: "e-duy", name: "Duy", top: "56.5%", left: "30.5%", width: "13%", height: "9.8%" },
-            { id: "e-anahtar", name: "Anahtar", top: "56.5%", left: "44.5%", width: "13%", height: "9.8%" },
-            { id: "e-pil", name: "Pil", top: "56.5%", left: "58.5%", width: "13%", height: "9.8%" },
-            { id: "e-pil-yatagi", name: "Pil Yatağı", top: "56.5%", left: "72.5%", width: "13%", height: "9.8%" },
-            { id: "e-isik-kaynagi", name: "Işık Kaynağı", top: "56.5%", left: "86.5%", width: "11.5%", height: "9.8%" },
-            { id: "e-yay", name: "Yay", top: "71.0%", left: "2.5%", width: "22.5%", height: "8.5%" },
-            { id: "e-kronometre", name: "Kronometre", top: "71.0%", left: "26.5%", width: "22.5%", height: "8.5%" },
-            { id: "e-ispirto", name: "İspirto Ocağı", top: "71.0%", left: "50.5%", width: "22.5%", height: "8.5%" },
-            { id: "e-siringa", name: "Şırınga", top: "71.0%", left: "74.5%", width: "23.0%", height: "8.5%" },
-            { id: "e-damlalik-sise", name: "Damlalıklı Şişe", top: "84.0%", left: "2.5%", width: "17.5%", height: "8.5%" },
-            { id: "e-ip", name: "İp", top: "84.0%", left: "21.5%", width: "17.5%", height: "8.5%" },
-            { id: "e-sacayagi", name: "Sacayağı", top: "84.0%", left: "40.5%", width: "17.5%", height: "8.5%" },
-            { id: "e-gozluk", name: "Koruyucu Gözlük", top: "84.0%", left: "61.5%", width: "17.5%", height: "8.5%" },
-            { id: "e-eldiven", name: "Koruyucu Eldiven", top: "84.0%", left: "80.0%", width: "17.5%", height: "8.5%" }
-        ];
-
-        const SEMBOLLER_HITBOXES = [
-            { id: "s-eldiven", name: "1. Eldiven Giy", top: "17.5%", left: "2.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-gozluk", name: "2. Gözlük Kullan", top: "17.5%", left: "26.5%", width: "23.5%", height: "18.5%" },
-            { id: "s-elbise", name: "3. Koruyucu Elbise Giy", top: "17.5%", left: "51.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-maske", name: "4. Maske Kullan", top: "17.5%", left: "75.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-yanici", name: "5. Yanıcı (Parlayıcı) Madde", top: "37.0%", left: "2.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-asindirici", name: "6. Aşındırıcı (Korozif) Madde", top: "37.0%", left: "26.5%", width: "23.5%", height: "18.5%" },
-            { id: "s-zehirli", name: "7. Zehirli (Toksik) Madde", top: "37.0%", left: "51.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-tahris", name: "8. Tahriş Edici Madde", top: "37.0%", left: "75.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-kesici", name: "9. Kesici / Delici Cisim", top: "56.5%", left: "2.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-sicak", name: "10. Sıcak Cisim", top: "56.5%", left: "26.5%", width: "23.5%", height: "18.5%" },
-            { id: "s-elektrik", name: "11. Elektrik Uyarısı", top: "56.5%", left: "51.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-cam", name: "12. Kırılabilir Cam", top: "56.5%", left: "75.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-yakici", name: "13. Yakıcı (Oksitleyici)", top: "76.5%", left: "2.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-cevre", name: "14. Çevreye Zararlı", top: "76.5%", left: "26.5%", width: "23.5%", height: "18.5%" },
-            { id: "s-patlayici", name: "15. Patlayıcı Madde", top: "76.5%", left: "51.0%", width: "23.5%", height: "18.5%" },
-            { id: "s-radyoaktif", name: "16. Radyoaktif Madde", top: "76.5%", left: "75.0%", width: "23.5%", height: "18.5%" }
-        ];
-
-        // 4 KAPI PROTOKOLÜ VE SORULARI
-        const DOORS_DATA = [
+        const DOORS_CONFIG = [
             {
                 doorId: 1,
                 title: "1. KAPI: Cam Malzemeler & Ölçüm",
-                posterType: "malzemeler",
-                imageSrc: "afis-malzemeler.png",
                 targetCode: "482",
+                refPoster: "afis-malzemeler.png",
                 questions: [
-                    { text: "Sıvıları karıştırmak ve ısıtmak için kullanılan düz tabanlı cam kabı (Beherglas) bul!", correctId: "e-beher", code: "4", hint: "1. bölümün en solundaki bardak biçimindeki cam kap." },
-                    { text: "Sıvıların hacmini mililitre cinsinden en hassas ölçen dereceli silindiri bul!", correctId: "e-silindir", code: "8", hint: "Beherglas'ın hemen sağındaki çizgili ince mezür." },
-                    { text: "Mikroskobik canlıları yüzlerce kat büyüterek inceleyen optik aleti bul!", correctId: "e-mikroskop", code: "2", hint: "2. bölümün en sağ altındaki mikroskop." }
+                    {
+                        text: "Sıvıları karıştırmak, ısıtmak ve aktarmak için kullanılan, geniş ağızlı ve düz tabanlı cam malzeme hangisidir?",
+                        code: "4",
+                        correctId: "beherglas",
+                        options: [
+                            { id: "beherglas", name: "Beherglas", img: "kartlar/beherglas.png" },
+                            { id: "dereceli-silindir", name: "Dereceli Silindir", img: "kartlar/dereceli-silindir.png" },
+                            { id: "deney-tupu", name: "Deney Tüpü", img: "kartlar/deney-tupu.png" },
+                            { id: "ampul", name: "Ampul", img: "kartlar/ampul.png" }
+                        ]
+                    },
+                    {
+                        text: "Sıvıların hacmini mililitre (mL) cinsinden en hassas şekilde ölçen dereceli silindirik kap (Mezür) hangisidir?",
+                        code: "8",
+                        correctId: "dereceli-silindir",
+                        options: [
+                            { id: "dereceli-silindir", name: "Dereceli Silindir", img: "kartlar/dereceli-silindir.png" },
+                            { id: "beherglas", name: "Beherglas", img: "kartlar/beherglas.png" },
+                            { id: "termometre", name: "Termometre", img: "kartlar/termometre.png" },
+                            { id: "plastik-pipet", name: "Plastik Pipet", img: "kartlar/plastik-pipet.png" }
+                        ]
+                    },
+                    {
+                        text: "Mikroskobik canlıları, hücre ve dokuları yüzlerce kat büyüterek incelememizi sağlayan optik gözlem aleti hangisidir?",
+                        code: "2",
+                        correctId: "mikroskop",
+                        options: [
+                            { id: "mikroskop", name: "Mikroskop", img: "kartlar/mikroskop.png" },
+                            { id: "buyutec", name: "Büyüteç", img: "kartlar/buyutec.png" },
+                            { id: "lam", name: "Lam", img: "kartlar/lam.png" },
+                            { id: "dinamometre", name: "Dinamometre", img: "kartlar/dinamometre.png" }
+                        ]
+                    }
                 ]
             },
             {
                 doorId: 2,
                 title: "2. KAPI: Elektrik & Isı Güvenliği",
-                posterType: "malzemeler",
-                imageSrc: "afis-malzemeler.png",
                 targetCode: "391",
+                refPoster: "afis-malzemeler.png",
                 questions: [
-                    { text: "Elektrik devresinde akımı açıp kapatmaya yarayan mavi anahtarı afişte bul!", correctId: "e-anahtar", code: "3", hint: "3. Elektrik bölümündeki mavi renkli anahtar." },
-                    { text: "Isıtma deneylerinde kullanılan, içinde ispirto yanan ve fitilli cam ısıtıcıyı bul!", correctId: "e-ispirto", code: "9", hint: "4. Diğer malzemeler bölümündeki şeffaf ispirto ocağı." },
-                    { text: "İspirto ocağının üzerine konulan ve kapları taşıyan 3 ayaklı metal desteği (Sacayağı) bul!", correctId: "e-sacayagi", code: "1", hint: "5. Sıvı bölümündeki 3 ayaklı sehpa." }
+                    {
+                        text: "Elektrik devresinde akımın geçişini kontrol eden, devreyi açıp kapatmaya yarayan eleman hangisidir?",
+                        code: "3",
+                        correctId: "anahtar",
+                        options: [
+                            { id: "anahtar", name: "Anahtar", img: "kartlar/anahtar.png" },
+                            { id: "duy", name: "Duy", img: "kartlar/duy.png" },
+                            { id: "pil", name: "Pil", img: "kartlar/pil.png" },
+                            { id: "baglanti-kablosu", name: "Bağlantı Kablosu", img: "kartlar/baglanti-kablosu.png" }
+                        ]
+                    },
+                    {
+                        text: "Isıtma deneylerinde kullanılan, içinde ispirto yanan ve fitili olan klasik laboratuvar ısıtıcısı hangisidir?",
+                        code: "9",
+                        correctId: "ispirto-ocagi",
+                        options: [
+                            { id: "ispirto-ocagi", name: "İspirto Ocağı", img: "kartlar/ispirto-ocagi.png" },
+                            { id: "sacayagi", name: "Sacayağı", img: "kartlar/sacayagi.png" },
+                            { id: "isi-iletim-aleti", name: "Isı İletim Aleti", img: "kartlar/isi-iletim-aleti.png" },
+                            { id: "damlalikli-sise", name: "Damlalıklı Şişe", img: "kartlar/damlalikli-sise.png" }
+                        ]
+                    },
+                    {
+                        text: "Isıtma sırasında ispirto ocağının üzerine konulan ve kapları taşıyan 3 ayaklı metal destek (Sacayağı) hangisidir?",
+                        code: "1",
+                        correctId: "sacayagi",
+                        options: [
+                            { id: "sacayagi", name: "Sacayağı", img: "kartlar/sacayagi.png" },
+                            { id: "yay", name: "Yay", img: "kartlar/yay.png" },
+                            { id: "ispirto-ocagi", name: "İspirto Ocağı", img: "kartlar/ispirto-ocagi.png" },
+                            { id: "dinamometre", name: "Dinamometre", img: "kartlar/dinamometre.png" }
+                        ]
+                    }
                 ]
             },
             {
                 doorId: 3,
                 title: "3. KAPI: Kişisel Koruyucu Donanım",
-                posterType: "semboller",
-                imageSrc: "afis-semboller.png",
                 targetCode: "348",
+                refPoster: "afis-semboller.png",
                 questions: [
-                    { text: "Laboratuvara girişte cildi ve kıyafetleri korumak için zorunlu olan 'Koruyucu Elbise Giy' sembolünü bul!", correctId: "s-elbise", code: "3", hint: "1. satırdaki 3 numaralı beyaz önlük simgesi." },
-                    { text: "Zehirli gaz ve buharlara karşı solunumu koruyan 'Maske Kullan' sembolünü bul!", correctId: "s-maske", code: "4", hint: "1. satırdaki 4 numaralı mavi maske dairesi." },
-                    { text: "Deri ve solunum yollarında tahrişe neden olabilecek maddeleri gösteren 'Tahriş Edici Madde' ünlemini bul!", correctId: "s-tahris", code: "8", hint: "2. satırın en sağındaki 8 numaralı kırmızı ünlem sembolü." }
+                    {
+                        text: "Laboratuvara girişte cildi ve kıyafetleri kimyasal sıçramalarına karşı korumak için zorunlu olan önlük sembolü hangisidir?",
+                        code: "3",
+                        correctId: "3-koruyucu-elbise",
+                        options: [
+                            { id: "3-koruyucu-elbise", name: "Koruyucu Elbise Giy", img: "kartlar/3-koruyucu-elbise.png" },
+                            { id: "1-eldiven-giy", name: "Eldiven Giy", img: "kartlar/1-eldiven-giy.png" },
+                            { id: "2-gozluk-kullan", name: "Gözlük Kullan", img: "kartlar/2-gozluk-kullan.png" },
+                            { id: "4-maske-kullan", name: "Maske Kullan", img: "kartlar/4-maske-kullan.png" }
+                        ]
+                    },
+                    {
+                        text: "Zehirli gaz, buhar ve zararlı tozlara karşı solunum yollarını korumak için takılması gereken maske sembolü hangisidir?",
+                        code: "4",
+                        correctId: "4-maske-kullan",
+                        options: [
+                            { id: "4-maske-kullan", name: "Maske Kullan", img: "kartlar/4-maske-kullan.png" },
+                            { id: "2-gozluk-kullan", name: "Gözlük Kullan", img: "kartlar/2-gozluk-kullan.png" },
+                            { id: "1-eldiven-giy", name: "Eldiven Giy", img: "kartlar/1-eldiven-giy.png" },
+                            { id: "11-elektrik-uyarisi", name: "Elektrik Uyarısı", img: "kartlar/11-elektrik-uyarisi.png" }
+                        ]
+                    },
+                    {
+                        text: "Deri, göz veya solunum yollarında tahrişe neden olabilecek kimyasalları belirten 'Tahriş Edici Madde' ünlemi hangisidir?",
+                        code: "8",
+                        correctId: "8-tahris-edici",
+                        options: [
+                            { id: "8-tahris-edici", name: "Tahriş Edici Madde", img: "kartlar/8-tahris-edici.png" },
+                            { id: "9-kesici-delici", name: "Kesici / Delici Cisim", img: "kartlar/9-kesici-delici.png" },
+                            { id: "10-sicak-cisim", name: "Sıcak Cisim Uyarısı", img: "kartlar/10-sicak-cisim.png" },
+                            { id: "12-kirilabilir-cam", name: "Kırılabilir Cam", img: "kartlar/12-kirilabilir-cam.png" }
+                        ]
+                    }
                 ]
             },
             {
                 doorId: 4,
-                title: "4. KAPI: Tehlikeli Kimyasallar & Çıkış",
-                posterType: "semboller",
-                imageSrc: "afis-semboller.png",
+                title: "4. KAPI: Tehlikeli Kimyasallar & Kaçış",
                 targetCode: "761",
+                refPoster: "afis-semboller.png",
                 questions: [
-                    { text: "Solunduğunda veya yutulduğunda ölümcül risk taşıyan 'Zehirli (Toksik) Madde' kurukafa sembolünü bul!", correctId: "s-zehirli", code: "7", hint: "2. satırdaki 7 numaralı kurukafalı piktogram." },
-                    { text: "Cilde ve metallere damladığında eritip delen 'Aşındırıcı (Korozif) Madde' sembolünü bul!", correctId: "s-asindirici", code: "6", hint: "2. satırdaki 6 numaralı ele damlayan tüpler simgesi." },
-                    { text: "Isı veya alevle kolayca tutuşabilen 'Yanıcı (Parlayıcı) Madde' alev sembolünü bul!", correctId: "s-yanici", code: "1", hint: "2. satırın başındaki 5 numaralı alev piktogramı." }
+                    {
+                        text: "Solunduğunda veya yutulduğunda ölümcül risk taşıyan 'Zehirli (Toksik) Madde' kurukafa sembolü hangisidir?",
+                        code: "7",
+                        correctId: "7-zehirli-madde",
+                        options: [
+                            { id: "7-zehirli-madde", name: "Zehirli (Toksik) Madde", img: "kartlar/7-zehirli-madde.png" },
+                            { id: "14-cevreye-zararli", name: "Çevreye Zararlı", img: "kartlar/14-cevreye-zararli.png" },
+                            { id: "16-radyoaktif-madde", name: "Radyoaktif Madde", img: "kartlar/16-radyoaktif-madde.png" },
+                            { id: "15-patlayici-madde", name: "Patlayıcı Madde", img: "kartlar/15-patlayici-madde.png" }
+                        ]
+                    },
+                    {
+                        text: "Cilde, kumaşa ve metallere temas ettiğinde eritip delen 'Aşındırıcı (Korozif) Madde' sembolü hangisidir?",
+                        code: "6",
+                        correctId: "6-asindirici-madde",
+                        options: [
+                            { id: "6-asindirici-madde", name: "Aşındırıcı Madde", img: "kartlar/6-asindirici-madde.png" },
+                            { id: "5-yanici-madde", name: "Yanıcı Madde", img: "kartlar/5-yanici-madde.png" },
+                            { id: "13-yakici-madde", name: "Yakıcı Madde", img: "kartlar/13-yakici-madde.png" },
+                            { id: "10-sicak-cisim", name: "Sıcak Cisim", img: "kartlar/10-sicak-cisim.png" }
+                        ]
+                    },
+                    {
+                        text: "Isı veya alevle kolayca tutuşabilen ve hızla yanan maddeleri belirten 'Yanıcı (Parlayıcı) Madde' alevi hangisidir?",
+                        code: "1",
+                        correctId: "5-yanici-madde",
+                        options: [
+                            { id: "5-yanici-madde", name: "Yanıcı Madde", img: "kartlar/5-yanici-madde.png" },
+                            { id: "13-yakici-madde", name: "Yakıcı Madde", img: "kartlar/13-yakici-madde.png" },
+                            { id: "15-patlayici-madde", name: "Patlayıcı Madde", img: "kartlar/15-patlayici-madde.png" },
+                            { id: "11-elektrik-uyarisi", name: "Elektrik Uyarısı", img: "kartlar/11-elektrik-uyarisi.png" }
+                        ]
+                    }
                 ]
             }
         ];
 
         // ==========================================
-        // 🧱 LABİRENT HARİTA DÜZENİ (Grid Matrisi)
-        // 0: Yol, 1: Duvar, 2: Kapı 1, 3: Kapı 2, 4: Kapı 3, 5: Kapı 4, 6: Çıkış Portalı, 7: Deney Tüpü (+Puan)
+        // 🧱 LABİRENT HARİTASI
         // ==========================================
         const MAZE_COLS = 25;
         const MAZE_ROWS = 19;
@@ -662,43 +706,36 @@
             [1, 0, 0, 7, 1, 0, 0, 0, 0, 1, 1, 0, 0, 7, 1, 0, 0, 0, 0, 0, 0, 0, 7, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1],
             [1, 0, 1, 0, 0, 0, 1, 7, 0, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1], // [4][11]: KAPI 1 (Değer: 2)
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 0, 1], // [4][11]: KAPI 1
             [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
             [1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1],
             [1, 7, 0, 0, 1, 0, 1, 7, 1, 0, 0, 0, 1, 0, 1, 7, 0, 0, 1, 0, 0, 0, 1, 0, 1],
             [1, 0, 1, 0, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
-            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1], // [9][11]: KAPI 2 (Değer: 3)
+            [1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 3, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1], // [9][11]: KAPI 2
             [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1],
             [1, 0, 0, 0, 7, 0, 0, 0, 1, 0, 1, 0, 0, 7, 1, 0, 0, 0, 1, 0, 0, 0, 0, 7, 1],
             [1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1],
             [1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1],
-            [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 4, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1], // [14][11]: KAPI 3 (Değer: 4)
+            [1, 0, 1, 1, 1, 0, 1, 0, 1, 1, 1, 4, 1, 1, 1, 0, 1, 0, 1, 1, 1, 0, 1, 0, 1], // [14][11]: KAPI 3
             [1, 0, 1, 7, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 7, 1, 0, 0, 0, 1],
-            [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 5, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1], // [16][11]: KAPI 4 (Değer: 5)
-            [1, 0, 0, 0, 0, 0, 0, 7, 1, 0, 0, 0, 0, 0, 1, 7, 0, 0, 0, 0, 0, 0, 0, 6, 1], // [17][23]: ÇIKIŞ (Değer: 6)
+            [1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 5, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1], // [16][11]: KAPI 4
+            [1, 0, 0, 0, 0, 0, 0, 7, 1, 0, 0, 0, 0, 0, 1, 7, 0, 0, 0, 0, 0, 0, 0, 6, 1], // [17][23]: ÇIKIŞ
             [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         ];
 
-        // Açılmış kapılar kümesi
         const unlockedDoors = new Set();
 
-        // Oyuncu Durumu
         const player = {
             col: 1,
             row: 1,
-            x: 1,
-            y: 1,
-            targetCol: 1,
-            targetRow: 1,
-            dir: 'down',
-            isMoving: false,
-            animTimer: 0
+            dir: 'down'
         };
 
         let score = 0;
-        let timeLeft = 600; // 10 dakika
+        let timeLeft = 600;
         let timerInterval = null;
         let isGameRunning = true;
+
         let activeDoorData = null;
         let doorCurrentQIndex = 0;
         let collectedDoorCode = "";
@@ -711,14 +748,13 @@
 
         let tileSize = 32;
 
-        // Tuval Boyutunu Ekranla Eşitle
         function resizeCanvas() {
             const main = document.querySelector('main');
             const availableW = main.clientWidth;
             const availableH = main.clientHeight;
 
             tileSize = Math.floor(Math.min(availableW / MAZE_COLS, availableH / MAZE_ROWS));
-            if (tileSize < 22) tileSize = 22; // Çok küçük ekranlar için minimum boyut
+            if (tileSize < 22) tileSize = 22;
 
             canvas.width = MAZE_COLS * tileSize;
             canvas.height = MAZE_ROWS * tileSize;
@@ -727,7 +763,7 @@
         window.addEventListener('resize', resizeCanvas);
 
         // ==========================================
-        // 🎮 HAREKET VE GİRİŞ KONTROLLERİ
+        // 🎮 HAREKET VE KONTROLLER
         // ==========================================
         let moveHoldInterval = null;
         let currentHoldDir = null;
@@ -763,25 +799,22 @@
 
             player.dir = dir;
 
-            // Sınır ve Duvar Kontrolü
             if (nextCol < 0 || nextCol >= MAZE_COLS || nextRow < 0 || nextRow >= MAZE_ROWS) return;
 
             const tile = MAZE_MAP[nextRow][nextCol];
 
-            // Duvar
-            if (tile === 1) return;
+            if (tile === 1) return; // Duvar
 
-            // Kilitli Kapı Kontrolü (2, 3, 4, 5)
+            // Kilitli Kapı Kontrolü
             if (tile >= 2 && tile <= 5) {
                 const doorNum = tile - 1;
                 if (!unlockedDoors.has(doorNum)) {
-                    // Kapı kilitli -> Kapı Şifre Çözücüyü Aç!
                     triggerDoorEncounter(doorNum);
                     return;
                 }
             }
 
-            // Çıkış Portalı (6)
+            // Çıkış
             if (tile === 6) {
                 player.col = nextCol;
                 player.row = nextRow;
@@ -789,17 +822,16 @@
                 return;
             }
 
-            // Deney Tüpü (+Puan) Toplama (7)
+            // Puan Tüpü (7)
             if (tile === 7) {
-                MAZE_MAP[nextRow][nextCol] = 0; // Kaldır
+                MAZE_MAP[nextRow][nextCol] = 0;
                 score += 150;
-                timeLeft += 15; // +15 saniye ödül
+                timeLeft += 15;
                 playSound('pickup');
-                showToast("🧪 Deney Tüpü Bulundu! +150 Puan & +15 Saniye", "success");
+                showToast("🧪 Deney Tüpü! +150 Puan & +15sn", "success");
                 updateStats();
             }
 
-            // Normal Adım
             player.col = nextCol;
             player.row = nextRow;
             playSound('step');
@@ -807,7 +839,6 @@
         }
 
         function interactCurrentTile() {
-            // Çevredeki kapıları kontrol et
             const neighbors = [
                 { r: player.row - 1, c: player.col },
                 { r: player.row + 1, c: player.col },
@@ -828,7 +859,6 @@
             }
         }
 
-        // Klavye Dinleyicisi
         window.addEventListener('keydown', (e) => {
             if (activeDoorData || !isGameRunning) return;
             if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { e.preventDefault(); stepMove('up'); }
@@ -839,10 +869,10 @@
         });
 
         // ==========================================
-        // 🚪 KAPI ETKİLEŞİMİ & PROTOKOLÜ
+        // 🚪 KAPI ŞİFRE ÇÖZÜCÜ (SEÇENEKLER TEK TEK SIRALANIR)
         // ==========================================
         function triggerDoorEncounter(doorNum) {
-            activeDoorData = DOORS_DATA.find(d => d.doorId === doorNum);
+            activeDoorData = DOORS_CONFIG.find(d => d.doorId === doorNum);
             if (!activeDoorData) return;
 
             doorCurrentQIndex = 0;
@@ -853,14 +883,13 @@
 
             document.getElementById('puzzle-badge').innerText = `${doorNum}. Güvenlik Seviyesi`;
             document.getElementById('puzzle-door-title').innerText = activeDoorData.title;
-            document.getElementById('door-poster-img').src = activeDoorData.imageSrc;
+            document.getElementById('ref-poster-img').src = activeDoorData.refPoster;
 
             document.getElementById('door-unlock-btn-container').classList.add('hidden');
             document.getElementById('door-question-box').classList.remove('hidden');
 
-            renderDoorHitboxes();
             renderDoorCodeSlots();
-            loadDoorQuestion();
+            renderQuestionCards();
 
             const modal = document.getElementById('modal-door-puzzle');
             modal.classList.remove('hidden');
@@ -872,28 +901,6 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
             activeDoorData = null;
-        }
-
-        function renderDoorHitboxes() {
-            const container = document.getElementById('door-hitboxes');
-            container.innerHTML = "";
-            const list = activeDoorData.posterType === 'malzemeler' ? MALZEMELER_HITBOXES : SEMBOLLER_HITBOXES;
-
-            list.forEach(item => {
-                const div = document.createElement('div');
-                div.className = "hitbox";
-                div.style.top = item.top;
-                div.style.left = item.left;
-                div.style.width = item.width;
-                div.style.height = item.height;
-                div.title = item.name;
-                div.setAttribute('data-id', item.id);
-                div.onclick = (e) => {
-                    e.stopPropagation();
-                    handleDoorHitboxClick(item.id, div, item);
-                };
-                container.appendChild(div);
-            });
         }
 
         function renderDoorCodeSlots() {
@@ -912,13 +919,21 @@
             }
         }
 
-        function loadDoorQuestion() {
+        // 🎴 TEK TEK SIRALANAN KARTLARI ÇİZ
+        function renderQuestionCards() {
             if (doorCurrentQIndex >= activeDoorData.questions.length) {
-                // Tüm sorular bitti
+                // Tüm sorular tamamlandı!
                 document.getElementById('door-question-box').classList.add('hidden');
+                document.getElementById('cards-container').innerHTML = `
+                    <div class="col-span-2 sm:col-span-4 p-6 bg-slate-900/90 border-2 border-emerald-500 rounded-3xl text-center">
+                        <i class="fa-solid fa-circle-check text-4xl text-emerald-400 mb-2"></i>
+                        <h4 class="text-lg font-black text-white">Tüm İpuçları ve Şifreler Toplandı!</h4>
+                        <p class="text-xs text-slate-300 mt-1">Aşağıdaki yeşil butona basarak şifreyi gir ve kapıyı aç.</p>
+                    </div>
+                `;
                 document.getElementById('door-unlock-btn-container').classList.remove('hidden');
                 playSound('correct');
-                showToast("TÜM KODLAR BULUNDU! Şifreyi gir ve kapıyı aç!", "success");
+                showToast("TÜM KODLAR BULUNDU!", "success");
                 return;
             }
 
@@ -926,58 +941,78 @@
             document.getElementById('door-q-counter').innerText = `GÖREV ${doorCurrentQIndex + 1} / ${activeDoorData.questions.length}`;
             document.getElementById('door-question-text').innerText = q.text;
 
-            document.querySelectorAll('#door-hitboxes .hitbox.show-hint').forEach(el => el.classList.remove('show-hint'));
+            const container = document.getElementById('cards-container');
+            container.innerHTML = "";
+
+            // Seçenekleri oluştur
+            q.options.forEach(opt => {
+                const card = document.createElement('div');
+                card.className = "choice-card";
+                card.setAttribute('data-id', opt.id);
+                card.onclick = () => handleCardSelection(opt, card, q);
+
+                card.innerHTML = `
+                    <div class="w-full h-24 sm:h-28 flex items-center justify-center p-2 bg-slate-50 rounded-xl mb-2 overflow-hidden border border-slate-100">
+                        <img src="${opt.img}" alt="${opt.name}" class="max-w-full max-h-full object-contain pointer-events-none drop-shadow-sm" onerror="this.src='afis-malzemeler.png'">
+                    </div>
+                    <span class="text-xs sm:text-sm font-black text-slate-900 tracking-tight leading-tight block">
+                        ${opt.name}
+                    </span>
+                    <span class="mt-1 text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center gap-1">
+                        <i class="fa-solid fa-hand-pointer text-[9px]"></i> Seç
+                    </span>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        function handleDoorHitboxClick(clickedId, element, itemData) {
-            const q = activeDoorData.questions[doorCurrentQIndex];
-            if (!q) return;
+        function handleCardSelection(opt, cardEl, question) {
+            if (cardEl.parentElement.style.pointerEvents === 'none') return;
 
-            if (clickedId === q.correctId) {
-                // Doğru seçim
-                element.classList.add('correct');
+            if (opt.id === question.correctId) {
+                // DOĞRU SEÇİM!
+                cardEl.classList.add('correct');
                 playSound('correct');
-                showToast(`DOĞRU: ${itemData.name}! Kod: ${q.code}`, "success");
+                showToast(`🎉 DOĞRU: ${opt.name}! Şifre Kodu: ${question.code}`, "success");
 
-                collectedDoorCode += q.code;
+                collectedDoorCode += question.code;
                 renderDoorCodeSlots();
 
-                document.getElementById('door-image-container').style.pointerEvents = 'none';
+                cardEl.parentElement.style.pointerEvents = 'none';
 
                 setTimeout(() => {
-                    element.classList.remove('correct');
                     doorCurrentQIndex++;
-                    loadDoorQuestion();
-                    document.getElementById('door-image-container').style.pointerEvents = 'auto';
+                    renderQuestionCards();
+                    if (document.getElementById('cards-container')) {
+                        document.getElementById('cards-container').style.pointerEvents = 'auto';
+                    }
                 }, 850);
 
             } else {
-                // Yanlış seçim
-                element.classList.add('wrong');
+                // HATALI SEÇİM
+                cardEl.classList.add('wrong');
                 document.getElementById('door-question-box').classList.add('animate-shake');
                 playSound('wrong');
                 timeLeft -= 10;
                 if (timeLeft < 0) timeLeft = 0;
-                showToast("YANLIŞ SEÇİM! -10 Saniye Ceza", "error");
+                showToast("❌ YANLIŞ ARAÇ! -10 Saniye Ceza", "error");
 
                 setTimeout(() => {
-                    element.classList.remove('wrong');
+                    cardEl.classList.remove('wrong');
                     document.getElementById('door-question-box').classList.remove('animate-shake');
-                }, 700);
+                }, 600);
             }
         }
 
-        function useDoorHint() {
-            const q = activeDoorData.questions[doorCurrentQIndex];
-            if (!q) return;
-
-            timeLeft -= 15;
-            if (timeLeft < 0) timeLeft = 0;
-
-            const targetBox = document.querySelector(`#door-hitboxes [data-id="${q.correctId}"]`);
-            if (targetBox) targetBox.classList.add('show-hint');
-            showToast(`İpucu: ${q.hint}`, "info");
-            playSound('step');
+        function toggleFullPosterModal() {
+            const m = document.getElementById('modal-full-poster');
+            if (m.classList.contains('hidden')) {
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+            } else {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
         }
 
         // ==========================================
@@ -1030,14 +1065,14 @@
 
         function numpadSubmit() {
             if (enteredNumpadStr === activeDoorData.targetCode) {
-                // ŞİFRE DOĞRU! KAPI AÇILDI
+                // ŞİFRE DOĞRU! KAPI DEVRE DIŞI
                 closeNumpadModal();
                 closeDoorPuzzle();
 
                 unlockedDoors.add(activeDoorData.doorId);
                 score += 300;
                 playSound('door');
-                showToast(`✅ ${activeDoorData.doorId}. KAPI AÇILDI! İLERLEYEBİLİRSİN!`, "success");
+                showToast(`✅ ${activeDoorData.doorId}. KAPI AÇILDI! GEÇEBİLİRSİN!`, "success");
 
                 updateStats();
                 updateMissionHud();
@@ -1090,9 +1125,9 @@
                 hintEl.innerHTML = "Labirentte ilerle ve <strong class='text-amber-300'>1. Kapı</strong>'ya ulaş!";
             } else if (!unlockedDoors.has(2)) {
                 titleEl.innerText = "2. Bölge: Elektrik & Isı";
-                hintEl.innerHTML = "<strong class='text-emerald-400'>1. Kapı Açıldı!</strong> İlerideki <strong class='text-amber-300'>2. Kapı</strong>'ya doğru yönel.";
+                hintEl.innerHTML = "<strong class='text-emerald-400'>1. Kapı Açıldı!</strong> <strong class='text-amber-300'>2. Kapı</strong>'ya yönel.";
             } else if (!unlockedDoors.has(3)) {
-                titleEl.innerText = "3. Bölge: Güvenlik Piktogramları";
+                titleEl.innerText = "3. Bölge: Güvenlik Sembolleri";
                 hintEl.innerHTML = "<strong class='text-emerald-400'>2. Kapı Açıldı!</strong> <strong class='text-amber-300'>3. Kapı</strong>'yı bul ve şifreyi çöz.";
             } else if (!unlockedDoors.has(4)) {
                 titleEl.innerText = "4. Bölge: Tehlikeli Kimyasallar";
@@ -1104,12 +1139,11 @@
         }
 
         // ==========================================
-        // 🎨 LABİRENT CANVAS ÇİZİMİ (60 FPS)
+        // 🎨 LABİRENT TUVALİ ÇİZİMİ (60 FPS)
         // ==========================================
         function drawMaze() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // 1. Fayans ve Duvarları Çiz
             for (let r = 0; r < MAZE_ROWS; r++) {
                 for (let c = 0; c < MAZE_COLS; c++) {
                     const tile = MAZE_MAP[r][c];
@@ -1117,32 +1151,26 @@
                     const py = r * tileSize;
 
                     if (tile === 1) {
-                        // DUVAR: Yüksek teknolojili laboratuvar paneli
                         ctx.fillStyle = "#1e293b";
                         ctx.fillRect(px, py, tileSize, tileSize);
                         ctx.strokeStyle = "#334155";
                         ctx.lineWidth = 1.5;
                         ctx.strokeRect(px + 1, py + 1, tileSize - 2, tileSize - 2);
 
-                        // Duvar iç süslemesi
                         ctx.fillStyle = "#0f172a";
                         ctx.fillRect(px + 4, py + 4, tileSize - 8, tileSize - 8);
-
                     } else {
-                        // ZEMİN: Temiz metal zemin fayansı
                         ctx.fillStyle = "#0b1120";
                         ctx.fillRect(px, py, tileSize, tileSize);
                         ctx.strokeStyle = "#172033";
                         ctx.lineWidth = 1;
                         ctx.strokeRect(px, py, tileSize, tileSize);
 
-                        // Kilitli / Açık Kapılar (2, 3, 4, 5)
                         if (tile >= 2 && tile <= 5) {
                             const dNum = tile - 1;
                             const isOpen = unlockedDoors.has(dNum);
 
                             if (isOpen) {
-                                // Açık Kapı: Yeşil Zemin
                                 ctx.fillStyle = "rgba(34, 197, 94, 0.25)";
                                 ctx.fillRect(px, py, tileSize, tileSize);
                                 ctx.strokeStyle = "#22c55e";
@@ -1155,7 +1183,6 @@
                                 ctx.textBaseline = "middle";
                                 ctx.fillText(`K${dNum}`, px + tileSize / 2, py + tileSize / 2);
                             } else {
-                                // Kilitli Lazer Kapı: Yanıp Sönen Kırmızı Bariyer
                                 const pulseAlpha = 0.5 + Math.sin(Date.now() / 200) * 0.3;
                                 ctx.fillStyle = `rgba(239, 68, 68, ${pulseAlpha})`;
                                 ctx.fillRect(px + 2, py + 2, tileSize - 4, tileSize - 4);
@@ -1169,10 +1196,7 @@
                                 ctx.textBaseline = "middle";
                                 ctx.fillText(`🔒${dNum}`, px + tileSize / 2, py + tileSize / 2);
                             }
-                        }
-
-                        // Çıkış Portalı (6)
-                        else if (tile === 6) {
+                        } else if (tile === 6) {
                             const exitPulse = 0.6 + Math.sin(Date.now() / 150) * 0.4;
                             ctx.fillStyle = `rgba(16, 185, 129, ${exitPulse})`;
                             ctx.fillRect(px + 2, py + 2, tileSize - 4, tileSize - 4);
@@ -1185,10 +1209,7 @@
                             ctx.textAlign = "center";
                             ctx.textBaseline = "middle";
                             ctx.fillText("🏁", px + tileSize / 2, py + tileSize / 2);
-                        }
-
-                        // Toplanabilir Deney Tüpü (7)
-                        else if (tile === 7) {
+                        } else if (tile === 7) {
                             const bobY = Math.sin(Date.now() / 250) * (tileSize * 0.1);
                             ctx.fillStyle = "#f59e0b";
                             ctx.font = `bold ${Math.floor(tileSize * 0.6)}px Fredoka`;
@@ -1200,11 +1221,10 @@
                 }
             }
 
-            // 2. Oyuncuyu Çiz (Çılgın Profesör Avatarı)
+            // Oyuncu (Çılgın Profesör Avatarı)
             const ppx = player.col * tileSize;
             const ppy = player.row * tileSize;
 
-            // Oyuncu etrafında neon aydınlatma halesi
             const glowGrad = ctx.createRadialGradient(
                 ppx + tileSize / 2, ppy + tileSize / 2, tileSize * 0.2,
                 ppx + tileSize / 2, ppy + tileSize / 2, tileSize * 1.4
@@ -1216,20 +1236,17 @@
             ctx.arc(ppx + tileSize / 2, ppy + tileSize / 2, tileSize * 1.4, 0, Math.PI * 2);
             ctx.fill();
 
-            // Karakter Gövdesi / Avatarı
             ctx.fillStyle = "#ffffff";
             ctx.font = `bold ${Math.floor(tileSize * 0.75)}px Fredoka`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText("👨‍🔬", ppx + tileSize / 2, ppy + tileSize / 2);
 
-            // 3. Mini Haritayı Çiz
             drawMiniMap();
 
             requestAnimationFrame(drawMaze);
         }
 
-        // Mini Radar Harita Çizimi
         function drawMiniMap() {
             if (!miniCtx) return;
             const mw = miniCanvas.width;
@@ -1255,7 +1272,6 @@
                 }
             }
 
-            // Oyuncu Noktası (Mavi Parlayan)
             miniCtx.fillStyle = "#38bdf8";
             miniCtx.beginPath();
             miniCtx.arc((player.col + 0.5) * cellW, (player.row + 0.5) * cellH, cellW * 0.9, 0, Math.PI * 2);
@@ -1263,7 +1279,7 @@
         }
 
         // ==========================================
-        // ⏱️ OYUN ZAMANLAYICISI & YÖNETİM
+        // ⏱️ ZAMANLAYICI & GENEL FONKSİYONLAR
         // ==========================================
         function startTimer() {
             if (timerInterval) clearInterval(timerInterval);
@@ -1278,7 +1294,7 @@
                     isGameRunning = false;
                     clearInterval(timerInterval);
                     playSound('wrong');
-                    alert("Süre doldu! Laboratuvar kapıları tamamen kilitlendi.");
+                    alert("Süre doldu! Yeniden deneyin.");
                     location.reload();
                 }
             }, 1000);
@@ -1300,21 +1316,12 @@
             document.getElementById('modal-help').classList.remove('flex');
         }
 
-        function handleImageFallback(imgEl) {
-            const src = imgEl.src.toLowerCase();
-            if (src.includes('malzemeler')) {
-                imgEl.src = imgEl.src.endsWith('.png') ? 'Laboratuvar Malzemeleri_2.png' : 'afis-malzemeler.png';
-            } else {
-                imgEl.src = imgEl.src.endsWith('.png') ? 'd4313cf1-d275-42de-80db-4f0f4ece3a78_3.png' : 'afis-semboller.png';
-            }
-        }
-
         function showToast(msg, type = "info") {
             const el = document.getElementById('toast-msg');
             const icon = document.getElementById('toast-icon');
             document.getElementById('toast-text').innerText = msg;
 
-            el.className = "fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-24 opacity-0 font-bold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 z-[90] flex items-center text-xs sm:text-sm pointer-events-none";
+            el.className = "fixed top-20 left-1/2 transform -translate-x-1/2 -translate-y-24 opacity-0 font-bold px-5 py-2.5 rounded-full shadow-2xl transition-all duration-300 z-[95] flex items-center text-xs sm:text-sm pointer-events-none";
 
             if (type === 'success') {
                 el.classList.add('bg-emerald-500', 'text-slate-950', 'border', 'border-emerald-300');
@@ -1338,7 +1345,6 @@
             }, 2500);
         }
 
-        // Başlat
         window.addEventListener('DOMContentLoaded', () => {
             resizeCanvas();
             startTimer();
