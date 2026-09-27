@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Acil Durum: Laboratuvardan Kaçış</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: #0f172a;
+            color: #e2e8f0;
+            overscroll-behavior: none;
+            user-select: none;
+        }
+
+        .mono-font { font-family: 'Share Tech Mono', monospace; }
+
+        @keyframes emergency-pulse {
+            0%, 100% { box-shadow: inset 0 0 50px rgba(239, 68, 68, 0.1); }
+            50% { box-shadow: inset 0 0 150px rgba(239, 68, 68, 0.4); }
+        }
+        
+        .room-bg {
+            background: linear-gradient(to bottom, #1e293b, #020617);
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(239, 68, 68, 0.03) 40px, rgba(239, 68, 68, 0.03) 80px);
+            animation: emergency-pulse 3s infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .symbol-blue-circle {
+            width: 50px; height: 50px;
+            background-color: #0284c7; /* Posterdeki mavi */
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: white;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+        
+        .symbol-red-diamond-wrapper {
+            width: 54px; height: 54px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .symbol-red-diamond {
+            width: 40px; height: 40px;
+            background-color: white;
+            border: 4px solid #ef4444; /* Posterdeki kırmızı */
+            transform: rotate(45deg);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .symbol-red-diamond span {
+            transform: rotate(-45deg);
+            font-size: 22px;
+            color: black;
+        }
+
+        @keyframes float-obj {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-8px) scale(1.05); }
+        }
+        
+        .interactive-zone {
+            animation: float-obj 3s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: absolute;
+            z-index: 10;
+        }
+        .interactive-zone:hover {
+            filter: drop-shadow(0 0 15px rgba(250, 204, 21, 0.8));
+            animation-play-state: paused;
+            transform: scale(1.15);
+        }
+
+        .solved-zone {
+            opacity: 0.4;
+            filter: grayscale(100%);
+            pointer-events: none;
+            animation: none;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-10px); }
+            40%, 80% { transform: translateX(10px); }
+        }
+        .shake-effect { animation: shake 0.4s ease-in-out; }
+
+        @keyframes time-penalty {
+            0% { color: #ef4444; transform: scale(1); }
+            50% { color: #ef4444; transform: scale(1.5); }
+            100% { color: inherit; transform: scale(1); }
+        }
+        .penalty-effect { animation: time-penalty 1s ease-in-out; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-2 md:p-6">
+
+    <div class="max-w-5xl w-full bg-slate-800 rounded-3xl shadow-2xl border-4 border-slate-700 flex flex-col h-[95vh] md:h-[85vh] overflow-hidden relative">
+        
+        <!-- Üst Panel: Başlık, Sayaç ve Tablet -->
+        <div class="bg-slate-900 border-b-4 border-slate-950 p-4 flex justify-between items-center z-20">
+            <div class="flex items-center gap-3">
+                <div class="bg-red-500/20 border-2 border-red-500 rounded-xl px-4 py-2 flex items-center gap-2">
+                    <span class="text-red-500 animate-pulse text-xl">⚠️</span>
+                    <span id="timerDisplay" class="mono-font text-2xl md:text-3xl font-bold text-red-400 tracking-wider">05:00</span>
+                </div>
+                <div class="hidden md:block text-slate-300 font-bold text-lg">
+                    ACİL DURUM KİLİDİ
+                </div>
+            </div>
+            
+            <button onclick="toggleTablet()" class="bg-sky-600 hover:bg-sky-500 text-white border-2 border-sky-400 rounded-xl px-4 py-2 font-bold flex items-center gap-2 transition-all shadow-[0_0_15px_rgba(2,132,199,0.5)] hover:scale-105 active:scale-95">
+                <span class="text-xl">📱</span> 
+                <span class="hidden sm:inline">Güvenlik Tableti</span>
+            </button>
+        </div>
+
+        <!-- OYUN ALANI (Oda) -->
+        <div class="room-bg flex-grow w-full h-full relative flex items-center justify-center">
+            
+            <!-- 1. Kırık Cam (Sol Alt) -->
+            <div id="zone-1" class="interactive-zone bottom-10 left-10 md:bottom-20 md:left-24" style="animation-delay: 0s;" onclick="openQuestion(1)">
+                <div class="text-6xl drop-shadow-[0_5px_15px_rgba(0,0,0,0.8)]">🍷</div>
+                <div class="bg-black/70 text-yellow-400 text-xs font-bold text-center rounded mt-2 border border-yellow-500/50">Tehlike 1</div>
+            </div>
+
+            <!-- 2. Elektrik Kaçağı (Sağ Üst) -->
+            <div id="zone-2" class="interactive-zone top-16 right-12 md:top-24 md:right-32" style="animation-delay: 0.5s;" onclick="openQuestion(2)">
+                <div class="text-6xl drop-shadow-[0_5px_15px_rgba(234,179,8,0.5)]">🔌</div>
+                <div class="bg-black/70 text-yellow-400 text-xs font-bold text-center rounded mt-2 border border-yellow-500/50">Tehlike 2</div>
+            </div>
+
+            <!-- 3. Toksik Varil (Sağ Alt) -->
+            <div id="zone-3" class="interactive-zone bottom-12 right-16 md:bottom-20 md:right-40" style="animation-delay: 1.2s;" onclick="openQuestion(3)">
+                <div class="text-7xl drop-shadow-[0_5px_20px_rgba(34,197,94,0.4)]">🛢️</div>
+                <div class="bg-black/70 text-yellow-400 text-xs font-bold text-center rounded mt-2 border border-yellow-500/50">Tehlike 3</div>
+            </div>
+
+            <!-- 4. Asit Döküntüsü (Sol Üst) -->
+            <div id="zone-4" class="interactive-zone top-20 left-16 md:top-32 md:left-32" style="animation-delay: 0.8s;" onclick="openQuestion(4)">
+                <div class="text-6xl drop-shadow-[0_5px_15px_rgba(168,85,247,0.4)]">🧪</div>
+                <div class="bg-black/70 text-yellow-400 text-xs font-bold text-center rounded mt-2 border border-yellow-500/50">Tehlike 4</div>
+            </div>
+
+            <!-- ANA KAPI VE ŞİFRE PANELİ -->
+            <div class="relative z-10 flex flex-col items-center">
+                <div id="mainDoor" class="bg-slate-700 border-8 border-slate-900 rounded-t-3xl w-56 md:w-72 h-80 md:h-96 flex flex-col items-center shadow-[inset_0_0_50px_rgba(0,0,0,0.8)] transition-all duration-1000 relative overflow-hidden">
+                    
+                    <div class="absolute top-0 left-0 w-full h-4 bg-yellow-400/20" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, #000 10px, #000 20px);"></div>
+                    <div class="mt-12 text-slate-400 font-bold tracking-widest text-lg">ÇIKIŞ KAPISI</div>
+                    
+                    <button onclick="openKeypad()" class="mt-10 bg-slate-900 border-4 border-slate-600 hover:border-yellow-400 rounded-xl p-4 flex flex-col items-center gap-2 group transition-colors shadow-2xl">
+                        <div class="w-4 h-4 rounded-full bg-red-500 shadow-[0_0_10px_red] mb-2" id="doorLight"></div>
+                        <div class="text-4xl">🔒</div>
+                        <div class="text-yellow-400 mono-font font-bold">ŞİFREYİ GİR</div>
+                    </button>
+                    
+                    <div class="mt-auto mb-6 bg-slate-900 border-2 border-slate-700 rounded-lg p-3 w-4/5">
+                        <div class="text-xs text-slate-400 text-center mb-1">BULUNAN RAKAMLAR</div>
+                        <div class="flex justify-center gap-2 mono-font text-xl font-bold text-sky-400" id="clueDisplay">
+                            <span id="c1">_</span> <span id="c2">_</span> <span id="c3">_</span> <span id="c4">_</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GÜVENLİK TABLETİ (Yardım Menüsü) -->
+        <div id="tabletModal" class="absolute inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4">
+            <div class="bg-slate-100 rounded-3xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden border-8 border-slate-800">
+                <div class="bg-slate-800 p-4 flex justify-between items-center text-white">
+                    <h2 class="text-xl font-bold flex items-center gap-2">📱 Laboratuvar Güvenlik Rehberi</h2>
+                    <button onclick="toggleTablet()" class="bg-red-500 hover:bg-red-600 w-8 h-8 rounded-full font-bold flex items-center justify-center">✕</button>
+                </div>
+                
+                <div class="p-4 bg-sky-100 text-sky-800 font-semibold text-center text-sm">
+                    💡 İpucu: Soruları çözerken sembollerin anlamlarını bu listeden kontrol edebilirsin.
+                </div>
+                
+                <div class="flex-grow overflow-y-auto p-4 no-scrollbar bg-slate-100">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="tabletGrid">
+                        <!-- JS ile yüklenecek -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SORU MODALI -->
+        <div id="questionModal" class="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4">
+            <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl border-4 border-sky-400 p-6 relative">
+                <button onclick="closeModals()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center">✕</button>
+                
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800" id="qTitle">Tehlike Analizi</h2>
+                    <p class="text-slate-500 text-sm mt-1">Laboratuvar kurallarını hatırla!</p>
+                </div>
+
+                <div class="bg-sky-50 border-2 border-sky-100 rounded-xl p-4 mb-6">
+                    <p id="qText" class="text-slate-700 font-semibold text-lg text-center leading-relaxed"></p>
+                </div>
+                
+                <div id="qOptions" class="grid grid-cols-1 gap-3">
+                    <!-- JS ile eklenecek -->
+                </div>
+
+                <div id="feedbackArea" class="hidden mt-6 text-center p-4 rounded-xl font-bold text-lg border-2">
+                </div>
+            </div>
+        </div>
+
+        <!-- ŞİFRE PANELI (Keypad) -->
+        <div id="keypadModal" class="absolute inset-0 z-40 bg-black/80 backdrop-blur-sm hidden flex-col items-center justify-center p-4">
+            <div id="keypadBox" class="bg-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl border-4 border-slate-600">
+                <div class="flex justify-between items-center mb-4 text-white">
+                    <h2 class="text-xl font-bold mono-font">GÜVENLİK SİSTEMİ</h2>
+                    <button onclick="closeModals()" class="text-red-400 hover:text-red-300 font-bold text-xl">✕</button>
+                </div>
+                
+                <div class="bg-black/80 border-2 border-slate-700 rounded-lg p-4 mb-6 flex justify-center gap-3">
+                    <div class="w-12 h-14 bg-slate-900 border border-slate-700 rounded flex items-center justify-center text-3xl mono-font text-emerald-400" id="k1">_</div>
+                    <div class="w-12 h-14 bg-slate-900 border border-slate-700 rounded flex items-center justify-center text-3xl mono-font text-emerald-400" id="k2">_</div>
+                    <div class="w-12 h-14 bg-slate-900 border border-slate-700 rounded flex items-center justify-center text-3xl mono-font text-emerald-400" id="k3">_</div>
+                    <div class="w-12 h-14 bg-slate-900 border border-slate-700 rounded flex items-center justify-center text-3xl mono-font text-emerald-400" id="k4">_</div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(1)">1</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(2)">2</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(3)">3</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(4)">4</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(5)">5</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(6)">6</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(7)">7</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(8)">8</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(9)">9</button>
+                    <button class="bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white font-bold rounded-lg" onclick="clearKeypad()">SİL</button>
+                    <button class="bg-slate-700 hover:bg-slate-600 text-white text-2xl py-3 rounded-lg shadow font-bold" onclick="typeDigit(0)">0</button>
+                    <button class="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500 hover:text-white font-bold rounded-lg" onclick="checkMasterCode()">AÇ</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="endScreen" class="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 text-center hidden">
+            <div id="endIcon" class="text-7xl mb-4 drop-shadow-xl"></div>
+            <h1 id="endTitle" class="text-4xl md:text-5xl font-extrabold text-white mb-4 drop-shadow-lg uppercase tracking-wide"></h1>
+            <p id="endMessage" class="text-xl text-white/90 font-medium max-w-lg mb-8 bg-black/20 p-4 rounded-xl border border-white/20"></p>
+            <button onclick="location.reload()" class="bg-white text-slate-800 font-bold text-xl py-4 px-10 rounded-full shadow-2xl hover:scale-105 active:scale-95 transition-transform">
+                Tekrar Oyna
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const posterData = [
+            { id: 1, type: 'blue', icon: '🧤', name: 'Eldiven Giy', desc: 'Kimyasallara ve kirliliğe karşı elleri korumak için kullanılır.' },
+            { id: 2, type: 'blue', icon: '🥽', name: 'Gözlük Kullan', desc: 'Gözü sıçrama, kimyasal ve parçacıklardan korur.' },
+            { id: 3, type: 'blue', icon: '🥼', name: 'Koruyucu Elbise', desc: 'Kıyafetleri ve cildi korumak için önlük giyilmelidir.' },
+            { id: 4, type: 'blue', icon: '😷', name: 'Maske Kullan', desc: 'Zehirli gaz, buhar ve zararlı maddelere karşı kullanılır.' },
+            { id: 5, type: 'red', icon: '🔥', name: 'Yanıcı Madde', desc: 'Isı, kıvılcım veya alevle kolayca tutuşabilen maddelerdir.' },
+            { id: 6, type: 'red', icon: '🧪', name: 'Aşındırıcı Madde', desc: 'Cilde, kumaşa ve metallere zarar verebilen maddeleri belirtir.' },
+            { id: 7, type: 'red', icon: '☠️', name: 'Zehirli (Toksik)', desc: 'Solunduğunda, yutulduğunda temas ettiğinde sağlık riski oluşturur.' },
+            { id: 8, type: 'red', icon: '❗', name: 'Tahriş Edici', desc: 'Deri, göz veya solunum yollarında tahrişe neden olabilir.' },
+            { id: 9, type: 'red', icon: '🔪', name: 'Kesici Cisim', desc: 'Kesici ve delici aletlerle çalışırken dikkatli olunmalıdır.' },
+            { id: 10, type: 'red', icon: '♨️', name: 'Sıcak Cisim', desc: 'Sıcak yüzeyler ve ısıtıcılar yanıklara neden olabilir.' },
+            { id: 11, type: 'red', icon: '⚡', name: 'Elektrik Uyarısı', desc: 'Elektrikli araçlarla çalışırken çarpılma riskine dikkat.' },
+            { id: 12, type: 'red', icon: '🍷', name: 'Kırılabilir Cam', desc: 'Cam malzemeler kırılma ve ani ısı değişiminden korunmalıdır.' },
+            { id: 13, type: 'red', icon: '⭕', name: 'Yakıcı Madde', desc: 'Diğer maddelerin tutuşmasını kolaylaştıran maddeler.' },
+            { id: 14, type: 'red', icon: '🍂', name: 'Çevreye Zararlı', desc: 'Doğaya ve su kaynaklarına zarar verebilecek maddeler.' },
+            { id: 15, type: 'red', icon: '💥', name: 'Patlayıcı Madde', desc: 'Isı, kıvılcım veya darbeyle patlayabilecek maddeler.' },
+            { id: 16, type: 'red', icon: '☢️', name: 'Radyoaktif', desc: 'Yaydığı radyasyon nedeniyle canlılar için tehlike oluşturur.' }
+        ];
+
+        const gameQuestions = {
+            1: { 
+                question: "Laboratuvarda bir deney tüpü yere düşüp kırıldı. Temizlemeden önce 'Cam malzemelerin dikkatli kullanılması gerektiğini' anlatan uyarı sembolünü hatırlamalısın. Bu sembol hangisidir?",
+                options: [
+                    { text: "Kırılabilir Cam Uyarısı", isCorrect: true, symbol: {type: 'red', icon: '🍷'} },
+                    { text: "Kesici Cisim Uyarısı", isCorrect: false, symbol: {type: 'red', icon: '🔪'} },
+                    { text: "Tahriş Edici Madde", isCorrect: false, symbol: {type: 'red', icon: '❗'} }
+                ],
+                clue: "2", position: 1
+            },
+            2: { 
+                question: "Bağlantı kablosu suya değdiği için kıvılcımlar çıkıyor! 'Elektrikli araçlarla çalışırken çarpılma riskine karşı' dikkatli olmayı gerektiren güvenlik sembolü nedir?",
+                options: [
+                    { text: "Patlayıcı Madde", isCorrect: false, symbol: {type: 'red', icon: '💥'} },
+                    { text: "Yanıcı Madde", isCorrect: false, symbol: {type: 'red', icon: '🔥'} },
+                    { text: "Elektrik Uyarısı", isCorrect: true, symbol: {type: 'red', icon: '⚡'} }
+                ],
+                clue: "7", position: 2
+            },
+            3: { 
+                question: "Üzerinde uyarı olan bu varilin içindeki madde, solunduğunda veya temas edildiğinde ciddi sağlık riski (zehirlenme) oluşturuyor. Bu hangi sembolle gösterilir?",
+                options: [
+                    { text: "Zehirli (Toksik) Madde", isCorrect: true, symbol: {type: 'red', icon: '☠️'} },
+                    { text: "Radyoaktif Madde", isCorrect: false, symbol: {type: 'red', icon: '☢️'} },
+                    { text: "Çevreye Zararlı Madde", isCorrect: false, symbol: {type: 'red', icon: '🍂'} }
+                ],
+                clue: "4", position: 3
+            },
+            4: { 
+                question: "Tezgaha dökülen sıvı asit, masanın yüzeyini eritmeye (aşındırmaya) başladı! Cilde ve kumaşa da zarar verebilecek bu maddenin sembolü hangisidir?",
+                options: [
+                    { text: "Tahriş Edici Madde", isCorrect: false, symbol: {type: 'red', icon: '❗'} },
+                    { text: "Aşındırıcı Madde", isCorrect: true, symbol: {type: 'red', icon: '🧪'} },
+                    { text: "Sıcak Cisim Uyarısı", isCorrect: false, symbol: {type: 'red', icon: '♨️'} }
+                ],
+                clue: "9", position: 4
+            }
+        };
+
+        const MASTER_CODE = "2749";
+
+        let timeLeft = 300; 
+        let timerInterval;
+        let activeQuestionId = null;
+        let enteredCode = "";
+        let solvedZones = { 1: false, 2: false, 3: false, 4: false };
+
+        const timerDisplay = document.getElementById('timerDisplay');
+        const tabletModal = document.getElementById('tabletModal');
+        const questionModal = document.getElementById('questionModal');
+        const keypadModal = document.getElementById('keypadModal');
+        
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    gameOver(false); 
+                    return;
+                }
+                timeLeft--;
+                updateTimerDisplay();
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+            const seconds = (timeLeft % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${minutes}:${seconds}`;
+            
+            if(timeLeft < 60) {
+                timerDisplay.classList.add('text-red-500');
+                timerDisplay.classList.remove('text-red-400');
+            }
+        }
+
+        function applyTimePenalty() {
+            timeLeft -= 30; 
+            if (timeLeft < 0) timeLeft = 0;
+            updateTimerDisplay();
+            
+            timerDisplay.classList.remove('penalty-effect');
+            void timerDisplay.offsetWidth; 
+            timerDisplay.classList.add('penalty-effect');
+        }
+
+        function initTablet() {
+            const grid = document.getElementById('tabletGrid');
+            posterData.forEach(item => {
+                const isBlue = item.type === 'blue';
+                const symbolHTML = isBlue 
+                    ? `<div class="symbol-blue-circle">${item.icon}</div>`
+                    : `<div class="symbol-red-diamond-wrapper"><div class="symbol-red-diamond"><span>${item.icon}</span></div></div>`;
+
+                grid.innerHTML += `
+                    <div class="bg-white rounded-xl p-3 flex items-center gap-4 border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
+                        ${symbolHTML}
+                        <div>
+                            <div class="font-bold text-slate-800 text-sm">${item.name}</div>
+                            <div class="text-xs text-slate-500 leading-tight mt-1">${item.desc}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function toggleTablet() {
+            tabletModal.classList.toggle('hidden');
+            tabletModal.classList.toggle('flex');
+        }
+
+        function openQuestion(id) {
+            if (solvedZones[id]) return;
+            
+            activeQuestionId = id;
+            const data = gameQuestions[id];
+            
+            document.getElementById('qText').textContent = data.question;
+            const qOptions = document.getElementById('qOptions');
+            const feedbackArea = document.getElementById('feedbackArea');
+            
+            qOptions.innerHTML = '';
+            feedbackArea.classList.add('hidden');
+            qOptions.classList.remove('hidden');
+
+            data.options.forEach((opt, index) => {
+                const isBlue = opt.symbol.type === 'blue';
+                const symbolHTML = isBlue 
+                    ? `<div class="symbol-blue-circle w-10 h-10 text-lg">${opt.symbol.icon}</div>`
+                    : `<div class="symbol-red-diamond-wrapper w-12 h-12"><div class="symbol-red-diamond w-8 h-8"><span class="text-lg">${opt.symbol.icon}</span></div></div>`;
+
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-3 rounded-xl border-2 border-slate-200 hover:border-sky-400 hover:bg-sky-50 flex items-center gap-4 font-bold text-slate-700 transition-colors';
+                btn.innerHTML = `${symbolHTML} <span>${opt.text}</span>`;
+                
+                btn.onclick = () => checkAnswer(opt.isCorrect, btn, data.clue, data.position);
+                qOptions.appendChild(btn);
+            });
+
+            questionModal.classList.remove('hidden');
+            questionModal.classList.add('flex');
+        }
+
+        function checkAnswer(isCorrect, btnElement, clueNum, position) {
+            const qOptions = document.getElementById('qOptions');
+            const feedbackArea = document.getElementById('feedbackArea');
+            
+            Array.from(qOptions.children).forEach(btn => btn.style.pointerEvents = 'none');
+
+            if (isCorrect) {
+                btnElement.classList.add('border-green-500', 'bg-green-100');
+                
+                setTimeout(() => {
+                    qOptions.classList.add('hidden');
+                    feedbackArea.innerHTML = `
+                        <div class="text-4xl mb-2">✅</div>
+                        <div class="text-green-600 mb-2">Tehlike önlendi! Doğru sembolü buldun.</div>
+                        <div class="bg-slate-800 text-yellow-400 p-3 rounded-lg mono-font text-xl mt-4">
+                            ŞİFRE İPUCU: <b>${position}. Rakam = ${clueNum}</b>
+                        </div>
+                    `;
+                    feedbackArea.className = 'mt-6 text-center p-4 rounded-xl font-bold border-2 border-green-500 bg-green-50 block';
+                    
+                    document.getElementById(`c${position}`).textContent = clueNum;
+                    
+                    solvedZones[activeQuestionId] = true;
+                    document.getElementById(`zone-${activeQuestionId}`).classList.add('solved-zone');
+                    document.getElementById(`zone-${activeQuestionId}`).innerHTML = '<div class="text-5xl">✅</div>';
+
+                    setTimeout(closeModals, 3000);
+                }, 500);
+
+            } else {
+                btnElement.classList.add('border-red-500', 'bg-red-100', 'shake-effect');
+                applyTimePenalty();
+                
+                setTimeout(() => {
+                    feedbackArea.innerHTML = `
+                        <div class="text-4xl mb-2">❌</div>
+                        <div class="text-red-600">Yanlış sembol! Tehlike devam ediyor.</div>
+                        <div class="text-sm text-slate-500 mt-2">-30 Saniye Ceza!</div>
+                    `;
+                    feedbackArea.className = 'mt-4 text-center p-4 rounded-xl font-bold border-2 border-red-500 bg-red-50 block';
+                    
+                    setTimeout(() => { closeModals(); }, 2000);
+                }, 600);
+            }
+        }
+
+        function openKeypad() {
+            keypadModal.classList.remove('hidden');
+            keypadModal.classList.add('flex');
+        }
+
+        function closeModals() {
+            tabletModal.classList.add('hidden');
+            questionModal.classList.add('hidden');
+            keypadModal.classList.add('hidden');
+            activeQuestionId = null;
+        }
+
+        function typeDigit(num) {
+            if (enteredCode.length < 4) {
+                enteredCode += num.toString();
+                updateKeypadDisplay();
+            }
+        }
+
+        function clearKeypad() {
+            enteredCode = "";
+            updateKeypadDisplay();
+        }
+
+        function updateKeypadDisplay() {
+            for (let i = 1; i <= 4; i++) {
+                const box = document.getElementById(`k${i}`);
+                if (i <= enteredCode.length) {
+                    box.textContent = enteredCode[i-1];
+                    box.classList.add('text-white', 'border-sky-500');
+                    box.classList.remove('text-emerald-400', 'border-slate-700');
+                } else {
+                    box.textContent = "_";
+                    box.classList.remove('text-white', 'border-sky-500');
+                    box.classList.add('text-emerald-400', 'border-slate-700');
+                }
+            }
+        }
+
+        function checkMasterCode() {
+            if (enteredCode.length !== 4) return;
+
+            const box = document.getElementById('keypadBox');
+
+            if (enteredCode === MASTER_CODE) {
+                clearInterval(timerInterval);
+                closeModals();
+                
+                const doorLight = document.getElementById('doorLight');
+                doorLight.classList.replace('bg-red-500', 'bg-green-500');
+                doorLight.style.boxShadow = '0 0 20px #22c55e';
+                
+                const mainDoor = document.getElementById('mainDoor');
+                mainDoor.style.transform = 'translateY(-100%)';
+                mainDoor.style.opacity = '0';
+                
+                setTimeout(() => { gameOver(true); }, 1500);
+
+            } else {
+                box.classList.add('shake-effect', 'border-red-500');
+                box.classList.remove('border-slate-600');
+                applyTimePenalty();
+                
+                setTimeout(() => {
+                    box.classList.remove('shake-effect', 'border-red-500');
+                    box.classList.add('border-slate-600');
+                    clearKeypad();
+                }, 600);
+            }
+        }
+
+        function gameOver(isWin) {
+            const endScreen = document.getElementById('endScreen');
+            const endIcon = document.getElementById('endIcon');
+            const endTitle = document.getElementById('endTitle');
+            const endMessage = document.getElementById('endMessage');
+
+            endScreen.classList.remove('hidden');
+            
+            if (isWin) {
+                endScreen.classList.add('bg-green-600');
+                endIcon.textContent = "🏆";
+                endTitle.textContent = "KAÇIŞ BAŞARILI!";
+                endMessage.innerHTML = "Tebrikler! Laboratuvar güvenlik kurallarını doğru uygulayarak tüm tehlikeleri atlattın ve kapıyı açmayı başardın.<br><br><b>Kalan Süre:</b> " + timerDisplay.textContent;
+            } else {
+                endScreen.classList.add('bg-red-700');
+                endIcon.textContent = "💥";
+                endTitle.textContent = "SÜRE BİTTİ!";
+                endMessage.innerHTML = "Laboratuvardaki tehlikeler kontrolden çıktı ve kapılar tamamen kilitlendi.<br>Güvenlik kurallarını tekrar çalışmalısın!";
+            }
+        }
+
+        window.onload = () => {
+            initTablet();
+            startTimer();
+        };
+    </script>
+</body>
+</html>

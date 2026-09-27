@@ -188,26 +188,44 @@ const CloudSyncManager = {
             let cloudMaterials = [];
             let cloudDeletedIds = [];
             let fetchSuccess = false;
+
+            // 🌟 0. ÖNCELİK: Supabase Bulut Veritabanı (Çoklu cihaz senkronizasyonu)
+            let isSupabaseSource = false;
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                try {
+                    const sbMaterials = await RotaliCloud.fetchMaterials();
+                    if (Array.isArray(sbMaterials)) {
+                        cloudMaterials = sbMaterials;
+                        fetchSuccess = true;
+                        isSupabaseSource = true;
+                    }
+                } catch(sbErr) {
+                    console.warn("Supabase sync fetch error:", sbErr);
+                }
+            }
+
             const noCacheHeaders = {
                 "Cache-Control": "no-cache, no-store, must-revalidate",
                 "Pragma": "no-cache"
             };
 
-            // Önce API endpoint dene
-            try {
-                const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}&r=${Math.random()}`, {
-                    headers: noCacheHeaders
-                });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && Array.isArray(data.materials)) {
-                        cloudMaterials = data.materials;
-                        cloudDeletedIds = Array.isArray(data.deletedIds) ? data.deletedIds : [];
-                        fetchSuccess = true;
+            // Önce API endpoint dene (Gist / Vercel fallback)
+            if (!fetchSuccess) {
+                try {
+                    const res = await fetch(`${this.apiEndpoint}?t=${Date.now()}&r=${Math.random()}`, {
+                        headers: noCacheHeaders
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && Array.isArray(data.materials)) {
+                            cloudMaterials = data.materials;
+                            cloudDeletedIds = Array.isArray(data.deletedIds) ? data.deletedIds : [];
+                            fetchSuccess = true;
+                        }
                     }
+                } catch(apiErr) {
+                    console.warn("api/sync fetch error, trying fallback:", apiErr);
                 }
-            } catch(apiErr) {
-                console.warn("api/sync fetch error, trying fallback:", apiErr);
             }
 
             // Fallback: Canlı rotalifenci.vercel.app/api/sync
@@ -337,8 +355,8 @@ const CloudSyncManager = {
                 }
             }
 
-            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa, buluta gönder
-            if (hasNewLocalToUpload) {
+            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa veya Supabase henüz boşsa, buluta gönder
+            if (hasNewLocalToUpload || (isSupabaseSource && cloudMaterials.length === 0 && localMaterials.length > 0)) {
                 await this.uploadToCloud(finalMergedList, false);
             }
 
@@ -373,8 +391,8 @@ const CloudSyncManager = {
                         copy.fileUrl = cached.fileUrl;
                     }
                 }
-                // 5MB üstü DataURL'leri buluta gönderme (Gist boyut sınırı)
-                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
+                // Sadece eski Gist/Vercel senkronizasyonunda 5MB üstü DataURL'ler sınırlandırılır (Supabase Storage varsa kısıtlama yapılmaz)
+                if (!window.RotaliCloud?.isConfigured() && copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
                     copy.fileUrl = "";
                     copy.hasBlob = true; // Bu cihazda IndexedDB'de saklanır işareti
                 }
@@ -384,6 +402,18 @@ const CloudSyncManager = {
                 }
                 return copy;
             });
+
+            // 🌟 Supabase Bulut Veritabanı ile Anında Eşitle
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                try {
+                    for (const m of cleanMaterials) {
+                        await RotaliCloud.saveMaterial(m);
+                    }
+                    console.log("☁️ Supabase bulut veritabanına tüm materyaller başarıyla eşitlendi.");
+                } catch(sbErr) {
+                    console.warn("Supabase uploadToCloud error:", sbErr);
+                }
+            }
 
             const payload = {
                 materials: cleanMaterials,
@@ -434,6 +464,13 @@ const CloudSyncManager = {
     async deleteMaterial(id, updatedList) {
         addDeletedMaterialId(id);
         
+        // 🌟 Supabase Bulut Veritabanından ve Storage'dan Sil
+        if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            try {
+                await RotaliCloud.deleteMaterial(id);
+            } catch(e) {}
+        }
+
         // ⚡ HAFİF VE ANLIK BULUT SİLME (50 Baytlık Doğrudan İstek)
         const deletePayload = {
             action: "delete",
@@ -469,7 +506,7 @@ const CloudSyncManager = {
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
-const ROTALI_DATA_SCHEMA_VERSION = 20260918_01;
+const ROTALI_DATA_SCHEMA_VERSION = 20260927_07;
 
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;
@@ -485,6 +522,16 @@ function sanitizeMaterialItem(raw) {
     item.desc = String(item.desc || "").trim();
     item.fileName = String(item.fileName || (item.title ? `${item.title}.pdf` : "dokuman.pdf")).trim();
     item.fileUrl = String(item.fileUrl || "").trim();
+    
+    // Kaçış Odası veya Gemini URL'lerini ASLA harici iframe olarak bırakma, yerel motora bağla
+    if (item.fileUrl && (item.fileUrl.includes("gemini.google") || item.fileUrl.includes("share.gemini.google"))) {
+        item.fileUrl = "oyun-lab-kacis";
+    }
+    const lowTitle = item.title.toLowerCase();
+    if ((lowTitle.includes("kaçış") || lowTitle.includes("kacis") || lowTitle.includes("escape")) && (item.category === "egitsel-oyunlar" || item.category === "oyunlar" || item.category === "oyun")) {
+        item.fileUrl = "oyun-lab-kacis";
+    }
+
     item.imageUrl = String(item.imageUrl || "").trim();
     item.format = String(item.format || (item.fileUrl.endsWith(".mp4") ? "MP4" : "PDF")).trim();
     item.hasBlob = Boolean(item.hasBlob);
@@ -606,6 +653,24 @@ const DEFAULT_CUSTOM_MATERIALS = [
         createdAt: "Yeni Yayınlandı"
     },
     {
+        id: "mat-5-lab-kacis-gemini",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        title: "Laboratuvar Kaçış Odası",
+        unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
+        targetSection: "lab",
+        desc: "Google Yapay Zekâ (Gemini) destekli interaktif Fen Laboratuvarı Kaçış Odası oyunu. Şifreleri çözün, kapıyı açın ve laboratuvardan kurtulun!",
+        fileName: "Laboratuvar Kaçış Odası",
+        fileUrl: "oyun-lab-kacis",
+        imageUrl: "assets/lab-guvenligi.svg",
+        format: "Eğitsel Oyun",
+        hasBlob: false,
+        tags: ["MEB 2026-2027", "Laboratuvar", "Kaçış Odası", "Gemini AI", "İnteraktif Oyun"],
+        visibility: "public",
+        downloadCount: "4.250+",
+        createdAt: "Yeni Yayınlandı"
+    },
+    {
         id: "mat-8-lgs-deneme-1",
         grade: "8",
         category: "lgs",
@@ -674,11 +739,19 @@ function migrateAndSanitizeMaterials(rawList, forceMigrate = false) {
     // Map: id -> item
     const map = new Map();
 
-    // 1. Önce kayıtlı kullanıcı materyallerini yükle
+    // 1. Önce kayıtlı kullanıcı materyallerini yükle (Hayalet ve sahte sistem şablonları elenir)
+    const ghostSystemIds = new Set([
+        "std-ders-sunumu-5-1", "std-ders-sunumu-6-1", "std-ders-sunumu-7-1", "std-ders-sunumu-8-1",
+        "mat-5-unite-bilgi", "mat-5-lab-guvenlik-gorsel", "not-5-unite-bilgilendirmeleri"
+    ]);
+
     if (Array.isArray(rawList)) {
         for (const raw of rawList) {
             const item = sanitizeMaterialItem(raw);
             if (!item || !item.id || deletedIds.has(item.id)) continue;
+            if (ghostSystemIds.has(item.id)) continue;
+            // Dosyası olmayan sahte sistem föyleri/sunumları temizlenir
+            if ((item.id.startsWith("foy-") || item.id.startsWith("std-") || item.id.startsWith("not-5-")) && (!item.fileUrl || item.fileUrl === "#" || item.fileUrl.trim() === "")) continue;
             map.set(item.id, item);
         }
     }
@@ -853,11 +926,10 @@ function matchesSubTabCategory(item, subTab) {
 
     if (target === "all" || target === "uniteler") return true;
 
-    if (target === "ders-notu") {
-        return itemCat === "ders-notu" || itemCat === "not" || itemCat === "ders_notu" || (!itemCat && format.includes("pdf"));
-    }
-    if (target === "ders-sunumu") {
-        return itemCat === "ders-sunumu" || itemCat === "sunum" || itemCat === "slayt" || (!itemCat && (format.includes("ppt") || format.includes("sunum")));
+    if (target === "ders-notu" || target === "ders-sunumu" || target === "ders-notu-sunumu" || target === "ders_notu_sunumu" || target === "not-sunum") {
+        return itemCat === "ders-notu" || itemCat === "not" || itemCat === "ders_notu" || 
+               itemCat === "ders-sunumu" || itemCat === "sunum" || itemCat === "slayt" || 
+               (!itemCat && (format.includes("pdf") || format.includes("ppt") || format.includes("sunum")));
     }
     if (target === "videolar") {
         return itemCat === "videolar" || itemCat === "video" || (!itemCat && (format.includes("video") || format.includes("mp4") || format.includes("youtube")));
@@ -880,8 +952,11 @@ function matchesSubTabCategory(item, subTab) {
     if (target === "lgs" || target === "lgs-pusulasi") {
         return itemCat === "lgs" || itemCat === "lgs-pusulasi";
     }
-    if (target === "projeler") {
-        return itemCat === "projeler" || itemCat === "proje";
+    if (target === "projeler" || target === "proje") {
+        const itemSec = String(item.targetSection || "").toLowerCase();
+        const itemUnit = String(item.unit || "").toLowerCase();
+        const itemTitle = String(item.title || "").toLowerCase();
+        return itemCat === "projeler" || itemCat === "proje" || itemSec === "projeler" || itemUnit.includes("proje") || itemUnit.includes("tübitak") || itemTitle.includes("tübitak") || itemTitle.includes("2204") || itemTitle.includes("4006") || itemTitle.includes("teknofest");
     }
 
     return itemCat === target;
@@ -941,6 +1016,11 @@ function getMaterialTargetSection(item) {
     const unit = (item.unit || "").toLowerCase();
     const cat = (item.category || "").toLowerCase();
 
+    // 1.5. Projeler & TÜBİTAK
+    if (cat === "projeler" || cat === "proje" || unit.includes("proje") || unit.includes("tübitak") || unit.includes("teknofest") || title.includes("tübitak") || title.includes("2204") || title.includes("4006") || title.includes("teknofest") || title.includes("etwinning")) {
+        return "projeler";
+    }
+
     // 2. Ders Kitabı
     if (title.includes("ders kitabı") || title.includes("ders kitabi") || unit.includes("ders kitabı") || unit.includes("ders kitabi") || (title.includes("kitap") && !title.includes("ünite"))) {
         return "kitap";
@@ -967,6 +1047,48 @@ function getMaterialTargetSection(item) {
 
     // 5. 1. Ünite kontrolü veya varsayılan (İlk Ders Notu, Konuları, İşlenecek Üniteler vb. hepsi 1. Ünitede yer alır)
     return "1";
+}
+
+// -------------------------------------------------------------
+// 🎯 DİNAMİK BUTON VE AKSİYON YÖNETİCİSİ (Oyunu Oyna, Kitabı Aç, Görseli Aç, Sunumu Başlat)
+// -------------------------------------------------------------
+function getMaterialActionUI(item, fallbackCat = "") {
+    const title = String((item && item.title) || "").toLowerCase();
+    const format = String((item && item.format) || "").toUpperCase();
+    const file = String((item && (item.fileName || item.fileUrl)) || "").toLowerCase();
+    const cat = String((item && item.category) || fallbackCat || "").toLowerCase();
+    const url = String((item && item.fileUrl) || "");
+
+    const isVideo = cat === "videolar" || format.includes("VİDEO") || format.includes("VIDEO") || format === "MP4" || file.endsWith(".mp4") || file.endsWith(".webm") || url.includes("youtube.com") || url.includes("youtu.be");
+    const isGame = cat === "egitsel-oyunlar" || cat.includes("oyun") || title.includes("oyun") || title.includes("kaçış") || title.includes("kacis") || title.includes("escape") || title.includes("eşleştirme") || title.includes("eslestirme") || title.includes("çark") || title.includes("passaparola") || url.includes("share.gemini") || url.includes("gemini.google") || url.includes("wordwall");
+    const isOffice = format.includes("PPT") || format.includes("SLAYT") || format.includes("SUNUM") || format.includes("DOC") || format.includes("XLS") || format.includes("ZIP") || file.endsWith(".pptx") || file.endsWith(".ppt") || file.endsWith(".docx") || file.endsWith(".doc") || file.endsWith(".xlsx") || file.endsWith(".xls") || file.endsWith(".zip") || file.endsWith(".rar");
+    const isBook = cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi") || (title.includes("kitap") && !title.includes("not"));
+    const isImage = !isOffice && (format.includes("GÖRSEL") || format.includes("RESİM") || format === "PNG" || format === "JPG" || format === "JPEG" || format === "WEBP" || format === "SVG" || file.endsWith(".jpg") || file.endsWith(".jpeg") || file.endsWith(".png") || file.endsWith(".webp") || file.endsWith(".svg") || title.includes("infografik") || title.includes("malzeme") || (item && item.imageUrl && item.imageUrl.startsWith("data:image") && (!item.fileUrl || item.fileUrl === "#")));
+    const isTest = cat === "soru-bankasi" || cat === "denemeler" || cat === "lgs" || title.includes("deneme") || title.includes("test") || title.includes("soru");
+    const isSim = cat === "simulasyon" || format.includes("SİMÜL") || title.includes("simülasyon") || title.includes("simulasyon") || url.includes("phet");
+
+    if (isVideo) {
+        return { text: "Videoyu İzle", icon: "fa-solid fa-circle-play", bg: "bg-red-600 hover:bg-red-700 shadow-red-600/20" };
+    }
+    if (isGame) {
+        return { text: "Oyunu Oyna", icon: "fa-solid fa-gamepad", bg: "bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 shadow-emerald-600/20" };
+    }
+    if (isOffice) {
+        return { text: "Sunumu Başlat", icon: "fa-solid fa-file-powerpoint", bg: "bg-orange-600 hover:bg-orange-700 shadow-orange-600/20" };
+    }
+    if (isImage) {
+        return { text: "Görseli Aç", icon: "fa-solid fa-eye", bg: "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-600/20" };
+    }
+    if (isBook) {
+        return { text: "Kitabı Aç", icon: "fa-solid fa-book-open", bg: "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20" };
+    }
+    if (isTest) {
+        return { text: (cat === "denemeler" || title.includes("deneme")) ? "Denemeyi Çöz" : "Testi Çöz", icon: "fa-solid fa-circle-check", bg: "bg-indigo-600 hover:bg-indigo-700 shadow-indigo-600/20" };
+    }
+    if (isSim) {
+        return { text: "Simülasyonu Başlat", icon: "fa-solid fa-flask-vial", bg: "bg-teal-600 hover:bg-teal-700 shadow-teal-600/20" };
+    }
+    return { text: "Kitabı Aç", icon: "fa-solid fa-book-open", bg: "bg-blue-600 hover:bg-blue-700 shadow-blue-600/20" };
 }
 
 function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
@@ -1034,6 +1156,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                     const isVideo = item.category === "videolar" || (item.format && item.format.toUpperCase().includes("VİDEO")) || (item.format && item.format.toUpperCase() === "MP4");
                     const isBook = lowerTitle.includes("kitap") || lowerTitle.includes("kitab");
+                    const actionUI = getMaterialActionUI(item, item.category);
 
                     return `
                         <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
@@ -1063,7 +1186,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${itemGrade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                     <div class="absolute bottom-2.5 right-2.5">
                                         <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                            <i class="fa-solid ${isVideo ? 'fa-play' : (isBook ? 'fa-book-open-reader' : 'fa-eye')}"></i> ${isVideo ? 'Videoyu Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görseli Aç')}
+                                            <i class="${actionUI.icon}"></i> ${actionUI.text}
                                         </span>
                                     </div>
                                 </div>
@@ -1083,12 +1206,12 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                             <!-- Butonlar -->
                             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || (isBook ? '#' : validImgUrl) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'ders-notu'))}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-gradient-to-r ${isVideo ? 'from-rose-600 to-red-600 hover:from-rose-700 hover:to-red-700' : (isBook ? 'from-amber-600 to-red-600 hover:from-amber-700 hover:to-red-700' : 'from-slate-900 to-slate-800 hover:from-red-600 hover:to-red-700')} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md">
-                                    <i class="fa-solid ${isVideo ? 'fa-play' : (validImgUrl ? 'fa-eye' : 'fa-file-lines')}"></i>
-                                    <span>${isVideo ? 'Oynat' : (isBook ? 'Kitabı Aç & Oku' : 'Görüntüle')}</span>
+                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || (isBook ? '#' : validImgUrl) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'ders-notu'))}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
+                                    <i class="${actionUI.icon}"></i>
+                                    <span>${actionUI.text}</span>
                                 </button>
 
-                                ${isAdmin ? `
+                                ${(isAdmin || subTab === "projeler" || subTab === "proje") ? `
                                     <div class="flex items-center gap-1.5 mt-2">
                                         <button type="button" onclick="moveCustomMaterial('${item.id}', -1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Yukarı Taşı">
                                             <i class="fa-solid fa-arrow-up"></i>
@@ -1474,6 +1597,8 @@ function handleRouteChange(options = {}) {
             renderStemLabPage(appEl);
         } else if (hash === "projects") {
             renderProjectsPage(appEl);
+        } else if (hash === "dosyalar" || hash === "files" || hash === "file-manager") {
+            renderFileManagerPage(appEl);
         } else if (hash === "teachers-room") {
             renderLgsPusulasiPage(appEl);
         } else if (hash === "student-portal") {
@@ -1658,7 +1783,9 @@ function renderHomeRecentMaterialsSection() {
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                ${displayItems.slice(0, 6).map(item => `
+                ${displayItems.slice(0, 6).map(item => {
+                    const actionUI = getMaterialActionUI(item, item.category);
+                    return `
                     <div class="bg-white rounded-3xl p-6 border-2 border-slate-200/90 hover:border-red-500/50 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
                         <div class="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-red-500/10 via-amber-500/5 to-transparent rounded-bl-full pointer-events-none group-hover:scale-125 transition-transform"></div>
 
@@ -1679,7 +1806,7 @@ function renderHomeRecentMaterialsSection() {
                                 <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${item.grade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                 <div class="absolute bottom-2.5 right-2.5">
                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                        <i class="fa-solid fa-eye"></i> İncele & Aç
+                                        <i class="${actionUI.icon}"></i> ${actionUI.text}
                                     </span>
                                 </div>
                             </div>
@@ -1693,9 +1820,9 @@ function renderHomeRecentMaterialsSection() {
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20">
-                                <i class="fa-solid ${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i>
-                                <span>${item.category === 'egitsel-oyunlar' || item.format.includes('OYUN') ? 'Oyunu Oynat' : item.category === 'videolar' ? 'Videoyu Oynat' : 'Materyali Görüntüle'}</span>
+                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md group-hover:shadow-red-600/20 active:scale-95 cursor-pointer">
+                                <i class="${actionUI.icon}"></i>
+                                <span>${actionUI.text}</span>
                             </button>
 
                             ${isAdmin && !item.id.startsWith('default-rec-') ? `
@@ -1710,7 +1837,8 @@ function renderHomeRecentMaterialsSection() {
                             ` : ''}
                         </div>
                     </div>
-                `).join("")}
+                `;
+                }).join("")}
             </div>
         </div>
     `;
@@ -1815,7 +1943,9 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                     </div>
                 ` : `
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        ${filtered.map(item => `
+                        ${filtered.map(item => {
+                            const actionUI = getMaterialActionUI(item, item.category);
+                            return `
                             <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col justify-between group">
                                 <div>
                                     <!-- Üst Rozet & Sınıf -->
@@ -1843,7 +1973,7 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                             <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${item.grade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid ${item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i> ${item.category === 'videolar' ? 'Videoyu Oynat' : 'Görseli Aç'}
+                                                    <i class="${actionUI.icon}"></i> ${actionUI.text}
                                                 </span>
                                             </div>
                                         </div>
@@ -1862,9 +1992,9 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
 
                                 <!-- Alt Butonlar -->
                                 <div class="p-5 pt-0 border-t border-slate-100/80 mt-2 space-y-2">
-                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.fileName || 'materyal'}', '${item.category || ''}', '${item.title || ''}')" class="w-full py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2">
-                                        <i class="fa-solid ${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) ? 'fa-gamepad' : item.category === 'videolar' ? 'fa-play' : 'fa-eye'}"></i>
-                                        <span>${item.category === 'egitsel-oyunlar' || (item.format && item.format.includes('OYUN')) ? 'Oyunu Oynat' : item.category === 'videolar' ? 'Videoyu Oynat' : 'Materyali Görüntüle'}</span>
+                                    <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || '#'}', '${item.fileName || 'materyal'}', '${item.category || ''}', '${item.title || ''}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                                        <i class="${actionUI.icon}"></i>
+                                        <span>${actionUI.text}</span>
                                     </button>
 
                                     ${isAdmin ? `
@@ -1879,7 +2009,8 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                     ` : ''}
                                 </div>
                             </div>
-                        `).join("")}
+                        `;
+                        }).join("")}
                     </div>
                 `}
 
@@ -2166,7 +2297,6 @@ function renderGradesOverview(container) {
                 <p class="text-sm text-slate-600 font-medium">5, 6, 7 ve 8. sınıf Fen Bilimleri derslerine ait 7 ana alt bölüm: Ders Notları, Sunumlar, Videolar, Etkinlikler, Soru Bankası, Denemeler ve Eğitsel Oyunlar.</p>
             </div>
 
-            ${renderCustomMaterialsSection("all", "projeler")}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 ${PORTAL_GRADES.map(g => `
                     <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between hover:shadow-lg transition-all">
@@ -2183,29 +2313,26 @@ function renderGradesOverview(container) {
                             <!-- 7 ALT BÖLÜM HIZLI ERİŞİM BUTONLARI -->
                             <div class="mb-6">
                                 <div class="text-[11px] font-black uppercase text-slate-400 tracking-wider mb-2.5">
-                                    7 Alt Öğrenme Bölümü:
+                                    Öğrenme ve Çalışma Alanları:
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-bold">
-                                    <a href="#grade/${g.id}/ders-notu" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>📝</span> <span>Ders Notu</span>
+                                    <a href="#grade/${g.id}/ders-notu" class="p-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📝</span> <span>Ders Notu / Sunumu</span>
                                     </a>
-                                    <a href="#grade/${g.id}/ders-sunumu" class="p-2 bg-slate-50 hover:bg-orange-50 hover:text-orange-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>📊</span> <span>Ders Sunumu</span>
-                                    </a>
-                                    <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                    <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎥</span> <span>Videolar</span>
                                     </a>
                                     <a href="#grade/${g.id}/etkinlikler" class="p-2 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🧩</span> <span>Etkinlikler</span>
                                     </a>
-                                    <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                    <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>📚</span> <span>Soru Bankası</span>
                                     </a>
                                     <a href="#grade/${g.id}/denemeler" class="p-2 bg-slate-50 hover:bg-purple-50 hover:text-purple-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎯</span> <span>Denemeler</span>
                                     </a>
-                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors col-span-2 sm:col-span-3 text-center justify-center">
-                                        <span>🎮</span> <span>Eğitsel Oyunlar & Turnuva</span>
+                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎮</span> <span>Eğitsel Oyunlar</span>
                                     </a>
                                 </div>
                             </div>
@@ -3112,12 +3239,12 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
         // Aktif Sekmeye Göre Üst Başlık ve Açıklama (Kullanıcı Talebi: Sekme Bilgisi 8 Butonun Üstündeki Alana Taşındı)
     const tabMetaMap = {
         "ders-notu": {
-            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notları`,
-            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, laboratuvar föyleri ve pekiştirme testleri."
+            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notu / Sunumu`,
+            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, akıllı tahta sunumları (PPTX), laboratuvar föyleri ve ders slaytları."
         },
         "ders-sunumu": {
-            title: `${grade.number}. Sınıf Akıllı Tahta Ders Sunumları`,
-            desc: "MEB kazanımlarına uygun, sınıf içi projeksiyon ve akıllı tahta uyumlu animasyonlu sunum slaytları."
+            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notu / Sunumu`,
+            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, akıllı tahta sunumları (PPTX), laboratuvar föyleri ve ders slaytları."
         },
         "videolar": {
             title: `${grade.number}. Sınıf Video Dersler & Deney Kayıtları`,
@@ -3168,34 +3295,33 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
 
     const allCustomMaterials = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const getTabCustomCount = (tabKey) => {
+        const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
         return allCustomMaterials.filter(item => {
+            if (!item || !item.id || deletedIds.has(item.id)) return false;
+
             const normItemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
             const normTargetGrade = String(grade.number || "").replace(/^grade-/, "").trim().toLowerCase();
             const gradeMatch = (normTargetGrade === "all" || normItemGrade === "all" || normItemGrade === normTargetGrade);
             if (!gradeMatch) return false;
 
-            const itemCat = String(item.category || "").trim().toLowerCase();
-            const itemFormat = String(item.format || "").trim().toLowerCase();
-            const itemTitle = String(item.title || "").trim().toLowerCase();
+            if (!matchesSubTabCategory(item, tabKey)) return false;
 
-            if (tabKey === "ders-notu") {
-                return (itemCat === "ders-notu" || itemCat === "not" || itemCat === "pdf" || (!itemCat && itemFormat.includes("pdf")) || itemTitle.includes("konu") || itemTitle.includes("özet") || itemTitle.includes("not") || itemTitle.includes("ünite") || itemTitle.includes("müfredat") || itemTitle.includes("kitap") || (itemCat === "ders-sunumu" && (itemTitle.includes("konu") || itemTitle.includes("ünite") || itemFormat.includes("pdf"))));
-            } else if (tabKey === "ders-sunumu") {
-                return (itemCat === "ders-sunumu" || itemCat === "sunum" || itemFormat.includes("ppt") || itemFormat.includes("slayt") || itemTitle.includes("sunum") || itemTitle.includes("slayt") || (itemTitle.includes("konu") && itemFormat.includes("pdf")));
-            } else if (tabKey === "videolar") {
-                return (itemCat === "videolar" || itemCat === "video" || itemFormat.includes("youtube") || itemFormat.includes("video") || itemFormat.includes("mp4"));
-            } else if (tabKey === "etkinlikler") {
-                return (itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy");
-            } else if (tabKey === "soru-bankasi") {
-                return (itemCat === "soru-bankasi" || itemCat === "soru" || itemCat === "test");
-            } else if (tabKey === "denemeler") {
-                return (itemCat === "denemeler" || itemCat === "deneme");
-            } else if (tabKey === "egitsel-oyunlar") {
-                return (itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || itemFormat.includes("oyun") || itemTitle.includes("oyun"));
-            } else if (tabKey === "lgs") {
-                return (itemCat === "lgs" || itemCat === "lgs-pusulasi" || itemTitle.includes("lgs"));
+            // Standart sistem şablonu veya mock ID'leri gerçek dosya olmadıkça kullanıcı içeriği sayılmaz
+            const id = String(item.id);
+            const isSystemPlaceholder = id.startsWith("std-") || id.startsWith("foy-") || id.startsWith("book-") || id.startsWith("lab-") || id.startsWith("default-") || id === "not-5-unite-bilgilendirmeleri";
+            
+            const hasRealFile = (item.fileUrl && item.fileUrl !== "#" && item.fileUrl.trim() !== "" && !item.fileUrl.startsWith("assets/lab-guvenligi")) || !!item.hasBlob;
+            
+            if (isSystemPlaceholder && !hasRealFile) {
+                return false;
             }
-            return itemCat === tabKey;
+
+            // Dosya veya içerik yoksa sayma
+            if (!hasRealFile && (!item.imageUrl || item.imageUrl === "#" || item.imageUrl.trim() === "")) {
+                return false;
+            }
+
+            return true;
         }).length;
     };
 
@@ -3224,90 +3350,106 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 drop-shadow-sm">${currentTabMeta.title}</h2>
                     <p class="text-xs sm:text-sm text-white/90 leading-snug max-w-4xl font-medium drop-shadow-sm mb-3">${currentTabMeta.desc}</p>
                     
-                    <!-- 8 ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
+                    <!-- ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
                     <div class="pt-3 border-t border-white/20">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-9" : "lg:grid-cols-8"} gap-1.5 sm:gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-8" : "lg:grid-cols-7"} gap-1.5 sm:gap-2">
                             
-                            <!-- 1. Ders Notu -->
-                            <a href="#grade/${grade.id}/ders-notu" onclick="switchGradeSubTab('${grade.id}', 'ders-notu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-notu' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
-                                    <i class="fa-solid fa-file-lines"></i>
+                            <!-- 1. Ders Notu / Sunumu (BİRLEŞİK) -->
+                            <a href="#grade/${grade.id}/ders-notu" onclick="switchGradeSubTab('${grade.id}', 'ders-notu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                    <i class="fa-solid fa-book-open-reader"></i>
                                     ${getTabCustomCount('ders-notu') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>📝 DERS NOTU</span>
-                                    ${getTabCustomCount('ders-notu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'ders-notu' ? 'bg-blue-100 text-blue-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-notu')}</span>` : ''}
-                                </span>
-                            </a>
-
-                            <!-- 2. Ders Sunumu -->
-                            <a href="#grade/${grade.id}/ders-sunumu" onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'ders-sunumu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-sunumu' ? 'bg-orange-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
-                                    <i class="fa-solid fa-file-powerpoint"></i>
-                                    ${getTabCustomCount('ders-sunumu') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
-                                </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>📊 DERS SUNUMU</span>
-                                    ${getTabCustomCount('ders-sunumu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'ders-sunumu' ? 'bg-orange-100 text-orange-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-sunumu')}</span>` : ''}
+                                    <span>📝 DERS NOTU/SUNUMU</span>
+                                    ${getTabCustomCount('ders-notu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-blue-100 text-blue-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-notu')}</span>` : ''}
                                 </span>
                             </a>
 
                             <!-- 3. Videolar -->
                             <a href="#grade/${grade.id}/videolar" onclick="switchGradeSubTab('${grade.id}', 'videolar', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'videolar' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'videolar' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'videolar' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-circle-play"></i>
+                                    ${getTabCustomCount('videolar') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-rose-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🎥 VİDEOLAR</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🎥 VİDEOLAR</span>
+                                    ${getTabCustomCount('videolar') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'videolar' ? 'bg-rose-100 text-rose-800' : 'bg-white/30 text-white'}">${getTabCustomCount('videolar')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 4. Etkinlikler -->
                             <a href="#grade/${grade.id}/etkinlikler" onclick="switchGradeSubTab('${grade.id}', 'etkinlikler', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'etkinlikler' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-puzzle-piece"></i>
+                                    ${getTabCustomCount('etkinlikler') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🧩 ETKİNLİKLER</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🧩 ETKİNLİKLER</span>
+                                    ${getTabCustomCount('etkinlikler') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'etkinlikler' ? 'bg-emerald-100 text-emerald-800' : 'bg-white/30 text-white'}">${getTabCustomCount('etkinlikler')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 5. Soru Bankası -->
                             <a href="#grade/${grade.id}/soru-bankasi" onclick="switchGradeSubTab('${grade.id}', 'soru-bankasi', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'soru-bankasi' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'soru-bankasi' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'soru-bankasi' ? 'bg-indigo-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-book-open-reader"></i>
+                                    ${getTabCustomCount('soru-bankasi') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-indigo-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">📚 SORU BANKASI</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>📚 SORU BANKASI</span>
+                                    ${getTabCustomCount('soru-bankasi') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'soru-bankasi' ? 'bg-indigo-100 text-indigo-800' : 'bg-white/30 text-white'}">${getTabCustomCount('soru-bankasi')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 6. Denemeler -->
                             <a href="#grade/${grade.id}/denemeler" onclick="switchGradeSubTab('${grade.id}', 'denemeler', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'denemeler' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'denemeler' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'denemeler' ? 'bg-purple-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-bullseye"></i>
+                                    ${getTabCustomCount('denemeler') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-purple-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🎯 DENEMELER</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🎯 DENEMELER</span>
+                                    ${getTabCustomCount('denemeler') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'denemeler' ? 'bg-purple-100 text-purple-800' : 'bg-white/30 text-white'}">${getTabCustomCount('denemeler')}</span>` : ''}
+                                </span>
                             </a>
 
                             <!-- 7. Eğitsel Oyunlar -->
                             <a href="#grade/${grade.id}/egitsel-oyunlar" onclick="switchGradeSubTab('${grade.id}', 'egitsel-oyunlar', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'egitsel-oyunlar' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-gamepad"></i>
+                                    ${getTabCustomCount('egitsel-oyunlar') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-fuchsia-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🎮 EĞİTSEL OYUNLAR</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🎮 EĞİTSEL OYUNLAR</span>
+                                    ${getTabCustomCount('egitsel-oyunlar') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'egitsel-oyunlar' ? 'bg-fuchsia-100 text-fuchsia-800' : 'bg-white/30 text-white'}">${getTabCustomCount('egitsel-oyunlar')}</span>` : ''}
+                                </span>
                             </a>
 
                             ${grade.number === 8 || grade.isLGS ? `
                             <!-- 8. LGS Pusulası (8. Sınıfa Özel) -->
                             <a href="#grade/${grade.id}/lgs" onclick="switchGradeSubTab('${grade.id}', 'lgs', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-graduation-cap"></i>
+                                    ${getTabCustomCount('lgs') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🧭 LGS PUSULASI</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🧭 LGS PUSULASI</span>
+                                    ${getTabCustomCount('lgs') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'lgs' || subTab === 'lgs-pusulasi' ? 'bg-red-100 text-red-800' : 'bg-white/30 text-white'}">${getTabCustomCount('lgs')}</span>` : ''}
+                                </span>
                             </a>
                             ` : ''}
 
                             <!-- Bilimin Rotasını Çizenler (EN SONDA) -->
                             <a href="#grade/${grade.id}/bilim-insanlari" onclick="switchGradeSubTab('${grade.id}', 'bilim-insanlari', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'bilim-insanlari' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'bilim-insanlari' ? 'bg-red-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
                                     <i class="fa-solid fa-telescope"></i>
+                                    ${getTabCustomCount('bilim-insanlari') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight">🔭 BİLİMİN ROTASINI ÇİZENLER</span>
+                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
+                                    <span>🔭 BİLİMİN ROTASINI ÇİZENLER</span>
+                                    ${getTabCustomCount('bilim-insanlari') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'bilim-insanlari' ? 'bg-amber-100 text-amber-800' : 'bg-white/30 text-white'}">${getTabCustomCount('bilim-insanlari')}</span>` : ''}
+                                </span>
                             </a>
                         </div>
                     </div>
@@ -3335,6 +3477,25 @@ function switchGradeSubTab(gradeId, tabName, event) {
         localStorage.setItem(subTabKey, tabName);
         sessionStorage.setItem(subTabKey, tabName);
     } catch(e) {}
+
+    // 🌟 KULLANICI TALEBİ: Her zaman ilk baştaki yeri (1. üniteyi / ilk bölümü) aç!
+    const gClean = String(gradeId).replace(/^grade-/, "").trim();
+    if (tabName === "ders-notu") {
+        try {
+            localStorage.setItem(`rotali_active_ders_notu_unit_${gClean}`, "kitap");
+            sessionStorage.setItem(`rotali_active_ders_notu_unit_${gClean}`, "kitap");
+            localStorage.setItem('rotali_active_ders_notu_unit', "kitap");
+            sessionStorage.setItem('rotali_active_ders_notu_unit', "kitap");
+        } catch(e) {}
+    } else {
+        try {
+            localStorage.setItem(`rotali_active_hub_unit_${gClean}_${tabName}`, "1");
+            sessionStorage.setItem(`rotali_active_hub_unit_${gClean}_${tabName}`, "1");
+            localStorage.setItem(`rotali_active_hub_unit_${gClean}`, "1");
+            sessionStorage.setItem(`rotali_active_hub_unit_${gClean}`, "1");
+        } catch(e) {}
+    }
+
     const targetHash = `grade/${gradeId}/${tabName}`;
     try {
         localStorage.setItem("rotali_last_active_hash", targetHash);
@@ -3623,7 +3784,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     const unitCustomNotes = customList.filter(m => {
                         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
                         if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                        if (!matchesSubTabCategory(m, "ders-notu")) return false;
+                        if (!matchesSubTabCategory(m, "ders-notu") && !matchesSubTabCategory(m, "ders-sunumu")) return false;
                         const sec = getMaterialTargetSection(m);
                         return sec === String(unitNum);
                     });
@@ -3639,7 +3800,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     };
 
                     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
-                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK MATERYALLER GÖSTERİLİR
+                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK MATERYALLER (NOTLAR & SUNUMLAR) GÖSTERİLİR
                     const allNotesForUnit = [...unitCustomNotes];
 
                     const isThisUnitActive = activeUnit === String(unitNum);
@@ -3656,7 +3817,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <div class="flex items-center gap-2 mb-0.5">
                                             <span class="text-xs font-black text-blue-600 uppercase tracking-wider">${grade.number}. Sınıf • ${unitNum}. Ünite</span>
                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${allNotesForUnit.length > 0 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
-                                                ${allNotesForUnit.length > 0 ? `${allNotesForUnit.length} Ders Notu` : 'Henüz İçerik Yok'}
+                                                ${allNotesForUnit.length > 0 ? `${allNotesForUnit.length} Ders Notu / Sunumu` : 'Henüz İçerik Yok'}
                                             </span>
                                         </div>
                                         <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
@@ -3673,39 +3834,40 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         ${allNotesForUnit.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
+                                            const isSunum = (item.category === "ders-sunumu" || item.category === "sunum" || item.category === "slayt" || (item.format && (item.format.toLowerCase().includes("ppt") || item.format.toLowerCase().includes("sunum"))));
                                             const isPdfReady = item.fileUrl && item.fileUrl !== "#";
                                             return `
-                                                <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                                                <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group ${isSunum ? 'hover:border-orange-400' : 'hover:border-blue-400'}">
                                                     <div>
                                                         <div class="flex items-center justify-between gap-2 mb-3">
-                                                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
-                                                                ${item.format || item.badge || 'PDF FÖY'}
+                                                            <span class="px-3 py-1 rounded-full ${isSunum ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-100'} text-[11px] font-black tracking-wider uppercase inline-block border">
+                                                                ${isSunum ? (item.format || '📊 PPTX SUNUM') : (item.format || item.badge || '📝 PDF NOT')}
                                                             </span>
-                                                            <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? 'Özel İçerik' : '4-6 Sayfa')}</span>
+                                                            <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? (isSunum ? 'Özel Sunum' : 'Özel Not') : 'MEB 2026-2027')}</span>
                                                         </div>
                                                         <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
                                                             <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
                                                         </div>
-                                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
+                                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:${isSunum ? 'text-orange-600' : 'text-blue-600'} transition-colors">
                                                             ${item.title}
                                                         </h5>
                                                         <!-- Görsel Kapak Kutusu -->
-                                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-blue-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')">
+                                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:${isSunum ? 'border-orange-500/40' : 'border-blue-500/40'} cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')">
                                                             <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                             <div class="absolute bottom-2.5 right-2.5">
-                                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-blue-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:${isSunum ? 'bg-orange-600' : 'bg-blue-600'} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                                     <i class="fa-solid fa-eye"></i> İncele & Aç
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
-                                                            ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
+                                                            ${item.desc || (isSunum ? 'MEB kazanımlarına uygun sınıf içi akıllı tahta ders sunumu.' : 'MEB kazanımlarına uygun özet föy ve kavram haritası.')}
                                                         </p>
                                                     </div>
                                                     <div>
-                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
-                                                            <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
-                                                            <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
+                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${isSunum ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-600/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
+                                                            <i class="fa-solid ${isSunum ? 'fa-file-powerpoint' : (isPdfReady ? 'fa-file-lines' : 'fa-book-open')}"></i>
+                                                            <span>${isSunum ? 'Sunumu İncele & Aç' : (isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle')}</span>
                                                         </button>
                                                         ${isAdmin ? `
                                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -3727,11 +3889,11 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3 shadow-inner">
                                             <i class="fa-solid fa-folder-open"></i>
                                         </div>
-                                        <h5 class="text-sm font-black text-slate-700 mb-1">Bu üniteye henüz ders notu eklenmedi</h5>
-                                        <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için ders notu veya föy eklediğinizde burada listelenecektir.</p>
+                                        <h5 class="text-sm font-black text-slate-700 mb-1">Bu üniteye henüz ders notu veya sunum eklenmedi</h5>
+                                        <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için ders notu, föy veya akıllı tahta sunumu eklediğinizde burada listelenecektir.</p>
                                         ${isAdmin ? `
                                             <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu', '${unitNum}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye Not Ekle
+                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye Not / Sunum Ekle
                                             </button>
                                         ` : ''}
                                     </div>
@@ -3765,6 +3927,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             ${allLab.map(item => {
                                 const isCustom = !String(item.id).startsWith("lab-");
+                                const actionUI = getMaterialActionUI(item, 'laboratuvar');
+                                const coverImg = resolveMaterialCover(item);
                                 return `
                                     <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-emerald-400 transition-all group">
                                         <div>
@@ -3773,9 +3937,9 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'İnteraktif'}</span>
                                             </div>
                                             <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
-                                            <!-- Görsel Kapak Kutusu -->
-                                            <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')">
-                                                <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Görseli Yüksek Çözünürlükle Açar) -->
+                                            <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${coverImg.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', true)">
+                                                <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                 <div class="absolute bottom-2.5 right-2.5">
                                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                         <i class="fa-solid fa-eye"></i> Görseli Aç
@@ -3785,9 +3949,9 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
                                         </div>
                                         <div>
-                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
-                                                <i class="fa-solid fa-play"></i>
-                                                <span>Etkinliği Başlat / İncele</span>
+                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
+                                                <i class="${actionUI.icon}"></i>
+                                                <span>${actionUI.text}</span>
                                             </button>
                                             ${isAdmin ? `
                                                 <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -4055,6 +4219,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             const actionCall = isCustom
                                                 ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
                                                 : cfg.btnAction(item);
+                                            const itemActionUI = getMaterialActionUI(item, normSubTab);
+                                            const itemCover = resolveMaterialCover(item);
 
                                             return `
                                             <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group">
@@ -4068,12 +4234,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
                                                         ${item.title}
                                                     </h5>
-                                                    <!-- Görsel Kapak Kutusu -->
-                                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${actionCall}">
-                                                        <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                    <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Görseli Yüksek Çözünürlükle Açar) -->
+                                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${itemCover.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', true)">
+                                                        <img src="${itemCover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                         <div class="absolute bottom-2.5 right-2.5">
-                                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:${cfg.btnBg} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                                <i class="${cfg.icon} text-xs"></i> İncele
+                                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                                <i class="fa-solid fa-eye text-xs"></i> Görseli Aç
                                                             </span>
                                                         </div>
                                                     </div>
@@ -4082,9 +4248,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     </p>
                                                 </div>
                                                 <div>
-                                                    <button type="button" onclick="${actionCall}" class="w-full py-2.5 ${cfg.btnBg} text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
-                                                        <i class="${cfg.icon} text-xs"></i>
-                                                        <span>${cfg.btnText}</span>
+                                                    <button type="button" onclick="${actionCall}" class="w-full py-2.5 ${itemActionUI.bg} text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                                        <i class="${itemActionUI.icon} text-xs"></i>
+                                                        <span>${itemActionUI.text}</span>
                                                     </button>
                                                     ${isAdmin ? `
                                                         <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -4150,40 +4316,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 const sec = getMaterialTargetSection(m);
                                 return sec === "lab" || m.category === "laboratuvar";
                             }).map(item => {
-                                const isVid = (item.category === "videolar") || (item.format && item.format.toLowerCase().includes("video"));
-                                const isGame = (item.category === "egitsel-oyunlar") || (item.format && item.format.toLowerCase().includes("oyun"));
-                                const isSim = (item.category === "simulasyon" || item.category === "simulasyonlar") || (item.format && item.format.toLowerCase().includes("simül"));
-
-                                let btnText = "Materyali İncele";
-                                let btnIcon = "fa-eye";
-                                let badgeText = "Görseli Aç";
-                                let badgeIcon = "fa-eye";
-                                let btnBg = "bg-emerald-600 hover:bg-emerald-700";
-
-                                if (isVid) {
-                                    btnText = "Videoyu İzle";
-                                    btnIcon = "fa-circle-play";
-                                    badgeText = "Videoyu Oynat";
-                                    badgeIcon = "fa-play";
-                                    btnBg = "bg-red-600 hover:bg-red-700";
-                                } else if (isGame) {
-                                    btnText = "Oyunu Başlat";
-                                    btnIcon = "fa-gamepad";
-                                    badgeText = "Oyuna Başla";
-                                    badgeIcon = "fa-gamepad";
-                                    btnBg = "bg-amber-600 hover:bg-amber-700";
-                                } else if (isSim) {
-                                    btnText = "Simülasyonu Başlat";
-                                    btnIcon = "fa-flask-vial";
-                                    badgeText = "Simülasyon";
-                                    badgeIcon = "fa-flask";
-                                    btnBg = "bg-teal-600 hover:bg-teal-700";
-                                }
-
+                                const actionUI = getMaterialActionUI(item, 'laboratuvar');
                                 const safeTitle = String(item.title || "Laboratuvar Materyali").replace(/'/g, "\\'");
                                 const safeFile = String(item.fileName || item.title || "materyal.pdf").replace(/'/g, "\\'");
                                 const safeUrl = String(item.fileUrl || item.imageUrl || resolveMaterialCover(item) || "#").replace(/'/g, "\\'");
                                 const itemCat = String(item.category || "laboratuvar").replace(/'/g, "\\'");
+                                const coverImg = resolveMaterialCover(item);
 
                                 return `
                                 <div class="bg-white p-5 rounded-2xl border border-emerald-300 shadow-sm hover:border-emerald-500 transition-all flex flex-col justify-between group">
@@ -4193,21 +4331,21 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             <span class="text-[11px] font-bold text-slate-400">Yüklendi</span>
                                         </div>
                                         <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
-                                        <!-- Görsel Kapak Kutusu -->
-                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')">
-                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Görseli Yüksek Çözünürlükle Açar) -->
+                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${coverImg.replace(/'/g, "\\'")}', '${safeTitle}', '${safeFile}', true)">
+                                            <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid ${badgeIcon}"></i> ${badgeText}
+                                                    <i class="fa-solid fa-eye"></i> Görseli Aç
                                                 </span>
                                             </div>
                                         </div>
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
                                     </div>
                                     <div>
-                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')" class="w-full py-2.5 ${btnBg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
-                                            <i class="fa-solid ${btnIcon} text-xs"></i>
-                                            <span>${btnText}</span>
+                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                            <i class="${actionUI.icon} text-xs"></i>
+                                            <span>${actionUI.text}</span>
                                         </button>
                                         ${isAdmin ? `
                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -4554,8 +4692,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     }
 
-    // 1. 📝 DERS NOTU (4 Kademeli Dikey Akordeon: Kitap, Notlar, Lab, Soru)
-    if (subTab === "ders-notu") {
+    // 1. 📝 DERS NOTU / SUNUMU (Kitap, Notlar & Sunumlar, Lab, Projeler)
+    if (subTab === "ders-notu" || subTab === "ders-sunumu" || subTab === "ders-notu-sunumu") {
         return renderGradeDersNotuAccordion(grade, subData);
     }
 
@@ -4564,8 +4702,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         return renderScientistsModule(grade.number);
     }
 
-    // 2. 🌟 DİĞER 6 ANA BÖLÜM (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
-    if (["ders-sunumu", "videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar"].includes(subTab)) {
+    // 2. 🌟 DİĞER ANA BÖLÜMLER (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
+    if (["videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar"].includes(subTab)) {
         return renderGradeUnitBasedHub(grade, subData, subTab);
     }
 
@@ -4767,12 +4905,747 @@ function renderStemLabPage(container) {
 }
 
 // -------------------------------------------------------------
+// 📁 ROTALI FENCİ DOSYA & MATERYAL YÖNETİCİSİ (ALPINE.JS & TAILWIND CSS)
+// Benzersiz kimliklendirme, bağımsız Blob yönetimi, tüm formatlar
+// -------------------------------------------------------------
+window.rotaliFileManager = function() {
+    return {
+        files: [],
+        searchQuery: '',
+        activeFilter: 'all',
+        selectedFile: null,
+        isDragging: false,
+        isLoading: false,
+        uploadMethod: 'file', // 'file' | 'link'
+        newLinkUrl: '',
+        newLinkTitle: '',
+        linkError: '',
+
+        init() {
+            this.loadInitialFiles();
+            // ⚡ Gerçek zamanlı bulut dinleyicisi (Diğer cihazlardan eklenenler anında gelsin)
+            if (!this._hasCloudListener) {
+                this._hasCloudListener = true;
+                window.addEventListener('rotali-cloud-sync', () => {
+                    this.loadInitialFiles();
+                });
+            }
+        },
+
+        async loadInitialFiles() {
+            this.isLoading = true;
+            try {
+                let mats = [];
+                // 1. Önce Supabase bulut veritabanından güncel verileri çek
+                if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                    try {
+                        const cloudData = await RotaliCloud.fetchMaterials();
+                        if (Array.isArray(cloudData) && cloudData.length > 0) {
+                            mats = cloudData;
+                        }
+                    } catch(cErr) {
+                        console.warn("RotaliCloud fetch error:", cErr);
+                    }
+                }
+
+                // 2. Bulutta henüz yoksa veya yapılandırılmamışsa yerel listeden yükle
+                if (mats.length === 0) {
+                    mats = (typeof getCustomMaterialsList === "function" ? getCustomMaterialsList() : []) || [];
+                }
+
+                const loaded = [];
+                mats.forEach(m => {
+                    if (!m) return;
+                    const fmt = String(m.format || 'PDF').toUpperCase();
+                    let typeCategory = 'dokuman';
+                    const fileLower = String(m.fileName || m.title || '').toLowerCase();
+
+                    if (['PPTX', 'PPT', 'SLIDE', 'SUNUM'].includes(fmt) || fileLower.endsWith('.pptx') || fileLower.endsWith('.ppt')) {
+                        typeCategory = 'sunum';
+                    } else if (['PNG', 'JPG', 'JPEG', 'WEBP', 'SVG', 'GÖRSEL'].includes(fmt) || /\.(png|jpg|jpeg|webp|svg)$/i.test(fileLower)) {
+                        typeCategory = 'gorsel';
+                    } else if (['MP4', 'WEBM', 'VIDEO', 'VİDEO'].includes(fmt) || /\.(mp4|webm)$/i.test(fileLower)) {
+                        typeCategory = 'video';
+                    } else if (['ZIP', 'RAR', '7Z', 'ARŞİV'].includes(fmt) || /\.(zip|rar|7z)$/i.test(fileLower)) {
+                        typeCategory = 'arsiv';
+                    }
+
+                    loaded.push({
+                        id: m.id || ('file-' + Date.now() + '-' + Math.random().toString(36).slice(2, 7)),
+                        name: m.fileName || m.title || 'Dosya',
+                        title: m.title || m.fileName || 'Dosya',
+                        format: fmt,
+                        typeCategory: typeCategory,
+                        size: m.size || (m.isCloud ? 'Bulut Arşivi' : 'MEB Arşivi'),
+                        date: m.createdAt ? new Date(m.createdAt).toLocaleDateString('tr-TR') : (m.updatedAt || '17.09.2026'),
+                        url: m.fileUrl || m.imageUrl || '#',
+                        blobUrl: null,
+                        category: m.category || '',
+                        grade: m.grade || '5',
+                        isLocal: !m.isCloud,
+                        isCloud: !!m.isCloud
+                    });
+                });
+                this.files = loaded;
+            } catch(e) {
+                console.error("FileManager load error:", e);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        handleFileUpload(e) {
+            const uploadedFiles = e.target.files;
+            if (!uploadedFiles || uploadedFiles.length === 0) return;
+            this.processFileList(uploadedFiles);
+            e.target.value = '';
+        },
+
+        handleDrop(e) {
+            this.isDragging = false;
+            const droppedFiles = e.dataTransfer.files;
+            if (!droppedFiles || droppedFiles.length === 0) return;
+            this.processFileList(droppedFiles);
+        },
+
+        async processFileList(fileList) {
+            this.isLoading = true;
+            try {
+                for (const file of Array.from(fileList)) {
+                    // 1. Benzersiz Kimliklendirme
+                    const uniqueId = 'mat-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+                    const ext = file.name.split('.').pop().toUpperCase();
+
+                    let typeCat = 'dokuman';
+                    if (['PPTX', 'PPT'].includes(ext)) typeCat = 'sunum';
+                    else if (['PNG', 'JPG', 'JPEG', 'WEBP', 'SVG', 'GIF'].includes(ext)) typeCat = 'gorsel';
+                    else if (['MP4', 'WEBM', 'MKV', 'MOV'].includes(ext)) typeCat = 'video';
+                    else if (['ZIP', 'RAR', '7Z', 'TAR', 'GZ'].includes(ext)) typeCat = 'arsiv';
+
+                    let finalUrl = URL.createObjectURL(file);
+                    let isCloudStored = false;
+
+                    // 2. Bulut Depolama (Storage) Yüklemesi
+                    if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                        try {
+                            if (typeof showToast === 'function') {
+                                showToast(`☁️ "${file.name}" bulut depolamaya yükleniyor...`, 'info');
+                            }
+                            const upRes = await RotaliCloud.uploadFile(file, 'materials');
+                            if (upRes && upRes.publicUrl) {
+                                finalUrl = upRes.publicUrl;
+                                isCloudStored = true;
+                            }
+                        } catch(upErr) {
+                            console.warn("Storage upload error, using local fallback:", upErr);
+                        }
+                    }
+
+                    const newFile = {
+                        id: uniqueId,
+                        name: file.name,
+                        title: file.name.replace(/\.[^/.]+$/, ""),
+                        format: ext,
+                        typeCategory: typeCat,
+                        size: this.formatFileSize(file.size),
+                        date: new Date().toLocaleDateString('tr-TR'),
+                        url: finalUrl,
+                        fileUrl: finalUrl,
+                        blobUrl: isCloudStored ? null : finalUrl,
+                        rawFile: file,
+                        isLocal: !isCloudStored,
+                        isCloud: isCloudStored
+                    };
+
+                    this.files.unshift(newFile);
+
+                    // 3. Bulut Veritabanına Anında Kaydet (Diğer tüm cihazlarda anında görünür)
+                    if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                        await RotaliCloud.saveMaterial(newFile);
+                    }
+
+                    if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
+                        RotaliDB.saveFile(uniqueId, file, file.name, file.type).catch(console.error);
+                    }
+                }
+
+                if (typeof showToast === "function") {
+                    showToast(`✅ ${fileList.length} dosya başarıyla yüklendi ve senkronize edildi!`, "success");
+                }
+            } catch(procErr) {
+                console.error("processFileList error:", procErr);
+            } finally {
+                this.isLoading = false;
+            }
+        },
+
+        async addWebLink() {
+            let rawUrl = (this.newLinkUrl || '').trim();
+            if (!rawUrl) {
+                this.linkError = 'Lütfen bir web bağlantısı giriniz.';
+                return;
+            }
+            // Katı kurallar kaldırıldı: https:// veya http:// ile başlayan geçerli ve güvenli her link kabul edilir!
+            if (!/^https?:\/\//i.test(rawUrl)) {
+                if (/^[\w.-]+\.[a-zA-Z]{2,}/.test(rawUrl)) {
+                    rawUrl = 'https://' + rawUrl;
+                } else {
+                    this.linkError = 'Lütfen "https://" ile başlayan geçerli bir web linki giriniz.';
+                    return;
+                }
+            }
+            this.linkError = '';
+
+            let fmt = 'Web Bağlantısı';
+            let typeCat = 'dokuman';
+            const lowerUrl = rawUrl.toLowerCase();
+
+            if (lowerUrl.includes('youtube.com') || lowerUrl.includes('youtu.be')) {
+                fmt = 'YouTube Video';
+                typeCat = 'video';
+            } else if (lowerUrl.includes('drive.google.com')) {
+                fmt = 'Google Drive';
+                typeCat = 'dokuman';
+            } else if (lowerUrl.includes('canva.com')) {
+                fmt = 'Canva';
+                typeCat = 'sunum';
+            } else if (lowerUrl.includes('gemini') || lowerUrl.includes('kacis') || lowerUrl.includes('kaçış') || lowerUrl.includes('escape') || lowerUrl.endsWith('.html')) {
+                fmt = 'Eğitsel Oyun';
+                typeCat = 'gorsel';
+            } else if (lowerUrl.endsWith('.pdf')) {
+                fmt = 'PDF';
+                typeCat = 'dokuman';
+            } else if (lowerUrl.endsWith('.pptx') || lowerUrl.endsWith('.ppt')) {
+                fmt = 'PPTX';
+                typeCat = 'sunum';
+            } else if (lowerUrl.endsWith('.mp4') || lowerUrl.endsWith('.webm')) {
+                fmt = 'MP4';
+                typeCat = 'video';
+            } else if (lowerUrl.endsWith('.zip') || lowerUrl.endsWith('.rar')) {
+                fmt = 'ZIP';
+                typeCat = 'arsiv';
+            }
+
+            const cleanTitle = (this.newLinkTitle || '').trim() || (fmt !== 'Web Bağlantısı' ? fmt : rawUrl);
+            const uniqueId = 'link-' + Date.now() + '-' + Math.random().toString(36).slice(2, 9);
+
+            const newFile = {
+                id: uniqueId,
+                name: cleanTitle,
+                title: cleanTitle,
+                format: fmt,
+                typeCategory: typeCat,
+                size: 'Web Linki',
+                date: new Date().toLocaleDateString('tr-TR'),
+                url: rawUrl,
+                fileUrl: rawUrl,
+                blobUrl: null,
+                isLocal: false,
+                isLink: true,
+                isCloud: true
+            };
+
+            this.files.unshift(newFile);
+            this.newLinkUrl = '';
+            this.newLinkTitle = '';
+
+            // Bulut Veritabanına Anında Kaydet (Telefon ve bilgisayar anında görür)
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                const saved = await RotaliCloud.saveMaterial(newFile);
+                if (saved && typeof showToast === 'function') {
+                    showToast('✅ Web bağlantısı buluta kaydedildi (tüm cihazlarda anında aktif)!', 'success');
+                    return;
+                }
+            }
+
+            if (typeof showToast === 'function') {
+                showToast('✅ Web bağlantısı başarıyla eklendi!', 'success');
+            }
+        },
+
+        formatFileSize(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        },
+
+        get filteredFiles() {
+            return this.files.filter(f => {
+                const matchesFilter = this.activeFilter === 'all' || f.typeCategory === this.activeFilter;
+                const q = this.searchQuery.toLowerCase().trim();
+                const matchesSearch = !q ||
+                    f.name.toLowerCase().includes(q) ||
+                    f.title.toLowerCase().includes(q) ||
+                    f.format.toLowerCase().includes(q);
+                return matchesFilter && matchesSearch;
+            });
+        },
+
+        // Dosya Açma - Kesinlikle Benzersiz ID ile çalışır
+        openFile(id) {
+            const target = this.files.find(f => f.id === id);
+            if (!target) return;
+
+            // Önceki modal state'ini tamamen temizle
+            this.selectedFile = { ...target };
+
+            const fmt = (target.format || '').toUpperCase();
+            const cat = target.typeCategory;
+            const targetUrl = target.blobUrl || target.url;
+
+            // Web linki kontrolü
+            if (target.isLink || fmt === 'WEB BAĞLANTISI' || fmt === 'EĞİTSEL OYUN' || (targetUrl && (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) && !target.blobUrl)) {
+                if (targetUrl.includes('gemini') || (target.title && (target.title.toLowerCase().includes('kaçış') || target.title.toLowerCase().includes('kacis')))) {
+                    openInteractiveGameModal('oyun-lab-kacis', target.title || 'Laboratuvar Kaçış Odası');
+                    return;
+                }
+                if (cat === 'video' || ['MP4', 'WEBM', 'YOUTUBE VIDEO'].includes(fmt)) {
+                    openInPageVideoModal(targetUrl, target.title, false, target.id);
+                    return;
+                }
+                window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                return;
+            }
+
+            if (cat === 'sunum' || cat === 'arsiv' || ['PPTX', 'PPT', 'DOCX', 'DOC', 'XLSX', 'XLS', 'ZIP', 'RAR'].includes(fmt)) {
+                openOfficeDocumentAction({
+                    id: target.id,
+                    title: target.title,
+                    fileName: target.name,
+                    fileUrl: target.blobUrl || target.url,
+                    format: target.format
+                });
+            } else if (cat === 'video' || ['MP4', 'WEBM'].includes(fmt)) {
+                openInPageVideoModal(target.blobUrl || target.url, target.title, !!target.blobUrl, target.id);
+            } else if (cat === 'gorsel' || ['PNG', 'JPG', 'JPEG', 'WEBP', 'SVG'].includes(fmt)) {
+                openInPageDocumentModal(target.blobUrl || target.url, target.title, target.name, true);
+            } else if (fmt === 'PDF') {
+                openDigitalBookModal({
+                    id: target.id,
+                    title: target.title,
+                    fileName: target.name,
+                    fileUrl: target.blobUrl || target.url,
+                    grade: target.grade || '5'
+                });
+            } else {
+                this.downloadFile(target.id);
+            }
+        },
+
+        downloadFile(id) {
+            const target = this.files.find(f => f.id === id);
+            if (!target) return;
+            const downloadUrl = target.blobUrl || target.url;
+            if (!downloadUrl || downloadUrl === '#') {
+                if (typeof showToast === "function") showToast("Dosya indirme bağlantısı hazır değil.", "warning");
+                return;
+            }
+            triggerDirectDownload(downloadUrl, target.name);
+        },
+
+        closePreviewModal() {
+            // STATE TEMİZLİĞİ: Hafızada eski dosya kalmaması için null yapılır
+            this.selectedFile = null;
+        },
+
+        async deleteFile(id) {
+            const idx = this.files.findIndex(f => f.id === id);
+            if (idx !== -1) {
+                const f = this.files[idx];
+                if (f.blobUrl) {
+                    try { URL.revokeObjectURL(f.blobUrl); } catch(e) {}
+                }
+                this.files.splice(idx, 1);
+
+                // Bulut Veritabanından ve Storage'dan Sil
+                if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+                    await RotaliCloud.deleteMaterial(id);
+                }
+
+                if (typeof showToast === "function") showToast("Dosya buluttan ve listeden kaldırıldı.", "info");
+            }
+        }
+    };
+};
+
+function renderFileManagerPage(container) {
+    if (!container) return;
+    container.innerHTML = `
+        <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12" x-data="rotaliFileManager()">
+            <!-- Üst Başlık & Portal Bilgi -->
+            <div class="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-200/80 pb-6 sm:pb-8">
+                <div>
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="px-3 py-1 rounded-full bg-red-100 text-brand-red text-xs font-black tracking-wider uppercase inline-flex items-center gap-1.5 shadow-2xs">
+                            <i class="fa-solid fa-folder-open"></i> YENİ NESİL MATERYAL MERKEZİ
+                        </span>
+                        <span class="text-xs font-bold text-slate-400">• Akıllı Tahta & Mobil Senkronize</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">Dosya Yükleme & Görüntüleme</h2>
+                    <p class="text-xs sm:text-sm text-slate-500 font-medium mt-1">Sunumlar (PPTX), PDF ders kitapları, Word belgeleri, videolar, görseller ve arşivleri tek tıkla cihazınızda açın.</p>
+                </div>
+                <!-- İstatistik Rozetleri -->
+                <div class="flex items-center gap-3">
+                    <div class="bg-white px-4 py-3 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-orange-100 text-orange-600 flex items-center justify-center text-lg font-black">
+                            <i class="fa-solid fa-file-powerpoint"></i>
+                        </div>
+                        <div>
+                            <span class="block text-base font-black text-slate-900" x-text="files.filter(f => f.typeCategory === 'sunum').length"></span>
+                            <span class="block text-[11px] font-bold text-slate-400">Sunum (PPTX)</span>
+                        </div>
+                    </div>
+                    <div class="bg-white px-4 py-3 rounded-2xl border border-slate-200/80 shadow-xs flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 flex items-center justify-center text-lg font-black">
+                            <i class="fa-solid fa-file-lines"></i>
+                        </div>
+                        <div>
+                            <span class="block text-base font-black text-slate-900" x-text="files.length"></span>
+                            <span class="block text-[11px] font-bold text-slate-400">Toplam Dosya</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sürükle Bırak / Yükleme & Link Ekleme Alanı -->
+            <div class="mb-8">
+                <!-- Sekme Değiştirici -->
+                <div class="flex items-center justify-center mb-4">
+                    <div class="inline-flex items-center p-1 bg-slate-200/90 rounded-2xl text-xs font-black shadow-inner">
+                        <button type="button" @click="uploadMethod = 'file'" :class="uploadMethod === 'file' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'" class="px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-cloud-arrow-up text-red-600"></i> 📁 Dosya Yükle
+                        </button>
+                        <button type="button" @click="uploadMethod = 'link'" :class="uploadMethod === 'link' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'" class="px-4 py-2 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-link text-indigo-600"></i> 🔗 Web / Drive Linki
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 1. Dosya Yükleme Alanı -->
+                <div 
+                    x-show="uploadMethod === 'file'"
+                    class="border-2 border-dashed rounded-3xl p-6 sm:p-10 text-center transition-all cursor-pointer relative overflow-hidden group"
+                    :class="isDragging ? 'border-red-500 bg-red-50/70 scale-[1.01]' : 'border-slate-300 hover:border-red-400 bg-white'"
+                    x-on:dragover.prevent="isDragging = true"
+                    x-on:dragleave.prevent="isDragging = false"
+                    x-on:drop.prevent="handleDrop($event)"
+                    onclick="document.getElementById('file-manager-upload-input').click()"
+                >
+                    <input 
+                        type="file" 
+                        id="file-manager-upload-input" 
+                        multiple 
+                        accept="*/*,.pptx,.ppt,.docx,.doc,.xlsx,.xls,.pdf,.png,.jpg,.jpeg,.svg,.webp,.mp4,.webm,.zip,.rar" 
+                        class="hidden" 
+                        x-on:change="handleFileUpload($event)"
+                    >
+                    <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-red-500 to-amber-500 text-white flex items-center justify-center text-2xl sm:text-3xl mx-auto mb-4 shadow-xl shadow-red-500/20 group-hover:scale-110 transition-transform">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-black text-slate-900 mb-1">
+                        Dosyalarınızı buraya sürükleyin veya <span class="text-brand-red underline">gözatın</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 font-medium mb-4 max-w-md mx-auto">
+                        Tüm dosya formatları desteklenir. Yüklenen dosyalar anında belleğe alınır ve akıllı tahta, bilgisayar ve telefonunuzda tam uyumlu çalışır.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-2">
+                        <span class="px-2.5 py-1 rounded-lg bg-orange-100 text-orange-700 text-[11px] font-black uppercase">PPTX / PPT</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-red-100 text-red-700 text-[11px] font-black uppercase">PDF KİTAP</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-blue-100 text-blue-700 text-[11px] font-black uppercase">DOCX / WORD</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-700 text-[11px] font-black uppercase">XLSX TABLO</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-700 text-[11px] font-black uppercase">MP4 VİDEO</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-violet-100 text-violet-700 text-[11px] font-black uppercase">GÖRSEL</span>
+                        <span class="px-2.5 py-1 rounded-lg bg-purple-100 text-purple-700 text-[11px] font-black uppercase">ZIP / ARŞİV</span>
+                    </div>
+                </div>
+
+                <!-- 2. Web / Drive Linki Ekleme Alanı -->
+                <div x-show="uploadMethod === 'link'" class="bg-white border-2 border-slate-200 rounded-3xl p-6 sm:p-8 shadow-sm">
+                    <div class="max-w-2xl mx-auto space-y-4">
+                        <div class="text-center mb-2">
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mx-auto mb-2 shadow-xs">
+                                <i class="fa-solid fa-link"></i>
+                            </div>
+                            <h3 class="text-base font-black text-slate-900">Web / Drive / Çevrimiçi İçerik Bağlantısı Ekle</h3>
+                            <p class="text-xs text-slate-500 font-medium">Google Drive, YouTube, Canva, Gemini Canvas, interaktif web oyunları veya güvenli herhangi bir web bağlantısı (https://...)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">Web Bağlantısı (URL) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <input 
+                                    type="text" 
+                                    x-model="newLinkUrl" 
+                                    @keydown.enter="addWebLink()" 
+                                    placeholder="https://... (Örn: Drive, YouTube, Gemini Canvas, Simülasyon, Web Oyunu vb.)" 
+                                    class="w-full p-3 pl-10 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-xs"
+                                >
+                                <i class="fa-solid fa-globe absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-black uppercase text-slate-700 mb-1">İçerik Başlığı (İsteğe Bağlı)</label>
+                            <input 
+                                type="text" 
+                                x-model="newLinkTitle" 
+                                @keydown.enter="addWebLink()" 
+                                placeholder="Örn: Laboratuvar Güvenlik Kaçış Odası Oyunu" 
+                                class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-xs"
+                            >
+                        </div>
+
+                        <div x-show="linkError" class="p-3 bg-red-50 border border-red-200 text-red-700 rounded-xl text-xs font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span x-text="linkError"></span>
+                        </div>
+
+                        <div class="flex justify-end pt-2">
+                            <button 
+                                type="button" 
+                                @click="addWebLink()" 
+                                class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-red-600/20 flex items-center gap-2 cursor-pointer"
+                            >
+                                <i class="fa-solid fa-plus"></i> Bağlantıyı Ekle
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtreler & Arama Barı -->
+            <div class="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 mb-8">
+                <!-- Filtre Sekmeleri -->
+                <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar pb-1">
+                    <button type="button" @click="activeFilter = 'all'" :class="activeFilter === 'all' ? 'bg-slate-900 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 cursor-pointer">
+                        Tümü (<span x-text="files.length"></span>)
+                    </button>
+                    <button type="button" @click="activeFilter = 'sunum'" :class="activeFilter === 'sunum' ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-orange-50 border border-slate-200'" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-file-powerpoint text-xs"></i> <span>Sunumlar</span>
+                    </button>
+                    <button type="button" @click="activeFilter = 'dokuman'" :class="activeFilter === 'dokuman' ? 'bg-red-600 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-red-50 border border-slate-200'" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-file-pdf text-xs"></i> <span>Dokümanlar</span>
+                    </button>
+                    <button type="button" @click="activeFilter = 'gorsel'" :class="activeFilter === 'gorsel' ? 'bg-violet-600 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-violet-50 border border-slate-200'" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-image text-xs"></i> <span>Görseller</span>
+                    </button>
+                    <button type="button" @click="activeFilter = 'video'" :class="activeFilter === 'video' ? 'bg-rose-600 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-rose-50 border border-slate-200'" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-circle-play text-xs"></i> <span>Videolar</span>
+                    </button>
+                    <button type="button" @click="activeFilter = 'arsiv'" :class="activeFilter === 'arsiv' ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-slate-700 hover:bg-purple-50 border border-slate-200'" class="px-4 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all shrink-0 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-file-zipper text-xs"></i> <span>Arşivler</span>
+                    </button>
+                </div>
+
+                <!-- Arama Girişi -->
+                <div class="relative min-w-[240px] sm:min-w-[280px]">
+                    <input 
+                        type="text" 
+                        x-model="searchQuery" 
+                        placeholder="Dosya adı veya türe göre ara..." 
+                        class="w-full px-4 py-2.5 pl-10 bg-white border border-slate-200 rounded-2xl text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 shadow-xs"
+                    >
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <button x-show="searchQuery" @click="searchQuery = ''" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 text-xs font-bold">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dosya Kartları Listesi -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" x-show="filteredFiles.length > 0">
+                <template x-for="file in filteredFiles" :key="file.id">
+                    <div class="bg-white rounded-3xl p-5 border border-slate-200 hover:border-red-400 shadow-sm hover:shadow-md transition-all flex flex-col justify-between group">
+                        <div>
+                            <!-- Üst İkon & Format Rozeti -->
+                            <div class="flex items-center justify-between mb-4">
+                                <div 
+                                    class="w-12 h-12 rounded-2xl flex items-center justify-center text-xl shadow-xs"
+                                    :class="{
+                                        'bg-orange-100 text-orange-600': file.typeCategory === 'sunum',
+                                        'bg-red-100 text-red-600': file.typeCategory === 'dokuman',
+                                        'bg-violet-100 text-violet-600': file.typeCategory === 'gorsel',
+                                        'bg-rose-100 text-rose-600': file.typeCategory === 'video',
+                                        'bg-purple-100 text-purple-600': file.typeCategory === 'arsiv',
+                                        'bg-slate-100 text-slate-600': !file.typeCategory
+                                    }"
+                                >
+                                    <i 
+                                        class="fa-solid"
+                                        :class="{
+                                            'fa-file-powerpoint': file.typeCategory === 'sunum',
+                                            'fa-file-pdf': file.typeCategory === 'dokuman',
+                                            'fa-image': file.typeCategory === 'gorsel',
+                                            'fa-circle-play': file.typeCategory === 'video',
+                                            'fa-file-zipper': file.typeCategory === 'arsiv',
+                                            'fa-file': !file.typeCategory
+                                        }"
+                                    ></i>
+                                </div>
+                                <span 
+                                    class="px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider"
+                                    :class="{
+                                        'bg-orange-50 text-orange-700 border border-orange-200': file.typeCategory === 'sunum',
+                                        'bg-red-50 text-red-700 border border-red-200': file.typeCategory === 'dokuman',
+                                        'bg-violet-50 text-violet-700 border border-violet-200': file.typeCategory === 'gorsel',
+                                        'bg-rose-50 text-rose-700 border border-rose-200': file.typeCategory === 'video',
+                                        'bg-purple-50 text-purple-700 border border-purple-200': file.typeCategory === 'arsiv',
+                                        'bg-slate-50 text-slate-700 border border-slate-200': !file.typeCategory
+                                    }"
+                                    x-text="file.format"
+                                ></span>
+                            </div>
+
+                            <!-- Dosya Başlığı & Bilgisi -->
+                            <h4 class="text-sm font-black text-slate-900 mb-1 leading-snug line-clamp-2 group-hover:text-brand-red transition-colors" x-text="file.title"></h4>
+                            <p class="text-[11px] text-slate-400 font-medium truncate mb-4" x-text="file.name"></p>
+                        </div>
+
+                        <div>
+                            <!-- Detay Satırı -->
+                            <div class="flex items-center justify-between text-[11px] font-bold text-slate-400 mb-4 pt-3 border-t border-slate-100">
+                                <span x-text="file.size"></span>
+                                <span x-text="file.date"></span>
+                            </div>
+
+                            <!-- Aksiyon Butonları -->
+                            <div class="flex items-center gap-2">
+                                <button 
+                                    type="button" 
+                                    @click="openFile(file.id)" 
+                                    class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-95"
+                                    :class="{
+                                        'bg-orange-600 hover:bg-orange-700 text-white': file.typeCategory === 'sunum',
+                                        'bg-red-600 hover:bg-red-700 text-white': file.typeCategory === 'dokuman',
+                                        'bg-violet-600 hover:bg-violet-700 text-white': file.typeCategory === 'gorsel',
+                                        'bg-rose-600 hover:bg-rose-700 text-white': file.typeCategory === 'video',
+                                        'bg-purple-600 hover:bg-purple-700 text-white': file.typeCategory === 'arsiv',
+                                        'bg-slate-900 hover:bg-slate-800 text-white': !file.typeCategory
+                                    }"
+                                >
+                                    <i 
+                                        class="fa-solid text-xs"
+                                        :class="{
+                                            'fa-file-powerpoint': file.typeCategory === 'sunum',
+                                            'fa-book-open': file.typeCategory === 'dokuman',
+                                            'fa-eye': file.typeCategory === 'gorsel',
+                                            'fa-circle-play': file.typeCategory === 'video',
+                                            'fa-download': file.typeCategory === 'arsiv' || !file.typeCategory
+                                        }"
+                                    ></i>
+                                    <span x-text="file.typeCategory === 'sunum' ? 'Sunumu Başlat' : (file.typeCategory === 'dokuman' ? 'Kitabı Aç' : (file.typeCategory === 'gorsel' ? 'Görseli Aç' : (file.typeCategory === 'video' ? 'Videoyu İzle' : 'Dosyayı İndir')))"></span>
+                                </button>
+
+                                <button 
+                                    type="button" 
+                                    @click="downloadFile(file.id)" 
+                                    class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center text-xs transition-colors shrink-0 cursor-pointer"
+                                    title="Doğrudan İndir"
+                                >
+                                    <i class="fa-solid fa-download"></i>
+                                </button>
+
+                                <template x-if="file.isLocal">
+                                    <button 
+                                        type="button" 
+                                        @click="deleteFile(file.id)" 
+                                        class="w-10 h-10 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center text-xs transition-colors shrink-0 cursor-pointer"
+                                        title="Listeden Sil"
+                                    >
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Boş Durum (Hiç dosya bulunamadığında) -->
+            <div x-show="filteredFiles.length === 0" class="py-16 text-center bg-white rounded-3xl border border-slate-200/80 p-8 max-w-md mx-auto">
+                <div class="w-16 h-16 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-2xl mx-auto mb-3">
+                    <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h4 class="text-base font-black text-slate-800 mb-1">Eşleşen Dosya Bulunamadı</h4>
+                <p class="text-xs text-slate-400 mb-4">Arama kriterlerinizi değiştirebilir veya yukarıdaki alandan yeni dosya yükleyebilirsiniz.</p>
+                <button type="button" @click="searchQuery = ''; activeFilter = 'all'" class="px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold cursor-pointer">
+                    Filtreleri Temizle
+                </button>
+            </div>
+        </div>
+    `;
+    if (window.Alpine && typeof Alpine.initTree === "function") {
+        try {
+            Alpine.initTree(container);
+        } catch (e) {}
+    }
+}
+
+// -------------------------------------------------------------
 // 7. 🏆 PROJE MERKEZİ (TÜBİTAK, TEKNOFEST, eTwinning)
 // -------------------------------------------------------------
+
+function getHiddenProjects() {
+    try {
+        const raw = localStorage.getItem("rotali_hidden_projects");
+        return raw ? JSON.parse(raw) : [];
+    } catch(e) {
+        return [];
+    }
+}
+
+function hideProjectCard(projectId) {
+    if (!confirm("Bu proje kartını bölümden çıkarmak istediğinize emin misiniz?\n(Daha sonra 'Gizlenenleri Geri Getir' butonuyla dilediğiniz zaman geri yükleyebilirsiniz)")) return;
+    const hidden = getHiddenProjects();
+    if (!hidden.includes(projectId)) {
+        hidden.push(projectId);
+        localStorage.setItem("rotali_hidden_projects", JSON.stringify(hidden));
+    }
+    if (typeof showToast === "function") {
+        showToast("🗑️ Proje kartı bölümden çıkarıldı.", "info");
+    }
+    const appEl = document.getElementById("app");
+    if (appEl) renderProjectsPage(appEl);
+}
+
+function restoreHiddenProjects() {
+    localStorage.removeItem("rotali_hidden_projects");
+    if (typeof showToast === "function") {
+        showToast("✅ Çıkarılan tüm proje kartları başarıyla geri getirildi!", "success");
+    }
+    const appEl = document.getElementById("app");
+    if (appEl) renderProjectsPage(appEl);
+}
+
+function getProjectCategoriesWithCustom() {
+    let customOverrides = {};
+    try {
+        customOverrides = JSON.parse(localStorage.getItem("rotali_project_categories_custom") || "{}");
+    } catch(e) {}
+
+    return PROJECT_CENTER_DATA.categories.map(cat => {
+        const ovr = customOverrides[cat.id];
+        if (!ovr) return { ...cat };
+        return {
+            ...cat,
+            name: ovr.name || cat.name,
+            badge: ovr.badge || cat.badge,
+            ideas: Array.isArray(ovr.ideas) && ovr.ideas.length > 0 ? ovr.ideas : cat.ideas
+        };
+    });
+}
+
 function renderProjectsPage(container) {
+    const hiddenProjects = getHiddenProjects();
+    const allCategories = getProjectCategoriesWithCustom();
+    const visibleCategories = allCategories.filter(c => !hiddenProjects.includes(c.id));
+
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div class="mb-10 text-center max-w-3xl mx-auto">
+            <!-- Üst Başlık -->
+            <div class="mb-8 text-center max-w-3xl mx-auto">
                 <span class="px-4 py-1.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 text-xs font-black tracking-wider uppercase inline-block mb-3">
                     BİLİMSEL ÜRETİM & YARIŞMALAR
                 </span>
@@ -4780,20 +5653,74 @@ function renderProjectsPage(container) {
                 <p class="text-sm text-slate-600 font-medium">TÜBİTAK 2204-B, TÜBİTAK 4006, TEKNOFEST ve eTwinning için proje şablonları, basamakları ve örnek fikirler.</p>
             </div>
 
+            <!-- 🛠️ EKLEME & ÇIKARMA YÖNETİM ALANI -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-200 p-5 rounded-3xl shadow-sm">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black text-slate-900">Proje & Doküman Yönetimi</h3>
+                        <p class="text-xs text-slate-500 font-medium">Bu bölüme dilediğiniz TÜBİTAK/TEKNOFEST dokümanını veya şablonunu ekleyebilir; istemediklerinizi çıkarabilirsiniz.</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
+                    ${hiddenProjects.length > 0 ? `
+                        <button type="button" onclick="restoreHiddenProjects()" class="px-3.5 py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
+                            <i class="fa-solid fa-rotate-left text-amber-600"></i>
+                            <span>Gizlenenleri Geri Getir (${hiddenProjects.length})</span>
+                        </button>
+                    ` : ''}
+                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'TÜBİTAK & Projeler')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-plus-circle text-sm"></i>
+                        <span>➕ Yeni Proje / Şablon Ekle</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Kullanıcının Eklediği Özel Proje Materyalleri -->
             ${renderCustomMaterialsSection("all", "projeler")}
+
+            <!-- Proje Kategorileri Kartları -->
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                ${PROJECT_CENTER_DATA.categories.map(cat => `
-                    <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col justify-between">
+                ${visibleCategories.map(cat => `
+                    <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between relative group hover:shadow-xl transition-all duration-300">
                         <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs">${cat.badge}</span>
-                                <i class="${cat.icon} text-amber-500 text-xl"></i>
+                            <!-- Kart Üst Bar & Ekle/Düzenle/Çıkar Butonları -->
+                            <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
+                                <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs border border-amber-200">${cat.badge}</span>
+                                
+                                <div class="flex items-center gap-1.5">
+                                    <!-- Ekle -->
+                                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, '${cat.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projeye dosya veya rapor ekle">
+                                        <i class="fa-solid fa-plus text-xs"></i>
+                                        <span>Ekle</span>
+                                    </button>
+
+                                    <!-- Düzenle -->
+                                    <button type="button" onclick="openEditProjectCategoryModal('${cat.id}')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projenin başlığını veya içeriğini düzenle">
+                                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                        <span>Düzenle</span>
+                                    </button>
+
+                                    <!-- Çıkar -->
+                                    <button type="button" onclick="hideProjectCard('${cat.id}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer border border-slate-200 active:scale-95" title="Bu proje kartını bölümden çıkar">
+                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                        <span>Çıkar</span>
+                                    </button>
+                                </div>
                             </div>
-                            <h3 class="text-xl font-black text-slate-900 mb-4">${cat.name}</h3>
+
+                            <h3 class="text-lg sm:text-xl font-black text-slate-900 mb-4 flex items-center gap-2.5">
+                                <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shrink-0 shadow-sm">
+                                    <i class="${cat.icon}"></i>
+                                </span>
+                                <span>${cat.name}</span>
+                            </h3>
 
                             <div class="space-y-2 mb-6">
                                 ${cat.steps.map(s => `
-                                    <div class="p-3 bg-slate-50 rounded-xl text-xs">
+                                    <div class="p-3 bg-slate-50 rounded-xl text-xs border border-slate-100">
                                         <span class="font-black text-slate-800 block">${s.step}</span>
                                         <span class="text-slate-500">${s.detail}</span>
                                     </div>
@@ -4808,14 +5735,345 @@ function renderProjectsPage(container) {
                             </div>
                         </div>
 
-                        <button onclick="window.print()" class="w-full py-3 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase rounded-xl transition-colors">
-                            Proje Rapor Şablonunu Görüntüle (DOCX/PDF)
-                        </button>
+                        <!-- Şablon İncele & İndir Butonu ve Hızlı Ekle / Düzenle Butonları -->
+                        <div class="space-y-2 pt-3 border-t border-slate-100">
+                            <button onclick="openProjectTemplateModal('${cat.id}')" class="w-full py-3 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95">
+                                <i class="fa-solid fa-file-lines text-amber-400"></i>
+                                <span>Proje Rapor Şablonunu İncele & İndir (DOCX/PDF)</span>
+                            </button>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, '${cat.name.replace(/'/g, "\\'")}')" class="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                                    <i class="fa-solid fa-plus-circle"></i>
+                                    <span>➕ Dosya Ekle</span>
+                                </button>
+                                <button type="button" onclick="openEditProjectCategoryModal('${cat.id}')" class="py-2.5 px-3 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                                    <i class="fa-solid fa-pen-to-square"></i>
+                                    <span>✏️ Düzenle</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 `).join("")}
             </div>
         </div>
     `;
+}
+
+// ✏️ PROJE KARTINI DÜZENLEME MODALI (Başlık, Rozet ve Fikirler)
+function openEditProjectCategoryModal(catId) {
+    const allCategories = getProjectCategoriesWithCustom();
+    const cat = allCategories.find(c => c.id === catId);
+    if (!cat) return;
+
+    let modal = document.getElementById("edit-project-category-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "edit-project-category-modal";
+        modal.className = "fixed inset-0 z-[9995] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 animate-in fade-in";
+        modal.onclick = function(e) {
+            if (e.target === this) closeEditProjectCategoryModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    const ideasText = Array.isArray(cat.ideas) ? cat.ideas.join("\n") : "";
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 relative animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center text-base shadow-sm">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </span>
+                    <div>
+                        <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">Proje Kartını Düzenle</h4>
+                        <p class="text-xs text-slate-400">Proje başlığını, rozetini ve örnek fikirleri güncelleyin</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEditProjectCategoryModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form onsubmit="handleSaveProjectCategory(event, '${cat.id}')" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">Proje / Yarışma Başlığı</label>
+                    <input type="text" id="edit-cat-name" value="${cat.name.replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">Kategori / Rozet (Örn: Ulusal Yarışma)</label>
+                    <input type="text" id="edit-cat-badge" value="${(cat.badge || 'Ulusal Yarışma').replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">Örnek Proje Fikirleri (Her satıra 1 fikir)</label>
+                    <textarea id="edit-cat-ideas" rows="4" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500">${ideasText}</textarea>
+                </div>
+
+                <div class="flex items-center justify-between gap-3 pt-3 border-t border-slate-100">
+                    <button type="button" onclick="hideProjectCard('${cat.id}'); closeEditProjectCategoryModal();" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl transition-colors flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-trash-can"></i> Kartı Gizle
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="closeEditProjectCategoryModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer">
+                            İptal
+                        </button>
+                        <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-colors flex items-center gap-1.5 shadow-md shadow-amber-500/25 cursor-pointer">
+                            <i class="fa-solid fa-check"></i> Kaydet
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+}
+
+function closeEditProjectCategoryModal() {
+    const modal = document.getElementById("edit-project-category-modal");
+    if (modal) {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+    }
+}
+
+function handleSaveProjectCategory(e, catId) {
+    if (e) e.preventDefault();
+    const name = document.getElementById("edit-cat-name")?.value.trim();
+    const badge = document.getElementById("edit-cat-badge")?.value.trim();
+    const ideasRaw = document.getElementById("edit-cat-ideas")?.value || "";
+    const ideas = ideasRaw.split("\n").map(s => s.trim()).filter(Boolean);
+
+    try {
+        const saved = JSON.parse(localStorage.getItem("rotali_project_categories_custom") || "{}");
+        saved[catId] = { name, badge, ideas };
+        localStorage.setItem("rotali_project_categories_custom", JSON.stringify(saved));
+        if (typeof showToast === "function") {
+            showToast("✅ Proje bilgileri başarıyla güncellendi!", "success");
+        }
+    } catch(err) {
+        console.error("Proje kaydetme hatası:", err);
+    }
+
+    closeEditProjectCategoryModal();
+    const appEl = document.getElementById("app");
+    if (appEl) renderProjectsPage(appEl);
+}
+
+// 📄 PROJE RAPOR ŞABLONU MODALI (İnceleme, Word İndirme & PDF Yazdırma)
+function openProjectTemplateModal(catId) {
+    const cat = PROJECT_CENTER_DATA.categories.find(c => c.id === catId) || PROJECT_CENTER_DATA.categories[0];
+    if (!cat) return;
+
+    let modal = document.getElementById("project-template-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "project-template-modal";
+        modal.className = "fixed inset-0 z-[9990] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300 animate-in fade-in";
+        modal.onclick = function(e) {
+            if (e.target === this) closeProjectTemplateModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl max-w-3xl w-full border border-slate-200 shadow-2xl relative animate-in zoom-in-95 duration-200 max-h-[92vh] flex flex-col overflow-hidden" onclick="event.stopPropagation()">
+            <!-- Üst Bar -->
+            <div class="px-5 py-4 bg-slate-900 text-white flex items-center justify-between shrink-0 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0">
+                        <i class="${cat.icon}"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">${cat.badge} • Resmî Rapor Formatı</span>
+                        <h3 class="text-sm sm:text-base font-black text-white truncate max-w-md">${cat.name}</h3>
+                    </div>
+                </div>
+                <button type="button" onclick="closeProjectTemplateModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-sm" title="Kapat (ESC)">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <!-- İçerik Alanı -->
+            <div class="flex-1 overflow-y-auto p-5 sm:p-7 space-y-6 custom-scrollbar text-slate-800 text-xs sm:text-sm">
+                <!-- Bilgilendirme Kartı -->
+                <div class="p-4 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-3">
+                    <i class="fa-solid fa-circle-info text-amber-600 text-base mt-0.5 shrink-0"></i>
+                    <div>
+                        <h4 class="font-black text-slate-900 mb-0.5">Resmî Bilimsel Rapor Şablon Rehberi</h4>
+                        <p class="text-slate-600 leading-relaxed text-xs">
+                            Aşağıdaki standart başlıklar TÜBİTAK 2204-B ve bilimsel yarışma kurallarına göre hazırlanmıştır. <strong>Word (.doc)</strong> butonuna tıklayarak bilgisayarınıza veya telefonunuza şablon olarak indirebilir, doğrudan doldurabilirsiniz.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Şablon Bölümleri -->
+                <div class="space-y-4">
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">1. PROJE BAŞLIĞI</span>
+                        <p class="text-slate-600">Özgün, kısa, ilgi çekici ve araştırmanın içeriğini doğrudan yansıtan başlık.</p>
+                        <div class="mt-2 p-2.5 bg-white border border-dashed border-slate-300 rounded-xl text-slate-400 italic text-[11px]">
+                            Örnek: "Meyve Kabuklarından Biyo-Çözünür Poşet Geliştirilmesi ve Toprak Çözünme Analizi"
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">2. PROJE ÖZETİ (150 - 250 Kelime)</span>
+                        <p class="text-slate-600">Araştırmanın amacı, kurulan hipotez, uygulanan yöntem, elde edilen temel bulgular ve varılan sonuçların kısa bir sentezi.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">3. PROBLEM TANIMI & HİPOTEZ</span>
+                        <p class="text-slate-600">
+                            <strong>Problem:</strong> Çözülmek istenen fen/çevre sorunu.<br>
+                            <strong>Hipotez:</strong> Sınanabilir, ölçülebilir varsayım.<br>
+                            <strong>Değişkenler:</strong> Bağımsız değişken, Bağımlı değişken, Kontrol edilen (sabit) değişkenler.
+                        </p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">4. PROJENİN AMACI & GEREKÇESİ</span>
+                        <p class="text-slate-600">Bu araştırma neden yapıldı? Çevreye, eğitime veya bilime ne gibi bir katkı sağlayacak?</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">5. YÖNTEM & DENEY DÜZENEĞİ</span>
+                        <p class="text-slate-600">Kullanılan laboratuvar malzemeleri, ölçüm araçları, deney aşamaları ve adım adım veri toplama süreci.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">6. BULGULAR & VERİ ANALİZİ</span>
+                        <p class="text-slate-600">Elde edilen sayısal verilerin tabloları, grafikler ve fotoğraf kayıtları.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">7. SONUÇ & TARTIŞMA</span>
+                        <p class="text-slate-600">Hipotez doğrulandı mı? Sonuçların günlük hayatta kullanımı ve gelecekteki araştırmacılara öneriler.</p>
+                    </div>
+
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-2xl">
+                        <span class="font-black text-amber-700 uppercase tracking-wide block mb-1">8. KAYNAKÇA (APA)</span>
+                        <p class="text-slate-600">Yararlanılan bilimsel makaleler, ders kitapları ve resmî akademik web siteleri.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Aksiyon Barı -->
+            <div class="p-4 sm:p-5 bg-slate-50 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="downloadProjectTemplateDocx('${cat.name.replace(/'/g, "\\'")}')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl shadow-md transition-all flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-file-word text-sm"></i>
+                        <span>Word (.doc) İndir</span>
+                    </button>
+                    <button type="button" onclick="window.print()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Yazdır / PDF</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeProjectTemplateModal(); openMaterialUploadModal('projeler', 'projeler', null, 'projeler')" class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-xs uppercase rounded-xl shadow-md transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <span>Bu Projeye Özel Dosya Ekle</span>
+                    </button>
+                    <button type="button" onclick="closeProjectTemplateModal()" class="px-3.5 py-2.5 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+}
+
+function closeProjectTemplateModal() {
+    const modal = document.getElementById("project-template-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+}
+
+// 📥 WORD BELGESİ (DOC/DOCX) ÜRETİCİSİ VE İNDİRİCİSİ
+function downloadProjectTemplateDocx(projectName = "Proje") {
+    const htmlContent = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset='utf-8'>
+            <title>${projectName} Rapor Şablonu</title>
+            <style>
+                body { font-family: 'Calibri', 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #1e293b; margin: 30px; }
+                h1 { font-size: 18pt; text-align: center; color: #b45309; margin-bottom: 4px; text-transform: uppercase; }
+                h2 { font-size: 13pt; color: #1e3a8a; border-bottom: 2px solid #cbd5e1; padding-bottom: 4px; margin-top: 18px; margin-bottom: 6px; }
+                p { margin: 6px 0; }
+                .subtitle { text-align: center; font-size: 10pt; color: #64748b; margin-bottom: 25px; }
+                table.info-box { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                table.info-box td { border: 1px solid #cbd5e1; padding: 6px 10px; font-size: 10pt; }
+                .label { background-color: #f8fafc; font-weight: bold; width: 25%; }
+                .note-box { background-color: #fffbeb; border: 1px solid #fde68a; padding: 10px; border-radius: 6px; font-size: 10pt; margin-bottom: 15px; }
+            </style>
+        </head>
+        <body>
+            <h1>${projectName}</h1>
+            <div class='subtitle'>Rotalı Fenci • Bilimsel Araştırma Projesi Resmî Rapor Formatı</div>
+
+            <table class='info-box'>
+                <tr><td class='label'>Proje Adı</td><td>[Buraya projenizin tam adını yazınız]</td></tr>
+                <tr><td class='label'>Proje Alanı / Dalı</td><td>Fen Bilimleri / Biyoloji / Fizik / Kimya / Çevre</td></tr>
+                <tr><td class='label'>Öğrenci(ler)</td><td>[Adı Soyadı, Sınıfı, Okul Numarası]</td></tr>
+                <tr><td class='label'>Danışman Öğretmen</td><td>[Danışman Fen Bilimleri Öğretmeni Adı Soyadı]</td></tr>
+                <tr><td class='label'>Okul Adı</td><td>[Okulunuzun Tam Adı ve İli / İlçesi]</td></tr>
+            </table>
+
+            <h2>1. PROJE ÖZETİ (150 - 250 KELİME)</h2>
+            <p>[Projenizin amacını, test edilen hipotezi, veri toplama yöntemini ve elde edilen en önemli sonucu bu bölüme kısaca özetleyiniz.]</p>
+
+            <h2>2. PROBLEM VE HİPOTEZ</h2>
+            <p><strong>Araştırma Problemi:</strong> [Çözmek istediğiniz bilimsel veya çevresel problem nedir?]</p>
+            <p><strong>Hipotez Cümlesi:</strong> [Ölçülebilir ve sınanabilir hipotezinizi yazınız. Örn: 'X maddesi eklendiğinde Y reaksiyon hızı artacaktır.']</p>
+            <p><strong>Bağımsız Değişken:</strong> [Deneyde sizin değiştirdiğiniz etken]</p>
+            <p><strong>Bağımlı Değişken:</strong> [Bağımsız değişkene bağlı olarak değişen/ölçülen sonuç]</p>
+            <p><strong>Kontrol Edilen Değişkenler:</strong> [Deney boyunca sabit tutulan tüm şartlar (sıcaklık, ışık, miktar vb.)]</p>
+
+            <h2>3. PROJENİN AMACI VE GEREKÇESİ</h2>
+            <p>[Bu çalışmayı yapmaya sizi yönlendiren ihtiyaç nedir? Projenin topluma, bilime veya çevreye faydaları nelerdir?]</p>
+
+            <h2>4. YÖNTEM VE DENEY DÜZENEĞİ</h2>
+            <p><strong>Kullanılan Malzemeler:</strong> [Deneyde kullanılan tüm laboratuvar ve sarf malzemeleri]</p>
+            <p><strong>Deney Protokolü & Adımları:</strong> [1. Adım, 2. Adım şeklinde kontrollü deneyin nasıl yapıldığını açıklayınız]</p>
+
+            <h2>5. BULGULAR VE VERİ ANALİZİ</h2>
+            <p>[Deney ölçümlerinizi tablo ve grafiklerle gösteriniz. Ölçülen değerleri ve karşılaştırmaları belirtiniz.]</p>
+
+            <h2>6. SONUÇ VE DEĞERLENDİRME</h2>
+            <p>[Kurulan hipotez doğrulandı mı? Sonuçlardan hangi bilimsel çıkarımlar yapıldı? Bu proje gelecekte nasıl geliştirilebilir?]</p>
+
+            <h2>7. KAYNAKÇA</h2>
+            <p>1. [Yazar Soyadı, Adı. (Yıl). Kitap veya Makale Adı. Yayınevi/Dergi.]</p>
+            <p>2. [TÜBİTAK Bilim ve Teknik Dergisi, Sayı/Yıl.]</p>
+        </body>
+        </html>
+    `;
+
+    const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const cleanName = (projectName || "Proje").replace(/[^a-zA-Z0-9çÇğĞıİöÖşŞüÜ_-]/g, "_");
+    a.download = `${cleanName}_Rapor_Sablonu.doc`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        a.remove();
+        URL.revokeObjectURL(url);
+    }, 500);
+
+    if (typeof showToast === "function") {
+        showToast("📥 Word (.doc) rapor şablonu indirildi!", "success");
+    }
 }
 
 // -------------------------------------------------------------
@@ -5705,7 +6963,7 @@ function getPortalSearchIndex() {
                     icon: isGame ? "fa-solid fa-gamepad" : "fa-solid fa-file-circle-check",
                     iconBg: isGame ? "bg-fuchsia-600" : "bg-emerald-600",
                     url: gNum > 0 ? `#grade/grade-${gNum}/${m.category || (isGame ? 'egitsel-oyunlar' : 'ders-notu')}` : `#home`,
-                    action: isGame ? `openInteractiveGameModal('oyun-5-lab', '${(m.title || '').replace(/'/g, "\'")}')` : null
+                    action: isGame ? ((String(m.title || '').toLowerCase().includes("kaçış") || String(m.title || '').toLowerCase().includes("kacis") || String(m.title || '').toLowerCase().includes("escape") || (m.fileUrl && m.fileUrl.includes("gemini"))) ? `openInteractiveGameModal('oyun-lab-kacis', '${(m.title || '').replace(/'/g, "\\'")}')` : `openInteractiveGameModal('${m.fileUrl && m.fileUrl.startsWith("http") ? m.fileUrl : (m.id || "oyun-5-lab")}', '${(m.title || '').replace(/'/g, "\\'")}')`) : null
                 });
             });
         }
@@ -6473,9 +7731,9 @@ function triggerEditFoy(gradeNumber, foyId, defaultTitle, defaultUnit, defaultDe
     });
 }
 
-function triggerUploadModal(gradeNumber = "8", subTab = "ders-notu") {
+function triggerUploadModal(gradeNumber = "8", subTab = "ders-notu", unitNum = "1") {
     checkAdminAccess(() => {
-        openMaterialUploadModal(gradeNumber, subTab);
+        openMaterialUploadModal(gradeNumber, subTab, null, unitNum);
     });
 }
 
@@ -6610,6 +7868,9 @@ function updateAdminNavUI() {
         if (isAdmin) {
             topContainer.innerHTML = `
                 <div class="flex items-center gap-1.5 animate-in fade-in duration-200">
+                    <button type="button" onclick="if (window.RotaliCloud) RotaliCloud.openSettingsModal()" class="px-3 py-1.5 rounded-xl bg-indigo-900/80 hover:bg-indigo-800 text-indigo-200 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-indigo-700/60 active:scale-95 cursor-pointer" title="☁️ Supabase Bulut Veritabanı ve Depolama Ayarları">
+                        <i class="fa-solid fa-cloud"></i> <span class="hidden md:inline">Bulut Ayarları</span>
+                    </button>
                     <button type="button" onclick="triggerManualCloudSync(this)" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-slate-700 active:scale-95 cursor-pointer" title="☁️ Canlı Bulut Eşitlemesini Çalıştır">
                         <i class="fa-solid fa-cloud-arrow-down"></i> <span class="hidden md:inline">Bulut Eşitle</span>
                     </button>
@@ -7285,8 +8546,9 @@ async function openDigitalBookModal(options = {}) {
     const id = options.id || "";
     const coverUrl = options.cover || options.imageUrl || (["5", "6", "7", "8"].includes(grade) ? `assets/kapak-${grade}.jpg` : "assets/kapak-5.jpg");
 
-    // EBA CDN otomatik fallback
-    if ((!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") && ["5", "6", "7", "8"].includes(grade)) {
+    // EBA CDN otomatik fallback - SADECE gerçek ders kitapları için geçerlidir (Alakasız dokümanların MEB kitabına dönüşmesini engeller)
+    const isRealBook = (id && String(id).startsWith("book-")) || (options.category === "ders-kitabi") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabı") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabi");
+    if (isRealBook && (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") && ["5", "6", "7", "8"].includes(grade)) {
         fileUrl = `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${grade}-1.pdf`;
     }
 
@@ -7588,38 +8850,44 @@ async function tryLoadPdfDocument(id, fileUrl) {
     }
 
     if (!pdfData) {
-        // hasBlob = true ise ve gerçekten hiçbir veri bulunamadıysa dosya seçme opsiyonu sun
-        const hasRemoteBlob = bookInfo.hasBlob || (function() {
-            try {
-                if (Array.isArray(ROTALI_MATERIALS_CACHE) && id) {
-                    const m = ROTALI_MATERIALS_CACHE.find(c => c && c.id === id);
-                    return m && m.hasBlob;
-                }
-            } catch(e) {}
-            return false;
-        })();
+        // 🌟 1. ÖNCELİK: Görsel İçerik veya Kapak Resmi Varsa DOĞRUDAN GÖRÜNTÜLE
+        // Eğer materyal bir resim/görsel içeriyorsa (örneğin telefonla eklenen afiş, resim notu veya TÜBİTAK görseli),
+        // "Bu Cihazda Dosya Bulunamadı" demek yerine görsel görüntüleyicide aç!
+        const foundMat = (Array.isArray(ROTALI_MATERIALS_CACHE) && id) ? ROTALI_MATERIALS_CACHE.find(c => c && c.id === id) : null;
+        const candidateImg = (bookInfo && (bookInfo.imageUrl || bookInfo.coverUrl || bookInfo.kapakResmi)) ||
+                             (foundMat && (foundMat.imageUrl || foundMat.coverUrl || foundMat.kapakResmi));
 
-        if (hasRemoteBlob) {
+        if (candidateImg && (candidateImg.startsWith("data:image") || (!candidateImg.includes("assets/kapak-") && !candidateImg.toLowerCase().endsWith(".pdf")))) {
+            closeDigitalBookModal();
+            openInPageDocumentModal(candidateImg, (bookInfo && bookInfo.title) || (foundMat && foundMat.title) || "Ders Dokümanı / Görseli", (bookInfo && bookInfo.fileName) || (foundMat && foundMat.fileName) || "gorsel.jpg", true);
+            return;
+        }
+
+        // hasBlob = true ise veya veri bulunamadıysa dosya seçme opsiyonu sun
+        const hasRemoteBlob = bookInfo.hasBlob || (foundMat && foundMat.hasBlob);
+
+        if (hasRemoteBlob || !pdfData) {
             // Dosya başka cihazda mevcut ama bu cihazda yok - dosya seçme butonu göster
-            if (statusEl) statusEl.innerText = "Bu cihazda dosya bulunamadı";
+            if (statusEl) statusEl.innerText = "Dosyayı Eşitle / Aç";
             const container = document.getElementById("book-pages-container");
             if (container) {
                 container.innerHTML = `
                     <div class="flex flex-col items-center justify-center py-16 px-6 text-center gap-5">
-                        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-red-500/20 flex items-center justify-center text-4xl text-amber-400 shadow-lg border border-amber-500/30">
+                        <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-500/20 to-red-500/20 flex items-center justify-center text-4xl text-amber-400 shadow-lg border border-amber-500/30 animate-pulse">
                             <i class="fa-solid fa-cloud-arrow-down"></i>
                         </div>
-                        <h3 class="text-lg font-black text-white">Bu Cihazda Dosya Bulunamadı</h3>
-                        <p class="text-sm text-slate-400 max-w-md leading-relaxed">
-                            Bu doküman başka bir cihazdan yüklenmiş. PDF dosyasını bu cihazdan da açabilmek için aşağıdaki butona tıklayarak dosyayı seçin.
-                            <br><span class="text-amber-400 font-bold">Dosya bir kez seçildiğinde bu cihaza kaydedilir ve her zaman açılır.</span>
+                        <h3 class="text-xl font-black text-white">Bu Cihazda Dosya Bulunamadı</h3>
+                        <p class="text-sm text-slate-300 max-w-md leading-relaxed">
+                            Bu doküman başka bir cihazdan yüklenmiş. Dosyayı (<strong>PDF, Word, PPTX, Excel, Görsel vb.</strong>) seçerek bu cihazda açabilir ve <strong>tek tıkla tüm cihazlarınıza (telefon, PC, tahta) eşitleyebilirsiniz</strong>.
                         </p>
-                        <label class="cursor-pointer px-6 py-3 bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-red-600/25 transition-all flex items-center gap-2 active:scale-95">
-                            <i class="fa-solid fa-file-arrow-up"></i>
-                            <span>PDF Dosyasını Seç</span>
-                            <input type="file" accept=".pdf,application/pdf" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${id}')">
+                        <label class="cursor-pointer px-6 py-3.5 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-sm uppercase tracking-wider rounded-2xl shadow-xl shadow-red-600/30 transition-all flex items-center gap-2.5 active:scale-95">
+                            <i class="fa-solid fa-file-arrow-up text-base"></i>
+                            <span>Dosyayı Seç ve Tüm Cihazlara Eşitle</span>
+                            <input type="file" accept="*/*" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${id}')">
                         </label>
-                        <p class="text-[10px] text-slate-500 mt-2">Aynı PDF dosyasını (${bookInfo.fileName || 'dosya.pdf'}) seçmeniz yeterli.</p>
+                        <p class="text-[11px] text-slate-400 mt-2 font-medium">
+                            ${bookInfo.fileName ? `Aranan dosya: <span class="text-amber-400 font-bold">${bookInfo.fileName}</span>` : 'Tüm dosya formatları desteklenmektedir.'}
+                        </p>
                     </div>
                 `;
             }
@@ -8057,6 +9325,21 @@ function closeDigitalBookModal() {
         window.removeEventListener("keydown", DigitalBookState.keyListener);
         DigitalBookState.keyListener = null;
     }
+    if (DigitalBookState.scrollListener) {
+        const scrollArea = document.getElementById("book-scroll-area");
+        if (scrollArea) {
+            scrollArea.removeEventListener("scroll", DigitalBookState.scrollListener);
+        }
+        DigitalBookState.scrollListener = null;
+    }
+
+    // STATE TEMİZLİĞİ: Hafızada eski doküman/kitap kesinlikle tutulmaz!
+    DigitalBookState.pdfDoc = null;
+    DigitalBookState.renderedPages.clear();
+    DigitalBookState.renderingPages.clear();
+    DigitalBookState.bookInfo = null;
+    DigitalBookState.fallbackPages = [];
+
     const modal = document.getElementById("digital-book-modal");
     if (modal) {
         modal.innerHTML = "";
@@ -8064,49 +9347,100 @@ function closeDigitalBookModal() {
     }
 }
 
-// 🔄 ÇAPRAZ CİHAZ DOSYA YÜKLEMESİ - Başka cihazdan eklenen dosyayı bu cihaza da kaydet
+// 🔄 ÇAPRAZ CİHAZ DOSYA YÜKLEMESİ - Başka cihazdan eklenen dosyayı bu cihaza ve buluta kaydet (Tüm dosya türleri)
 async function handleCrossDevicePdfUpload(inputEl, materialId) {
     if (!inputEl || !inputEl.files || !inputEl.files[0]) return;
     const file = inputEl.files[0];
-    
-    // 1. IndexedDB'ye kaydet (Bu cihazda kalıcı olsun)
+    const fileName = file.name || "dosya";
+    const ext = fileName.split('.').pop().toLowerCase();
+    const item = Array.isArray(ROTALI_MATERIALS_CACHE) ? ROTALI_MATERIALS_CACHE.find(m => m && m.id === materialId) : null;
+    const itemTitle = (item && item.title) || fileName;
+
+    const statusEl = document.getElementById("book-modal-status");
+    if (statusEl) statusEl.innerText = "Dosya Buluta Eşitleniyor...";
+    if (typeof showToast === "function") {
+        showToast("☁️ Dosya yükleniyor ve tüm cihazlarınıza eşitleniyor...", "info");
+    }
+
+    let cloudPublicUrl = null;
+
+    // 1. Supabase Bulut Depolamasına (Storage) Yükle (Tüm Cihazlarda Kalıcı Olsun)
+    if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+        try {
+            const upRes = await RotaliCloud.uploadFile(file, "materials");
+            if (upRes && upRes.publicUrl) {
+                cloudPublicUrl = upRes.publicUrl;
+                console.log("☁️ Supabase Storage Çapraz Cihaz Yüklemesi Başarılı:", cloudPublicUrl);
+            }
+        } catch(sbErr) {
+            console.warn("Supabase Storage yükleme uyarısı:", sbErr);
+        }
+    }
+
+    // 2. IndexedDB'ye kaydet (Bu cihazda çevrimdışı da kalıcı olsun)
     if (typeof RotaliDB !== "undefined" && RotaliDB.saveFile) {
         try {
-            await RotaliDB.saveFile(materialId, file, file.name, file.type || "application/pdf");
-            if (typeof showToast === "function") {
-                showToast("✅ Dosya bu cihaza kaydedildi! Artık her zaman açılacak.", "success");
-            }
+            await RotaliDB.saveFile(materialId, file, fileName, file.type || "application/octet-stream");
         } catch(err) {
             console.warn("IDB save error:", err);
         }
     }
 
-    // 2. DataURL oluştur ve bellek önbelleğine ekle (Bulut sync için)
-    try {
-        if (file.size <= 5 * 1024 * 1024 && Array.isArray(ROTALI_MATERIALS_CACHE)) {
-            const dataUrl = await readFileAsDataURL(file);
-            const item = ROTALI_MATERIALS_CACHE.find(m => m && m.id === materialId);
-            if (item && dataUrl) {
-                item.fileUrl = dataUrl;
-                item.hasBlob = true;
-                saveCustomMaterialsSafe(ROTALI_MATERIALS_CACHE);
-                // Buluta da gönder ki diğer cihazlar da açabilsin
-                if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-                    CloudSyncManager.uploadToCloud(ROTALI_MATERIALS_CACHE, true);
-                }
-            }
-        }
-    } catch(e) {}
-
-    // 3. Okuyucuyu dosya ile yeniden başlat
+    // 3. Materyal kaydını güncelle ve buluta yaz
     const blobUrl = URL.createObjectURL(file);
+    const activeUrl = cloudPublicUrl || blobUrl;
+
+    if (item) {
+        item.fileUrl = cloudPublicUrl || (file.size <= 5 * 1024 * 1024 ? await readFileAsDataURL(file).catch(() => blobUrl) : blobUrl);
+        item.fileName = fileName;
+        item.hasBlob = !cloudPublicUrl;
+        saveCustomMaterialsSafe(ROTALI_MATERIALS_CACHE);
+
+        if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            try {
+                await RotaliCloud.saveMaterial(item);
+            } catch(e) {}
+        }
+    }
+
+    if (typeof showToast === "function") {
+        showToast("✅ Dosya başarıyla eşitlendi! Artık tüm cihazlardan anında açılacak.", "success");
+    }
+
+    // 4. DOSYA TÜRÜNE GÖRE UYGUN GÖRÜNTÜLEYİCİYİ AÇ
+    // A) Sunum & Ofis Dosyaları (PPTX, DOCX, XLSX, ZIP)
+    if (["pptx", "ppt", "docx", "doc", "xlsx", "xls", "zip", "rar", "7z"].includes(ext)) {
+        closeDigitalBookModal();
+        await openOfficeDocumentAction({
+            id: materialId,
+            title: itemTitle,
+            fileName: fileName,
+            fileUrl: activeUrl,
+            format: ext.toUpperCase()
+        });
+        return;
+    }
+
+    // B) Görseller (JPG, PNG, WEBP, SVG)
+    if (["jpg", "jpeg", "png", "webp", "svg", "gif"].includes(ext) || (file.type && file.type.startsWith("image/"))) {
+        closeDigitalBookModal();
+        openInPageDocumentModal(activeUrl, itemTitle, fileName, true);
+        return;
+    }
+
+    // C) Videolar (MP4, WebM)
+    if (["mp4", "webm", "ogg"].includes(ext) || (file.type && file.type.startsWith("video/"))) {
+        closeDigitalBookModal();
+        openInPageVideoModal(activeUrl, itemTitle, true, materialId);
+        return;
+    }
+
+    // D) PDF Dokümanı (PDF.js okuyucuda yükle)
     try {
         const ab = await file.arrayBuffer();
         const pdfData = new Uint8Array(ab);
-        
-        // PDF.js ile yeniden yükle
+
         if (window.pdfjsLib) {
-            const statusEl = document.getElementById("book-modal-status");
             if (statusEl) statusEl.innerText = "Doküman Yükleniyor...";
 
             const cMapOptions = {
@@ -8135,10 +9469,9 @@ async function handleCrossDevicePdfUpload(inputEl, materialId) {
         }
     } catch(err) {
         console.warn("Cross-device PDF load error:", err);
-        // Fallback: blob URL ile iframe göster
         const container = document.getElementById("book-pages-container");
         if (container) {
-            container.innerHTML = `<iframe src="${blobUrl}" class="w-full h-[80vh] rounded-xl border-0"></iframe>`;
+            container.innerHTML = `<iframe src="${activeUrl}" class="w-full h-[80vh] rounded-xl border-0"></iframe>`;
         }
     }
 }
@@ -8177,6 +9510,222 @@ async function handleCrossDeviceImageUpload(inputEl, materialId) {
 }
 
 
+// -------------------------------------------------------------
+// 📊 OFİS DOSYALARI (PPTX, DOCX, XLSX, ZIP) YÖNETİCİSİ VE MODALI
+// (PowerPoint Sunumları, Word Belgeleri, Excel ve Arşiv Dosyaları)
+// Kesinlikle PDF okuyucuya veya yanlış MEB kitabına yönlendirilmez!
+// -------------------------------------------------------------
+let activeOfficeModalData = null;
+
+function dataURLtoBlob(dataurl) {
+    try {
+        const arr = dataurl.split(',');
+        const mime = arr[0].match(/:(.*?);/)[1];
+        const bstr = atob(arr[1]);
+        let n = bstr.length;
+        const u8arr = new Uint8Array(n);
+        while (n--) {
+            u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new Blob([u8arr], { type: mime });
+    } catch (e) {
+        return null;
+    }
+}
+
+function triggerDirectDownload(url, filename) {
+    if (!url || url === "#") {
+        if (typeof showToast === "function") showToast("Dosya indirme bağlantısı hazır değil.", "warning");
+        return;
+    }
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename || "dosya";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+        try { a.remove(); } catch (e) {}
+    }, 200);
+}
+
+async function openOfficeDocumentAction(fileData) {
+    if (!fileData) return;
+
+    let blobUrl = null;
+    let shouldRevoke = false;
+    const fileId = fileData.id || "";
+    const fileName = fileData.fileName || fileData.title || "sunum.pptx";
+    const fileTitle = fileData.title || fileName || "Ders Sunumu";
+    let targetUrl = fileData.fileUrl || fileData.url || "";
+    const fmt = String(fileData.format || "").toUpperCase() || (fileName.split('.').pop().toUpperCase());
+
+    // 1. IndexedDB'de orijinal dosya (Blob) var mı kontrol et
+    if (typeof RotaliDB !== "undefined" && RotaliDB.getFile && fileId) {
+        try {
+            const record = await RotaliDB.getFile(fileId);
+            if (record && record.blob) {
+                blobUrl = URL.createObjectURL(record.blob);
+                shouldRevoke = true;
+            }
+        } catch (e) {}
+    }
+
+    // 2. Data URL ise Blob'a çevirip performanslı ve güvenli Blob URL üret
+    if (!blobUrl && targetUrl) {
+        if (targetUrl.startsWith("data:")) {
+            const bl = dataURLtoBlob(targetUrl);
+            if (bl) {
+                blobUrl = URL.createObjectURL(bl);
+                shouldRevoke = true;
+            } else {
+                blobUrl = targetUrl;
+            }
+        } else if (targetUrl.startsWith("blob:") || targetUrl.startsWith("http")) {
+            blobUrl = targetUrl;
+        }
+    }
+
+    activeOfficeModalData = {
+        id: fileId,
+        title: fileTitle,
+        fileName: fileName,
+        format: fmt,
+        downloadUrl: blobUrl || targetUrl,
+        rawUrl: targetUrl,
+        shouldRevoke: shouldRevoke
+    };
+
+    renderOfficeDocumentModal(activeOfficeModalData);
+}
+
+function renderOfficeDocumentModal(item) {
+    let modal = document.getElementById("office-document-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "office-document-modal";
+        modal.className = "fixed inset-0 z-[9995] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-200 animate-in fade-in";
+        modal.onclick = function(e) {
+            if (e.target === this) closeOfficeDocumentModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    const fmt = (item.format || "PPTX").toUpperCase();
+    const isPPT = fmt.includes("PPT") || item.fileName.toLowerCase().endsWith(".pptx") || item.fileName.toLowerCase().endsWith(".ppt");
+    const isWord = fmt.includes("DOC") || item.fileName.toLowerCase().endsWith(".docx") || item.fileName.toLowerCase().endsWith(".doc");
+    const isExcel = fmt.includes("XLS") || item.fileName.toLowerCase().endsWith(".xlsx") || item.fileName.toLowerCase().endsWith(".xls");
+    const isZip = fmt.includes("ZIP") || fmt.includes("RAR") || item.fileName.toLowerCase().endsWith(".zip") || item.fileName.toLowerCase().endsWith(".rar");
+
+    let typeColor = "from-orange-500 to-amber-600";
+    let iconClass = "fa-file-powerpoint";
+    let badgeText = "PPTX SUNUM";
+
+    if (isWord) {
+        typeColor = "from-blue-600 to-cyan-600";
+        iconClass = "fa-file-word";
+        badgeText = "DOCX BELGE";
+    } else if (isExcel) {
+        typeColor = "from-emerald-600 to-teal-600";
+        iconClass = "fa-file-excel";
+        badgeText = "XLSX TABLO";
+    } else if (isZip) {
+        typeColor = "from-purple-600 to-indigo-600";
+        iconClass = "fa-file-zipper";
+        badgeText = "ARŞİV DOSYASI";
+    }
+
+    const hasDownload = item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "" && item.downloadUrl !== "null";
+    const isWebUrl = item.rawUrl && item.rawUrl.startsWith("http") && !item.rawUrl.includes("localhost") && !item.rawUrl.includes("127.0.0.1");
+    const googleDocsViewerUrl = isWebUrl ? `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true` : "";
+
+    modal.innerHTML = `
+        <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-white shadow-2xl relative animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <!-- Kapatma Butonu -->
+            <button type="button" onclick="closeOfficeDocumentModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-md">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            <!-- İkon ve Tür Başlığı -->
+            <div class="text-center mb-6">
+                <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr ${typeColor} text-white flex items-center justify-center text-3xl mx-auto mb-4 shadow-xl shadow-orange-500/20">
+                    <i class="fa-solid ${iconClass}"></i>
+                </div>
+                <span class="px-3 py-1 bg-slate-800 text-amber-400 border border-slate-700 text-[11px] font-black uppercase tracking-wider rounded-full inline-block mb-2">
+                    ${badgeText}
+                </span>
+                <h3 class="text-xl font-black text-white leading-tight mb-1">${item.title}</h3>
+                <p class="text-xs text-slate-400 truncate max-w-sm mx-auto font-medium">${item.fileName}</p>
+            </div>
+
+            <!-- Cihaz Uyumluluk Kutusu -->
+            <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 mb-6 space-y-2 text-left">
+                <div class="flex items-center gap-2 text-amber-400 font-bold text-xs">
+                    <i class="fa-solid fa-circle-check"></i>
+                    <span>Akıllı Tahta, PC ve Mobil Uyumlu</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Bu dosya <strong>Akıllı Tahta, Bilgisayar ve Mobil</strong> cihazlarda Microsoft PowerPoint, WPS Office veya sistem sunum programı ile anında açılır.
+                </p>
+            </div>
+
+            <!-- Aksiyon Butonları -->
+            <div class="space-y-3">
+                ${hasDownload ? `
+                    <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="w-full py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black text-sm uppercase rounded-2xl shadow-xl hover:shadow-orange-500/30 transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-download text-base"></i>
+                        <span>${isPPT ? 'Sunumu İndir / Cihazda Aç' : 'Dosyayı İndir / Cihazda Aç'}</span>
+                    </button>
+
+                    ${isWebUrl ? `
+                        <button type="button" onclick="closeOfficeDocumentModal(); openInPageDocumentModal('${googleDocsViewerUrl}', '${item.title.replace(/'/g, "\\'")}', '${item.fileName.replace(/'/g, "\\'")}', false, '${item.rawUrl.replace(/'/g, "\\'")}')" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs uppercase rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-brands fa-google text-sm"></i>
+                            <span>Google Dokümanlar ile Canlı Önizle</span>
+                        </button>
+
+                        <a href="https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(item.rawUrl)}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase rounded-2xl border border-slate-700 transition-all flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <span>Office Online'da Aç</span>
+                        </a>
+                    ` : ''}
+                ` : `
+                    <div class="bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 text-center space-y-3">
+                        <p class="text-xs text-amber-300 font-bold leading-relaxed">
+                            Bu dosya başka bir cihazdan eklenmiş. Dosyayı seçerek bu cihazda açabilir ve <strong>tek tıkla tüm cihazlarınıza eşitleyebilirsiniz</strong>.
+                        </p>
+                        <label class="cursor-pointer px-5 py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 active:scale-95">
+                            <i class="fa-solid fa-file-arrow-up text-sm"></i>
+                            <span>Dosyayı Seç ve Eşitle</span>
+                            <input type="file" accept="*/*" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${item.id}')">
+                        </label>
+                    </div>
+                `}
+
+                <button type="button" onclick="closeOfficeDocumentModal()" class="w-full py-2.5 bg-transparent hover:bg-slate-800 text-slate-400 hover:text-white font-bold text-xs rounded-xl transition-all cursor-pointer">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+}
+
+function closeOfficeDocumentModal() {
+    if (activeOfficeModalData && activeOfficeModalData.shouldRevoke && activeOfficeModalData.downloadUrl && activeOfficeModalData.downloadUrl.startsWith("blob:")) {
+        try {
+            URL.revokeObjectURL(activeOfficeModalData.downloadUrl);
+        } catch (e) {}
+    }
+    // STATE TEMİZLİĞİ: Kesinlikle null yapılır, eski dosya hafızada kalmaz
+    activeOfficeModalData = null;
+
+    const modal = document.getElementById("office-document-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+}
+
 async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materyal.pdf", category = "", title = "") {
     const found = findMaterialByIdOrTitle(id, title);
     if (found) {
@@ -8188,11 +9737,6 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
 
     const coverUrl = (found && (found.imageUrl || found.cover)) || "";
     let targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
-
-    // 🎯 Eğer fileUrl boş ama imageUrl (kapak görseli) varsa, materyalin ana görsel içeriği budur!
-    if ((!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") && coverUrl) {
-        targetUrl = coverUrl;
-    }
 
     // Bulut önbelleğinden kontrol
     if ((!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") && id && Array.isArray(ROTALI_MATERIALS_CACHE)) {
@@ -8212,6 +9756,56 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     const checkFile = String((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
     const checkTitle = String((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
     const checkCat = String((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
+
+    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME (Hata İhtimali %0)
+    if (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
+        id === "mat-5-lab-kacis-gemini" || id === "oyun-lab-kacis" ||
+        targetUrl === "oyun-lab-kacis" || (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) ||
+        (fallbackUrl && (fallbackUrl.includes("gemini.google") || fallbackUrl.includes("share.gemini.google")))) {
+        openInteractiveGameModal("oyun-lab-kacis", title || (found && found.title) || "Laboratuvar Kaçış Odası");
+        return;
+    }
+
+    // 🌐 GOOGLE DRIVE VE DOCS BAĞLANTILARI (Önizleme moduyla doğrudan aç)
+    if (targetUrl && (targetUrl.includes("drive.google.com") || targetUrl.includes("docs.google.com"))) {
+        let drivePreview = targetUrl;
+        const fileIdMatch = targetUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || targetUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        if (fileIdMatch && fileIdMatch[1]) {
+            drivePreview = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+        }
+        openInPageDocumentModal(drivePreview, title || (found && found.title) || "Google Drive Dokümanı", fileName, false, targetUrl);
+        return;
+    }
+
+    // 🎨 CANVA TASARIM VE SUNUM BAĞLANTILARI
+    if (targetUrl && targetUrl.includes("canva.com")) {
+        let canvaEmbed = targetUrl;
+        if (!canvaEmbed.includes("view?embed")) {
+            canvaEmbed = canvaEmbed.replace(/\/view(\?.*)?$/, "/view?embed");
+        }
+        openInPageDocumentModal(canvaEmbed, title || (found && found.title) || "Canva Tasarımı", fileName, false, targetUrl);
+        return;
+    }
+
+    // 0. 🎯 OFİS VE SUNUM DOSYALARI (PPTX, DOCX, XLSX, ZIP)
+    // Asla PDF okuyucuya veya yanlış MEB kitabına gitmez!
+    const isOfficeOrArchive = ["PPTX", "PPT", "DOCX", "DOC", "XLSX", "XLS", "ZIP", "RAR", "7Z"].includes(checkFormat) ||
+                              checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
+                              checkFile.endsWith(".docx") || checkFile.endsWith(".doc") ||
+                              checkFile.endsWith(".xlsx") || checkFile.endsWith(".xls") ||
+                              checkFile.endsWith(".zip") || checkFile.endsWith(".rar") ||
+                              checkTitle.endsWith(".pptx") || checkTitle.endsWith(".docx") || checkTitle.includes("pptx");
+
+    if (isOfficeOrArchive) {
+        await openOfficeDocumentAction({
+            id: (found && found.id) || id,
+            title: (found && found.title) || title || "Ders Sunumu / Dosyası",
+            fileName: (found && found.fileName) || fileName || (checkFormat === "PPTX" ? "sunum.pptx" : "dosya"),
+            fileUrl: targetUrl,
+            format: checkFormat || "PPTX"
+        });
+        return;
+    }
 
     // 1. 🎬 VİDEO İÇERİK KONTROLÜ
     const isVideo = checkCat === "videolar" || checkFormat.includes("VİDEO") || checkFormat.includes("VIDEO") || checkFormat === "MP4" ||
@@ -8261,43 +9855,57 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 2. 🎮 EĞİTSEL OYUN VEYA ETKİNLİK
-    if (checkCat === "egitsel-oyunlar" || checkCat.includes("oyun") || checkTitle.includes("oyun") || checkTitle.includes("eşleştirme") || checkTitle.includes("çark") || checkTitle.includes("cark") || checkTitle.includes("passaparola")) {
-        const gameKey = (found && found.fileUrl && found.fileUrl.startsWith("http")) ? found.fileUrl : (id || (found && found.id) || "oyun-5-lab");
+    // 2. 🎮 EĞİTSEL OYUN VEYA ETKİNLİK (veya Google Gemini Kaçış Odası)
+    const isGame = checkCat === "egitsel-oyunlar" || checkCat.includes("oyun") || checkTitle.includes("oyun") || checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("eşleştirme") || checkTitle.includes("çark") || checkTitle.includes("cark") || checkTitle.includes("passaparola") ||
+                   (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google") || targetUrl.includes("wordwall.net")));
+
+    if (isGame) {
+        let gameKey = (found && found.fileUrl && found.fileUrl.startsWith("http")) ? found.fileUrl : ((targetUrl && targetUrl.startsWith("http")) ? targetUrl : (id || (found && found.id) || "oyun-5-lab"));
+        if (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || (targetUrl && (targetUrl.includes("gemini") || targetUrl.includes("share.gemini")))) {
+            gameKey = "oyun-lab-kacis";
+        }
         openInteractiveGameModal(gameKey || targetUrl, title || (found && found.title) || "İnteraktif Fen Oyunu");
         return;
     }
 
-    // 3. 🖼️ GÖRSEL / KAPAK İÇERİĞİ (PDF dokümanları asla görsel olarak açılmamalıdır)
-    const isPdfContent = checkFormat === "PDF" ||
-                         checkFile.endsWith(".pdf") ||
-                         (targetUrl && (targetUrl.toLowerCase().endsWith(".pdf") || targetUrl.toLowerCase().includes(".pdf?") || targetUrl.toLowerCase().includes(".pdf#"))) ||
-                         (targetUrl && targetUrl.startsWith("data:application/pdf"));
-
-    const isImageContent = !isPdfContent && (
-                           (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-"))) ||
+    // 3. 🖼️ GÖRSEL / AFİŞ / LABORATUVAR MALZEMELERİ İÇERİĞİ
+    // (Görsel formatlı materyaller veya fileUrl olmayıp kapak görseli bulunan ders notları)
+    const isImageContent = (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg") || targetUrl.startsWith("assets/kapak-"))) ||
                            ["JPG", "JPEG", "PNG", "WEBP", "SVG", "GÖRSEL", "RESİM"].includes(checkFormat) ||
                            checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".png") || checkFile.endsWith(".webp") || checkFile.endsWith(".svg") ||
-                           (!targetUrl.includes(".pdf") && coverUrl.startsWith("data:image"))
-    );
+                           ((!targetUrl || targetUrl === "#" || targetUrl === "") && coverUrl && (coverUrl.startsWith("data:image") || !coverUrl.includes("assets/kapak-")));
 
     if (isImageContent) {
-        const activeImg = targetUrl || coverUrl;
+        const activeImg = (targetUrl && targetUrl !== "#" && !targetUrl.includes(".pdf")) ? targetUrl : coverUrl;
         if (activeImg) {
             openInPageDocumentModal(activeImg, title || (found && found.title) || "Fen Bilimleri Görseli", fileName, true, "");
             return;
         }
     }
 
-    // 4. 📚 PDF DERS NOTU & DERS KİTABI -> Dijital Kitap Okuyucuda Aç
-    const isBookMaterial = checkTitle.includes("kitap") || checkTitle.includes("kitab") || checkCat === "ders-kitabi";
+    // 4. 🌐 GENEL WEB SAYFASI / HARİCİ BAĞLANTI (PDF veya ofis olmayan URL'ler)
+    const isWebLink = targetUrl && targetUrl.startsWith("http") && !targetUrl.toLowerCase().includes(".pdf") && !targetUrl.toLowerCase().includes(".pptx") && !targetUrl.toLowerCase().includes(".docx");
+    if (isWebLink) {
+        openInPageDocumentModal(targetUrl, title || (found && found.title) || "Web Bağlantısı", fileName, false, targetUrl);
+        return;
+    }
+
+    // 5. 📚 PDF DERS NOTU & MEB DERS KİTABI -> Dijital Kitap Okuyucuda Aç
+    const isRealBook = (id && String(id).startsWith("book-")) || checkTitle.includes("kitap") || checkTitle.includes("kitab") || checkCat === "ders-kitabi";
     let pdfTarget = targetUrl;
     const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
 
-    if (isBookMaterial && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
+    // SADECE ve SADECE gerçek ders kitabıysa EBA fallback verilir (Başka dosyalar asla MEB kitabına dönüşmez!)
+    if (isRealBook && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
         if (["5", "6", "7", "8"].includes(gradeStr)) {
             pdfTarget = "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri" + gradeStr + "-1.pdf";
         }
+    }
+
+    // Eğer PDF linki yoksa ama kapak görseli varsa görsel modalda aç
+    if ((!pdfTarget || pdfTarget === "#") && coverUrl) {
+        openInPageDocumentModal(coverUrl, title || (found && found.title) || "Ders Dokümanı", fileName, true, "");
+        return;
     }
 
     openDigitalBookModal({
@@ -8306,7 +9914,8 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         grade: gradeStr,
         fileUrl: pdfTarget,
         fileName: (found && found.fileName) || fileName || "dokuman.pdf",
-        cover: coverUrl
+        cover: coverUrl,
+        category: checkCat
     });
 }
 
@@ -8388,6 +9997,12 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
     const lowerFile = (fileName || "").toLowerCase();
     const lowerTitle = (docTitle || "").toLowerCase();
 
+    // Google Gemini veya Kaçış Odası ise asla iframe'e yönlendirme, yerel oyun motorunda aç
+    if (lowerUrl.includes("gemini.google") || lowerUrl.includes("share.gemini.google") || lowerTitle.includes("kaçış") || lowerTitle.includes("kacis") || lowerTitle.includes("gemini")) {
+        openInteractiveGameModal("oyun-lab-kacis", docTitle || "Laboratuvar Kaçış Odası");
+        return;
+    }
+
     const isImageDoc = forceImage || 
         lowerUrl.endsWith(".svg") || lowerUrl.endsWith(".jpg") || lowerUrl.endsWith(".jpeg") || lowerUrl.endsWith(".png") || lowerUrl.endsWith(".webp") || lowerUrl.endsWith(".gif") || lowerUrl.includes("data:image") ||
         lowerFile.endsWith(".svg") || lowerFile.endsWith(".jpg") || lowerFile.endsWith(".jpeg") || lowerFile.endsWith(".png") || lowerFile.endsWith(".webp") || lowerFile.endsWith(".gif") ||
@@ -8466,21 +10081,29 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                 <div class="px-4 py-2.5 sm:px-5 sm:py-3.5 bg-slate-800 text-white flex items-center justify-between shrink-0 border-b border-slate-700 gap-3">
                     <div class="flex items-center gap-2 min-w-0">
                         <span class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg sm:rounded-xl bg-blue-600 text-white flex items-center justify-center text-xs sm:text-sm font-black shrink-0">
-                            <i class="fa-solid fa-file-pdf"></i>
+                            <i class="fa-solid fa-file-lines"></i>
                         </span>
                         <div class="min-w-0">
                             <h3 class="text-xs sm:text-sm font-black truncate">${docTitle}</h3>
-                            <span class="text-[10px] text-slate-400">Rotalı Fenci Belge Görüntüleyici</span>
+                            <span class="text-[10px] text-slate-400">Rotalı Fenci Belge & Link Görüntüleyici</span>
                         </div>
                     </div>
-                    <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
-                        <i class="fa-solid fa-xmark text-sm"></i>
-                    </button>
+                    <div class="flex items-center gap-2 shrink-0">
+                        ${docUrl && docUrl.startsWith("http") ? `
+                            <a href="${docUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black flex items-center gap-1.5 transition-all shadow-sm" title="Yeni Sekmede / Tam Ekran Aç">
+                                <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                                <span class="hidden sm:inline">Yeni Sekmede Aç</span>
+                            </a>
+                        ` : ''}
+                        <button type="button" onclick="closeInPageDocumentModal()" class="w-8 h-8 rounded-full bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shrink-0 cursor-pointer shadow-sm" title="Kapat (ESC)">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Belge Alanı -->
-                <div class="flex-1 bg-slate-950 p-2 overflow-hidden">
-                    <iframe src="${docUrl}" class="w-full h-full rounded-xl sm:rounded-2xl border-0 bg-white"></iframe>
+                <div class="flex-1 bg-slate-950 p-2 overflow-hidden relative">
+                    <iframe src="${docUrl}" class="w-full h-full rounded-xl sm:rounded-2xl border-0 bg-white" allow="autoplay; fullscreen; encrypted-media" loading="lazy"></iframe>
                 </div>
             </div>
         `;
@@ -8496,6 +10119,10 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
 }
 
 function closeInPageDocumentModal() {
+    inPageModalZoom = 1.0;
+    inPageModalPanX = 0;
+    inPageModalPanY = 0;
+    inPageIsDragging = false;
     const modal = document.getElementById("inpage-document-modal");
     if (modal) {
         modal.innerHTML = "";
@@ -8877,6 +10504,50 @@ function closeInPageVideoModal() {
 // -------------------------------------------------------------
 
 const INTERACTIVE_GAMES_POOL = {
+    "oyun-lab-kacis": {
+        title: "🚪 Laboratuvar Kaçış Odası (Gemini AI Kaçış Görevi)",
+        grade: "5. Sınıf",
+        desc: "🚨 DİKKAT! Laboratuvar kapıları kilitlendi! Çıkış kapısının 5 haneli güvenlik kodunu çözebilmek için fen bilimleri bulmacalarını tamamla ve kaç!",
+        isEscapeRoom: true,
+        geminiUrl: "https://share.gemini.google/S9cH7V0PhsiE",
+        questions: [
+            {
+                q: "🔐 1. ODA KİLİDİ: Sıvıların hacmini ölçmek için mezür (dereceli silindir) inceliyorsun. Mezürde 45 ml sıvı var. Üzerine 25 ml saf su eklendiğinde toplam hacim kaç ml olur?",
+                options: ["70 ml (1. Şifre Kodu: 7)", "60 ml (1. Şifre Kodu: 6)", "75 ml (1. Şifre Kodu: 5)", "80 ml (1. Şifre Kodu: 8)"],
+                answer: 0,
+                hint: "45 + 25 toplama işlemini yapınız.",
+                icon: "fa-solid fa-flask-vial"
+            },
+            {
+                q: "🔐 2. ODA KİLİDİ: Duvardaki acil durum panelinde 'Ateşten uzak tutulması gereken, kolay alev alan kimyasal' uyarısı yanıp sönüyor. Hangi güvenlik sembolü acil çıkış anahtarını serbest bırakır?",
+                options: ["Alev Sembolü (Yanıcı Madde)", "Kuru Kafa Sembolü (Zehirli)", "Ağaç ve Ölü Balık (Çevreye Zararlı)", "Radyasyon Sembolü"],
+                answer: 0,
+                hint: "Yangın çıkaran maddeleri temsil eden alev işaretidir.",
+                icon: "fa-solid fa-fire-flame-curved"
+            },
+            {
+                q: "🔐 3. ODA KİLİDİ: Deney tezgahındaki üç ayaklı metal düzeneğin adı şifre kutusunda soruluyor. Isıtma kabını üzerine koyduğumuz bu aletin adı nedir?",
+                options: ["Sacayak", "Baget", "Erlenmayer", "Damlalık"],
+                answer: 0,
+                hint: "3 tane ayağı olan ısıtma sehpasıdır.",
+                icon: "fa-solid fa-shapes"
+            },
+            {
+                q: "🔐 4. ODA KİLİDİ: Masaya bir kimyasal damladı ve tezgahı delmeye başladı! Bu aşındırıcı ve yakıcı madde sınıfına ne ad verilir?",
+                options: ["Korozif (Aşındırıcı) Madde", "Radyoaktif Madde", "Zararsız Nötr Madde", "Besin Maddesi"],
+                answer: 0,
+                hint: "Temas ettiği yüzeyleri ve cildi tahriş edip yakan maddedir.",
+                icon: "fa-solid fa-hand-dots"
+            },
+            {
+                q: "🔐 5. BÜYÜK ÇIKIŞ KAPISI: Kaçış kapısını açmak için son adım! Laboratuvarda deney yaparken gözleri kimyasal sıçramalarından korumak için hangi güvenlik ekipmanı zorunludur?",
+                options: ["Koruyucu Gözlük ve Önlük", "Güneş Şapkası", "Kulak Tıkacı", "Sadece Eldiven"],
+                answer: 0,
+                hint: "Kimyasal sıçramalardan gözlerimizi ve bedenimizi koruyan temel ekipmandır.",
+                icon: "fa-solid fa-glasses"
+            }
+        ]
+    },
     "oyun-5-lab": {
         title: "🧪 5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu",
         grade: "5. Sınıf",
@@ -9192,11 +10863,47 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         document.body.appendChild(modal);
     }
 
+    let resolvedKey = gameKeyOrUrl;
+    const str = String(gameKeyOrUrl || "").toLowerCase();
+    const titleStr = String(gameTitle || "").toLowerCase();
+
+    // Kaçış Odası veya Gemini ise kesinlikle yerel Kaçış Odası oyunumuzu hedefle
+    if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 rounded-3xl max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-3 sm:p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
+                            <i class="fa-solid fa-door-open"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-amber-400">🚪 Acil Durum: Laboratuvardan Kaçış</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">Güvenlik Sembolleri ve Deney Görevleri • Kesintisiz Yerel Kaçış Oyunu</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/laboratuvar-kacis-odasi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        return;
+    }
+
     // Determine if it's a built-in interactive game or external URL
-    const rawGameData = INTERACTIVE_GAMES_POOL[gameKeyOrUrl] ||
+    const rawGameData = INTERACTIVE_GAMES_POOL[resolvedKey] ||
+        INTERACTIVE_GAMES_POOL[gameKeyOrUrl] ||
         (function() {
-            if (!gameKeyOrUrl) return null;
-            const str = String(gameKeyOrUrl).toLowerCase();
+            if (!resolvedKey) return null;
             const matchingKey = Object.keys(INTERACTIVE_GAMES_POOL).find(k => str.includes(k) || (k.startsWith("oyun-") && str.includes(k.replace("oyun-", ""))));
             return matchingKey ? INTERACTIVE_GAMES_POOL[matchingKey] : null;
         })() ||
@@ -9229,7 +10936,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         };
 
         currentActiveGame = {
-            gameKey: gameKeyOrUrl,
+            gameKey: resolvedKey || gameKeyOrUrl,
             data: gameData,
             score: 0,
             currentQIdx: 0,
@@ -9240,50 +10947,80 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     } else {
         // Fallback or Iframe web game player (in-page iframe)
         const embedUrl = (gameKeyOrUrl && gameKeyOrUrl.startsWith("http")) ? gameKeyOrUrl : "#";
-        modal.innerHTML = `
-            <div class="bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-                <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between text-white">
-                    <div class="flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black">
-                            <i class="fa-solid fa-gamepad"></i>
-                        </span>
-                        <div>
-                            <h3 class="text-base font-black">${gameTitle}</h3>
-                            <span class="text-xs text-slate-400">Rotalı Fenci İnteraktif Oyun Alanı</span>
-                        </div>
-                    </div>
-                    <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all">
-                        <i class="fa-solid fa-xmark"></i>
-                    </button>
-                </div>
-                <div class="p-6 text-center text-white space-y-4">
-                    ${embedUrl !== '#' ? `
-                        <div class="w-full h-[65vh] rounded-2xl overflow-hidden bg-white">
-                            <iframe src="${embedUrl}" class="w-full h-full border-0" allowfullscreen></iframe>
-                        </div>
-                    ` : `
-                        <div class="py-12 bg-slate-800/60 rounded-2xl border border-slate-700 max-w-lg mx-auto">
-                            <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl mx-auto mb-3">
-                                <i class="fa-solid fa-flask"></i>
+        const isGeminiAI = embedUrl.includes("gemini") || str.includes("gemini") || titleStr.includes("gemini") || str.includes("kaçış") || str.includes("kacis") || titleStr.includes("kaçış") || titleStr.includes("kacis") || str.includes("escape") || titleStr.includes("escape");
+
+        if (isGeminiAI) {
+            // Google Gemini iframe'de ASLA açılamaz (SAMEORIGIN kuralı). Yerel motorumuz anında devreye girer!
+            const fallbackEscape = INTERACTIVE_GAMES_POOL["oyun-lab-kacis"] || Object.values(INTERACTIVE_GAMES_POOL)[0];
+            if (fallbackEscape) {
+                currentActiveGame = {
+                    gameKey: "oyun-lab-kacis",
+                    data: { ...fallbackEscape, questions: [...fallbackEscape.questions] },
+                    score: 0,
+                    currentQIdx: 0,
+                    streak: 0,
+                    answered: false
+                };
+                renderInteractiveGameScreen(modal);
+                return;
+            }
+        } else {
+            modal.innerHTML = `
+                <div class="bg-slate-900 rounded-3xl max-w-4xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col max-h-[95vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                    <div class="p-4 bg-slate-800 border-b border-slate-700 flex items-center justify-between text-white">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black">
+                                <i class="fa-solid fa-gamepad"></i>
+                            </span>
+                            <div>
+                                <h3 class="text-base font-black">${gameTitle}</h3>
+                                <span class="text-xs text-slate-400">Rotalı Fenci İnteraktif Oyun Alanı</span>
                             </div>
-                            <h4 class="text-lg font-black mb-2">${gameTitle}</h4>
-                            <p class="text-xs text-slate-300 mb-6 px-4">Bu interaktif oyun doğrudan Rotalı Fenci platformu üzerinde çalışmak üzere hazırlandı.</p>
-                            <button type="button" onclick="openInteractiveGameModal('oyun-5-lab')" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all">
-                                🎮 Laboratuvar Oyununu Hemen Oyna
+                        </div>
+                        <div class="flex items-center gap-2">
+                            ${embedUrl !== '#' ? `
+                                <a href="${embedUrl}" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-700 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5" title="Tam Ekran Yeni Pencerede Aç">
+                                    <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Yeni Sekmede Aç</span>
+                                </a>
+                            ` : ''}
+                            <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-700 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                                <i class="fa-solid fa-xmark"></i>
                             </button>
                         </div>
-                    `}
+                    </div>
+                    <div class="p-6 text-center text-white space-y-4">
+                        ${embedUrl !== '#' ? `
+                            <div class="w-full h-[65vh] rounded-2xl overflow-hidden bg-white">
+                                <iframe src="${embedUrl}" class="w-full h-full border-0" allowfullscreen></iframe>
+                            </div>
+                        ` : `
+                            <div class="py-12 bg-slate-800/60 rounded-2xl border border-slate-700 max-w-lg mx-auto">
+                                <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl mx-auto mb-3">
+                                    <i class="fa-solid fa-flask"></i>
+                                </div>
+                                <h4 class="text-lg font-black mb-2">${gameTitle}</h4>
+                                <p class="text-xs text-slate-300 mb-6 px-4">Bu interaktif oyun doğrudan Rotalı Fenci platformu üzerinde çalışmak üzere hazırlandı.</p>
+                                <button type="button" onclick="openInteractiveGameModal('oyun-5-lab')" class="px-6 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all cursor-pointer">
+                                    🎮 Laboratuvar Oyununu Hemen Oyna
+                                </button>
+                            </div>
+                        `}
+                    </div>
                 </div>
-            </div>
-        `;
+            `;
+        }
     }
 
     modal.classList.remove("hidden");
 }
 
 function closeInteractiveGameModal() {
+    currentActiveGame = null;
     const modal = document.getElementById("interactive-game-modal");
-    if (modal) modal.classList.add("hidden");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.classList.add("hidden");
+    }
 }
 
 // -------------------------------------------------------------
@@ -9298,6 +11035,10 @@ let currentSimulationState = {
 };
 
 function openInteractiveSimulationModal(targetUrl, title = "Fen Laboratuvarı Simülasyonu", grade = "5", id = "") {
+    if (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) {
+        openInteractiveGameModal("oyun-lab-kacis", title || "Laboratuvar Kaçış Odası");
+        return;
+    }
     const gClean = String(grade || "5").replace(/^grade-/, "").trim();
     
     // Sınıf seviyesine göre en uygun PhET HTML5 simülasyonu URL'si
@@ -9532,11 +11273,16 @@ function renderInteractiveGameScreen(modal) {
                     <div class="text-[11px] text-slate-300 mt-2">Doğruluk Oranı: %${Math.round((score / (questions.length * 10)) * 100)}</div>
                 </div>
 
-                <div class="flex gap-3">
-                    <button type="button" onclick="openInteractiveGameModal('${currentActiveGame.gameKey}')" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md">
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button type="button" onclick="openInteractiveGameModal('${currentActiveGame.gameKey}')" class="flex-1 py-3 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow-md cursor-pointer">
                         🔄 Yeniden Oyna
                     </button>
-                    <button type="button" onclick="closeInteractiveGameModal()" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md">
+                    ${data.geminiUrl ? `
+                        <a href="${data.geminiUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Gemini AI
+                        </a>
+                    ` : ''}
+                    <button type="button" onclick="closeInteractiveGameModal()" class="flex-1 py-3 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md cursor-pointer">
                         ✅ Kapat
                     </button>
                 </div>
@@ -9661,11 +11407,17 @@ function renderInteractiveGameScreen(modal) {
                 </div>
                 
                 <div class="flex items-center gap-2">
+                    ${data.geminiUrl ? `
+                        <a href="${data.geminiUrl}" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white rounded-xl text-[11px] font-black shadow-md transition-all" title="Google Gemini AI Web Bağlantısını Aç">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                            <span>Gemini AI</span>
+                        </a>
+                    ` : ''}
                     <div class="text-right">
                         <span class="text-[10px] text-slate-400 block font-bold">PUAN</span>
                         <span class="text-sm font-black text-amber-400">${score}</span>
                     </div>
-                    <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-600 text-white flex items-center justify-center text-sm transition-all ml-2" title="Kapat (ESC)">
+                    <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 rounded-full bg-white/10 hover:bg-red-600 text-white flex items-center justify-center text-sm transition-all ml-1 cursor-pointer" title="Kapat (ESC)">
                         <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
@@ -9759,7 +11511,7 @@ function handleGameAnswer(selectedIdx) {
 }
 
 
-function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", editMaterial = null) {
+function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", editMaterial = null, prefillSection = "1") {
     let modal = document.getElementById("material-upload-modal");
     if (!modal) {
         modal = document.createElement("div");
@@ -9782,7 +11534,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     if (activeEditCategory === "laboratuvar" || activeEditCategory === "ders-kitabi" || activeEditCategory === "kitap") activeEditCategory = "ders-notu";
     if (activeEditCategory === "oyunlar") activeEditCategory = "egitsel-oyunlar";
 
-    let preselectedSection = "1";
+    let preselectedSection = (editMaterial && editMaterial.targetSection) ? String(editMaterial.targetSection) : String(prefillSection || "1");
     if (isEditing && editMaterial) {
         if (editMaterial.targetSection) {
             preselectedSection = String(editMaterial.targetSection);
@@ -9843,7 +11595,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             <label class="block text-xs font-black uppercase text-slate-700">Hedef Sınıf / Seviye (Çoklu Seçim)</label>
                             <span class="text-[11px] text-slate-500 font-medium">Birden fazla sınıf işaretleyebilirsiniz</span>
                         </div>
-                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2" id="adv-grades-container">
+                        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2" id="adv-grades-container">
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
                                 <input type="checkbox" name="adv_grade_checkbox" value="5" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === '5' ? 'checked' : ''}>
                                 <span>5. Sınıf</span>
@@ -9857,12 +11609,16 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <span>7. Sınıf</span>
                             </label>
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
-                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','all'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
+                                <input type="checkbox" name="adv_grade_checkbox" value="8" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${(targetGradeClean === '8' || (!['5','6','7','all','projeler'].includes(targetGradeClean) && !isEditing)) ? 'checked' : ''}>
                                 <span>8. Sınıf & LGS</span>
                             </label>
                             <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-slate-200 rounded-xl cursor-pointer hover:border-red-500 transition-all text-xs font-bold text-slate-800 shadow-sm">
                                 <input type="checkbox" name="adv_grade_checkbox" value="all" onchange="updateCascadingUnits()" class="w-4 h-4 text-red-600 rounded border-slate-300 focus:ring-red-500 cursor-pointer" ${targetGradeClean === 'all' ? 'checked' : ''}>
                                 <span>Genel</span>
+                            </label>
+                            <label class="flex items-center gap-2 p-2 sm:p-2.5 bg-white border border-amber-300 rounded-xl cursor-pointer hover:border-amber-500 hover:bg-amber-50/50 transition-all text-xs font-bold text-amber-900 shadow-sm">
+                                <input type="checkbox" name="adv_grade_checkbox" value="projeler" onchange="handleProjectGradeCheckbox(this)" class="w-4 h-4 text-amber-600 rounded border-amber-300 focus:ring-amber-500 cursor-pointer" ${(targetGradeClean === 'projeler' || prefillTab === 'projeler' || preselectedSection === 'projeler' || activeEditCategory === 'projeler') ? 'checked' : ''}>
+                                <span>🚀 Projeler</span>
                             </label>
                         </div>
                         <input type="hidden" id="adv-grade-select" value="${targetGradeClean || '8'}">
@@ -9872,9 +11628,9 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <!-- Alt Kategori (Materyal Türü / Sekme) -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
-                            <select id="adv-category-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ünite Ders Notları & PDF Föy</option>
-                                <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu</option>
+                            <select id="adv-category-select" onchange="handleAdvCategoryChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                                <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ders Notu (PDF Föy)</option>
+                                <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu (PPTX Slayt)</option>
                                 <option value="videolar" ${activeEditCategory === 'videolar' ? 'selected' : ''}>🎥 Videolar</option>
                                 <option value="etkinlikler" ${activeEditCategory === 'etkinlikler' ? 'selected' : ''}>🧩 Etkinlikler</option>
                                 <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Soru Bankası</option>
@@ -9886,7 +11642,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             </select>
                         </div>
 
-                        <!-- Hedef Bölüm / Ünite (Ders Kitabı, 1-7. Ünite, Laboratuvar) -->
+                        <!-- Hedef Bölüm / Ünite (Ders Kitabı, 1-7. Ünite, Laboratuvar, Projeler) -->
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Hedef Bölüm / Ünite</label>
                             <select id="adv-section-select" onchange="handleTargetSectionChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
@@ -9899,6 +11655,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="6" ${preselectedSection === '6' ? 'selected' : ''}>6. Ünite</option>
                                 <option value="7" ${preselectedSection === '7' ? 'selected' : ''}>7. Ünite</option>
                                 <option value="lab" ${preselectedSection === 'lab' ? 'selected' : ''}>🧪 Laboratuvar</option>
+                                <option value="projeler" ${(preselectedSection === 'projeler' || activeEditCategory === 'projeler') ? 'selected' : ''}>🚀 Projeler & TÜBİTAK</option>
                             </select>
                         </div>
                     </div>
@@ -9967,9 +11724,9 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
 
                     <!-- Embed Link -->
                     <div id="upload-method-link-container" class="hidden space-y-2">
-                        <label class="block text-[11px] font-black text-slate-700 uppercase">Google Drive, YouTube, Canva veya Web Dosya Linki</label>
+                        <label class="block text-[11px] font-black text-slate-700 uppercase">Web / Drive Linki (Google Drive, YouTube, Canva, Gemini veya Güvenli Herhangi Bir Bağlantı)</label>
                         <div class="relative">
-                            <input type="url" id="adv-link-input" oninput="handleAdvLinkInput(this.value)" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://drive.google.com/... veya https://youtube.com/watch?v=..." class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                            <input type="text" inputmode="url" id="adv-link-input" oninput="handleAdvLinkInput(this.value)" value="${isEditing && editMaterial.fileUrl && editMaterial.fileUrl.startsWith('http') ? editMaterial.fileUrl : ''}" placeholder="https://... (Örn: Drive, YouTube, Canva, Gemini Canvas veya herhangi bir web bağlantısı)" class="w-full p-3 sm:p-3.5 pl-10 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
                             <i class="fa-solid fa-link absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                         </div>
                     </div>
@@ -10108,9 +11865,43 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
     modal.classList.remove("hidden");
 }
 
+const PROJECT_UNITS_LIST = [
+    "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "TÜBİTAK 4006 Bilim Fuarları Destekleme Programı",
+    "TEKNOFEST Havacılık, Uzay ve Teknoloji Projeleri",
+    "eTwinning & Uluslararası Fen Projeleri",
+    "Proje Rapor Şablonları & Kılavuzlar (DOCX/PDF)",
+    "Örnek Fen Bilimleri Proje Fikirleri & Sunumlar"
+];
+
+function handleProjectGradeCheckbox(checkboxEl) {
+    if (!checkboxEl) return;
+    const catSelect = document.getElementById("adv-category-select");
+    const secSelect = document.getElementById("adv-section-select");
+    if (checkboxEl.checked) {
+        if (catSelect) catSelect.value = "projeler";
+        if (secSelect) secSelect.value = "projeler";
+        handleTargetSectionChange("projeler");
+    } else {
+        updateCascadingUnits();
+    }
+}
+
+function handleAdvCategoryChange(cat) {
+    const secSelect = document.getElementById("adv-section-select");
+    if (!secSelect) return;
+    if (cat === "projeler") {
+        secSelect.value = "projeler";
+        handleTargetSectionChange("projeler");
+        const projBox = document.querySelector('input[name="adv_grade_checkbox"][value="projeler"]');
+        if (projBox) projBox.checked = true;
+    }
+}
+
 function updateCascadingUnits(forceGrade) {
     const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
-    const firstChecked = checkedBoxes.length > 0 ? checkedBoxes[0].value : "8";
+    const checkedValues = Array.from(checkedBoxes).map(cb => cb.value);
+    const firstChecked = checkedValues.length > 0 ? checkedValues[0] : "8";
     const selectedGrade = forceGrade || firstChecked;
 
     const hiddenGradeInput = document.getElementById("adv-grade-select");
@@ -10118,7 +11909,17 @@ function updateCascadingUnits(forceGrade) {
 
     const unitSelect = document.getElementById("adv-unit-select");
     const sectionSelect = document.getElementById("adv-section-select");
+    const categorySelect = document.getElementById("adv-category-select");
     if (!unitSelect) return;
+
+    const isProjectMode = checkedValues.includes("projeler") || selectedGrade === "projeler" || (sectionSelect && sectionSelect.value === "projeler") || (categorySelect && categorySelect.value === "projeler");
+
+    if (isProjectMode) {
+        unitSelect.innerHTML = PROJECT_UNITS_LIST.map(u => `<option value="${u}">${u}</option>`).join("");
+        if (sectionSelect) sectionSelect.value = "projeler";
+        if (categorySelect && categorySelect.value !== "projeler") categorySelect.value = "projeler";
+        return;
+    }
 
     const units = GRADE_UNITS_MAP[selectedGrade] || GRADE_UNITS_MAP["8"];
 
@@ -10126,6 +11927,7 @@ function updateCascadingUnits(forceGrade) {
         <option value="Ders Kitabı">📖 MEB Ders Kitabı & Ünite PDF'leri</option>
         ${units.map(u => `<option value="${u}">${u}</option>`).join("")}
         <option value="Laboratuvar">🧪 Laboratuvar / Deneyler & Simülasyonlar</option>
+        <option value="TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri">🚀 TÜBİTAK & Projeler</option>
     `;
 
     if (sectionSelect) {
@@ -10135,11 +11937,18 @@ function updateCascadingUnits(forceGrade) {
 
 function handleTargetSectionChange(sec) {
     const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
-    const g = checkedBoxes.length > 0 ? checkedBoxes[0].value : (document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "8");
+    const checkedValues = Array.from(checkedBoxes).map(cb => cb.value);
+    const g = checkedValues.length > 0 ? checkedValues[0] : (document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "8");
     const unitSelect = document.getElementById("adv-unit-select");
+    const categorySelect = document.getElementById("adv-category-select");
     if (!unitSelect) return;
 
-    if (sec === "kitap") {
+    if (sec === "projeler") {
+        if (categorySelect && categorySelect.value !== "projeler") categorySelect.value = "projeler";
+        unitSelect.innerHTML = PROJECT_UNITS_LIST.map(u => `<option value="${u}">${u}</option>`).join("");
+        const projBox = document.querySelector('input[name="adv_grade_checkbox"][value="projeler"]');
+        if (projBox) projBox.checked = true;
+    } else if (sec === "kitap") {
         unitSelect.value = "Ders Kitabı";
     } else if (sec === "lab") {
         unitSelect.value = "Laboratuvar";
@@ -10562,14 +12371,19 @@ async function handleAdvMaterialSubmit(e) {
     }
     const primaryGrade = selectedGrades[0];
     const grade = primaryGrade;
-    const category = categorySelect ? categorySelect.value : "ders-notu";
+    let category = categorySelect ? categorySelect.value : "ders-notu";
     const sectionSelect = document.getElementById("adv-section-select");
-    const targetSection = sectionSelect ? sectionSelect.value : "1";
+    let targetSection = sectionSelect ? sectionSelect.value : "1";
+    if (selectedGrades.includes("projeler") || category === "projeler" || targetSection === "projeler") {
+        targetSection = "projeler";
+        category = "projeler";
+    }
     const customTopic = customTopicInput ? customTopicInput.value.trim() : "";
     let unit = customTopic || (unitSelect && unitSelect.value ? unitSelect.value : `${primaryGrade}. Sınıf Fen Bilimleri`);
     if (!customTopic) {
         if (targetSection === "kitap") unit = "Ders Kitabı & Ünite PDF'leri";
         else if (targetSection === "lab") unit = "Laboratuvar & Deneyler";
+        else if (targetSection === "projeler" || category === "projeler") unit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
     }
     const desc = descInput && descInput.value.trim() ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
     const linkVal = linkInput ? linkInput.value.trim() : "";
@@ -10604,19 +12418,37 @@ async function handleAdvMaterialSubmit(e) {
             fileFormat = finalFileName.split('.').pop().toUpperCase();
             hasBlob = true;
 
-            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda kota aşmadan anında açılır)
-            try {
-                const compressed = await compressImageIfNeeded(currentUploadedFile);
-                if (compressed) {
-                    fileDataUrl = compressed;
-                } else if (currentUploadedFile.size <= 10 * 1024 * 1024) {
-                    fileDataUrl = await readFileAsDataURL(currentUploadedFile);
-                }
-            } catch(e) {
-                console.warn("DataURL conversion error:", e);
+            // 🌟 1. Supabase Storage Bulut Depolamasına Yükle (PDF, Görsel, PPTX, Video)
+            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
                 try {
-                    fileDataUrl = await readFileAsDataURL(currentUploadedFile);
-                } catch(err2) {}
+                    submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up fa-bounce"></i> Bulut Depolamaya Yükleniyor...`;
+                    const upRes = await RotaliCloud.uploadFile(currentUploadedFile, 'materials');
+                    if (upRes && upRes.publicUrl) {
+                        externalUrl = upRes.publicUrl;
+                        fileDataUrl = upRes.publicUrl;
+                        hasBlob = false;
+                        console.log("☁️ Supabase Storage CDN URL:", externalUrl);
+                    }
+                } catch(cErr) {
+                    console.warn("Storage upload warning, fallback to local:", cErr);
+                }
+            }
+
+            // Görsel ise akıllı sıkıştırma ile DataURL oluştur (Mobilde ve tüm cihazlarda kota aşmadan anında açılır)
+            if (!externalUrl) {
+                try {
+                    const compressed = await compressImageIfNeeded(currentUploadedFile);
+                    if (compressed) {
+                        fileDataUrl = compressed;
+                    } else if (currentUploadedFile.size <= 10 * 1024 * 1024) {
+                        fileDataUrl = await readFileAsDataURL(currentUploadedFile);
+                    }
+                } catch(e) {
+                    console.warn("DataURL conversion error:", e);
+                    try {
+                        fileDataUrl = await readFileAsDataURL(currentUploadedFile);
+                    } catch(err2) {}
+                }
             }
 
             // IndexedDB'ye de kaydet
@@ -10626,11 +12458,29 @@ async function handleAdvMaterialSubmit(e) {
                 console.warn("IDB Save error:", idbErr);
             }
         } else if (linkVal) {
-            if (linkVal.includes("youtube.com") || linkVal.includes("youtu.be")) fileFormat = "YouTube Video";
-            else if (linkVal.includes("drive.google.com")) fileFormat = "Google Drive";
-            else if (linkVal.includes("canva.com")) fileFormat = "Canva";
+            let cleanLink = linkVal.trim();
+            if (!/^https?:\/\//i.test(cleanLink) && /^[\w.-]+\.[a-zA-Z]{2,}/.test(cleanLink)) {
+                cleanLink = 'https://' + cleanLink;
+            }
+            externalUrl = cleanLink;
+            const lLower = cleanLink.toLowerCase();
+            if (lLower.includes("youtube.com") || lLower.includes("youtu.be")) fileFormat = "YouTube Video";
+            else if (lLower.includes("drive.google.com")) fileFormat = "Google Drive";
+            else if (lLower.includes("canva.com")) fileFormat = "Canva";
+            else if (lLower.includes("gemini") || lLower.includes("kacis") || lLower.includes("kaçış") || lLower.includes("escape") || lLower.endsWith(".html")) fileFormat = "Eğitsel Oyun";
+            else if (lLower.endsWith(".pdf")) fileFormat = "PDF";
+            else if (lLower.endsWith(".pptx") || lLower.endsWith(".ppt")) fileFormat = "PPTX";
+            else if (lLower.endsWith(".docx") || lLower.endsWith(".doc")) fileFormat = "Word";
+            else if (lLower.endsWith(".mp4") || lLower.endsWith(".webm")) fileFormat = "Video";
             else fileFormat = "Web Bağlantısı";
-            finalFileName = linkVal;
+            finalFileName = title || cleanLink;
+        } else if (!editingMaterialId) {
+            showToast("⚠️ Lütfen bir dosya yükleyin veya geçerli bir Web / Drive Linki girin!", "warning");
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i> <span>Yayınla & Kaydet</span>`;
+            }
+            return;
         }
 
         if (editingMaterialId) {
@@ -10644,10 +12494,10 @@ async function handleAdvMaterialSubmit(e) {
                     title: title,
                     unit: unit,
                     desc: desc,
-                    fileName: currentUploadedFile ? finalFileName : customList[idx].fileName,
+                    fileName: currentUploadedFile ? finalFileName : (linkVal ? finalFileName : customList[idx].fileName),
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
                     imageUrl: chosenCover || (customList[idx].imageUrl || (externalUrl && !externalUrl.startsWith("data:") ? externalUrl : "")),
-                    format: fileFormat || customList[idx].format,
+                    format: (currentUploadedFile || linkVal) ? fileFormat : customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
                     visibility: visibility,
@@ -10683,6 +12533,7 @@ async function handleAdvMaterialSubmit(e) {
                 if (!extraUnit) {
                     if (targetSection === "kitap") extraUnit = "Ders Kitabı & Ünite PDF'leri";
                     else if (targetSection === "lab") extraUnit = "Laboratuvar & Deneyler";
+                    else if (targetSection === "projeler") extraUnit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
                     else {
                         const secIdx = parseInt(targetSection, 10) - 1;
                         const gUnits = GRADE_UNITS_MAP[extraGrade] || GRADE_UNITS_MAP["8"];
@@ -10721,6 +12572,8 @@ async function handleAdvMaterialSubmit(e) {
                         itemUnit = "Ders Kitabı & Ünite PDF'leri";
                     } else if (targetSection === "lab") {
                         itemUnit = "Laboratuvar & Deneyler";
+                    } else if (targetSection === "projeler") {
+                        itemUnit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
                     } else {
                         const secIdx = parseInt(targetSection, 10) - 1;
                         const gUnits = GRADE_UNITS_MAP[g] || GRADE_UNITS_MAP["8"];
