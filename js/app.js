@@ -3704,7 +3704,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         ${currentBook.title}
                                     </h5>
                                     <!-- Görsel Kapak Kutusu (Kullanıcı görselindeki gibi) -->
-                                    <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })">
+                                    <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openDigitalBookModal({ id: 'book-${grade.number}', fileUrl: '${currentBook.fileUrl && currentBook.fileUrl !== '#' ? currentBook.fileUrl : ''}', title: '${currentBook.title.replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${currentBook.cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })">
                                         <img src="${currentBook.cover || 'assets/kapak-' + grade.number + '.jpg'}" alt="${currentBook.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                         <div class="absolute bottom-2.5 right-2.5">
                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -3717,7 +3717,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     </p>
                                 </div>
                                 <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                    <button type="button" onclick="openDigitalBookModal({ fileUrl: '${currentBook.fileUrl}', title: '${currentBook.title}', grade: '${grade.number}', cover: '${currentBook.cover}' })" class="flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
+                                    <button type="button" onclick="openDigitalBookModal({ id: 'book-${grade.number}', fileUrl: '${currentBook.fileUrl && currentBook.fileUrl !== '#' ? currentBook.fileUrl : ''}', title: '${currentBook.title.replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${currentBook.cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })" class="flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
                                         <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
                                     </button>
                                     ${isAdmin ? `
@@ -8334,6 +8334,245 @@ function getFallbackPagesForGrade(grade, title, coverUrl = "") {
         ];
     }
 
+    if (g === "8" && isBook) {
+        return [
+            {
+                pageNum: 1,
+                title: "Kitap Kapağı & MEB Bilgileri",
+                html: `
+                    <div class="flex flex-col items-center justify-center text-center py-6 px-2 sm:px-6 select-none max-w-xl mx-auto">
+                        <div class="w-48 sm:w-60 h-64 sm:h-80 mx-auto rounded-2xl overflow-hidden shadow-2xl border border-slate-200 mb-5 bg-slate-900 flex items-center justify-center p-1">
+                            <img src="${activeCover}" alt="${title}" class="w-full h-full object-contain rounded-xl" onerror="this.src='assets/kapak-8.jpg'">
+                        </div>
+                        <span class="px-3 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-black uppercase tracking-wider mb-2 border border-red-100">
+                            T.C. Millî Eğitim Bakanlığı • 2026-2027
+                        </span>
+                        <h2 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mb-2">
+                            8. SINIF FEN BİLİMLERİ MEB DERS KİTABI
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mb-6 font-medium leading-relaxed">
+                            Milli Eğitim Bakanlığı Onaylı 256 Sayfa Güncel LGS ve Beceri Temelli Müfredat
+                        </p>
+                        <div class="grid grid-cols-2 gap-3 w-full text-left max-w-md bg-slate-50 p-4 rounded-2xl border border-slate-200 text-xs mb-6">
+                            <div class="text-slate-500">Yazar Komisyonu: <strong class="text-slate-800 block">MEB Fen Kurulu</strong></div>
+                            <div class="text-slate-500">Sayfa Sayısı: <strong class="text-slate-800 block">256 Sayfa</strong></div>
+                            <div class="text-slate-500">Kapsam: <strong class="text-slate-800 block">1 - 7. Üniteler (LGS)</strong></div>
+                            <div class="text-slate-500">Durum: <strong class="text-emerald-700 block">Canlı Dijital Akış</strong></div>
+                        </div>
+                        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-bold">
+                            <i class="fa-solid fa-arrows-up-down"></i> Fare tekerleğiyle aşağı kaydırarak ünite özetlerini ve sayfaları okuyabilirsiniz
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 2,
+                title: "İstiklâl Marşı & Atatürk",
+                html: `
+                    <div class="max-w-xl mx-auto py-4 px-2 sm:px-6 text-center text-slate-800 select-none">
+                        <h3 class="text-base sm:text-lg font-black text-red-600 uppercase tracking-widest mb-3 border-b-2 border-red-600/20 pb-1">
+                            İSTİKLÂL MARŞI
+                        </h3>
+                        <div class="text-xs sm:text-sm leading-relaxed font-serif space-y-2 text-slate-700">
+                            <p class="mb-3">Korkma, sönmez bu şafaklarda yüzen al sancak;<br>Sönmeden yurdumun üstünde tüten en son ocak.<br>O benim milletimin yıldızıdır, parlayacak;<br>O benimdir, o benim milletimindir ancak.</p>
+                            <p>Çatma, kurban olayım, çehreni ey nazlı hilâl!<br>Kahraman ırkıma bir gül! Ne bu şiddet, bu celâl?<br>Sana olmaz dökülen kanlarımız sonra helâl...<br>Hakkıdır, Hakk'a tapan, milletimin istiklâl!</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-slate-200 text-right">
+                            <span class="text-xs font-black text-slate-800">Mehmet Âkif ERSOY</span>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 3,
+                title: "İçindekiler & 8. Sınıf 7 Ünite Haritası",
+                html: `
+                    <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 select-none text-slate-800">
+                        <div class="flex items-center justify-between border-b-2 border-slate-900 pb-2 mb-4">
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 uppercase">İÇİNDEKİLER</h3>
+                            <span class="text-xs font-bold text-red-600">8. Sınıf Tam LGS Müfredatı (256 Sayfa)</span>
+                        </div>
+                        <div class="space-y-2 text-xs sm:text-sm">
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">1. Ünite: Mevsimler ve İklim</span>
+                                <span class="font-bold text-red-600">s. 12 - 42</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">2. Ünite: DNA ve Genetik Kod</span>
+                                <span class="font-bold text-red-600">s. 44 - 76</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">3. Ünite: Basınç (Katı, Sıvı, Gaz)</span>
+                                <span class="font-bold text-red-600">s. 78 - 106</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">4. Ünite: Madde ve Endüstri</span>
+                                <span class="font-bold text-red-600">s. 108 - 144</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">5. Ünite: Basit Makineler</span>
+                                <span class="font-bold text-red-600">s. 146 - 178</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi</span>
+                                <span class="font-bold text-red-600">s. 180 - 212</span>
+                            </div>
+                            <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-xl border border-slate-200">
+                                <span class="font-black text-slate-800">7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi</span>
+                                <span class="font-bold text-red-600">s. 214 - 256</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 4,
+                title: "1. Ünite: Mevsimler ve İklim",
+                html: `
+                    <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
+                        <div class="p-5 bg-gradient-to-r from-red-600 to-rose-600 text-white rounded-2xl shadow-md mb-4">
+                            <span class="text-[11px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">1. Ünite • s. 12-42</span>
+                            <h3 class="text-lg sm:text-xl font-black mt-1">Mevsimler ve İklim</h3>
+                        </div>
+                        <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <p><strong>Mevsimlerin Oluşumu:</strong> Dünya'nın Güneş etrafında dolanması ve 23° 27'lik eksen eğikliği sonucu mevsimler oluşur. Güneş ışınlarının bir noktaya geliş açısı değiştikçe birim yüzeye düşen ısı enerjisi değişir.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200">
+                                    <strong class="block font-black text-amber-900 mb-1">Gündönümleri:</strong>
+                                    <ul class="space-y-1 text-slate-700 text-xs">
+                                        <li>• <strong>21 Haziran:</strong> KYK'de yaz, GYK'de kış başlangıcı. En uzun gündüz (KYK).</li>
+                                        <li>• <strong>21 Aralık:</strong> KYK'de kış, GYK'de yaz başlangıcı. En uzun gece (KYK).</li>
+                                    </ul>
+                                </div>
+                                <div class="p-3.5 bg-emerald-50 rounded-2xl border border-emerald-200">
+                                    <strong class="block font-black text-emerald-900 mb-1">Ekinokslar:</strong>
+                                    <ul class="space-y-1 text-slate-700 text-xs">
+                                        <li>• <strong>21 Mart & 23 Eylül:</strong> Gece-gündüz eşitliği (12 saat). Güneş ışınları Ekvator'a dik gelir.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="p-3.5 bg-blue-50 rounded-2xl border border-blue-200">
+                                <strong class="block font-black text-blue-900 mb-1">İklim ve Hava Hareketleri:</strong>
+                                <p class="text-xs text-slate-700 leading-relaxed">Rüzgâr, yüksek basınç (soğuk alan) alanından alçak basınç (sıcak alan) alanına doğru gerçekleşen yatay hava hareketidir. İklim ise en az 35-40 yıllık ortalama hava koşullarıdır (Klimatoloji).</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 5,
+                title: "2. Ünite: DNA ve Genetik Kod",
+                html: `
+                    <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
+                        <div class="p-5 bg-gradient-to-r from-teal-600 to-emerald-600 text-white rounded-2xl shadow-md mb-4">
+                            <span class="text-[11px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">2. Ünite • s. 44-76</span>
+                            <h3 class="text-lg sm:text-xl font-black mt-1">DNA ve Genetik Kod, Kalıtım & Biyoteknoloji</h3>
+                        </div>
+                        <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200">
+                                <strong class="block font-black text-slate-900 mb-1">Kromozom > DNA > Gen > Nükleotid (KeDiGeNi):</strong>
+                                <p class="text-xs text-slate-700">Nükleotidin yapısında Fosfat + Deoksiriboz Şekeri + Organik Baz (A, T, G, C) bulunur. DNA'da her zaman <strong>Adenin = Timin</strong> ve <strong>Guanin = Sitozin</strong> eşleşir.</p>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                                <div class="p-3 bg-rose-50 rounded-2xl border border-rose-200">
+                                    <strong class="font-black text-rose-900 block mb-1">Mutasyon & Modifikasyon:</strong>
+                                    <p>Mutasyon gen yapısını değiştirir (kalıtsal olabilir). Modifikasyon genin işleyişini değiştirir (kalıtsal değildir, çevre etkisiyle olur: çuha çiçeği, himalaya tavşanı).</p>
+                                </div>
+                                <div class="p-3 bg-purple-50 rounded-2xl border border-purple-200">
+                                    <strong class="font-black text-purple-900 block mb-1">Adaptasyon & Doğal Seçilim:</strong>
+                                    <p>Yaşama ve üreme şansını artıran kalıtsal uyumlardır (kutup ayısının beyaz kürkü, kaktüsün diken yaprakları).</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 6,
+                title: "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+                html: `
+                    <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
+                        <div class="p-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shadow-md mb-4">
+                            <span class="text-[11px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">3. Ünite • s. 78-106</span>
+                            <h3 class="text-lg sm:text-xl font-black mt-1">Basınç (Katı, Sıvı ve Gaz Basıncı)</h3>
+                        </div>
+                        <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                                <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <strong class="font-black text-blue-900 block mb-1">Katı Basıncı:</strong>
+                                    <p>P = G / S. Ağırlık arttıkça basınç artar, yüzey alanı arttıkça basınç azalır (Tırların çok tekerlekli olması).</p>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <strong class="font-black text-blue-900 block mb-1">Sıvı Basıncı:</strong>
+                                    <p>P = h • d. Derinlik ve sıvı yoğunluğu ile doğru orantılıdır. Kabın şekline ve sıvı miktarına bağlı değildir.</p>
+                                </div>
+                                <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200">
+                                    <strong class="font-black text-blue-900 block mb-1">Pascal Prensibi:</strong>
+                                    <p>Sıvılar sıkıştırılamaz ve üzerlerine uygulanan basıncı her yöne aynen iletir (Hidrolik fren, vinç).</p>
+                                </div>
+                            </div>
+                            <div class="p-3.5 bg-amber-50 rounded-2xl border border-amber-200 text-xs">
+                                <strong class="font-black text-amber-900 block mb-1">Açık Hava Basıncı (Torricelli Deneyi):</strong>
+                                <p class="text-slate-700">Deniz seviyesinde 0°C'de açık hava basıncı 76 cm-Hg cıva sütununa eşittir. Yükseklere çıkıldıkça açık hava basıncı azalır.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 7,
+                title: "4 - 7. Üniteler: LGS Özet Rehberi",
+                html: `
+                    <div class="max-w-2xl mx-auto py-3 px-2 sm:px-6 text-slate-800 select-none">
+                        <div class="p-5 bg-gradient-to-r from-orange-500 to-amber-600 text-white rounded-2xl shadow-md mb-4">
+                            <span class="text-[11px] font-black uppercase tracking-wider bg-white/20 px-2.5 py-0.5 rounded-full">LGS Tam Kapsam • s. 108-256</span>
+                            <h3 class="text-lg sm:text-xl font-black mt-1">Madde, Basit Makineler, Enerji & Elektrik</h3>
+                        </div>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                <strong class="font-black text-slate-900 block mb-1">4. Ünite: Madde ve Endüstri</strong>
+                                <p class="text-slate-700">Periyodik sistemde 7 periyot, 18 grup vardır. Asitler (pH &lt; 7), mavi turnusolu kırmızıya; bazlar (pH &gt; 7), kırmızı turnusolu maviye çevirir. Kimyasal tepkimelerde kütle ve atom cinsi daima korunur.</p>
+                            </div>
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                <strong class="font-black text-slate-900 block mb-1">5. Ünite: Basit Makineler</strong>
+                                <p class="text-slate-700">Kuvvetten kazanç varsa yoldan aynı oranda kayıp vardır. <strong>Hiçbir basit makinede işten veya enerjiden kazanç yoktur!</strong></p>
+                            </div>
+                            <div class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
+                                <strong class="font-black text-slate-900 block mb-1">6 & 7. Üniteler: Enerji Dönüşümleri ve Elektrik</strong>
+                                <p class="text-slate-700">Fotosentez kloroplastta gerçekleşir (CO2 + H2O -&gt; Besin + O2). Elektriklenme sürtünme, dokunma ve etki ile gerçekleşir. Elektroskop cismin yüklü olup olmadığını belirler.</p>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                pageNum: 8,
+                title: "Kitap Sonu & Özel PDF Yükleme",
+                html: `
+                    <div class="max-w-md mx-auto py-6 px-4 text-center text-slate-800 select-none">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-red-600 text-white flex items-center justify-center text-2xl mx-auto mb-4 shadow-xl">
+                            <i class="fa-solid fa-book-bookmark"></i>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-900 mb-2">8. Sınıf Ders Kitabı Akışı</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-6 font-medium">
+                            256 sayfalık 8. Sınıf MEB Fen Bilimleri müfredat özetlerini incelediniz. Kendi tam MEB PDF dosyanızı yükleyerek tüm sayfaları orijinal kitap formatında da görüntüleyebilirsiniz.
+                        </p>
+                        <div class="space-y-2">
+                            <label class="cursor-pointer w-full py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95">
+                                <i class="fa-solid fa-file-arrow-up text-sm"></i>
+                                <span>Cihazımdan 8. Sınıf PDF'ini Seç ve Yükle</span>
+                                <input type="file" accept="application/pdf,.pdf" class="hidden" onchange="handleCrossDevicePdfUpload(this, 'book-8')">
+                            </label>
+                            <button type="button" onclick="scrollBookToPage(1)" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-angles-up"></i> En Başa Dön
+                            </button>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+    }
+
     return [
         {
             pageNum: 1,
@@ -8547,17 +8786,28 @@ async function openDigitalBookModal(options = {}) {
     const bookTitle = options.title || "Fen Bilimleri Ders Dokümanı";
     const grade = String(options.grade || "5").replace(/^grade-/, "").trim();
     let fileUrl = options.fileUrl || "";
-    const id = options.id || "";
+    if (fileUrl === "#" || fileUrl === "null") fileUrl = "";
+
+    const isRealBook = (options.id && String(options.id).startsWith("book-")) || (options.category === "ders-kitabi") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabı") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabi");
+    const id = options.id || (isRealBook ? `book-${grade}` : "");
     const coverUrl = options.cover || options.imageUrl || (["5", "6", "7", "8"].includes(grade) ? `assets/kapak-${grade}.jpg` : "assets/kapak-5.jpg");
 
-    // EBA CDN otomatik fallback - SADECE gerçek ders kitapları için geçerlidir (Alakasız dokümanların MEB kitabına dönüşmesini engeller)
-    const isRealBook = (id && String(id).startsWith("book-")) || (options.category === "ders-kitabi") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabı") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabi");
-    if (isRealBook && (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") && ["5", "6", "7", "8"].includes(grade)) {
+    // EBA CDN otomatik fallback - SADECE CDN'de doğrulanmış 5, 6, 7. sınıflar için geçerlidir (8. sınıf CDN'de 404 döndüğü için atanmaz)
+    if (isRealBook && (!fileUrl || fileUrl === "") && ["5", "6", "7"].includes(grade)) {
         fileUrl = `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${grade}-1.pdf`;
     }
 
+    // Özel yüklenmiş kitap veya bulut verisi kontrolü
+    if (isRealBook && (!fileUrl || fileUrl === "")) {
+        const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+        const customBook = customList.find(m => m && (m.id === id || m.id === `book-${grade}`));
+        if (customBook && customBook.fileUrl && customBook.fileUrl !== "#") {
+            fileUrl = customBook.fileUrl;
+        }
+    }
+
     // 🎯 Bilinen statik doküman eşleştirmesi
-    if (!fileUrl || fileUrl === "#" || fileUrl === "" || fileUrl === "null") {
+    if (!fileUrl || fileUrl === "") {
         const idLower = String(id || "").toLowerCase();
         const fileLower = String(options.fileName || "").toLowerCase();
         const titleLower = String(bookTitle || "").toLowerCase();
@@ -8663,12 +8913,18 @@ async function openDigitalBookModal(options = {}) {
                         <span class="hidden sm:inline">Düzenle</span>
                     </button>
                 ` : ''}
-                ${fileUrl && fileUrl.startsWith("http") ? `
+                ${fileUrl && fileUrl.startsWith("http") && !fileUrl.includes("fenbilimleri8-1.pdf") ? `
                     <a href="${fileUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="MEB EBA Resmî Sunucusundan Doğrudan Aç">
                         <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
                         <span class="hidden md:inline">Yeni Sekmede Aç</span>
                     </a>
                 ` : ''}
+                <!-- Kendi PDF Dosyasını Yükle Butonu -->
+                <label class="cursor-pointer px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 flex items-center gap-1.5 text-xs font-black transition-all shadow-sm ml-1" title="Kendi PDF Dosyanızı Ekleyin">
+                    <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
+                    <span class="hidden md:inline">PDF Seç</span>
+                    <input type="file" accept="application/pdf,.pdf" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${id || 'book-' + grade}')">
+                </label>
                 <!-- Tam Ekran Akıllı Tahta Butonu -->
                 <button type="button" onclick="togglePresentationNativeFullscreen()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Tam Ekran (F11)">
                     <i class="fa-solid fa-expand text-xs"></i>
@@ -8716,6 +8972,32 @@ function renderFallbackVerticalPages() {
     if (!container) return;
 
     container.innerHTML = "";
+
+    const bInfo = DigitalBookState.bookInfo || {};
+    const bGrade = String(bInfo.grade || "5").replace(/^grade-/, "").trim();
+    const isBook = String(bInfo.id || "").startsWith("book-") || String(bInfo.title || "").toLowerCase().includes("ders kitabı");
+
+    if (isBook) {
+        const topBanner = document.createElement("div");
+        topBanner.className = "p-4 sm:p-5 bg-gradient-to-r from-amber-500/15 via-orange-500/15 to-red-500/15 border border-amber-500/30 rounded-2xl max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[760px] text-amber-200 text-xs flex flex-col sm:flex-row items-center justify-between gap-3 mb-3 shadow-lg";
+        topBanner.innerHTML = `
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-xl shrink-0">
+                    <i class="fa-solid fa-book-open"></i>
+                </div>
+                <div>
+                    <strong class="text-white text-xs sm:text-sm block font-black">${bGrade}. Sınıf Fen Bilimleri MEB Müfredat Kitabı</strong>
+                    <span class="text-slate-300 text-[11px] leading-relaxed">İnteraktif müfredat sayfaları yüklenmiştir. Cihazınızdaki tam MEB PDF dosyasını da ekleyebilirsiniz.</span>
+                </div>
+            </div>
+            <label class="cursor-pointer px-4 py-2.5 bg-gradient-to-r from-amber-500 to-red-600 hover:from-amber-600 hover:to-red-700 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-md transition-all shrink-0 flex items-center gap-2 active:scale-95">
+                <i class="fa-solid fa-cloud-arrow-up"></i> PDF Seç ve Aç
+                <input type="file" accept="application/pdf,.pdf" class="hidden" onchange="handleCrossDevicePdfUpload(this, '${bInfo.id || 'book-' + bGrade}')">
+            </label>
+        `;
+        container.appendChild(topBanner);
+    }
+
     DigitalBookState.fallbackPages.forEach((p, idx) => {
         const pageNum = idx + 1;
         const pageEl = document.createElement("div");
@@ -8881,6 +9163,14 @@ async function tryLoadPdfDocument(id, fileUrl) {
             return;
         }
 
+        const isOfficialBook = String(id || "").startsWith("book-") || (bookInfo && (bookInfo.category === "ders-kitabi" || String(bookInfo.title || "").toLowerCase().includes("ders kitabı")));
+
+        if (isOfficialBook) {
+            if (statusEl) statusEl.innerText = "Müfredat Akışı (" + DigitalBookState.totalPages + " Sayfa)";
+            renderFallbackVerticalPages();
+            return;
+        }
+
         // hasBlob = true ise veya veri bulunamadıysa dosya seçme opsiyonu sun
         const hasRemoteBlob = bookInfo.hasBlob || (foundMat && foundMat.hasBlob);
 
@@ -8971,7 +9261,7 @@ async function tryLoadPdfDocument(id, fileUrl) {
         if (statusEl) statusEl.innerText = "Önizleme Akışı (" + DigitalBookState.totalPages + " Sayfa)";
         const container = document.getElementById("book-pages-container");
         if (container) {
-            const externalLink = (typeof fileUrl === "string" && fileUrl.startsWith("http")) ? fileUrl : (["5", "6", "7", "8"].includes(String(DigitalBookState.bookInfo.grade)) ? `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${DigitalBookState.bookInfo.grade}-1.pdf` : "");
+            const externalLink = (typeof fileUrl === "string" && fileUrl.startsWith("http") && !fileUrl.includes("fenbilimleri8-1.pdf")) ? fileUrl : (["5", "6", "7"].includes(String(DigitalBookState.bookInfo?.grade)) ? `https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri${DigitalBookState.bookInfo.grade}-1.pdf` : "");
             renderFallbackVerticalPages();
             if (externalLink) {
                 const noticeBanner = document.createElement("div");
@@ -9422,6 +9712,37 @@ async function handleCrossDevicePdfUpload(inputEl, materialId) {
                 await RotaliCloud.saveMaterial(item);
             } catch(e) {}
         }
+    } else if (materialId && materialId.startsWith("book-")) {
+        const gradeNum = materialId.replace("book-", "");
+        const newBookItem = {
+            id: materialId,
+            title: `${gradeNum}. Sınıf Fen Bilimleri MEB Ders Kitabı`,
+            grade: gradeNum,
+            category: "ders-kitabi",
+            format: "PDF",
+            fileName: fileName,
+            fileUrl: cloudPublicUrl || (file.size <= 5 * 1024 * 1024 ? await readFileAsDataURL(file).catch(() => blobUrl) : blobUrl),
+            hasBlob: !cloudPublicUrl,
+            cover: `assets/kapak-${gradeNum}.jpg`
+        };
+        if (!Array.isArray(ROTALI_MATERIALS_CACHE)) ROTALI_MATERIALS_CACHE = [];
+        const existingIdx = ROTALI_MATERIALS_CACHE.findIndex(m => m && m.id === materialId);
+        if (existingIdx >= 0) {
+            ROTALI_MATERIALS_CACHE[existingIdx] = newBookItem;
+        } else {
+            ROTALI_MATERIALS_CACHE.push(newBookItem);
+        }
+        saveCustomMaterialsSafe(ROTALI_MATERIALS_CACHE);
+
+        if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            try {
+                await RotaliCloud.saveMaterial(newBookItem);
+            } catch(e) {}
+        }
+    }
+
+    if (DigitalBookState && DigitalBookState.bookInfo) {
+        DigitalBookState.bookInfo.fileUrl = activeUrl;
     }
 
     if (typeof showToast === "function") {
