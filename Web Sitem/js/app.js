@@ -3732,20 +3732,23 @@ function renderGradeDersNotuAccordion(grade, subData) {
                             </div>
                             ` : ''}
 
-                            ${customBooks.map(cb => `
+                            ${customBooks.map(cb => {
+                                const isImg = (cb.format === 'GÖRSEL' || cb.title.toLowerCase().includes('ünite') || cb.title.toLowerCase().includes('işlenecek') || cb.title.toLowerCase().includes('bilgi'));
+                                const cover = resolveMaterialCover(cb);
+                                return `
                                 <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                                     <div>
                                         <div class="flex items-center justify-between gap-2 mb-2">
                                             <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
-                                                ${cb.format || 'PDF KİTAP'}
+                                                ${cb.format || (isImg ? 'GÖRSEL / AFİŞ' : 'PDF KİTAP')}
                                             </span>
                                             <span class="text-[11px] font-bold text-slate-400">Özel İçerik</span>
                                         </div>
                                         <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-700 transition-colors">
                                             ${cb.title}
                                         </h5>
-                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || resolveMaterialCover(cb) || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')">
-                                            <img src="${resolveMaterialCover(cb)}" alt="${cb.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || cover || '#'}', '${cb.title.replace(/'/g, "\\'")}', '${cb.category || 'ders-notu'}', '${cb.title.replace(/'/g, "\\'")}')">
+                                            <img src="${cover}" alt="${cb.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                     <i class="fa-solid fa-eye"></i> GÖRSELİ AÇ
@@ -3757,8 +3760,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         </p>
                                     </div>
                                     <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                        <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || '#'}', '${cb.title.replace(/'/g, "\\'")}', 'ders-notu', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                            <i class="fa-solid fa-book-open"></i> Oku
+                                        <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || cover || '#'}', '${cb.title.replace(/'/g, "\\'")}', '${cb.category || 'ders-notu'}', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
+                                            <i class="fa-solid ${isImg ? 'fa-eye' : 'fa-book-open'}"></i> <span>${isImg ? 'İncele & Aç' : 'Oku'}</span>
                                         </button>
                                         ${isAdmin ? `
                                             <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
@@ -3770,7 +3773,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         ` : ''}
                                     </div>
                                 </div>
-                            `).join("")}
+                                `;
+                            }).join("")}
                         </div>
                     </div>
                 </div>
@@ -8850,12 +8854,21 @@ async function tryLoadPdfDocument(id, fileUrl) {
     }
 
     if (!pdfData) {
-        // 🌟 1. ÖNCELİK: Görsel İçerik veya Kapak Resmi Varsa DOĞRUDAN GÖRÜNTÜLE
-        // Eğer materyal bir resim/görsel içeriyorsa (örneğin telefonla eklenen afiş, resim notu veya TÜBİTAK görseli),
-        // "Bu Cihazda Dosya Bulunamadı" demek yerine görsel görüntüleyicide aç!
+        // 🌟 1. ÖNCELİK: Görsel İçerik, İnfografik veya Kapak Resmi Varsa DOĞRUDAN GÖRÜNTÜLE
         const foundMat = (Array.isArray(ROTALI_MATERIALS_CACHE) && id) ? ROTALI_MATERIALS_CACHE.find(c => c && c.id === id) : null;
-        const candidateImg = (bookInfo && (bookInfo.imageUrl || bookInfo.coverUrl || bookInfo.kapakResmi)) ||
-                             (foundMat && (foundMat.imageUrl || foundMat.coverUrl || foundMat.kapakResmi));
+        const bTitle = String((bookInfo && bookInfo.title) || (foundMat && foundMat.title) || "").toLowerCase();
+
+        if (bTitle.includes("işlenecek") || bTitle.includes("islenec") || bTitle.includes("ünite") || bTitle.includes("unite") || bTitle.includes("bilgi")) {
+            closeDigitalBookModal();
+            const gNum = String((bookInfo && bookInfo.grade) || "5").replace(/^grade-/, "").trim();
+            const infoImg = (gNum === "5" || !gNum) ? "assets/unite-bilgilendirmeleri-gorsel.png" : `assets/unite-bilgilendirmeleri-${gNum}.svg`;
+            openInPageDocumentModal(infoImg, (bookInfo && bookInfo.title) || "İşlenecek Üniteler", "unite-bilgilendirmeleri.png", true);
+            return;
+        }
+
+        const candidateImg = (bookInfo && (bookInfo.imageUrl || bookInfo.coverUrl || bookInfo.cover || bookInfo.kapakResmi)) ||
+                             (foundMat && (foundMat.imageUrl || foundMat.coverUrl || foundMat.cover || foundMat.kapakResmi)) ||
+                             resolveMaterialCover(foundMat || bookInfo || { id, title: bTitle });
 
         if (candidateImg && (candidateImg.startsWith("data:image") || (!candidateImg.includes("assets/kapak-") && !candidateImg.toLowerCase().endsWith(".pdf")))) {
             closeDigitalBookModal();
@@ -9592,10 +9605,492 @@ async function openOfficeDocumentAction(fileData) {
         format: fmt,
         downloadUrl: blobUrl || targetUrl,
         rawUrl: targetUrl,
-        shouldRevoke: shouldRevoke
+        shouldRevoke: shouldRevoke,
+        grade: fileData.grade || "5",
+        unit: fileData.unit || ""
     };
 
+    const isPPT = fmt.includes("PPT") || fileName.toLowerCase().endsWith(".pptx") || fileName.toLowerCase().endsWith(".ppt") || (fileData.category === "ders-sunumu") || fmt.includes("SUNUM");
+    if (isPPT) {
+        await openFullScreenPresentationModal(activeOfficeModalData);
+        return;
+    }
+
     renderOfficeDocumentModal(activeOfficeModalData);
+}
+
+// -------------------------------------------------------------
+// 🖥️ TAM EKRAN SUNUM MOTORU (AKILLI TAHTA & 16:9 GENİŞ EKRAN)
+// -------------------------------------------------------------
+let presentationModalState = {
+    item: null,
+    currentSlide: 1,
+    totalSlides: 5,
+    slides: [],
+    viewMode: "slides",
+    solutionRevealed: false
+};
+
+function getPresentationSlidesForMaterial(item) {
+    const title = String(item.title || "").trim();
+    const grade = String(item.grade || "5").replace(/^grade-/, "").trim();
+    const unit = String(item.unit || "").trim();
+
+    let unitNum = "1";
+    const uMatch = (unit + " " + title).match(/(\d+)\s*[\.:\-_]?\s*ünite/i) || (unit + " " + title).match(/ünite\s*(\d+)/i);
+    if (uMatch && uMatch[1]) unitNum = uMatch[1];
+
+    const unitTitlesMap = {
+        "5": ["Güneş, Dünya ve Ay", "Canlılar Dünyası", "Kuvvetin Ölçülmesi ve Sürtünme", "Madde ve Değişim", "Işığın Yayılması", "İnsan ve Çevre", "Elektrik Devre Elemanları"],
+        "6": ["Güneş Sistemi ve Tutulmalar", "Vücudumuzdaki Sistemler", "Kuvvet ve Hareket", "Madde ve Isı", "Ses ve Özellikleri", "Sistemler ve Sağlığı", "Elektriğin İletimi"],
+        "7": ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
+        "8": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç (Katı, Sıvı, Gaz)", "Madde ve Endüstri", "Basit Makineler", "Canlılar ve Enerji İlişkileri", "Elektrik Yükleri ve Elektrik Enerjisi"]
+    };
+    const defaultUnitName = (unitTitlesMap[grade] && unitTitlesMap[grade][parseInt(unitNum)-1]) || "Fen Bilimleri";
+    const cleanUnitTitle = unit.includes("•") ? unit.split("•")[1].trim() : (unit.includes(":") ? unit.split(":")[1].trim() : defaultUnitName);
+
+    let highlights = [];
+    if (typeof ENRICHED_GRADE_CONTENT !== "undefined" && ENRICHED_GRADE_CONTENT[grade] && Array.isArray(ENRICHED_GRADE_CONTENT[grade].unitSummaries)) {
+        const foundSummary = ENRICHED_GRADE_CONTENT[grade].unitSummaries.find(s => s.unit && s.unit.includes(unitNum + "."));
+        if (foundSummary && Array.isArray(foundSummary.highlights)) {
+            highlights = foundSummary.highlights;
+        }
+    }
+    if (highlights.length === 0) {
+        highlights = [
+            `MEB ${grade}. sınıf Fen Bilimleri ${unitNum}. ünite temel kazanımları ve kavram analizleri.`,
+            `Akıllı tahta projeksiyon uyumlu renkli şemalar, formül özetleri ve püf noktalar.`,
+            `Beceri temelli yeni nesil soru analizleri ve sınıf içi interaktif tartışma etkinlikleri.`
+        ];
+    }
+
+    return [
+        {
+            type: "cover",
+            title: title || `${grade}. Sınıf ${unitNum}. Ünite Dersi`,
+            badge: `${grade}. SINIF • ${unitNum}. ÜNİTE • 16:9 AKILLI TAHTA SUNUMU`,
+            unitName: cleanUnitTitle,
+            subtitle: "MEB Müfredatına Tam Uyumlu • Akıllı Tahta 16:9 Geniş Ekran Sunum Modu",
+            points: highlights.slice(0, 3)
+        },
+        {
+            type: "concepts",
+            title: "📌 Temel Kavramlar & Püf Noktalar",
+            unitName: cleanUnitTitle,
+            items: highlights.map((h, i) => {
+                const parts = h.split(":");
+                const heading = parts[0] ? parts[0].replace(/[\*•]/g, '').trim() : `Kavram ${i+1}`;
+                const text = parts[1] ? parts.slice(1).join(":").replace(/\*\*/g, '').trim() : h.replace(/\*\*/g, '');
+                return { heading, text };
+            })
+        },
+        {
+            type: "focus",
+            title: "💡 Önemli Bilgiler & Sınavda Çıkar",
+            unitName: cleanUnitTitle,
+            highlights: highlights,
+            warning: "Dikkat: MEB sınavlarında çeldiricilere dikkat edilmeli, kavram tanımları ile grafik ve deney sonuçları doğru ilişkilendirilmelidir."
+        },
+        {
+            type: "experiment",
+            title: "🔬 Deney, Gözlem & Günlük Yaşam Bağlantısı",
+            unitName: cleanUnitTitle,
+            content: `Bu ünitede ele alınan fen ilkeleri doğa olaylarında, modern teknolojide ve laboratuvar deneylerinde doğrudan karşılık bulur. Bilimsel süreç becerileri (gözlem, hipotez, değişken belirleme, çıkarım yapma) aktif olarak pekiştirilir.`,
+            questions: [
+                "1. Bu kavramı günlük yaşantımızda nerede ve nasıl gözlemliyoruz?",
+                "2. Deney yaparken bağımsız değişken değiştirildiğinde sonuç nasıl etkilenir?",
+                "3. Modelleme ve şemalar bilimsel gerçeği anlamamıza nasıl katkı sağlar?"
+            ]
+        },
+        {
+            type: "question",
+            title: "🎯 Sınıf İçi Pekiştirme Sorusu & Çözüm",
+            unitName: cleanUnitTitle,
+            questionText: `${grade}. Sınıf Fen Bilimleri ${unitNum}. Ünite (${cleanUnitTitle}) kazanımları doğrultusunda hazırlanan akıllı tahta pekiştirme sorusu:`,
+            prompt: `Verilen kavramlar ve bilimsel özellikler dikkate alındığında, konuyla ilgili yapılan aşağıdaki çıkarımlardan hangisi **kesinlikle doğrudur**?`,
+            options: [
+                { key: "A", text: "Öğrenilen temel fen prensipleri tüm doğa olaylarında ve kontrollü deneylerde tutarlı sonuçlar verir." },
+                { key: "B", text: "Değişkenler arasındaki ilişki yalnızca teorik olup günlük yaşamda gözlenemez." },
+                { key: "C", text: "Ölçüm aletlerinin hassasiyeti ve deney tekrarları sonuca etki etmez." },
+                { key: "D", text: "Yalnızca tek bir gözlem yapıldığında bilimsel hipotez kesinleşmiş sayılır." }
+            ],
+            correctKey: "A",
+            explanation: `Tebrikler! Doğru cevap A seçeneğidir. Fen bilimlerinde bilimsel ilkeler evrenseldir; doğru deney tasarımı, kontrollü değişkenler ve hassas ölçümlerle daima tutarlı ve tekrarlanabilir sonuçlar elde edilir.`
+        }
+    ];
+}
+
+async function openFullScreenPresentationModal(item) {
+    if (!item) return;
+
+    let targetUrl = item.fileUrl || item.downloadUrl || item.rawUrl || "";
+    let downloadUrl = targetUrl;
+    const fileId = item.id || "";
+    const fileName = item.fileName || item.title || "sunum.pptx";
+    const fileTitle = item.title || fileName || "Ders Sunumu";
+
+    if (typeof RotaliDB !== "undefined" && RotaliDB.getFile && fileId) {
+        try {
+            const record = await RotaliDB.getFile(fileId);
+            if (record && record.blob) {
+                downloadUrl = URL.createObjectURL(record.blob);
+            }
+        } catch (e) {}
+    }
+
+    const slides = getPresentationSlidesForMaterial(item);
+    presentationModalState = {
+        item: {
+            ...item,
+            title: fileTitle,
+            fileName: fileName,
+            downloadUrl: downloadUrl,
+            rawUrl: targetUrl
+        },
+        currentSlide: 1,
+        totalSlides: slides.length,
+        slides: slides,
+        viewMode: (targetUrl && targetUrl.startsWith("http") && (targetUrl.includes("drive.google.com") || targetUrl.includes("canva.com") || targetUrl.endsWith(".pptx"))) ? "embed" : "slides",
+        solutionRevealed: false
+    };
+
+    renderFullScreenPresentationModal();
+    initPresentationKeyboardListeners();
+
+    try {
+        const modalEl = document.getElementById("fullscreen-presentation-modal");
+        if (modalEl && modalEl.requestFullscreen) {
+            modalEl.requestFullscreen().catch(() => {});
+        }
+    } catch(e) {}
+}
+
+function renderFullScreenPresentationModal() {
+    let modal = document.getElementById("fullscreen-presentation-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "fullscreen-presentation-modal";
+        modal.className = "fixed inset-0 z-[9999] bg-slate-950 text-white flex flex-col justify-between select-none animate-in fade-in duration-200 overflow-hidden w-full max-w-full";
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
+        document.body.appendChild(modal);
+    }
+
+    const { item, currentSlide, totalSlides, slides, viewMode, solutionRevealed } = presentationModalState;
+    const cur = slides[currentSlide - 1] || slides[0];
+    const isWebUrl = item.rawUrl && item.rawUrl.startsWith("http");
+    const googleDocsViewerUrl = isWebUrl ? `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true` : "";
+    const hasDownload = item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "";
+
+    let bodyHtml = "";
+    if (viewMode === "embed" && isWebUrl) {
+        bodyHtml = `
+            <div class="flex-1 w-full h-full p-2 bg-slate-950 flex flex-col items-center justify-center">
+                <iframe src="${googleDocsViewerUrl}" class="w-full h-full rounded-2xl border border-slate-800 shadow-2xl bg-white" allow="autoplay; fullscreen; encrypted-media"></iframe>
+            </div>
+        `;
+    } else {
+        let slideInner = "";
+        if (cur.type === "cover") {
+            slideInner = `
+                <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto my-auto p-4 sm:p-8 animate-in zoom-in-95 duration-200">
+                    <span class="px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs sm:text-sm font-black tracking-widest uppercase mb-4 shadow-lg flex items-center gap-2">
+                        <i class="fa-solid fa-chalkboard-user"></i> ${cur.badge}
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-4 tracking-tight drop-shadow-md">
+                        ${cur.title}
+                    </h1>
+                    <p class="text-base sm:text-xl text-slate-300 font-bold mb-8 max-w-2xl leading-relaxed">
+                        ${cur.subtitle}
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full text-left mb-8">
+                        ${cur.points.map((pt, i) => `
+                            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg backdrop-blur-sm">
+                                <span class="w-6 h-6 rounded-lg bg-orange-600/30 text-orange-400 font-black text-xs flex items-center justify-center mb-2 border border-orange-500/30">${i+1}</span>
+                                <p class="text-xs sm:text-sm font-bold text-slate-200 leading-snug">${pt.replace(/\*\*/g, '')}</p>
+                            </div>
+                        `).join("")}
+                    </div>
+                    <button type="button" onclick="changePresentationSlide(1)" class="px-8 py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black text-sm sm:text-base uppercase rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-all flex items-center gap-3 cursor-pointer">
+                        <span>Dersi Başlat & Sonraki Slayt</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            `;
+        } else if (cur.type === "concepts") {
+            slideInner = `
+                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                            <span class="text-orange-400">${cur.title}</span>
+                        </h2>
+                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        ${cur.items.map((item, i) => `
+                            <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl hover:border-orange-500/50 transition-all">
+                                <div class="flex items-center gap-2.5 mb-2">
+                                    <span class="w-7 h-7 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center font-black text-xs shadow-md">${i+1}</span>
+                                    <h3 class="text-base sm:text-lg font-black text-amber-300">${item.heading}</h3>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">${item.text}</p>
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        } else if (cur.type === "focus") {
+            slideInner = `
+                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                            <span class="text-amber-400">${cur.title}</span>
+                        </h2>
+                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
+                    </div>
+                    <div class="space-y-3 mb-6">
+                        ${cur.highlights.map(h => `
+                            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-start gap-3 shadow-md">
+                                <i class="fa-solid fa-circle-check text-emerald-400 text-base mt-1 shrink-0"></i>
+                                <div class="text-xs sm:text-sm text-slate-200 font-semibold leading-relaxed">${h.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-300">$1</strong>')}</div>
+                            </div>
+                        `).join("")}
+                    </div>
+                    <div class="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 border border-amber-500/40 rounded-2xl p-4 shadow-lg flex items-center gap-3">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-2xl shrink-0"></i>
+                        <p class="text-xs sm:text-sm font-bold text-amber-200">${cur.warning}</p>
+                    </div>
+                </div>
+            `;
+        } else if (cur.type === "experiment") {
+            slideInner = `
+                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
+                        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
+                            <span class="text-teal-400">${cur.title}</span>
+                        </h2>
+                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
+                    </div>
+                    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
+                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-semibold">${cur.content}</p>
+                    </div>
+                    <h4 class="text-xs sm:text-sm font-black text-teal-400 uppercase tracking-wider mb-3">Sınıf İçi Beyin Fırtınası Soruları:</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        ${cur.questions.map(q => `
+                            <div class="bg-slate-900 border border-teal-500/30 rounded-2xl p-4 shadow-md text-xs sm:text-sm font-bold text-slate-300 leading-snug">
+                                ${q}
+                            </div>
+                        `).join("")}
+                    </div>
+                </div>
+            `;
+        } else if (cur.type === "question") {
+            slideInner = `
+                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
+                        <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                            <span class="text-rose-400">${cur.title}</span>
+                        </h2>
+                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
+                    </div>
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-4 shadow-xl">
+                        <p class="text-xs sm:text-sm text-slate-300 font-semibold mb-2">${cur.questionText}</p>
+                        <p class="text-sm sm:text-base text-white font-black leading-relaxed">${cur.prompt.replace(/\*\*(.*?)\*\*/g, '<span class="text-amber-300">$1</span>')}</p>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                        ${cur.options.map(opt => `
+                            <div class="p-3.5 rounded-2xl border transition-all text-xs sm:text-sm font-bold flex items-center gap-3 ${solutionRevealed && opt.key === cur.correctKey ? 'bg-emerald-950/70 border-emerald-500 text-emerald-200 ring-2 ring-emerald-500/50' : 'bg-slate-900/80 border-slate-800 text-slate-300'}">
+                                <span class="w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${solutionRevealed && opt.key === cur.correctKey ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">${opt.key}</span>
+                                <span>${opt.text}</span>
+                            </div>
+                        `).join("")}
+                    </div>
+                    <div class="flex items-center justify-between pt-2">
+                        <button type="button" onclick="togglePresentationSolution()" class="px-5 py-2.5 ${solutionRevealed ? 'bg-slate-800 text-slate-300' : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'} font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md cursor-pointer active:scale-95">
+                            <i class="fa-solid ${solutionRevealed ? 'fa-eye-slash' : 'fa-lightbulb'}"></i>
+                            <span>${solutionRevealed ? 'Çözümü Gizle' : 'Cevabı & Çözümü Göster'}</span>
+                        </button>
+                        ${solutionRevealed ? `
+                            <div class="text-xs sm:text-sm font-bold text-emerald-300 max-w-xl text-right animate-in fade-in">
+                                ${cur.explanation}
+                            </div>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        bodyHtml = `
+            <div class="flex-1 relative w-full h-full flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
+                <button type="button" onclick="changePresentationSlide(-1)" class="fixed left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/85 hover:bg-orange-600 text-white border border-slate-700 hover:border-orange-500 flex items-center justify-center text-base sm:text-xl shadow-2xl backdrop-blur-md active:scale-90 transition-all cursor-pointer ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}" title="Önceki Slayt (Sol Ok)">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+
+                <div class="w-full max-w-[96vw] max-h-[84vh] aspect-video bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 rounded-3xl border border-slate-800 shadow-2xl flex flex-col justify-between overflow-hidden relative backdrop-blur-md">
+                    ${slideInner}
+                </div>
+
+                <button type="button" onclick="changePresentationSlide(1)" class="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/85 hover:bg-orange-600 text-white border border-slate-700 hover:border-orange-500 flex items-center justify-center text-base sm:text-xl shadow-2xl backdrop-blur-md active:scale-90 transition-all cursor-pointer ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}" title="Sonraki Slayt (Sağ Ok)">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    modal.innerHTML = `
+        <div class="px-3 sm:px-6 py-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0 gap-2 shadow-xl z-50" style="padding-top: max(8px, env(safe-area-inset-top, 8px));">
+            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
+                    <i class="fa-solid fa-file-powerpoint"></i>
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-xs sm:text-sm font-black text-white truncate max-w-[150px] sm:max-w-md">${item.title}</h2>
+                    <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider hidden sm:inline">16:9 Geniş Ekran • Akıllı Tahta Modu</span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button type="button" onclick="changePresentationSlide(-1)" class="p-1.5 sm:px-3 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 cursor-pointer ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}">
+                    <i class="fa-solid fa-chevron-left"></i> <span class="hidden sm:inline">Önceki</span>
+                </button>
+                <span class="px-3 py-1 bg-slate-800 text-amber-400 font-black text-xs rounded-full border border-slate-700 shadow-inner">
+                    Slayt ${currentSlide} / ${totalSlides}
+                </span>
+                <button type="button" onclick="changePresentationSlide(1)" class="p-1.5 sm:px-3 sm:py-1 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs cursor-pointer ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}">
+                    <span class="hidden sm:inline">Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                ${isWebUrl ? `
+                    <button type="button" onclick="togglePresentationViewMode()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid ${viewMode === 'embed' ? 'fa-table-cells' : 'fa-globe'}"></i>
+                        <span class="hidden md:inline">${viewMode === 'embed' ? 'Slayt Modu' : 'Web Önizleme'}</span>
+                    </button>
+                ` : ''}
+
+                ${hasDownload ? `
+                    <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer" title="Sunumu İndir / Cihazda Aç">
+                        <i class="fa-solid fa-download"></i> <span class="hidden md:inline">İndir (PPTX)</span>
+                    </button>
+                ` : ''}
+
+                <button type="button" onclick="togglePresentationNativeFullscreen()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer shadow-sm" title="Tam Ekran (F11)">
+                    <i class="fa-solid fa-expand text-xs"></i> <span class="hidden md:inline">Tam Ekran</span>
+                </button>
+
+                <button type="button" onclick="closeFullScreenPresentationModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all cursor-pointer shadow-sm" title="Kapat (ESC)">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+        </div>
+
+        ${bodyHtml}
+
+        <div class="px-3 sm:px-6 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 shrink-0 z-50">
+            <div class="flex items-center gap-1.5">
+                <span class="text-[10px] sm:text-xs font-bold text-slate-400 mr-2 hidden sm:inline">Hızlı Slayt:</span>
+                ${slides.map((_, i) => `
+                    <button type="button" onclick="goToPresentationSlide(${i+1})" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl font-black text-xs transition-all cursor-pointer ${currentSlide === (i+1) ? 'bg-orange-600 text-white shadow-md shadow-orange-600/30 ring-2 ring-orange-500/50' : 'bg-slate-800 text-slate-400 hover:bg-slate-700 hover:text-white'}">
+                        ${i+1}
+                    </button>
+                `).join("")}
+            </div>
+
+            <div class="flex items-center gap-3 text-[11px] font-medium text-slate-400">
+                <span class="hidden lg:inline"><i class="fa-regular fa-keyboard mr-1"></i> Yön tuşları veya Boşluk (Space) ile slayt geçişi yapabilirsiniz</span>
+                <span class="text-amber-400 font-bold flex items-center gap-1"><i class="fa-solid fa-chalkboard-user"></i> Akıllı Tahta Uyumlu</span>
+            </div>
+        </div>
+    `;
+    modal.classList.remove("hidden");
+    modal.style.display = "flex";
+}
+
+function changePresentationSlide(delta) {
+    if (!presentationModalState.slides || presentationModalState.slides.length === 0) return;
+    const next = presentationModalState.currentSlide + delta;
+    if (next >= 1 && next <= presentationModalState.totalSlides) {
+        presentationModalState.currentSlide = next;
+        presentationModalState.solutionRevealed = false;
+        renderFullScreenPresentationModal();
+    }
+}
+
+function goToPresentationSlide(num) {
+    if (num >= 1 && num <= presentationModalState.totalSlides) {
+        presentationModalState.currentSlide = num;
+        presentationModalState.solutionRevealed = false;
+        renderFullScreenPresentationModal();
+    }
+}
+
+function togglePresentationSolution() {
+    presentationModalState.solutionRevealed = !presentationModalState.solutionRevealed;
+    renderFullScreenPresentationModal();
+}
+
+function togglePresentationViewMode() {
+    presentationModalState.viewMode = presentationModalState.viewMode === "embed" ? "slides" : "embed";
+    renderFullScreenPresentationModal();
+}
+
+function togglePresentationNativeFullscreen() {
+    const modal = document.getElementById("fullscreen-presentation-modal") || document.getElementById("inpage-document-modal") || document.documentElement;
+    if (!document.fullscreenElement) {
+        if (modal.requestFullscreen) {
+            modal.requestFullscreen().catch(() => {});
+        } else if (modal.webkitRequestFullscreen) {
+            modal.webkitRequestFullscreen();
+        }
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(() => {});
+        } else if (document.webkitExitFullscreen) {
+            document.webkitExitFullscreen();
+        }
+    }
+}
+
+function closeFullScreenPresentationModal() {
+    if (document.fullscreenElement) {
+        try { document.exitFullscreen().catch(() => {}); } catch(e) {}
+    }
+    window.removeEventListener("keydown", handlePresentationKeyNavigation);
+    const modal = document.getElementById("fullscreen-presentation-modal");
+    if (modal) {
+        modal.innerHTML = "";
+        modal.remove();
+    }
+    presentationModalState = {
+        item: null,
+        currentSlide: 1,
+        totalSlides: 5,
+        slides: [],
+        viewMode: "slides",
+        solutionRevealed: false
+    };
+}
+
+function handlePresentationKeyNavigation(e) {
+    const modal = document.getElementById("fullscreen-presentation-modal");
+    if (!modal || modal.classList.contains("hidden")) return;
+
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "PageDown") {
+        e.preventDefault();
+        changePresentationSlide(1);
+    } else if (e.key === "ArrowLeft" || e.key === "PageUp") {
+        e.preventDefault();
+        changePresentationSlide(-1);
+    } else if (e.key === "Escape") {
+        closeFullScreenPresentationModal();
+    } else if (e.key === "f" || e.key === "F" || e.key === "F11") {
+        e.preventDefault();
+        togglePresentationNativeFullscreen();
+    }
+}
+
+function initPresentationKeyboardListeners() {
+    window.removeEventListener("keydown", handlePresentationKeyNavigation);
+    window.addEventListener("keydown", handlePresentationKeyNavigation);
 }
 
 function renderOfficeDocumentModal(item) {
@@ -9640,12 +10135,10 @@ function renderOfficeDocumentModal(item) {
 
     modal.innerHTML = `
         <div class="bg-slate-900 border border-slate-700/80 rounded-3xl max-w-lg w-full p-6 sm:p-8 text-white shadow-2xl relative animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-            <!-- Kapatma Butonu -->
             <button type="button" onclick="closeOfficeDocumentModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-800 hover:bg-red-600 text-slate-300 hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-md">
                 <i class="fa-solid fa-xmark text-sm"></i>
             </button>
 
-            <!-- İkon ve Tür Başlığı -->
             <div class="text-center mb-6">
                 <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr ${typeColor} text-white flex items-center justify-center text-3xl mx-auto mb-4 shadow-xl shadow-orange-500/20">
                     <i class="fa-solid ${iconClass}"></i>
@@ -9657,7 +10150,6 @@ function renderOfficeDocumentModal(item) {
                 <p class="text-xs text-slate-400 truncate max-w-sm mx-auto font-medium">${item.fileName}</p>
             </div>
 
-            <!-- Cihaz Uyumluluk Kutusu -->
             <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 mb-6 space-y-2 text-left">
                 <div class="flex items-center gap-2 text-amber-400 font-bold text-xs">
                     <i class="fa-solid fa-circle-check"></i>
@@ -9668,7 +10160,6 @@ function renderOfficeDocumentModal(item) {
                 </p>
             </div>
 
-            <!-- Aksiyon Butonları -->
             <div class="space-y-3">
                 ${hasDownload ? `
                     <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="w-full py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black text-sm uppercase rounded-2xl shadow-xl hover:shadow-orange-500/30 transition-all flex items-center justify-center gap-2.5 active:scale-95 cursor-pointer">
@@ -9681,11 +10172,6 @@ function renderOfficeDocumentModal(item) {
                             <i class="fa-brands fa-google text-sm"></i>
                             <span>Google Dokümanlar ile Canlı Önizle</span>
                         </button>
-
-                        <a href="https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(item.rawUrl)}" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs uppercase rounded-2xl border border-slate-700 transition-all flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                            <span>Office Online'da Aç</span>
-                        </a>
                     ` : ''}
                 ` : `
                     <div class="bg-amber-950/40 border border-amber-500/30 rounded-2xl p-4 text-center space-y-3">
@@ -9716,7 +10202,6 @@ function closeOfficeDocumentModal() {
             URL.revokeObjectURL(activeOfficeModalData.downloadUrl);
         } catch (e) {}
     }
-    // STATE TEMİZLİĞİ: Kesinlikle null yapılır, eski dosya hafızada kalmaz
     activeOfficeModalData = null;
 
     const modal = document.getElementById("office-document-modal");
@@ -9735,29 +10220,42 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         if (found.fileUrl && found.fileUrl !== "#" && found.fileUrl !== "") fallbackUrl = found.fileUrl;
     }
 
-    const coverUrl = (found && (found.imageUrl || found.cover)) || "";
-    let targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
-
-    // Bulut önbelleğinden kontrol
-    if ((!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") && id && Array.isArray(ROTALI_MATERIALS_CACHE)) {
-        try {
-            const cachedItem = ROTALI_MATERIALS_CACHE.find(m => m && m.id === id);
-            if (cachedItem) {
-                if (cachedItem.fileUrl && cachedItem.fileUrl.startsWith("data:") && cachedItem.fileUrl.length > 10) {
-                    targetUrl = cachedItem.fileUrl;
-                } else if (cachedItem.imageUrl && cachedItem.imageUrl.startsWith("data:") && cachedItem.imageUrl.length > 10) {
-                    targetUrl = cachedItem.imageUrl;
-                }
-            }
-        } catch(e) {}
-    }
-
     const checkFormat = String((found && found.format) || "").toUpperCase();
     const checkFile = String((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
     const checkTitle = String((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
     const checkCat = String((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
+    const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
 
-    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME (Hata İhtimali %0)
+    const resolvedCover = (found && (found.imageUrl || found.cover)) || 
+                         resolveMaterialCover(found || { id, title, category: checkCat, format: checkFormat, grade: gradeStr }) || "";
+    const coverUrl = resolvedCover;
+    let targetUrl = (found && found.fileUrl && found.fileUrl !== "#") ? found.fileUrl : ((fallbackUrl && fallbackUrl !== "#") ? fallbackUrl : "");
+
+    // Bulut / IndexedDB kontrolü
+    if (!targetUrl || targetUrl === "#" || targetUrl === "" || targetUrl === "null") {
+        if (id && Array.isArray(ROTALI_MATERIALS_CACHE)) {
+            try {
+                const cachedItem = ROTALI_MATERIALS_CACHE.find(m => m && m.id === id);
+                if (cachedItem) {
+                    if (cachedItem.fileUrl && cachedItem.fileUrl.startsWith("data:") && cachedItem.fileUrl.length > 10) {
+                        targetUrl = cachedItem.fileUrl;
+                    } else if (cachedItem.imageUrl && cachedItem.imageUrl.startsWith("data:") && cachedItem.imageUrl.length > 10) {
+                        targetUrl = cachedItem.imageUrl;
+                    }
+                }
+            } catch(e) {}
+        }
+        if ((!targetUrl || targetUrl === "#" || targetUrl === "") && typeof RotaliDB !== "undefined" && RotaliDB.getFile && id) {
+            try {
+                const rec = await RotaliDB.getFile(id);
+                if (rec && rec.blob) {
+                    targetUrl = URL.createObjectURL(rec.blob);
+                }
+            } catch (e) {}
+        }
+    }
+
+    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME
     if (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
         id === "mat-5-lab-kacis-gemini" || id === "oyun-lab-kacis" ||
         targetUrl === "oyun-lab-kacis" || (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) ||
@@ -9766,7 +10264,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 🌐 GOOGLE DRIVE VE DOCS BAĞLANTILARI (Önizleme moduyla doğrudan aç)
+    // 🌐 GOOGLE DRIVE VE DOCS BAĞLANTILARI
     if (targetUrl && (targetUrl.includes("drive.google.com") || targetUrl.includes("docs.google.com"))) {
         let drivePreview = targetUrl;
         const fileIdMatch = targetUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || targetUrl.match(/id=([a-zA-Z0-9_-]+)/);
@@ -9787,24 +10285,60 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 0. 🎯 OFİS VE SUNUM DOSYALARI (PPTX, DOCX, XLSX, ZIP)
-    // Asla PDF okuyucuya veya yanlış MEB kitabına gitmez!
-    const isOfficeOrArchive = ["PPTX", "PPT", "DOCX", "DOC", "XLSX", "XLS", "ZIP", "RAR", "7Z"].includes(checkFormat) ||
-                              checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
-                              checkFile.endsWith(".docx") || checkFile.endsWith(".doc") ||
-                              checkFile.endsWith(".xlsx") || checkFile.endsWith(".xls") ||
-                              checkFile.endsWith(".zip") || checkFile.endsWith(".rar") ||
-                              checkTitle.endsWith(".pptx") || checkTitle.endsWith(".docx") || checkTitle.includes("pptx");
+    // 0. 🖥️ SUNUMLAR (TAM EKRAN AKILLI TAHTA MODU)
+    const isPresentation = checkCat === "ders-sunumu" || checkCat.includes("sunum") ||
+                          checkFormat.includes("SUNUM") || checkFormat.includes("SLAYT") ||
+                          checkFormat.includes("PPT") || checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
+                          checkTitle.includes("sunum") || checkTitle.includes("slayt");
 
-    if (isOfficeOrArchive) {
-        await openOfficeDocumentAction({
+    if (isPresentation) {
+        await openFullScreenPresentationModal({
             id: (found && found.id) || id,
-            title: (found && found.title) || title || "Ders Sunumu / Dosyası",
-            fileName: (found && found.fileName) || fileName || (checkFormat === "PPTX" ? "sunum.pptx" : "dosya"),
+            title: (found && found.title) || title || "Akıllı Tahta Ders Sunumu",
+            fileName: (found && found.fileName) || fileName || "sunum.pptx",
             fileUrl: targetUrl,
-            format: checkFormat || "PPTX"
+            format: checkFormat || "PPTX",
+            unit: (found && found.unit) || "",
+            grade: gradeStr,
+            cover: coverUrl
         });
         return;
+    }
+
+    // 0.1 📑 DİĞER OFİS BELGELERİ (Word, Excel, Zip)
+    const isOtherOffice = ["DOCX", "DOC", "XLSX", "XLS", "ZIP", "RAR", "7Z"].includes(checkFormat) ||
+                          checkFile.endsWith(".docx") || checkFile.endsWith(".doc") ||
+                          checkFile.endsWith(".xlsx") || checkFile.endsWith(".xls") ||
+                          checkFile.endsWith(".zip") || checkFile.endsWith(".rar") ||
+                          checkTitle.endsWith(".docx");
+
+    if (isOtherOffice) {
+        await openOfficeDocumentAction({
+            id: (found && found.id) || id,
+            title: (found && found.title) || title || "Ders Dosyası",
+            fileName: (found && found.fileName) || fileName || "dosya",
+            fileUrl: targetUrl,
+            format: checkFormat || "DOCX"
+        });
+        return;
+    }
+
+    // 0.2 🖼️ GÖRSEL / İNFOGRAFİK / ÜNİTE TABLOSU (5.Sınıf İşlenecek Üniteler vb.)
+    const isInfographicOrUnitChart = checkTitle.includes("işlenecek") || checkTitle.includes("islenec") ||
+                                    checkTitle.includes("ünite bilgilendirme") || checkTitle.includes("unite bilgilendirme") ||
+                                    (checkTitle.includes("ünite") && (checkTitle.includes("konu") || checkTitle.includes("plan") || checkTitle.includes("dağılım"))) ||
+                                    ["GÖRSEL", "RESİM", "İNFOGRAFİK", "INFOGRAFIK", "SVG", "PNG", "JPG"].includes(checkFormat) ||
+                                    checkFile.endsWith(".svg") || checkFile.endsWith(".png") || checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg");
+
+    if (isInfographicOrUnitChart) {
+        let activeImg = (targetUrl && targetUrl !== "#" && !targetUrl.toLowerCase().endsWith(".pdf")) ? targetUrl : coverUrl;
+        if (!activeImg || activeImg === "#" || activeImg === "" || activeImg.includes("assets/kapak-")) {
+            activeImg = "assets/unite-bilgilendirmeleri-gorsel.png";
+        }
+        if (activeImg) {
+            openInPageDocumentModal(activeImg, title || (found && found.title) || "İşlenecek Üniteler", fileName, true, "");
+            return;
+        }
     }
 
     // 1. 🎬 VİDEO İÇERİK KONTROLÜ
@@ -9893,7 +10427,6 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     // 5. 📚 PDF DERS NOTU & MEB DERS KİTABI -> Dijital Kitap Okuyucuda Aç
     const isRealBook = (id && String(id).startsWith("book-")) || checkTitle.includes("kitap") || checkTitle.includes("kitab") || checkCat === "ders-kitabi";
     let pdfTarget = targetUrl;
-    const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
 
     // SADECE ve SADECE gerçek ders kitabıysa EBA fallback verilir (Başka dosyalar asla MEB kitabına dönüşmez!)
     if (isRealBook && (!pdfTarget || pdfTarget === "#" || !pdfTarget.startsWith("http"))) {
@@ -10034,7 +10567,7 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                         </a>
                     ` : ''}
 
-                    <!-- 🔍 Büyüt / Küçült / Sıfırla Toolbar -->
+                    <!-- 🔍 Büyüt / Küçült / Sıfırla / Tam Ekran Toolbar -->
                     <div class="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-slate-800 p-0.5 sm:p-1 rounded-xl border border-slate-700">
                         <button type="button" onclick="changeImageModalZoom(-0.25)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Küçült (-)">
                             <i class="fa-solid fa-magnifying-glass-minus"></i>
@@ -10044,6 +10577,9 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                         </button>
                         <button type="button" onclick="changeImageModalZoom(0.25)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-700 hover:bg-emerald-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Büyüt (+)">
                             <i class="fa-solid fa-magnifying-glass-plus"></i>
+                        </button>
+                        <button type="button" onclick="togglePresentationNativeFullscreen()" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-700 hover:bg-amber-600 text-white flex items-center justify-center text-xs font-black transition-all cursor-pointer" title="Tam Ekran (F11)">
+                            <i class="fa-solid fa-expand"></i>
                         </button>
                     </div>
 
