@@ -382,7 +382,7 @@
             </div>
             <div class="glass-panel p-2.5 rounded-xl text-center">
                 <span class="text-slate-400 block text-[9px] mb-0.5">Açılan Kapı</span>
-                <strong class="text-amber-400 font-orbitron text-sm sm:text-base">4 / 4</strong>
+                <strong id="victory-doors" class="text-amber-400 font-orbitron text-sm sm:text-base">4 / 20</strong>
             </div>
             <div class="glass-panel p-2.5 rounded-xl text-center">
                 <span class="text-slate-400 block text-[9px] mb-0.5">Toplam Skor</span>
@@ -422,7 +422,7 @@
                 </div>
                 <div class="flex items-start gap-2">
                     <div class="w-5 h-5 rounded bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[10px]">4</div>
-                    <p><strong class="text-white">Çıkış Portalı:</strong> 4 kapıyı sırayla açtıktan sonra en alttaki yeşil çıkış portalına (🏁) ulaşarak kaçışı tamamlayın!</p>
+                    <p><strong class="text-white">20 Kapı & Çıkış:</strong> Labirentte toplam 20 kapı bulunur. Çıkışa ulaşana kadar her kademede kapılardan geçmeli ve <strong>en az 4 kapı</strong> açmalısınız. İster 4 kapı açarak doğrudan çıkışa (🏁) koşun, ister diğer kapıları açıp bonus tüpleri toplayarak rekor kırın!</p>
                 </div>
             </div>
             <button onclick="closeHelpModal()" class="w-full mt-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer">
@@ -898,42 +898,31 @@
         const MAZE_COLS = 25;
         const MAZE_ROWS = 25;
 
-        const BASE_MAZE_MAP = [
-            // Row 0: Üst Duvar
+                const BASE_MAZE_MAP = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            // Bölge 1 (Satır 1-4)
-            [1,0,0,7,1,0,0,0,1,0,0,0,1,0,7,0,0,0,1,0,0,0,0,7,1],
-            [1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1],
-            [1,0,1,0,0,0,1,0,0,0,1,0,0,0,1,7,0,0,1,0,0,0,1,0,1],
-            [1,7,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,1,1,1,0,1,0,1],
-            // 🛑 1. BÖLGE AYIRICI DUVAR: SADECE [5][12] KAPI 1'DİR! ETRAFI TAMAMEN DUVARDIR!
-            [1,1,1,1,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1],
-            // Bölge 2 (Satır 6-9)
-            [1,0,7,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,7,0,0,1],
-            [1,0,1,0,1,0,1,0,1,1,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1],
-            [1,0,1,0,0,0,1,0,0,0,0,1,0,1,0,0,1,0,0,0,1,7,0,0,1],
-            [1,0,1,1,1,0,1,1,1,0,0,0,0,0,0,1,1,0,1,1,1,0,1,1,1],
-            // 🛑 2. BÖLGE AYIRICI DUVAR: SADECE [10][12] KAPI 2'DİR! ETRAFI TAMAMEN DUVARDIR!
-            [1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1],
-            // Bölge 3 (Satır 11-14)
-            [1,7,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,0,7,0,1],
-            [1,0,1,0,1,1,1,0,1,0,1,1,0,1,1,0,1,0,1,1,1,0,1,0,1],
-            [1,0,1,0,0,0,1,0,0,0,1,7,0,0,1,0,0,0,1,0,0,0,1,0,1],
-            [1,0,1,1,1,0,1,1,1,1,1,0,0,0,1,1,1,0,1,1,1,0,1,0,1],
-            // 🛑 3. BÖLGE AYIRICI DUVAR: SADECE [15][12] KAPI 3'TÜR! ETRAFI TAMAMEN DUVARDIR!
-            [1,1,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,1,1,1,1,1,1,1,1],
-            // Bölge 4 (Satır 16-19)
-            [1,0,0,0,1,0,0,7,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,7,1],
-            [1,0,1,0,1,0,1,0,1,0,1,1,0,1,1,0,1,0,1,0,1,1,1,0,1],
-            [1,7,1,0,0,0,1,0,0,0,1,0,0,0,1,0,1,0,0,0,1,7,0,0,1],
-            [1,0,1,1,1,1,1,1,1,0,1,0,0,0,1,0,1,1,1,1,1,0,1,0,1],
-            // 🛑 4. BÖLGE AYIRICI DUVAR: SADECE [20][12] KAPI 4'TÜR! ETRAFI TAMAMEN DUVARDIR!
-            [1,1,1,1,1,1,1,1,1,1,1,1,5,1,1,1,1,1,1,1,1,1,1,1,1],
-            // Büyük Çıkış Odası (Satır 21-23)
-            [1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,7,1],
-            [1,0,1,1,1,0,1,1,1,1,1,1,0,1,1,1,1,0,1,0,1,1,1,0,1],
-            [1,7,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,6,1], // [23][23]: BÜYÜK ÇIKIŞ PORTALI (6)
-            // Alt Duvar
+            [1,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,1],
+            [1,31,1,0,1,0,1,0,1,0,1,1,0,0,1,1,1,0,1,1,1,0,1,0,1],
+            [1,1,1,2,1,1,1,3,1,1,1,1,4,1,1,1,1,5,1,1,1,6,1,1,1],
+            [1,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,1],
+            [1,0,31,0,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,0,1,0,1],
+            [1,1,1,7,1,1,1,1,8,1,1,1,9,1,1,1,10,1,1,1,1,11,1,1,1],
+            [1,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,1],
+            [1,1,31,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,1,0,0,1,1],
+            [1,1,1,1,12,1,1,1,13,1,1,1,14,1,1,1,1,15,1,1,1,16,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,1],
+            [1,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,1,0,0,1,1,1,0,1,31,1],
+            [1,1,1,17,1,1,1,18,1,1,1,1,19,1,1,1,20,1,1,1,1,21,1,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
 
@@ -998,10 +987,21 @@
         function generateDynamicDoors() {
             dynamicDoorsConfig = [];
 
-            for (let doorNum = 1; doorNum <= 4; doorNum++) {
-                const categoryQuestions = QUESTIONS_POOL.filter(q => q.doorCategory === doorNum);
+            // 20 Kapı İçin Kategori Eşleştirmesi (Her 5 kapı bir aşamadır)
+            // 1-5: Cam Malzemeler & Temel Güvenlik
+            // 6-10: Elektrik, Isı & Ölçüm
+            // 11-15: Kişisel Koruyucu Donanım
+            // 16-20: Tehlikeli Kimyasallar & Büyük Çıkış
+            for (let doorNum = 1; doorNum <= 20; doorNum++) {
+                let category = 1;
+                if (doorNum > 15) category = 4;
+                else if (doorNum > 10) category = 3;
+                else if (doorNum > 5) category = 2;
+
+                const categoryQuestions = QUESTIONS_POOL.filter(q => q.doorCategory === category);
                 const shuffledQuestions = shuffleArray(categoryQuestions);
-                const selectedQ = shuffledQuestions.slice(0, 3);
+                // Her kapıda 1 odaklı görsel soru ve şifre bulunur
+                const selectedQ = [shuffledQuestions[(doorNum - 1) % shuffledQuestions.length]];
 
                 let generatedCode = "";
                 const digits = shuffleArray([1, 2, 3, 4, 5, 6, 7, 8, 9]);
@@ -1018,24 +1018,23 @@
                     };
                 });
 
-                const doorTitles = [
+                const tierNames = [
                     "",
-                    "1. KAPI: Cam Malzemeler & Güvenlik Protokolü",
-                    "2. KAPI: Elektrik, Isı & Ölçüm Güvenliği",
-                    "3. KAPI: Kişisel Koruyucu Donanım & Kurallar",
-                    "4. KAPI: Tehlikeli Kimyasallar & Büyük Çıkış"
+                    "1. Aşama: Cam Malzemeler & Güvenlik",
+                    "2. Aşama: Elektrik, Isı & Ölçüm",
+                    "3. Aşama: Kişisel Koruyucu Donanım",
+                    "4. Aşama: Tehlikeli Kimyasallar & Büyük Çıkış"
                 ];
 
                 dynamicDoorsConfig.push({
                     doorId: doorNum,
-                    title: doorTitles[doorNum],
+                    title: `${doorNum}. KAPI - ${tierNames[category]}`,
                     targetCode: generatedCode,
-                    refPoster: doorNum <= 2 ? "afis-malzemeler.png" : "afis-semboller.png",
+                    refPoster: category <= 2 ? "afis-malzemeler.png" : "afis-semboller.png",
                     questions: finalizedQuestions
                 });
             }
         }
-
         function initGameSession() {
             MAZE_MAP = BASE_MAZE_MAP.map(row => [...row]);
             unlockedDoors.clear();
@@ -1108,8 +1107,8 @@
 
             if (tile === 1) return; // Duvar
 
-            // Kilitli Kapı Kontrolü (2: K1, 3: K2, 4: K3, 5: K4)
-            if (tile >= 2 && tile <= 5) {
+            // Kilitli Kapı Kontrolü (2..21: Kapı 1..20)
+            if (tile >= 2 && tile <= 21) {
                 const doorNum = tile - 1;
                 if (!unlockedDoors.has(doorNum)) {
                     triggerDoorEncounter(doorNum);
@@ -1117,10 +1116,10 @@
                 }
             }
 
-            // Çıkış Portalı (6)
-            if (tile === 6) {
+            // Çıkış Portalı (30)
+            if (tile === 30) {
                 if (unlockedDoors.size < 4) {
-                    showToast("⚠️ Çıkış kilitli! Önce 4 kapının tamamını açmalısın!", "warning");
+                    showToast(`⚠️ Çıkış için en az 4 kapı açmalısın! (Açılan: ${unlockedDoors.size}/4)`, "warning");
                     playSound('wrong');
                     return;
                 }
@@ -1130,8 +1129,8 @@
                 return;
             }
 
-            // Deney Tüpü (+Puan) Toplama (7)
-            if (tile === 7) {
+            // Deney Tüpü (+Puan) Toplama (31)
+            if (tile === 31) {
                 MAZE_MAP[nextRow][nextCol] = 0;
                 score += 150;
                 timeLeft += 15;
@@ -1156,7 +1155,7 @@
             for (let n of neighbors) {
                 if (n.r >= 0 && n.r < MAZE_ROWS && n.c >= 0 && n.c < MAZE_COLS) {
                     const t = MAZE_MAP[n.r][n.c];
-                    if (t >= 2 && t <= 5) {
+                    if (t >= 2 && t <= 21) {
                         const doorNum = t - 1;
                         if (!unlockedDoors.has(doorNum)) {
                             triggerDoorEncounter(doorNum);
@@ -1166,7 +1165,6 @@
                 }
             }
         }
-
         // 📱 MOBİL İÇİN DOKUNMATİK KAYDIRMA (SWIPE) DESTEĞİ
         let touchStartX = 0;
         let touchStartY = 0;
@@ -1384,17 +1382,17 @@
             const doorId = activeDoorData.doorId;
             closeDoorPuzzle();
 
-            // Oyuncuyu kapının arkasındaki yeni bölge koridoruna ilerlet
-            if (doorId === 1 && player.row <= 5) player.row = 6;
-            else if (doorId === 2 && player.row <= 10) player.row = 11;
-            else if (doorId === 3 && player.row <= 15) player.row = 16;
-            else if (doorId === 4 && player.row <= 20) player.row = 21;
+            // Oyuncuyu kapının arkasındaki yeni koridora geçir
+            if (doorId >= 1 && doorId <= 5 && player.row <= 5) player.row = 6;
+            else if (doorId >= 6 && doorId <= 10 && player.row <= 10) player.row = 11;
+            else if (doorId >= 11 && doorId <= 15 && player.row <= 15) player.row = 16;
+            else if (doorId >= 16 && doorId <= 20 && player.row <= 20) player.row = 21;
 
             playSound('step');
             updateMissionHud();
-            showToast(`🚀 ${doorId}. Kapı Geçildi! Yeni Bölgedesiniz!`, "info");
+            updateStats();
+            showToast(`🚀 ${doorId}. Kapı Başarıyla Geçildi!`, "info");
         }
-
         function toggleFullPosterModal() {
             const m = document.getElementById('modal-full-poster');
             if (m.classList.contains('hidden')) {
@@ -1490,6 +1488,8 @@
             const m = document.getElementById('modal-victory');
             document.getElementById('victory-time').innerText = document.getElementById('game-timer').innerText;
             document.getElementById('victory-score').innerText = score;
+            const vicDoorsEl = document.getElementById('victory-doors');
+            if (vicDoorsEl) vicDoorsEl.innerText = `${unlockedDoors.size} / 20 (Min: 4)`;
 
             m.classList.remove('hidden');
             m.classList.add('flex');
@@ -1502,32 +1502,33 @@
         }
 
         function updateStats() {
-            document.getElementById('doors-stat').innerText = `${unlockedDoors.size} / 4`;
+            const count = unlockedDoors.size;
+            document.getElementById('doors-stat').innerText = `${count} / 4`;
             document.getElementById('score-stat').innerText = score;
         }
 
         function updateMissionHud() {
             const titleEl = document.getElementById('hud-zone-title');
             const hintEl = document.getElementById('hud-hint');
+            const count = unlockedDoors.size;
 
-            if (!unlockedDoors.has(1)) {
-                titleEl.innerText = "1. Bölge: Cam Malzemeler & Güvenlik";
-                hintEl.innerHTML = "Labirentte ilerle ve <strong class='text-amber-300'>1. Kapı</strong>'ya ulaş!";
-            } else if (!unlockedDoors.has(2)) {
-                titleEl.innerText = "2. Bölge: Elektrik & Isı Güvenliği";
-                hintEl.innerHTML = "<strong class='text-emerald-400'>1. Kapı Açıldı!</strong> 2. bölgedeki <strong class='text-amber-300'>2. Kapı</strong>'ya yönel.";
-            } else if (!unlockedDoors.has(3)) {
-                titleEl.innerText = "3. Bölge: Kişisel Koruyucu Donanım";
-                hintEl.innerHTML = "<strong class='text-emerald-400'>2. Kapı Açıldı!</strong> 3. bölgedeki <strong class='text-amber-300'>3. Kapı</strong>'yı aç.";
-            } else if (!unlockedDoors.has(4)) {
-                titleEl.innerText = "4. Bölge: Tehlikeli Kimyasallar";
-                hintEl.innerHTML = "Son kapıdasın! <strong class='text-amber-300'>4. Kapı</strong>'yı açarak çıkışa yaklaş.";
+            if (count === 0) {
+                titleEl.innerText = "1. Aşama: 20 Kapı Labirenti";
+                hintEl.innerHTML = "Önündeki 5 kapıdan birini seç ve aç! <strong class='text-amber-300'>(Çıkış için en az 4 kapı gerekli)</strong>";
+            } else if (count === 1) {
+                titleEl.innerText = "2. Aşama: İlerleme Sürüyor";
+                hintEl.innerHTML = "<strong class='text-emerald-400'>1 Kapı Açıldı!</strong> 2. bariyerdeki kapılardan birine yönel. (1/4)";
+            } else if (count === 2) {
+                titleEl.innerText = "3. Aşama: Yarı Yoldasın";
+                hintEl.innerHTML = "<strong class='text-emerald-400'>2 Kapı Açıldı!</strong> 3. bariyerdeki kapılardan birini aç. (2/4)";
+            } else if (count === 3) {
+                titleEl.innerText = "4. Aşama: Son Güvenlik Kapısı";
+                hintEl.innerHTML = "<strong class='text-amber-400'>3 Kapı Açıldı!</strong> Son bariyer kapısını açarak çıkış odasına ulaş. (3/4)";
             } else {
-                titleEl.innerText = "Büyük Çıkış Odası";
-                hintEl.innerHTML = "Tüm 4 kapı açıldı! <strong class='text-emerald-400'>Yeşil Çıkış Portalı (🏁)</strong>'na koş!";
+                titleEl.innerText = `Büyük Çıkış Açıldı (${count}/20 Kapı)`;
+                hintEl.innerHTML = "🏁 <strong class='text-emerald-400'>ÇIKIŞ PORTALI (🏁) AKTİF!</strong> Çıkabilir veya diğer kapıları açarak rekor kırabilirsin!";
             }
         }
-
         // ==========================================
         // 🎨 LABİRENT TUVALİ ÇİZİMİ (60 FPS)
         // ==========================================
@@ -1556,8 +1557,8 @@
                         ctx.lineWidth = 0.8;
                         ctx.strokeRect(px, py, tileSize, tileSize);
 
-                        // Kilitli / Açık Kapılar (2: K1, 3: K2, 4: K3, 5: K4)
-                        if (tile >= 2 && tile <= 5) {
+                        // Kilitli / Açık Kapılar (2..21: K1..K20)
+                        if (tile >= 2 && tile <= 21) {
                             const dNum = tile - 1;
                             const isOpen = unlockedDoors.has(dNum);
 
@@ -1569,7 +1570,7 @@
                                 ctx.strokeRect(px + 2, py + 2, tileSize - 4, tileSize - 4);
 
                                 ctx.fillStyle = "#22c55e";
-                                ctx.font = `bold ${Math.floor(tileSize * 0.42)}px Orbitron`;
+                                ctx.font = `bold ${Math.floor(tileSize * 0.36)}px Orbitron`;
                                 ctx.textAlign = "center";
                                 ctx.textBaseline = "middle";
                                 ctx.fillText(`K${dNum}`, px + tileSize / 2, py + tileSize / 2);
@@ -1582,29 +1583,31 @@
                                 ctx.strokeRect(px + 1, py + 1, tileSize - 2, tileSize - 2);
 
                                 ctx.fillStyle = "#ffffff";
-                                ctx.font = `bold ${Math.floor(tileSize * 0.42)}px Orbitron`;
+                                ctx.font = `bold ${Math.floor(tileSize * 0.36)}px Orbitron`;
                                 ctx.textAlign = "center";
                                 ctx.textBaseline = "middle";
                                 ctx.fillText(`🔒${dNum}`, px + tileSize / 2, py + tileSize / 2);
                             }
-                        } else if (tile === 6) {
-                            const isAllOpen = unlockedDoors.size === 4;
-                            const exitColor = isAllOpen ? "#10b981" : "#64748b";
-                            ctx.fillStyle = isAllOpen ? "rgba(16, 185, 129, 0.4)" : "rgba(100, 116, 139, 0.2)";
+                        } else if (tile === 30) {
+                            // Çıkış Portalı
+                            const isExitUnlocked = unlockedDoors.size >= 4;
+                            const exitColor = isExitUnlocked ? "#10b981" : "#64748b";
+                            ctx.fillStyle = isExitUnlocked ? "rgba(16, 185, 129, 0.45)" : "rgba(100, 116, 139, 0.2)";
                             ctx.fillRect(px + 2, py + 2, tileSize - 4, tileSize - 4);
                             ctx.strokeStyle = exitColor;
                             ctx.lineWidth = 2.5;
                             ctx.strokeRect(px + 1, py + 1, tileSize - 2, tileSize - 2);
 
                             ctx.fillStyle = "#ffffff";
-                            ctx.font = `bold ${Math.floor(tileSize * 0.55)}px Fredoka`;
+                            ctx.font = `bold ${Math.floor(tileSize * 0.52)}px Fredoka`;
                             ctx.textAlign = "center";
                             ctx.textBaseline = "middle";
-                            ctx.fillText(isAllOpen ? "🏁" : "🔒", px + tileSize / 2, py + tileSize / 2);
-                        } else if (tile === 7) {
+                            ctx.fillText(isExitUnlocked ? "🏁" : "🔒", px + tileSize / 2, py + tileSize / 2);
+                        } else if (tile === 31) {
+                            // Bonus Deney Tüpü
                             const bobY = Math.sin(Date.now() / 250) * (tileSize * 0.1);
                             ctx.fillStyle = "#f59e0b";
-                            ctx.font = `bold ${Math.floor(tileSize * 0.55)}px Fredoka`;
+                            ctx.font = `bold ${Math.floor(tileSize * 0.52)}px Fredoka`;
                             ctx.textAlign = "center";
                             ctx.textBaseline = "middle";
                             ctx.fillText("🧪", px + tileSize / 2, py + tileSize / 2 + bobY);
@@ -1654,11 +1657,11 @@
                     if (t === 1) {
                         miniCtx.fillStyle = "#334155";
                         miniCtx.fillRect(c * cellW, r * cellH, cellW, cellH);
-                    } else if (t >= 2 && t <= 5) {
+                    } else if (t >= 2 && t <= 21) {
                         miniCtx.fillStyle = unlockedDoors.has(t - 1) ? "#22c55e" : "#ef4444";
                         miniCtx.fillRect(c * cellW, r * cellH, cellW, cellH);
-                    } else if (t === 6) {
-                        miniCtx.fillStyle = unlockedDoors.size === 4 ? "#34d399" : "#64748b";
+                    } else if (t === 30) {
+                        miniCtx.fillStyle = unlockedDoors.size >= 4 ? "#34d399" : "#64748b";
                         miniCtx.fillRect(c * cellW, r * cellH, cellW, cellH);
                     }
                 }
@@ -1669,8 +1672,6 @@
             miniCtx.arc((player.col + 0.5) * cellW, (player.row + 0.5) * cellH, cellW * 0.85, 0, Math.PI * 2);
             miniCtx.fill();
         }
-
-        // ==========================================
         // ⏱️ ZAMANLAYICI & GENEL FONKSİYONLAR
         // ==========================================
         function startTimer() {
