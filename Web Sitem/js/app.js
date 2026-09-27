@@ -926,11 +926,10 @@ function matchesSubTabCategory(item, subTab) {
 
     if (target === "all" || target === "uniteler") return true;
 
-    if (target === "ders-notu") {
-        return itemCat === "ders-notu" || itemCat === "not" || itemCat === "ders_notu" || (!itemCat && format.includes("pdf"));
-    }
-    if (target === "ders-sunumu") {
-        return itemCat === "ders-sunumu" || itemCat === "sunum" || itemCat === "slayt" || (!itemCat && (format.includes("ppt") || format.includes("sunum")));
+    if (target === "ders-notu" || target === "ders-sunumu" || target === "ders-notu-sunumu" || target === "ders_notu_sunumu" || target === "not-sunum") {
+        return itemCat === "ders-notu" || itemCat === "not" || itemCat === "ders_notu" || 
+               itemCat === "ders-sunumu" || itemCat === "sunum" || itemCat === "slayt" || 
+               (!itemCat && (format.includes("pdf") || format.includes("ppt") || format.includes("sunum")));
     }
     if (target === "videolar") {
         return itemCat === "videolar" || itemCat === "video" || (!itemCat && (format.includes("video") || format.includes("mp4") || format.includes("youtube")));
@@ -2314,29 +2313,26 @@ function renderGradesOverview(container) {
                             <!-- 7 ALT BÖLÜM HIZLI ERİŞİM BUTONLARI -->
                             <div class="mb-6">
                                 <div class="text-[11px] font-black uppercase text-slate-400 tracking-wider mb-2.5">
-                                    7 Alt Öğrenme Bölümü:
+                                    Öğrenme ve Çalışma Alanları:
                                 </div>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs font-bold">
-                                    <a href="#grade/${g.id}/ders-notu" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>📝</span> <span>Ders Notu</span>
+                                    <a href="#grade/${g.id}/ders-notu" class="p-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>📝</span> <span>Ders Notu / Sunumu</span>
                                     </a>
-                                    <a href="#grade/${g.id}/ders-sunumu" class="p-2 bg-slate-50 hover:bg-orange-50 hover:text-orange-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>📊</span> <span>Ders Sunumu</span>
-                                    </a>
-                                    <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-red-50 hover:text-red-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                    <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎥</span> <span>Videolar</span>
                                     </a>
                                     <a href="#grade/${g.id}/etkinlikler" class="p-2 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🧩</span> <span>Etkinlikler</span>
                                     </a>
-                                    <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-blue-50 hover:text-blue-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                    <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>📚</span> <span>Soru Bankası</span>
                                     </a>
                                     <a href="#grade/${g.id}/denemeler" class="p-2 bg-slate-50 hover:bg-purple-50 hover:text-purple-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎯</span> <span>Denemeler</span>
                                     </a>
-                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors col-span-2 sm:col-span-3 text-center justify-center">
-                                        <span>🎮</span> <span>Eğitsel Oyunlar & Turnuva</span>
+                                    <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
+                                        <span>🎮</span> <span>Eğitsel Oyunlar</span>
                                     </a>
                                 </div>
                             </div>
@@ -3243,12 +3239,12 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
         // Aktif Sekmeye Göre Üst Başlık ve Açıklama (Kullanıcı Talebi: Sekme Bilgisi 8 Butonun Üstündeki Alana Taşındı)
     const tabMetaMap = {
         "ders-notu": {
-            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notları`,
-            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, laboratuvar föyleri ve pekiştirme testleri."
+            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notu / Sunumu`,
+            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, akıllı tahta sunumları (PPTX), laboratuvar föyleri ve ders slaytları."
         },
         "ders-sunumu": {
-            title: `${grade.number}. Sınıf Akıllı Tahta Ders Sunumları`,
-            desc: "MEB kazanımlarına uygun, sınıf içi projeksiyon ve akıllı tahta uyumlu animasyonlu sunum slaytları."
+            title: `${grade.number}. Sınıf Fen Bilimleri Ders Notu / Sunumu`,
+            desc: "MEB 2026-2027 müfredatına uygun ders kitabı, ünite özetleri, akıllı tahta sunumları (PPTX), laboratuvar föyleri ve ders slaytları."
         },
         "videolar": {
             title: `${grade.number}. Sınıf Video Dersler & Deney Kayıtları`,
@@ -3354,31 +3350,19 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 drop-shadow-sm">${currentTabMeta.title}</h2>
                     <p class="text-xs sm:text-sm text-white/90 leading-snug max-w-4xl font-medium drop-shadow-sm mb-3">${currentTabMeta.desc}</p>
                     
-                    <!-- 8 ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
+                    <!-- ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
                     <div class="pt-3 border-t border-white/20">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-9" : "lg:grid-cols-8"} gap-1.5 sm:gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-8" : "lg:grid-cols-7"} gap-1.5 sm:gap-2">
                             
-                            <!-- 1. Ders Notu -->
-                            <a href="#grade/${grade.id}/ders-notu" onclick="switchGradeSubTab('${grade.id}', 'ders-notu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'ders-notu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-notu' ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
-                                    <i class="fa-solid fa-file-lines"></i>
+                            <!-- 1. Ders Notu / Sunumu (BİRLEŞİK) -->
+                            <a href="#grade/${grade.id}/ders-notu" onclick="switchGradeSubTab('${grade.id}', 'ders-notu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
+                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-blue-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
+                                    <i class="fa-solid fa-book-open-reader"></i>
                                     ${getTabCustomCount('ders-notu') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>📝 DERS NOTU</span>
-                                    ${getTabCustomCount('ders-notu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'ders-notu' ? 'bg-blue-100 text-blue-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-notu')}</span>` : ''}
-                                </span>
-                            </a>
-
-                            <!-- 2. Ders Sunumu -->
-                            <a href="#grade/${grade.id}/ders-sunumu" onclick="switchGradeSubTab('${grade.id}', 'ders-sunumu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'ders-sunumu' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'ders-sunumu' ? 'bg-orange-600 text-white shadow-sm' : 'bg-white/20 text-white'}">
-                                    <i class="fa-solid fa-file-powerpoint"></i>
-                                    ${getTabCustomCount('ders-sunumu') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
-                                </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>📊 DERS SUNUMU</span>
-                                    ${getTabCustomCount('ders-sunumu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'ders-sunumu' ? 'bg-orange-100 text-orange-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-sunumu')}</span>` : ''}
+                                    <span>📝 DERS NOTU/SUNUMU</span>
+                                    ${getTabCustomCount('ders-notu') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-blue-100 text-blue-800' : 'bg-white/30 text-white'}">${getTabCustomCount('ders-notu')}</span>` : ''}
                                 </span>
                             </a>
 
@@ -3800,7 +3784,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     const unitCustomNotes = customList.filter(m => {
                         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
                         if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                        if (!matchesSubTabCategory(m, "ders-notu")) return false;
+                        if (!matchesSubTabCategory(m, "ders-notu") && !matchesSubTabCategory(m, "ders-sunumu")) return false;
                         const sec = getMaterialTargetSection(m);
                         return sec === String(unitNum);
                     });
@@ -3816,7 +3800,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     };
 
                     const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
-                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK MATERYALLER GÖSTERİLİR
+                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK MATERYALLER (NOTLAR & SUNUMLAR) GÖSTERİLİR
                     const allNotesForUnit = [...unitCustomNotes];
 
                     const isThisUnitActive = activeUnit === String(unitNum);
@@ -3833,7 +3817,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <div class="flex items-center gap-2 mb-0.5">
                                             <span class="text-xs font-black text-blue-600 uppercase tracking-wider">${grade.number}. Sınıf • ${unitNum}. Ünite</span>
                                             <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${allNotesForUnit.length > 0 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'bg-slate-100 text-slate-400 border border-slate-200'}">
-                                                ${allNotesForUnit.length > 0 ? `${allNotesForUnit.length} Ders Notu` : 'Henüz İçerik Yok'}
+                                                ${allNotesForUnit.length > 0 ? `${allNotesForUnit.length} Ders Notu / Sunumu` : 'Henüz İçerik Yok'}
                                             </span>
                                         </div>
                                         <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${uTitle}</h4>
@@ -3850,39 +3834,40 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                                         ${allNotesForUnit.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
+                                            const isSunum = (item.category === "ders-sunumu" || item.category === "sunum" || item.category === "slayt" || (item.format && (item.format.toLowerCase().includes("ppt") || item.format.toLowerCase().includes("sunum"))));
                                             const isPdfReady = item.fileUrl && item.fileUrl !== "#";
                                             return `
-                                                <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group hover:border-blue-400">
+                                                <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group ${isSunum ? 'hover:border-orange-400' : 'hover:border-blue-400'}">
                                                     <div>
                                                         <div class="flex items-center justify-between gap-2 mb-3">
-                                                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-[11px] font-black tracking-wider uppercase inline-block border border-blue-100">
-                                                                ${item.format || item.badge || 'PDF FÖY'}
+                                                            <span class="px-3 py-1 rounded-full ${isSunum ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-100'} text-[11px] font-black tracking-wider uppercase inline-block border">
+                                                                ${isSunum ? (item.format || '📊 PPTX SUNUM') : (item.format || item.badge || '📝 PDF NOT')}
                                                             </span>
-                                                            <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? 'Özel İçerik' : '4-6 Sayfa')}</span>
+                                                            <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? (isSunum ? 'Özel Sunum' : 'Özel Not') : 'MEB 2026-2027')}</span>
                                                         </div>
                                                         <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
                                                             <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
                                                         </div>
-                                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-blue-600 transition-colors">
+                                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:${isSunum ? 'text-orange-600' : 'text-blue-600'} transition-colors">
                                                             ${item.title}
                                                         </h5>
                                                         <!-- Görsel Kapak Kutusu -->
-                                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-blue-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')">
+                                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:${isSunum ? 'border-orange-500/40' : 'border-blue-500/40'} cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')">
                                                             <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                             <div class="absolute bottom-2.5 right-2.5">
-                                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-blue-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:${isSunum ? 'bg-orange-600' : 'bg-blue-600'} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                                     <i class="fa-solid fa-eye"></i> İncele & Aç
                                                                 </span>
                                                             </div>
                                                         </div>
                                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
-                                                            ${item.desc || 'MEB kazanımlarına uygun özet föy ve kavram haritası.'}
+                                                            ${item.desc || (isSunum ? 'MEB kazanımlarına uygun sınıf içi akıllı tahta ders sunumu.' : 'MEB kazanımlarına uygun özet föy ve kavram haritası.')}
                                                         </p>
                                                     </div>
                                                     <div>
-                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'ders-notu', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
-                                                            <i class="fa-solid ${isPdfReady ? 'fa-file-lines' : 'fa-book-open'}"></i>
-                                                            <span>${isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle'}</span>
+                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${isSunum ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-600/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
+                                                            <i class="fa-solid ${isSunum ? 'fa-file-powerpoint' : (isPdfReady ? 'fa-file-lines' : 'fa-book-open')}"></i>
+                                                            <span>${isSunum ? 'Sunumu İncele & Aç' : (isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle')}</span>
                                                         </button>
                                                         ${isAdmin ? `
                                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -3904,11 +3889,11 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3 shadow-inner">
                                             <i class="fa-solid fa-folder-open"></i>
                                         </div>
-                                        <h5 class="text-sm font-black text-slate-700 mb-1">Bu üniteye henüz ders notu eklenmedi</h5>
-                                        <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için ders notu veya föy eklediğinizde burada listelenecektir.</p>
+                                        <h5 class="text-sm font-black text-slate-700 mb-1">Bu üniteye henüz ders notu veya sunum eklenmedi</h5>
+                                        <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için ders notu, föy veya akıllı tahta sunumu eklediğinizde burada listelenecektir.</p>
                                         ${isAdmin ? `
                                             <button type="button" onclick="triggerUploadModal('${grade.number}', 'ders-notu', '${unitNum}')" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye Not Ekle
+                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye Not / Sunum Ekle
                                             </button>
                                         ` : ''}
                                     </div>
@@ -4707,8 +4692,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         `;
     }
 
-    // 1. 📝 DERS NOTU (4 Kademeli Dikey Akordeon: Kitap, Notlar, Lab, Soru)
-    if (subTab === "ders-notu") {
+    // 1. 📝 DERS NOTU / SUNUMU (Kitap, Notlar & Sunumlar, Lab, Projeler)
+    if (subTab === "ders-notu" || subTab === "ders-sunumu" || subTab === "ders-notu-sunumu") {
         return renderGradeDersNotuAccordion(grade, subData);
     }
 
@@ -4717,8 +4702,8 @@ function renderGradeSubTabContent(grade, subData, subTab) {
         return renderScientistsModule(grade.number);
     }
 
-    // 2. 🌟 DİĞER 6 ANA BÖLÜM (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
-    if (["ders-sunumu", "videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar"].includes(subTab)) {
+    // 2. 🌟 DİĞER ANA BÖLÜMLER (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
+    if (["videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar"].includes(subTab)) {
         return renderGradeUnitBasedHub(grade, subData, subTab);
     }
 
@@ -11644,8 +11629,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-xs font-black uppercase text-slate-700 mb-1">Materyal Türü / Sekme</label>
                             <select id="adv-category-select" onchange="handleAdvCategoryChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
-                                <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ünite Ders Notları & PDF Föy</option>
-                                <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu</option>
+                                <option value="ders-notu" ${activeEditCategory === 'ders-notu' ? 'selected' : ''}>📝 Ders Notu (PDF Föy)</option>
+                                <option value="ders-sunumu" ${activeEditCategory === 'ders-sunumu' ? 'selected' : ''}>📊 Ders Sunumu (PPTX Slayt)</option>
                                 <option value="videolar" ${activeEditCategory === 'videolar' ? 'selected' : ''}>🎥 Videolar</option>
                                 <option value="etkinlikler" ${activeEditCategory === 'etkinlikler' ? 'selected' : ''}>🧩 Etkinlikler</option>
                                 <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Soru Bankası</option>
