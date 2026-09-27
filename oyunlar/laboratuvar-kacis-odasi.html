@@ -584,8 +584,8 @@
         // ==========================================
         // 📚 ZENGİN SORU HAVUZU (Malzemeler + Güvenlik Kuralları + Piktogramlar)
         // ==========================================
-        const QUESTIONS_POOL = [
-            // --- 1. KAPI HAVUZU (Cam Malzemeler & Temel Güvenlik Kuralları) ---
+                const QUESTIONS_POOL = [
+            // --- 1. KAPI HAVUZU (Cam Malzemeler, Temel Ölçüm & Kırılma Güvenliği) ---
             {
                 doorCategory: 1,
                 text: "Sıvıları karıştırmak, ısıtmak ve aktarmak için kullanılan, geniş ağızlı ve düz tabanlı cam malzeme hangisidir?",
@@ -632,7 +632,7 @@
             },
             {
                 doorCategory: 1,
-                text: "GÜVENLİK KURALI: Laboratuvarda kırılan cam malzemeler asla çıplak elle toplanmamalıdır. Kesik riskini belirten sembol hangisidir?",
+                text: "GÜVENLİK KURALI: Bisturi, makas ve cam kırıkları gibi kesici ve delici aletlerle çalışırken yaralanma riskini belirten sembol hangisidir?",
                 correctId: "9-kesici-delici",
                 options: [
                     { id: "9-kesici-delici", name: "Kesici / Delici Cisim", img: "kartlar/9-kesici-delici.png" },
@@ -641,8 +641,30 @@
                     { id: "10-sicak-cisim", name: "Sıcak Cisim", img: "kartlar/10-sicak-cisim.png" }
                 ]
             },
+            {
+                doorCategory: 1,
+                text: "Küçük miktarlardaki sıvıların ısıtılması, karıştırılması veya kimyasal reaksiyonların gözlenmesi için kullanılan ince uzun cam malzeme hangisidir?",
+                correctId: "deney-tupu",
+                options: [
+                    { id: "deney-tupu", name: "Deney Tüpü", img: "kartlar/deney-tupu.png" },
+                    { id: "beherglas", name: "Beherglas", img: "kartlar/beherglas.png" },
+                    { id: "dereceli-silindir", name: "Dereceli Silindir", img: "kartlar/dereceli-silindir.png" },
+                    { id: "damlalikli-sise", name: "Damlalıklı Şişe", img: "kartlar/damlalikli-sise.png" }
+                ]
+            },
+            {
+                doorCategory: 1,
+                text: "Deneylerde sıcaklık değişimlerini derece Celsius (°C) cinsinden ölçen alet hangisidir?",
+                correctId: "termometre",
+                options: [
+                    { id: "termometre", name: "Termometre", img: "kartlar/termometre.png" },
+                    { id: "dinamometre", name: "Dinamometre", img: "kartlar/dinamometre.png" },
+                    { id: "ahsap-metre", name: "Ahşap Metre", img: "kartlar/ahsap-metre.png" },
+                    { id: "kronometre", name: "Kronometre", img: "kartlar/kronometre.png" }
+                ]
+            },
 
-            // --- 2. KAPI HAVUZU (Elektrik, Isı & Ölçüm Güvenliği Kuralları) ---
+            // --- 2. KAPI HAVUZU (Elektrik, Isı, Kuvvet & Isı Güvenliği) ---
             {
                 doorCategory: 2,
                 text: "Elektrik devrelerinde akımın geçişini kontrol eden, devreyi açıp kapatmaya yarayan eleman hangisidir?",
@@ -696,6 +718,28 @@
                     { id: "yay", name: "Yay", img: "kartlar/yay.png" },
                     { id: "ispirto-ocagi", name: "İspirto Ocağı", img: "kartlar/ispirto-ocagi.png" },
                     { id: "dinamometre", name: "Dinamometre", img: "kartlar/dinamometre.png" }
+                ]
+            },
+            {
+                doorCategory: 2,
+                text: "Cisimlere uygulanan kuvvetin veya yerçekimi kuvvetinin (ağırlık) büyüklüğünü Newton cinsinden ölçen yaylı düzenek hangisidir?",
+                correctId: "dinamometre",
+                options: [
+                    { id: "dinamometre", name: "Dinamometre", img: "kartlar/dinamometre.png" },
+                    { id: "yay", name: "Yay", img: "kartlar/yay.png" },
+                    { id: "dijital-terazi", name: "Dijital Terazi", img: "kartlar/dijital-terazi.png" },
+                    { id: "ahsap-metre", name: "Ahşap Metre", img: "kartlar/ahsap-metre.png" }
+                ]
+            },
+            {
+                doorCategory: 2,
+                text: "Laboratuvarda maddelerin kütlesini gram veya miligram cinsinden en hassas şekilde ölçen dijital alet hangisidir?",
+                correctId: "dijital-terazi",
+                options: [
+                    { id: "dijital-terazi", name: "Dijital Terazi", img: "kartlar/dijital-terazi.png" },
+                    { id: "terazi", name: "Eşit Kollu Terazi", img: "kartlar/terazi.png" },
+                    { id: "dinamometre", name: "Dinamometre", img: "kartlar/dinamometre.png" },
+                    { id: "termometre", name: "Termometre", img: "kartlar/termometre.png" }
                 ]
             },
 
@@ -755,6 +799,17 @@
                     { id: "12-kirilabilir-cam", name: "Kırılabilir Cam", img: "kartlar/12-kirilabilir-cam.png" }
                 ]
             },
+            {
+                doorCategory: 3,
+                text: "Sıvıları damla damla ve küçük miktarlarda hassas aktarmak için kullanılan araç hangisidir?",
+                correctId: "plastik-pipet",
+                options: [
+                    { id: "plastik-pipet", name: "Plastik Pipet", img: "kartlar/plastik-pipet.png" },
+                    { id: "siringa", name: "Şırınga", img: "kartlar/siringa.png" },
+                    { id: "beherglas", name: "Beherglas", img: "kartlar/beherglas.png" },
+                    { id: "dereceli-silindir", name: "Dereceli Silindir", img: "kartlar/dereceli-silindir.png" }
+                ]
+            },
 
             // --- 4. KAPI HAVUZU (Tehlikeli Kimyasallar & Büyük Çıkış Piktogramları) ---
             {
@@ -809,6 +864,28 @@
                     { id: "15-patlayici-madde", name: "Patlayıcı Madde", img: "kartlar/15-patlayici-madde.png" },
                     { id: "5-yanici-madde", name: "Yanıcı Madde", img: "kartlar/5-yanici-madde.png" },
                     { id: "13-yakici-madde", name: "Yakıcı Madde", img: "kartlar/13-yakici-madde.png" },
+                    { id: "11-elektrik-uyarisi", name: "Elektrik Uyarısı", img: "kartlar/11-elektrik-uyarisi.png" }
+                ]
+            },
+            {
+                doorCategory: 4,
+                text: "GÜVENLİK KURALI: Kendisi yanıcı olmasa bile diğer maddelerin daha şiddetli yanmasına yol açan oksitleyici/yakıcı maddelerin sembolü hangisidir?",
+                correctId: "13-yakici-madde",
+                options: [
+                    { id: "13-yakici-madde", name: "Yakıcı (Oksitleyici) Madde", img: "kartlar/13-yakici-madde.png" },
+                    { id: "5-yanici-madde", name: "Yanıcı Madde", img: "kartlar/5-yanici-madde.png" },
+                    { id: "15-patlayici-madde", name: "Patlayıcı Madde", img: "kartlar/15-patlayici-madde.png" },
+                    { id: "7-zehirli-madde", name: "Zehirli Madde", img: "kartlar/7-zehirli-madde.png" }
+                ]
+            },
+            {
+                doorCategory: 4,
+                text: "GÜVENLİK KURALI: Çevreye ve canlı hücrelere zarar veren görünmez radyasyon ışınları yayan maddeleri belirten 'Radyoaktif Madde' sembolü hangisidir?",
+                correctId: "16-radyoaktif-madde",
+                options: [
+                    { id: "16-radyoaktif-madde", name: "Radyoaktif Madde", img: "kartlar/16-radyoaktif-madde.png" },
+                    { id: "14-cevreye-zararli", name: "Çevreye Zararlı", img: "kartlar/14-cevreye-zararli.png" },
+                    { id: "7-zehirli-madde", name: "Zehirli Madde", img: "kartlar/7-zehirli-madde.png" },
                     { id: "11-elektrik-uyarisi", name: "Elektrik Uyarısı", img: "kartlar/11-elektrik-uyarisi.png" }
                 ]
             }
@@ -1181,20 +1258,52 @@
             }
         }
 
-        // 🎴 TEK TEK SIRALANAN KARTLARI ÇİZ
+        // 🎴 TEK TEK SIRALANAN KARTLARI ÇİZ (Görsellerin altında açıklama yazmaz, temiz seçenekler)
         function renderQuestionCards() {
             if (doorCurrentQIndex >= activeDoorData.questions.length) {
+                // ŞİFRE ÇÖZÜLDÜ - KAPIYI ANINDA VE KESİN OLARAK AÇ!
+                const doorId = activeDoorData.doorId;
+                unlockedDoors.add(doorId);
+                score += 300;
+                playSound('victory');
+                updateStats();
+                updateMissionHud();
+
                 document.getElementById('door-question-box').classList.add('hidden');
+                const unlockContainer = document.getElementById('door-unlock-btn-container');
+                if (unlockContainer) unlockContainer.classList.add('hidden');
+
                 document.getElementById('cards-container').innerHTML = `
-                    <div class="col-span-2 sm:col-span-4 p-5 sm:p-6 bg-slate-900/90 border-2 border-emerald-500 rounded-3xl text-center">
-                        <i class="fa-solid fa-circle-check text-3xl sm:text-4xl text-emerald-400 mb-2"></i>
-                        <h4 class="text-base sm:text-lg font-black text-white">Tüm İpuçları ve Şifreler Toplandı!</h4>
-                        <p class="text-xs text-slate-300 mt-1">Aşağıdaki butona dokunarak şifreyi gir ve kapıyı aç.</p>
+                    <div class="col-span-2 sm:col-span-4 p-5 sm:p-7 bg-gradient-to-b from-slate-900 via-emerald-950/60 to-slate-900 border-2 border-emerald-400 rounded-3xl text-center shadow-[0_0_50px_rgba(16,185,129,0.35)] animate-in zoom-in-95">
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-3 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 text-slate-950 flex items-center justify-center text-3xl sm:text-4xl shadow-lg animate-bounce">
+                            <i class="fa-solid fa-lock-open"></i>
+                        </div>
+                        <span class="text-[10px] sm:text-xs uppercase font-orbitron font-bold text-amber-400 tracking-widest block mb-1">PROTOKOL TAMAMLANDI</span>
+                        <h4 class="text-base sm:text-2xl font-orbitron font-black text-white">ŞİFRE ÇÖZÜLDÜ: <span class="text-emerald-400 tracking-widest">${collectedDoorCode}</span></h4>
+                        <p class="text-xs sm:text-sm font-bold text-emerald-300 mt-2">
+                            ${doorId}. Güvenlik Kapısı Başarıyla Açıldı!
+                        </p>
+                        <p class="text-[11px] sm:text-xs text-slate-300 mt-1">
+                            Kapıdan geçiliyor, bir sonraki bölgeye aktarılıyorsunuz...
+                        </p>
+                        <button onclick="confirmDoorOpened()" class="mt-4 px-6 sm:px-8 py-2.5 sm:py-3 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs sm:text-sm shadow-xl transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-2 mx-auto">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            <span>Hemen Kapıdan Geç ve İlerle</span>
+                        </button>
                     </div>
                 `;
-                document.getElementById('door-unlock-btn-container').classList.remove('hidden');
-                playSound('correct');
-                showToast("TÜM KODLAR BULUNDU!", "success");
+
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 75, spread: 65, origin: { y: 0.55 } });
+                }
+
+                showToast(`✅ ${doorId}. KAPI AÇILDI! GEÇEBİLİRSİNİZ!`, "success");
+
+                // 1.5 saniye sonra oyuncuyu otomatik olarak kapıdan geçir
+                setTimeout(() => {
+                    confirmDoorOpened();
+                }, 1500);
+
                 return;
             }
 
@@ -1205,22 +1314,28 @@
             const container = document.getElementById('cards-container');
             container.innerHTML = "";
 
-            q.options.forEach(opt => {
+            q.options.forEach((opt, idx) => {
                 const card = document.createElement('div');
                 card.className = "choice-card";
                 card.setAttribute('data-id', opt.id);
                 card.onclick = () => handleCardSelection(opt, card, q);
 
+                const optionLetter = ['A', 'B', 'C', 'D'][idx] || (idx + 1);
+
+                // GÖRSELİN ALTINDA ASLA AÇIKLAMA VEYA İSİM YAZMAZ (Tam pedagojik görsel eşleştirme)
                 card.innerHTML = `
-                    <div class="w-full h-20 sm:h-26 md:h-28 flex items-center justify-center p-1.5 sm:p-2 bg-slate-50 rounded-xl mb-1.5 sm:mb-2 overflow-hidden border border-slate-100">
-                        <img src="${opt.img}" alt="${opt.name}" class="max-w-full max-h-full object-contain pointer-events-none drop-shadow-sm" onerror="this.src='afis-malzemeler.png'">
+                    <div class="w-full flex items-center justify-between mb-1.5 px-0.5">
+                        <span class="w-7 h-7 rounded-lg bg-slate-900 border border-slate-700 text-amber-400 font-orbitron font-black text-xs flex items-center justify-center shadow-inner">
+                            ${optionLetter}
+                        </span>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Seçenek</span>
                     </div>
-                    <span class="text-[11px] sm:text-xs md:text-sm font-black text-slate-900 tracking-tight leading-tight block">
-                        ${opt.name}
-                    </span>
-                    <span class="mt-1 text-[9px] sm:text-[10px] uppercase font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center gap-1">
-                        <i class="fa-solid fa-hand-pointer text-[8px]"></i> Seç
-                    </span>
+                    <div class="w-full h-24 sm:h-28 flex items-center justify-center p-2 bg-slate-50 rounded-xl mb-2 overflow-hidden border border-slate-200">
+                        <img src="${opt.img}" alt="Seçenek ${optionLetter}" class="max-w-full max-h-full object-contain pointer-events-none drop-shadow-sm" onerror="this.src='afis-malzemeler.png'">
+                    </div>
+                    <div class="w-full py-1.5 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded-lg text-xs font-black uppercase tracking-wider transition-colors flex items-center justify-center gap-1 border border-blue-200">
+                        <i class="fa-solid fa-hand-pointer text-[10px]"></i> Seç
+                    </div>
                 `;
                 container.appendChild(card);
             });
@@ -1232,7 +1347,8 @@
             if (opt.id === question.correctId) {
                 cardEl.classList.add('correct');
                 playSound('correct');
-                showToast(`🎉 DOĞRU: ${opt.name}! Şifre Kodu: ${question.code}`, "success");
+                // Öğrenmeyi pekiştirmek için doğru cevap verildikten SONRA toast'ta teyit edilir
+                showToast(`🎉 DOĞRU SEÇİM! (${opt.name}) - Kod: ${question.code}`, "success");
 
                 collectedDoorCode += question.code;
                 renderDoorCodeSlots();
@@ -1253,13 +1369,30 @@
                 playSound('wrong');
                 timeLeft -= 10;
                 if (timeLeft < 0) timeLeft = 0;
-                showToast("❌ YANLIŞ SEÇİM! -10 Saniye Ceza", "error");
+                showToast("❌ YANLIŞ SEÇENEK! -10 Saniye Ceza", "error");
 
                 setTimeout(() => {
                     cardEl.classList.remove('wrong');
                     document.getElementById('door-question-box').classList.remove('animate-shake');
                 }, 600);
             }
+        }
+
+        // 🚪 KAPI GEÇİŞİNİ VE KONUMU KESİNLEŞTİR
+        function confirmDoorOpened() {
+            if (!activeDoorData) return;
+            const doorId = activeDoorData.doorId;
+            closeDoorPuzzle();
+
+            // Oyuncuyu kapının arkasındaki yeni bölge koridoruna ilerlet
+            if (doorId === 1 && player.row <= 5) player.row = 6;
+            else if (doorId === 2 && player.row <= 10) player.row = 11;
+            else if (doorId === 3 && player.row <= 15) player.row = 16;
+            else if (doorId === 4 && player.row <= 20) player.row = 21;
+
+            playSound('step');
+            updateMissionHud();
+            showToast(`🚀 ${doorId}. Kapı Geçildi! Yeni Bölgedesiniz!`, "info");
         }
 
         function toggleFullPosterModal() {
