@@ -11769,8 +11769,8 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     // Kaçış Odası veya Gemini ise kesinlikle yerel Kaçış Odası oyunumuzu hedefle
     if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis") {
         modal.innerHTML = `
-            <div class="bg-slate-950 rounded-3xl max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-                <div class="p-3 sm:p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[98vw] h-[97vh] border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
                     <div class="flex items-center gap-3">
                         <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
                             <i class="fa-solid fa-door-open"></i>
