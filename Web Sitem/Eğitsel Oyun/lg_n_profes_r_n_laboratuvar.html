@@ -29,7 +29,7 @@
             -webkit-user-select: none;
             overflow: hidden;
             width: 100vw;
-            height: 100vh;
+            height: 100vh; height: 100dvh;
             height: 100dvh;
             margin: 0;
             padding: 0;
@@ -187,64 +187,78 @@
         </div>
     </header>
 
-    <!-- 🕹️ LABİRENT ALANI -->
-    <main class="flex-1 relative w-full h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] overflow-hidden flex flex-col md:flex-row items-center justify-center bg-slate-950 p-1 sm:p-2">
+    <!-- 🕹️ LABİRENT ALANI (Tam Sayfa & Mobil Ergonomik Düzen) -->
+    <main class="flex-1 relative w-full h-[calc(100dvh-3.25rem)] sm:h-[calc(100dvh-3.75rem)] overflow-hidden flex flex-col md:flex-row items-center justify-between md:justify-center bg-slate-950 p-1 sm:p-2.5">
         
-        <!-- Labirent Çizim Tuvali (Canvas) -->
-        <div class="relative flex items-center justify-center max-w-full max-h-full">
-            <canvas id="maze-canvas" class="block bg-slate-950 shadow-2xl cursor-crosshair rounded-xl touch-none"></canvas>
-        </div>
-
-        <!-- Mini Harita Radarı (Sağ Üst Köşede) -->
-        <div class="absolute top-2.5 right-2.5 glass-panel rounded-xl p-1.5 border border-slate-700/80 shadow-2xl pointer-events-none hidden sm:block z-10">
-            <div class="text-[8px] font-orbitron font-black text-amber-400 mb-0.5 flex items-center justify-between">
-                <span>RADAR</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+        <!-- Labirent Çizim Alanı (Ekranı Maksimum Dolduran Kapsayıcı) -->
+        <div id="canvas-wrapper" class="relative flex items-center justify-center flex-1 w-full max-h-[60dvh] md:max-h-full overflow-hidden my-auto">
+            <canvas id="maze-canvas" class="block bg-slate-950 shadow-[0_0_40px_rgba(0,0,0,0.8)] cursor-pointer rounded-2xl touch-none border border-slate-800/80"></canvas>
+            
+            <!-- Mini Harita Radarı (Sağ Üst Köşede) -->
+            <div class="absolute top-2 right-2 glass-panel rounded-xl p-1.5 border border-slate-700/80 shadow-2xl pointer-events-none hidden sm:block z-10">
+                <div class="text-[8px] font-orbitron font-black text-amber-400 mb-0.5 flex items-center justify-between">
+                    <span>RADAR</span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                </div>
+                <canvas id="minimap-canvas" width="100" height="100" class="rounded-lg bg-slate-900 border border-slate-800"></canvas>
             </div>
-            <canvas id="minimap-canvas" width="100" height="100" class="rounded-lg bg-slate-900 border border-slate-800"></canvas>
+
+            <!-- Görev İpucu Rozeti (Sol Üst Köşede) -->
+            <div id="mission-hud" class="absolute top-2 left-2 glass-panel rounded-xl px-2.5 py-1.5 border border-slate-700/80 shadow-2xl pointer-events-none z-10 max-w-[210px] sm:max-w-xs transition-all">
+                <span class="text-[9px] sm:text-[10px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5">
+                    <i class="fa-solid fa-compass text-amber-400"></i>
+                    <span id="hud-zone-title">1. Aşama: 20 Kapı</span>
+                </span>
+                <p id="hud-hint" class="text-[10px] sm:text-xs text-slate-200 font-semibold mt-0.5 leading-snug">
+                    Bariyer kapılarından birine ulaş ve aç!
+                </p>
+            </div>
         </div>
 
-        <!-- Görev İpucu Rozeti (Sol Üst Köşede) -->
-        <div id="mission-hud" class="absolute top-2.5 left-2.5 glass-panel rounded-xl px-2.5 py-1.5 border border-slate-700/80 shadow-2xl pointer-events-none z-10 max-w-[240px] sm:max-w-xs transition-all">
-            <span class="text-[9px] sm:text-[10px] font-bold text-amber-400 uppercase tracking-wider block flex items-center gap-1.5">
-                <i class="fa-solid fa-compass text-amber-400"></i>
-                <span id="hud-zone-title">1. Bölge: Cam Malzemeler</span>
-            </span>
-            <p id="hud-hint" class="text-[11px] sm:text-xs text-slate-200 font-semibold mt-0.5 leading-snug">
-                Labirentte ilerle ve <strong class="text-amber-300">1. Kapı</strong>'ya ulaş!
-            </p>
-        </div>
-
-        <!-- 🎮 SANAL D-PAD (Akıllı Tahta & Dokunmatik Ekranlar) -->
-        <div id="virtual-dpad" class="absolute bottom-2.5 right-2.5 sm:bottom-4 sm:right-4 z-20 flex flex-col items-center gap-1 select-none pointer-events-auto transition-opacity duration-200">
-            <button class="d-btn w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14" onpointerdown="startMove('up')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Yukarı">
-                <i class="fa-solid fa-chevron-up text-sm sm:text-base"></i>
-            </button>
-            <div class="flex items-center gap-1">
-                <button class="d-btn w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14" onpointerdown="startMove('left')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Sol">
-                    <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i>
+        <!-- 🎮 SANAL KUMANDA & BUTONLAR (Mobilde Altta Rahat Basılan Ergonomik Panel) -->
+        <div id="virtual-dpad" class="w-full md:w-auto md:absolute md:bottom-4 md:right-4 z-20 flex items-center justify-around md:justify-center gap-3 sm:gap-5 px-3 py-2 md:p-0 bg-slate-900/90 md:bg-transparent border-t md:border-0 border-slate-800/80 shrink-0 select-none pb-[max(0.6rem,env(safe-area-inset-bottom))] transition-opacity duration-200">
+            
+            <!-- 4 Yönlü Kumanda Haçı -->
+            <div class="flex flex-col items-center gap-1.5">
+                <button id="btn-move-up" class="d-btn w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 active:scale-90" title="Yukarı">
+                    <i class="fa-solid fa-chevron-up text-base sm:text-lg"></i>
                 </button>
-                <!-- Orta: Kapı Etkileşimi / Açma -->
-                <button class="d-btn w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14 bg-amber-600/90 border-amber-400 text-slate-950 font-black text-xs sm:text-sm" onpointerdown="interactCurrentTile()" title="Kapıyı Aç (Boşluk/Enter)">
-                    <i class="fa-solid fa-key"></i>
-                </button>
-                <button class="d-btn w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14" onpointerdown="startMove('right')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Sağ">
-                    <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
+                <div class="flex items-center gap-1.5">
+                    <button id="btn-move-left" class="d-btn w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 active:scale-90" title="Sol">
+                        <i class="fa-solid fa-chevron-left text-base sm:text-lg"></i>
+                    </button>
+                    <!-- Orta: Kapı Etkileşimi / Açma -->
+                    <button id="btn-interact" class="d-btn w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 bg-gradient-to-tr from-amber-500 to-amber-600 border-amber-300 text-slate-950 font-black text-sm active:scale-90 shadow-[0_0_15px_rgba(245,158,11,0.5)]" title="Kapıyı Aç (Boşluk/Enter)">
+                        <i class="fa-solid fa-key text-base"></i>
+                    </button>
+                    <button id="btn-move-right" class="d-btn w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 active:scale-90" title="Sağ">
+                        <i class="fa-solid fa-chevron-right text-base sm:text-lg"></i>
+                    </button>
+                </div>
+                <button id="btn-move-down" class="d-btn w-12 h-12 sm:w-13 sm:h-13 md:w-14 md:h-14 active:scale-90" title="Aşağı">
+                    <i class="fa-solid fa-chevron-down text-base sm:text-lg"></i>
                 </button>
             </div>
-            <button class="d-btn w-11 h-11 sm:w-13 sm:h-13 md:w-14 md:h-14" onpointerdown="startMove('down')" onpointerup="stopMove()" onpointerleave="stopMove()" title="Aşağı">
-                <i class="fa-solid fa-chevron-down text-sm sm:text-base"></i>
-            </button>
+
+            <!-- Mobilde Hızlı Kapı Açma ve Bilgi Rozeti -->
+            <div class="flex flex-col items-center gap-2 md:hidden">
+                <button onclick="interactCurrentTile()" class="px-4 py-3 bg-gradient-to-r from-emerald-500 to-teal-500 active:scale-95 text-slate-950 font-black rounded-2xl text-xs shadow-lg flex items-center gap-2 cursor-pointer border border-emerald-300">
+                    <i class="fa-solid fa-door-open text-base"></i>
+                    <span>KAPIYI AÇ</span>
+                </button>
+                <span class="text-[9px] text-slate-400 font-semibold text-center">
+                    Ekrana dokunarak veya<br>ok tuşlarıyla yönlendirin
+                </span>
+            </div>
         </div>
 
-        <!-- Cihaz Kontrol Bilgisi (Sol Alt) -->
-        <div class="absolute bottom-2.5 left-2.5 text-[10px] text-slate-400 bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800 pointer-events-none hidden sm:flex items-center gap-2">
-            <i class="fa-solid fa-hand-pointer text-amber-400"></i>
-            <span><strong>Parmakla kaydırarak (Swipe)</strong>, yön tuşlarıyla veya butonlarla yürüyebilirsiniz.</span>
+        <!-- Cihaz Kontrol Bilgisi (Masaüstü Sol Alt) -->
+        <div class="absolute bottom-3 left-3 text-[10px] text-slate-400 bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-800 pointer-events-none hidden md:flex items-center gap-2">
+            <i class="fa-solid fa-keyboard text-amber-400"></i>
+            <span><strong>W-A-S-D</strong> veya <strong>Yön Tuşları</strong> ile hareket edin, <strong>Boşluk/Enter</strong> ile kapıyı açın.</span>
         </div>
     </main>
-
-    <!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ (HER CİHAZA UYUMLU MODAL) -->
+<!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ (HER CİHAZA UYUMLU MODAL) -->
     <div id="modal-door-puzzle" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-50 hidden flex-col items-center justify-between p-2.5 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
         
         <!-- Üst Başlık & Şifre Slotları -->
@@ -898,31 +912,31 @@
         const MAZE_COLS = 25;
         const MAZE_ROWS = 25;
 
-                const BASE_MAZE_MAP = [
+                        const BASE_MAZE_MAP = [
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,1],
-            [1,31,1,0,1,0,1,0,1,0,1,1,0,0,1,1,1,0,1,1,1,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
+            [1,0,1,0,0,31,0,0,1,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,2,1,1,1,3,1,1,1,1,4,1,1,1,1,5,1,1,1,6,1,1,1],
-            [1,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,0,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,1],
-            [1,0,31,0,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,0,1,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,31,0,0,1,0,0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,31,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,7,1,1,1,1,8,1,1,1,9,1,1,1,10,1,1,1,1,11,1,1,1],
-            [1,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,1],
-            [1,1,31,1,0,1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,1,0,0,1,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,31,0,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,1],
+            [1,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,31,0,1,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,1,12,1,1,1,13,1,1,1,14,1,1,1,1,15,1,1,1,16,1,1,1],
-            [1,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,0,1,0,1],
-            [1,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,1,0,1,0,1,0,1,0,1,1,0,0,1,1,0,0,1,1,1,0,1,31,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,1,0,0,31,0,1,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+            [1,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,31,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
             [1,1,1,17,1,1,1,18,1,1,1,1,19,1,1,1,20,1,1,1,1,21,1,1,1],
             [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
-            [1,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,31,0,0,0,0,0,0,0,0,0,0,0,1],
+            [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,30,1],
             [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
         ];
 
@@ -955,20 +969,28 @@
 
         // 📱 AKILLI TAHTA, TELEFON VE BİLGİSAYAR İÇİN RESPONSIVE CANVAS BOYUTLANDIRICI
         function resizeCanvas() {
-            const main = document.querySelector('main');
-            if (!main) return;
-            const availableW = main.clientWidth - 16;
-            const availableH = main.clientHeight - 16;
+            const wrapper = document.getElementById('canvas-wrapper');
+            if (!wrapper) return;
 
-            // Ekran boyutuna göre en uygun karo (tile) boyutunu hesapla
+            const isMobile = window.innerWidth < 768;
+            const availableW = wrapper.clientWidth - (isMobile ? 8 : 24);
+            const availableH = wrapper.clientHeight - (isMobile ? 8 : 24);
+
+            // Ekran boyutunu dolduran maksimum kare boyutu (tile size)
             const calculatedSize = Math.floor(Math.min(availableW / MAZE_COLS, availableH / MAZE_ROWS));
-            // Mobilde en küçük 14px, akıllı tahtada en büyük 50px
-            tileSize = Math.max(14, Math.min(50, calculatedSize));
+            // Mobilde en az 14px, büyük ekranda 60px'e kadar tam doluluk
+            tileSize = Math.max(13, Math.min(60, calculatedSize));
 
-            canvas.width = MAZE_COLS * tileSize;
-            canvas.height = MAZE_ROWS * tileSize;
+            // Retina / High-DPI Desteği
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = (MAZE_COLS * tileSize) * dpr;
+            canvas.height = (MAZE_ROWS * tileSize) * dpr;
+            canvas.style.width = (MAZE_COLS * tileSize) + 'px';
+            canvas.style.height = (MAZE_ROWS * tileSize) + 'px';
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+            ctx.scale(dpr, dpr);
         }
-
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 150));
 
@@ -1065,7 +1087,7 @@
         }
 
         // ==========================================
-        // 🎮 HAREKET KONTROLLERİ (MOBİL SWIPE + D-PAD + KLAVYE)
+        // 🎮 HAREKET KONTROLLERİ (MOBİL DOKUNMATİK + D-PAD + KLAVYE + TIKLAMA)
         // ==========================================
         let moveHoldInterval = null;
         let currentHoldDir = null;
@@ -1076,7 +1098,7 @@
             if (!moveHoldInterval) {
                 moveHoldInterval = setInterval(() => {
                     if (currentHoldDir) stepMove(currentHoldDir);
-                }, 160);
+                }, 150);
             }
         }
 
@@ -1086,6 +1108,28 @@
                 clearInterval(moveHoldInterval);
                 moveHoldInterval = null;
             }
+        }
+
+        // Dokunmatik butonlara kesintisiz basma desteği bağla
+        function bindTouchButton(btnId, dir) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+
+            const handleStart = (e) => {
+                e.preventDefault();
+                startMove(dir);
+            };
+            const handleEnd = (e) => {
+                e.preventDefault();
+                stopMove();
+            };
+
+            btn.addEventListener('touchstart', handleStart, { passive: false });
+            btn.addEventListener('touchend', handleEnd, { passive: false });
+            btn.addEventListener('touchcancel', handleEnd, { passive: false });
+            btn.addEventListener('mousedown', handleStart);
+            btn.addEventListener('mouseup', handleEnd);
+            btn.addEventListener('mouseleave', handleEnd);
         }
 
         function stepMove(dir) {
@@ -1145,12 +1189,14 @@
             updateMissionHud();
         }
 
+        // Yakındaki kapıyı açma fonksiyonu (Etraftaki veya hedeflenen kapı)
         function interactCurrentTile() {
             const neighbors = [
                 { r: player.row - 1, c: player.col },
                 { r: player.row + 1, c: player.col },
                 { r: player.row, c: player.col - 1 },
-                { r: player.row, c: player.col + 1 }
+                { r: player.row, c: player.col + 1 },
+                { r: player.row, c: player.col }
             ];
             for (let n of neighbors) {
                 if (n.r >= 0 && n.r < MAZE_ROWS && n.c >= 0 && n.c < MAZE_COLS) {
@@ -1164,8 +1210,10 @@
                     }
                 }
             }
+            showToast("Yakında kilitli kapı yok!", "info");
         }
-        // 📱 MOBİL İÇİN DOKUNMATİK KAYDIRMA (SWIPE) DESTEĞİ
+
+        // 📱 MOBİL SWIPE DESTEĞİ
         let touchStartX = 0;
         let touchStartY = 0;
 
@@ -1182,7 +1230,7 @@
             const diffY = e.changedTouches[0].clientY - touchStartY;
             const absX = Math.abs(diffX);
             const absY = Math.abs(diffY);
-            const minSwipe = 24;
+            const minSwipe = 20;
 
             if (Math.max(absX, absY) > minSwipe) {
                 if (absX > absY) {
@@ -1190,12 +1238,38 @@
                 } else {
                     stepMove(diffY > 0 ? 'down' : 'up');
                 }
+            } else {
+                // Kısa dokunuş (Tap): Dokunulan karoya göre etkileşim
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.changedTouches[0].clientX - rect.left;
+                const clickY = e.changedTouches[0].clientY - rect.top;
+                const col = Math.floor(clickX / tileSize);
+                const row = Math.floor(clickY / tileSize);
+
+                if (col >= 0 && col < MAZE_COLS && row >= 0 && row < MAZE_ROWS) {
+                    const t = MAZE_MAP[row][col];
+                    if (t >= 2 && t <= 21 && !unlockedDoors.has(t - 1)) {
+                        // Kapıya dokunulduysa ve oyuncu yakınsa kapıyı aç
+                        const dist = Math.abs(row - player.row) + Math.abs(col - player.col);
+                        if (dist <= 3) {
+                            triggerDoorEncounter(t - 1);
+                        } else {
+                            showToast("Kapıya yaklaşmanız gerekiyor!", "info");
+                        }
+                    } else if (Math.abs(row - player.row) <= 1 && Math.abs(col - player.col) <= 1) {
+                        // Yan karoya dokunulduysa o yöne adım at
+                        if (row < player.row) stepMove('up');
+                        else if (row > player.row) stepMove('down');
+                        else if (col < player.col) stepMove('left');
+                        else if (col > player.col) stepMove('right');
+                    }
+                }
             }
             touchStartX = 0;
             touchStartY = 0;
         }, { passive: true });
 
-        // 💻 KLAVYE DESTEĞİ (Masaüstü & Laptop)
+        // 💻 KLAVYE DESTEĞİ
         window.addEventListener('keydown', (e) => {
             if (activeDoorData || !isGameRunning) return;
             if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') { e.preventDefault(); stepMove('up'); }
@@ -1204,7 +1278,6 @@
             else if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') { e.preventDefault(); stepMove('right'); }
             else if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); interactCurrentTile(); }
         });
-
         // ==========================================
         // 🚪 KAPI ŞİFRE ÇÖZÜCÜ
         // ==========================================
@@ -1735,6 +1808,14 @@
         }
 
         window.addEventListener('DOMContentLoaded', () => {
+            bindTouchButton('btn-move-up', 'up');
+            bindTouchButton('btn-move-down', 'down');
+            bindTouchButton('btn-move-left', 'left');
+            bindTouchButton('btn-move-right', 'right');
+            const interactBtn = document.getElementById('btn-interact');
+            if (interactBtn) {
+                interactBtn.addEventListener('click', (e) => { e.preventDefault(); interactCurrentTile(); });
+            }
             resizeCanvas();
             initGameSession();
             requestAnimationFrame(drawMaze);
