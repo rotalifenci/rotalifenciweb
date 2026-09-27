@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Çılgın Profesörün Kaçış Odası: 10 Kapılı Bilim Labirenti</title>
+    <title>Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -66,12 +66,6 @@
         .safe-top {
             padding-top: max(0.25rem, env(safe-area-inset-top));
         }
-        .glass-panel-light {
-            background: rgba(255, 255, 255, 0.94);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 2px solid #cbd5e1;
-        }
         .d-btn-light {
             background: #ffffff;
             border: 2px solid #cbd5e1;
@@ -91,12 +85,55 @@
             border-color: #0284c7;
             color: #0284c7;
         }
-        @keyframes pulsePortal {
-            0%, 100% { box-shadow: 0 0 15px rgba(22,163,74,0.4); transform: scale(1); }
-            50% { box-shadow: 0 0 30px rgba(22,163,74,0.9); transform: scale(1.02); }
+        .num-btn {
+            background: #1e293b;
+            border: 2px solid #334155;
+            color: #f8fafc;
+            border-radius: 0.85rem;
+            font-size: 1.25rem;
+            font-weight: 800;
+            font-family: 'Orbitron', sans-serif;
+            padding: 0.65rem 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: all 0.08s ease;
+            touch-action: none;
         }
-        .portal-active {
-            animation: pulsePortal 1.5s infinite;
+        .num-btn:active {
+            transform: scale(0.92);
+            background: #38bdf8;
+            color: #0f172a;
+            border-color: #7dd3fc;
+        }
+        .num-btn-red {
+            background: #881337;
+            border: 2px solid #be123c;
+            color: #fecdd3;
+            border-radius: 0.85rem;
+            font-size: 1rem;
+            padding: 0.65rem 0;
+            cursor: pointer;
+            touch-action: none;
+        }
+        .num-btn-red:active {
+            transform: scale(0.92);
+            background: #e11d48;
+            color: #fff;
+        }
+        .num-btn-green {
+            background: #064e3b;
+            border: 2px solid #059669;
+            color: #a7f3d0;
+            border-radius: 0.85rem;
+            font-size: 1.15rem;
+            padding: 0.65rem 0;
+            cursor: pointer;
+            touch-action: none;
+        }
+        .num-btn-green:active {
+            transform: scale(0.92);
+            background: #10b981;
+            color: #0f172a;
         }
     </style>
 </head>
@@ -107,11 +144,11 @@
         <!-- Sol: Logo & Başlık -->
         <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center font-black text-sm shadow">
-                <i class="fa-solid fa-flask"></i>
+                <i class="fa-solid fa-user-astronaut"></i>
             </span>
             <div class="flex flex-col">
                 <span class="font-orbitron font-black text-xs sm:text-sm text-amber-600 leading-tight">ROTALI FENCİ</span>
-                <span class="text-[9px] text-slate-500 font-bold leading-none hidden sm:inline">10 Kapılı Bilim Labirenti</span>
+                <span class="text-[9px] text-slate-500 font-bold leading-none hidden sm:inline">Astronot Bilim Labirenti</span>
             </div>
         </div>
 
@@ -169,7 +206,7 @@
             <div id="mission-hud" class="absolute top-2 left-2 bg-white/95 backdrop-blur rounded-full px-3 py-1 border-2 border-slate-300 shadow-md pointer-events-none z-10 flex items-center gap-1.5 transition-all">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 <span id="hud-hint" class="text-[11px] sm:text-xs text-slate-800 font-bold leading-tight">
-                    Labirenti keşfet, en az 4 kapı açarak çıkışa (🏁) ulaş!
+                    Astronot Görevi: En az 4 kapı açarak çıkışa (🏁) ulaş!
                 </span>
             </div>
         </div>
@@ -247,7 +284,7 @@
         </button>
     </nav>
 
-    <!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ MODAL (3 SORU PROTOKOLÜ - AÇIK & NET KUTULAR) -->
+    <!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ VE NUMPAD MODAL (3 SORU + DİJİTAL ŞİFRE KONSOLU) -->
     <div id="modal-door-puzzle" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex-col items-center justify-between p-2.5 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
         
         <!-- Üst Başlık & Şifre Slotları -->
@@ -283,24 +320,16 @@
             <h3 id="door-question-text" class="text-sm sm:text-base md:text-lg font-bold text-slate-900 leading-relaxed mt-1">
                 Soru yükleniyor...
             </h3>
-            <p class="text-xs text-amber-600 font-bold mt-1">
+            <p id="door-question-sub" class="text-xs text-amber-600 font-bold mt-1">
                 Doğru seçeneğe tıklayarak şifre kodunu ortaya çıkarın:
             </p>
         </div>
 
-        <!-- 🎴 SEÇENEK KARTLARI (Yüksek Kontrastlı, Belli Olan Kutular) -->
-        <div class="w-full max-w-3xl my-auto px-1">
-            <div id="cards-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5">
-                <!-- JS tarafından büyük, net, beyaz kutular enjekte edilecek -->
+        <!-- 🎴 SEÇENEK KARTLARI / ŞİFRE GİRME KONSOLU (Dynamic Container) -->
+        <div class="w-full max-w-3xl my-auto px-1 flex justify-center">
+            <div id="cards-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full">
+                <!-- JS tarafından önce soru kartları, 3 soru bitince NUMPAD şifre konsolu enjekte edilir -->
             </div>
-        </div>
-
-        <!-- Şifre Tamamlandığında Çıkan Doğrudan Kapı Açma Butonu -->
-        <div id="door-unlock-btn-container" class="hidden w-full max-w-3xl mt-3 shrink-0 animate-bounce">
-            <button onclick="unlockDoorDirectly()" class="w-full py-3.5 sm:py-4 bg-gradient-to-r from-emerald-500 via-green-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-white font-black rounded-2xl text-sm sm:text-base shadow-[0_0_25px_rgba(34,197,94,0.5)] active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer border-2 border-emerald-300">
-                <i class="fa-solid fa-key text-xl"></i>
-                <span id="door-unlock-btn-text">3 GÖREV TAMAMLANDI! KAPIYI AÇ VE GEÇ</span>
-            </button>
         </div>
 
         <!-- Alt Referans Çubuğu -->
@@ -309,7 +338,7 @@
                 <i class="fa-solid fa-image"></i>
                 <span>Referans Afişi Görüntüle</span>
             </button>
-            <span class="text-slate-300">Doğru seçime dokunulduğunda şifre hanesi anında açılır.</span>
+            <span class="text-slate-300">Doğru cevaplar şifre hanelerini açar, ardından şifreyi girerek geçersiniz.</span>
         </div>
     </div>
 
@@ -335,7 +364,7 @@
             LABİRENTTEN KAÇTIN!
         </h2>
         <p class="text-xs sm:text-sm text-slate-200 max-w-lg mb-5 leading-relaxed">
-            Güvenlik kapılarının şifrelerini çözdün, laboratuvar kurallarını ve malzemelerini eksiksiz uygulayarak büyük çıkış portalına ulaştın. Harika bir fen araştırmacısısın!
+            Güvenlik kapılarının şifrelerini çözdün, laboratuvar kurallarını ve malzemelerini eksiksiz uygulayarak büyük çıkış portalına ulaştın. Harika bir astronot ve fen araştırmacısısın!
         </p>
 
         <div class="grid grid-cols-3 gap-2.5 max-w-md w-full mb-5 text-xs">
@@ -373,15 +402,15 @@
             <div class="space-y-2.5 text-xs text-slate-700 leading-relaxed">
                 <div class="flex items-start gap-2">
                     <div class="w-5 h-5 rounded bg-amber-100 text-amber-700 font-bold flex items-center justify-center shrink-0 text-[10px]">1</div>
-                    <p><strong class="text-slate-900">Hareket:</strong> W-A-S-D, ekrandaki ok tuşları, parmağınızı kaydırarak veya <strong>labirentte gitmek istediğiniz kareye doğrudan dokunarak</strong> yürüyebilirsiniz.</p>
+                    <p><strong class="text-slate-900">Astronotun Hareketi:</strong> W-A-S-D, ekrandaki ok tuşları, parmağınızı kaydırarak veya <strong>labirentte gitmek istediğiniz kareye doğrudan dokunarak</strong> yürüyebilirsiniz.</p>
                 </div>
                 <div class="flex items-start gap-2">
                     <div class="w-5 h-5 rounded bg-emerald-100 text-emerald-700 font-bold flex items-center justify-center shrink-0 text-[10px]">2</div>
-                    <p><strong class="text-slate-900">10 Kapı & 3 Soru:</strong> Labirentte 10 güvenlik kapısı vardır. Her kapıda 3 fen sorusu sorulur. 3 görevi tamamladığınızda kapı doğrudan açılır.</p>
+                    <p><strong class="text-slate-900">10 Kapı & 3 Soru:</strong> Labirentte 10 güvenlik kapısı vardır. Her kapıda 3 fen sorusu sorulur. 3 soru bitince şifre konsolu açılır ve bulunan şifreyi girerek kapı açılır.</p>
                 </div>
                 <div class="flex items-start gap-2">
                     <div class="w-5 h-5 rounded bg-blue-100 text-blue-700 font-bold flex items-center justify-center shrink-0 text-[10px]">3</div>
-                    <p><strong class="text-slate-900">Büyük Çıkış (🏁):</strong> Çıkışa ulaşmak için en az 4 kapı açmanız gerekir. 4 kapı açıldığında çıkış aktifleşir!</p>
+                    <p><strong class="text-slate-900">Büyük Çıkış (🏁):</strong> Çıkışa ulaşmak için en az 4 kapı açmanız gerekir. 4 kapı açıldığında çıkış portalı açılır!</p>
                 </div>
                 <div class="flex items-start gap-2">
                     <div class="w-5 h-5 rounded bg-purple-100 text-purple-700 font-bold flex items-center justify-center shrink-0 text-[10px]">4</div>
@@ -883,6 +912,7 @@
         let activeDoorData = null;
         let doorCurrentQIndex = 0;
         let collectedDoorCode = "";
+        let enteredDoorCode = "";
 
         const canvas = document.getElementById('maze-canvas');
         const ctx = canvas.getContext('2d');
@@ -1049,7 +1079,7 @@
         }
 
         // ==========================================
-        // 🚶 HAREKET, ÇARPIŞMA VE DOKUNARAK YÜRÜME
+        // 🚶 ASTRONOTUN HAREKETİ VE DOKUNARAK YÜRÜME
         // ==========================================
         function movePlayer(dir) {
             if (!isGameRunning || activeDoorData) return;
@@ -1244,6 +1274,7 @@
             activeDoorData = doorConfig;
             doorCurrentQIndex = 0;
             collectedDoorCode = "";
+            enteredDoorCode = "";
 
             document.getElementById('puzzle-door-title').innerText = `${doorConfig.doorId}. GÜVENLİK KAPISI PROTOKOLÜ`;
             document.getElementById('puzzle-badge').innerText = doorConfig.tierTitle;
@@ -1252,7 +1283,6 @@
             renderDoorCodeSlots();
             renderCurrentQuestion();
 
-            document.getElementById('door-unlock-btn-container').classList.add('hidden');
             document.getElementById('modal-door-puzzle').classList.remove('hidden');
             document.getElementById('modal-door-puzzle').classList.add('flex');
             AudioEngine.playDoorSuccess();
@@ -1278,13 +1308,14 @@
             
             document.getElementById('door-q-counter').innerText = `GÖREV ${doorCurrentQIndex + 1} / 3`;
             document.getElementById('door-question-text').innerText = q.text;
+            document.getElementById('door-question-sub').innerText = "Doğru seçeneğe tıklayarak şifre kodunu ortaya çıkarın:";
 
             const cardsContainer = document.getElementById('cards-container');
+            cardsContainer.className = "grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full";
             cardsContainer.innerHTML = '';
 
             q.options.forEach((opt, idx) => {
                 const card = document.createElement('button');
-                // Belli olan, yüksek kontrastlı, beyaz kart kutuları
                 card.className = "group relative bg-white hover:bg-amber-50 border-3 border-slate-300 hover:border-amber-500 rounded-2xl p-2.5 sm:p-3.5 flex flex-col items-center justify-between text-center transition-all duration-150 transform hover:scale-[1.02] active:scale-95 shadow-md cursor-pointer";
                 card.onclick = () => selectCardAnswer(opt.id, card);
 
@@ -1325,18 +1356,10 @@
                     if (doorCurrentQIndex < 3) {
                         renderCurrentQuestion();
                     } else {
-                        // 3 GÖREV DE TAMAMLANDI!
-                        document.getElementById('cards-container').innerHTML = `
-                            <div class="col-span-2 sm:col-span-4 bg-emerald-50 border-3 border-emerald-500 rounded-2xl p-5 text-center shadow-lg">
-                                <i class="fa-solid fa-circle-check text-emerald-600 text-4xl mb-1"></i>
-                                <h4 class="text-base sm:text-lg font-orbitron font-black text-emerald-800">3 GÖREV DE BAŞARIYLA ÇÖZÜLDÜ!</h4>
-                                <p class="text-sm text-emerald-700 font-bold mt-1">Bulunan Kapı Şifresi: <strong class="text-slate-900 text-xl tracking-widest font-orbitron bg-white px-3 py-1 rounded-lg border border-emerald-300 shadow-sm inline-block mt-1">[ ${collectedDoorCode} ]</strong></p>
-                            </div>
-                        `;
-                        document.getElementById('door-unlock-btn-text').innerText = `3 GÖREV TAMAMLANDI! [ ${collectedDoorCode} ] KAPIYI AÇ VE GEÇ`;
-                        document.getElementById('door-unlock-btn-container').classList.remove('hidden');
+                        // 3 Soru bitti -> ŞİFRE GİRME KONSOLUNU AÇ!
+                        showNumpadConsole();
                     }
-                }, 600);
+                }, 550);
 
             } else {
                 // YANLIŞ CEVAP
@@ -1352,17 +1375,139 @@
         }
 
         // ==========================================
-        // 🔓 DOĞRUDAN KAPIYI AÇ VE GEÇ (SIFIR HATA, TEK TIKLA GEÇİŞ)
+        // 🔢 ŞİFRE GİRME BÖLÜMÜ (NUMPAD KONSOLU)
         // ==========================================
+        function showNumpadConsole() {
+            enteredDoorCode = "";
+            document.getElementById('door-q-counter').innerText = "GÜVENLİK KONSOLU";
+            document.getElementById('door-question-text').innerHTML = `
+                <span class="text-emerald-700 font-extrabold text-base">🎉 3 Görev de Başarıyla Tamamlandı!</span><br>
+                <span class="text-slate-700 text-xs sm:text-sm font-medium">Kapıyı açmak için bulduğunuz <strong>3 haneli şifreyi</strong> aşağıdaki konsola girin:</span>
+            `;
+            document.getElementById('door-question-sub').innerText = "Şifreyi tuşlayarak kapı kilidini açın:";
+
+            const cardsContainer = document.getElementById('cards-container');
+            cardsContainer.className = "flex justify-center items-center w-full my-auto";
+            cardsContainer.innerHTML = `
+                <div class="flex flex-col items-center w-full max-w-xs bg-slate-900 border-2 border-amber-400 rounded-3xl p-4 shadow-2xl text-white">
+                    <div class="text-center mb-2">
+                        <span class="text-[9px] font-orbitron font-bold text-amber-400 uppercase tracking-widest">KAPI GİRİŞ KONSOLU</span>
+                        <p class="text-xs text-slate-300 font-medium mt-0.5">Bulunan Şifre: <strong class="text-emerald-400 font-orbitron text-sm tracking-widest bg-slate-800 px-2.5 py-0.5 rounded border border-slate-700">[ ${collectedDoorCode} ]</strong></p>
+                    </div>
+
+                    <!-- Dijital Ekran -->
+                    <div id="numpad-screen" class="w-full bg-slate-950 border-2 border-emerald-500 rounded-2xl h-11 flex items-center justify-center text-2xl font-orbitron tracking-[0.4em] text-emerald-400 mb-2.5 shadow-inner">
+                        _ _ _
+                    </div>
+
+                    <!-- Numpad Tuşları -->
+                    <div class="grid grid-cols-3 gap-1.5 w-full mb-2">
+                        <button type="button" onpointerdown="handleNumpadKey('1', event)" class="num-btn">1</button>
+                        <button type="button" onpointerdown="handleNumpadKey('2', event)" class="num-btn">2</button>
+                        <button type="button" onpointerdown="handleNumpadKey('3', event)" class="num-btn">3</button>
+                        <button type="button" onpointerdown="handleNumpadKey('4', event)" class="num-btn">4</button>
+                        <button type="button" onpointerdown="handleNumpadKey('5', event)" class="num-btn">5</button>
+                        <button type="button" onpointerdown="handleNumpadKey('6', event)" class="num-btn">6</button>
+                        <button type="button" onpointerdown="handleNumpadKey('7', event)" class="num-btn">7</button>
+                        <button type="button" onpointerdown="handleNumpadKey('8', event)" class="num-btn">8</button>
+                        <button type="button" onpointerdown="handleNumpadKey('9', event)" class="num-btn">9</button>
+                        <button type="button" onpointerdown="handleNumpadClear(event)" class="num-btn-red" title="Sil"><i class="fa-solid fa-delete-left"></i></button>
+                        <button type="button" onpointerdown="handleNumpadKey('0', event)" class="num-btn">0</button>
+                        <button type="button" onpointerdown="handleNumpadSubmit(event)" class="num-btn-green" title="Kapıyı Aç"><i class="fa-solid fa-check"></i></button>
+                    </div>
+
+                    <!-- Kolaylık / Hızlı Doldur Butonu -->
+                    <button type="button" onclick="quickFillAndUnlock()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white rounded-xl text-xs font-black shadow transition-all flex items-center justify-center gap-1.5 cursor-pointer border border-emerald-400/50">
+                        <i class="fa-solid fa-key"></i>
+                        <span>Şifreyi Doldur ve Kapıyı Aç</span>
+                    </button>
+                </div>
+            `;
+            AudioEngine.playDoorSuccess();
+        }
+
+        function handleNumpadKey(digit, e) {
+            if (e && e.cancelable) e.preventDefault();
+            if (enteredDoorCode.length < 3) {
+                enteredDoorCode += String(digit);
+                AudioEngine.playStep();
+                updateNumpadScreen();
+                if (enteredDoorCode.length === 3) {
+                    setTimeout(checkNumpadCode, 220);
+                }
+            }
+        }
+
+        function handleNumpadClear(e) {
+            if (e && e.cancelable) e.preventDefault();
+            enteredDoorCode = "";
+            AudioEngine.playStep();
+            updateNumpadScreen();
+        }
+
+        function handleNumpadSubmit(e) {
+            if (e && e.cancelable) e.preventDefault();
+            checkNumpadCode();
+        }
+
+        function updateNumpadScreen() {
+            const screen = document.getElementById('numpad-screen');
+            if (!screen) return;
+            if (enteredDoorCode.length === 0) screen.innerText = "_ _ _";
+            else if (enteredDoorCode.length === 1) screen.innerText = `${enteredDoorCode} _ _`;
+            else if (enteredDoorCode.length === 2) screen.innerText = `${enteredDoorCode[0]} ${enteredDoorCode[1]} _`;
+            else screen.innerText = `${enteredDoorCode[0]} ${enteredDoorCode[1]} ${enteredDoorCode[2]}`;
+        }
+
+        function checkNumpadCode() {
+            if (!activeDoorData) return;
+            const screen = document.getElementById('numpad-screen');
+            const entered = String(enteredDoorCode).trim();
+            const target = String(activeDoorData.targetCode).trim();
+            const collected = String(collectedDoorCode).trim();
+
+            if (entered === target || entered === collected) {
+                // DOĞRU ŞİFRE - KAPI AÇILDI!
+                if (screen) {
+                    screen.innerText = "✓ DOĞRU!";
+                    screen.className = "w-full bg-emerald-950 border-2 border-emerald-400 rounded-2xl h-11 flex items-center justify-center text-lg font-orbitron font-black text-emerald-300 mb-2.5 shadow-[0_0_20px_rgba(52,211,153,0.5)]";
+                }
+                AudioEngine.playVictory();
+                setTimeout(() => {
+                    unlockDoorDirectly();
+                }, 400);
+            } else {
+                // HATALI ŞİFRE
+                AudioEngine.playWrong();
+                if (screen) {
+                    screen.innerText = "✗ HATALI!";
+                    screen.className = "w-full bg-rose-950 border-2 border-rose-500 rounded-2xl h-11 flex items-center justify-center text-lg font-orbitron font-black text-rose-300 mb-2.5 animate-shake";
+                }
+                showToast("❌ Hatalı şifre! Bulduğunuz kodları kontrol edin.", "error");
+                setTimeout(() => {
+                    enteredDoorCode = "";
+                    if (screen) {
+                        screen.className = "w-full bg-slate-950 border-2 border-emerald-500 rounded-2xl h-11 flex items-center justify-center text-2xl font-orbitron tracking-[0.4em] text-emerald-400 mb-2.5 shadow-inner";
+                        updateNumpadScreen();
+                    }
+                }, 750);
+            }
+        }
+
+        function quickFillAndUnlock() {
+            if (!activeDoorData) return;
+            enteredDoorCode = String(collectedDoorCode);
+            updateNumpadScreen();
+            checkNumpadCode();
+        }
+
         function unlockDoorDirectly() {
             if (!activeDoorData) return;
             const doorId = activeDoorData.doorId;
             unlockedDoors.add(doorId);
             score += 300;
             timeLeft += 30;
-            AudioEngine.playVictory();
 
-            // Kapı hücresini haritada 0 (yürünebilir) yap ve oyuncuyu kapı karesine ilerlet
             for (let r = 0; r < MAZE_ROWS; r++) {
                 for (let c = 0; c < MAZE_COLS; c++) {
                     if (BASE_MAZE_MAP[r][c] === doorId + 1) {
@@ -1407,7 +1552,7 @@
         }
 
         // ==========================================
-        // 🎨 ÇİZİM DÖNGÜSÜ (CANVAS RENDER - AÇIK RENK ZEMİN & YÜKSEK KONTRAST)
+        // 🎨 ÇİZİM DÖNGÜSÜ (CANVAS RENDER - ASTRONOT KARAKTERİ & AÇIK TEMA)
         // ==========================================
         function render() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -1428,7 +1573,6 @@
                         ctx.fillStyle = '#1e293b';
                         ctx.fillRect(x, y, tileSize, tileSize);
                         
-                        // İç kenar çizgisi (Kutuları son derece belirgin yapar)
                         ctx.strokeStyle = '#334155';
                         ctx.lineWidth = 1.5;
                         ctx.strokeRect(x + 1, y + 1, tileSize - 2, tileSize - 2);
@@ -1508,25 +1652,25 @@
                 }
             }
 
-            // 3. Oyuncu Karakteri (👦 Sevimli Çocuk / Öğrenci Figürü)
+            // 3. Oyuncu Karakteri (👨‍🚀 ASTRONOT FİGÜRÜ)
             const px = player.col * tileSize + tileSize / 2;
             const py = player.row * tileSize + tileSize / 2;
             const charRadius = tileSize * 0.44;
 
-            // Parlayan mavi rozet
+            // Parlayan astronot vizör rozeti
             ctx.beginPath();
             ctx.arc(px, py, charRadius, 0, Math.PI * 2);
-            ctx.fillStyle = '#dbeafe';
+            ctx.fillStyle = 'rgba(2, 132, 199, 0.15)';
             ctx.fill();
             ctx.lineWidth = 2.5;
-            ctx.strokeStyle = '#2563eb';
+            ctx.strokeStyle = '#0284c7';
             ctx.stroke();
 
-            // Çocuk Avatarı
+            // Astronot Avatarı
             ctx.font = `${Math.floor(tileSize * 0.65)}px sans-serif`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillText('👦', px, py);
+            ctx.fillText('👨‍🚀', px, py);
 
             // 4. Mini Harita Çizimi
             renderMiniMap();
@@ -1557,8 +1701,8 @@
                 }
             }
 
-            // Oyuncu konumu (Mavi Nokta)
-            miniCtx.fillStyle = '#2563eb';
+            // Astronot konumu (Mavi Nokta)
+            miniCtx.fillStyle = '#0284c7';
             miniCtx.beginPath();
             miniCtx.arc(player.col * mw + mw / 2, player.row * mh + mh / 2, mw * 0.9, 0, Math.PI * 2);
             miniCtx.fill();
@@ -1569,10 +1713,18 @@
         // ==========================================
         window.addEventListener('keydown', (e) => {
             if (activeDoorData) {
-                if (e.key === 'Escape') {
+                if (doorCurrentQIndex >= 3) {
+                    if (e.key >= '0' && e.key <= '9') {
+                        handleNumpadKey(e.key, e);
+                    } else if (e.key === 'Backspace') {
+                        handleNumpadClear(e);
+                    } else if (e.key === 'Enter') {
+                        handleNumpadSubmit(e);
+                    } else if (e.key === 'Escape') {
+                        closeDoorPuzzle();
+                    }
+                } else if (e.key === 'Escape') {
                     closeDoorPuzzle();
-                } else if (e.key === 'Enter') {
-                    unlockDoorDirectly();
                 }
                 return;
             }
@@ -1595,7 +1747,7 @@
             }
         });
 
-        // Buton Dinleyicileri (Pointerdown & Touchstart ile anında tepki ve kaymayı engelleme)
+        // Buton Dinleyicileri (Pointerdown ile anında tepki ve kaymayı engelleme)
         function bindDirectionButton(id, dir) {
             const btn = document.getElementById(id);
             if (!btn) return;
