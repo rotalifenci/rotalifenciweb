@@ -8669,6 +8669,11 @@ async function openDigitalBookModal(options = {}) {
                         <span class="hidden md:inline">Yeni Sekmede Aç</span>
                     </a>
                 ` : ''}
+                <!-- Tam Ekran Akıllı Tahta Butonu -->
+                <button type="button" onclick="togglePresentationNativeFullscreen()" class="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Tam Ekran (F11)">
+                    <i class="fa-solid fa-expand text-xs"></i>
+                    <span class="hidden md:inline">Tam Ekran</span>
+                </button>
                 <!-- Kapat Butonu -->
                 <button type="button" onclick="closeDigitalBookModal()" class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 hover:bg-red-600 text-white flex items-center justify-center font-black transition-all shadow-md cursor-pointer ml-1" title="Kapat (ESC)">
                     <i class="fa-solid fa-xmark text-sm"></i>
@@ -9330,6 +9335,9 @@ function initBookEventListeners() {
 }
 
 function closeDigitalBookModal() {
+    if (document.fullscreenElement) {
+        try { document.exitFullscreen().catch(() => {}); } catch(e) {}
+    }
     if (DigitalBookState.observer) {
         DigitalBookState.observer.disconnect();
         DigitalBookState.observer = null;
@@ -10034,7 +10042,7 @@ function togglePresentationViewMode() {
 }
 
 function togglePresentationNativeFullscreen() {
-    const modal = document.getElementById("fullscreen-presentation-modal") || document.getElementById("inpage-document-modal") || document.documentElement;
+    const modal = document.getElementById("digital-book-modal") || document.getElementById("fullscreen-presentation-modal") || document.getElementById("inpage-document-modal") || document.documentElement;
     if (!document.fullscreenElement) {
         if (modal.requestFullscreen) {
             modal.requestFullscreen().catch(() => {});
@@ -10220,8 +10228,8 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         if (found.fileUrl && found.fileUrl !== "#" && found.fileUrl !== "") fallbackUrl = found.fileUrl;
     }
 
-    const checkFormat = String((found && found.format) || "").toUpperCase();
-    const checkFile = String((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
+    let checkFormat = String((found && found.format) || "").toUpperCase();
+    let checkFile = String((found && found.fileName) || fileName || "").toLocaleLowerCase("tr-TR");
     const checkTitle = String((found && found.title) || title || "").toLocaleLowerCase("tr-TR");
     const checkCat = String((found && found.category) || category || "").toLocaleLowerCase("tr-TR");
     const gradeStr = String((found && found.grade) || "5").replace(/^grade-/, "").trim();
@@ -10242,14 +10250,23 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
                     } else if (cachedItem.imageUrl && cachedItem.imageUrl.startsWith("data:") && cachedItem.imageUrl.length > 10) {
                         targetUrl = cachedItem.imageUrl;
                     }
+                    if (cachedItem.format && !checkFormat) checkFormat = String(cachedItem.format).toUpperCase();
+                    if (cachedItem.fileName && (!checkFile || checkFile === "materyal.pdf")) checkFile = String(cachedItem.fileName).toLocaleLowerCase("tr-TR");
                 }
             } catch(e) {}
         }
         if ((!targetUrl || targetUrl === "#" || targetUrl === "") && typeof RotaliDB !== "undefined" && RotaliDB.getFile && id) {
             try {
-                const rec = await RotaliDB.getFile(id);
+                let rec = await RotaliDB.getFile(id);
+                if ((!rec || !rec.blob) && RotaliDB.findFileByTitleOrName) {
+                    rec = await RotaliDB.findFileByTitleOrName(title, fileName);
+                }
                 if (rec && rec.blob) {
                     targetUrl = URL.createObjectURL(rec.blob);
+                    if (rec.fileName && (!checkFile || checkFile === "materyal.pdf")) checkFile = String(rec.fileName).toLocaleLowerCase("tr-TR");
+                    if (rec.fileType === "application/pdf" || (rec.fileName && rec.fileName.toLowerCase().endsWith(".pdf"))) {
+                        checkFormat = "PDF";
+                    }
                 }
             } catch (e) {}
         }
@@ -10285,11 +10302,36 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 0. 🖥️ SUNUMLAR (TAM EKRAN AKILLI TAHTA MODU)
-    const isPresentation = checkCat === "ders-sunumu" || checkCat.includes("sunum") ||
-                          checkFormat.includes("SUNUM") || checkFormat.includes("SLAYT") ||
-                          checkFormat.includes("PPT") || checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
-                          checkTitle.includes("sunum") || checkTitle.includes("slayt");
+    // 📚 1. ÖNCELİK: PDF DERS NOTLARI VE SUNUM PDF'LERİ
+    // Başlığında "Sunum" veya "Slayt" geçse bile, formatı PDF veya dosya uzantısı .pdf olan TÜM dokümanlar doğrudan dijital okuyucuda açılır!
+    const isPdfFile = checkFormat === "PDF" ||
+                      checkFile.endsWith(".pdf") ||
+                      (targetUrl && (targetUrl.toLowerCase().includes(".pdf") || targetUrl.startsWith("data:application/pdf"))) ||
+                      (found && String(found.format).toUpperCase() === "PDF") ||
+                      (found && String(found.fileName || "").toLowerCase().endsWith(".pdf")) ||
+                      (found && String(found.fileUrl || "").toLowerCase().includes(".pdf"));
+
+    if (isPdfFile) {
+        openDigitalBookModal({
+            id: (found && found.id) || id,
+            title: (found && found.title) || title || "Fen Bilimleri Ders Dokümanı",
+            grade: gradeStr,
+            fileUrl: targetUrl,
+            fileName: (found && found.fileName) || fileName || "dokuman.pdf",
+            cover: coverUrl,
+            category: checkCat
+        });
+        return;
+    }
+
+    // 🖥️ 2. GERÇEK OFİS SUNUMLARI (PowerPoint PPTX/PPT veya Dahili Akıllı Tahta Sunum Şablonu)
+    const isPresentation = !isPdfFile && (
+        checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
+        checkFormat.includes("PPT") || checkFormat.includes("SLAYT") ||
+        checkFormat === "SUNUM" ||
+        (id && String(id).startsWith("sunum-")) ||
+        (checkCat === "ders-sunumu" && !checkFile.endsWith(".pdf") && !checkFormat.includes("PDF"))
+    );
 
     if (isPresentation) {
         await openFullScreenPresentationModal({
