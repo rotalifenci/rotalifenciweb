@@ -684,16 +684,16 @@ const DEFAULT_CUSTOM_MATERIALS = [
         id: "mat-5-lab-kacis-gemini",
         grade: "5",
         category: "egitsel-oyunlar",
-        title: "Laboratuvar Kaçış Odası",
+        title: "Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti",
         unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
         targetSection: "lab",
-        desc: "Google Yapay Zekâ (Gemini) destekli interaktif Fen Laboratuvarı Kaçış Odası oyunu. Şifreleri çözün, kapıyı açın ve laboratuvardan kurtulun!",
-        fileName: "Laboratuvar Kaçış Odası",
+        desc: "Astronot ile 10 kapılı uzay ve bilim labirentinde mahsur kaldın! Ahşap ve güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!",
+        fileName: "Astronotun Kaçış Odası",
         fileUrl: "oyun-lab-kacis",
-        imageUrl: "assets/lab-guvenligi.svg",
+        imageUrl: "assets/astronot-kacis-odasi.png",
         format: "Eğitsel Oyun",
         hasBlob: false,
-        tags: ["MEB 2026-2027", "Laboratuvar", "Kaçış Odası", "Gemini AI", "İnteraktif Oyun"],
+        tags: ["MEB 2026-2027", "Laboratuvar", "Kaçış Odası", "Astronot", "İnteraktif Oyun"],
         visibility: "public",
         downloadCount: "4.250+",
         createdAt: "Yeni Yayınlandı"
@@ -1853,12 +1853,12 @@ function renderHomeRecentMaterialsSection() {
                                 <span>${actionUI.text}</span>
                             </button>
 
-                            ${isAdmin && !item.id.startsWith('default-rec-') ? `
+                            ${isAdmin ? `
                                 <div class="flex items-center gap-2 mt-1">
-                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold rounded-lg border border-amber-200 transition-all flex items-center justify-center gap-1">
+                                    <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[11px] font-bold rounded-lg border border-amber-200 transition-all flex items-center justify-center gap-1 cursor-pointer">
                                         <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                     </button>
-                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold rounded-lg border border-rose-200 transition-all flex items-center justify-center gap-1">
+                                    <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-[11px] font-bold rounded-lg border border-rose-200 transition-all flex items-center justify-center gap-1 cursor-pointer">
                                         <i class="fa-solid fa-trash-can"></i> Sil
                                     </button>
                                 </div>
@@ -4392,7 +4392,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     <span class="text-xs font-black ${normSubTab === 'egitsel-oyunlar' ? 'text-amber-700' : 'text-emerald-700'} uppercase tracking-wider">${grade.number}. Sınıf • Özel Bölüm</span>
                                     <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}">${normSubTab === 'egitsel-oyunlar' ? 'Laboratuvar Kaçış Odası & Oyunlar' : 'Laboratuvar & Deneyler'}</span>
                                 </div>
-                                <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${normSubTab === 'egitsel-oyunlar' ? 'Çılgın Profesörün Kaçış Odası & İnteraktif Laboratuvar Oyunları' : 'Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar'}</h4>
+                                 <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${normSubTab === 'egitsel-oyunlar' ? 'Astronotun Kaçış Odası & İnteraktif Laboratuvar Oyunları' : 'Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar'}</h4>
                             </div>
                         </div>
                         <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'} flex items-center justify-center transition-transform duration-300 ${isLabActive ? 'rotate-180' : ''}">
@@ -4409,12 +4409,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 
                                 <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
                                     <div class="relative w-full sm:w-72 md:w-80 h-48 sm:h-52 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/70 shadow-2xl bg-slate-900 group/img">
-                                        <img src="assets/lab-guvenligi.svg" alt="Çılgın Profesörün Laboratuvarı Kaçış Oyunu" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.src='rotali-fenci-logo.png'">
+                                        <img src="assets/astronot-kacis-odasi.png" alt="Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.src='rotali-fenci-logo.png'">
                                         <div class="absolute top-2.5 left-2.5 w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-amber-400 to-orange-500 shadow-lg flex items-center justify-center">
                                             <img src="rotali-fenci-logo.png" alt="Rotalı Fenci Logo" class="w-full h-full object-cover rounded-[14px]" onerror="this.src='ROTALI FENCİ.jpg'">
                                         </div>
                                         <span class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-xl shadow font-orbitron">
-                                            10 KAPI • ŞİFRELER
+                                            🚀 10 KAPI • ŞİFRELER
                                         </span>
                                     </div>
 
@@ -4428,14 +4428,14 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             </span>
                                         </div>
                                         <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
-                                            Çılgın Profesörün Laboratuvarı: Kaçış Odası
+                                            Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti
                                         </h4>
                                         <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3.5">
-                                            Profesörün kilitli laboratuvarında mahsur kaldın! Ahşap güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
+                                            Astronot ile 10 kapılı uzay ve bilim labirentinde mahsur kaldın! Ahşap ve güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
                                         </p>
                                         <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
                                             <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🚪 10 Ahşap Oda Kapısı</span>
-                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🧭 Rotalı Fenci Karakteri</span>
+                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">👨‍🚀 Astronot & Rotalı Fenci</span>
                                             <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">⏱️ 15sn Soru Sayacı</span>
                                             <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">❤️ 3 Can Hakkı</span>
                                             <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🏆 Maks 10.000 Canlı Skor</span>
@@ -4450,6 +4450,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
                                             <i class="fa-solid fa-up-right-from-square"></i> Yeni Sekmede Aç
                                         </a>
+                                        ${isAdmin ? `
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('mat-5-lab-kacis-gemini')" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer">
+                                                <i class="fa-solid fa-pen-to-square"></i> Oyunu Düzenle
+                                            </button>
+                                        ` : ''}
                                     </div>
                                 </div>
                             </div>
@@ -4486,13 +4491,25 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 ${g.desc}
                                             </p>
                                         </div>
-                                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                                            <span class="text-[10px] font-bold text-slate-500">
-                                                <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
-                                            </span>
-                                            <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
-                                                <i class="fa-solid fa-play text-[10px]"></i> Oyna
-                                            </button>
+                                        <div>
+                                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                                                <span class="text-[10px] font-bold text-slate-500">
+                                                    <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
+                                                </span>
+                                                <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                                                    <i class="fa-solid fa-play text-[10px]"></i> Oyna
+                                                </button>
+                                            </div>
+                                            ${isAdmin ? `
+                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${g.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${g.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ` : ''}
                                         </div>
                                     </div>
                                 `).join("")}
@@ -5119,8 +5136,7 @@ function renderGradeEducationalGames(grade, subData) {
             }
         ]
     };
-
-    const currentBuiltins = builtinCurriculumGames[gNum] || builtinCurriculumGames["5"];
+    const currentBuiltins = (builtinCurriculumGames[gNum] || builtinCurriculumGames["5"]).filter(g => !deletedIds.has(g.id));
 
     return `
         <div class="mb-10 animate-in fade-in duration-300">
@@ -5147,7 +5163,7 @@ function renderGradeEducationalGames(grade, subData) {
                 </div>
             </div>
 
-            <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT: ÇILGIN PROFESÖRÜN LABORATUVARI - KAÇIŞ ODASI OYUNU -->
+            <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT: ASTRONOTUN KAÇIŞ ODASI: 10 KAPILI BİLİM LABİRENTİ -->
             <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/80 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
                 <!-- Arka Plan Dekoratif Parıltılar -->
                 <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -5157,11 +5173,11 @@ function renderGradeEducationalGames(grade, subData) {
                     <!-- Sol: Karakter Logosu & Başlık Bilgisi -->
                     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
                         <div class="relative shrink-0">
-                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform">
-                                <img src="rotali-fenci-logo.png" alt="Rotalı Fenci" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='ROTALI FENCİ.jpg'">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
+                                <img src="assets/astronot-kacis-odasi.png" alt="Astronotun Kaçış Odası" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='rotali-fenci-logo.png'">
                             </div>
                             <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
-                                10 KAPI
+                                🚀 10 KAPI
                             </span>
                         </div>
 
@@ -5175,10 +5191,10 @@ function renderGradeEducationalGames(grade, subData) {
                                 </span>
                             </div>
                             <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
-                                Çılgın Profesörün Laboratuvarı: Kaçış Odası
+                                Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti
                             </h4>
                             <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
-                                Profesörün kilitli laboratuvarında mahsur kaldın! Ahşap oda kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
+                                Astronot ile 10 kapılı uzay ve bilim labirentinde mahsur kaldın! Ahşap ve güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
                             </p>
                             <!-- Özellik Rozetleri -->
                             <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
@@ -5186,13 +5202,16 @@ function renderGradeEducationalGames(grade, subData) {
                                     🚪 10 Ahşap Oda Kapısı
                                 </span>
                                 <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🧭 Rotalı Fenci Karakteri
+                                    👨‍🚀 Astronot & Rotalı Fenci
                                 </span>
                                 <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🔢 Sanal Şifre Tuş Takımı
+                                    ⏱️ 15sn Soru Sayacı
                                 </span>
                                 <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🔄 Yeniledikçe Değişen Sorular
+                                    ❤️ 3 Can Hakkı
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🏆 Maks 10.000 Canlı Skor
                                 </span>
                             </div>
                         </div>
@@ -5200,12 +5219,17 @@ function renderGradeEducationalGames(grade, subData) {
 
                     <!-- Sağ: Hızlı Başlatma Butonları -->
                     <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
-                        <button type="button" onclick="openInteractiveGameModal('oyun-lab-kacis', 'Çılgın Profesörün Laboratuvarı: Kaçış Odası')" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
-                            <i class="fa-solid fa-play text-base"></i> HEMEN OYNA
+                        <button type="button" onclick="window.location.href='oyunlar/laboratuvar-kacis-odasi.html'" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
+                            <i class="fa-solid fa-play text-base"></i> OYUNU AÇ (TAM EKRAN)
                         </button>
                         <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
                             <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
                         </a>
+                        ${isAdmin ? `
+                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('mat-5-lab-kacis-gemini')" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square"></i> Oyunu Düzenle
+                            </button>
+                        ` : ''}
                     </div>
                 </div>
             </div>
@@ -5285,13 +5309,25 @@ function renderGradeEducationalGames(grade, subData) {
                                 ${g.desc}
                             </p>
                         </div>
-                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                            <span class="text-[10px] font-bold text-slate-500">
-                                <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
-                            </span>
-                            <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-play text-[10px]"></i> Oyna
-                            </button>
+                        <div>
+                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-slate-500">
+                                    <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
+                                </span>
+                                <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Oyna
+                                </button>
+                            </div>
+                            ${isAdmin ? `
+                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${g.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                    </button>
+                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${g.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            ` : ''}
                         </div>
                     </div>
                 `).join("")}
@@ -8746,6 +8782,34 @@ function editCustomMaterial(id) {
                                 break;
                             }
                         }
+                        if (mat) break;
+                    }
+                    if (mat) break;
+                }
+            }
+
+            // 4.5. builtinUnitGamesMap ve builtinCurriculumGames kontrolü
+            if (!mat && typeof builtinUnitGamesMap !== "undefined") {
+                for (const [gKey, uMap] of Object.entries(builtinUnitGamesMap)) {
+                    for (const [secKey, gamesList] of Object.entries(uMap)) {
+                        if (Array.isArray(gamesList)) {
+                            const bg = gamesList.find(x => x && x.id === id);
+                            if (bg) {
+                                mat = {
+                                    id: bg.id,
+                                    title: bg.title,
+                                    grade: String(gKey),
+                                    category: "egitsel-oyunlar",
+                                    unit: secKey === "lab" ? "Laboratuvar" : `${secKey}. Ünite`,
+                                    targetSection: secKey,
+                                    format: bg.type || "İnteraktif Oyun",
+                                    desc: bg.desc || "",
+                                    fileUrl: bg.fileUrl || "",
+                                    imageUrl: "rotali-fenci-logo.png"
+                                };
+                                break;
+                            }
+                        }
                     }
                     if (mat) break;
                 }
@@ -8837,6 +8901,7 @@ let DigitalBookState = {
     currentPage: 1,
     totalPages: 1,
     currentScale: 1.0,
+    viewMode: "single", // "single" (varsayılan: 1 sayfa tam ekrana sığdırılır) | "continuous" (dikey akış)
     renderedPages: new Set(),
     renderingPages: new Set(),
     observer: null,
@@ -8844,7 +8909,8 @@ let DigitalBookState = {
     fallbackPages: [],
     mode: "fallback", // 'pdf' | 'fallback'
     keyListener: null,
-    scrollListener: null
+    scrollListener: null,
+    resizeListener: null
 };
 
 let bookZoomDebounceTimer = null;
@@ -9440,6 +9506,7 @@ async function openDigitalBookModal(options = {}) {
     DigitalBookState.currentPage = 1;
     DigitalBookState.totalPages = 1;
     DigitalBookState.currentScale = 1.0;
+    DigitalBookState.viewMode = "single"; // Varsayılan: 1 sayfa tam ekrana sığdırılır
     DigitalBookState.renderedPages.clear();
     DigitalBookState.renderingPages.clear();
     DigitalBookState.pdfDoc = null;
@@ -9476,21 +9543,21 @@ async function openDigitalBookModal(options = {}) {
                     <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[120px] sm:max-w-xs md:max-w-md text-white">${bookTitle}</h3>
                     <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
                         <span class="px-1.5 py-0.2 rounded bg-slate-800 text-red-400 border border-slate-700">${grade}. SINIF MEB</span>
-                        <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Dikey Akış Yükleniyor...</span>
+                        <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Tek Sayfa Açılıyor...</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Orta: Dikey Sayfa İlerletme ve Sayfa Numarası Butonları -->
+            <!-- Orta: Sayfa İlerletme ve Sayfa Numarası Butonları -->
             <div class="flex items-center gap-1 sm:gap-1.5 bg-slate-800/90 px-1.5 sm:px-3 py-1 rounded-2xl border border-slate-700 shadow-inner">
                 <!-- En Başa Dön -->
                 <button type="button" onclick="scrollBookToPage(1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer" title="En Başa Dön (1. Sayfa)">
-                    <i class="fa-solid fa-angles-up"></i>
+                    <i class="fa-solid fa-angles-left"></i>
                 </button>
                 
-                <!-- Önceki Sayfa (Yukarı) -->
-                <button type="button" onclick="scrollBookStep(-1)" class="px-2 sm:px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-red-600 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer" title="Önceki Sayfa (Yukarı Kaydır)">
-                    <i class="fa-solid fa-chevron-up"></i>
+                <!-- Önceki Sayfa -->
+                <button type="button" onclick="scrollBookStep(-1)" class="px-2 sm:px-3 py-1.5 rounded-xl bg-slate-700 hover:bg-red-600 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer" title="Önceki Sayfa (Sol Ok / Yukarı)">
+                    <i class="fa-solid fa-chevron-left"></i>
                     <span class="hidden md:inline text-[11px]">Önceki</span>
                 </button>
 
@@ -9502,19 +9569,19 @@ async function openDigitalBookModal(options = {}) {
                     <span id="book-total-pages" class="text-slate-300 font-bold min-w-[18px] text-center">${DigitalBookState.totalPages}</span>
                 </div>
 
-                <!-- Sonraki Sayfa (Aşağı) -->
-                <button type="button" onclick="scrollBookStep(1)" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-md cursor-pointer" title="Sonraki Sayfa (Aşağı Kaydır)">
+                <!-- Sonraki Sayfa -->
+                <button type="button" onclick="scrollBookStep(1)" class="px-2.5 sm:px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 text-white flex items-center gap-1.5 text-xs font-black transition-all shadow-md cursor-pointer" title="Sonraki Sayfa (Sağ Ok / Aşağı / Boşluk)">
                     <span class="hidden md:inline text-[11px]">Sonraki</span>
-                    <i class="fa-solid fa-chevron-down"></i>
+                    <i class="fa-solid fa-chevron-right"></i>
                 </button>
 
                 <!-- En Sona Git -->
                 <button type="button" onclick="scrollBookToPage(DigitalBookState.totalPages)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-slate-700/80 hover:bg-slate-600 text-white flex items-center justify-center text-xs font-bold transition-all cursor-pointer" title="En Sona Git">
-                    <i class="fa-solid fa-angles-down"></i>
+                    <i class="fa-solid fa-angles-right"></i>
                 </button>
             </div>
 
-            <!-- Sağ: BÜYÜTME / KÜÇÜLTME & KAPAT (İNDİRME BUTONU YOKTUR) -->
+            <!-- Sağ: BÜYÜTME / KÜÇÜLTME, MOD DEĞİŞTİRME & KAPAT -->
             <div class="flex items-center gap-1 sm:gap-2">
                 <div class="flex items-center gap-0.5 sm:gap-1 bg-slate-800 p-0.5 rounded-xl border border-slate-700 shadow-sm">
                     <button type="button" onclick="changeBookZoom(-0.2)" class="w-7 h-7 rounded-lg bg-slate-700 hover:bg-red-600 text-white flex items-center justify-center text-xs font-black cursor-pointer transition-colors" title="Küçült (-)">
@@ -9527,6 +9594,12 @@ async function openDigitalBookModal(options = {}) {
                         <i class="fa-solid fa-magnifying-glass-plus"></i>
                     </button>
                 </div>
+
+                <!-- Görünüm Modu Değiştirici: Tek Sayfa (Tam Ekran Fit) <-> Dikey Akış -->
+                <button type="button" onclick="toggleBookViewMode()" id="book-view-mode-btn" class="px-2 sm:px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Görünüm: Tek Sayfa / Dikey Akış">
+                    <i class="fa-solid fa-desktop text-xs" id="book-view-mode-icon"></i>
+                    <span class="hidden md:inline" id="book-view-mode-text">Tek Sayfa</span>
+                </button>
 
                 ${localStorage.getItem("rotali_is_admin") === "true" ? `
                     <button type="button" onclick="closeDigitalBookModal(); triggerEditMaterial('book-${grade}')" class="px-2.5 py-1 rounded-xl bg-amber-500 hover:bg-amber-600 text-white flex items-center gap-1 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Kitap Bilgilerini Düzenle">
@@ -9558,27 +9631,26 @@ async function openDigitalBookModal(options = {}) {
             </div>
         </div>
 
-        <!-- ORTA KESİNTİSİZ DİKEY KAYDIRMA ALANI (Fare Tekerleği ile Aşağı-Yukarı Akıcı Kaydırılır) -->
-        <div id="book-reader-scroll-area" class="relative flex-1 bg-slate-950 overflow-y-auto overflow-x-auto p-3 sm:p-6" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
-            <!-- Sayfaların Alt Alta Sıralandığı Dikey Taşıyıcı: Önizleme ekranı olmadan doğrudan sayfalar yüklenir -->
-            <div id="book-pages-container" class="flex flex-col items-center gap-6 max-w-full mx-auto w-fit min-h-full pb-16">
-                <!-- Hızlı Yükleme Göstergesi (Önizleme Adımı Olmadan Doğrudan Kitap Sayfalarına Geçer) -->
+        <!-- ORTA ALAN: 1 SAYFA TAM EKRAN (Varsayılan) VEYA DİKEY AKIŞ -->
+        <div id="book-reader-scroll-area" class="relative flex-1 bg-slate-950 overflow-hidden flex items-center justify-center p-1 sm:p-3" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+            <div id="book-pages-container" class="w-full h-full flex items-center justify-center relative">
+                <!-- Hızlı Yükleme Göstergesi -->
                 <div id="book-loading-spinner" class="py-24 flex flex-col items-center justify-center gap-4 text-white">
                     <div class="w-14 h-14 border-4 border-amber-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-amber-500/20"></div>
-                    <div class="text-base font-black text-white tracking-wide">Ders Kitabı Açılıyor...</div>
-                    <div class="text-xs text-slate-400">MEB resmî kitabı doğrudan yükleniyor, lütfen bekleyiniz</div>
+                    <div class="text-base font-black text-white tracking-wide">Ders Dokümanı Açılıyor...</div>
+                    <div class="text-xs text-slate-400">Sayfa ekrana tam sığdırılıyor, lütfen bekleyiniz</div>
                 </div>
             </div>
         </div>
 
         <!-- MOBİL ALT SAYFA ÇUBUĞU -->
         <div class="sm:hidden px-4 py-2 bg-slate-900/95 border-t border-slate-800 flex items-center justify-between gap-2 shrink-0 z-20 backdrop-blur-md">
-            <button type="button" onclick="scrollBookStep(-1)" class="py-1.5 px-3 bg-slate-800 text-white rounded-xl text-xs font-black flex items-center gap-1 border border-slate-700">
-                <i class="fa-solid fa-chevron-up"></i> Yukarı
+            <button type="button" onclick="scrollBookStep(-1)" class="py-1.5 px-3 bg-slate-800 text-white rounded-xl text-xs font-black flex items-center gap-1 border border-slate-700 cursor-pointer active:scale-95">
+                <i class="fa-solid fa-chevron-left"></i> Önceki
             </button>
             <span class="text-xs font-black text-amber-400" id="book-mob-counter">1 / ${DigitalBookState.totalPages}</span>
-            <button type="button" onclick="scrollBookStep(1)" class="py-1.5 px-3 bg-red-600 text-white rounded-xl text-xs font-black flex items-center gap-1 shadow-md">
-                Aşağı <i class="fa-solid fa-chevron-down"></i>
+            <button type="button" onclick="scrollBookStep(1)" class="py-1.5 px-3 bg-red-600 text-white rounded-xl text-xs font-black flex items-center gap-1 shadow-md cursor-pointer active:scale-95">
+                Sonraki <i class="fa-solid fa-chevron-right"></i>
             </button>
         </div>
     `;
@@ -9619,12 +9691,18 @@ function renderFallbackVerticalPages() {
         container.appendChild(topBanner);
     }
 
+    const isSingle = DigitalBookState.viewMode === "single";
+
     DigitalBookState.fallbackPages.forEach((p, idx) => {
         const pageNum = idx + 1;
         const pageEl = document.createElement("div");
         pageEl.id = `fallback-page-wrap-${pageNum}`;
         pageEl.className = "fallback-page-card bg-white shadow-2xl rounded-2xl p-6 sm:p-8 max-w-[850px] w-[94vw] sm:w-[88vw] md:w-[760px] text-slate-900 border border-slate-200 flex flex-col justify-between my-2";
         pageEl.dataset.page = pageNum;
+        if (isSingle) {
+            pageEl.style.display = (pageNum === (DigitalBookState.currentPage || 1)) ? "flex" : "none";
+            pageEl.style.maxHeight = "calc(100vh - 120px)";
+        }
         pageEl.innerHTML = `
             <div class="flex items-center justify-between border-b border-slate-100 pb-2 mb-4 shrink-0">
                 <span class="text-xs font-black text-red-600 uppercase tracking-wider">
@@ -9912,51 +9990,64 @@ async function setupVerticalPdfSlots(pdf) {
     const firstPage = await pdf.getPage(1);
     const baseVp = firstPage.getViewport({ scale: 1.0 });
     const scrollArea = document.getElementById("book-reader-scroll-area");
-    const availableWidth = Math.min(880, Math.max(320, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 36));
-    const baseFitScale = availableWidth / baseVp.width;
+    
+    const availWidth = Math.max(280, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 24);
+    const availHeight = Math.max(280, (scrollArea ? scrollArea.clientHeight : (window.innerHeight - 90)) - 24);
+    
+    let baseFitScale;
+    if (DigitalBookState.viewMode === "single") {
+        baseFitScale = Math.min(availWidth / baseVp.width, availHeight / baseVp.height);
+    } else {
+        baseFitScale = Math.min(availWidth, 920) / baseVp.width;
+    }
 
     const zoom = DigitalBookState.currentScale || 1.0;
     const targetWidth = Math.round(baseVp.width * baseFitScale * zoom);
     const targetHeight = Math.round(baseVp.height * baseFitScale * zoom);
 
+    const isSingle = DigitalBookState.viewMode === "single";
+
     const fragment = document.createDocumentFragment();
     for (let p = 1; p <= pdf.numPages; p++) {
         const slot = document.createElement("div");
         slot.id = `pdf-page-slot-${p}`;
-        slot.className = "pdf-page-card relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-700/60 my-2 flex flex-col items-center select-none";
+        slot.className = `pdf-page-card relative bg-white rounded-2xl shadow-2xl overflow-hidden border border-slate-700/60 my-2 flex flex-col items-center select-none ${isSingle ? 'max-w-full max-h-full' : ''}`;
         slot.dataset.page = p;
         slot.style.width = targetWidth + "px";
         slot.style.minHeight = targetHeight + "px";
-        // ⚡ GPU ve DOM Performans Canavarı: Yüzlerce sayfayı anında akıcı hale getirir
-        slot.style.contentVisibility = "auto";
+        slot.style.display = (!isSingle || p === (DigitalBookState.currentPage || 1)) ? "flex" : "none";
+        slot.style.contentVisibility = isSingle ? "visible" : "auto";
         slot.style.containIntrinsicSize = `${targetWidth}px ${targetHeight}px`;
 
         slot.innerHTML = `
-            <div class="w-full bg-slate-900 text-slate-400 text-[10px] font-bold px-3.5 py-1.5 flex items-center justify-between border-b border-slate-800 select-none">
+            <div class="w-full bg-slate-900 text-slate-400 text-[10px] font-bold px-3.5 py-1.5 flex items-center justify-between border-b border-slate-800 select-none shrink-0">
                 <span class="text-amber-400 font-extrabold flex items-center gap-1.5">
                     <i class="fa-solid fa-file-lines text-xs"></i> Sayfa ${p} / ${pdf.numPages}
                 </span>
                 <span class="truncate max-w-[220px] text-slate-400 font-medium">${DigitalBookState.bookInfo.title}</span>
             </div>
-            <div class="relative w-full flex items-center justify-center bg-white min-h-[300px]" id="pdf-page-body-${p}">
+            <div class="relative w-full flex-1 flex items-center justify-center bg-white min-h-[260px] overflow-hidden" id="pdf-page-body-${p}">
                 <div id="pdf-page-spinner-${p}" class="absolute inset-0 flex items-center justify-center text-slate-400 text-xs font-bold gap-2 bg-white/90 z-10">
                     <div class="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
                     <span>Sayfa ${p} Hazırlanıyor...</span>
                 </div>
-                <canvas id="pdf-canvas-${p}" class="block bg-white"></canvas>
+                <canvas id="pdf-canvas-${p}" class="block bg-white max-w-full max-h-full object-contain"></canvas>
             </div>
         `;
         fragment.appendChild(slot);
     }
     container.appendChild(fragment);
 
-    // 2. Sayfaların ekrana girdikçe çizilmesi için IntersectionObserver kur
-    setupPdfIntersectionObserver();
+    // 2. Sayfaların ekrana girdikçe çizilmesi için IntersectionObserver kur (sürekli akış modu için)
+    if (!isSingle) {
+        setupPdfIntersectionObserver();
+    }
 
     // 3. ⚡ İlk sayfayı ANINDA çiz, sonrakileri arka planda akıt
-    renderSinglePdfPage(1);
-    if (pdf.numPages >= 2) {
-        requestAnimationFrame(() => renderSinglePdfPage(2));
+    const startPage = DigitalBookState.currentPage || 1;
+    renderSinglePdfPage(startPage);
+    if (pdf.numPages >= startPage + 1) {
+        requestAnimationFrame(() => renderSinglePdfPage(startPage + 1));
     }
 }
 
@@ -9966,7 +10057,7 @@ function setupPdfIntersectionObserver() {
     }
 
     const scrollArea = document.getElementById("book-reader-scroll-area");
-    if (!scrollArea || typeof IntersectionObserver === "undefined") return;
+    if (!scrollArea || typeof IntersectionObserver === "undefined" || DigitalBookState.viewMode === "single") return;
 
     DigitalBookState.observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -9974,7 +10065,6 @@ function setupPdfIntersectionObserver() {
                 const pageNum = parseInt(entry.target.dataset.page, 10);
                 if (!isNaN(pageNum)) {
                     renderSinglePdfPage(pageNum);
-                    // Bir sonraki sayfayı da önceden yükle
                     if (pageNum + 1 <= DigitalBookState.totalPages) {
                         renderSinglePdfPage(pageNum + 1);
                     }
@@ -9993,6 +10083,7 @@ function setupPdfIntersectionObserver() {
 
 async function renderSinglePdfPage(pageNum) {
     if (!DigitalBookState.pdfDoc) return;
+    if (pageNum < 1 || pageNum > DigitalBookState.totalPages) return;
     if (DigitalBookState.renderedPages.has(pageNum) || DigitalBookState.renderingPages.has(pageNum)) return;
 
     DigitalBookState.renderingPages.add(pageNum);
@@ -10001,10 +10092,19 @@ async function renderSinglePdfPage(pageNum) {
         const page = await DigitalBookState.pdfDoc.getPage(pageNum);
         const baseVp = page.getViewport({ scale: 1.0 });
         const scrollArea = document.getElementById("book-reader-scroll-area");
-        const availableWidth = Math.min(880, Math.max(320, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 36));
-        const baseFitScale = availableWidth / baseVp.width;
-        const zoom = DigitalBookState.currentScale || 1.0;
+        
+        let availWidth = Math.max(280, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 24);
+        let availHeight = Math.max(280, (scrollArea ? scrollArea.clientHeight : (window.innerHeight - 90)) - 24);
+        
+        let baseFitScale;
+        if (DigitalBookState.viewMode === "single") {
+            baseFitScale = Math.min(availWidth / baseVp.width, availHeight / baseVp.height);
+        } else {
+            availWidth = Math.min(920, availWidth);
+            baseFitScale = availWidth / baseVp.width;
+        }
 
+        const zoom = DigitalBookState.currentScale || 1.0;
         const cssWidth = Math.round(baseVp.width * baseFitScale * zoom);
         const cssHeight = Math.round(baseVp.height * baseFitScale * zoom);
 
@@ -10012,19 +10112,28 @@ async function renderSinglePdfPage(pageNum) {
         if (slot) {
             slot.style.width = cssWidth + "px";
             slot.style.minHeight = cssHeight + "px";
+            if (DigitalBookState.viewMode === "single") {
+                slot.style.display = (pageNum === DigitalBookState.currentPage) ? "flex" : "none";
+                slot.style.maxHeight = "100%";
+            } else {
+                slot.style.display = "flex";
+            }
         }
 
         const canvas = document.getElementById(`pdf-canvas-${pageNum}`);
         const spinner = document.getElementById(`pdf-page-spinner-${pageNum}`);
         if (!canvas) return;
 
-        const dpr = Math.min(1.8, Math.max(window.devicePixelRatio || 1.0, 1.25));
+        const dpr = Math.min(2.0, Math.max(window.devicePixelRatio || 1.0, 1.25));
         const viewport = page.getViewport({ scale: baseFitScale * zoom * dpr });
 
         canvas.width = Math.round(viewport.width);
         canvas.height = Math.round(viewport.height);
         canvas.style.width = cssWidth + "px";
         canvas.style.height = cssHeight + "px";
+        canvas.style.maxWidth = "100%";
+        canvas.style.maxHeight = "100%";
+        canvas.style.objectFit = "contain";
 
         const ctx = canvas.getContext("2d", { alpha: false });
         ctx.fillStyle = "#ffffff";
@@ -10063,18 +10172,43 @@ function scrollBookToPage(pageNum) {
     pageNum = Math.max(1, Math.min(pageNum, DigitalBookState.totalPages));
     DigitalBookState.currentPage = pageNum;
 
-    const targetEl = document.getElementById(
-        DigitalBookState.mode === "pdf" ? `pdf-page-slot-${pageNum}` : `fallback-page-wrap-${pageNum}`
-    );
+    const scrollArea = document.getElementById("book-reader-scroll-area");
 
-    if (targetEl) {
-        targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (DigitalBookState.viewMode === "single") {
+        if (DigitalBookState.mode === "pdf") {
+            const allSlots = scrollArea ? scrollArea.querySelectorAll(".pdf-page-card") : [];
+            allSlots.forEach(slot => {
+                const p = parseInt(slot.dataset.page, 10);
+                slot.style.display = (p === pageNum) ? "flex" : "none";
+            });
+            renderSinglePdfPage(pageNum);
+            if (pageNum + 1 <= DigitalBookState.totalPages) renderSinglePdfPage(pageNum + 1);
+            if (pageNum - 1 >= 1) renderSinglePdfPage(pageNum - 1);
+        } else {
+            const allCards = scrollArea ? scrollArea.querySelectorAll(".fallback-page-card") : [];
+            allCards.forEach(card => {
+                const p = parseInt(card.dataset.page, 10);
+                card.style.display = (p === pageNum) ? "flex" : "none";
+            });
+        }
+        if (scrollArea) {
+            scrollArea.scrollTop = 0;
+            scrollArea.scrollLeft = 0;
+        }
+    } else {
+        const targetEl = document.getElementById(
+            DigitalBookState.mode === "pdf" ? `pdf-page-slot-${pageNum}` : `fallback-page-wrap-${pageNum}`
+        );
+        if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        if (DigitalBookState.mode === "pdf") {
+            renderSinglePdfPage(pageNum);
+            if (pageNum + 1 <= DigitalBookState.totalPages) renderSinglePdfPage(pageNum + 1);
+        }
     }
+
     updateBookToolbarPage(pageNum);
-
-    if (DigitalBookState.mode === "pdf") {
-        renderSinglePdfPage(pageNum);
-    }
 }
 
 function scrollBookStep(delta) {
@@ -10088,68 +10222,107 @@ function onBookPageInputChange(val) {
     }
 }
 
+function toggleBookViewMode() {
+    DigitalBookState.viewMode = DigitalBookState.viewMode === "single" ? "continuous" : "single";
+    const modeBtnText = document.getElementById("book-view-mode-text");
+    const modeBtnIcon = document.getElementById("book-view-mode-icon");
+    const scrollArea = document.getElementById("book-reader-scroll-area");
+    const container = document.getElementById("book-pages-container");
+
+    if (DigitalBookState.viewMode === "single") {
+        if (modeBtnText) modeBtnText.innerText = "Tek Sayfa";
+        if (modeBtnIcon) modeBtnIcon.className = "fa-solid fa-desktop text-xs";
+        if (scrollArea) {
+            scrollArea.className = "relative flex-1 bg-slate-950 overflow-hidden flex items-center justify-center p-1 sm:p-3";
+        }
+        if (container) {
+            container.className = "w-full h-full flex items-center justify-center relative";
+        }
+        if (DigitalBookState.observer) {
+            DigitalBookState.observer.disconnect();
+            DigitalBookState.observer = null;
+        }
+    } else {
+        if (modeBtnText) modeBtnText.innerText = "Dikey Akış";
+        if (modeBtnIcon) modeBtnIcon.className = "fa-solid fa-scroll text-xs";
+        if (scrollArea) {
+            scrollArea.className = "relative flex-1 bg-slate-950 overflow-y-auto overflow-x-auto p-3 sm:p-6";
+        }
+        if (container) {
+            container.className = "flex flex-col items-center gap-6 max-w-full mx-auto w-fit min-h-full pb-16";
+        }
+        if (scrollArea) {
+            scrollArea.querySelectorAll(".pdf-page-card, .fallback-page-card").forEach(s => {
+                s.style.display = "flex";
+            });
+        }
+        setupPdfIntersectionObserver();
+    }
+
+    applyBookZoomInPlace();
+    scrollBookToPage(DigitalBookState.currentPage);
+}
+window.toggleBookViewMode = toggleBookViewMode;
+
 async function applyBookZoomInPlace() {
     const scrollArea = document.getElementById("book-reader-scroll-area");
     if (!scrollArea) return;
 
     const anchorPage = DigitalBookState.currentPage || 1;
-    const anchorSlot = document.getElementById(
-        DigitalBookState.mode === "pdf" ? `pdf-page-slot-${anchorPage}` : `fallback-page-wrap-${anchorPage}`
-    );
-
-    // Büyütme öncesi mevcut sayfa içi bağıl dikey konumu kaydet
-    let relativeRatio = 0;
-    if (anchorSlot) {
-        const slotTop = anchorSlot.offsetTop;
-        const currentScroll = scrollArea.scrollTop;
-        const slotHeight = anchorSlot.offsetHeight || 1;
-        relativeRatio = Math.max(0, Math.min(1, (currentScroll - slotTop) / slotHeight));
-    }
+    const isSingle = DigitalBookState.viewMode === "single";
 
     if (DigitalBookState.mode === "pdf" && DigitalBookState.pdfDoc) {
         const firstPage = await DigitalBookState.pdfDoc.getPage(1);
         const baseVp = firstPage.getViewport({ scale: 1.0 });
-        const availableWidth = Math.min(880, Math.max(320, scrollArea.clientWidth - 36));
-        const baseFitScale = availableWidth / baseVp.width;
-        const zoom = DigitalBookState.currentScale || 1.0;
 
+        let availWidth = Math.max(280, (scrollArea ? scrollArea.clientWidth : window.innerWidth) - 24);
+        let availHeight = Math.max(280, (scrollArea ? scrollArea.clientHeight : (window.innerHeight - 90)) - 24);
+
+        let baseFitScale;
+        if (isSingle) {
+            baseFitScale = Math.min(availWidth / baseVp.width, availHeight / baseVp.height);
+        } else {
+            availWidth = Math.min(920, availWidth);
+            baseFitScale = availWidth / baseVp.width;
+        }
+
+        const zoom = DigitalBookState.currentScale || 1.0;
         const newWidth = Math.round(baseVp.width * baseFitScale * zoom);
         const newHeight = Math.round(baseVp.height * baseFitScale * zoom);
 
         const allSlots = scrollArea.querySelectorAll(".pdf-page-card");
         allSlots.forEach(slot => {
+            const p = parseInt(slot.dataset.page, 10);
             slot.style.width = newWidth + "px";
             slot.style.minHeight = newHeight + "px";
+            if (isSingle) {
+                slot.style.display = (p === anchorPage) ? "flex" : "none";
+                slot.style.maxHeight = "100%";
+            } else {
+                slot.style.display = "flex";
+            }
             const canvas = slot.querySelector("canvas");
             if (canvas) {
                 canvas.style.width = newWidth + "px";
                 canvas.style.height = newHeight + "px";
+                canvas.style.maxWidth = "100%";
+                canvas.style.maxHeight = "100%";
             }
         });
 
-        // Sayfayı kaydırmadan tam olduğumuz konuma sabitle
-        if (anchorSlot) {
-            scrollArea.scrollTop = anchorSlot.offsetTop + (relativeRatio * anchorSlot.offsetHeight);
-        }
-
-        // Görünür sayfaları yüksek çözünürlükle arka planda yeniden çiz
-        clearTimeout(bookZoomDebounceTimer);
-        bookZoomDebounceTimer = setTimeout(() => {
-            DigitalBookState.renderedPages.clear();
-            DigitalBookState.renderingPages.clear();
-            renderSinglePdfPage(anchorPage);
-            if (anchorPage > 1) renderSinglePdfPage(anchorPage - 1);
-            if (anchorPage < DigitalBookState.totalPages) renderSinglePdfPage(anchorPage + 1);
-        }, 80);
+        // Mevcut sayfayı yeniden çiz
+        DigitalBookState.renderedPages.delete(anchorPage);
+        renderSinglePdfPage(anchorPage);
     } else {
         const fallbackCards = document.querySelectorAll(".fallback-page-card");
         fallbackCards.forEach(c => {
-            c.style.transform = `scale(${DigitalBookState.currentScale})`;
-            c.style.transformOrigin = "top center";
+            const p = parseInt(c.dataset.page, 10);
+            if (isSingle) {
+                c.style.display = (p === anchorPage) ? "flex" : "none";
+            } else {
+                c.style.display = "flex";
+            }
         });
-        if (anchorSlot) {
-            scrollArea.scrollTop = anchorSlot.offsetTop + (relativeRatio * anchorSlot.offsetHeight);
-        }
     }
 }
 
@@ -10180,12 +10353,20 @@ function initBookEventListeners() {
 
         const scrollArea = document.getElementById("book-reader-scroll-area");
 
-        if (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
+        if (e.key === "ArrowRight" || e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ") {
             e.preventDefault();
-            if (scrollArea) scrollArea.scrollBy({ top: 320, behavior: "smooth" });
-        } else if (e.key === "ArrowUp" || e.key === "PageUp") {
+            if (DigitalBookState.viewMode === "single") {
+                scrollBookStep(1);
+            } else {
+                if (scrollArea) scrollArea.scrollBy({ top: 320, behavior: "smooth" });
+            }
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp" || e.key === "PageUp") {
             e.preventDefault();
-            if (scrollArea) scrollArea.scrollBy({ top: -320, behavior: "smooth" });
+            if (DigitalBookState.viewMode === "single") {
+                scrollBookStep(-1);
+            } else {
+                if (scrollArea) scrollArea.scrollBy({ top: -320, behavior: "smooth" });
+            }
         } else if (e.key === "Home") {
             e.preventDefault();
             scrollBookToPage(1);
@@ -10207,15 +10388,75 @@ function initBookEventListeners() {
     };
     window.addEventListener("keydown", DigitalBookState.keyListener);
 
+    // Akıllı Tahta / Pencere Boyut Değişimi Dinleyicisi
+    if (DigitalBookState.resizeListener) {
+        window.removeEventListener("resize", DigitalBookState.resizeListener);
+    }
+    let resizeTimer = null;
+    DigitalBookState.resizeListener = () => {
+        if (!document.getElementById("digital-book-modal")) return;
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+            if (DigitalBookState.viewMode === "single") {
+                applyBookZoomInPlace();
+            }
+        }, 150);
+    };
+    window.addEventListener("resize", DigitalBookState.resizeListener);
+
     const scrollArea = document.getElementById("book-reader-scroll-area");
     if (!scrollArea) return;
 
+    // Dokunmatik Swipe (Akıllı Tahta & Telefon)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    scrollArea.addEventListener("touchstart", (e) => {
+        if (e.touches && e.touches[0]) {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }
+    }, { passive: true });
+
+    scrollArea.addEventListener("touchend", (e) => {
+        if (!e.changedTouches || !e.changedTouches[0]) return;
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        const dy = e.changedTouches[0].clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
+            if (dx < 0) {
+                scrollBookStep(1); // Sağa kaydırınca sonraki slayt
+            } else {
+                scrollBookStep(-1); // Sola kaydırınca önceki slayt
+            }
+        }
+    }, { passive: true });
+
+    // Fare Tekerleği: Tek sayfa modunda slayt atlama
+    let lastWheelTime = 0;
+    scrollArea.addEventListener("wheel", (e) => {
+        if (DigitalBookState.viewMode !== "single") return;
+        if (DigitalBookState.currentScale <= 1.05) {
+            const now = Date.now();
+            if (now - lastWheelTime < 320) return;
+            if (Math.abs(e.deltaY) > 25) {
+                e.preventDefault();
+                lastWheelTime = now;
+                if (e.deltaY > 0) {
+                    scrollBookStep(1);
+                } else {
+                    scrollBookStep(-1);
+                }
+            }
+        }
+    }, { passive: false });
+
+    // Sürekli dikey akış modu için scroll listener
     if (DigitalBookState.scrollListener) {
         scrollArea.removeEventListener("scroll", DigitalBookState.scrollListener);
     }
 
     let scrollTimeout = null;
     DigitalBookState.scrollListener = () => {
+        if (DigitalBookState.viewMode === "single") return;
         if (scrollTimeout) return;
         scrollTimeout = setTimeout(() => {
             scrollTimeout = null;
@@ -10257,8 +10498,12 @@ function closeDigitalBookModal() {
         window.removeEventListener("keydown", DigitalBookState.keyListener);
         DigitalBookState.keyListener = null;
     }
+    if (DigitalBookState.resizeListener) {
+        window.removeEventListener("resize", DigitalBookState.resizeListener);
+        DigitalBookState.resizeListener = null;
+    }
     if (DigitalBookState.scrollListener) {
-        const scrollArea = document.getElementById("book-scroll-area");
+        const scrollArea = document.getElementById("book-reader-scroll-area");
         if (scrollArea) {
             scrollArea.removeEventListener("scroll", DigitalBookState.scrollListener);
         }

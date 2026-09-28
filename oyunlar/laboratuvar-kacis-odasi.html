@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Rotalı Fenci: 10 Kapılı Bilim Labirenti</title>
+    <title>Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -206,7 +206,7 @@
         
         <!-- LABİRENT TUVAL KAPSAYICISI -->
         <div id="canvas-wrapper" class="flex-1 w-full h-full min-h-0 min-w-0 flex items-center justify-center relative p-1 sm:p-2 overflow-hidden">
-            <canvas id="maze-canvas" class="block bg-white shadow-xl cursor-pointer rounded-2xl touch-none border-2 border-slate-300"></canvas>
+            <canvas id="maze-canvas" class="block bg-white shadow-xl cursor-default rounded-2xl touch-none border-2 border-slate-300"></canvas>
             
             <!-- Açık Renkli, Şık HUD Rozeti -->
             <div id="mission-hud" class="absolute top-2 left-2 bg-white/95 backdrop-blur rounded-full px-3 py-1 border-2 border-slate-300 shadow-md pointer-events-none z-10 flex items-center gap-1.5 transition-all">
@@ -1358,15 +1358,7 @@
                 stepIndex++;
             }, 85);
         }
-
-        canvas.addEventListener('click', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            const targetCol = Math.floor(clickX / (canvas.clientWidth / MAZE_COLS));
-            const targetRow = Math.floor(clickY / (canvas.clientHeight / MAZE_ROWS));
-            walkToTile(targetCol, targetRow);
-        });
+        // Tuval tıklaması ile kontrol devre dışı: Karakter yalnızca yön tuşlarıyla hareket eder
 
         // 📱 MOBİL SWIPE DESTEĞİ
         let touchStartX = 0;
