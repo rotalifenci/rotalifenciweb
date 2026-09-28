@@ -344,8 +344,8 @@ const CloudSyncManager = {
                             merged.imageUrl = localItem.imageUrl;
                         }
                         mergedMap.set(localItem.id, merged);
-                    } else if (!isSupabaseSource) {
-                        // Bulut veritabanı aktifken, bulutta bulunmayan (silinmiş) eski yerel materyaller ASLA diriltilmez
+                    } else {
+                        // Bu cihazdaki yerel materyal bulutta henüz yoksa ve silinmişler listesinde değilse koru ve buluta yükle!
                         hasNewLocalToUpload = true;
                         mergedMap.set(localItem.id, localItem);
                     }
@@ -354,10 +354,14 @@ const CloudSyncManager = {
 
             const finalMergedList = Array.from(mergedMap.values());
 
-            // Görsel URL referanslarını güvene al
+            // Görsel URL referanslarını güvene al (Sadece gerçek görseller atanabilir, dokümanlar asla görsel olamaz)
             finalMergedList.forEach(item => {
-                if (item && !item.imageUrl && item.fileUrl && (item.fileUrl.startsWith("data:") || item.fileUrl.startsWith("http") || item.fileUrl.startsWith("assets/"))) {
-                    item.imageUrl = item.fileUrl;
+                if (item && !item.imageUrl && item.fileUrl) {
+                    const fu = item.fileUrl.toLowerCase();
+                    const isRealImg = fu.startsWith("data:image") || fu.endsWith(".png") || fu.endsWith(".jpg") || fu.endsWith(".jpeg") || fu.endsWith(".webp") || fu.endsWith(".svg") || (fu.startsWith("assets/") && (fu.endsWith(".png") || fu.endsWith(".jpg") || fu.endsWith(".jpeg") || fu.endsWith(".svg")));
+                    if (isRealImg) {
+                        item.imageUrl = item.fileUrl;
+                    }
                 }
             });
 
@@ -1012,16 +1016,135 @@ if (typeof window !== "undefined") {
     ensurePdfWorkerConfigured();
 }
 
-function generateSmartDocumentCover(title = "Ders Materyali", format = "DOKÜMAN", unit = "", grade = "8") {
+function uint8ArrayToBase64(bytes) {
+    if (!bytes) return "";
+    let binary = "";
+    const len = bytes.byteLength;
+    const chunkSize = 8192;
+    for (let i = 0; i < len; i += chunkSize) {
+        const chunk = bytes.subarray(i, Math.min(i + chunkSize, len));
+        binary += String.fromCharCode.apply(null, chunk);
+    }
+    return (typeof btoa === "function") ? btoa(binary) : "";
+}
+
+function resizeImageCoverDataUrl(dataUrl, maxDim = 640) {
+    return new Promise((resolve) => {
+        if (!dataUrl || typeof document === "undefined") return resolve(dataUrl);
+        const img = new Image();
+        img.onload = () => {
+            let w = img.width, h = img.height;
+            if (w <= maxDim && h <= maxDim && dataUrl.length < 80000) {
+                return resolve(dataUrl);
+            }
+            if (w > h) {
+                h = Math.round((h * maxDim) / w);
+                w = maxDim;
+            } else {
+                w = Math.round((w * maxDim) / h);
+                h = maxDim;
+            }
+            const canvas = document.createElement("canvas");
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0, w, h);
+            resolve(canvas.toDataURL("image/jpeg", 0.82));
+        };
+        img.onerror = () => resolve(dataUrl);
+        img.src = dataUrl;
+    });
+}
+
+// 📊 PPTX SUNUMLARINDAN 1. SLAYT VEYA KAPAK GÖRSELİNİ ÇIKAR
+async function extractCoverFromPptxSource(source) {
+    if (!source || typeof window === "undefined") return null;
+    try {
+        let arrayBuffer = null;
+        if (typeof Blob !== "undefined" && (source instanceof Blob || source instanceof File)) {
+            arrayBuffer = await source.arrayBuffer();
+        } else if (source instanceof ArrayBuffer) {
+            arrayBuffer = source;
+        } else if (source instanceof Uint8Array) {
+            arrayBuffer = source.buffer;
+        } else if (typeof source === "string" && (source.startsWith("http") || source.startsWith("data:") || source.startsWith("blob:"))) {
+            const res = await fetch(source);
+            if (res.ok) arrayBuffer = await res.arrayBuffer();
+        }
+        if (!arrayBuffer) return null;
+
+        // 1. JSZip ile ZIP içindeki slayt görsellerini veya küçük resmi tara
+        if (window.JSZip) {
+            const zip = await window.JSZip.loadAsync(arrayBuffer);
+            
+            // A) 1. Öncelik: ppt/media/image1.png / image1.jpg (Geniş ekran tam başlık slaytı görseli)
+            const titleMediaCandidates = [
+                "ppt/media/image1.png", "ppt/media/image1.jpg", "ppt/media/image1.jpeg",
+                "ppt/media/image2.png", "ppt/media/image2.jpg", "ppt/media/image2.jpeg"
+            ];
+            for (const path of titleMediaCandidates) {
+                const fileEntry = zip.file(path);
+                if (fileEntry) {
+                    const u8 = await fileEntry.async("uint8array");
+                    if (u8 && u8.length > 5000) {
+                        const mime = path.toLowerCase().endsWith(".png") ? "image/png" : "image/jpeg";
+                        const base64 = uint8ArrayToBase64(u8);
+                        const rawDataUrl = `data:${mime};base64,${base64}`;
+                        return await resizeImageCoverDataUrl(rawDataUrl, 640);
+                    }
+                }
+            }
+
+            // B) 2. Öncelik: docProps/thumbnail.jpeg veya thumbnail.png
+            const thumbEntry = zip.file("docProps/thumbnail.jpeg") || zip.file("docProps/thumbnail.png");
+            if (thumbEntry) {
+                const u8 = await thumbEntry.async("uint8array");
+                // 2500 bayttan büyükse (boş beyaz dummy değilse)
+                if (u8 && u8.length > 2500) {
+                    const isPng = thumbEntry.name.toLowerCase().endsWith(".png");
+                    const mime = isPng ? "image/png" : "image/jpeg";
+                    const base64 = uint8ArrayToBase64(u8);
+                    return `data:${mime};base64,${base64}`;
+                }
+            }
+        }
+    } catch (err) {
+        console.warn("PPTX kapak görseli çıkarılamadı:", err);
+    }
+    return null;
+}
+
+function generateSmartDocumentCover(title = "Ders Materyali", format = "DOKÜMAN", unit = "", grade = "8", fileName = "", id = "") {
     const cleanTitle = String(title || "Fen Bilimleri Materyali").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     const cleanUnit = String(unit || `${grade}. Sınıf Fen Bilimleri`).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const cleanFileName = String(fileName || "").replace(/\.[^/.]+$/, "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").trim();
     const fmt = String(format || "DOKÜMAN").toUpperCase();
     const g = String(grade || "8").replace(/^grade-/, "").trim();
 
+    // Benzersiz tohum hesapla (Aynı başlıklı 2 dosya ASLA aynı renk ve kapak olamaz!)
+    const seedStr = (String(id || "") + " " + String(fileName || "") + " " + String(title || "")).trim();
+    let hash = 0;
+    for (let i = 0; i < seedStr.length; i++) {
+        hash = ((hash << 5) - hash) + seedStr.charCodeAt(i);
+        hash |= 0;
+    }
+    const colorIndex = Math.abs(hash) % 6;
+
     let bgStart = "#1e293b", bgEnd = "#0f172a", accent = "#38bdf8", badgeBg = "#0284c7";
     let iconSymbol = "📄";
+
     if (fmt.includes("PPT") || fmt.includes("SLAYT") || fmt.includes("SUNUM")) {
-        bgStart = "#c2410c"; bgEnd = "#7c2d12"; accent = "#fed7aa"; badgeBg = "#ea580c"; iconSymbol = "📊";
+        iconSymbol = "📊";
+        const presentationPalettes = [
+            { bgStart: "#c2410c", bgEnd: "#7c2d12", accent: "#fed7aa", badgeBg: "#ea580c" }, // Sıcak Alev
+            { bgStart: "#1e1b4b", bgEnd: "#0f172a", accent: "#818cf8", badgeBg: "#4f46e5" }, // Kozmik İndigo
+            { bgStart: "#881337", bgEnd: "#4c0519", accent: "#fda4af", badgeBg: "#e11d48" }, // Yıldız Kırmızı
+            { bgStart: "#134e4a", bgEnd: "#042f2e", accent: "#5eead4", badgeBg: "#0d9488" }, // Göksel Turkuaz
+            { bgStart: "#3b0764", bgEnd: "#1e1b4b", accent: "#d8b4fe", badgeBg: "#9333ea" }, // Asil Mor
+            { bgStart: "#78350f", bgEnd: "#451a03", accent: "#fde68a", badgeBg: "#d97706" }  // Ahşap Kehribar
+        ];
+        const p = presentationPalettes[colorIndex];
+        bgStart = p.bgStart; bgEnd = p.bgEnd; accent = p.accent; badgeBg = p.badgeBg;
     } else if (fmt.includes("SORU") || fmt.includes("DENEME") || fmt.includes("TEST")) {
         bgStart = "#065f46"; bgEnd = "#064e3b"; accent = "#a7f3d0"; badgeBg = "#059669"; iconSymbol = "📝";
     } else if (fmt.includes("VİDEO") || fmt.includes("VIDEO") || fmt.includes("MP4")) {
@@ -1029,7 +1152,17 @@ function generateSmartDocumentCover(title = "Ders Materyali", format = "DOKÜMAN
     } else if (fmt.includes("PROJE") || fmt.includes("TÜBİTAK")) {
         bgStart = "#4338ca"; bgEnd = "#312e81"; accent = "#c7d2fe"; badgeBg = "#4f46e5"; iconSymbol = "🚀";
     } else {
-        bgStart = "#1e3a8a"; bgEnd = "#172554"; accent = "#93c5fd"; badgeBg = "#2563eb"; iconSymbol = "📑";
+        const docPalettes = [
+            { bgStart: "#1e3a8a", bgEnd: "#172554", accent: "#93c5fd", badgeBg: "#2563eb" },
+            { bgStart: "#0f766e", bgEnd: "#134e4a", accent: "#99f6e4", badgeBg: "#0d9488" },
+            { bgStart: "#3730a3", bgEnd: "#1e1b4b", accent: "#c7d2fe", badgeBg: "#4f46e5" },
+            { bgStart: "#155e75", bgEnd: "#083344", accent: "#a5f3fc", badgeBg: "#0891b2" },
+            { bgStart: "#1e293b", bgEnd: "#0f172a", accent: "#38bdf8", badgeBg: "#0284c7" },
+            { bgStart: "#1c1917", bgEnd: "#0c0a09", accent: "#f59e0b", badgeBg: "#d97706" }
+        ];
+        const dp = docPalettes[colorIndex];
+        bgStart = dp.bgStart; bgEnd = dp.bgEnd; accent = dp.accent; badgeBg = dp.badgeBg;
+        iconSymbol = "📑";
     }
 
     const words = cleanTitle.split(" ");
@@ -1049,21 +1182,33 @@ function generateSmartDocumentCover(title = "Ders Materyali", format = "DOKÜMAN
 
     const tspans = lines.map((l, i) => `<tspan x="240" dy="${i === 0 ? 0 : 36}">${l}</tspan>`).join("");
 
+    // Dosya adı başlıktan farklıysa altta özel rozet olarak göster
+    let fileNameTag = "";
+    if (cleanFileName && cleanFileName.toLowerCase() !== cleanTitle.toLowerCase() && cleanFileName !== "materyal" && cleanFileName !== "dosya") {
+        const shortFn = cleanFileName.length > 28 ? cleanFileName.substring(0, 26) + "..." : cleanFileName;
+        fileNameTag = `
+        <rect x="60" y="468" width="360" height="26" rx="13" fill="#ffffff" fill-opacity="0.14" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1"/>
+        <text x="240" y="485" fill="#ffffff" font-size="11" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle">📁 ${shortFn}</text>
+        `;
+    }
+
+    const gradId = "grad_" + Math.abs(hash);
+
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
         <defs>
-            <linearGradient id="bgGrad_${Math.abs(cleanTitle.length)}" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id="${gradId}" x1="0%" y1="0%" x2="100%" y2="100%">
                 <stop offset="0%" stop-color="${bgStart}"/>
                 <stop offset="100%" stop-color="${bgEnd}"/>
             </linearGradient>
-            <linearGradient id="cardGrad_${Math.abs(cleanTitle.length)}" x1="0%" y1="0%" x2="0%" y2="100%">
+            <linearGradient id="card_${gradId}" x1="0%" y1="0%" x2="0%" y2="100%">
                 <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12"/>
                 <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
             </linearGradient>
         </defs>
-        <rect width="480" height="640" rx="32" fill="url(#bgGrad_${Math.abs(cleanTitle.length)})"/>
-        <circle cx="420" cy="80" r="150" fill="${accent}" opacity="0.08"/>
-        <circle cx="60" cy="560" r="130" fill="${accent}" opacity="0.06"/>
-        <rect x="30" y="30" width="420" height="580" rx="24" fill="url(#cardGrad_${Math.abs(cleanTitle.length)})" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.5"/>
+        <rect width="480" height="640" rx="32" fill="url(#${gradId})"/>
+        <circle cx="420" cy="80" r="150" fill="${accent}" opacity="0.10"/>
+        <circle cx="60" cy="560" r="130" fill="${accent}" opacity="0.07"/>
+        <rect x="30" y="30" width="420" height="580" rx="24" fill="url(#card_${gradId})" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.5"/>
         <rect x="54" y="54" width="130" height="32" rx="16" fill="${badgeBg}"/>
         <text x="119" y="74" fill="#ffffff" font-size="12" font-weight="900" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" letter-spacing="1">ROTALI FENCİ</text>
         <rect x="330" y="54" width="96" height="32" rx="16" fill="#ffffff" fill-opacity="0.15"/>
@@ -1075,8 +1220,9 @@ function generateSmartDocumentCover(title = "Ders Materyali", format = "DOKÜMAN
         <text x="240" y="325" fill="#ffffff" font-size="22" font-weight="900" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle">
             ${tspans}
         </text>
-        <text x="240" y="510" fill="${accent}" font-size="14" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" opacity="0.95">${cleanUnit.substring(0, 34)}</text>
-        <line x1="70" y1="540" x2="410" y2="540" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
+        ${fileNameTag}
+        <text x="240" y="520" fill="${accent}" font-size="14" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" opacity="0.95">${cleanUnit.substring(0, 34)}</text>
+        <line x1="70" y1="544" x2="410" y2="544" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
         <text x="240" y="575" fill="#ffffff" fill-opacity="0.6" font-size="11" font-weight="600" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" letter-spacing="0.5">Özgün Eğitim Materyali • Akıllı Tahta Uyumlu</text>
     </svg>`;
 
@@ -1150,6 +1296,8 @@ function resolveMaterialCover(item) {
         // Eğer görsel assets/kapak-X.jpg ise ama bu materyal MEB DERS KİTABI DEĞİLSE, ders kitabı kapağını zorlama!
         if (rawImg.includes("assets/kapak-") && !isActualTextbook) {
             // Hatalı varsayılan kapak yerine akıllı kapağa devam et
+        } else if (rawImg.endsWith(".pptx") || rawImg.endsWith(".ppt") || rawImg.endsWith(".pdf") || rawImg.endsWith(".docx") || rawImg.endsWith(".doc") || rawImg.endsWith(".zip")) {
+            // Doküman dosyası asla doğrudan görsel src olarak kullanılamaz!
         } else {
             return rawImg;
         }
@@ -1177,19 +1325,22 @@ function resolveMaterialCover(item) {
         return "assets/unite-bilgilendirmeleri-gorsel.png";
     }
 
-    // 6. Bellekte taranmış PDF kapağı var mı?
+    // 6. Bellekte taranmış PDF veya PPTX kapağı var mı?
     if (item.id && window._pdfThumbCache && window._pdfThumbCache[item.id]) {
         return window._pdfThumbCache[item.id];
     }
+    if (item.id && window._pptxThumbCache && window._pptxThumbCache[item.id]) {
+        return window._pptxThumbCache[item.id];
+    }
 
     // 7. Otomatik Akıllı Belge Kapağı (Ders Kitabı kapağı yerine belgenin kendi format ve başlığına uygun kapak)
-    return generateSmartDocumentCover(item.title || "Fen Bilimleri", item.format || "DOKÜMAN", item.unit || `${g}. Sınıf Fen`, g);
+    return generateSmartDocumentCover(item.title || "Fen Bilimleri", item.format || "DOKÜMAN", item.unit || `${g}. Sınıf Fen`, g, item.fileName || "", item.id || "");
 }
 
-function handleImageCoverError(imgEl, title = "Materyal", format = "DOKÜMAN", unit = "", grade = "8") {
+function handleImageCoverError(imgEl, title = "Materyal", format = "DOKÜMAN", unit = "", grade = "8", fileName = "", id = "") {
     if (!imgEl || imgEl.dataset.errorHandled) return;
     imgEl.dataset.errorHandled = "true";
-    imgEl.src = generateSmartDocumentCover(title, format, unit, grade);
+    imgEl.src = generateSmartDocumentCover(title, format, unit, grade, fileName, id);
 }
 
 let _pdfThumbnailQueueRunning = false;
@@ -1430,7 +1581,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                                 <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
                                 <div class="mat-preview-box relative w-full h-72 sm:h-80 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
-                                    <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${itemGrade || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                    <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${itemGrade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                     <div class="absolute bottom-2.5 right-2.5">
                                         <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                             <i class="${actionUI.icon}"></i> ${actionUI.text}
@@ -2055,7 +2206,7 @@ function renderHomeRecentMaterialsSection() {
                             <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">${item.title}</h4>
                             <!-- Görsel Kapak Kutusu -->
                             <div class="mat-preview-box relative w-full h-52 sm:h-60 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
-                                <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                 <div class="absolute bottom-2.5 right-2.5">
                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                         <i class="${actionUI.icon}"></i> ${actionUI.text}
@@ -2222,7 +2373,7 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
 
                                         <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
                                         <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
-                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                     <i class="${actionUI.icon}"></i> ${actionUI.text}
@@ -4091,7 +4242,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         </h5>
                                                         <!-- Görsel Kapak Kutusu -->
                                                         <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:${isSunum ? 'border-orange-500/40' : 'border-blue-500/40'} cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')">
-                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                             <div class="absolute bottom-2.5 right-2.5">
                                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:${isSunum ? 'bg-orange-600' : 'bg-blue-600'} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                                     <i class="fa-solid fa-eye"></i> İncele & Aç
@@ -4545,7 +4696,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     </h5>
                                                     <!-- Görsel Kapak Kutusu -->
                                                     <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${itemCover.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', true)">
-                                                        <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                        <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                         <div class="absolute bottom-2.5 right-2.5">
                                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                                 <i class="fa-solid fa-eye text-xs"></i> Görseli Aç
@@ -14090,7 +14241,15 @@ async function autoExtractCoverFromFile(file, ext) {
             console.warn("PDF kapak sayfası oluşturulamadı:", pdfErr);
         }
     }
-    // C) Video Dosyası ise (1. saniyedeki kareyi yakala)
+    // C) PPTX / PPT Sunum Dosyası ise (1. Slayt veya Dahili Kapak Görselini Çıkar)
+    else if (cleanExt === "pptx" || cleanExt === "ppt" || (file && file.name && /\.(pptx|ppt)$/i.test(file.name))) {
+        try {
+            autoCover = await extractCoverFromPptxSource(file);
+        } catch(pptxErr) {
+            console.warn("PPTX kapak sayfası oluşturulamadı:", pptxErr);
+        }
+    }
+    // D) Video Dosyası ise (1. saniyedeki kareyi yakala)
     else if (file && ((file.type && file.type.startsWith("video/")) || ["mp4", "webm", "ogg", "mov"].includes(cleanExt))) {
         try {
             autoCover = await new Promise((resolve) => {
@@ -14123,7 +14282,7 @@ async function autoExtractCoverFromFile(file, ext) {
         }
     }
 
-    // D) PPTX, DOCX veya diğer dokümanlar için (veya PDF'ten görsel çıkarılamazsa) akıllı doküman kapağı oluştur
+    // E) PPTX, DOCX veya diğer dokümanlar için (veya dosyadan görsel çıkarılamazsa) akıllı doküman kapağı oluştur
     if (!autoCover) {
         const titleInput = document.getElementById("adv-title-input");
         const tVal = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : (file ? file.name.replace(/\.[^/.]+$/, "") : "Ders Materyali");
@@ -14131,7 +14290,7 @@ async function autoExtractCoverFromFile(file, ext) {
         const uVal = unitSelect ? unitSelect.value : "";
         const gradeSelect = document.getElementById("adv-grade-select");
         const gVal = gradeSelect ? gradeSelect.value : "8";
-        autoCover = generateSmartDocumentCover(tVal, cleanExt.toUpperCase(), uVal, gVal);
+        autoCover = generateSmartDocumentCover(tVal, cleanExt.toUpperCase(), uVal, gVal, file ? file.name : "", "");
     }
 
     // Kullanıcı henüz manuel bir kapak seçmediyse veya otomatik kapak oluştuysa arayüze ve state'e yansıt
@@ -14143,10 +14302,14 @@ async function autoExtractCoverFromFile(file, ext) {
             previewBox.classList.add("flex");
         }
         if (previewTitle) {
-            previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> ${cleanExt === 'pdf' ? 'Dosyanın 1. Sayfasından Otomatik Kapak Oluşturuldu' : 'Özel Kapak Görseli Hazır'}</span>`;
+            const isPdf = cleanExt === 'pdf';
+            const isPptx = cleanExt === 'pptx' || cleanExt === 'ppt';
+            const label = isPdf ? 'PDF 1. Sayfasından Otomatik Kapak Oluşturuldu' : isPptx ? 'Sunum 1. Slaytından Otomatik Kapak Oluşturuldu' : 'Özel Kapak Görseli Hazır';
+            previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> ${label}</span>`;
         }
         if (btnText) {
-            btnText.innerText = cleanExt === 'pdf' ? "1. Sayfa Kapak Oldu (Değiştirebilirsiniz)" : "Kapak Görseli Değiştir...";
+            const isDoc = ['pdf', 'pptx', 'ppt'].includes(cleanExt);
+            btnText.innerText = isDoc ? "1. Sayfa / Slayt Kapak Oldu (Değiştirebilirsiniz)" : "Kapak Görseli Değiştir...";
         }
     }
 
@@ -14465,7 +14628,7 @@ async function handleAdvMaterialSubmit(e) {
             chosenCover = "assets/lab-guvenligi.svg";
         } else {
             const extFmt = currentUploadedFile ? currentUploadedFile.name.split('.').pop().toUpperCase() : "DOKÜMAN";
-            chosenCover = generateSmartDocumentCover(title, extFmt, unit, primaryGrade);
+            chosenCover = generateSmartDocumentCover(title, extFmt, unit, primaryGrade, currentUploadedFile ? currentUploadedFile.name : "", editingMaterialId || "");
         }
     }
 
@@ -14568,7 +14731,7 @@ async function handleAdvMaterialSubmit(e) {
                     desc: desc,
                     fileName: currentUploadedFile ? finalFileName : (linkVal ? finalFileName : customList[idx].fileName),
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
-                    imageUrl: chosenCover || (customList[idx].imageUrl || (externalUrl && !externalUrl.startsWith("data:") ? externalUrl : "")),
+                    imageUrl: chosenCover || ((customList[idx] && customList[idx].imageUrl && !customList[idx].imageUrl.endsWith(".pptx") && !customList[idx].imageUrl.endsWith(".ppt") && !customList[idx].imageUrl.endsWith(".pdf")) ? customList[idx].imageUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
                     format: (currentUploadedFile || linkVal) ? fileFormat : customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
