@@ -498,9 +498,7 @@
     function startCloudService() {
         if (initClient()) {
             RotaliCloud.setupRealtimeListener();
-            setTimeout(() => {
-                RotaliCloud.syncAllLocalToCloud();
-            }, 800);
+            // Otomatik arka plan re-upload KALDIRILDI: Silinen materyallerin buluta geri yuklenmesini onler
         }
     }
 

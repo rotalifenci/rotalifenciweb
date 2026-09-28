@@ -35,8 +35,36 @@ function getDeletedMaterialIds() {
         if (!Array.isArray(list)) list = [];
         // Kullanıcı isteğiyle kalıcı olarak kaldırılan id'ler
         const hardDeleted = [
+            "mat-1789495047295",
+            "mat-1789424685585",
+            "mat-1789424515381",
+            "mat-1789501628135",
+            "mat-1789535615671",
             "mat-1789495187673",
+            "mat-918829f2-862f-45a2-b501-def853617613",
+            "mat-e817c59c-9d3a-4098-b70f-fd51ff54a523",
+            "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
+            "mat-cd5c84b1-2806-4462-b796-5e1f964f53d0",
+            "mat-1789502601881",
+            "mat-1789502565644",
+            "mat-1789494808381",
+            "mat-1789494668619",
+            "mat-1789495365682",
+            "mat-b0bf2fd9-7101-4962-b4ff-3c70f0257009",
+            "mat-1789502498114",
+            "mat-1789502414092",
+            "mat-1789494872749",
+            "mat-1789494840096",
+            "mat-1789495424636",
+            "mat-b30e5f27-431d-408f-8027-509e26e77e1a",
+            "mat-1789502710150",
+            "mat-1789502674304",
+            "mat-1789502752586",
+            "mat-1789494922903",
+            "mat-1789494959416",
             "mat-1789502325405",
+            "mat-8-ders-kitabi-1",
+            "mat-e072f771-967e-44c8-ad81-3e67f0934514",
             "mat-5-lab-guvenlik-gorsel",
             "mat-5-unite-bilgi",
             "not-5-unite-bilgilendirmeleri",
@@ -316,8 +344,8 @@ const CloudSyncManager = {
                             merged.imageUrl = localItem.imageUrl;
                         }
                         mergedMap.set(localItem.id, merged);
-                    } else {
-                        // Sadece bulutta henüz hiç olmayan YENİ yerel materyaller buluta eklenmek üzere korunur
+                    } else if (!isSupabaseSource) {
+                        // Bulut veritabanı aktifken, bulutta bulunmayan (silinmiş) eski yerel materyaller ASLA diriltilmez
                         hasNewLocalToUpload = true;
                         mergedMap.set(localItem.id, localItem);
                     }
@@ -4707,7 +4735,13 @@ function renderGradeSubTabContent(grade, subData, subTab) {
     }
 
     // 2. 🌟 DİĞER ANA BÖLÜMLER (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
-    if (["videolar", "etkinlikler", "soru-bankasi", "denemeler", "egitsel-oyunlar", "oyunlar"].includes(subTab)) {
+        // 2. • EĞİTSEL OYUNLAR & İNTERAKTİF KAÇIŞ ODALARI (DOĞRUDAN VE TAM GÖRÜNÜR)
+    if (["egitsel-oyunlar", "oyunlar"].includes(subTab)) {
+        return renderGradeEducationalGames(grade, subData);
+    }
+
+    // 3. • DİĞER ANA BÖLÜMLER (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
+    if (["videolar", "etkinlikler", "soru-bankasi", "denemeler"].includes(subTab)) {
         return renderGradeUnitBasedHub(grade, subData, subTab);
     }
 
@@ -4718,6 +4752,332 @@ function renderGradeSubTabContent(grade, subData, subTab) {
 // -------------------------------------------------------------
 // 4. 🔴 8. SINIF + LGS PUSULASI
 // -------------------------------------------------------------
+
+// -------------------------------------------------------------
+// 🎮 5-8. SINIF EĞİTSEL OYUNLAR & İNTERAKTİF DENEYİMLER MERKEZİ
+// (Çılgın Profesörün Laboratuvarı Kaçış Odası, Wordwall, Simülasyonlar)
+// -------------------------------------------------------------
+function renderGradeEducationalGames(grade, subData) {
+    const gNum = String(grade.number);
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+    const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
+
+    // 1. Bu sınıfa ait özel eklenmiş oyunlar
+    const customGames = customList.filter(m => {
+        if (!m || !m.id || deletedIds.has(m.id)) return false;
+        const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+        if (gClean !== "all" && gClean !== gNum) return false;
+        return matchesSubTabCategory(m, "egitsel-oyunlar");
+    });
+
+    // 2. Müfredat & Dahili İnteraktif Oyunlar
+    const builtinCurriculumGames = {
+        "5": [
+            {
+                id: "oyun-5-lab-wordwall",
+                title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu",
+                badge: "Wordwall İnteraktif",
+                desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eşleştirerek keşfedin.",
+                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
+                icon: "fa-solid fa-flask",
+                iconColor: "from-amber-500 to-orange-600",
+                type: "Eşleştirme Oyunu"
+            },
+            {
+                id: "oyun-5-lab-eslestirme",
+                title: "Laboratuvar Malzemeleri Eşleştirme Bulmacası",
+                badge: "Kavram Eşleştirme",
+                desc: "30 temel fen laboratuvar ekipmanını doğru görsel ve tanımlarla eşleştirerek yüksek puan toplayın.",
+                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
+                icon: "fa-solid fa-vial-circle-check",
+                iconColor: "from-blue-500 to-indigo-600",
+                type: "İnteraktif Bulmaca"
+            },
+            {
+                id: "oyun-5-gunes",
+                title: "Güneş, Dünya ve Ay 3D Yörünge Simülatörü",
+                badge: "3D Simülasyon",
+                desc: "Ay'ın evrelerini, Dünya ve Güneş etrafındaki dolanma hareketlerini 3 boyutlu uzay ortamında inceleyin.",
+                fileUrl: "https://phet.colorado.edu",
+                icon: "fa-solid fa-earth-americas",
+                iconColor: "from-teal-500 to-emerald-600",
+                type: "Uzay Keşfi"
+            },
+            {
+                id: "oyun-5-canlilar",
+                title: "Canlılar Dünyası ve Mantarlar Sınıflandırma Oyunu",
+                badge: "Sürükle-Bırak",
+                desc: "Omurgalı/omurgasız hayvanları, bitkileri ve mikroskobik canlıları doğru kutulara sürükleyin.",
+                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
+                icon: "fa-solid fa-paw",
+                iconColor: "from-emerald-500 to-green-600",
+                type: "Canlılar Oyunu"
+            },
+            {
+                id: "oyun-5-cark",
+                title: "5. Sınıf Fen Çarkıfeleği & Terim Yarışması",
+                badge: "Yarışma & Çark",
+                desc: "Çarkıfeleği çevirin, 5. sınıf fen terimlerini süre bitmeden doğru cevaplayarak şampiyon olun.",
+                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
+                icon: "fa-solid fa-dharmachakra",
+                iconColor: "from-purple-500 to-pink-600",
+                type: "Çarkıfelek"
+            }
+        ],
+        "6": [
+            {
+                id: "oyun-6-organ",
+                title: "6. Sınıf Vücudumuzdaki Sistemler Organ Eşleştirme",
+                badge: "Turnuva",
+                desc: "Dolaşım, solunum, sindirim ve boşaltım organlarını görevleriyle eşleştirin.",
+                fileUrl: "https://wordwall.net",
+                icon: "fa-solid fa-heart-pulse",
+                iconColor: "from-rose-500 to-red-600",
+                type: "Sistem Eşleştirme"
+            },
+            {
+                id: "oyun-6-gezegen",
+                title: "Güneş Sistemi & Tutulmalar 3D Uzay Keşfi",
+                badge: "Simülasyon",
+                desc: "Gezegenlerin büyüklükleri ve Güneş/Ay tutulmalarını interaktif gözlemleyin.",
+                fileUrl: "https://phet.colorado.edu",
+                icon: "fa-solid fa-meteor",
+                iconColor: "from-amber-500 to-yellow-600",
+                type: "3D Uzay"
+            },
+            {
+                id: "oyun-6-cark",
+                title: "6. Sınıf Fen Çarkıfeleği & Terim Yarışması",
+                badge: "Yarışma",
+                desc: "Kuvvet, hareket ve madde kavramlarını çarkıfelek ile yarışarak öğrenin.",
+                fileUrl: "https://wordwall.net",
+                icon: "fa-solid fa-dharmachakra",
+                iconColor: "from-purple-500 to-pink-600",
+                type: "Çarkıfelek"
+            }
+        ],
+        "7": [
+            {
+                id: "oyun-7-hucre",
+                title: "7. Sınıf Hücre ve Organeller 3D Eşleştirme",
+                badge: "Hücre Modeli",
+                desc: "Bitki ve hayvan hücresi organellerini görevleriyle eşleştirin.",
+                fileUrl: "https://wordwall.net",
+                icon: "fa-solid fa-dna",
+                iconColor: "from-indigo-500 to-blue-600",
+                type: "Hücre Oyunu"
+            },
+            {
+                id: "oyun-7-galileo",
+                title: "Bilimin Rotası: Teleskop ve Uzay Keşif Oyunu",
+                badge: "Keşif",
+                desc: "Teleskop çeşitleri, aynalar ve uzay araçları simülasyonu.",
+                fileUrl: "https://phet.colorado.edu",
+                icon: "fa-solid fa-satellite",
+                iconColor: "from-sky-500 to-teal-600",
+                type: "Uzay & Optik"
+            }
+        ],
+        "8": [
+            {
+                id: "oyun-8-passaparola",
+                title: "8. Sınıf LGS Fen Passaparola Terim Yarışması",
+                badge: "LGS Passaparola",
+                desc: "A'dan Z'ye 24 LGS Fen terimini süre dolmadan bil, rekor kır!",
+                fileUrl: "https://wordwall.net",
+                icon: "fa-solid fa-circle-question",
+                iconColor: "from-red-500 to-rose-600",
+                type: "LGS Yarışması"
+            },
+            {
+                id: "oyun-8-basinc",
+                title: "Sıvı ve Gaz Basıncı Sanal Deney Simülatörü",
+                badge: "PhET Simülasyon",
+                desc: "Derinlik, yoğunluk ve açık hava basıncını sanal manometreyle ölçün.",
+                fileUrl: "https://phet.colorado.edu",
+                icon: "fa-solid fa-atom",
+                iconColor: "from-cyan-500 to-blue-600",
+                type: "Basınç Simülatörü"
+            }
+        ]
+    };
+
+    const currentBuiltins = builtinCurriculumGames[gNum] || builtinCurriculumGames["5"];
+
+    return `
+        <div class="mb-10 animate-in fade-in duration-300">
+            <!-- 1. VİTRİN ÜST BAŞLIĞI & ADMIN YÖNETİMİ -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-4 border-b border-slate-200">
+                <div>
+                    <div class="flex items-center gap-2 mb-1">
+                        <span class="px-3 py-1 rounded-full bg-gradient-to-r from-fuchsia-600 to-pink-600 text-white text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-gamepad"></i> İNTERAKTİF FEN MERKEZİ
+                        </span>
+                        <span class="text-xs font-bold text-slate-500">${grade.number}. Sınıf Eğitsel Oyunlar</span>
+                    </div>
+                    <h3 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Eğlenerek Öğren: Kaçış Odaları, Bulmacalar & Simülasyonlar</h3>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <span class="text-xs font-bold text-fuchsia-700 bg-fuchsia-50 px-3.5 py-1.5 rounded-full border border-fuchsia-200 self-start sm:self-auto">
+                        🎮 MEB 2026-2027 Uyumlu
+                    </span>
+                    ${isAdmin ? `
+                        <button type="button" onclick="triggerUploadModal('${grade.number}', 'egitsel-oyunlar')" class="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-md shadow-fuchsia-600/20 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-plus"></i> + Yeni Eğitsel Oyun Ekle
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+
+            <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT: ÇILGIN PROFESÖRÜN LABORATUVARI - KAÇIŞ ODASI OYUNU -->
+            <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/80 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+                <!-- Arka Plan Dekoratif Parıltılar -->
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+                    <!-- Sol: Karakter Logosu & Başlık Bilgisi -->
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="relative shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform">
+                                <img src="rotali-fenci-logo.png" alt="Rotalı Fenci" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='ROTALI FENCİ.jpg'">
+                            </div>
+                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
+                                10 KAPI
+                            </span>
+                        </div>
+
+                        <div class="max-w-xl">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> ÖNE ÇIKAN KAÇIŞ OYUNU
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                    ✓ Akıllı Tahta & Telefon Uyumlu
+                                </span>
+                            </div>
+                            <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
+                                Çılgın Profesörün Laboratuvarı: Kaçış Odası
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
+                                Profesörün kilitli laboratuvarında mahsur kaldın! Ahşap oda kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
+                            </p>
+                            <!-- Özellik Rozetleri -->
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🚪 10 Ahşap Oda Kapısı
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🧭 Rotalı Fenci Karakteri
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔢 Sanal Şifre Tuş Takımı
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔄 Yeniledikçe Değişen Sorular
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Hızlı Başlatma Butonları -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-lab-kacis', 'Çılgın Profesörün Laboratuvarı: Kaçış Odası')" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
+                            <i class="fa-solid fa-play text-base"></i> HEMEN OYNA
+                        </button>
+                        <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. DİĞER EĞİTSEL OYUNLAR & SİMÜLASYONLAR LİSTESİ -->
+            <div class="mb-4 flex items-center justify-between">
+                <h4 class="text-lg sm:text-xl font-black text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-dice-d20 text-fuchsia-600"></i> ${grade.number}. Sınıf İnteraktif Oyun & Simülasyon Galerisi
+                </h4>
+                <span class="text-xs font-bold text-slate-500">${currentBuiltins.length + customGames.length} Oyun Mevcut</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                <!-- Özel Eklenen Oyunlar (Varsa) -->
+                ${customGames.map(item => {
+                    const actionUI = getMaterialActionUI(item, 'egitsel-oyunlar');
+                    const coverImg = resolveMaterialCover(item);
+                    return `
+                        <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-fuchsia-400 hover:shadow-md transition-all group">
+                            <div>
+                                <div class="flex items-center justify-between mb-3">
+                                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">
+                                        🎮 ${item.format || 'Eğitsel Oyun'}
+                                    </span>
+                                    ${isAdmin ? `
+                                        <div class="flex items-center gap-1">
+                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-800 flex items-center justify-center text-xs transition-colors" title="Düzenle">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-rose-100 text-slate-600 hover:text-rose-800 flex items-center justify-center text-xs transition-colors" title="Sil">
+                                                <i class="fa-solid fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-fuchsia-700 transition-colors">
+                                    ${item.title || 'İnteraktif Oyun'}
+                                </h5>
+                                <p class="text-xs text-slate-600 font-medium mb-4 leading-relaxed line-clamp-3">
+                                    ${item.desc || 'MEB müfredatına uygun interaktif eğitsel fen oyunu.'}
+                                </p>
+                            </div>
+                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-slate-400">
+                                    <i class="fa-solid fa-check-circle text-emerald-500"></i> Hazır
+                                </span>
+                                <button type="button" onclick="openOrDownloadMaterial('${String(item.id).replace(/'/g, "\'")}', '${String(item.fileUrl || item.imageUrl || '#').replace(/'/g, "\'")}', '${String(item.fileName || item.title).replace(/'/g, "\'")}', 'egitsel-oyunlar', '${String(item.title || '').replace(/'/g, "\'")}')" class="px-4 py-2 bg-gradient-to-r from-fuchsia-600 to-pink-600 hover:from-fuchsia-700 hover:to-pink-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                                    <i class="fa-solid fa-play text-[10px]"></i> Oyunu Başlat
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join("")}
+
+                <!-- Müfredat Yerleşik Oyunları -->
+                ${currentBuiltins.map(g => `
+                    <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-fuchsia-400 hover:shadow-md transition-all group">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">
+                                    ${g.badge}
+                                </span>
+                                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr ${g.iconColor} text-white flex items-center justify-center text-lg shadow-sm">
+                                    <i class="${g.icon}"></i>
+                                </div>
+                            </div>
+                            <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-fuchsia-700 transition-colors">
+                                ${g.title}
+                            </h5>
+                            <p class="text-xs text-slate-600 font-medium mb-4 leading-relaxed line-clamp-3">
+                                ${g.desc}
+                            </p>
+                        </div>
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <span class="text-[10px] font-bold text-slate-500">
+                                <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
+                            </span>
+                            <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-play text-[10px]"></i> Oyna
+                            </button>
+                        </div>
+                    </div>
+                `).join("")}
+            </div>
+        </div>
+    `;
+}
+
+
 function renderLgsPusulasiPage(container) {
     container.innerHTML = `
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -11769,8 +12129,8 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     // Kaçış Odası veya Gemini ise kesinlikle yerel Kaçış Odası oyunumuzu hedefle
     if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis") {
         modal.innerHTML = `
-            <div class="bg-slate-950 rounded-3xl max-w-5xl w-full border border-slate-700 shadow-2xl overflow-hidden flex flex-col h-[90vh] animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-                <div class="p-3 sm:p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[98vw] h-[97vh] border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
                     <div class="flex items-center gap-3">
                         <span class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
                             <i class="fa-solid fa-door-open"></i>
