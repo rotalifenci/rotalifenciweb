@@ -4011,7 +4011,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const gNum = String(grade.number);
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
-    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+    const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
 
     // Resmi MEB 7 Ünitesi
     const unitTitlesMap = {
@@ -4259,7 +4259,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         return targetSec === String(unitNum);
                     });
 
-                    const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
                     let unitBuiltinGames = [];
                     if (normSubTab === "egitsel-oyunlar") {
                         const allBuiltinsForGrade = (builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum][String(unitNum)]) || [];
