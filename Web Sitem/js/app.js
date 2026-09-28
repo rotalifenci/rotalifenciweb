@@ -1239,7 +1239,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     <span>${actionUI.text}</span>
                                 </button>
 
-                                ${(isAdmin || subTab === "projeler" || subTab === "proje") ? `
+                                ${(isAdmin && (subTab === "projeler" || subTab === "proje")) ? `
                                     <div class="flex items-center gap-1.5 mt-2">
                                         <button type="button" onclick="moveCustomMaterial('${item.id}', -1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Yukarı Taşı">
                                             <i class="fa-solid fa-arrow-up"></i>
@@ -3112,29 +3112,73 @@ function openIssueReportModal() {
                     </select>
                 </div>
 
-                <!-- 2. Alt Başlık / Modül -->
-                <div>
-                    <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-amber-500"></span> Sorunlu Alt Başlık / Modül
-                    </label>
-                    <select id="issue-submodule-select" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-amber-500 focus:bg-white transition-all">
-                        <option value="📝 Ders Notu & PDF Föyleri">📝 Ders Notu & PDF Föyleri</option>
-                        <option value="📊 Ders Sunumu & Akıllı Tahta Slaytları">📊 Ders Sunumu & Akıllı Tahta Slaytları</option>
-                        <option value="🎥 Videolar & Deney Çekimleri">🎥 Videolar & Deney Çekimleri</option>
-                        <option value="🧩 Etkinlikler & Çalışma Kağıtları">🧩 Etkinlikler & Çalışma Kağıtları</option>
-                        <option value="📚 Soru Bankası & Testler">📚 Soru Bankası & Testler</option>
-                        <option value="🎯 Deneme Sınavları">🎯 Deneme Sınavları</option>
-                        <option value="🎮 Eğitsel Oyunlar & Simülasyonlar">🎮 Eğitsel Oyunlar & Simülasyonlar</option>
-                        <option value="🔭 Bilim İnsanı Araştırma Notu">🔭 Bilim İnsanı Araştırma Notu</option>
-                        <option value="✏️ Ortak Yazılı Sınav Kağıtları">✏️ Ortak Yazılı Sınav Kağıtları</option>
-                        <option value="🏆 Projeler & STEM Atölyesi">🏆 Projeler & STEM Atölyesi</option>
-                        <option value="🃏 3D Bilgi Kartları / Mini Quizler">🃏 3D Bilgi Kartları / Mini Quizler</option>
-                        <option value="📱 Mobil Menü & Sayfa Butonları">📱 Mobil Menü & Sayfa Butonları</option>
-                        <option value="Diğer Bölüm">Diğer</option>
-                    </select>
-                </div>
+                <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT: ÇILGIN PROFESÖRÜN LABORATUVARI - KAÇIŞ ODASI OYUNU -->
+            <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+                <!-- Arka Plan Dekoratif Parıltılar -->
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
+                    
+                    <!-- Sol: Oyunun Görseli (Görsel Tekrar Eklendi) -->
+                    <div class="relative w-full sm:w-72 md:w-80 h-48 sm:h-52 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/70 shadow-2xl bg-slate-900 group/img">
+                        <img src="assets/lab-guvenligi.svg" alt="Çılgın Profesörün Laboratuvarı Kaçış Oyunu" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.src='ROTALI FENCİ.jpg'">
+                        <!-- Dairesel Rotalı Fenci Logosu Rozeti -->
+                        <div class="absolute top-2.5 left-2.5 w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-amber-400 to-orange-500 shadow-lg flex items-center justify-center">
+                            <img src="rotali-fenci-logo.png" alt="Rotalı Fenci Logo" class="w-full h-full object-cover rounded-[14px]">
+                        </div>
+                        <span class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-xl shadow font-orbitron">
+                            10 KAPI • ŞİFRELER
+                        </span>
+                    </div>
 
-                <!-- 3. Sorun Türü (Genişletilmiş Seçenekler) -->
+                    <!-- Orta: Başlık, Görev Bilgisi ve Özellik Rozetleri -->
+                    <div class="flex-1 text-center sm:text-left">
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                            <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                <i class="fa-solid fa-trophy text-amber-400"></i> ÖNE ÇIKAN KAÇIŞ OYUNU
+                            </span>
+                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                ✓ Akıllı Tahta, PC & Telefon Uyumlu
+                            </span>
+                        </div>
+                        <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
+                            Çılgın Profesörün Laboratuvarı: Kaçış Odası
+                        </h4>
+                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3.5">
+                            Profesörün kilitli laboratuvarında mahsur kaldın! Ahşap güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
+                        </p>
+                        <!-- Özellik Rozetleri -->
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                🚪 10 Ahşap Oda Kapısı
+                            </span>
+                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                🧭 Rotalı Fenci Logolu Karakter
+                            </span>
+                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                ⏱️ 15sn Soru Sayacı
+                            </span>
+                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                ❤️ 3 Can Hakkı
+                            </span>
+                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                🏆 Maks 10.000 Canlı Skor
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Hızlı Başlatma Butonu (Aynı Sekmede Tam Ekran Açar) -->
+                    <div class="shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="window.location.href='oyunlar/laboratuvar-kacis-odasi.html'" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm sm:text-base uppercase tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer border-2 border-amber-300">
+                            <i class="fa-solid fa-play text-lg"></i>
+                            <span>OYUNU AÇ (TAM EKRAN)</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Sorun Türü (Genişletilmiş Seçenekler) -->
                 <div>
                     <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-blue-600"></span> Sorun Türü
@@ -6002,6 +6046,7 @@ function getProjectCategoriesWithCustom() {
 }
 
 function renderProjectsPage(container) {
+    const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
     const hiddenProjects = getHiddenProjects();
     const allCategories = getProjectCategoriesWithCustom();
     const visibleCategories = allCategories.filter(c => !hiddenProjects.includes(c.id));
@@ -6017,7 +6062,8 @@ function renderProjectsPage(container) {
                 <p class="text-sm text-slate-600 font-medium">TÜBİTAK 2204-B, TÜBİTAK 4006, TEKNOFEST ve eTwinning için proje şablonları, basamakları ve örnek fikirler.</p>
             </div>
 
-            <!-- 🛠️ EKLEME & ÇIKARMA YÖNETİM ALANI -->
+            ${isAdmin ? `
+<!-- 🛠️ EKLEME & ÇIKARMA YÖNETİM ALANI -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-200 p-5 rounded-3xl shadow-sm">
                 <div class="flex items-center gap-3.5">
                     <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
@@ -6041,6 +6087,7 @@ function renderProjectsPage(container) {
                     </button>
                 </div>
             </div>
+` : ''}
 
             <!-- Kullanıcının Eklediği Özel Proje Materyalleri -->
             ${renderCustomMaterialsSection("all", "projeler")}
@@ -6054,7 +6101,8 @@ function renderProjectsPage(container) {
                             <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
                                 <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs border border-amber-200">${cat.badge}</span>
                                 
-                                <div class="flex items-center gap-1.5">
+                                ${isAdmin ? `
+<div class="flex items-center gap-1.5">
                                     <!-- Ekle -->
                                     <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, '${cat.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projeye dosya veya rapor ekle">
                                         <i class="fa-solid fa-plus text-xs"></i>
@@ -6073,6 +6121,7 @@ function renderProjectsPage(container) {
                                         <span>Çıkar</span>
                                     </button>
                                 </div>
+` : ''}
                             </div>
 
                             <h3 class="text-lg sm:text-xl font-black text-slate-900 mb-4 flex items-center gap-2.5">

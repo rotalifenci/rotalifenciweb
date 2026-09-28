@@ -141,34 +141,42 @@
 
     <!-- 🔝 ÜST BAŞLIK (Header - Açık Renk, Rotalı Fenci Logolu) -->
     <header class="h-12 bg-white/95 border-b-2 border-slate-200 px-2 sm:px-4 flex items-center justify-between shrink-0 z-30 safe-top shadow-sm">
-        <!-- Sol: Logo & Başlık -->
+        <!-- Sol: Web Sitesine D?n & Logo & Ba?l?k -->
         <div class="flex items-center gap-2 shrink-0">
-            <img src="rotali-fenci-logo.png" alt="Rotalı Fenci Logo" class="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow">
+            <a href="../index.html#grade/grade-5/egitsel-oyunlar" class="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-300 shadow-sm" title="Rotal? Fenci Sitesine Geri D?n">
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+                <span class="hidden sm:inline">Siteye D?n</span>
+            </a>
+            <img src="rotali-fenci-logo.png" alt="Rotal? Fenci Logo" class="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow">
             <div class="flex flex-col">
-                <span class="font-orbitron font-black text-xs sm:text-sm text-red-600 leading-tight">ROTALI FENCİ</span>
-                <span class="text-[9px] text-blue-700 font-bold leading-none hidden sm:inline">Rotamız Fen • 10 Kapılı Kaçış Labirenti</span>
+                <span class="font-orbitron font-black text-xs sm:text-sm text-red-600 leading-tight">ROTALI FENC?</span>
+                <span class="text-[9px] text-blue-700 font-bold leading-none hidden md:inline">Rotam?z Fen ? Ka??? Labirenti</span>
             </div>
         </div>
 
-        <!-- Orta: Süre ve Kapı Durumu Rozetleri -->
-        <div class="flex items-center gap-2 sm:gap-3 bg-slate-50 px-2.5 py-1 rounded-xl border-2 border-slate-200">
-            <!-- Süre -->
-            <div class="flex items-center gap-1 text-xs sm:text-sm font-bold text-amber-700">
+        <!-- Orta: S?re, Kalan Can Haklar?, Kap? ve Canl? Skor Rozetleri -->
+        <div class="flex items-center gap-1.5 sm:gap-2.5 bg-slate-50 px-2 sm:px-3 py-1 rounded-xl border-2 border-slate-200 text-xs sm:text-sm">
+            <!-- S?re -->
+            <div class="flex items-center gap-1 font-bold text-amber-700" title="Kalan S?re">
                 <i class="fa-regular fa-clock text-amber-600"></i>
                 <span id="timer" class="font-orbitron font-bold">10:00</span>
             </div>
             <div class="h-4 w-px bg-slate-300"></div>
-            <!-- Kapı Durumu -->
-            <div class="flex items-center gap-1 text-xs sm:text-sm font-bold text-emerald-700">
+            <!-- Can Haklar? (3 Yanl??ta Oyun Biter) -->
+            <div class="flex items-center gap-1 font-bold text-rose-600" title="Kalan Hak">
+                <span id="header-lives" class="flex gap-0.5 text-xs sm:text-sm">???</span>
+            </div>
+            <div class="h-4 w-px bg-slate-300"></div>
+            <!-- Kap? Durumu -->
+            <div class="flex items-center gap-1 font-bold text-emerald-700" title="A??lan Kap?lar">
                 <i class="fa-solid fa-door-open text-emerald-600"></i>
                 <span id="doors-stat" class="font-orbitron font-bold">0/4</span>
-                <span class="text-[10px] text-slate-500 font-medium hidden md:inline">(Top. 10 Kapı)</span>
             </div>
-            <div class="h-4 w-px bg-slate-300 hidden sm:block"></div>
-            <!-- Puan -->
-            <div class="items-center gap-1 text-xs sm:text-sm font-bold text-blue-700 hidden sm:flex">
-                <i class="fa-solid fa-star text-yellow-500"></i>
-                <span id="score-stat" class="font-orbitron font-bold">0</span>
+            <div class="h-4 w-px bg-slate-300"></div>
+            <!-- Dinamik Skor (10.000 ?zerinden) -->
+            <div class="flex items-center gap-1 font-bold text-blue-700" title="Maksimum 10.000 Skordan D??er">
+                <i class="fa-solid fa-star text-amber-500 text-xs"></i>
+                <span id="score-stat" class="font-orbitron font-bold text-xs sm:text-sm">10000</span>
             </div>
         </div>
 
@@ -757,7 +765,7 @@
                 ]
             },
             {
-                text: "Sıvılardan damla damla küçük hacimler çekip başka bir kaba aktarmak için kullanılan dereceli plastik pipet hangisidir?",
+                text: "Sıvılardan damla damla küçük hacimler çekip başka bir kaba aktarmak için kullanılan laboratuvar aleti hangisidir?",
                 correctId: "plastik-pipet",
                 options: [
                     { id: "plastik-pipet", name: "Plastik Pipet", img: "kartlar/plastik-pipet.png" },
@@ -884,11 +892,17 @@
         const playerLogoImg = new Image();
         playerLogoImg.src = 'rotali-fenci-logo.png';
 
-        let score = 0;
+        const MAX_POSSIBLE_SCORE = 10000;
+        let score = MAX_POSSIBLE_SCORE;
         let timeLeft = 600;
         let timerInterval = null;
         let isGameRunning = true;
         let isWalkingAuto = false;
+
+        let totalWrongAnswers = 0; // 3 yanl??ta oyun sonlan?r
+        const MAX_LIVES = 3;
+        let questionTimerInterval = null;
+        let questionTimeLeft = 15;
 
         let dynamicDoorsConfig = [];
         let activeDoorData = null;
@@ -977,7 +991,15 @@
         }
 
         function initGameSession() {
+            stopQuestionTimer();
+            totalWrongAnswers = 0;
+
             // Modalleri tamamen kapat
+            const goModal = document.getElementById('modal-gameover');
+            if (goModal) {
+                goModal.classList.add('hidden');
+                goModal.classList.remove('flex');
+            }
             const vicModal = document.getElementById('modal-victory');
             if (vicModal) {
                 vicModal.classList.add('hidden');
@@ -1041,6 +1063,14 @@
             }, 1000);
         }
 
+        function calculateCurrentScore() {
+            // S?re uzad?k?a 10.000 maksimum puandan d??er
+            const elapsed = Math.max(0, 600 - timeLeft);
+            // Saniyede ~12 puan kay?p, her a??lan kap? +300 bonus, her yanl?? -500 ceza
+            const calculated = MAX_POSSIBLE_SCORE - (elapsed * 12) - (totalWrongAnswers * 500) + (unlockedDoors.size * 300);
+            return Math.max(1000, Math.min(MAX_POSSIBLE_SCORE, Math.floor(calculated)));
+        }
+
         function updateStats() {
             const m = Math.floor(timeLeft / 60);
             const s = timeLeft % 60;
@@ -1050,13 +1080,125 @@
                 if (timeLeft < 60) timerEl.className = "font-orbitron font-bold text-rose-600 animate-pulse";
                 else timerEl.className = "font-orbitron font-bold text-amber-700";
             }
+
+            const headerLivesEl = document.getElementById('header-lives');
+            if (headerLivesEl) {
+                const remaining = Math.max(0, MAX_LIVES - totalWrongAnswers);
+                headerLivesEl.innerHTML = '❤️'.repeat(remaining) + '🖤'.repeat(MAX_LIVES - remaining);
+            }
+
             const doorsEl = document.getElementById('doors-stat');
             if (doorsEl) {
                 doorsEl.innerText = `${unlockedDoors.size}/${REQUIRED_DOORS}`;
                 if (unlockedDoors.size >= REQUIRED_DOORS) doorsEl.className = "font-orbitron font-bold text-emerald-600";
             }
+
+            score = calculateCurrentScore();
             const scoreEl = document.getElementById('score-stat');
             if (scoreEl) scoreEl.innerText = score;
+        }
+
+        // --- 15 SAN?YE GER? SAYIM SAYACI & CAN Y?NET?M? ---
+        function startQuestionTimer() {
+            stopQuestionTimer();
+            questionTimeLeft = 15;
+            updateQuestionTimerUI();
+
+            questionTimerInterval = setInterval(() => {
+                if (!activeDoorData || !isGameRunning) {
+                    stopQuestionTimer();
+                    return;
+                }
+                questionTimeLeft--;
+                updateQuestionTimerUI();
+
+                if (questionTimeLeft <= 0) {
+                    stopQuestionTimer();
+                    handleQuestionTimeout();
+                }
+            }, 1000);
+        }
+
+        function stopQuestionTimer() {
+            if (questionTimerInterval) {
+                clearInterval(questionTimerInterval);
+                questionTimerInterval = null;
+            }
+        }
+
+        function updateQuestionTimerUI() {
+            const textEl = document.getElementById('door-q-timer-text');
+            const barEl = document.getElementById('door-q-timer-bar');
+            if (textEl) {
+                textEl.innerText = `${questionTimeLeft}s`;
+                if (questionTimeLeft <= 5) {
+                    textEl.className = "text-rose-400 font-orbitron font-black text-xs sm:text-sm animate-pulse";
+                } else if (questionTimeLeft <= 9) {
+                    textEl.className = "text-amber-300 font-orbitron font-black text-xs sm:text-sm";
+                } else {
+                    textEl.className = "text-emerald-400 font-orbitron font-black text-xs sm:text-sm";
+                }
+            }
+            if (barEl) {
+                const pct = Math.max(0, (questionTimeLeft / 15) * 100);
+                barEl.style.width = `${pct}%`;
+                if (questionTimeLeft <= 5) {
+                    barEl.className = "h-full bg-rose-500 transition-all duration-1000 ease-linear shadow-[0_0_12px_rgba(244,63,94,0.9)]";
+                } else if (questionTimeLeft <= 9) {
+                    barEl.className = "h-full bg-amber-400 transition-all duration-1000 ease-linear shadow-[0_0_12px_rgba(251,191,36,0.8)]";
+                } else {
+                    barEl.className = "h-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-1000 ease-linear shadow-[0_0_12px_rgba(16,185,129,0.8)]";
+                }
+            }
+        }
+
+        function updateDoorLivesUI() {
+            const modalLivesEl = document.getElementById('modal-lives-icons');
+            if (modalLivesEl) {
+                const remaining = Math.max(0, MAX_LIVES - totalWrongAnswers);
+                modalLivesEl.innerHTML = '❤️'.repeat(remaining) + '🖤'.repeat(MAX_LIVES - remaining);
+            }
+            updateStats();
+        }
+
+        function handleQuestionTimeout() {
+            AudioEngine.playWrong();
+            showToast("⏱️ SÜRE DOLDU! (15 saniye sona erdi)", "warning");
+            registerWrongAnswer();
+        }
+
+        function registerWrongAnswer() {
+            totalWrongAnswers++;
+            updateDoorLivesUI();
+
+            if (totalWrongAnswers >= MAX_LIVES) {
+                // 3 YANLIŞ CEVAP VEYA SÜRE AŞIMI -> OYUN BİTER!
+                stopQuestionTimer();
+                closeDoorPuzzle();
+                triggerGameOverModal();
+                return;
+            }
+
+            showToast(`⚠️ Yanlış Cevap! Kalan Can: ${MAX_LIVES - totalWrongAnswers}`, "warning");
+            // Kalan can varsa aynı soru için zamanlayıcıyı 15 saniyeden yeniden başlat
+            startQuestionTimer();
+        }
+
+        function triggerGameOverModal() {
+            isGameRunning = false;
+            stopQuestionTimer();
+            AudioEngine.playWrong();
+
+            const goScore = document.getElementById('gameover-score');
+            if (goScore) goScore.innerText = score;
+            const goDoors = document.getElementById('gameover-doors');
+            if (goDoors) goDoors.innerText = `${unlockedDoors.size}/${REQUIRED_DOORS}`;
+
+            const goModal = document.getElementById('modal-gameover');
+            if (goModal) {
+                goModal.classList.remove('hidden');
+                goModal.classList.add('flex');
+            }
         }
 
         function updateMissionHud() {
@@ -1300,26 +1442,40 @@
             
             document.getElementById('door-q-counter').innerText = `GÖREV ${doorCurrentQIndex + 1} / 3`;
             document.getElementById('door-question-text').innerText = q.text;
-            document.getElementById('door-question-sub').innerText = "Doğru seçeneğe tıklayarak şifre kodunu ortaya çıkarın:";
+            document.getElementById('door-question-sub').innerText = "Doğru seçeneğe tıklayarak kapı şifresini ortaya çıkarın:";
+
+            updateDoorLivesUI();
+            startQuestionTimer();
 
             const cardsContainer = document.getElementById('cards-container');
-            cardsContainer.className = "grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full";
+            cardsContainer.className = "grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full";
             cardsContainer.innerHTML = '';
+
+            const letterGradients = [
+                "from-amber-400 to-orange-500",
+                "from-blue-400 to-indigo-500",
+                "from-emerald-400 to-teal-500",
+                "from-fuchsia-400 to-pink-500"
+            ];
 
             q.options.forEach((opt, idx) => {
                 const card = document.createElement('button');
-                card.className = "group relative bg-white hover:bg-amber-50 border-3 border-slate-300 hover:border-amber-500 rounded-2xl p-2.5 sm:p-3.5 flex flex-col items-center justify-between text-center transition-all duration-150 transform hover:scale-[1.02] active:scale-95 shadow-md cursor-pointer";
+                card.type = "button";
+                card.className = "group relative bg-slate-800/90 hover:bg-slate-700/90 border-2 border-slate-700 hover:border-amber-400 rounded-2xl p-2.5 sm:p-3.5 flex flex-col items-center justify-between text-center transition-all duration-200 transform hover:scale-[1.03] active:scale-95 shadow-xl cursor-pointer";
                 card.onclick = () => selectCardAnswer(opt.id, card);
 
                 card.innerHTML = `
-                    <div class="w-full aspect-square max-h-24 sm:max-h-28 bg-slate-50 rounded-xl p-2 flex items-center justify-center mb-2 overflow-hidden border border-slate-200 group-hover:border-amber-400 transition-colors">
-                        <img src="${opt.img}" alt="${opt.name}" class="w-full h-full object-contain pointer-events-none group-hover:scale-110 transition-transform duration-200">
-                    </div>
-                    <span class="text-xs sm:text-sm font-extrabold text-slate-800 group-hover:text-amber-700 leading-tight">
-                        ${opt.name}
-                    </span>
-                    <span class="absolute top-2 left-2 w-6 h-6 rounded-lg bg-blue-600 text-white text-xs font-black flex items-center justify-center shadow">
+                    <!-- Seçenek Harfi (A, B, C, D) -->
+                    <span class="absolute top-2.5 left-2.5 w-7 h-7 rounded-xl bg-gradient-to-tr ${letterGradients[idx % 4]} text-slate-950 text-xs font-black flex items-center justify-center shadow font-orbitron">
                         ${String.fromCharCode(65 + idx)}
+                    </span>
+                    <!-- Görsel Alanı -->
+                    <div class="w-full aspect-square max-h-24 sm:max-h-28 bg-white rounded-xl p-2 flex items-center justify-center mb-2 overflow-hidden border border-slate-600/40 group-hover:scale-105 transition-transform duration-200">
+                        <img src="${opt.img}" alt="${opt.name}" class="w-full h-full object-contain pointer-events-none">
+                    </div>
+                    <!-- İsim / Tanım -->
+                    <span class="text-xs sm:text-sm font-extrabold text-slate-100 group-hover:text-amber-300 leading-snug">
+                        ${opt.name}
                     </span>
                 `;
                 cardsContainer.appendChild(card);
@@ -1332,16 +1488,17 @@
 
             if (selectedId === q.correctId) {
                 // DOĞRU CEVAP
+                stopQuestionTimer();
                 AudioEngine.playDoorSuccess();
-                cardElement.classList.remove('border-slate-300', 'hover:border-amber-500');
-                cardElement.classList.add('border-emerald-500', 'bg-emerald-50', 'ring-4', 'ring-emerald-400');
+                cardElement.classList.remove('border-slate-700', 'hover:border-amber-400');
+                cardElement.classList.add('border-emerald-400', 'bg-emerald-950/60', 'ring-4', 'ring-emerald-400/50');
 
                 collectedDoorCode += q.code;
                 renderDoorCodeSlots();
-                score += 100;
+                score = calculateCurrentScore();
                 updateStats();
 
-                showToast(`🎉 DOĞRU! Şifre Hanesi Açıldı: [ ${q.code} ]`, "success");
+                showToast(`✨ DOĞRU! Şifre Hanesi Açıldı: [ ${q.code} ]`, "success");
 
                 setTimeout(() => {
                     doorCurrentQIndex++;
@@ -1349,27 +1506,20 @@
                         renderCurrentQuestion();
                     } else {
                         // 3 Soru bitti -> ŞİFRE GİRME KONSOLUNU AÇ!
+                        stopQuestionTimer();
                         showNumpadConsole();
                     }
-                }, 550);
+                }, 500);
 
             } else {
                 // YANLIŞ CEVAP
                 AudioEngine.playWrong();
-                cardElement.classList.add('border-rose-500', 'bg-rose-50', 'animate-shake');
-                timeLeft = Math.max(0, timeLeft - 15);
-                updateStats();
-                showToast("❌ Yanlış Seçenek! 15 saniye azaldı!", "error");
-                setTimeout(() => {
-                    cardElement.classList.remove('border-rose-500', 'bg-rose-50', 'animate-shake');
-                }, 800);
+                cardElement.classList.add('border-rose-500', 'bg-rose-950/60', 'animate-shake');
+                registerWrongAnswer();
             }
         }
 
-        // ==========================================
-        // 🔢 ŞİFRE GİRME BÖLÜMÜ (NUMPAD KONSOLU)
-        // ==========================================
-        function showNumpadConsole() {
+function showNumpadConsole() {
             enteredDoorCode = "";
             document.getElementById('door-q-counter').innerText = "GÜVENLİK KONSOLU";
             document.getElementById('door-question-text').innerHTML = `
