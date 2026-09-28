@@ -991,11 +991,151 @@ function matchesSubTabCategory(item, subTab) {
 }
 
 // -------------------------------------------------------------
-// 🖼️ AKILLI MATERYAL KAPAK GÖRSELİ ÇÖZÜCÜ (HER İÇERİK İÇİN GÖRSEL KAPAK)
+// 🖼️ AKILLI MATERYAL KAPAK GÖRSELİ VE DOKÜMAN ÖNİZLEME MOTORU
 // -------------------------------------------------------------
+window._pdfThumbCache = window._pdfThumbCache || {};
+
+function ensurePdfWorkerConfigured() {
+    if (typeof window !== "undefined" && window.pdfjsLib && !window._pdfWorkerConfigured) {
+        try {
+            const workerCode = `importScripts('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js');`;
+            const workerBlob = new Blob([workerCode], { type: "application/javascript" });
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = URL.createObjectURL(workerBlob);
+            window._pdfWorkerConfigured = true;
+        } catch(wErr) {
+            window.pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+            window._pdfWorkerConfigured = true;
+        }
+    }
+}
+if (typeof window !== "undefined") {
+    ensurePdfWorkerConfigured();
+}
+
+function generateSmartDocumentCover(title = "Ders Materyali", format = "DOKÜMAN", unit = "", grade = "8") {
+    const cleanTitle = String(title || "Fen Bilimleri Materyali").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    const cleanUnit = String(unit || `${grade}. Sınıf Fen Bilimleri`).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const fmt = String(format || "DOKÜMAN").toUpperCase();
+    const g = String(grade || "8").replace(/^grade-/, "").trim();
+
+    let bgStart = "#1e293b", bgEnd = "#0f172a", accent = "#38bdf8", badgeBg = "#0284c7";
+    let iconSymbol = "📄";
+    if (fmt.includes("PPT") || fmt.includes("SLAYT") || fmt.includes("SUNUM")) {
+        bgStart = "#c2410c"; bgEnd = "#7c2d12"; accent = "#fed7aa"; badgeBg = "#ea580c"; iconSymbol = "📊";
+    } else if (fmt.includes("SORU") || fmt.includes("DENEME") || fmt.includes("TEST")) {
+        bgStart = "#065f46"; bgEnd = "#064e3b"; accent = "#a7f3d0"; badgeBg = "#059669"; iconSymbol = "📝";
+    } else if (fmt.includes("VİDEO") || fmt.includes("VIDEO") || fmt.includes("MP4")) {
+        bgStart = "#991b1b"; bgEnd = "#450a0a"; accent = "#fecaca"; badgeBg = "#dc2626"; iconSymbol = "🎬";
+    } else if (fmt.includes("PROJE") || fmt.includes("TÜBİTAK")) {
+        bgStart = "#4338ca"; bgEnd = "#312e81"; accent = "#c7d2fe"; badgeBg = "#4f46e5"; iconSymbol = "🚀";
+    } else {
+        bgStart = "#1e3a8a"; bgEnd = "#172554"; accent = "#93c5fd"; badgeBg = "#2563eb"; iconSymbol = "📑";
+    }
+
+    const words = cleanTitle.split(" ");
+    const lines = [];
+    let curLine = "";
+    for (const w of words) {
+        if ((curLine + " " + w).trim().length <= 22) {
+            curLine = (curLine + " " + w).trim();
+        } else {
+            if (curLine) lines.push(curLine);
+            curLine = w;
+        }
+        if (lines.length >= 4) break;
+    }
+    if (curLine && lines.length < 4) lines.push(curLine);
+    if (lines.length === 0) lines.push(cleanTitle.substring(0, 22));
+
+    const tspans = lines.map((l, i) => `<tspan x="240" dy="${i === 0 ? 0 : 36}">${l}</tspan>`).join("");
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 640" width="480" height="640">
+        <defs>
+            <linearGradient id="bgGrad_${Math.abs(cleanTitle.length)}" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="${bgStart}"/>
+                <stop offset="100%" stop-color="${bgEnd}"/>
+            </linearGradient>
+            <linearGradient id="cardGrad_${Math.abs(cleanTitle.length)}" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" stop-opacity="0.12"/>
+                <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04"/>
+            </linearGradient>
+        </defs>
+        <rect width="480" height="640" rx="32" fill="url(#bgGrad_${Math.abs(cleanTitle.length)})"/>
+        <circle cx="420" cy="80" r="150" fill="${accent}" opacity="0.08"/>
+        <circle cx="60" cy="560" r="130" fill="${accent}" opacity="0.06"/>
+        <rect x="30" y="30" width="420" height="580" rx="24" fill="url(#cardGrad_${Math.abs(cleanTitle.length)})" stroke="#ffffff" stroke-opacity="0.15" stroke-width="1.5"/>
+        <rect x="54" y="54" width="130" height="32" rx="16" fill="${badgeBg}"/>
+        <text x="119" y="74" fill="#ffffff" font-size="12" font-weight="900" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" letter-spacing="1">ROTALI FENCİ</text>
+        <rect x="330" y="54" width="96" height="32" rx="16" fill="#ffffff" fill-opacity="0.15"/>
+        <text x="378" y="74" fill="#ffffff" font-size="12" font-weight="800" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle">${g === 'all' ? 'GENEL' : g + '. SINIF'}</text>
+        <circle cx="240" cy="180" r="48" fill="#ffffff" fill-opacity="0.12" stroke="${accent}" stroke-width="2"/>
+        <text x="240" y="196" font-size="44" text-anchor="middle">${iconSymbol}</text>
+        <rect x="160" y="244" width="160" height="26" rx="13" fill="${badgeBg}"/>
+        <text x="240" y="261" fill="#ffffff" font-size="11" font-weight="800" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" letter-spacing="1">${fmt.substring(0, 18)}</text>
+        <text x="240" y="325" fill="#ffffff" font-size="22" font-weight="900" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle">
+            ${tspans}
+        </text>
+        <text x="240" y="510" fill="${accent}" font-size="14" font-weight="700" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" opacity="0.95">${cleanUnit.substring(0, 34)}</text>
+        <line x1="70" y1="540" x2="410" y2="540" stroke="#ffffff" stroke-opacity="0.12" stroke-width="1"/>
+        <text x="240" y="575" fill="#ffffff" fill-opacity="0.6" font-size="11" font-weight="600" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif" text-anchor="middle" letter-spacing="0.5">Özgün Eğitim Materyali • Akıllı Tahta Uyumlu</text>
+    </svg>`;
+
+    return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+
+async function extractCoverFromPdfSource(source) {
+    if (!source || typeof window === "undefined" || !window.pdfjsLib) return null;
+    ensurePdfWorkerConfigured();
+
+    try {
+        let docInit = null;
+        if (typeof Blob !== "undefined" && (source instanceof Blob || source instanceof File)) {
+            const arrayBuffer = await source.arrayBuffer();
+            docInit = { data: arrayBuffer };
+        } else if (source instanceof ArrayBuffer || source instanceof Uint8Array) {
+            docInit = { data: source };
+        } else if (typeof source === "string") {
+            const trimmed = source.trim();
+            if (trimmed.startsWith("data:application/pdf") || trimmed.startsWith("blob:") || trimmed.startsWith("http")) {
+                docInit = { url: trimmed };
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+
+        docInit.cMapUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/";
+        docInit.cMapPacked = true;
+
+        const loadingTask = window.pdfjsLib.getDocument(docInit);
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1);
+        const origViewport = page.getViewport({ scale: 1.0 });
+        const targetWidth = 600;
+        const scale = Math.min(targetWidth / origViewport.width, 2.0);
+        const viewport = page.getViewport({ scale: scale });
+
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(viewport.width);
+        canvas.height = Math.round(viewport.height);
+        const ctx = canvas.getContext("2d", { alpha: false });
+        if (ctx) {
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            await page.render({ canvasContext: ctx, viewport: viewport }).promise;
+            return canvas.toDataURL("image/jpeg", 0.85);
+        }
+        return null;
+    } catch (err) {
+        console.warn("PDF kapak sayfası oluşturulamadı:", err);
+        return null;
+    }
+}
+
 function resolveMaterialCover(item) {
     if (!item) return "assets/kapak-5.jpg";
-    const rawImg = (item.kapakResmi || item.imageUrl || "").trim();
+    const rawImg = (item.kapakResmi || item.imageUrl || item.cover || "").trim();
     const rawFile = (item.fileUrl || "").trim();
     const title = (item.title || "").toLowerCase();
     const desc = (item.desc || "").toLowerCase();
@@ -1003,34 +1143,113 @@ function resolveMaterialCover(item) {
     const cat = (item.category || "").toLowerCase();
     const format = (item.format || "").toLowerCase();
     const g = String(item.grade || "5").replace(/^grade-/, "").trim();
+    const isActualTextbook = (item.targetSection === "kitap" || cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi") || (item.id && String(item.id).startsWith("book-")));
 
     // 1. Doğrudan atanmış geçerli görsel varsa
     if (rawImg && rawImg !== "#" && rawImg !== "null" && !rawImg.includes("cdn.eba.gov.tr") && !rawImg.includes("placeholder")) {
-        return rawImg;
+        // Eğer görsel assets/kapak-X.jpg ise ama bu materyal MEB DERS KİTABI DEĞİLSE, ders kitabı kapağını zorlama!
+        if (rawImg.includes("assets/kapak-") && !isActualTextbook) {
+            // Hatalı varsayılan kapak yerine akıllı kapağa devam et
+        } else {
+            return rawImg;
+        }
     }
-    // 2. fileUrl bir görsel ise
+
+    // 2. fileUrl doğrudan bir görsel ise
     if (rawFile && rawFile !== "#" && rawFile !== "null" && !rawFile.includes("cdn.eba.gov.tr") &&
         (rawFile.startsWith("data:image") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp") || rawFile.startsWith("assets/"))) {
         return rawFile;
     }
+
     // 3. Laboratuvar / Güvenlik Sembolleri / Kurallar
     if (cat === "laboratuvar" || title.includes("laboratuvar") || title.includes("lab ") || unit.includes("laboratuvar") ||
         title.includes("güvenlik") || title.includes("malzeme") || title.includes("kural")) {
         return "assets/lab-guvenligi.svg";
     }
-    // 4. Ders Kitabı
-    if (title.includes("kitap") || title.includes("kitab") || cat === "ders-kitabi") {
+
+    // 4. Gerçek MEB Ders Kitabı
+    if (isActualTextbook) {
         return ["5", "6", "7", "8"].includes(g) ? `assets/kapak-${g}.jpg` : "assets/kapak-5.jpg";
     }
-    // 5. İşlenecek Üniteler / Sınıf Konuları / Bilgilendirme
-    if (title.includes("ünite") || title.includes("unite") || title.includes("konuları") || title.includes("konulari") || title.includes("işlenecek") || title.includes("islenecek")) {
-        return (["5", "6", "7", "8"].includes(g) && g !== "5") ? `assets/kapak-${g}.jpg` : "assets/unite-bilgilendirmeleri-gorsel.png";
+
+    // 5. İşlenecek Üniteler / Sınıf Konuları / Bilgilendirme Afişi (Sadece tanıtım afişi için)
+    if (title === "ünite bilgilendirmeleri" || (title.includes("işlenecek üniteler") && !title.includes("slayt") && !title.includes("sunum") && !title.includes("not"))) {
+        return "assets/unite-bilgilendirmeleri-gorsel.png";
     }
-    // 6. Sınıf düzeyine göre varsayılan kapak görseli
-    if (["5", "6", "7", "8"].includes(g)) {
-        return `assets/kapak-${g}.jpg`;
+
+    // 6. Bellekte taranmış PDF kapağı var mı?
+    if (item.id && window._pdfThumbCache && window._pdfThumbCache[item.id]) {
+        return window._pdfThumbCache[item.id];
     }
-    return "assets/kapak-5.jpg";
+
+    // 7. Otomatik Akıllı Belge Kapağı (Ders Kitabı kapağı yerine belgenin kendi format ve başlığına uygun kapak)
+    return generateSmartDocumentCover(item.title || "Fen Bilimleri", item.format || "DOKÜMAN", item.unit || `${g}. Sınıf Fen`, g);
+}
+
+function handleImageCoverError(imgEl, title = "Materyal", format = "DOKÜMAN", unit = "", grade = "8") {
+    if (!imgEl || imgEl.dataset.errorHandled) return;
+    imgEl.dataset.errorHandled = "true";
+    imgEl.src = generateSmartDocumentCover(title, format, unit, grade);
+}
+
+let _pdfThumbnailQueueRunning = false;
+async function loadMissingPdfThumbnails() {
+    if (_pdfThumbnailQueueRunning) return;
+    if (typeof window === "undefined" || !window.pdfjsLib) return;
+    _pdfThumbnailQueueRunning = true;
+
+    try {
+        const candidateImgs = document.querySelectorAll('img[data-pdf-item-id]');
+        for (const img of candidateImgs) {
+            const itemId = img.getAttribute("data-pdf-item-id");
+            const fileUrl = img.getAttribute("data-pdf-url") || "";
+            if (!itemId) continue;
+
+            if (img.src && (img.src.startsWith("data:image/jpeg") || img.src.startsWith("data:image/png") || (img.src.startsWith("http") && !img.src.includes(".svg")))) {
+                continue;
+            }
+
+            if (window._pdfThumbCache && window._pdfThumbCache[itemId]) {
+                img.src = window._pdfThumbCache[itemId];
+                continue;
+            }
+
+            let pdfSource = null;
+            if (fileUrl && (fileUrl.toLowerCase().endsWith(".pdf") || fileUrl.startsWith("blob:") || fileUrl.startsWith("data:application/pdf"))) {
+                pdfSource = fileUrl;
+            } else if (typeof RotaliDB !== "undefined" && RotaliDB.getFile) {
+                try {
+                    const rec = await RotaliDB.getFile(itemId);
+                    if (rec && rec.blob && (rec.fileType === "application/pdf" || (rec.fileName && rec.fileName.toLowerCase().endsWith(".pdf")))) {
+                        pdfSource = rec.blob;
+                    }
+                } catch(e) {}
+            }
+
+            if (pdfSource) {
+                const thumb = await extractCoverFromPdfSource(pdfSource);
+                if (thumb) {
+                    window._pdfThumbCache = window._pdfThumbCache || {};
+                    window._pdfThumbCache[itemId] = thumb;
+                    img.src = thumb;
+
+                    try {
+                        const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+                        const targetItem = customList.find(m => m && m.id === itemId);
+                        if (targetItem && (!targetItem.imageUrl || targetItem.imageUrl.includes("assets/kapak-") || targetItem.imageUrl.startsWith("data:image/svg"))) {
+                            targetItem.imageUrl = thumb;
+                            targetItem.kapakResmi = thumb;
+                            saveCustomMaterialsSafe(customList);
+                        }
+                    } catch(saveErr) {}
+                }
+            }
+        }
+    } catch(err) {
+        console.warn("loadMissingPdfThumbnails error:", err);
+    } finally {
+        _pdfThumbnailQueueRunning = false;
+    }
 }
 
 function getMaterialTargetSection(item) {
@@ -1211,7 +1430,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
 
                                 <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
                                 <div class="mat-preview-box relative w-full h-72 sm:h-80 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
-                                    <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${itemGrade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                    <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${itemGrade || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                     <div class="absolute bottom-2.5 right-2.5">
                                         <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                             <i class="${actionUI.icon}"></i> ${actionUI.text}
@@ -1651,6 +1870,11 @@ function handleRouteChange(options = {}) {
 
         updateActiveNav(hash);
         updateStudentHeader();
+        setTimeout(() => {
+            if (typeof loadMissingPdfThumbnails === "function") {
+                loadMissingPdfThumbnails();
+            }
+        }, 300);
     } catch (routeErr) {
         console.error("Router hatası oluştu, otomatik onarılıyor:", routeErr);
         if (typeof recoverAndRepairData === "function") {
@@ -1831,7 +2055,7 @@ function renderHomeRecentMaterialsSection() {
                             <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">${item.title}</h4>
                             <!-- Görsel Kapak Kutusu -->
                             <div class="mat-preview-box relative w-full h-52 sm:h-60 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
-                                <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${item.grade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                 <div class="absolute bottom-2.5 right-2.5">
                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                         <i class="${actionUI.icon}"></i> ${actionUI.text}
@@ -1998,7 +2222,7 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
 
                                         <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
                                         <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
-                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${item.grade || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                     <i class="${actionUI.icon}"></i> ${actionUI.text}
@@ -3867,7 +4091,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         </h5>
                                                         <!-- Görsel Kapak Kutusu -->
                                                         <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:${isSunum ? 'border-orange-500/40' : 'border-blue-500/40'} cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')">
-                                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                             <div class="absolute bottom-2.5 right-2.5">
                                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:${isSunum ? 'bg-orange-600' : 'bg-blue-600'} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                                     <i class="fa-solid fa-eye"></i> İncele & Aç
@@ -4321,7 +4545,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     </h5>
                                                     <!-- Görsel Kapak Kutusu -->
                                                     <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${itemCover.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', true)">
-                                                        <img src="${itemCover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                        <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                         <div class="absolute bottom-2.5 right-2.5">
                                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                                 <i class="fa-solid fa-eye text-xs"></i> Görseli Aç
@@ -4674,7 +4898,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
                                         <!-- Görsel Kapak Kutusu -->
                                         <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')">
-                                            <img src="${resolveMaterialCover(labSimItem)}" alt="${labSimItem.title || 'PhET Simülasyon'}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <img src="${resolveMaterialCover(labSimItem)}" alt="${labSimItem.title || 'PhET Simülasyon'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                     <i class="fa-solid fa-play"></i> Simülasyonu Aç
@@ -13288,12 +13512,21 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
         document.body.appendChild(modal);
     }
 
+    ensurePdfWorkerConfigured();
     currentUploadedFile = null;
     currentTagsList = editMaterial && editMaterial.tags ? [...editMaterial.tags] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"];
     const targetGradeClean = editMaterial ? String(editMaterial.grade || "").replace(/^grade-/, "").replace(/\. Sınıf/i, "").trim() : String(prefillGrade || "8").replace(/^grade-/, "").replace(/\. Sınıf/i, "").trim();
     const isEditing = !!editMaterial;
     if (editMaterial) editingMaterialId = editMaterial.id;
     else editingMaterialId = null;
+
+    const isActualTextbook = isEditing && editMaterial && (editMaterial.targetSection === "kitap" || editMaterial.category === "ders-kitabi" || (editMaterial.title || "").toLowerCase().includes("ders kitabı"));
+    const rawExistingCover = (isEditing && editMaterial) ? (editMaterial.imageUrl || editMaterial.kapakResmi || editMaterial.cover || "").trim() : "";
+    if (rawExistingCover.includes("assets/kapak-") && !isActualTextbook) {
+        currentUploadedCoverDataUrl = "";
+    } else {
+        currentUploadedCoverDataUrl = rawExistingCover;
+    }
 
     let activeEditCategory = isEditing ? (editMaterial.category || "ders-notu") : (prefillTab || "ders-notu");
     if (activeEditCategory === "laboratuvar" || activeEditCategory === "ders-kitabi" || activeEditCategory === "kitap") activeEditCategory = "ders-notu";
@@ -13529,7 +13762,7 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                             <input type="file" id="adv-cover-input" onchange="handleCoverFileSelected(event)" accept="image/*,.png,.jpg,.jpeg,.webp,.svg" class="hidden">
                             <label for="adv-cover-input" class="w-full p-2.5 sm:p-3 bg-white hover:bg-amber-100/40 border border-slate-200 hover:border-amber-400 rounded-xl text-xs font-bold text-slate-700 cursor-pointer flex items-center justify-center gap-2 transition-all shadow-sm group">
                                 <i class="fa-solid fa-image text-amber-600 text-sm group-hover:scale-110 transition-transform"></i>
-                                <span id="cover-file-btn-text">Kapak Görseli Yükle...</span>
+                                <span id="cover-file-btn-text">${currentUploadedCoverDataUrl ? 'Kapak Görselini Değiştir...' : 'Kapak Görseli Yükle...'}</span>
                             </label>
                         </div>
 
@@ -13537,19 +13770,21 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                         <div>
                             <label class="block text-[11px] font-black uppercase text-slate-700 mb-1">veya Kapak Resmi Linki (URL)</label>
                             <div class="relative">
-                                <input type="url" id="adv-cover-url-input" oninput="handleCoverUrlInput(this.value)" value="${isEditing && (editMaterial.imageUrl || editMaterial.cover) ? (editMaterial.imageUrl || editMaterial.cover) : ''}" placeholder="https://.../kapak.jpg veya YouTube afişi" class="w-full p-2.5 sm:p-3 pl-8 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-amber-500 shadow-sm">
+                                <input type="url" id="adv-cover-url-input" oninput="handleCoverUrlInput(this.value)" value="${currentUploadedCoverDataUrl && (currentUploadedCoverDataUrl.startsWith('http') || currentUploadedCoverDataUrl.startsWith('data:image')) ? currentUploadedCoverDataUrl : ''}" placeholder="https://.../kapak.jpg veya YouTube afişi" class="w-full p-2.5 sm:p-3 pl-8 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-amber-500 shadow-sm">
                                 <i class="fa-solid fa-link absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                             </div>
                         </div>
                     </div>
 
                     <!-- Kapak Resmi Canlı Önizleme Kartı -->
-                    <div id="cover-preview-box" class="${isEditing && (editMaterial.imageUrl || editMaterial.cover) ? 'flex' : 'hidden'} items-center gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm animate-in fade-in duration-200">
+                    <div id="cover-preview-box" class="${currentUploadedCoverDataUrl ? 'flex' : 'hidden'} items-center gap-3 p-3 bg-white rounded-xl border border-amber-200 shadow-sm animate-in fade-in duration-200">
                         <div class="w-20 h-14 sm:w-24 sm:h-16 rounded-lg overflow-hidden bg-slate-100 border border-slate-200 shrink-0 flex items-center justify-center">
-                            <img id="cover-preview-img" src="${isEditing && (editMaterial.imageUrl || editMaterial.cover) ? (editMaterial.imageUrl || editMaterial.cover) : ''}" alt="Kapak Önizleme" class="w-full h-full object-cover">
+                            <img id="cover-preview-img" src="${currentUploadedCoverDataUrl || ''}" alt="Kapak Önizleme" class="w-full h-full object-cover">
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-xs font-black text-slate-800 truncate" id="cover-preview-title">Kapak Resmi Hazır</div>
+                            <div class="text-xs font-black text-slate-800 truncate" id="cover-preview-title">
+                                ${currentUploadedCoverDataUrl ? '<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> Kapak Görseli Hazır</span>' : 'Kapak Görseli Hazır'}
+                            </div>
                             <div class="text-[10px] text-emerald-600 font-bold flex items-center gap-1">
                                 <i class="fa-solid fa-circle-check"></i> Sitede bu görsel kapak olarak görünecek
                             </div>
@@ -13825,11 +14060,21 @@ async function autoExtractCoverFromFile(file, ext) {
     const previewImg = document.getElementById("cover-preview-img");
     const previewBox = document.getElementById("cover-preview-box");
     const btnText = document.getElementById("cover-file-btn-text");
+    const previewTitle = document.getElementById("cover-preview-title");
+
+    if (previewBox) {
+        previewBox.classList.remove("hidden");
+        previewBox.classList.add("flex");
+    }
+    if (previewTitle) {
+        previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-amber-700 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> 1. Sayfa taranıyor ve kapak görseli hazırlanıyor...</span>`;
+    }
 
     let autoCover = null;
+    const cleanExt = (ext || (file && file.name ? file.name.split('.').pop() : "") || "").toLowerCase();
 
     // A) Görsel dosyası ise (Doğrudan sıkıştır ve ata)
-    if (file.type && file.type.startsWith("image/") || ["png", "jpg", "jpeg", "webp", "svg", "gif"].includes(ext)) {
+    if (file && ((file.type && file.type.startsWith("image/")) || ["png", "jpg", "jpeg", "webp", "svg", "gif"].includes(cleanExt))) {
         try {
             const compressed = await compressImageIfNeeded(file);
             autoCover = compressed || await readFileAsDataURL(file);
@@ -13838,29 +14083,15 @@ async function autoExtractCoverFromFile(file, ext) {
         }
     }
     // B) PDF Dosyası ise (pdf.js kullanarak ilk sayfayı canvas'a render et ve kapak yap)
-    else if (ext === "pdf" || (file.type && file.type === "application/pdf")) {
+    else if (cleanExt === "pdf" || (file && file.type === "application/pdf")) {
         try {
-            if (typeof pdfjsLib !== "undefined") {
-                const arrayBuffer = await file.arrayBuffer();
-                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-                const pdf = await loadingTask.promise;
-                const page = await pdf.getPage(1);
-                const origViewport = page.getViewport({ scale: 1.0 });
-                const scale = Math.min(600 / origViewport.width, 1.5);
-                const viewport = page.getViewport({ scale: scale });
-                const canvas = document.createElement("canvas");
-                canvas.width = viewport.width;
-                canvas.height = viewport.height;
-                const ctx = canvas.getContext("2d");
-                await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-                autoCover = canvas.toDataURL("image/jpeg", 0.85);
-            }
+            autoCover = await extractCoverFromPdfSource(file);
         } catch(pdfErr) {
             console.warn("PDF kapak sayfası oluşturulamadı:", pdfErr);
         }
     }
     // C) Video Dosyası ise (1. saniyedeki kareyi yakala)
-    else if (file.type && file.type.startsWith("video/") || ["mp4", "webm", "ogg", "mov"].includes(ext)) {
+    else if (file && ((file.type && file.type.startsWith("video/")) || ["mp4", "webm", "ogg", "mov"].includes(cleanExt))) {
         try {
             autoCover = await new Promise((resolve) => {
                 const video = document.createElement("video");
@@ -13892,6 +14123,17 @@ async function autoExtractCoverFromFile(file, ext) {
         }
     }
 
+    // D) PPTX, DOCX veya diğer dokümanlar için (veya PDF'ten görsel çıkarılamazsa) akıllı doküman kapağı oluştur
+    if (!autoCover) {
+        const titleInput = document.getElementById("adv-title-input");
+        const tVal = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : (file ? file.name.replace(/\.[^/.]+$/, "") : "Ders Materyali");
+        const unitSelect = document.getElementById("adv-unit-select");
+        const uVal = unitSelect ? unitSelect.value : "";
+        const gradeSelect = document.getElementById("adv-grade-select");
+        const gVal = gradeSelect ? gradeSelect.value : "8";
+        autoCover = generateSmartDocumentCover(tVal, cleanExt.toUpperCase(), uVal, gVal);
+    }
+
     // Kullanıcı henüz manuel bir kapak seçmediyse veya otomatik kapak oluştuysa arayüze ve state'e yansıt
     if (autoCover) {
         currentUploadedCoverDataUrl = autoCover;
@@ -13900,8 +14142,15 @@ async function autoExtractCoverFromFile(file, ext) {
             previewBox.classList.remove("hidden");
             previewBox.classList.add("flex");
         }
-        if (btnText) btnText.innerText = "Otomatik Kapak Algılandı (Değiştirebilirsiniz)";
+        if (previewTitle) {
+            previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> ${cleanExt === 'pdf' ? 'Dosyanın 1. Sayfasından Otomatik Kapak Oluşturuldu' : 'Özel Kapak Görseli Hazır'}</span>`;
+        }
+        if (btnText) {
+            btnText.innerText = cleanExt === 'pdf' ? "1. Sayfa Kapak Oldu (Değiştirebilirsiniz)" : "Kapak Görseli Değiştir...";
+        }
     }
+
+    return autoCover;
 }
 
 
@@ -13920,11 +14169,15 @@ async function handleCoverFileSelected(e) {
         const previewBox = document.getElementById("cover-preview-box");
         const btnText = document.getElementById("cover-file-btn-text");
         const urlInput = document.getElementById("adv-cover-url-input");
+        const previewTitle = document.getElementById("cover-preview-title");
 
         if (previewImg) previewImg.src = currentUploadedCoverDataUrl;
         if (previewBox) {
             previewBox.classList.remove("hidden");
             previewBox.classList.add("flex");
+        }
+        if (previewTitle) {
+            previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Özel Kapak Görseli Seçildi</span>`;
         }
         if (btnText) btnText.innerText = file.name.length > 20 ? (file.name.substring(0, 18) + '...') : file.name;
         if (urlInput) urlInput.value = "";
@@ -13934,11 +14187,15 @@ async function handleCoverFileSelected(e) {
 function handleCoverUrlInput(url) {
     const previewImg = document.getElementById("cover-preview-img");
     const previewBox = document.getElementById("cover-preview-box");
+    const previewTitle = document.getElementById("cover-preview-title");
     const cleanUrl = (url || "").trim();
 
     if (cleanUrl.startsWith("http") || cleanUrl.startsWith("data:image")) {
         currentUploadedCoverDataUrl = cleanUrl;
         if (previewImg) previewImg.src = cleanUrl;
+        if (previewTitle) {
+            previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Kapak Bağlantısı Ayarlandı</span>`;
+        }
         if (previewBox) {
             previewBox.classList.remove("hidden");
             previewBox.classList.add("flex");
@@ -13967,10 +14224,10 @@ function removeSelectedCover() {
     if (btnText) btnText.innerText = "Kapak Görseli Yükle...";
 }
 
-function handleAdvLinkInput(val) {
+async function handleAdvLinkInput(val) {
     if (!val) return;
     const cleanVal = val.trim();
-    // YouTube ID Çıkarımı
+    // 1. YouTube ID Çıkarımı
     const ytMatch = cleanVal.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
     if (ytMatch && ytMatch[1]) {
         const ytId = ytMatch[1];
@@ -13978,17 +14235,49 @@ function handleAdvLinkInput(val) {
         const urlInput = document.getElementById("adv-cover-url-input");
         const previewBox = document.getElementById("cover-preview-box");
         const previewImg = document.getElementById("cover-preview-img");
+        const previewTitle = document.getElementById("cover-preview-title");
 
-        // Eğer kullanıcı elle başka bir dosya yüklemediyse otomatik YouTube afişini yerleştir
-        if (!currentUploadedCoverDataUrl || currentUploadedCoverDataUrl.includes("youtube.com")) {
-            currentUploadedCoverDataUrl = ytThumb;
-            if (urlInput) urlInput.value = ytThumb;
-            if (previewImg) previewImg.src = ytThumb;
-            if (previewBox) {
-                previewBox.classList.remove("hidden");
-                previewBox.classList.add("flex");
-            }
+        currentUploadedCoverDataUrl = ytThumb;
+        if (urlInput) urlInput.value = ytThumb;
+        if (previewImg) previewImg.src = ytThumb;
+        if (previewTitle) previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> YouTube Video Afişi Algılandı</span>`;
+        if (previewBox) {
+            previewBox.classList.remove("hidden");
+            previewBox.classList.add("flex");
         }
+        return;
+    }
+
+    // 2. Doğrudan Görsel Linki
+    if (/\.(jpg|jpeg|png|webp|svg)($|\?)/i.test(cleanVal)) {
+        handleCoverUrlInput(cleanVal);
+        return;
+    }
+
+    // 3. PDF Web / Drive Linki
+    if (/\.pdf($|\?)/i.test(cleanVal) || cleanVal.includes("/pdf")) {
+        const previewBox = document.getElementById("cover-preview-box");
+        const previewImg = document.getElementById("cover-preview-img");
+        const previewTitle = document.getElementById("cover-preview-title");
+        if (previewBox) { previewBox.classList.remove("hidden"); previewBox.classList.add("flex"); }
+        if (previewTitle) previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-amber-600 font-bold"><i class="fa-solid fa-spinner fa-spin"></i> PDF 1. sayfası taranıyor...</span>`;
+
+        try {
+            const pdfCover = await extractCoverFromPdfSource(cleanVal);
+            if (pdfCover) {
+                currentUploadedCoverDataUrl = pdfCover;
+                if (previewImg) previewImg.src = pdfCover;
+                if (previewTitle) previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> PDF 1. Sayfasından Kapak Oluşturuldu</span>`;
+                return;
+            }
+        } catch(e) {}
+
+        const titleInput = document.getElementById("adv-title-input");
+        const tVal = (titleInput && titleInput.value.trim()) ? titleInput.value.trim() : "PDF Ders Notu";
+        const smartCover = generateSmartDocumentCover(tVal, "PDF", "Fen Bilimleri", "8");
+        currentUploadedCoverDataUrl = smartCover;
+        if (previewImg) previewImg.src = smartCover;
+        if (previewTitle) previewTitle.innerHTML = `<span class="inline-flex items-center gap-1.5 text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> Özel Doküman Kapağı Hazırlandı</span>`;
     }
 }
 
@@ -14155,6 +14444,29 @@ async function handleAdvMaterialSubmit(e) {
     if (!chosenCover && linkVal) {
         const ytM = linkVal.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))([\w-]{11})/);
         if (ytM && ytM[1]) chosenCover = `https://img.youtube.com/vi/${ytM[1]}/hqdefault.jpg`;
+    }
+
+    // Eğer kapak seçilmediyse veya otomatik çıkarım henüz tamamlanmadıysa şimdi tamamla
+    if (!chosenCover && currentUploadedFile) {
+        const ext = (currentUploadedFile.name || "").split('.').pop().toLowerCase();
+        try {
+            chosenCover = await autoExtractCoverFromFile(currentUploadedFile, ext);
+        } catch(e) {}
+    }
+    if (!chosenCover && linkVal && (linkVal.toLowerCase().endsWith(".pdf") || linkVal.includes("/pdf"))) {
+        try {
+            chosenCover = await extractCoverFromPdfSource(linkVal);
+        } catch(e) {}
+    }
+    if (!chosenCover) {
+        if (targetSection === "kitap" || category === "ders-kitabi" || title.toLowerCase().includes("ders kitabı") || title.toLowerCase().includes("ders kitabi")) {
+            chosenCover = ["5", "6", "7", "8"].includes(primaryGrade) ? `assets/kapak-${primaryGrade}.jpg` : "assets/kapak-5.jpg";
+        } else if (category === "laboratuvar" || targetSection === "lab" || title.toLowerCase().includes("laboratuvar")) {
+            chosenCover = "assets/lab-guvenligi.svg";
+        } else {
+            const extFmt = currentUploadedFile ? currentUploadedFile.name.split('.').pop().toUpperCase() : "DOKÜMAN";
+            chosenCover = generateSmartDocumentCover(title, extFmt, unit, primaryGrade);
+        }
     }
 
     if (submitBtn) {
