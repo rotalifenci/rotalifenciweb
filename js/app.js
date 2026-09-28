@@ -1239,18 +1239,18 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     <span>${actionUI.text}</span>
                                 </button>
 
-                                ${(isAdmin && (subTab === "projeler" || subTab === "proje")) ? `
+                                ${isAdmin ? `
                                     <div class="flex items-center gap-1.5 mt-2">
-                                        <button type="button" onclick="moveCustomMaterial('${item.id}', -1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Yukarı Taşı">
-                                            <i class="fa-solid fa-arrow-up"></i>
+                                        <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center cursor-pointer active:scale-95" title="Sola / Yukarı Taşı">
+                                            <i class="fa-solid fa-arrow-left"></i>
                                         </button>
-                                        <button type="button" onclick="moveCustomMaterial('${item.id}', 1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center" title="Aşağı Taşı">
-                                            <i class="fa-solid fa-arrow-down"></i>
+                                        <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl border border-slate-200 transition-all flex items-center justify-center cursor-pointer active:scale-95" title="Sağa / Aşağı Taşı">
+                                            <i class="fa-solid fa-arrow-right"></i>
                                         </button>
-                                        <button type="button" onclick="editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5" title="Düzenle / Konum Değiştir">
+                                        <button type="button" onclick="event.stopPropagation(); editCustomMaterial('${item.id}')" class="flex-1 py-1.5 bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-bold rounded-xl border border-amber-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Düzenle / Konum Değiştir">
                                             <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                         </button>
-                                        <button type="button" onclick="deleteCustomMaterial('${item.id}')" class="py-1.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5" title="Sil">
+                                        <button type="button" onclick="event.stopPropagation(); deleteCustomMaterial('${item.id}')" class="py-1.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer" title="Sil">
                                             <i class="fa-solid fa-trash-can"></i> Sil
                                         </button>
                                     </div>
@@ -3112,73 +3112,7 @@ function openIssueReportModal() {
                     </select>
                 </div>
 
-                <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT: ÇILGIN PROFESÖRÜN LABORATUVARI - KAÇIŞ ODASI OYUNU -->
-            <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
-                <!-- Arka Plan Dekoratif Parıltılar -->
-                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-16 -top-16 w-80 h-80 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-                    
-                    <!-- Sol: Oyunun Görseli (Görsel Tekrar Eklendi) -->
-                    <div class="relative w-full sm:w-72 md:w-80 h-48 sm:h-52 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/70 shadow-2xl bg-slate-900 group/img">
-                        <img src="assets/lab-guvenligi.svg" alt="Çılgın Profesörün Laboratuvarı Kaçış Oyunu" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.src='ROTALI FENCİ.jpg'">
-                        <!-- Dairesel Rotalı Fenci Logosu Rozeti -->
-                        <div class="absolute top-2.5 left-2.5 w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-amber-400 to-orange-500 shadow-lg flex items-center justify-center">
-                            <img src="rotali-fenci-logo.png" alt="Rotalı Fenci Logo" class="w-full h-full object-cover rounded-[14px]">
-                        </div>
-                        <span class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-xl shadow font-orbitron">
-                            10 KAPI • ŞİFRELER
-                        </span>
-                    </div>
-
-                    <!-- Orta: Başlık, Görev Bilgisi ve Özellik Rozetleri -->
-                    <div class="flex-1 text-center sm:text-left">
-                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
-                            <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
-                                <i class="fa-solid fa-trophy text-amber-400"></i> ÖNE ÇIKAN KAÇIŞ OYUNU
-                            </span>
-                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
-                                ✓ Akıllı Tahta, PC & Telefon Uyumlu
-                            </span>
-                        </div>
-                        <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
-                            Çılgın Profesörün Laboratuvarı: Kaçış Odası
-                        </h4>
-                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3.5">
-                            Profesörün kilitli laboratuvarında mahsur kaldın! Ahşap güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
-                        </p>
-                        <!-- Özellik Rozetleri -->
-                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
-                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                🚪 10 Ahşap Oda Kapısı
-                            </span>
-                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                🧭 Rotalı Fenci Logolu Karakter
-                            </span>
-                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                ⏱️ 15sn Soru Sayacı
-                            </span>
-                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                ❤️ 3 Can Hakkı
-                            </span>
-                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                🏆 Maks 10.000 Canlı Skor
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Sağ: Hızlı Başlatma Butonu (Aynı Sekmede Tam Ekran Açar) -->
-                    <div class="shrink-0 w-full sm:w-auto">
-                        <button type="button" onclick="window.location.href='oyunlar/laboratuvar-kacis-odasi.html'" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm sm:text-base uppercase tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer border-2 border-amber-300">
-                            <i class="fa-solid fa-play text-lg"></i>
-                            <span>OYUNU AÇ (TAM EKRAN)</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 3. Sorun Türü (Genişletilmiş Seçenekler) -->
+                <!-- 2. Sorun Türü (Genişletilmiş Seçenekler) -->
                 <div>
                     <label class="block text-xs font-black uppercase text-slate-700 mb-1.5 flex items-center gap-1.5">
                         <span class="w-2 h-2 rounded-full bg-blue-600"></span> Sorun Türü
@@ -3687,6 +3621,10 @@ function renderGradeDersNotuAccordion(grade, subData) {
         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         if (gClean !== "all" && gClean !== String(grade.number)) return false;
         if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
+        // Eğitsel oyunları ders notu laboratuvarında ASLA gösterme!
+        if (matchesSubTabCategory(m, "egitsel-oyunlar") || m.category === "egitsel-oyunlar" || m.category === "oyunlar" || m.category === "oyun" || (m.format && m.format.toLowerCase().includes("oyun")) || m.fileUrl === "oyun-lab-kacis" || String(m.title || '').toLowerCase().includes("kaçış") || String(m.title || '').toLowerCase().includes("kacis")) {
+            return false;
+        }
         const sec = getMaterialTargetSection(m);
         return sec === "lab" || m.category === "laboratuvar";
     });
@@ -3947,6 +3885,14 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         </button>
                                                         ${isAdmin ? `
                                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                                ${isCustom ? `
+                                                                    <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sola / Yukarı Taşı">
+                                                                        <i class="fa-solid fa-arrow-left"></i>
+                                                                    </button>
+                                                                    <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sağa / Aşağı Taşı">
+                                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                                    </button>
+                                                                ` : ''}
                                                                 <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
                                                                     <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                                                 </button>
@@ -4031,6 +3977,14 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             </button>
                                             ${isAdmin ? `
                                                 <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    ${isCustom ? `
+                                                        <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sola / Yukarı Taşı">
+                                                            <i class="fa-solid fa-arrow-left"></i>
+                                                        </button>
+                                                        <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sağa / Aşağı Taşı">
+                                                            <i class="fa-solid fa-arrow-right"></i>
+                                                        </button>
+                                                    ` : ''}
                                                     <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
                                                         <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                                     </button>
@@ -4099,6 +4053,53 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         ]
     };
     const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
+
+    // Müfredat Yerleşik Eğitsel Oyun Haritası (Ünitelere ve Laboratuvara Göre Dağılım)
+    const builtinUnitGamesMap = {
+        "5": {
+            "1": [
+                { id: "oyun-5-gunes", title: "Güneş, Dünya ve Ay 3D Yörünge Simülatörü", badge: "3D Simülasyon", desc: "Ay'ın evrelerini, Dünya ve Güneş etrafındaki dolanma hareketlerini 3 boyutlu uzay ortamında inceleyin.", fileUrl: "https://phet.colorado.edu", format: "3D SİMÜLASYON", icon: "fa-solid fa-earth-americas", iconColor: "from-teal-500 to-emerald-600", type: "Uzay Keşfi" },
+                { id: "oyun-5-cark", title: "5. Sınıf Fen Çarkıfeleği & Terim Yarışması", badge: "Yarışma & Çark", desc: "Çarkıfeleği çevirin, 5. sınıf fen terimlerini süre bitmeden doğru cevaplayarak şampiyon olun.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "ÇARKIFELEK", icon: "fa-solid fa-dharmachakra", iconColor: "from-purple-500 to-pink-600", type: "Çarkıfelek" }
+            ],
+            "2": [
+                { id: "oyun-5-canlilar", title: "Canlılar Dünyası ve Mantarlar Sınıflandırma Oyunu", badge: "Sürükle-Bırak", desc: "Omurgalı/omurgasız hayvanları, bitkileri ve mikroskobik canlıları doğru kutulara sürükleyin.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "EŞLEŞTİRME", icon: "fa-solid fa-paw", iconColor: "from-emerald-500 to-green-600", type: "Canlılar Oyunu" }
+            ],
+            "lab": [
+                { id: "oyun-5-lab-wordwall", title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu", badge: "Wordwall İnteraktif", desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eşleştirerek keşfedin.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "EŞLEŞTİRME", icon: "fa-solid fa-flask", iconColor: "from-amber-500 to-orange-600", type: "Eşleştirme Oyunu" },
+                { id: "oyun-5-lab-eslestirme", title: "Laboratuvar Malzemeleri Eşleştirme Bulmacası", badge: "Kavram Eşleştirme", desc: "30 temel fen laboratuvar ekipmanını doğru görsel ve tanımlarla eşleştirerek yüksek puan toplayın.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "BULMACA", icon: "fa-solid fa-vial-circle-check", iconColor: "from-blue-500 to-indigo-600", type: "İnteraktif Bulmaca" }
+            ]
+        },
+        "6": {
+            "1": [
+                { id: "oyun-6-gezegen", title: "Güneş Sistemi & Tutulmalar 3D Uzay Keşfi", badge: "Simülasyon", desc: "Gezegenlerin büyüklükleri ve Güneş/Ay tutulmalarını interaktif gözlemleyin.", fileUrl: "https://phet.colorado.edu", format: "3D UZAY", icon: "fa-solid fa-meteor", iconColor: "from-amber-500 to-yellow-600", type: "3D Uzay" }
+            ],
+            "2": [
+                { id: "oyun-6-organ", title: "6. Sınıf Vücudumuzdaki Sistemler Organ Eşleştirme", badge: "Turnuva", desc: "Dolaşım, solunum, sindirim ve boşaltım organlarını görevleriyle eşleştirin.", fileUrl: "https://wordwall.net", format: "EŞLEŞTİRME", icon: "fa-solid fa-heart-pulse", iconColor: "from-rose-500 to-red-600", type: "Sistem Eşleştirme" }
+            ],
+            "3": [
+                { id: "oyun-6-cark", title: "6. Sınıf Fen Çarkıfeleği & Terim Yarışması", badge: "Yarışma", desc: "Kuvvet, hareket ve madde kavramlarını çarkıfelek ile yarışarak öğrenin.", fileUrl: "https://wordwall.net", format: "ÇARKIFELEK", icon: "fa-solid fa-dharmachakra", iconColor: "from-purple-500 to-pink-600", type: "Çarkıfelek" }
+            ],
+            "lab": []
+        },
+        "7": {
+            "1": [
+                { id: "oyun-7-galileo", title: "Bilimin Rotası: Teleskop ve Uzay Keşif Oyunu", badge: "Keşif", desc: "Teleskop çeşitleri, aynalar ve uzay araçları simülasyonu.", fileUrl: "https://phet.colorado.edu", format: "SİMÜLASYON", icon: "fa-solid fa-satellite", iconColor: "from-sky-500 to-teal-600", type: "Uzay & Optik" }
+            ],
+            "2": [
+                { id: "oyun-7-hucre", title: "7. Sınıf Hücre ve Organeller 3D Eşleştirme", badge: "Hücre Modeli", desc: "Bitki ve hayvan hücresi organellerini görevleriyle eşleştirin.", fileUrl: "https://wordwall.net", format: "EŞLEŞTİRME", icon: "fa-solid fa-dna", iconColor: "from-indigo-500 to-blue-600", type: "Hücre Oyunu" }
+            ],
+            "lab": []
+        },
+        "8": {
+            "1": [
+                { id: "oyun-8-passaparola", title: "8. Sınıf LGS Fen Passaparola Terim Yarışması", badge: "LGS Passaparola", desc: "A'dan Z'ye 24 LGS Fen terimini süre dolmadan bil, rekor kır!", fileUrl: "https://wordwall.net", format: "PASSAPAROLA", icon: "fa-solid fa-circle-question", iconColor: "from-red-500 to-rose-600", type: "LGS Yarışması" }
+            ],
+            "3": [
+                { id: "oyun-8-basinc", title: "Sıvı ve Gaz Basıncı Sanal Deney Simülatörü", badge: "PhET Simülasyon", desc: "Derinlik, yoğunluk ve açık hava basıncını sanal manometreyle ölçün.", fileUrl: "https://phet.colorado.edu", format: "SİMÜLASYON", icon: "fa-solid fa-atom", iconColor: "from-cyan-500 to-blue-600", type: "Basınç Simülatörü" }
+            ],
+            "lab": []
+        }
+    };
 
     // 7 Bölümün Yapılandırma Bilgileri
     const sectionConfigs = {
@@ -4231,10 +4232,10 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     ${hasLabSection ? `
                     <button type="button" onclick="filterUnitHubSection('${containerId}', 'lab', '${grade.number}', '${normSubTab}')" data-unit="lab" data-active="${isLabActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isLabActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm'} active:scale-95 cursor-pointer">
                         <div class="flex items-center justify-center gap-1 text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full">
-                            <i class="fa-solid fa-flask-vial text-emerald-600 text-[10px] sm:text-xs shrink-0"></i>
+                            <i class="fa-solid ${normSubTab === 'egitsel-oyunlar' ? 'fa-gamepad text-amber-500' : 'fa-flask-vial text-emerald-600'} text-[10px] sm:text-xs shrink-0"></i>
                             <span class="truncate">Laboratuvar</span>
                         </div>
-                        <span class="text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full">Deneyler</span>
+                        <span class="text-[9px] sm:text-[10px] font-semibold ${normSubTab === 'egitsel-oyunlar' ? 'text-amber-700/90' : 'text-emerald-700/80'} truncate w-full">${normSubTab === 'egitsel-oyunlar' ? 'Kaçış Odası' : 'Deneyler'}</span>
                     </button>
                     ` : ''}
                 </div>
@@ -4258,14 +4259,18 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         return targetSec === String(unitNum);
                     });
 
-                    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
-                    // 🌟 YALNIZCA KULLANICININ VEYA YÖNETİCİNİN EKLEDİĞİ GERÇEK İÇERİKLER GÖSTERİLİR (SAHTE/BOŞ MOCK İÇERİK EKLENMEZ)
-                    const totalItems = [...unitCustoms];
+                    const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
+                    let unitBuiltinGames = [];
+                    if (normSubTab === "egitsel-oyunlar") {
+                        const allBuiltinsForGrade = (builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum][String(unitNum)]) || [];
+                        unitBuiltinGames = allBuiltinsForGrade.filter(g => !deletedIds.has(g.id));
+                    }
+                    const totalItems = [...unitCustoms, ...unitBuiltinGames];
 
                     return `
                         <div data-unit="${unitNum}" class="unit-accordion-card ${isOpenInitial ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                             <!-- Akordeon Başlığı -->
-                            <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50">
+                            <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                                 <div class="flex items-center gap-3 sm:gap-4">
                                     <div class="w-12 h-12 rounded-2xl bg-slate-900 text-white flex flex-col items-center justify-center shrink-0 shadow-sm">
                                         <span class="text-[9px] font-black uppercase tracking-wider text-slate-300">ÜNİTE</span>
@@ -4291,11 +4296,16 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 ${totalItems.length > 0 ? `
                                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         ${totalItems.map(item => {
-                                            const isCustom = !String(item.id).startsWith("std-");
-                                            const actionCall = isCustom
-                                                ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
-                                                : cfg.btnAction(item);
-                                            const itemActionUI = getMaterialActionUI(item, normSubTab);
+                                            const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("oyun-");
+                                            const isBuiltinGame = String(item.id).startsWith("oyun-");
+                                            const actionCall = isBuiltinGame
+                                                ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
+                                                : (isCustom
+                                                    ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}')`
+                                                    : cfg.btnAction(item));
+                                            const itemActionUI = isBuiltinGame
+                                                ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Oyunu Oyna", icon: "fa-solid fa-play" }
+                                                : getMaterialActionUI(item, normSubTab);
                                             const itemCover = resolveMaterialCover(item);
 
                                             return `
@@ -4310,7 +4320,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
                                                         ${item.title}
                                                     </h5>
-                                                    <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Görseli Yüksek Çözünürlükle Açar) -->
+                                                    <!-- Görsel Kapak Kutusu -->
                                                     <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${itemCover.replace(/'/g, "\\'")}', '${item.title.replace(/'/g, "\\'")}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', true)">
                                                         <img src="${itemCover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                         <div class="absolute bottom-2.5 right-2.5">
@@ -4330,6 +4340,14 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     </button>
                                                     ${isAdmin ? `
                                                         <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                            ${isCustom ? `
+                                                                <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sola / Yukarı Taşı">
+                                                                    <i class="fa-solid fa-arrow-left"></i>
+                                                                </button>
+                                                                <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sağa / Aşağı Taşı">
+                                                                    <i class="fa-solid fa-arrow-right"></i>
+                                                                </button>
+                                                            ` : ''}
                                                             <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
                                                                 <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                                             </button>
@@ -4352,7 +4370,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <p class="text-xs text-slate-400 max-w-sm mb-4">${uTitle} için materyal eklediğinizde bu alanda görüntülenecektir.</p>
                                         ${isAdmin ? `
                                             <button type="button" onclick="triggerUploadModal('${grade.number}', '${normSubTab}', '${unitNum}')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye İçerik Ekle
+                                                <i class="fa-solid fa-plus"></i> + ${unitNum}. Üniteye ${normSubTab === 'egitsel-oyunlar' ? 'Eğitsel Oyun' : 'İçerik'} Ekle
                                             </button>
                                         ` : ''}
                                     </div>
@@ -4364,155 +4382,311 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                 ${hasLabSection ? `
                 <!-- 8. LABORATUVAR & DENEYLER AKORDEONU -->
-                <div data-unit="lab" class="unit-accordion-card ${isLabActive ? '' : 'hidden'} border border-emerald-200/90 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-emerald-400 hover:shadow-md">
-                    <button type="button" onclick="toggleAccordionSection('${containerId}-unit-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-emerald-50/40">
+                <div data-unit="lab" class="unit-accordion-card ${isLabActive ? '' : 'hidden'} border ${normSubTab === 'egitsel-oyunlar' ? 'border-amber-300/80 hover:border-amber-400' : 'border-emerald-200/90 hover:border-emerald-400'} rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:shadow-md">
+                    <button type="button" onclick="toggleAccordionSection('${containerId}-unit-lab')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors ${normSubTab === 'egitsel-oyunlar' ? 'hover:bg-amber-50/40' : 'hover:bg-emerald-50/40'} cursor-pointer">
                         <div class="flex items-center gap-3 sm:gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-sm text-xl">
-                                <i class="fa-solid fa-flask-vial"></i>
+                            <div class="w-12 h-12 rounded-2xl ${normSubTab === 'egitsel-oyunlar' ? 'bg-gradient-to-tr from-amber-500 to-orange-600' : 'bg-emerald-600'} text-white flex items-center justify-center shrink-0 shadow-sm text-xl">
+                                <i class="fa-solid ${normSubTab === 'egitsel-oyunlar' ? 'fa-gamepad' : 'fa-flask-vial'}"></i>
                             </div>
                             <div>
                                 <div class="flex items-center gap-2 mb-0.5">
-                                    <span class="text-xs font-black text-emerald-700 uppercase tracking-wider">${grade.number}. Sınıf • Özel Bölüm</span>
-                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-50 text-emerald-800 border border-emerald-200">Laboratuvar & Deneyler</span>
+                                    <span class="text-xs font-black ${normSubTab === 'egitsel-oyunlar' ? 'text-amber-700' : 'text-emerald-700'} uppercase tracking-wider">${grade.number}. Sınıf • Özel Bölüm</span>
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50 text-amber-800 border border-amber-200' : 'bg-emerald-50 text-emerald-800 border border-emerald-200'}">${normSubTab === 'egitsel-oyunlar' ? 'Laboratuvar Kaçış Odası & Oyunlar' : 'Laboratuvar & Deneyler'}</span>
                                 </div>
-                                <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar</h4>
+                                <h4 class="text-base sm:text-lg font-black text-slate-900 leading-snug">${normSubTab === 'egitsel-oyunlar' ? 'Çılgın Profesörün Kaçış Odası & İnteraktif Laboratuvar Oyunları' : 'Laboratuvar Güvenliği, Deney Föyleri & İnteraktif Simülasyonlar'}</h4>
                             </div>
                         </div>
-                        <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 transition-transform duration-300 ${isLabActive ? 'rotate-180' : ''}">
+                        <div id="${containerId}-unit-lab-icon" class="unit-card-icon accordion-icon-rotatable w-8 h-8 rounded-full ${normSubTab === 'egitsel-oyunlar' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'} flex items-center justify-center transition-transform duration-300 ${isLabActive ? 'rotate-180' : ''}">
                             <i class="fa-solid fa-chevron-down text-xs"></i>
                         </div>
                     </button>
 
-                    <div id="${containerId}-unit-lab" class="unit-card-body accordion-body-collapsible ${isLabActive ? '' : 'hidden'} border-t border-emerald-100 p-4 sm:p-6 bg-slate-50/50">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                            ${customList.filter(m => {
-                                const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
-                                if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                                if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
-                                const sec = getMaterialTargetSection(m);
-                                return sec === "lab" || m.category === "laboratuvar";
-                            }).map(item => {
-                                const actionUI = getMaterialActionUI(item, 'laboratuvar');
-                                const safeTitle = String(item.title || "Laboratuvar Materyali").replace(/'/g, "\\'");
-                                const safeFile = String(item.fileName || item.title || "materyal.pdf").replace(/'/g, "\\'");
-                                const safeUrl = String(item.fileUrl || item.imageUrl || resolveMaterialCover(item) || "#").replace(/'/g, "\\'");
-                                const itemCat = String(item.category || "laboratuvar").replace(/'/g, "\\'");
-                                const coverImg = resolveMaterialCover(item);
+                    <div id="${containerId}-unit-lab" class="unit-card-body accordion-body-collapsible ${isLabActive ? '' : 'hidden'} border-t ${normSubTab === 'egitsel-oyunlar' ? 'border-amber-100' : 'border-emerald-100'} p-4 sm:p-6 bg-slate-50/50">
+                        ${normSubTab === 'egitsel-oyunlar' ? `
+                            <!-- 🌟 1. ÖNE ÇIKAN KAÇIŞ ODASI OYUNU -->
+                            <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-6 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+                                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                                <div class="absolute -left-16 -top-16 w-80 h-80 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                                
+                                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
+                                    <div class="relative w-full sm:w-72 md:w-80 h-48 sm:h-52 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/70 shadow-2xl bg-slate-900 group/img">
+                                        <img src="assets/lab-guvenligi.svg" alt="Çılgın Profesörün Laboratuvarı Kaçış Oyunu" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.src='rotali-fenci-logo.png'">
+                                        <div class="absolute top-2.5 left-2.5 w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-amber-400 to-orange-500 shadow-lg flex items-center justify-center">
+                                            <img src="rotali-fenci-logo.png" alt="Rotalı Fenci Logo" class="w-full h-full object-cover rounded-[14px]" onerror="this.src='ROTALI FENCİ.jpg'">
+                                        </div>
+                                        <span class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-xl shadow font-orbitron">
+                                            10 KAPI • ŞİFRELER
+                                        </span>
+                                    </div>
 
-                                return `
-                                <div class="bg-white p-5 rounded-2xl border border-emerald-300 shadow-sm hover:border-emerald-500 transition-all flex flex-col justify-between group">
+                                    <div class="flex-1 text-center sm:text-left">
+                                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                            <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                                <i class="fa-solid fa-trophy text-amber-400"></i> ÖNE ÇIKAN KAÇIŞ OYUNU
+                                            </span>
+                                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                                ✓ Akıllı Tahta, PC & Telefon Uyumlu
+                                            </span>
+                                        </div>
+                                        <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
+                                            Çılgın Profesörün Laboratuvarı: Kaçış Odası
+                                        </h4>
+                                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3.5">
+                                            Profesörün kilitli laboratuvarında mahsur kaldın! Ahşap güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
+                                        </p>
+                                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🚪 10 Ahşap Oda Kapısı</span>
+                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🧭 Rotalı Fenci Karakteri</span>
+                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">⏱️ 15sn Soru Sayacı</span>
+                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">❤️ 3 Can Hakkı</span>
+                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🏆 Maks 10.000 Canlı Skor</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex flex-col gap-2.5 shrink-0 w-full sm:w-auto">
+                                        <button type="button" onclick="window.location.href='oyunlar/laboratuvar-kacis-odasi.html'" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm sm:text-base uppercase tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer border-2 border-amber-300">
+                                            <i class="fa-solid fa-play text-lg"></i>
+                                            <span>OYUNU AÇ (TAM EKRAN)</span>
+                                        </button>
+                                        <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                                            <i class="fa-solid fa-up-right-from-square"></i> Yeni Sekmede Aç
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 2. LABORATUVAR EĞİTSEL OYUNLARI & BULMACALARI -->
+                            <div class="mb-3 flex items-center justify-between">
+                                <h5 class="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-flask text-fuchsia-600"></i> Laboratuvar Oyunları & Simülasyonlar
+                                </h5>
+                                ${isAdmin ? `
+                                    <button type="button" onclick="triggerUploadModal('${grade.number}', 'egitsel-oyunlar', 'lab')" class="px-3 py-1.5 bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black text-xs uppercase rounded-xl transition-all inline-flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer">
+                                        <i class="fa-solid fa-plus"></i> + Lab Oyunu Ekle
+                                    </button>
+                                ` : ''}
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                <!-- Yerleşik Lab Oyunları (Wordwall) -->
+                                ${((builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum]["lab"]) || []).filter(g => !deletedIds.has(g.id)).map(g => `
+                                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-fuchsia-400 hover:shadow-md transition-all group">
+                                        <div>
+                                            <div class="flex items-center justify-between mb-3">
+                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">
+                                                    ${g.badge}
+                                                </span>
+                                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr ${g.iconColor} text-white flex items-center justify-center text-sm shadow-sm">
+                                                    <i class="${g.icon}"></i>
+                                                </div>
+                                            </div>
+                                            <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:text-fuchsia-700 transition-colors">
+                                                ${g.title}
+                                            </h5>
+                                            <p class="text-xs text-slate-500 font-medium mb-3 leading-relaxed line-clamp-3">
+                                                ${g.desc}
+                                            </p>
+                                        </div>
+                                        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                                            <span class="text-[10px] font-bold text-slate-500">
+                                                <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
+                                            </span>
+                                            <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                                                <i class="fa-solid fa-play text-[10px]"></i> Oyna
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join("")}
+
+                                <!-- Özel Eklenen Lab Oyunları -->
+                                ${customList.filter(m => {
+                                    const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+                                    if (gClean !== "all" && gClean !== String(grade.number)) return false;
+                                    if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
+                                    if (!matchesSubTabCategory(m, "egitsel-oyunlar") && m.category !== "egitsel-oyunlar" && m.category !== "oyunlar") return false;
+                                    const sec = getMaterialTargetSection(m);
+                                    return sec === "lab" || m.category === "laboratuvar";
+                                }).map(item => {
+                                    const actionUI = getMaterialActionUI(item, 'egitsel-oyunlar');
+                                    const coverImg = resolveMaterialCover(item);
+                                    return `
+                                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-fuchsia-400 hover:shadow-md transition-all group">
+                                        <div>
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">${item.format || 'Eğitsel Oyun'}</span>
+                                                <span class="text-[11px] font-bold text-slate-400">Özel Oyun</span>
+                                            </div>
+                                            <h5 class="text-sm font-black text-slate-900 mb-1.5 group-hover:text-fuchsia-700 transition-colors">${item.title}</h5>
+                                            <div class="mat-preview-box relative w-full h-48 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\'")}')">
+                                                <img src="${coverImg}" alt="${item.title}" onerror="this.src='rotali-fenci-logo.png'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            </div>
+                                            <p class="text-xs text-slate-500 mb-3 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar eğitsel oyunu.'}</p>
+                                        </div>
+                                        <div>
+                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                                <i class="${actionUI.icon} text-xs"></i>
+                                                <span>${actionUI.text}</span>
+                                            </button>
+                                            ${isAdmin ? `
+                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sola / Yukarı Taşı">
+                                                        <i class="fa-solid fa-arrow-left"></i>
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sağa / Aşağı Taşı">
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    `;
+                                }).join("")}
+                            </div>
+                        ` : `
+                            <!-- Standart Laboratuvar Deney Föyleri ve Rehberleri (videolar, etkinlikler vb. için) -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                ${customList.filter(m => {
+                                    const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+                                    if (gClean !== "all" && gClean !== String(grade.number)) return false;
+                                    if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
+                                    if (!matchesSubTabCategory(m, normSubTab) && m.category !== normSubTab) return false;
+                                    const sec = getMaterialTargetSection(m);
+                                    return sec === "lab" || m.category === "laboratuvar";
+                                }).map(item => {
+                                    const actionUI = getMaterialActionUI(item, 'laboratuvar');
+                                    const safeTitle = String(item.title || "Laboratuvar Materyali").replace(/'/g, "\\'");
+                                    const safeFile = String(item.fileName || item.title || "materyal.pdf").replace(/'/g, "\\'");
+                                    const safeUrl = String(item.fileUrl || item.imageUrl || resolveMaterialCover(item) || "#").replace(/'/g, "\\'");
+                                    const itemCat = String(item.category || "laboratuvar").replace(/'/g, "\\'");
+                                    const coverImg = resolveMaterialCover(item);
+
+                                    return `
+                                    <div class="bg-white p-5 rounded-2xl border border-emerald-300 shadow-sm hover:border-emerald-500 transition-all flex flex-col justify-between group">
+                                        <div>
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || 'ÖZEL FÖY'}</span>
+                                                <span class="text-[11px] font-bold text-slate-400">Yüklendi</span>
+                                            </div>
+                                            <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
+                                            <!-- Görsel Kapak Kutusu -->
+                                            <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${coverImg.replace(/'/g, "\\'")}', '${safeTitle}', '${safeFile}', true)">
+                                                <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                <div class="absolute bottom-2.5 right-2.5">
+                                                    <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                        <i class="fa-solid fa-eye"></i> Görseli Aç
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
+                                        </div>
+                                        <div>
+                                            <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                                <i class="${actionUI.icon} text-xs"></i>
+                                                <span>${actionUI.text}</span>
+                                            </button>
+                                            ${isAdmin ? `
+                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                    <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sola / Yukarı Taşı">
+                                                        <i class="fa-solid fa-arrow-left"></i>
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sağa / Aşağı Taşı">
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1">
+                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                    </button>
+                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center">
+                                                        <i class="fa-solid fa-trash"></i>
+                                                    </button>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    </div>
+                                    `;
+                                }).join("")}
+                                ${!deletedIds.has(`lab-${grade.number}-guide`) ? `
+                                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
                                     <div>
                                         <div class="flex items-center justify-between mb-2">
-                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || 'ÖZEL FÖY'}</span>
-                                            <span class="text-[11px] font-bold text-slate-400">Yüklendi</span>
+                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">Deney Föyü</span>
+                                            <span class="text-[11px] font-bold text-slate-400">MEB Uyumlu</span>
                                         </div>
-                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
-                                        <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Görseli Yüksek Çözünürlükle Açar) -->
-                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openInPageDocumentModal('${coverImg.replace(/'/g, "\\'")}', '${safeTitle}', '${safeFile}', true)">
-                                            <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`}</h5>
+                                        <!-- Görsel Kapak Kutusu -->
+                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}')">
+                                            <img src="${resolveMaterialCover(labGuideItem) || 'assets/lab-guvenligi.svg'}" alt="${labGuideItem.title || 'Laboratuvar Rehberi'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-eye"></i> Görseli Aç
+                                                    <i class="fa-solid fa-eye"></i> Kılavuzu Aç
                                                 </span>
                                             </div>
                                         </div>
-                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
+                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
                                     </div>
                                     <div>
-                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
-                                            <i class="${actionUI.icon} text-xs"></i>
-                                            <span>${actionUI.text}</span>
+                                        <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
+                                            <i class="fa-solid fa-eye text-xs"></i>
+                                            <span>Kılavuzu Aç & İncele</span>
                                         </button>
                                         ${isAdmin ? `
                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1 px-2 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1">
+                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-guide')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
                                                     <i class="fa-solid fa-pen-to-square"></i> Düzenle
                                                 </button>
-                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1 px-2 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center">
+                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-guide')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
                                                     <i class="fa-solid fa-trash"></i>
                                                 </button>
                                             </div>
                                         ` : ''}
                                     </div>
                                 </div>
-                                `;
-                            }).join("")}
-                            ${!deletedIds.includes(`lab-${grade.number}-guide`) ? `
-                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
-                                <div>
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">Deney Föyü</span>
-                                        <span class="text-[11px] font-bold text-slate-400">MEB Uyumlu</span>
-                                    </div>
-                                    <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`}</h5>
-                                    <!-- Görsel Kapak Kutusu -->
-                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}')">
-                                        <img src="${resolveMaterialCover(labGuideItem) || 'assets/lab-guvenligi.svg'}" alt="${labGuideItem.title || 'Laboratuvar Rehberi'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                        <div class="absolute bottom-2.5 right-2.5">
-                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-eye"></i> Kılavuzu Aç
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
-                                </div>
-                                <div>
-                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
-                                        <i class="fa-solid fa-eye text-xs"></i>
-                                        <span>Kılavuzu Aç & İncele</span>
-                                    </button>
-                                    ${isAdmin ? `
-                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-guide')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                            </button>
-                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-guide')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
-                                        </div>
-                                    ` : ''}
-                                </div>
-                            </div>
-                            ` : ''}
+                                ` : ''}
 
-                            ${!deletedIds.includes(`lab-${grade.number}-sim`) ? `
-                            <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
-                                <div>
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">PhET Simülasyon</span>
-                                        <span class="text-[11px] font-bold text-slate-400">3D İnteraktif</span>
-                                    </div>
-                                    <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
-                                    <!-- Görsel Kapak Kutusu -->
-                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')">
-                                        <img src="${resolveMaterialCover(labSimItem)}" alt="${labSimItem.title || 'PhET Simülasyon'}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                        <div class="absolute bottom-2.5 right-2.5">
-                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-play"></i> Simülasyonu Aç
-                                            </span>
+                                ${!deletedIds.has(`lab-${grade.number}-sim`) ? `
+                                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">PhET Simülasyon</span>
+                                            <span class="text-[11px] font-bold text-slate-400">3D İnteraktif</span>
                                         </div>
-                                    </div>
-                                    <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labSimItem.desc || 'Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.'}</p>
-                                </div>
-                                <div>
-                                    <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
-                                        <i class="fa-solid fa-play text-xs"></i>
-                                        <span>Simülasyonu Başlat</span>
-                                    </button>
-                                    ${isAdmin ? `
-                                        <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-sim')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                            </button>
-                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-sim')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
+                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
+                                        <!-- Görsel Kapak Kutusu -->
+                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')">
+                                            <img src="${resolveMaterialCover(labSimItem)}" alt="${labSimItem.title || 'PhET Simülasyon'}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="absolute bottom-2.5 right-2.5">
+                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
+                                                    <i class="fa-solid fa-play"></i> Simülasyonu Aç
+                                                </span>
+                                            </div>
                                         </div>
-                                    ` : ''}
+                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labSimItem.desc || 'Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.'}</p>
+                                    </div>
+                                    <div>
+                                        <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
+                                            <i class="fa-solid fa-play text-xs"></i>
+                                            <span>Simülasyonu Başlat</span>
+                                        </button>
+                                        ${isAdmin ? `
+                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-sim')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                </button>
+                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-sim')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        ` : ''}
+                                    </div>
                                 </div>
+                                ` : ''}
                             </div>
-                            ` : ''}
-                        </div>
+                        `}
                     </div>
                 </div>
                 ` : ''}
@@ -4779,9 +4953,9 @@ function renderGradeSubTabContent(grade, subData, subTab) {
     }
 
     // 2. 🌟 DİĞER ANA BÖLÜMLER (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
-        // 2. • EĞİTSEL OYUNLAR & İNTERAKTİF KAÇIŞ ODALARI (DOĞRUDAN VE TAM GÖRÜNÜR)
+    // 2. • EĞİTSEL OYUNLAR & İNTERAKTİF KAÇIŞ ODALARI (ÜNİTE VE LABORATUVAR MERKEZLİ)
     if (["egitsel-oyunlar", "oyunlar"].includes(subTab)) {
-        return renderGradeEducationalGames(grade, subData);
+        return renderGradeUnitBasedHub(grade, subData, "egitsel-oyunlar");
     }
 
     // 3. • DİĞER ANA BÖLÜMLER (Ünite 1'den 7'ye Dikey Akordeon & Hızlı Filtre)
@@ -5059,6 +5233,12 @@ function renderGradeEducationalGames(grade, subData) {
                                     </span>
                                     ${isAdmin ? `
                                         <div class="flex items-center gap-1">
+                                            <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-800 flex items-center justify-center text-xs transition-colors cursor-pointer active:scale-95" title="Sola / Yukarı Taşı">
+                                                <i class="fa-solid fa-arrow-left"></i>
+                                            </button>
+                                            <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-800 flex items-center justify-center text-xs transition-colors cursor-pointer active:scale-95" title="Sağa / Aşağı Taşı">
+                                                <i class="fa-solid fa-arrow-right"></i>
+                                            </button>
                                             <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-amber-100 text-slate-600 hover:text-amber-800 flex items-center justify-center text-xs transition-colors" title="Düzenle">
                                                 <i class="fa-solid fa-pen"></i>
                                             </button>
@@ -8347,26 +8527,59 @@ function closeMaterialUploadModal() {
 
 // Materyal Silme
 
-// Materyalin Sırasını Değiştirme (Yukarı / Aşağı Taşıma)
+// Materyalin Sırasını Değiştirme (Yukarı / Aşağı Taşıma - Bölüm İçi Sıralama)
 async function moveCustomMaterial(id, direction) {
     if (!checkAdminAccess()) return;
     let customList = getCustomMaterialsList();
-    const idx = customList.findIndex(m => m.id === id);
+    const idx = customList.findIndex(m => String(m.id) === String(id));
     if (idx === -1) return;
-    const targetIdx = idx + direction;
-    if (targetIdx < 0 || targetIdx >= customList.length) return;
 
-    const itemToMove = customList.splice(idx, 1)[0];
-    customList.splice(targetIdx, 0, itemToMove);
+    const item = customList[idx];
+    const itemGrade = String(item.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+    const itemCat = String(item.category || "").toLowerCase();
+    const itemTargetSec = getMaterialTargetSection(item);
+
+    // Aynı sınıf ve hedef kategorideki kardeş kartları tespit et
+    const siblings = customList.filter(m => {
+        if (!m || !m.id) return false;
+        const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+        if (itemGrade !== "all" && gClean !== "all" && gClean !== itemGrade) return false;
+        const mCat = String(m.category || "").toLowerCase();
+        const sameCat = (mCat === itemCat) || matchesSubTabCategory(m, itemCat) || matchesSubTabCategory(item, mCat);
+        if (!sameCat) return false;
+        const mTargetSec = getMaterialTargetSection(m);
+        return mTargetSec === itemTargetSec;
+    });
+
+    const sibIdx = siblings.findIndex(m => String(m.id) === String(id));
+    if (sibIdx !== -1) {
+        const targetSibIdx = sibIdx + direction;
+        if (targetSibIdx >= 0 && targetSibIdx < siblings.length) {
+            const targetSibling = siblings[targetSibIdx];
+            const [itemToMove] = customList.splice(idx, 1);
+            const newTargetGlobalIdx = customList.findIndex(m => String(m.id) === String(targetSibling.id));
+            const insertPos = (direction > 0) ? newTargetGlobalIdx + 1 : newTargetGlobalIdx;
+            customList.splice(insertPos, 0, itemToMove);
+        } else {
+            showToast(direction < 0 ? "Materyal zaten bu bölümün en başında." : "Materyal zaten bu bölümün en sonunda.", "info");
+            return;
+        }
+    } else {
+        const targetIdx = idx + direction;
+        if (targetIdx < 0 || targetIdx >= customList.length) return;
+        const [itemToMove] = customList.splice(idx, 1);
+        customList.splice(targetIdx, 0, itemToMove);
+    }
 
     saveCustomMaterialsSafe(customList);
-    showToast("↕️ Materyalin konumu ve sırası güncellendi.", "info");
+    showToast("↕️ Materyalin konumu ve sırası güncellendi.", "success");
 
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
         await CloudSyncManager.uploadToCloud(customList, true);
     }
     handleRouteChange({ preserveScroll: true });
 }
+window.moveCustomMaterial = moveCustomMaterial;
 
 function deleteCustomMaterial(id) {
     checkAdminAccess(async () => {
