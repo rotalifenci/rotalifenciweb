@@ -327,6 +327,58 @@
         </div>
     </div>
 
+    <!-- ⏱️ 5 SANİYE BİLGİ VE DÜŞÜNME MOLASI (Oyun Dursun, Soru Okunsun) -->
+    <div id="question-pause-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="max-w-lg w-full neon-card-blue border-2 border-cyan-400 rounded-3xl p-5 sm:p-7 text-center shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
+            <!-- 5 Saniyelik Geri Sayım Rozeti -->
+            <div class="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-cyan-500/30">
+                <span id="pause-q-badge" class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400 text-xs font-black uppercase tracking-wider">
+                    🪐 GÜNEŞ SİSTEMİ BİLGİ KAPISI
+                </span>
+                <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 font-mono font-black text-xs">
+                    <i class="fa-solid fa-hourglass-half animate-spin"></i>
+                    <span>DURAKLAMA: <span id="pause-timer-num" class="text-sm font-black text-white">5</span>sn</span>
+                </div>
+            </div>
+
+            <!-- Soru Metni -->
+            <div class="mb-4">
+                <div class="text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">
+                    📖 Soruyu Oku ve Doğru Şeridi Belirle:
+                </div>
+                <h2 id="pause-q-text" class="text-base sm:text-xl font-black text-white leading-snug font-orbitron drop-shadow">
+                    Güneş Sistemi'nin en büyük gezegeni hangisidir?
+                </h2>
+            </div>
+
+            <!-- Şıklar (Sol ve Sağ Şeritler) -->
+            <div class="grid grid-cols-2 gap-2.5 sm:gap-3 mb-4 text-left">
+                <div class="p-3 sm:p-4 rounded-2xl bg-amber-950/80 border-2 border-amber-400 shadow-lg">
+                    <div class="text-[10px] font-black uppercase text-amber-400 tracking-wider mb-1 flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-left"></i> SOL ŞERİT
+                    </div>
+                    <div id="pause-opt-left" class="font-black text-xs sm:text-sm text-white">Mars</div>
+                </div>
+                <div class="p-3 sm:p-4 rounded-2xl bg-cyan-950/80 border-2 border-cyan-400 shadow-lg">
+                    <div class="text-[10px] font-black uppercase text-cyan-400 tracking-wider mb-1 flex items-center gap-1">
+                        SAĞ ŞERİT <i class="fa-solid fa-arrow-right"></i>
+                    </div>
+                    <div id="pause-opt-right" class="font-black text-xs sm:text-sm text-white">Jüpiter</div>
+                </div>
+            </div>
+
+            <!-- Bilgilendirme ve Hızlı Devam Butonu -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-2 border-t border-slate-800">
+                <span class="text-[11px] text-slate-400 font-medium">
+                    ⏱️ 5 saniye sonra tren otomatik devam eder.
+                </span>
+                <button type="button" onclick="resumeFromQuestionPause()" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-transform active:scale-95 cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-play"></i> Hazırım, Devam Et
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- 📱 SABİT DOKUNMATİK TUŞLAR (TELEFON, TABLET & AKILLI TAHTA) -->
     <div id="mobile-controls-bar" class="mobile-controls-bar">
         
@@ -639,6 +691,23 @@
                     osc.stop(now + 0.3);
                 } catch(e) {}
             }
+            countdownTick(isGo) {
+                if (this.muted) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(isGo ? 880 : 440, now);
+                    g.gain.setValueAtTime(0.14, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.14);
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(now + 0.14);
+                } catch(e) {}
+            }
         }
         const AudioFX = new SoundFX();
 
@@ -654,15 +723,18 @@
         let activeObstacles = [];
         let activeQuestionGate = null;
 
-        // Oyun Durumu
+        // Oyun Durumu & 5 Saniyelik Düşünme Molası
         let isRunning = false;
+        let isQuestionPaused = false;
+        let questionPauseSeconds = 5;
+        let questionPauseInterval = null;
         let score = 0;
         let lightYears = 0.0;
         let lives = 3;
         let correctAnswers = 0;
         let currentPlanetIndex = 3; // Mars başlangıç
-        let nextQuestionTimer = 18; // saniye sonra ilk soru kapısı gelir
-        let speed = 44;             // Birim / sn
+        let nextQuestionTimer = 12; // İlk soru 12 saniye sonra gelir
+        let speed = 26;             // Dengeli, keyifli ve ortaokula uygun akış hızı (Önceden 44 idi)
         let invulnerableTime = 0;
 
         // Fizik & Zıplama
@@ -892,11 +964,8 @@
         // --- 7. ENGEL, YILDIZ TOZU VE SORU KAPILARI ÜRETİMİ ---
         function spawnElementsForSegment(minZ, maxZ) {
             for (let z = minZ; z > maxZ; z -= 22) {
-                
-                // Soru Kapısı Zamanı Geldiyse
-                if (nextQuestionTimer <= 0 && !activeQuestionGate) {
-                    spawnQuestionGatePair(z);
-                    nextQuestionTimer = 25; // 25 saniye sonra tekrar
+                // Soru kapısına çok yakın konumlarda engel ve para üretmeyelim
+                if (activeQuestionGate && Math.abs(activeQuestionGate.position.z - z) < 22) {
                     continue;
                 }
 
@@ -1060,11 +1129,22 @@
                 passed: false
             };
 
+            // Kapı çevresindeki engelleri temizle (Öğrencinin şeridi rahat seçebilmesi için)
+            for (let i = activeObstacles.length - 1; i >= 0; i--) {
+                if (Math.abs(activeObstacles[i].position.z - z) < 20) {
+                    scene.remove(activeObstacles[i]);
+                    activeObstacles.splice(i, 1);
+                }
+            }
+
             scene.add(gateGroup);
             activeQuestionGate = gateGroup;
 
             // UI Bannerını Aç
             showQuestionBanner(q, isLeftCorrect);
+
+            // 5 Saniyelik Düşünme & Bilgi Molasını Başlat (Oyun Dursun)
+            startQuestionPause(q, isLeftCorrect, isHard);
         }
 
         function showQuestionBanner(q, isLeftCorrect) {
@@ -1099,6 +1179,66 @@
             document.getElementById('gate-option-left').textContent = isLeftCorrect ? q.correct : q.wrong;
             document.getElementById('gate-option-right').textContent = !isLeftCorrect ? q.correct : q.wrong;
             banner.classList.remove('hidden');
+        }
+
+        // ⏱️ 5 SANİYELİK SORU DURAKLAMASI VE GERİ SAYIM SİSTEMİ
+        function startQuestionPause(q, isLeftCorrect, isHard) {
+            if (!isRunning || isQuestionPaused) return;
+
+            isQuestionPaused = true;
+            questionPauseSeconds = 5;
+
+            // Ses efekti (Tik)
+            AudioFX.countdownTick(false);
+
+            // Modal elemanlarını güncelle
+            const modal = document.getElementById('question-pause-modal');
+            const badge = document.getElementById('pause-q-badge');
+            const timerNum = document.getElementById('pause-timer-num');
+            const qText = document.getElementById('pause-q-text');
+            const optLeft = document.getElementById('pause-opt-left');
+            const optRight = document.getElementById('pause-opt-right');
+
+            if (badge) {
+                if (isHard) {
+                    badge.className = "px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400 text-xs font-black uppercase tracking-wider animate-pulse";
+                    badge.innerHTML = '<i class="fa-solid fa-star text-amber-300 mr-1"></i> ⭐ ZOR SORU • +1 CAN ÖDÜLLÜ ⭐';
+                } else {
+                    badge.className = "px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400 text-xs font-black uppercase tracking-wider";
+                    badge.innerHTML = '<i class="fa-solid fa-graduation-cap text-cyan-400 mr-1"></i> 🪐 GÜNEŞ SİSTEMİ BİLGİ KAPISI';
+                }
+            }
+
+            if (timerNum) timerNum.textContent = questionPauseSeconds;
+            if (qText) qText.textContent = q.q;
+            if (optLeft) optLeft.textContent = isLeftCorrect ? q.correct : q.wrong;
+            if (optRight) optRight.textContent = !isLeftCorrect ? q.correct : q.wrong;
+
+            if (modal) modal.classList.remove('hidden');
+
+            if (questionPauseInterval) clearInterval(questionPauseInterval);
+            questionPauseInterval = setInterval(() => {
+                questionPauseSeconds--;
+                if (timerNum) timerNum.textContent = Math.max(0, questionPauseSeconds);
+
+                if (questionPauseSeconds > 0) {
+                    AudioFX.countdownTick(false);
+                } else {
+                    AudioFX.countdownTick(true);
+                    resumeFromQuestionPause();
+                }
+            }, 1000);
+        }
+
+        function resumeFromQuestionPause() {
+            if (questionPauseInterval) {
+                clearInterval(questionPauseInterval);
+                questionPauseInterval = null;
+            }
+            const modal = document.getElementById('question-pause-modal');
+            if (modal) modal.classList.add('hidden');
+            isQuestionPaused = false;
+            lastFrame = performance.now();
         }
 
         // --- 8. KONTROLLER & ŞERİT DEĞİŞİMİ ---
@@ -1216,12 +1356,18 @@
 
             if (!isRunning) return;
 
+            // Soru molasında fizik, koşu ve engeller dursun; 3D sahne arkada canlı olarak render edilsin
+            if (isQuestionPaused) {
+                renderer.render(scene, camera);
+                return;
+            }
+
             nextQuestionTimer -= delta;
 
-            // Zamanı gelince yeni soru kapısı oluştur (Sık soru sorma: her 14-18 saniye)
+            // Zamanı gelince yeni soru kapısı oluştur (Sık soru sorma: her 14-18 saniyede bir)
             if (nextQuestionTimer <= 0 && !activeQuestionGate) {
-                spawnQuestionGatePair(-160);
-                nextQuestionTimer = 15 + Math.random() * 4;
+                spawnQuestionGatePair(-95);
+                nextQuestionTimer = 16 + Math.random() * 4;
             }
 
             // 1. İlerleme & Işık Yılı Mesafesi
@@ -1356,8 +1502,8 @@
                         } else {
                             AudioFX.correct();
                             score += 500;
-                            speed = Math.min(speed + 2.5, 66); // Hız takviyesi
-                            triggerRobotMessage("Harikasın!", "+500 Puan & Hız Takviyesi Kazandın!");
+                            speed = Math.min(speed + 1.0, 36); // Dengeli ve akıcı hız takviyesi (maks 36)
+                            triggerRobotMessage("Harikasın!", "+500 Puan Kazandın!");
                         }
                     } else {
                         takeDamage(isHard ? "Zor Soru Kapısında Hata Yaptın!" : "Yanlış Soru Kapısından Geçtin!");
@@ -1441,12 +1587,22 @@
             document.getElementById('start-modal').classList.add('hidden');
             document.getElementById('game-over-modal').classList.add('hidden');
 
+            if (questionPauseInterval) {
+                clearInterval(questionPauseInterval);
+                questionPauseInterval = null;
+            }
+            const pauseModal = document.getElementById('question-pause-modal');
+            if (pauseModal) pauseModal.classList.add('hidden');
+            const qBanner = document.getElementById('question-overlay-banner');
+            if (qBanner) qBanner.classList.add('hidden');
+
             isRunning = true;
+            isQuestionPaused = false;
             lives = 3; // Her oyunda 3 can ver
             score = 0;
             lightYears = 0.0;
             correctAnswers = 0;
-            speed = 44;
+            speed = 26; // Ortaokul öğrencisine uygun dengeli, akıcı başlangıç hızı (Önceden 44 idi)
             currentLane = 1;
             playerY = 0;
             playerYSpeed = 0;
@@ -1468,6 +1624,16 @@
 
         function gameOver(reason) {
             isRunning = false;
+            isQuestionPaused = false;
+            if (questionPauseInterval) {
+                clearInterval(questionPauseInterval);
+                questionPauseInterval = null;
+            }
+            const pauseModal = document.getElementById('question-pause-modal');
+            if (pauseModal) pauseModal.classList.add('hidden');
+            const qBanner = document.getElementById('question-overlay-banner');
+            if (qBanner) qBanner.classList.add('hidden');
+
             document.getElementById('game-over-modal').classList.remove('hidden');
             document.getElementById('game-over-msg').textContent = reason;
             document.getElementById('final-score-val').textContent = score.toLocaleString('tr-TR');
