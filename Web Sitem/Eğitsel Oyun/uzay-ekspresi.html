@@ -268,30 +268,32 @@
             </div>
         </div>
 
-        <!-- 🚀 ORTA BÖLÜM: SORU KAPISI BANNERI (Zor Soru & Normal Soru) -->
-        <div id="question-overlay-banner" class="self-center max-w-xl w-[94%] neon-card-blue border-2 border-cyan-400 rounded-3xl p-3 sm:p-4 shadow-2xl backdrop-blur-md hidden transition-all duration-300 pointer-events-none mt-2">
-            <div class="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-cyan-500/30">
-                <div class="flex items-center gap-2">
-                    <span id="question-badge-icon" class="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xs">
-                        <i class="fa-solid fa-graduation-cap"></i>
+        <!-- 🚀 ÜST SORU ŞERİDİ (Yolu ve Rayları Asla Kapatmaz - Merkez Tamamen Açık) -->
+        <div id="question-overlay-banner" class="w-full max-w-4xl mx-auto px-2 mt-1 sm:mt-2 hidden pointer-events-none transition-all duration-300">
+            <!-- Soru Metni: İnce, şeffaf üst şerit (Merkezi kapatmaz) -->
+            <div id="question-card-top" class="neon-card-blue border-cyan-400 rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 text-center shadow-xl max-w-xl mx-auto">
+                <div class="flex items-center justify-between gap-2 mb-0.5">
+                    <span id="question-badge-text" class="text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-graduation-cap text-amber-400"></i> BİLGİ KAPISI
                     </span>
-                    <span id="question-badge-text" class="text-[11px] sm:text-xs font-black uppercase text-amber-300 tracking-wider">GÜNEŞ SİSTEMİ BİLGİ KAPISI</span>
+                    <span id="question-badge-reward" class="text-[9px] sm:text-[10px] font-bold text-cyan-300">Doğru Şeritten Geç!</span>
                 </div>
-                <span id="question-badge-reward" class="text-[10px] font-bold text-cyan-300">Doğru Şeritten Geç!</span>
+                <h3 id="question-text" class="text-xs sm:text-sm md:text-base font-black text-white leading-tight font-orbitron">
+                    Kızıl Gezegen hangisidir?
+                </h3>
             </div>
-            
-            <h3 id="question-text" class="text-xs sm:text-base font-black text-white mb-2 text-center leading-snug font-orbitron">
-                Kızıl Gezegen hangisidir?
-            </h3>
 
-            <div class="grid grid-cols-2 gap-2 text-xs font-black text-center">
-                <div id="gate-card-left" class="p-2 rounded-xl bg-amber-500/20 border border-amber-400/80 text-amber-300 flex items-center justify-center gap-1.5">
-                    <span class="w-5 h-5 rounded-md bg-amber-400 text-slate-950 flex items-center justify-center font-black text-[10px]">SOL</span>
-                    <span id="gate-option-left" class="truncate">Mars</span>
+            <!-- Yan Şıklar: Sol ve Sağ köşelere ayrık, orta yol %100 açık! -->
+            <div class="w-full flex items-center justify-between mt-1 px-1">
+                <div id="gate-card-left" class="bg-amber-950/90 border-2 border-amber-400 text-amber-300 backdrop-blur-md px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-lg max-w-[45%]">
+                    <span class="w-5 h-5 rounded-md bg-amber-400 text-slate-950 flex items-center justify-center font-black text-[10px] shrink-0">SOL</span>
+                    <span id="gate-option-left" class="font-black text-[11px] sm:text-xs truncate">Mars</span>
                 </div>
-                <div id="gate-card-right" class="p-2 rounded-xl bg-cyan-500/20 border border-cyan-400/80 text-cyan-300 flex items-center justify-center gap-1.5">
-                    <span class="w-5 h-5 rounded-md bg-cyan-400 text-slate-950 flex items-center justify-center font-black text-[10px]">SAĞ</span>
-                    <span id="gate-option-right" class="truncate">Venüs</span>
+                <!-- Tamamen Açık Orta Alan (Raylar ve Engeller Kesintisiz Görünür) -->
+                <div class="flex-1"></div>
+                <div id="gate-card-right" class="bg-cyan-950/90 border-2 border-cyan-400 text-cyan-300 backdrop-blur-md px-2.5 py-1 rounded-xl flex items-center gap-1.5 shadow-lg max-w-[45%]">
+                    <span class="w-5 h-5 rounded-md bg-cyan-400 text-slate-950 flex items-center justify-center font-black text-[10px] shrink-0">SAĞ</span>
+                    <span id="gate-option-right" class="font-black text-[11px] sm:text-xs truncate">Venüs</span>
                 </div>
             </div>
         </div>
@@ -681,10 +683,10 @@
             camera.position.set(0, 5.2, 10.5);
             camera.lookAt(0, 2.2, -18);
 
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, powerPreference: 'high-performance' });
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: 'high-performance' });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.shadowMap.enabled = false;
 
             // Işıklar
             const ambient = new THREE.AmbientLight(0xffffff, 0.95);
@@ -911,68 +913,105 @@
             }
         }
 
-        // Parlayan Meteor veya Uydu Enkazı Engeli
+        // --- 7. PAYLAŞILAN 3D GEOMETRİ VE MATERYAL HAVUZU (DONMAYI VE BELLEK SIZINTISINI ÖNLER) ---
+        let SHARED_ASSETS = null;
+        function getSharedAssets() {
+            if (!SHARED_ASSETS) {
+                SHARED_ASSETS = {
+                    // 💎 PARLAK CYAN ELMAS KRİSTALLERİ (Puan / Yıldız Tozu)
+                    // Taş kayalardan %100 farklıdır: Mavi-Cyan parıldayan 8 yüzlü elmas kristal + beyaz parıldayan çekirdek
+                    diamondGeo: new THREE.OctahedronGeometry(0.55, 0),
+                    diamondMat: new THREE.MeshPhongMaterial({
+                        color: 0x00f0ff,
+                        emissive: 0x00d4ff,
+                        emissiveIntensity: 0.9,
+                        shininess: 90,
+                        flatShading: true
+                    }),
+                    diamondCoreGeo: new THREE.OctahedronGeometry(0.25, 0),
+                    diamondCoreMat: new THREE.MeshBasicMaterial({ color: 0xffffff }),
+
+                    // 🔥 AKKOR LAV VE MAGMA KAYASI (Tehlikeli Engel)
+                    // Koyu siyah volkanik taş + KIPKIRMIZI alev ışıması + Kırmızı sivri tehlike konisi!
+                    rockGeo: new THREE.DodecahedronGeometry(0.95, 0),
+                    rockMat: new THREE.MeshPhongMaterial({
+                        color: 0x111111,
+                        emissive: 0xef4444, // Parlak kırmızı magma alevi (Tehlike rengi!)
+                        emissiveIntensity: 0.95,
+                        shininess: 20,
+                        flatShading: true
+                    }),
+                    rockBeaconGeo: new THREE.ConeGeometry(0.28, 0.45, 6),
+                    rockBeaconMat: new THREE.MeshBasicMaterial({ color: 0xff0022 }),
+
+                    // 🛰️ ESKİ UYDU ENKAZI (Gövde + Mavi Güneş Paneli + Kırmızı Yanıp Sönen Uyarı)
+                    satBodyGeo: new THREE.BoxGeometry(0.9, 0.9, 0.9),
+                    satBodyMat: new THREE.MeshPhongMaterial({ color: 0x475569, shininess: 70 }),
+                    satPanelGeo: new THREE.BoxGeometry(2.5, 0.08, 0.75),
+                    satPanelMat: new THREE.MeshPhongMaterial({ color: 0x1e3a8a, emissive: 0x1d4ed8, emissiveIntensity: 0.35 }),
+                    satLightGeo: new THREE.SphereGeometry(0.14, 8, 8),
+                    satLightMat: new THREE.MeshBasicMaterial({ color: 0xff0044 })
+                };
+            }
+            return SHARED_ASSETS;
+        }
+
+        // Parlayan Kırmızı Magma Kayası veya Uydu Enkazı Engeli
         function spawnObstacle(x, z) {
+            const assets = getSharedAssets();
             const group = new THREE.Group();
             group.position.set(x, 0, z);
 
             const isSatellite = Math.random() < 0.4;
 
             if (isSatellite) {
-                // Eski Uydu Enkazı (Görseldeki Gibi Güneş Panelli)
-                const bodyGeo = new THREE.BoxGeometry(0.9, 0.9, 0.9);
-                const bodyMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.8 });
-                const body = new THREE.Mesh(bodyGeo, bodyMat);
+                // Uydu Enkazı: Gövde + Güneş Paneli + Kırmızı Yanıp Sönen Flaş
+                const body = new THREE.Mesh(assets.satBodyGeo, assets.satBodyMat);
                 body.position.y = 0.85;
                 group.add(body);
 
-                // Mavi Güneş Paneli Kanatları
-                const panelGeo = new THREE.BoxGeometry(2.4, 0.08, 0.75);
-                const panelMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, metalness: 0.9 });
-                const panel = new THREE.Mesh(panelGeo, panelMat);
+                const panel = new THREE.Mesh(assets.satPanelGeo, assets.satPanelMat);
                 panel.position.y = 0.85;
                 group.add(panel);
 
+                const beacon = new THREE.Mesh(assets.satLightGeo, assets.satLightMat);
+                beacon.position.y = 1.45;
+                group.add(beacon);
+
                 group.userData = { height: 1.4, isSatellite: true };
             } else {
-                // Lav Damarlı Gerçekçi Meteor Parçası
-                const rockGeo = new THREE.DodecahedronGeometry(0.9);
-                const rockMat = new THREE.MeshStandardMaterial({
-                    color: 0x451a03,
-                    roughness: 0.95,
-                    emissive: 0xd97706,
-                    emissiveIntensity: 0.35
-                });
-                const rock = new THREE.Mesh(rockGeo, rockMat);
+                // Akkor Kırmızı Magma / Ateş Kayası (Tehlike uyarılı kırmızı koni ile)
+                const rock = new THREE.Mesh(assets.rockGeo, assets.rockMat);
                 rock.position.y = 0.85;
                 group.add(rock);
 
-                group.userData = { height: 1.1, isSatellite: false };
+                const beacon = new THREE.Mesh(assets.rockBeaconGeo, assets.rockBeaconMat);
+                beacon.position.y = 1.5;
+                group.add(beacon);
+
+                group.userData = { height: 1.15, isSatellite: false };
             }
 
             scene.add(group);
             activeObstacles.push(group);
         }
 
-        // Yıldız Tozu Puanları (Görseldeki Parlayan Altın Yıldızlı Paralar)
+        // 💎 Yıldız Tozu / Elmas Puanları (Görseldeki Parlayan Elektrik Mavisi Elmaslar)
         function spawnStarDustGroup(x, startZ) {
+            const assets = getSharedAssets();
             for (let i = 0; i < 3; i++) {
                 const group = new THREE.Group();
-                group.position.set(x, 0.9, startZ - (i * 3.2));
+                group.position.set(x, 0.95, startZ - (i * 3.2));
 
-                // Altın Sikke / Yıldız Diski
-                const coinGeo = new THREE.CylinderGeometry(0.5, 0.5, 0.12, 16);
-                const coinMat = new THREE.MeshStandardMaterial({
-                    color: 0xffd166,
-                    metalness: 0.8,
-                    roughness: 0.2,
-                    emissive: 0xf59e0b,
-                    emissiveIntensity: 0.5
-                });
-                const coin = new THREE.Mesh(coinGeo, coinMat);
-                coin.rotation.x = Math.PI / 2;
-                group.add(coin);
+                // Dış Cyan Elmas Kristali
+                const diamond = new THREE.Mesh(assets.diamondGeo, assets.diamondMat);
+                group.add(diamond);
 
+                // İç Beyaz Parlayan Çekirdek
+                const inner = new THREE.Mesh(assets.diamondCoreGeo, assets.diamondCoreMat);
+                group.add(inner);
+
+                group.userData = { isDiamond: true };
                 scene.add(group);
                 activeCoins.push(group);
             }
@@ -989,7 +1028,7 @@
 
             // Kapı Kemer Çerçevesi (Büyük Portal)
             const frameGeo = new THREE.BoxGeometry(11.4, 0.65, 0.65);
-            const frameMat = new THREE.MeshStandardMaterial({ 
+            const frameMat = new THREE.MeshPhongMaterial({ 
                 color: isHard ? 0xffd166 : 0x1e293b, 
                 metalness: 0.9,
                 emissive: isHard ? 0xd97706 : 0x000000,
@@ -999,14 +1038,14 @@
             topBar.position.y = 4.2;
             gateGroup.add(topBar);
 
-            // Sol Kapı Kemeri
+            // Sol Kapı Kemeri (Turuncu)
             const leftArchGeo = new THREE.TorusGeometry(1.65, 0.2, 8, 24);
-            const leftArchMat = new THREE.MeshBasicMaterial({ color: isHard ? 0xf59e0b : 0xf59e0b });
+            const leftArchMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
             const leftPortal = new THREE.Mesh(leftArchGeo, leftArchMat);
             leftPortal.position.set(LANES[0], 2.0, 0);
             gateGroup.add(leftPortal);
 
-            // Sağ Kapı Kemeri
+            // Sağ Kapı Kemeri (Mavi)
             const rightArchGeo = new THREE.TorusGeometry(1.65, 0.2, 8, 24);
             const rightArchMat = new THREE.MeshBasicMaterial({ color: isHard ? 0xf43f5e : 0x00f0ff });
             const rightPortal = new THREE.Mesh(rightArchGeo, rightArchMat);
@@ -1030,26 +1069,30 @@
 
         function showQuestionBanner(q, isLeftCorrect) {
             const banner = document.getElementById('question-overlay-banner');
+            const topCard = document.getElementById('question-card-top');
             const badgeText = document.getElementById('question-badge-text');
             const badgeReward = document.getElementById('question-badge-reward');
-            const badgeIcon = document.getElementById('question-badge-icon');
 
             if (q.isHard) {
-                banner.className = "self-center max-w-xl w-[94%] neon-card-hard rounded-3xl p-3 sm:p-4 shadow-2xl backdrop-blur-md transition-all duration-300 pointer-events-none mt-2";
-                badgeText.textContent = "⭐ ZOR MAARİF SORUSU • ÖDÜLLÜ ⭐";
-                badgeText.className = "text-[11px] sm:text-xs font-black uppercase text-amber-300 tracking-wider animate-pulse";
-                badgeReward.textContent = "❤️ BİLİRSEN +1 CAN KAZAN!";
-                badgeReward.className = "text-[10px] font-black text-rose-400";
-                badgeIcon.className = "w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 to-rose-500 text-slate-950 flex items-center justify-center font-black text-xs";
-                badgeIcon.innerHTML = '<i class="fa-solid fa-star"></i>';
+                if (topCard) topCard.className = "neon-card-hard rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 text-center shadow-2xl max-w-xl mx-auto";
+                if (badgeText) {
+                    badgeText.innerHTML = '<i class="fa-solid fa-star text-amber-300 mr-1 animate-spin"></i> ⭐ ZOR SORU • ÖDÜLLÜ ⭐';
+                    badgeText.className = "text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-wider";
+                }
+                if (badgeReward) {
+                    badgeReward.textContent = "❤️ BİLİRSEN +1 CAN KAZAN!";
+                    badgeReward.className = "text-[9px] sm:text-[10px] font-black text-rose-400";
+                }
             } else {
-                banner.className = "self-center max-w-xl w-[94%] neon-card-blue border-2 border-cyan-400 rounded-3xl p-3 sm:p-4 shadow-2xl backdrop-blur-md transition-all duration-300 pointer-events-none mt-2";
-                badgeText.textContent = "GÜNEŞ SİSTEMİ BİLGİ KAPISI";
-                badgeText.className = "text-[11px] sm:text-xs font-black uppercase text-amber-300 tracking-wider";
-                badgeReward.textContent = "Doğru Şeritten Geç!";
-                badgeReward.className = "text-[10px] font-bold text-cyan-300";
-                badgeIcon.className = "w-6 h-6 rounded-lg bg-amber-500 text-slate-950 flex items-center justify-center font-black text-xs";
-                badgeIcon.innerHTML = '<i class="fa-solid fa-graduation-cap"></i>';
+                if (topCard) topCard.className = "neon-card-blue border-cyan-400 rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 text-center shadow-xl max-w-xl mx-auto";
+                if (badgeText) {
+                    badgeText.innerHTML = '<i class="fa-solid fa-graduation-cap text-amber-400 mr-1"></i> BİLGİ KAPISI';
+                    badgeText.className = "text-[10px] sm:text-xs font-black uppercase text-amber-300 tracking-wider";
+                }
+                if (badgeReward) {
+                    badgeReward.textContent = "Doğru Şeritten Geç!";
+                    badgeReward.className = "text-[9px] sm:text-[10px] font-bold text-cyan-300";
+                }
             }
 
             document.getElementById('question-text').textContent = q.q;
@@ -1270,7 +1313,8 @@
             for (let i = activeCoins.length - 1; i >= 0; i--) {
                 const coin = activeCoins[i];
                 coin.position.z += step;
-                coin.rotation.z += 4.5 * delta;
+                coin.rotation.y += 3.8 * delta;
+                coin.rotation.z += 2.2 * delta;
 
                 const dist = coin.position.distanceTo(astronautMesh.position.clone().add(new THREE.Vector3(0, 1, 0)));
                 if (dist < 1.7) {
