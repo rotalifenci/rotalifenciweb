@@ -730,6 +730,26 @@ const DEFAULT_CUSTOM_MATERIALS = [
         createdAt: "Yeni Yayınlandı"
     },
     {
+        id: "mat-6-oyun-uzay-ekspresi",
+        grade: "6",
+        category: "egitsel-oyunlar",
+        title: "Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Oyunu)",
+        unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
+        targetSection: "1",
+        desc: "Türkiye Yüzyılı Maarif Modeli uyumlu 3D Subway Surfers tarzı uzay treni macerası! Kuantum raylar üzerinde koş, meteor ve uydu enkazlarını aş, gezegen soru kapılarından doğru geç!",
+        fileName: "Uzay Ekspresi",
+        fileUrl: "oyun-uzay-ekspresi",
+        imageUrl: "assets/rotali-uzay-ekspresi.jpg",
+        kapakResmi: "assets/rotali-uzay-ekspresi.jpg",
+        cover: "assets/rotali-uzay-ekspresi.jpg",
+        format: "Eğitsel Oyun",
+        hasBlob: false,
+        tags: ["6. Sınıf", "1. Ünite", "Güneş Sistemi", "Gezegenler", "Uzay Ekspresi", "3D Oyun"],
+        visibility: "public",
+        downloadCount: "6.400+",
+        createdAt: "Yeni Yayınlandı"
+    },
+    {
         id: "mat-game-gezegen-kosusu",
         grade: "all",
         category: "egitsel-oyunlar",
@@ -4507,6 +4527,19 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         },
         "6": {
             "1": [
+                { 
+                    id: "oyun-6-uzay-ekspresi", 
+                    title: "Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Oyunu)", 
+                    badge: "3D Subway Surfers", 
+                    desc: "Türkiye Yüzyılı Maarif Modeli uyumlu 3D uzay treni macerası! Kuantum raylarda koş, meteor ve uydu enkazlarını aş, gezegen soru kapılarını çöz!", 
+                    fileUrl: "oyun-uzay-ekspresi", 
+                    imageUrl: "assets/rotali-uzay-ekspresi.jpg", 
+                    cover: "assets/rotali-uzay-ekspresi.jpg", 
+                    format: "3D EĞİTSEL OYUN", 
+                    icon: "fa-solid fa-rocket", 
+                    iconColor: "from-cyan-500 to-indigo-600", 
+                    type: "3D Uzay Koşusu" 
+                },
                 { id: "oyun-6-gezegen", title: "Güneş Sistemi & Tutulmalar 3D Uzay Keşfi", badge: "Simülasyon", desc: "Gezegenlerin büyüklükleri ve Güneş/Ay tutulmalarını interaktif gözlemleyin.", fileUrl: "https://phet.colorado.edu", format: "3D UZAY", icon: "fa-solid fa-meteor", iconColor: "from-amber-500 to-yellow-600", type: "3D Uzay" }
             ],
             "2": [
@@ -5497,6 +5530,18 @@ function renderGradeEducationalGames(grade, subData) {
         ],
         "6": [
             {
+                id: "oyun-6-uzay-ekspresi",
+                title: "Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Oyunu)",
+                badge: "3D Uzay Treni",
+                desc: "Türkiye Yüzyılı Maarif Modeli 1. Ünite! Bilim Treni kuantum raylarında koş, meteor ve uydu enkazlarını aş, gezegen soru kapılarını çöz!",
+                fileUrl: "oyun-uzay-ekspresi",
+                imageUrl: "assets/rotali-uzay-ekspresi.jpg",
+                cover: "assets/rotali-uzay-ekspresi.jpg",
+                icon: "fa-solid fa-train-subway",
+                iconColor: "from-amber-500 to-orange-600",
+                type: "3D Sonsuz Koşu"
+            },
+            {
                 id: "oyun-6-organ",
                 title: "6. Sınıf Vücudumuzdaki Sistemler Organ Eşleştirme",
                 badge: "Turnuva",
@@ -5599,7 +5644,78 @@ function renderGradeEducationalGames(grade, subData) {
                 </div>
             </div>
 
-            <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT: ASTRONOTUN KAÇIŞ ODASI: 10 KAPILI BİLİM LABİRENTİ -->
+            <!-- 2. 🌟 ÖNE ÇIKAN BAŞYAPIT -->
+            ${gNum === "6" ? `
+            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-2 border-amber-400/90 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+                <!-- Arka Plan Dekoratif Parıltılar -->
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+                    <!-- Sol: Karakter Logosu & Başlık Bilgisi -->
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="relative shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
+                                <img src="assets/rotali-uzay-ekspresi.jpg" alt="Rotalı Fenci - Uzay Ekspresi" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='rotali-fenci-logo.png'">
+                            </div>
+                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
+                                🚂 3D TREN
+                            </span>
+                        </div>
+
+                        <div class="max-w-xl">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT OYUNU
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                    ✓ Maarif Modeli & Akıllı Tahta Uyumlu
+                                </span>
+                            </div>
+                            <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-orange-400 mb-2">
+                                Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
+                                Uzay boşluğunda ilerleyen yüksek teknolojili Bilim Treni'nin kuantum raylarında koş! NASA dokulu gezegenleri keşfet, meteor ve uydu enkazlarından kaç, Türkiye Yüzyılı Maarif Modeli bilgi kapılarından doğru geçerek rekor kır!
+                            </p>
+                            <!-- Özellik Rozetleri -->
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🪐 8 Gezegen (İç & Dış)
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🚆 3 Şeritli Bilim Treni
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🚪 Maarif Modeli Kapıları
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ❤️ 3 Can & Asistan Robot
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ✨ Işık Yılı & Yıldız Skoru
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Hızlı Başlatma Butonları -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi')" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
+                            <i class="fa-solid fa-play text-base"></i> OYUNU AÇ (TAM EKRAN)
+                        </button>
+                        <a href="oyunlar/uzay-ekspresi.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        </a>
+                        ${isAdmin ? `
+                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('mat-6-oyun-uzay-ekspresi')" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer">
+                                <i class="fa-solid fa-pen-to-square"></i> Oyunu Düzenle
+                            </button>
+                        ` : ''}
+                    </div>
+                </div>
+            </div>
+            ` : `
             <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/80 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
                 <!-- Arka Plan Dekoratif Parıltılar -->
                 <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -5669,6 +5785,7 @@ function renderGradeEducationalGames(grade, subData) {
                     </div>
                 </div>
             </div>
+            `}
 
             <!-- 3. DİĞER EĞİTSEL OYUNLAR & SİMÜLASYONLAR LİSTESİ -->
             <div class="mb-4 flex items-center justify-between">
@@ -12140,6 +12257,8 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         let gameKey = (found && found.fileUrl && found.fileUrl.startsWith("http")) ? found.fileUrl : ((targetUrl && targetUrl.startsWith("http")) ? targetUrl : (id || (found && found.id) || "oyun-5-lab"));
         if (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || (targetUrl && (targetUrl.includes("gemini") || targetUrl.includes("share.gemini")))) {
             gameKey = "oyun-lab-kacis";
+        } else if (checkTitle.includes("uzay ekspresi") || checkTitle.includes("uzay-ekspresi") || String(id).includes("uzay-ekspresi") || (found && found.fileUrl === "oyun-uzay-ekspresi")) {
+            gameKey = "oyun-uzay-ekspresi";
         }
         openInteractiveGameModal(gameKey || targetUrl, title || (found && found.title) || "İnteraktif Fen Oyunu");
         return;
@@ -13203,6 +13322,38 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
                     <iframe src="oyunlar/gezegen-kosusu.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        return;
+    }
+
+    // 🚂 Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Bilim Treni Oyunu)
+    if (str.includes("uzay-ekspresi") || str.includes("uzay ekspresi") || str.includes("uzay_ekspresi") || titleStr.includes("uzay ekspresi") || resolvedKey === "oyun-uzay-ekspresi" || resolvedKey === "oyun-6-uzay-ekspresi" || resolvedKey === "mat-6-oyun-uzay-ekspresi") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[98vw] h-[97vh] border border-amber-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
+                            <i class="fa-solid fa-train-subway"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-amber-400">🚂 Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">3D Sonsuz Uzay Treni & Maarif Modeli Bilgi Kapıları • MEB 6. Sınıf 1. Ünite</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="oyunlar/uzay-ekspresi.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/uzay-ekspresi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
                 </div>
             </div>
         `;
