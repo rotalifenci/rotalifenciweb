@@ -524,47 +524,128 @@
             { id: 'neptune', name: 'Neptün', type: 'Dış (Gazsal) Gezegen', color: 0x274687, size: 6.2, desc: 'Güneş\'e en uzak gezegendir. Şiddetli fırtınalarıyla bilinir.' }
         ];
 
-        // 6. Sınıf Müfredatı Kapsamlı Soru Kapıları (Normal ve Ödüllü Zor Sorular)
-        const MAARIF_QUESTIONS = [
-            // --- NORMAL SORULAR (+500 Puan & Hız Takviyesi) ---
-            { q: "Güneş Sistemi'nin en büyük gezegeni hangisidir?", correct: "Jüpiter", wrong: "Mars", isHard: false },
-            { q: "Demir oksit pası nedeniyle 'Kızıl Gezegen' olarak bilinen gezegen hangisidir?", correct: "Mars", wrong: "Venüs", isHard: false },
-            { q: "Buz ve taş parçalarından oluşan en belirgin halkalara sahip dev gezegen hangisidir?", correct: "Satürn", wrong: "Merkür", isHard: false },
-            { q: "Aşağıdakilerden hangisi bir 'İç (Karasal)' gezegendir?", correct: "Dünya", wrong: "Jüpiter", isHard: false },
-            { q: "Aşağıdakilerden hangisi bir 'Dış (Gazsal)' dev gezegendir?", correct: "Neptün", wrong: "Mars", isHard: false },
-            { q: "Güneş'e en yakın gezegen hangisidir?", correct: "Merkür", wrong: "Dünya", isHard: false },
-            { q: "Güneş'e en uzak gezegen hangisidir?", correct: "Neptün", wrong: "Uranüs", isHard: false },
-            { q: "Güneş Sistemi'nin en küçük gezegeni hangisidir?", correct: "Merkür", wrong: "Mars", isHard: false },
-            { q: "Güneş tutulması Ay hangi evredeyken gerçekleşir?", correct: "Yeni Ay", wrong: "Dolunay", isHard: false },
-            { q: "Ay tutulması Ay hangi evredeyken gerçekleşir?", correct: "Dolunay", wrong: "Yeni Ay", isHard: false },
-            { q: "Güneş tutulmasında Ay, Güneş ile Dünya'nın neresindedir?", correct: "Tam Ortasında", wrong: "Dünya'nın Arkasında", isHard: false },
-            { q: "Ay tutulmasında gök cisimlerinin sıralanışı nasıldır?", correct: "Güneş - Dünya - Ay", wrong: "Güneş - Ay - Dünya", isHard: false },
-            { q: "Dünya atmosferine girip akkor hale gelerek yanan gök taşlarına halk arasında ne denir?", correct: "Kayan Yıldız", wrong: "Kuyruklu Yıldız", isHard: false },
-            { q: "Atmosferi geçip Dünya yüzeyine düşebilen gök taşlarına ne denir?", correct: "Meteorit", wrong: "Asteroit", isHard: false },
-            { q: "Karasal (İç) gezegenlerin yüzey yapısı nasıldır?", correct: "Katı ve Kayalık", wrong: "Gaz ve Sıvı", isHard: false },
-            { q: "Dış gezegenlerin (Gazsal devler) ortak özelliklerinden biri hangisidir?", correct: "Halkalarının Olması", wrong: "Yaşam Bulunması", isHard: false },
-            { q: "Dünya'nın tek doğal uydusu hangisidir?", correct: "Ay", wrong: "Titan", isHard: false },
-            { q: "Gezegenler Güneş etrafında hangi şekilli yörüngede dolanırlar?", correct: "Elips", wrong: "Kare", isHard: false },
-
-            // --- ⭐ ZOR SORULAR (+1 CAN HEDİYESİ & +1000 PUAN) ⭐ ---
-            { q: "Yoğun sera etkisi nedeniyle Güneş Sistemi'nin EN SICAK gezegeni hangisidir?", correct: "Venüs", wrong: "Merkür", isHard: true },
-            { q: "Dönme ekseni 98 derece yana yatık olan ve bir fıçı gibi yuvarlanan buz devi kimdir?", correct: "Uranüs", wrong: "Neptün", isHard: true },
-            { q: "Güneş Sistemi'nde diğer tüm gezegenlerin tersine (saat yönünde) dönen gezegen hangisidir?", correct: "Venüs", wrong: "Mars", isHard: true },
-            { q: "Güneş Sistemi'nde hiç doğal uydusu ve halkası BULUNMAYAN iki gezegen hangileridir?", correct: "Merkür ve Venüs", wrong: "Mars ve Dünya", isHard: true },
-            { q: "İç gezegenler ile Dış gezegenler arasında hangi gök cisimleri kuşağı yer alır?", correct: "Asteroit Kuşağı", wrong: "Oort Bulutu", isHard: true },
-            { q: "Asteroit Kuşağı hangi iki gezegenin yörüngeleri arasında bulunur?", correct: "Mars ile Jüpiter", wrong: "Dünya ile Mars", isHard: true },
-            { q: "Güneş ve Ay tutulmalarının meydana gelmesini sağlayan temel ışık özelliği nedir?", correct: "Işığın Doğrusal Yayılması", wrong: "Işığın Kırılması", isHard: true },
-            { q: "Güneş tutulmasını çıplak gözle izlemek neden tehlikelidir?", correct: "Zararlı Işınlar Göze Zarar Verir", wrong: "Ay Işığı Yakar", isHard: true },
-            { q: "Ay'ın gölgesinin Dünya üzerine düştüğü dar alanda hangi doğa olayı gözlenir?", correct: "Güneş Tutulması", wrong: "Ay Tutulması", isHard: true },
-            { q: "Dünya'nın gölgesinin Ay'ın üzerine düşmesiyle oluşan olay hangisidir?", correct: "Ay Tutulması", wrong: "Güneş Tutulması", isHard: true },
-            { q: "Ay her ay Dünya çevresinde dönmesine rağmen neden her ay tutulma olmaz?", correct: "Ay'ın Yörünge Düzleminin Eğik Olması", wrong: "Ay'ın Hızlı Dönmesi", isHard: true },
-            { q: "Güneş Sistemi'nin en büyük uydusu olan Ganymede hangi gezegenin uydusudur?", correct: "Jüpiter", wrong: "Satürn", isHard: true },
-            { q: "Kalın bir atmosfere sahip olan dev uydu Titan hangi gezegenin uydusudur?", correct: "Satürn", wrong: "Mars", isHard: true },
-            { q: "Güneş'e yakınlık sırasına göre 4. gezegen hangisidir?", correct: "Mars", wrong: "Dünya", isHard: true },
-            { q: "Gezegenlerin büyüklük sıralamasında 5. sırada yer alan gezegen hangisidir?", correct: "Dünya", wrong: "Venüs", isHard: true },
-            { q: "Gök taşlarının Dünya yüzeyine çarparak oluşturduğu dev çukurlara ne denir?", correct: "Meteor Çukuru", wrong: "Krater Krateri", isHard: true },
-            { q: "Ay tutulması Dünya üzerinde nereden gözlemlenebilir?", correct: "Geceyi Yaşayan Her Yerden", wrong: "Sadece Ekvatordan", isHard: true }
+        // 📚 6. SINIF MAARİF MÜFREDATI 100 SORULUK RESMİ SORU HAVUZU
+        const ALL_100_MAARIF_QUESTIONS = [
+            { q: "Dünya hangi tür gök cismidir?", correct: "Gezegen", wrong: "Yıldız", isHard: false },
+            { q: "Dünya’nın doğal uydusunun adı nedir?", correct: "Ay", wrong: "Güneş", isHard: false },
+            { q: "Dünya’ya en yakın gök cismi hangisidir?", correct: "Ay", wrong: "Mars", isHard: false },
+            { q: "Dünya’ya en yakın yıldız hangisidir?", correct: "Güneş", wrong: "Kutup Yıldızı", isHard: false },
+            { q: "Dünya hangi yıldızın çevresinde dolanır?", correct: "Güneş", wrong: "Sirius", isHard: false },
+            { q: "Dünya’nın geometrik şekli nasıldır?", correct: "Kutuplardan Basık Küre", wrong: "Düz Tepsi", isHard: false },
+            { q: "Dünya’nın iki temel hareketi nedir?", correct: "Dönme ve Dolanma", wrong: "Yükselme ve Alçalma", isHard: false },
+            { q: "Ay hangi hareketleri yapar?", correct: "Dönme ve Dolanma", wrong: "Yalnızca Durma", isHard: false },
+            { q: "Güneş kendi ekseni etrafında hangi hareketi yapar?", correct: "Dönme Hareketi", wrong: "Dolanma Hareketi", isHard: false },
+            { q: "Gezegen mi yoksa yıldız mı daha sıcak olabilir?", correct: "Yıldız", wrong: "Gezegen", isHard: false },
+            { q: "Gezegenler kendi ışıklarını üretir mi?", correct: "Hayır", wrong: "Evet", isHard: false },
+            { q: "Yıldızlar kendi ışıklarını üretir mi?", correct: "Evet", wrong: "Hayır", isHard: false },
+            { q: "Gezegenlerin şekli genel olarak nasıldır?", correct: "Küreseldir", wrong: "Küp Şeklindedir", isHard: false },
+            { q: "Yıldızlar birer ısı kaynağı mıdır?", correct: "Evet, Isı Kaynağıdır", wrong: "Hayır, Soğuktur", isHard: false },
+            { q: "Yıldızlar birer ışık kaynağı mıdır?", correct: "Evet, Işık Kaynağıdır", wrong: "Hayır, Işık Vermez", isHard: false },
+            { q: "Gezegenler doğal birer ışık kaynağı mıdır?", correct: "Hayır, Işığı Yansıtır", wrong: "Evet, Işık Üretir", isHard: false },
+            { q: "Gezegenler bir yıldızın çevresinde hangi hareketi yapar?", correct: "Dolanma Hareketi", wrong: "Yalpalama Hareketi", isHard: false },
+            { q: "Karasal (kayalık) özellikte olan gök cisimleri hangileridir?", correct: "İç Gezegenler", wrong: "Gaz Devleri", isHard: false },
+            { q: "Güneş Sistemi'nde gazsal özellikte olan dev gezegenler var mıdır?", correct: "Evet (4 Tane)", wrong: "Hayır", isHard: false },
+            { q: "Her şeyi içine alan sonsuz boşluğa ne denir?", correct: "Evren", wrong: "Uzay", isHard: false },
+            { q: "Dünya ve atmosferi dışındaki boşluğa ne denir?", correct: "Uzay", wrong: "Okyanus", isHard: false },
+            { q: "Dünya kendi ekseni etrafındaki bir tam dönüşünü kaç saatte tamamlar?", correct: "24 Saat", wrong: "12 Saat", isHard: false },
+            { q: "Ay kendi ekseni etrafında yaklaşık kaç günde döner?", correct: "27,3 Gün", wrong: "365 Gün", isHard: true },
+            { q: "Dünya Güneş çevresindeki dolanmasını yaklaşık ne kadar sürede tamamlar?", correct: "365 Gün 6 Saat", wrong: "30 Gün", isHard: false },
+            { q: "Gök taşlarının çarpmasıyla Ay yüzeyinde oluşan büyük çukurlara ne denir?", correct: "Krater", wrong: "Kanyon", isHard: false },
+            { q: "Ay’ın dört ana evresi nelerdir?", correct: "Yeni Ay, İlk Dördün, Dolunay, Son Dördün", wrong: "Hilal ve Şişkin Ay", isHard: false },
+            { q: "Aşağıdakilerden hangisi Ay’ın ara evrelerindendir?", correct: "Hilal ve Şişkin Ay", wrong: "Dolunay ve Yeni Ay", isHard: false },
+            { q: "Ay’ın şekli nasıldır?", correct: "Küreseldir", wrong: "Silindirdir", isHard: false },
+            { q: "Uzayı ve gök cisimlerini inceleyen bilim dalına ne denir?", correct: "Astronomi", wrong: "Astroloji", isHard: false },
+            { q: "Uzayla ilgili bilimsel araştırmalar yapan bilim insanına ne denir?", correct: "Astronom (Gök Bilimci)", wrong: "Astrolog", isHard: false },
+            { q: "Uzaya bilimsel araştırma amacıyla giden kişiye ne denir?", correct: "Astronot", wrong: "Kaptan", isHard: false },
+            { q: "Dünya ile Güneş arasındaki ortalama uzaklık yaklaşık kaç kilometredir?", correct: "150 Milyon km", wrong: "1 Milyon km", isHard: true },
+            { q: "Dünya ile Ay arasındaki ortalama uzaklık yaklaşık kaç kilometredir?", correct: "384.400 km", wrong: "10.000 km", isHard: true },
+            { q: "Uzaya gönderilen ilk canlılardan biri olan köpeğin adı nedir?", correct: "Laika", wrong: "Sputnik", isHard: true },
+            { q: "1961 yılında uzaya çıkan ilk insan kimdir?", correct: "Yuri Gagarin", wrong: "Neil Armstrong", isHard: true },
+            { q: "Amerika Birleşik Devletleri’nin uzay kurumunun adı nedir?", correct: "NASA", wrong: "ESA", isHard: false },
+            { q: "Türkiye’nin ulusal uzay kurumunun adı nedir?", correct: "Türkiye Uzay Ajansı (TUA)", wrong: "TÜBİTAK UZAY", isHard: false },
+            { q: "Ay’a insan gönderen ilk ülke hangisidir?", correct: "ABD", wrong: "SSCB", isHard: false },
+            { q: "1969 yılında Ay’a ilk ayak basan insan kimdir?", correct: "Neil Armstrong", wrong: "Buzz Aldrin", isHard: true },
+            { q: "Astronomi gözlemlerinde teleskobu kullanan önemli bilim insanı kimdir?", correct: "Galileo Galilei", wrong: "Isaac Newton", isHard: true },
+            { q: "1781 yılında Uranüs gezegenini keşfeden bilim insanı kimdir?", correct: "William Herschel", wrong: "Johannes Kepler", isHard: true },
+            { q: "Halley Kuyruklu Yıldızı’nın adını aldığı bilim insanı kimdir?", correct: "Edmond Halley", wrong: "Albert Einstein", isHard: true },
+            { q: "Semerkant’ta eğitim görüp Osmanlı Devleti’nde görev yapan ünlü astronom kimdir?", correct: "Ali Kuşçu", wrong: "Harezmi", isHard: true },
+            { q: "Kuzey yönünü bulmamızı sağlayan Demirkazık yıldızı hangisidir?", correct: "Kutup Yıldızı (Polaris)", wrong: "Çoban Yıldızı", isHard: false },
+            { q: "Buz, donmuş gaz ve kozmik tozdan oluşan gök cisimlerine ne denir?", correct: "Kuyruklu Yıldız", wrong: "Kara Delik", isHard: false },
+            { q: "Mars ile Jüpiter arasında bulunan küçük kayalık gök cisimlerine ne denir?", correct: "Asteroit", wrong: "Meteorit", isHard: false },
+            { q: "Güneş Sistemi'ndeki Asteroit Kuşağı hangi iki gezegen arasındadır?", correct: "Mars ve Jüpiter", wrong: "Dünya ve Mars", isHard: true },
+            { q: "Halk arasında “yıldız kayması” denilen olay gerçekte nedir?", correct: "Atmosfere Giren Meteorlar", wrong: "Yıldız Patlaması", isHard: false },
+            { q: "Uzayda serbestçe dolaşan küçük taş ve kaya parçalarına ne denir?", correct: "Gök Taşı (Meteoroid)", wrong: "Uydular", isHard: false },
+            { q: "Gök taşının atmosfere girip sürtünmeyle oluşturduğu ışıklı çizgiye ne denir?", correct: "Meteor", wrong: "Şimşek", isHard: false },
+            { q: "Yeryüzüne tamamen yanmadan ulaşan gök taşı parçasına ne denir?", correct: "Meteorit", wrong: "Asteroit", isHard: false },
+            { q: "Meteoritlerin yeryüzünde oluşturduğu dev çukurlara ne denir?", correct: "Meteor Çukuru", wrong: "Fay Hattı", isHard: false },
+            { q: "Işığın boşlukta bir yılda aldığı devasa mesafeye ne denir?", correct: "Işık Yılı", wrong: "Ses Yılı", isHard: false },
+            { q: "Yıldızlar arası uzaklıkları belirtmek için kullanılan birim nedir?", correct: "Işık Yılı", wrong: "Kilometre", isHard: false },
+            { q: "Yıldızların konumuna göre gelecek hakkında kehanette bulunmaya ne denir?", correct: "Astroloji", wrong: "Astronomi", isHard: false },
+            { q: "Gök biliminde “Kirli kartopu” olarak adlandırılan gök cismi hangisidir?", correct: "Kuyruklu Yıldız", wrong: "Meteor", isHard: true },
+            { q: "Güneş’e en yakın gezegen hangisidir?", correct: "Merkür", wrong: "Venüs", isHard: false },
+            { q: "Güneş’e en uzak gezegen hangisidir?", correct: "Neptün", wrong: "Uranüs", isHard: false },
+            { q: "Gezegenlerin Güneş’e yakınlık sıralamasında ilk 3 gezegen hangileridir?", correct: "Merkür, Venüs, Dünya", wrong: "Dünya, Mars, Venüs", isHard: false },
+            { q: "Aşağıdakilerden hangisi İç (Karasal) gezegenler grubundadır?", correct: "Merkür, Venüs, Dünya, Mars", wrong: "Jüpiter, Satürn, Uranüs, Neptün", isHard: false },
+            { q: "Aşağıdakilerden hangisi Dış (Gazsal) gezegenler grubundadır?", correct: "Jüpiter, Satürn, Uranüs, Neptün", wrong: "Merkür, Venüs, Dünya, Mars", isHard: false },
+            { q: "Karasal gezegenlerin genel yüzey yapısı nasıldır?", correct: "Katı ve Kayalık", wrong: "Gaz ve Sıvı", isHard: false },
+            { q: "Gazsal gezegenlerin genel yapısı nasıldır?", correct: "Gaz ve Sıvı Katmanlar", wrong: "Katı Taş Zemin", isHard: false },
+            { q: "Güneş Sistemi’nin en büyük devi olan gezegen hangisidir?", correct: "Jüpiter", wrong: "Satürn", isHard: false },
+            { q: "Güneş Sistemi’nin en küçük gezegeni hangisidir?", correct: "Merkür", wrong: "Mars", isHard: false },
+            { q: "Yan yatmış bir varil gibi yuvarlanarak dönen gezegen hangisidir?", correct: "Uranüs", wrong: "Neptün", isHard: true },
+            { q: "Dönüş yönü diğer gezegenlerin tersine (doğudan batıya) olan gezegen hangisidir?", correct: "Venüs", wrong: "Mars", isHard: true },
+            { q: "Güneş Sistemi'nde doğal uydusu bulunmayan iki gezegen hangileridir?", correct: "Merkür ve Venüs", wrong: "Mars ve Dünya", isHard: true },
+            { q: "Dünya’nın kaç tane doğal uydusu vardır?", correct: "1 Tane (Ay)", wrong: "2 Tane", isHard: false },
+            { q: "Karasal (İç) gezegenlerin en büyüğü hangisidir?", correct: "Dünya", wrong: "Venüs", isHard: true },
+            { q: "Karasal gezegenlerin en küçüğü hangisidir?", correct: "Merkür", wrong: "Mars", isHard: false },
+            { q: "Gazsal gezegenlerin en büyüğü hangisidir?", correct: "Jüpiter", wrong: "Satürn", isHard: false },
+            { q: "Gazsal devlerin çap olarak en küçüğü hangisidir?", correct: "Neptün", wrong: "Uranüs", isHard: true },
+            { q: "Halkası bulunan gezegenler grubu hangisidir?", correct: "Tüm Gazsal Devler (4 Tane)", wrong: "İç Gezegenler", isHard: false },
+            { q: "Halkası bulunmayan gezegenler grubu hangisidir?", correct: "İç Gezegenler (Merkür, Venüs, Dünya, Mars)", wrong: "Dış Gezegenler", isHard: false },
+            { q: "Bir gezegenin çekiminde dolanan doğal gök cismine ne denir?", correct: "Uydu", wrong: "Gezegen", isHard: false },
+            { q: "Atmosferi ve denizleri nedeniyle “Mavi Gezegen” olarak adlandırılan gezegen hangisidir?", correct: "Dünya", wrong: "Uranüs", isHard: false },
+            { q: "Üzerinde yaşam olduğu kanıtlanan tek gezegen hangisidir?", correct: "Dünya", wrong: "Mars", isHard: false },
+            { q: "Demir oksit pası nedeniyle “Kızıl Gezegen” olarak bilinen gezegen hangisidir?", correct: "Mars", wrong: "Venüs", isHard: false },
+            { q: "Eski dilde “Merih” adı verilen gezegen hangisidir?", correct: "Mars", wrong: "Merkür", isHard: true },
+            { q: "Büyüklük ve kütle olarak Dünya’nın ikizi olarak adlandırılan gezegen hangisidir?", correct: "Venüs", wrong: "Mars", isHard: false },
+            { q: "Uranüs’e yapı ve büyüklük açısından çok benzeyen ikiz gezegen hangisidir?", correct: "Neptün", wrong: "Satürn", isHard: false },
+            { q: "Sera etkisi nedeniyle Güneş Sistemi’nin EN SICAK gezegeni hangisidir?", correct: "Venüs (460°C)", wrong: "Merkür", isHard: true },
+            { q: "Kütlesi en büyük olan “Dev Gezegen” hangisidir?", correct: "Jüpiter", wrong: "Satürn", isHard: false },
+            { q: "Teleskopla bakıldığında en belirgin halkalara sahip gezegen hangisidir?", correct: "Satürn", wrong: "Merkür", isHard: false },
+            { q: "Dünya ve uzayın tümünü kapsayan sonsuz varlığın adı nedir?", correct: "Evren", wrong: "Samanyolu", isHard: false },
+            { q: "Güneş Sistemi’ndeki tek yıldız hangisidir?", correct: "Güneş", wrong: "Kutup Yıldızı", isHard: false },
+            { q: "Gündüz saatlerinde gökyüzünde gördüğümüz yıldız hangisidir?", correct: "Güneş", wrong: "Ay", isHard: false },
+            { q: "Güneş Sistemi’ndeki en yüksek dağ ve volkanın adı nedir?", correct: "Olympus Mons", wrong: "Everest", isHard: true },
+            { q: "Güneş Sistemi'nin en yüksek volkanı Olympus Mons hangi gezegendedir?", correct: "Mars", wrong: "Venüs", isHard: true },
+            { q: "Güneş Sistemi’nin en büyük uydusu olan Ganymede kime aittir?", correct: "Jüpiter", wrong: "Satürn", isHard: true },
+            { q: "Yüzyıllardır süren fırtına 'Büyük Kırmızı Leke' hangi gezegende bulunur?", correct: "Jüpiter", wrong: "Mars", isHard: true },
+            { q: "2006 yılında cüce gezegen sınıfına alınan gök cismi hangisidir?", correct: "Plüton", wrong: "Titan", isHard: true },
+            { q: "Dünya’dan bakıldığında en parlak görünen gezegen (Çoban Yıldızı) hangisidir?", correct: "Venüs", wrong: "Jüpiter", isHard: false },
+            { q: "1781 yılında teleskopla keşfedilen ilk gezegen hangisidir?", correct: "Uranüs", wrong: "Neptün", isHard: true },
+            { q: "Atmosfere aynı anda çok sayıda meteor girmesi olayına ne denir?", correct: "Meteor Yağmuru", wrong: "Kuyruklu Yıldız", isHard: false },
+            { q: "Kendi ekseni etrafında yaklaşık 10 saatte dönerek en hızlı dönen gezegen kimdir?", correct: "Jüpiter", wrong: "Dünya", isHard: true },
+            { q: "Güneş etrafında dolanımını 88 günde tamamlayan en hızlı gezegen kimdir?", correct: "Merkür", wrong: "Venüs", isHard: true },
+            { q: "Güneş etrafında dolanımını yaklaşık 165 yılda tamamlayan en yavaş gezegen kimdir?", correct: "Neptün", wrong: "Uranüs", isHard: true },
+            { q: "Güneş tutulmasında Güneş, Ay ve Dünya’nın sıralaması nasıldır?", correct: "Güneş – Ay – Dünya", wrong: "Güneş – Dünya – Ay", isHard: false }
         ];
+
+        // 🔀 DİNAMİK KARIŞTIRMA VE KESİNTİSİZ SORU SEÇİMİ (Her oynayan kişide farklı sıra, tekrarsız akış)
+        let activeQuestionDeck = [];
+
+        function shuffleArray(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function getNextMaarifQuestion() {
+            if (!activeQuestionDeck || activeQuestionDeck.length === 0) {
+                activeQuestionDeck = shuffleArray(ALL_100_MAARIF_QUESTIONS);
+            }
+            return activeQuestionDeck.pop();
+        }
 
         // --- 2. SES MOTORU (Web Audio API - Sıfır Dış Dosya Bağımlılığı) ---
         class SoundFX {
@@ -1133,7 +1214,7 @@
 
         // Soru Kapıları (Normal ve Altın/Zor Kapılar)
         function spawnQuestionGatePair(z) {
-            const q = MAARIF_QUESTIONS[Math.floor(Math.random() * MAARIF_QUESTIONS.length)];
+            const q = getNextMaarifQuestion();
             const isLeftCorrect = Math.random() < 0.5;
             const isHard = !!q.isHard;
 
@@ -1481,10 +1562,10 @@
                     if (Math.abs(obs.position.x - astronautMesh.position.x) < 1.35) {
                         let hit = false;
                         if (obs.userData.isSatellite) {
-                            // Uydu enkazı: Eğilerek (Duck) altından geçilebilir!
-                            hit = !isDucking;
+                            // Uydu enkazı (Kırmızı butonlu engel): Hem üzerinden zıplayarak hem de eğilerek hasar almadan geçilebilir!
+                            hit = !isDucking && (playerY < 0.85);
                         } else {
-                            // Meteor: Zıplayarak üzerinden geçilebilir!
+                            // Meteor / Kaya: Zıplayarak üzerinden geçilebilir!
                             hit = playerY < obs.userData.height;
                         }
 
@@ -1657,6 +1738,9 @@
             playerY = 0;
             playerYSpeed = 0;
             nextQuestionTimer = 10; // İlk soru kapısı 10 saniye sonra gelir
+
+            // Her oynayan kişide ve her yeni oyunda 100 soruluk havuzu baştan karıştır (Tamamen benzersiz sıra)
+            activeQuestionDeck = shuffleArray(ALL_100_MAARIF_QUESTIONS);
 
             updateLivesUI();
 
