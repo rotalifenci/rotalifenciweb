@@ -92,6 +92,63 @@
             return supabaseClient;
         },
 
+        // 📥 BULUTTAN SİLİNMİŞ ID'LERİ ÇEK (Çoklu cihaz senkronize mezarlık kaydı)
+        async fetchDeletedIds() {
+            const client = this.getClient();
+            if (!client) return [];
+
+            try {
+                const { data, error } = await client
+                    .from(currentConfig.tableName)
+                    .select("id, tags")
+                    .eq("id", "sys-deleted-registry");
+
+                if (error) {
+                    console.warn("⚠️ Supabase fetchDeletedIds hatası:", error.message);
+                    return [];
+                }
+
+                if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].tags)) {
+                    return data[0].tags;
+                }
+                return [];
+            } catch (err) {
+                console.warn("fetchDeletedIds beklenmeyen hata:", err);
+                return [];
+            }
+        },
+
+        // 📝 SİLİNEN ID'Yİ BULUTTAKİ SİSTEM MEZARLIĞINA (sys-deleted-registry) KAYDET
+        async registerDeletedId(id) {
+            const client = this.getClient();
+            if (!client || !id || typeof id !== "string") return false;
+
+            try {
+                const existing = await this.fetchDeletedIds();
+                const set = new Set(existing);
+                if (!set.has(id)) {
+                    set.add(id);
+                    const updatedTags = Array.from(set);
+
+                    // PATCH ile doğrudan tags dizisini güncelle
+                    const { error } = await client
+                        .from(currentConfig.tableName)
+                        .update({ tags: updatedTags, updated_at: new Date().toISOString() })
+                        .eq("id", "sys-deleted-registry");
+
+                    if (error) {
+                        console.warn("⚠️ registerDeletedId update hatası:", error.message);
+                        return false;
+                    }
+                    console.log("🪦 Materyal kimliği Supabase silinenler siciline eklendi:", id);
+                }
+                return true;
+            } catch (err) {
+                console.warn("registerDeletedId hata:", err);
+                return false;
+            }
+        },
+
         // 📥 BULUTTAN TÜM MATERYALLERİ ÇEK (Asenkron)
         async fetchMaterials() {
             const client = this.getClient();
@@ -112,8 +169,11 @@
                 }
 
                 if (Array.isArray(data)) {
+                    // Sistem ve mezarlık satırlarını filtrele
+                    const userRows = data.filter(row => row && row.id !== "sys-deleted-registry" && row.category !== "system");
+
                     // Veritabanı sütun isimlerini frontend modeline uyarla
-                    return data.map(row => ({
+                    return userRows.map(row => ({
                         id: row.id,
                         title: row.title || "Başlıksız Materyal",
                         grade: String(row.grade || "5"),
@@ -145,6 +205,9 @@
         async saveMaterial(mat) {
             const client = this.getClient();
             if (!client || !mat) return false;
+
+            // Sistem mezarlık kaydıysa koru
+            if (mat.id === "sys-deleted-registry") return false;
 
             try {
                 const payload = {
@@ -181,12 +244,13 @@
             }
         },
 
-        // 🗑️ BULUTTAN MATERYAL SİL
+        // 🗑️ BULUTTAN MATERYAL SİL (Kalıcı Mezar Kaydıyla Birlikte)
         async deleteMaterial(id) {
             const client = this.getClient();
             if (!client || !id) return false;
 
             try {
+                // 1. Doğrudan tablodan sil
                 const { error } = await client
                     .from(currentConfig.tableName)
                     .delete()
@@ -194,10 +258,14 @@
 
                 if (error) {
                     console.error("❌ Supabase deleteMaterial hatası:", error);
-                    return false;
+                } else {
+                    console.log("✅ Materyal buluttan silindi:", id);
                 }
-                console.log("✅ Materyal buluttan silindi:", id);
-                return true;
+
+                // 2. Mezarlığa (sys-deleted-registry) kaydet ki diğer cihazlar (akıllı tahta, telefon) asla diriltmesin!
+                await this.registerDeletedId(id);
+
+                return !error;
             } catch (err) {
                 console.error("❌ deleteMaterial hata:", err);
                 return false;
@@ -290,6 +358,20 @@
 
                 if (!Array.isArray(localList) || localList.length === 0) return true;
 
+                // Buluttaki mezarlık listesini çek (Kalıcı olarak silinenler ASLA diriltilemez!)
+                const deletedIds = new Set(await this.fetchDeletedIds());
+
+                // Yerel listedeki silinmişleri temizle
+                const cleanedLocalList = localList.filter(item => item && item.id && !deletedIds.has(item.id));
+                if (cleanedLocalList.length !== localList.length) {
+                    try {
+                        localStorage.setItem("rotali_custom_materials", JSON.stringify(cleanedLocalList));
+                        if (typeof ROTALI_MATERIALS_CACHE !== "undefined") {
+                            ROTALI_MATERIALS_CACHE = cleanedLocalList;
+                        }
+                    } catch(e) {}
+                }
+
                 // Buluttaki mevcut id'leri çek
                 const { data: existingRows, error } = await client
                     .from(currentConfig.tableName)
@@ -303,11 +385,11 @@
                 const cloudIds = new Set((existingRows || []).map(r => r.id));
 
                 let uploadedCount = 0;
-                for (const item of localList) {
-                    if (!item || !item.id) continue;
-                    // Eğer bulutta yoksa buluta aktar
-                    if (!cloudIds.has(item.id)) {
-                        console.log(`📤 Yerel materyal buluta aktarılıyor: "${item.title || item.id}"...`);
+                for (const item of cleanedLocalList) {
+                    if (!item || !item.id || deletedIds.has(item.id)) continue;
+                    // Sadece yeni oluşturulmuş veya bulutta olmayan geçerli yerel materyaller aktarılır
+                    if (!cloudIds.has(item.id) && item.isNewLocal) {
+                        console.log(`📤 Yeni yerel materyal buluta aktarılıyor: "${item.title || item.id}"...`);
                         await this.saveMaterial(item);
                         uploadedCount++;
                     }

@@ -62,7 +62,9 @@ function getDeletedMaterialIds() {
             "mat-1789502752586",
             "mat-1789494922903",
             "mat-1789494959416",
-            "mat-1789502325405",
+            "mat-1789589856366",
+            "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad",
+            "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
             "mat-8-ders-kitabi-1",
             "mat-e072f771-967e-44c8-ad81-3e67f0934514",
             "mat-5-lab-guvenlik-gorsel",
@@ -80,7 +82,7 @@ function getDeletedMaterialIds() {
         hardDeleted.forEach(hd => { if (!list.includes(hd)) list.push(hd); });
         return list.filter(id => typeof id === "string" && id.trim().length > 0);
     } catch(e) {
-        return ["mat-1789495187673", "mat-1789502325405", "not-5-unite-bilgilendirmeleri"];
+        return ["mat-1789589856366", "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336", "mat-1789495187673", "mat-1789502325405", "not-5-unite-bilgilendirmeleri"];
     }
 }
 
@@ -221,6 +223,14 @@ const CloudSyncManager = {
             let isSupabaseSource = false;
             if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
                 try {
+                    // Buluttaki mezarlık sicilini çek (Kalıcı silinmiş id'ler)
+                    const sbDeleted = await RotaliCloud.fetchDeletedIds();
+                    if (Array.isArray(sbDeleted) && sbDeleted.length > 0) {
+                        sbDeleted.forEach(dId => {
+                            if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId);
+                        });
+                    }
+
                     const sbMaterials = await RotaliCloud.fetchMaterials();
                     if (Array.isArray(sbMaterials)) {
                         cloudMaterials = sbMaterials;
@@ -304,7 +314,7 @@ const CloudSyncManager = {
             activeDeletedSet.add("mat-5-unite-bilgi");
             activeDeletedSet.add("mat-5-lab-guvenlik-gorsel");
 
-            // 2. Cihazdaki yerel materyalleri al
+            // 2. Cihazdaki yerel materyalleri al ve silinmişleri HEMEN temizle
             let localMaterials = [];
             if (Array.isArray(ROTALI_MATERIALS_CACHE) && ROTALI_MATERIALS_CACHE.length > 0) {
                 localMaterials = ROTALI_MATERIALS_CACHE;
@@ -316,13 +326,23 @@ const CloudSyncManager = {
                 }
             }
 
+            // Yerel depodaki mezarlık ögelerini anında sil
+            const purgedLocal = localMaterials.filter(m => m && m.id && !activeDeletedSet.has(m.id));
+            if (purgedLocal.length !== localMaterials.length) {
+                localMaterials = purgedLocal;
+                try {
+                    localStorage.setItem("rotali_custom_materials", JSON.stringify(purgedLocal));
+                    ROTALI_MATERIALS_CACHE = purgedLocal;
+                } catch(e) {}
+            }
+
             // 3. 🌟 BULUT ÖNCELİKLİ AKILLI BİRLEŞTİRME (Cloud First Source of Truth)
             // Telefondan yapılan değişiklikler bilgisayarı, bilgisayardan yapılanlar telefonu anında günceller!
             const mergedMap = new Map();
 
             // Adım A: Önce buluttaki güncel materyalleri ekle
             cloudMaterials.forEach(item => {
-                if (item && item.id && !activeDeletedSet.has(item.id)) {
+                if (item && item.id && item.id !== "sys-deleted-registry" && !activeDeletedSet.has(item.id)) {
                     mergedMap.set(item.id, item);
                 }
             });
@@ -330,7 +350,7 @@ const CloudSyncManager = {
             // Adım B: Yerel cihazdaki materyalleri birleştir
             let hasNewLocalToUpload = false;
             localMaterials.forEach(localItem => {
-                if (localItem && localItem.id && !activeDeletedSet.has(localItem.id)) {
+                if (localItem && localItem.id && localItem.id !== "sys-deleted-registry" && !activeDeletedSet.has(localItem.id)) {
                     if (mergedMap.has(localItem.id)) {
                         const inCloud = mergedMap.get(localItem.id);
                         // inCloud esastır (telefondan gelen en güncel başlık, kategori, kapak, açıklama kazanır!)
@@ -344,8 +364,8 @@ const CloudSyncManager = {
                             merged.imageUrl = localItem.imageUrl;
                         }
                         mergedMap.set(localItem.id, merged);
-                    } else {
-                        // Bu cihazdaki yerel materyal bulutta henüz yoksa ve silinmişler listesinde değilse koru ve buluta yükle!
+                    } else if (localItem.isNewLocal) {
+                        // Yalnızca kullanıcının bu cihazda YENİ oluşturduğu materyaller buluta aktarılır
                         hasNewLocalToUpload = true;
                         mergedMap.set(localItem.id, localItem);
                     }
@@ -9881,7 +9901,7 @@ async function openDigitalBookModal(options = {}) {
     DigitalBookState.currentPage = 1;
     DigitalBookState.totalPages = 1;
     DigitalBookState.currentScale = 1.0;
-    DigitalBookState.viewMode = "single"; // Varsayılan: 1 sayfa tam ekrana sığdırılır
+    DigitalBookState.viewMode = "continuous"; // 🌟 Varsayılan: Dikey Sürekli Akış (Aşağı doğru kaydırma)
     DigitalBookState.renderedPages.clear();
     DigitalBookState.renderingPages.clear();
     DigitalBookState.pdfDoc = null;
@@ -9918,7 +9938,7 @@ async function openDigitalBookModal(options = {}) {
                     <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[120px] sm:max-w-xs md:max-w-md text-white">${bookTitle}</h3>
                     <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
                         <span class="px-1.5 py-0.2 rounded bg-slate-800 text-red-400 border border-slate-700">${grade}. SINIF MEB</span>
-                        <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Tek Sayfa Açılıyor...</span>
+                        <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Dikey Akış Açılıyor...</span>
                     </div>
                 </div>
             </div>
@@ -9970,10 +9990,10 @@ async function openDigitalBookModal(options = {}) {
                     </button>
                 </div>
 
-                <!-- Görünüm Modu Değiştirici: Tek Sayfa (Tam Ekran Fit) <-> Dikey Akış -->
-                <button type="button" onclick="toggleBookViewMode()" id="book-view-mode-btn" class="px-2 sm:px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Görünüm: Tek Sayfa / Dikey Akış">
-                    <i class="fa-solid fa-desktop text-xs" id="book-view-mode-icon"></i>
-                    <span class="hidden md:inline" id="book-view-mode-text">Tek Sayfa</span>
+                <!-- Görünüm Modu Değiştirici: Dikey Akış (Aşağı Kaydırma) <-> Tek Sayfa -->
+                <button type="button" onclick="toggleBookViewMode()" id="book-view-mode-btn" class="px-2 sm:px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-700 flex items-center gap-1.5 text-xs font-black transition-all shadow-sm cursor-pointer ml-1" title="Görünüm: Dikey Akış / Tek Sayfa">
+                    <i class="fa-solid fa-scroll text-xs" id="book-view-mode-icon"></i>
+                    <span class="hidden md:inline" id="book-view-mode-text">Dikey Akış</span>
                 </button>
 
                 ${localStorage.getItem("rotali_is_admin") === "true" ? `
@@ -10006,14 +10026,14 @@ async function openDigitalBookModal(options = {}) {
             </div>
         </div>
 
-        <!-- ORTA ALAN: 1 SAYFA TAM EKRAN (Varsayılan) VEYA DİKEY AKIŞ -->
-        <div id="book-reader-scroll-area" class="relative flex-1 bg-slate-950 overflow-hidden flex items-center justify-center p-1 sm:p-3" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
-            <div id="book-pages-container" class="w-full h-full flex items-center justify-center relative">
+        <!-- ORTA ALAN: DİKEY AKIŞ (Varsayılan aşağı doğru kaydırma) -->
+        <div id="book-reader-scroll-area" class="relative flex-1 bg-slate-950 overflow-y-auto overflow-x-hidden p-2 sm:p-4 flex flex-col items-center" style="scroll-behavior: smooth; -webkit-overflow-scrolling: touch;">
+            <div id="book-pages-container" class="flex flex-col items-center gap-4 sm:gap-6 max-w-full mx-auto w-fit min-h-full pb-20">
                 <!-- Hızlı Yükleme Göstergesi -->
                 <div id="book-loading-spinner" class="py-24 flex flex-col items-center justify-center gap-4 text-white">
                     <div class="w-14 h-14 border-4 border-amber-500 border-t-transparent rounded-full animate-spin shadow-lg shadow-amber-500/20"></div>
                     <div class="text-base font-black text-white tracking-wide">Ders Dokümanı Açılıyor...</div>
-                    <div class="text-xs text-slate-400">Sayfa ekrana tam sığdırılıyor, lütfen bekleyiniz</div>
+                    <div class="text-xs text-slate-400">Sayfalar dikey akışla aşağı doğru yükleniyor, lütfen bekleyiniz</div>
                 </div>
             </div>
         </div>

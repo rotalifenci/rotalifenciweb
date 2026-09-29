@@ -68,20 +68,22 @@
         }
         .d-btn-light {
             background: #ffffff;
-            border: 2px solid #cbd5e1;
-            border-radius: 0.85rem;
-            color: #1e293b;
+            border: 2px solid #94a3b8;
+            border-radius: 1.1rem;
+            color: #0f172a;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.08s ease;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.12);
             cursor: pointer;
-            touch-action: none;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
         }
         .d-btn-light:active {
             transform: scale(0.92);
-            background: #e2e8f0;
+            background: #fef3c7;
             border-color: #d97706;
             color: #d97706;
         }
@@ -217,8 +219,8 @@
             </div>
         </div>
 
-        <!-- 🖥️ MASAÜSTÜ YAN PANELİ -->
-        <aside id="desktop-sidebar" class="hidden md:flex flex-col items-center justify-between h-full py-3 px-3 z-20 shrink-0 border-l-2 border-slate-200 bg-white/90 w-48 shadow-sm">
+        <!-- 🖥️ MASAÜSTÜ & AKILLI TAHTA YAN PANELİ -->
+        <aside id="desktop-sidebar" class="hidden md:flex flex-col items-center justify-between h-full py-3 px-3 z-20 shrink-0 border-l-2 border-slate-200 bg-white/95 w-56 shadow-sm">
             <!-- Radar Mini Harita -->
             <div class="bg-slate-50 rounded-2xl p-2.5 border-2 border-slate-200 shadow-sm flex flex-col items-center w-full">
                 <div class="text-[10px] font-orbitron font-black text-slate-700 mb-1.5 flex items-center justify-between w-full">
@@ -228,24 +230,24 @@
                 <canvas id="minimap-canvas" width="132" height="132" class="rounded-xl bg-white border-2 border-slate-200"></canvas>
             </div>
 
-            <!-- Masaüstü Yön Tuşları -->
-            <div id="desktop-dpad" class="flex flex-col items-center gap-1 select-none bg-slate-50 p-2.5 rounded-2xl border-2 border-slate-200 shadow-sm">
-                <button id="btn-desk-up" class="d-btn-light w-11 h-11" title="Yukarı">
-                    <i class="fa-solid fa-chevron-up text-base text-slate-700"></i>
+            <!-- Akıllı Tahta & Masaüstü Büyük Yön Tuşları -->
+            <div id="desktop-dpad" class="flex flex-col items-center gap-1.5 select-none bg-slate-50 p-3 rounded-3xl border-2 border-slate-300 shadow-md">
+                <button id="btn-desk-up" class="d-btn-light w-14 h-14 lg:w-16 lg:h-16" title="Yukarı">
+                    <i class="fa-solid fa-chevron-up text-2xl text-slate-800"></i>
                 </button>
-                <div class="flex items-center gap-1">
-                    <button id="btn-desk-left" class="d-btn-light w-11 h-11" title="Sol">
-                        <i class="fa-solid fa-chevron-left text-base text-slate-700"></i>
+                <div class="flex items-center gap-1.5">
+                    <button id="btn-desk-left" class="d-btn-light w-14 h-14 lg:w-16 lg:h-16" title="Sol">
+                        <i class="fa-solid fa-chevron-left text-2xl text-slate-800"></i>
                     </button>
-                    <button onclick="interactCurrentTile()" class="d-btn-light w-11 h-11 bg-amber-500 border-amber-600 text-white font-black text-xs shadow-md" title="Kapıyı Aç">
-                        <i class="fa-solid fa-key"></i>
+                    <button onclick="interactCurrentTile()" class="d-btn-light w-14 h-14 lg:w-16 lg:h-16 bg-amber-500 border-amber-600 text-white font-black shadow-md" title="Kapıyı Aç">
+                        <i class="fa-solid fa-key text-xl"></i>
                     </button>
-                    <button id="btn-desk-right" class="d-btn-light w-11 h-11" title="Sağ">
-                        <i class="fa-solid fa-chevron-right text-base text-slate-700"></i>
+                    <button id="btn-desk-right" class="d-btn-light w-14 h-14 lg:w-16 lg:h-16" title="Sağ">
+                        <i class="fa-solid fa-chevron-right text-2xl text-slate-800"></i>
                     </button>
                 </div>
-                <button id="btn-desk-down" class="d-btn-light w-11 h-11" title="Aşağı">
-                    <i class="fa-solid fa-chevron-down text-base text-slate-700"></i>
+                <button id="btn-desk-down" class="d-btn-light w-14 h-14 lg:w-16 lg:h-16" title="Aşağı">
+                    <i class="fa-solid fa-chevron-down text-2xl text-slate-800"></i>
                 </button>
             </div>
 
@@ -257,23 +259,23 @@
         </aside>
     </main>
 
-    <!-- 📱 MOBİL KONTROL ÇUBUĞU (KAYMAZ, SABİT, LABİRENTİ ASLA KAPATMAZ) -->
+    <!-- 📱 MOBİL & DOKUNMATİK AKILLI TAHTA KONTROL ÇUBUĞU -->
     <nav id="mobile-control-bar" class="md:hidden shrink-0 w-full bg-white/95 border-t-2 border-slate-200 px-3 py-2 flex items-center justify-between z-30 safe-bottom shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
-        <!-- 4 Yönlü D-Pad -->
-        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-2xl border border-slate-300 shadow-inner">
-            <button id="btn-move-left" class="d-btn-light w-11 h-11 active:scale-90" title="Sol">
-                <i class="fa-solid fa-chevron-left text-lg text-slate-700"></i>
+        <!-- 4 Yönlü Büyük D-Pad -->
+        <div class="flex items-center gap-1.5 bg-slate-100 p-1.5 rounded-2xl border-2 border-slate-300 shadow-inner">
+            <button id="btn-move-left" class="d-btn-light w-13 h-13 sm:w-15 sm:h-15 active:scale-90" title="Sol">
+                <i class="fa-solid fa-chevron-left text-2xl text-slate-800"></i>
             </button>
-            <div class="flex flex-col gap-1">
-                <button id="btn-move-up" class="d-btn-light w-11 h-11 active:scale-90" title="Yukarı">
-                    <i class="fa-solid fa-chevron-up text-lg text-slate-700"></i>
+            <div class="flex flex-col gap-1.5">
+                <button id="btn-move-up" class="d-btn-light w-13 h-13 sm:w-15 sm:h-15 active:scale-90" title="Yukarı">
+                    <i class="fa-solid fa-chevron-up text-2xl text-slate-800"></i>
                 </button>
-                <button id="btn-move-down" class="d-btn-light w-11 h-11 active:scale-90" title="Aşağı">
-                    <i class="fa-solid fa-chevron-down text-lg text-slate-700"></i>
+                <button id="btn-move-down" class="d-btn-light w-13 h-13 sm:w-15 sm:h-15 active:scale-90" title="Aşağı">
+                    <i class="fa-solid fa-chevron-down text-2xl text-slate-800"></i>
                 </button>
             </div>
-            <button id="btn-move-right" class="d-btn-light w-11 h-11 active:scale-90" title="Sağ">
-                <i class="fa-solid fa-chevron-right text-lg text-slate-700"></i>
+            <button id="btn-move-right" class="d-btn-light w-13 h-13 sm:w-15 sm:h-15 active:scale-90" title="Sağ">
+                <i class="fa-solid fa-chevron-right text-2xl text-slate-800"></i>
             </button>
         </div>
 
@@ -284,17 +286,17 @@
         </div>
 
         <!-- Sağ: Büyük Kapı Açma Butonu -->
-        <button id="btn-mobile-door" onclick="interactCurrentTile()" class="h-14 px-4 bg-gradient-to-tr from-emerald-500 via-teal-500 to-green-500 border-2 border-emerald-400 text-white font-black rounded-2xl shadow-lg active:scale-90 flex flex-col items-center justify-center gap-0.5 cursor-pointer">
-            <i class="fa-solid fa-door-open text-xl"></i>
-            <span class="text-[10px] uppercase font-black tracking-wider leading-none">KAPIYI AÇ</span>
+        <button id="btn-mobile-door" onclick="interactCurrentTile()" class="h-14 sm:h-16 px-4 sm:px-5 bg-gradient-to-tr from-emerald-500 via-teal-500 to-green-500 border-2 border-emerald-400 text-white font-black rounded-2xl shadow-lg active:scale-90 flex flex-col items-center justify-center gap-0.5 cursor-pointer">
+            <i class="fa-solid fa-door-open text-xl sm:text-2xl"></i>
+            <span class="text-[10px] sm:text-xs uppercase font-black tracking-wider leading-none">KAPIYI AÇ</span>
         </button>
     </nav>
 
     <!-- 🚪 KAPI ŞİFRE ÇÖZÜCÜ VE NUMPAD MODAL (3 SORU + DİJİTAL ŞİFRE KONSOLU) -->
     <div id="modal-door-puzzle" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-50 hidden flex-col items-center justify-between p-2.5 sm:p-5 overflow-y-auto animate-in fade-in duration-200">
         
-        <!-- Üst Başlık & Şifre Slotları -->
-        <div class="bg-white w-full max-w-4xl rounded-2xl p-2.5 sm:p-4 flex items-center justify-between gap-2 sm:gap-3 shrink-0 mb-2 sm:mb-3 border-2 border-slate-300 shadow-xl">
+        <!-- Üst Başlık & Süre, Can ve Şifre Slotları -->
+        <div class="bg-white w-full max-w-4xl rounded-2xl p-2.5 sm:p-4 flex flex-wrap items-center justify-between gap-2 sm:gap-3 shrink-0 mb-2 sm:mb-3 border-2 border-slate-300 shadow-xl">
             <div class="flex items-center gap-2 sm:gap-3">
                 <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-amber-500 text-white flex items-center justify-center text-base sm:text-xl font-black shadow-md shrink-0">
                     <i class="fa-solid fa-door-closed"></i>
@@ -302,6 +304,20 @@
                 <div>
                     <span id="puzzle-badge" class="text-[10px] sm:text-xs font-black uppercase text-amber-600 tracking-wider">Güvenlik Protokolü</span>
                     <h2 id="puzzle-door-title" class="text-sm sm:text-base font-orbitron font-black text-slate-800">1. GÜVENLİK KAPISI</h2>
+                </div>
+            </div>
+
+            <!-- ⏱️ 15 SANİYE GERİ SAYIM SAYACI & CAN HAKLARI (KULLANICI İSTEĞİ) -->
+            <div class="flex items-center gap-2">
+                <!-- 15s Sayaç -->
+                <div class="flex items-center gap-1.5 bg-amber-50 border-2 border-amber-400 px-2.5 sm:px-3 py-1.5 rounded-xl shadow-xs" title="Soru Süresi: 15 Saniyeden Geriye Sayar">
+                    <i class="fa-solid fa-stopwatch text-amber-600 text-xs sm:text-sm animate-pulse"></i>
+                    <span id="door-q-timer-text" class="text-amber-700 font-orbitron font-black text-xs sm:text-sm min-w-[24px] text-center">15s</span>
+                </div>
+                <!-- Can Hakları -->
+                <div class="flex items-center gap-1 bg-rose-50 border-2 border-rose-300 px-2.5 sm:px-3 py-1.5 rounded-xl shadow-xs" title="Kalan Can Hakları (3 Yanlışta Oyun Biter)">
+                    <span class="text-xs text-rose-700 font-bold hidden sm:inline">Can:</span>
+                    <span id="modal-lives-icons" class="text-sm sm:text-base tracking-wider">❤️❤️❤️</span>
                 </div>
             </div>
 
@@ -329,17 +345,21 @@
             <p id="door-question-sub" class="text-xs text-amber-600 font-bold mt-1">
                 Doğru seçeneğe tıklayarak şifre kodunu ortaya çıkarın:
             </p>
+            <!-- 15s Soru Süresi İlerleme Çubuğu -->
+            <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden mt-3 shadow-inner">
+                <div id="door-q-timer-bar" class="h-full bg-gradient-to-r from-emerald-400 to-teal-400 transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(16,185,129,0.8)]" style="width: 100%;"></div>
+            </div>
         </div>
 
-        <!-- 🎴 SEÇENEK KARTLARI / ŞİFRE GİRME KONSOLU -->
-        <div class="w-full max-w-3xl my-auto px-1 flex justify-center">
-            <div id="cards-container" class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 w-full">
-                <!-- JS enjekte edecek -->
+        <!-- 🎴 SEÇENEK KARTLARI / ŞİFRE GİRME KONSOLU (2 ÜSTTE 2 ALTTA 2x2 IZGARA) -->
+        <div class="w-full max-w-2xl my-auto px-1 flex justify-center">
+            <div id="cards-container" class="grid grid-cols-2 gap-3.5 sm:gap-5 w-full">
+                <!-- JS enjekte edecek (2 Üstte 2 Altta) -->
             </div>
         </div>
 
         <!-- Alt Referans Çubuğu -->
-        <div class="mt-2 flex items-center justify-between w-full max-w-3xl text-[11px] text-slate-200 shrink-0 px-2 safe-bottom">
+        <div class="mt-2 flex items-center justify-between w-full max-w-2xl text-[11px] text-slate-200 shrink-0 px-2 safe-bottom">
             <button onclick="toggleFullPosterModal()" class="text-sky-300 hover:text-white underline font-bold flex items-center gap-1.5 cursor-pointer">
                 <i class="fa-solid fa-image"></i>
                 <span>Referans Afişi Görüntüle</span>
@@ -359,6 +379,35 @@
         <div class="max-w-2xl max-h-[80vh] overflow-y-auto rounded-2xl border-2 border-slate-300 bg-white">
             <img id="ref-poster-img" src="afis-malzemeler.png" class="w-full h-auto block" alt="Referans Afiş">
         </div>
+    </div>
+
+    <!-- 💀 OYUN BİTTİ (CANLAR TÜKENDİ) MODALI (KULLANICI İSTEĞİ) -->
+    <div id="modal-gameover" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[85] hidden flex-col items-center justify-center p-4 text-center animate-in zoom-in-95 duration-300">
+        <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-gradient-to-tr from-rose-500 to-red-700 text-white flex items-center justify-center text-4xl sm:text-5xl mb-3 sm:mb-4 shadow-[0_0_50px_rgba(239,68,68,0.6)] animate-pulse">
+            <i class="fa-solid fa-skull-crossbones"></i>
+        </div>
+        <h2 class="text-2xl sm:text-4xl md:text-5xl font-orbitron font-black text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-red-500 to-orange-500 mb-2 tracking-wider">
+            OYUN BİTTİ!
+        </h2>
+        <p class="text-xs sm:text-sm text-slate-200 max-w-lg mb-5 leading-relaxed">
+            Laboratuvarda can haklarınız tükendi ve güvenlik kapıları kilitlendi! Tekrar deneyerek tüm şifreleri çözebilir ve kaçışı tamamlayabilirsiniz.
+        </p>
+
+        <div class="grid grid-cols-2 gap-3 max-w-xs w-full mb-6 text-xs">
+            <div class="bg-white/10 backdrop-blur border border-white/20 p-3 rounded-2xl text-center text-white">
+                <span class="text-slate-300 block text-[10px] mb-0.5">Açılan Kapı</span>
+                <strong id="gameover-doors" class="text-amber-400 font-orbitron text-base sm:text-lg">0 / 4</strong>
+            </div>
+            <div class="bg-white/10 backdrop-blur border border-white/20 p-3 rounded-2xl text-center text-white">
+                <span class="text-slate-300 block text-[10px] mb-0.5">Kazanılan Skor</span>
+                <strong id="gameover-score" class="text-rose-400 font-orbitron text-base sm:text-lg">0</strong>
+            </div>
+        </div>
+
+        <button onclick="handleReplayGame()" class="px-8 sm:px-10 py-3.5 bg-gradient-to-r from-red-600 to-rose-700 hover:from-red-500 hover:to-rose-600 text-white font-black rounded-2xl text-xs sm:text-sm shadow-2xl transition-all transform hover:scale-105 active:scale-95 flex items-center gap-2.5 cursor-pointer border-2 border-red-400">
+            <i class="fa-solid fa-rotate-right text-lg"></i>
+            <span>Yeniden Başlat ve Kaç</span>
+        </button>
     </div>
 
     <!-- 🏆 ZAFER & KAÇIŞ TAMAMLANDI MODALI (KUSURSUZ ÇALIŞAN YENİLEME BUTONLU) -->
@@ -1056,9 +1105,7 @@
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     isGameRunning = false;
-                    AudioEngine.playWrong();
-                    alert("⏰ SÜRE BİTTİ! Laboratuvardan kaçış başarısız oldu. Yeniden başlayın!");
-                    resetGame(false);
+                    triggerGameOverModal();
                 }
             }, 1000);
         }
@@ -1187,12 +1234,20 @@
         function triggerGameOverModal() {
             isGameRunning = false;
             stopQuestionTimer();
+            if (timerInterval) clearInterval(timerInterval);
             AudioEngine.playWrong();
 
             const goScore = document.getElementById('gameover-score');
             if (goScore) goScore.innerText = score;
             const goDoors = document.getElementById('gameover-doors');
             if (goDoors) goDoors.innerText = `${unlockedDoors.size}/${REQUIRED_DOORS}`;
+
+            // Kapı soru modalını tamamen kapat
+            const doorModal = document.getElementById('modal-door-puzzle');
+            if (doorModal) {
+                doorModal.classList.add('hidden');
+                doorModal.classList.remove('flex');
+            }
 
             const goModal = document.getElementById('modal-gameover');
             if (goModal) {
@@ -1440,7 +1495,7 @@
             startQuestionTimer();
 
             const cardsContainer = document.getElementById('cards-container');
-            cardsContainer.className = "grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 w-full";
+            cardsContainer.className = "grid grid-cols-2 gap-3.5 sm:gap-5 w-full max-w-2xl mx-auto";
             cardsContainer.innerHTML = '';
 
             const letterGradients = [
@@ -1453,20 +1508,20 @@
             q.options.forEach((opt, idx) => {
                 const card = document.createElement('button');
                 card.type = "button";
-                card.className = "group relative bg-slate-800/90 hover:bg-slate-700/90 border-2 border-slate-700 hover:border-amber-400 rounded-2xl p-2.5 sm:p-3.5 flex flex-col items-center justify-between text-center transition-all duration-200 transform hover:scale-[1.03] active:scale-95 shadow-xl cursor-pointer";
+                card.className = "group relative bg-slate-900/95 hover:bg-slate-800 border-2 border-slate-700 hover:border-amber-400 rounded-3xl p-3.5 sm:p-5 flex flex-col items-center justify-between text-center transition-all duration-200 transform hover:scale-[1.02] active:scale-95 shadow-xl cursor-pointer min-h-[175px] sm:min-h-[210px]";
                 card.onclick = () => selectCardAnswer(opt.id, card);
 
                 card.innerHTML = `
-                    <!-- Seçenek Harfi (A, B, C, D) -->
-                    <span class="absolute top-2.5 left-2.5 w-7 h-7 rounded-xl bg-gradient-to-tr ${letterGradients[idx % 4]} text-slate-950 text-xs font-black flex items-center justify-center shadow font-orbitron">
+                    <!-- Seçenek Harfi (A, B, C, D) - Daha Büyük -->
+                    <span class="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr ${letterGradients[idx % 4]} text-slate-950 text-sm sm:text-base font-black flex items-center justify-center shadow-md font-orbitron">
                         ${String.fromCharCode(65 + idx)}
                     </span>
-                    <!-- Görsel Alanı -->
-                    <div class="w-full aspect-square max-h-24 sm:max-h-28 bg-white rounded-xl p-2 flex items-center justify-center mb-2 overflow-hidden border border-slate-600/40 group-hover:scale-105 transition-transform duration-200">
+                    <!-- Görsel Alanı - Daha Büyük -->
+                    <div class="w-full aspect-square max-h-28 sm:max-h-36 bg-white rounded-2xl p-2.5 flex items-center justify-center mb-2.5 overflow-hidden border border-slate-600/40 group-hover:scale-105 transition-transform duration-200">
                         <img src="${opt.img}" alt="${opt.name}" class="w-full h-full object-contain pointer-events-none">
                     </div>
-                    <!-- İsim / Tanım -->
-                    <span class="text-xs sm:text-sm font-extrabold text-slate-100 group-hover:text-amber-300 leading-snug">
+                    <!-- İsim / Tanım - Daha Büyük & Belirgin -->
+                    <span class="text-sm sm:text-base md:text-lg font-black text-slate-100 group-hover:text-amber-300 leading-snug px-1">
                         ${opt.name}
                     </span>
                 `;
