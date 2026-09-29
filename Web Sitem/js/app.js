@@ -338,25 +338,22 @@ const CloudSyncManager = {
 
             // 3. 🌟 BULUT ÖNCELİKLİ AKILLI BİRLEŞTİRME (Cloud First Source of Truth)
             // Telefondan yapılan değişiklikler bilgisayarı, bilgisayardan yapılanlar telefonu anında günceller!
-            const mergedMap = new Map();
-
-            // Adım A: Önce buluttaki güncel materyalleri ekle
+            const cloudMap = new Map();
             cloudMaterials.forEach(item => {
                 if (item && item.id && item.id !== "sys-deleted-registry" && !activeDeletedSet.has(item.id)) {
-                    mergedMap.set(item.id, item);
+                    cloudMap.set(item.id, item);
                 }
             });
 
-            // Adım B: Yerel cihazdaki materyalleri birleştir
+            const mergedMap = new Map();
             let hasNewLocalToUpload = false;
+
+            // Adım A: Yerel cihazdaki materyallerin sırasını koru ve buluttaki güncel verilerle zenginleştir
             localMaterials.forEach(localItem => {
                 if (localItem && localItem.id && localItem.id !== "sys-deleted-registry" && !activeDeletedSet.has(localItem.id)) {
-                    if (mergedMap.has(localItem.id)) {
-                        const inCloud = mergedMap.get(localItem.id);
-                        // inCloud esastır (telefondan gelen en güncel başlık, kategori, kapak, açıklama kazanır!)
+                    if (cloudMap.has(localItem.id)) {
+                        const inCloud = cloudMap.get(localItem.id);
                         const merged = { ...localItem, ...inCloud };
-                        
-                        // Sadece bu cihazda yüklü olan DataURL veya yerel blob korunur
                         if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
                             merged.fileUrl = localItem.fileUrl;
                         }
@@ -365,9 +362,19 @@ const CloudSyncManager = {
                         }
                         mergedMap.set(localItem.id, merged);
                     } else if (localItem.isNewLocal) {
-                        // Yalnızca kullanıcının bu cihazda YENİ oluşturduğu materyaller buluta aktarılır
                         hasNewLocalToUpload = true;
                         mergedMap.set(localItem.id, localItem);
+                    } else {
+                        mergedMap.set(localItem.id, localItem);
+                    }
+                }
+            });
+
+            // Adım B: Buluttan yeni gelen (yerelde henüz olmayan) materyalleri ekle
+            cloudMaterials.forEach(cloudItem => {
+                if (cloudItem && cloudItem.id && cloudItem.id !== "sys-deleted-registry" && !activeDeletedSet.has(cloudItem.id)) {
+                    if (!mergedMap.has(cloudItem.id)) {
+                        mergedMap.set(cloudItem.id, cloudItem);
                     }
                 }
             });
@@ -1428,6 +1435,9 @@ function getMaterialTargetSection(item) {
     // 1. Doğrudan atanmış hedef bölüm
     if (item.targetSection) {
         return String(item.targetSection).toLowerCase().trim();
+    }
+    if (item.target_section) {
+        return String(item.target_section).toLowerCase().trim();
     }
 
     const title = (item.title || "").toLowerCase();
@@ -4000,13 +4010,45 @@ function renderGradeDersNotuAccordion(grade, subData) {
     };
     const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
 
-    // Özel Ders Kitabı Materyalleri (Ana kitap 'currentBook' olarak zaten çizildiği için book-* hariç tutulmalıdır)
-    const customBooks = customList.filter(m => {
+    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+
+    // 📖 DERS KİTABI BÖLÜMÜ MATERYALLERİ (MEB Resmi Kitap + Kullanıcı Özel Kitap / Not / Belgeleri)
+    const isMainBookDeleted = deletedIds.includes(`book-${grade.number}`) || deletedIds.includes(`book-${gNum}`);
+
+    // customList içinde kitap bölümüne ait materyaller (varsa book-* dahil)
+    const kitapSectionCustom = customList.filter(m => {
+        if (!m || !m.id) return false;
+        if (deletedIds.includes(m.id)) return false;
         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         if (gClean !== "all" && gClean !== String(grade.number)) return false;
-        if (m.id && m.id.startsWith("book-")) return false; // 🚫 book-8 gibi ana kitaplar customBooks'ta tekrar basılmamalı!
+        if (m.id === `book-${grade.number}` || m.id === `book-${gNum}`) return true;
         return getMaterialTargetSection(m) === "kitap";
     });
+
+    let allKitapItems = [];
+    const mainBookInList = kitapSectionCustom.find(m => m.id === `book-${grade.number}` || m.id === `book-${gNum}`);
+    if (mainBookInList) {
+        allKitapItems = kitapSectionCustom;
+    } else if (!isMainBookDeleted) {
+        allKitapItems = [
+            {
+                id: `book-${grade.number}`,
+                title: currentBook.title,
+                pages: currentBook.pages,
+                fileUrl: currentBook.fileUrl,
+                cover: currentBook.cover,
+                category: "ders-kitabi",
+                targetSection: "kitap",
+                target_section: "kitap",
+                grade: String(grade.number),
+                isDefaultMebBook: true,
+                desc: "Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı."
+            },
+            ...kitapSectionCustom
+        ];
+    } else {
+        allKitapItems = kitapSectionCustom;
+    }
 
     // Özel Laboratuvar Materyalleri (lab-*-guide ve lab-*-sim ayrı kart olarak yönetilir)
     const labGuideItem = customList.find(m => m && m.id === `lab-${grade.number}-guide`) || {};
@@ -4035,7 +4077,6 @@ function renderGradeDersNotuAccordion(grade, subData) {
     const activeUnit = savedUnit || "kitap";
     const isKitapActive = activeUnit === "kitap";
     const isLabActive = activeUnit === "lab";
-    const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
     const allLab = [...customLabItems, ...labItems].filter(item => item && !deletedIds.includes(item.id));
 
     return `
@@ -4096,64 +4137,32 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible ${isKitapActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            ${!deletedIds.includes(`book-${grade.number}`) ? `
-                            <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
-                                <div>
-                                    <div class="flex items-center justify-between gap-2 mb-2">
-                                        <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
-                                            MEB 2026-2027 • DERS KİTABI
-                                        </span>
-                                        <span class="text-[11px] font-bold text-slate-400">${currentBook.pages}</span>
-                                    </div>
-                                    <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-700 transition-colors">
-                                        ${currentBook.title}
-                                    </h5>
-                                    <!-- Görsel Kapak Kutusu (Kullanıcı görselindeki gibi) -->
-                                    <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openDigitalBookModal({ id: 'book-${grade.number}', fileUrl: '${currentBook.fileUrl && currentBook.fileUrl !== '#' ? currentBook.fileUrl : ''}', title: '${currentBook.title.replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${currentBook.cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })">
-                                        <img src="${currentBook.cover || 'assets/kapak-' + grade.number + '.jpg'}" alt="${currentBook.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                        <div class="absolute bottom-2.5 right-2.5">
-                                            <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                <i class="fa-solid fa-eye"></i> GÖRSELİ AÇ
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
-                                        Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.
-                                    </p>
-                                </div>
-                                <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                    <button type="button" onclick="openDigitalBookModal({ id: 'book-${grade.number}', fileUrl: '${currentBook.fileUrl && currentBook.fileUrl !== '#' ? currentBook.fileUrl : ''}', title: '${currentBook.title.replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${currentBook.cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })" class="flex-1 py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
-                                        <i class="fa-solid fa-book-open-reader text-sm"></i> <span>Kitabı Aç & Oku</span>
-                                    </button>
-                                    ${isAdmin ? `
-                                        <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('book-${grade.number}')" class="py-2.5 px-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 font-bold text-xs rounded-xl cursor-pointer flex items-center gap-1 shadow-xs active:scale-95" title="Ders Kitabını Düzenle">
-                                            <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                        </button>
-                                        <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('book-${grade.number}')" class="py-2.5 px-3 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 font-bold text-xs rounded-xl cursor-pointer flex items-center justify-center shadow-xs active:scale-95" title="Sil">
-                                            <i class="fa-solid fa-trash"></i>
-                                        </button>
-                                    ` : ''}
-                                </div>
-                            </div>
-                            ` : ''}
+                            ${allKitapItems.length > 0 ? allKitapItems.map(item => {
+                                const isMainBook = (item.id === `book-${grade.number}` || item.id === `book-${gNum}` || item.isDefaultMebBook || item.category === "ders-kitabi");
+                                const isImg = (item.format === 'GÖRSEL' || String(item.title || '').toLowerCase().includes('ünite') || String(item.title || '').toLowerCase().includes('işlenecek') || String(item.title || '').toLowerCase().includes('bilgi'));
+                                const cover = resolveMaterialCover(item) || item.cover || `assets/kapak-${grade.number || 5}.jpg`;
+                                const isBookReader = isMainBook || (item.category === "ders-kitabi") || (item.format && item.format.includes("KİTAP"));
+                                const openFunc = isBookReader
+                                    ? `openDigitalBookModal({ id: '${item.id}', fileUrl: '${(item.fileUrl && item.fileUrl !== '#' ? item.fileUrl : '')}', title: '${(item.title || '').replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })`
+                                    : `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || cover || '#'}', '${(item.title || '').replace(/'/g, "\\'")}', '${item.category || 'ders-notu'}', '${(item.title || '').replace(/'/g, "\\'")}')`;
+                                const badgeText = isMainBook ? "MEB 2026-2027 • DERS KİTABI" : (item.format || (isImg ? 'GÖRSEL / AFİŞ' : 'PDF KİTAP'));
+                                const badgeSub = isMainBook ? (item.pages || currentBook.pages || '240 Sayfa') : (item.pages || 'Özel İçerik');
 
-                            ${customBooks.map(cb => {
-                                const isImg = (cb.format === 'GÖRSEL' || cb.title.toLowerCase().includes('ünite') || cb.title.toLowerCase().includes('işlenecek') || cb.title.toLowerCase().includes('bilgi'));
-                                const cover = resolveMaterialCover(cb);
                                 return `
                                 <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
                                     <div>
                                         <div class="flex items-center justify-between gap-2 mb-2">
                                             <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
-                                                ${cb.format || (isImg ? 'GÖRSEL / AFİŞ' : 'PDF KİTAP')}
+                                                ${badgeText}
                                             </span>
-                                            <span class="text-[11px] font-bold text-slate-400">Özel İçerik</span>
+                                            <span class="text-[11px] font-bold text-slate-400">${badgeSub}</span>
                                         </div>
                                         <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-700 transition-colors">
-                                            ${cb.title}
+                                            ${item.title}
                                         </h5>
-                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || cover || '#'}', '${cb.title.replace(/'/g, "\\'")}', '${cb.category || 'ders-notu'}', '${cb.title.replace(/'/g, "\\'")}')">
-                                            <img src="${cover}" alt="${cb.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <!-- Görsel Kapak Kutusu -->
+                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${openFunc}">
+                                            <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
                                                     <i class="fa-solid fa-eye"></i> GÖRSELİ AÇ
@@ -4161,25 +4170,39 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             </div>
                                         </div>
                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
-                                            ${cb.desc || 'Ders kitabı eki ve bölüm dokümanı.'}
+                                            ${item.desc || (isMainBook ? 'Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.' : 'Ders kitabı eki ve bölüm dokümanı.')}
                                         </p>
                                     </div>
-                                    <div class="pt-2 border-t border-slate-100 flex items-center gap-2">
-                                        <button type="button" onclick="openOrDownloadMaterial('${cb.id}', '${cb.fileUrl || cb.imageUrl || cover || '#'}', '${cb.title.replace(/'/g, "\\'")}', '${cb.category || 'ders-notu'}', '${cb.title.replace(/'/g, "\\'")}')" class="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95 cursor-pointer">
-                                            <i class="fa-solid ${isImg ? 'fa-eye' : 'fa-book-open'}"></i> <span>${isImg ? 'İncele & Aç' : 'Oku'}</span>
+                                    <div>
+                                        <button type="button" onclick="${openFunc}" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
+                                            <i class="fa-solid ${isBookReader ? 'fa-book-open-reader' : (isImg ? 'fa-eye' : 'fa-book-open')} text-sm"></i>
+                                            <span>${isBookReader ? 'Kitabı Aç & Oku' : (isImg ? 'İncele & Aç' : 'Aç & Oku')}</span>
                                         </button>
                                         ${isAdmin ? `
-                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-amber-100 text-amber-900 font-bold text-xs rounded-xl cursor-pointer" title="Düzenle">
-                                                <i class="fa-solid fa-pen-to-square"></i>
-                                            </button>
-                                            <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${cb.id}')" class="py-2.5 px-3 bg-slate-100 hover:bg-red-100 text-red-600 font-bold text-xs rounded-xl cursor-pointer" title="Sil">
-                                                <i class="fa-solid fa-trash"></i>
-                                            </button>
+                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
+                                                <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', -1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sola / Yukarı Taşı">
+                                                    <i class="fa-solid fa-arrow-left"></i>
+                                                </button>
+                                                <button type="button" onclick="event.stopPropagation(); moveCustomMaterial('${item.id}', 1)" class="py-1.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sağa / Aşağı Taşı">
+                                                    <i class="fa-solid fa-arrow-right"></i>
+                                                </button>
+                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${item.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
+                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
+                                                </button>
+                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${item.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
                                         ` : ''}
                                     </div>
                                 </div>
                                 `;
-                            }).join("")}
+                            }).join("") : `
+                                <div class="col-span-full py-12 text-center text-slate-400 font-bold text-sm">
+                                    <i class="fa-solid fa-book text-3xl mb-2 block opacity-40"></i>
+                                    Bu bölümde henüz ders kitabı veya materyal bulunmamaktadır.
+                                </div>
+                            `}
                         </div>
                     </div>
                 </div>
@@ -8961,7 +8984,49 @@ function closeMaterialUploadModal() {
 async function moveCustomMaterial(id, direction) {
     if (!checkAdminAccess()) return;
     let customList = getCustomMaterialsList();
-    const idx = customList.findIndex(m => String(m.id) === String(id));
+
+    // MEB Ana Kitabını (book-5, book-6, book-7, book-8) gerekirse customList'e ekleyen yardımcı
+    const ensureDefaultBookInList = (targetGrade) => {
+        const bookId = `book-${targetGrade}`;
+        if (!customList.some(m => m && m.id === bookId)) {
+            const textbookMap = {
+                "5": { title: "5. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "184 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf", cover: "assets/kapak-5.jpg" },
+                "6": { title: "6. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "216 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf", cover: "assets/kapak-6.jpg" },
+                "7": { title: "7. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "240 Sayfa", fileUrl: "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri7-1.pdf", cover: "assets/kapak-7.jpg" },
+                "8": { title: "8. Sınıf Fen Bilimleri MEB Ders Kitabı", pages: "256 Sayfa", fileUrl: "#", cover: "assets/kapak-8.jpg" }
+            };
+            const b = textbookMap[targetGrade] || { title: `${targetGrade}. Sınıf MEB Ders Kitabı`, pages: "200 Sayfa", fileUrl: "#", cover: `assets/kapak-${targetGrade}.jpg` };
+            const defaultBookObj = {
+                id: bookId,
+                title: b.title,
+                pages: b.pages,
+                fileUrl: b.fileUrl,
+                cover: b.cover,
+                category: "ders-kitabi",
+                target_section: "kitap",
+                targetSection: "kitap",
+                grade: String(targetGrade),
+                createdAt: new Date().toISOString()
+            };
+            // Kitap bölümündeki ilk elemanın önüne veya listenin başına ekle
+            const firstKitapIdx = customList.findIndex(m => {
+                const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+                return (gClean === "all" || gClean === String(targetGrade)) && getMaterialTargetSection(m) === "kitap";
+            });
+            if (firstKitapIdx !== -1) {
+                customList.splice(firstKitapIdx, 0, defaultBookObj);
+            } else {
+                customList.unshift(defaultBookObj);
+            }
+        }
+    };
+
+    if (String(id).startsWith("book-")) {
+        const targetGrade = String(id).replace(/^book-/, "").trim();
+        ensureDefaultBookInList(targetGrade);
+    }
+
+    let idx = customList.findIndex(m => String(m.id) === String(id));
     if (idx === -1) return;
 
     const item = customList[idx];
@@ -8969,15 +9034,44 @@ async function moveCustomMaterial(id, direction) {
     const itemCat = String(item.category || "").toLowerCase();
     const itemTargetSec = getMaterialTargetSection(item);
 
-    // Aynı sınıf ve hedef kategorideki kardeş kartları tespit et
+    // Eğer taşınan öğe kitap bölümündeyse ve ana MEB kitabı henüz customList'te yoksa, onu da ekle (böylece ana kitapla yer değiştirebilir)
+    if (itemTargetSec === "kitap" && itemGrade !== "all") {
+        const deletedIds = (typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : [];
+        if (!deletedIds.includes(`book-${itemGrade}`)) {
+            ensureDefaultBookInList(itemGrade);
+            idx = customList.findIndex(m => String(m.id) === String(id));
+        }
+    }
+
+    // Aynı sınıf ve hedef bölümdeki kardeş kartları tespit et
     const siblings = customList.filter(m => {
         if (!m || !m.id) return false;
         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         if (itemGrade !== "all" && gClean !== "all" && gClean !== itemGrade) return false;
+
+        const mTargetSec = getMaterialTargetSection(m);
+
+        // 1. Kitap Bölümü: Kitap bölümündeki tüm öğeler (MEB kitabı + özel dokümanlar/web bağlantıları) kardeştir!
+        if (itemTargetSec === "kitap" || String(item.id).startsWith("book-")) {
+            return (mTargetSec === "kitap" || String(m.id).startsWith("book-") || m.category === "ders-kitabi");
+        }
+
+        // 2. Laboratuvar Bölümü: Laboratuvar bölümündeki tüm simülasyon ve föyler kardeştir!
+        if (itemTargetSec === "lab" || itemCat === "laboratuvar") {
+            return (mTargetSec === "lab" || m.category === "laboratuvar");
+        }
+
+        // 3. Ünite Bölümleri (1-7): Aynı ünitedeki ders notu ve sunumlar kardeştir!
+        const isItemUnit = /^[1-7]$/.test(itemTargetSec);
+        const isMUnit = /^[1-7]$/.test(mTargetSec);
+        if (isItemUnit && isMUnit) {
+            return mTargetSec === itemTargetSec;
+        }
+
+        // 4. Standart Kategori ve Alt Sekmeler
         const mCat = String(m.category || "").toLowerCase();
         const sameCat = (mCat === itemCat) || matchesSubTabCategory(m, itemCat) || matchesSubTabCategory(item, mCat);
         if (!sameCat) return false;
-        const mTargetSec = getMaterialTargetSection(m);
         return mTargetSec === itemTargetSec;
     });
 
