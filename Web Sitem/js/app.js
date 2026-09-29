@@ -13332,28 +13332,28 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     // 🚂 Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Bilim Treni Oyunu)
     if (str.includes("uzay-ekspresi") || str.includes("uzay ekspresi") || str.includes("uzay_ekspresi") || titleStr.includes("uzay ekspresi") || resolvedKey === "oyun-uzay-ekspresi" || resolvedKey === "oyun-6-uzay-ekspresi" || resolvedKey === "mat-6-oyun-uzay-ekspresi") {
         modal.innerHTML = `
-            <div class="bg-slate-950 rounded-2xl w-full max-w-[98vw] h-[97vh] border border-amber-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[99vw] h-[98vh] h-[98dvh] border border-amber-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
                 <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
-                    <div class="flex items-center gap-3">
-                        <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 text-slate-950 flex items-center justify-center text-sm sm:text-lg font-black shadow-md">
                             <i class="fa-solid fa-train-subway"></i>
                         </span>
                         <div>
-                            <h3 class="text-sm sm:text-base font-black text-amber-400">🚂 Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi</h3>
-                            <span class="text-[11px] text-slate-400 font-medium">3D Sonsuz Uzay Treni & Maarif Modeli Bilgi Kapıları • MEB 6. Sınıf 1. Ünite</span>
+                            <h3 class="text-xs sm:text-base font-black text-amber-400">🚂 Rotalı Fenci - Uzay Ekspresi</h3>
+                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:inline">3D Sonsuz Uzay Treni & Maarif Modeli Bilgi Kapıları • MEB 6. Sınıf 1. Ünite</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <a href="oyunlar/uzay-ekspresi.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <a href="oyunlar/uzay-ekspresi.html" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
                             <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
                         </a>
-                        <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
-                    <iframe src="oyunlar/uzay-ekspresi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                    <iframe src="oyunlar/uzay-ekspresi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
