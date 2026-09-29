@@ -327,17 +327,17 @@
         </div>
     </div>
 
-    <!-- ⏱️ 5 SANİYE BİLGİ VE DÜŞÜNME MOLASI (Oyun Dursun, Soru Okunsun) -->
+    <!-- ⏱️ 10 SANİYE BİLGİ VE DÜŞÜNME MOLASI (Oyun Dursun, Soru Okunsun) -->
     <div id="question-pause-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
         <div class="max-w-lg w-full neon-card-blue border-2 border-cyan-400 rounded-3xl p-5 sm:p-7 text-center shadow-2xl relative overflow-hidden animate-in zoom-in-95 duration-200">
-            <!-- 5 Saniyelik Geri Sayım Rozeti -->
+            <!-- 10 Saniyelik Geri Sayım Rozeti -->
             <div class="flex items-center justify-between gap-2 mb-3 pb-2 border-b border-cyan-500/30">
                 <span id="pause-q-badge" class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 border border-cyan-400 text-xs font-black uppercase tracking-wider">
                     🪐 GÜNEŞ SİSTEMİ BİLGİ KAPISI
                 </span>
                 <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/20 border border-amber-400 text-amber-300 font-mono font-black text-xs">
                     <i class="fa-solid fa-hourglass-half animate-spin"></i>
-                    <span>DURAKLAMA: <span id="pause-timer-num" class="text-sm font-black text-white">5</span>sn</span>
+                    <span>DURAKLAMA: <span id="pause-timer-num" class="text-sm font-black text-white">10</span>sn</span>
                 </div>
             </div>
 
@@ -370,7 +370,7 @@
             <!-- Bilgilendirme ve Hızlı Devam Butonu -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-2 border-t border-slate-800">
                 <span class="text-[11px] text-slate-400 font-medium">
-                    ⏱️ 5 saniye sonra tren otomatik devam eder.
+                    ⏱️ 10 saniye sonra tren otomatik devam eder.
                 </span>
                 <button type="button" onclick="resumeFromQuestionPause()" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-cyan-400 to-blue-600 hover:from-cyan-300 hover:to-blue-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-transform active:scale-95 cursor-pointer flex items-center justify-center gap-1.5">
                     <i class="fa-solid fa-play"></i> Hazırım, Devam Et
@@ -723,10 +723,10 @@
         let activeObstacles = [];
         let activeQuestionGate = null;
 
-        // Oyun Durumu & 5 Saniyelik Düşünme Molası
+        // Oyun Durumu & 10 Saniyelik Düşünme Molası
         let isRunning = false;
         let isQuestionPaused = false;
-        let questionPauseSeconds = 5;
+        let questionPauseSeconds = 10;
         let questionPauseInterval = null;
         let score = 0;
         let lightYears = 0.0;
@@ -973,11 +973,11 @@
                 const lane = Math.floor(Math.random() * 3);
 
                 if (rand < 0.45) {
-                    // Engel (Meteor Taşı veya Uydu Enkazı)
+                    // Engel (Doğal Gri Asteroit Kayası veya Uydu Enkazı)
                     spawnObstacle(LANES[lane], z);
                 } else {
-                    // Yıldız Tozu Puanları (Altın Yıldızlı Paralar)
-                    spawnStarDustGroup(LANES[lane], z);
+                    // 🪙 Toplanabilir Altın Paralar (Puan)
+                    spawnGoldCoinGroup(LANES[lane], z);
                 }
             }
         }
@@ -987,31 +987,51 @@
         function getSharedAssets() {
             if (!SHARED_ASSETS) {
                 SHARED_ASSETS = {
-                    // 💎 PARLAK CYAN ELMAS KRİSTALLERİ (Puan / Yıldız Tozu)
-                    // Taş kayalardan %100 farklıdır: Mavi-Cyan parıldayan 8 yüzlü elmas kristal + beyaz parıldayan çekirdek
-                    diamondGeo: new THREE.OctahedronGeometry(0.55, 0),
-                    diamondMat: new THREE.MeshPhongMaterial({
-                        color: 0x00f0ff,
-                        emissive: 0x00d4ff,
-                        emissiveIntensity: 0.9,
-                        shininess: 90,
-                        flatShading: true
+                    // 🪙 PARLAK 3D ALTIN PARALAR (Subway Surfers Tarzı Dönen Altınlar)
+                    // Dış altın para diski
+                    goldCoinGeo: new THREE.CylinderGeometry(0.52, 0.52, 0.12, 22),
+                    goldCoinMat: new THREE.MeshStandardMaterial({
+                        color: 0xffd700, // Zengin sarı altın
+                        emissive: 0xb45309, // Sıcak altın ışıltısı
+                        emissiveIntensity: 0.45,
+                        metalness: 0.85,
+                        roughness: 0.25
                     }),
-                    diamondCoreGeo: new THREE.OctahedronGeometry(0.25, 0),
-                    diamondCoreMat: new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                    // İç kabartmalı altın çekirdek
+                    goldInnerGeo: new THREE.CylinderGeometry(0.38, 0.38, 0.15, 22),
+                    goldInnerMat: new THREE.MeshStandardMaterial({
+                        color: 0xffea00, // Saf parlak altın
+                        emissive: 0xd97706,
+                        emissiveIntensity: 0.55,
+                        metalness: 0.9,
+                        roughness: 0.2
+                    }),
+                    // Merkezdeki pırıltı yıldızı
+                    goldStarGeo: new THREE.OctahedronGeometry(0.2, 0),
+                    goldStarMat: new THREE.MeshBasicMaterial({ color: 0xffffff }),
 
-                    // 🔥 AKKOR LAV VE MAGMA KAYASI (Tehlikeli Engel)
-                    // Koyu siyah volkanik taş + KIPKIRMIZI alev ışıması + Kırmızı sivri tehlike konisi!
+                    // 🌑 DOĞAL ASTEROİT GRİ KAYA ENGELİ (Uzay Gök Taşı - Tamamen Gri Tonlarında)
                     rockGeo: new THREE.DodecahedronGeometry(0.95, 0),
-                    rockMat: new THREE.MeshPhongMaterial({
-                        color: 0x111111,
-                        emissive: 0xef4444, // Parlak kırmızı magma alevi (Tehlike rengi!)
-                        emissiveIntensity: 0.95,
-                        shininess: 20,
+                    rockMat: new THREE.MeshStandardMaterial({
+                        color: 0x64748b, // Açık kraterli uzay grisi
+                        roughness: 0.88,
+                        metalness: 0.12,
                         flatShading: true
                     }),
-                    rockBeaconGeo: new THREE.ConeGeometry(0.28, 0.45, 6),
-                    rockBeaconMat: new THREE.MeshBasicMaterial({ color: 0xff0022 }),
+                    rockSubGeo: new THREE.DodecahedronGeometry(0.58, 0),
+                    rockSubMat: new THREE.MeshStandardMaterial({
+                        color: 0x475569, // Koyu mineral gök taşı grisi
+                        roughness: 0.92,
+                        metalness: 0.08,
+                        flatShading: true
+                    }),
+                    rockAccentGeo: new THREE.TetrahedronGeometry(0.38, 0),
+                    rockAccentMat: new THREE.MeshStandardMaterial({
+                        color: 0x334155, // Koyu gri taş çıkıntısı
+                        roughness: 0.95,
+                        metalness: 0.05,
+                        flatShading: true
+                    }),
 
                     // 🛰️ ESKİ UYDU ENKAZI (Gövde + Mavi Güneş Paneli + Kırmızı Yanıp Sönen Uyarı)
                     satBodyGeo: new THREE.BoxGeometry(0.9, 0.9, 0.9),
@@ -1025,7 +1045,7 @@
             return SHARED_ASSETS;
         }
 
-        // Parlayan Kırmızı Magma Kayası veya Uydu Enkazı Engeli
+        // Doğal Gri Asteroit Kayası veya Uydu Enkazı Engeli
         function spawnObstacle(x, z) {
             const assets = getSharedAssets();
             const group = new THREE.Group();
@@ -1049,38 +1069,53 @@
 
                 group.userData = { height: 1.4, isSatellite: true };
             } else {
-                // Akkor Kırmızı Magma / Ateş Kayası (Tehlike uyarılı kırmızı koni ile)
+                // 🌑 Doğal Gri Asteroit / Uzay Kayası (Asla turuncu/kırmızı içermez; saf gri tonlarında)
                 const rock = new THREE.Mesh(assets.rockGeo, assets.rockMat);
                 rock.position.y = 0.85;
+                rock.rotation.set(0.35, 0.45, 0.2);
                 group.add(rock);
 
-                const beacon = new THREE.Mesh(assets.rockBeaconGeo, assets.rockBeaconMat);
-                beacon.position.y = 1.5;
-                group.add(beacon);
+                // Yan küçük gri mineral kaya parçası
+                const subRock = new THREE.Mesh(assets.rockSubGeo, assets.rockSubMat);
+                subRock.position.set(0.48, 0.52, 0.22);
+                subRock.rotation.set(0.6, 0.2, 0.4);
+                group.add(subRock);
 
-                group.userData = { height: 1.15, isSatellite: false };
+                // Üçüncü sivri gri taş çıkıntısı
+                const accentRock = new THREE.Mesh(assets.rockAccentGeo, assets.rockAccentMat);
+                accentRock.position.set(-0.42, 0.45, -0.2);
+                accentRock.rotation.set(0.2, 0.7, 0.5);
+                group.add(accentRock);
+
+                group.userData = { height: 1.25, isSatellite: false };
             }
 
             scene.add(group);
             activeObstacles.push(group);
         }
 
-        // 💎 Yıldız Tozu / Elmas Puanları (Görseldeki Parlayan Elektrik Mavisi Elmaslar)
-        function spawnStarDustGroup(x, startZ) {
+        // 🪙 ALTIN PARALAR (Subway Surfers Tarzı Dönen 3D Altınlar)
+        function spawnGoldCoinGroup(x, startZ) {
             const assets = getSharedAssets();
             for (let i = 0; i < 3; i++) {
                 const group = new THREE.Group();
-                group.position.set(x, 0.95, startZ - (i * 3.2));
+                group.position.set(x, 1.05, startZ - (i * 3.2));
 
-                // Dış Cyan Elmas Kristali
-                const diamond = new THREE.Mesh(assets.diamondGeo, assets.diamondMat);
-                group.add(diamond);
+                // Dış Altın Para Silindiri (Öne dik bakar, dönerken parıldar)
+                const coin = new THREE.Mesh(assets.goldCoinGeo, assets.goldCoinMat);
+                coin.rotation.x = Math.PI / 2;
+                group.add(coin);
 
-                // İç Beyaz Parlayan Çekirdek
-                const inner = new THREE.Mesh(assets.diamondCoreGeo, assets.diamondCoreMat);
+                // İç Kabartmalı Altın Göbek
+                const inner = new THREE.Mesh(assets.goldInnerGeo, assets.goldInnerMat);
+                inner.rotation.x = Math.PI / 2;
                 group.add(inner);
 
-                group.userData = { isDiamond: true };
+                // Merkezdeki Işıltılı Yıldız Çekirdeği
+                const star = new THREE.Mesh(assets.goldStarGeo, assets.goldStarMat);
+                group.add(star);
+
+                group.userData = { isGold: true, initialY: 1.05, offsetIndex: i };
                 scene.add(group);
                 activeCoins.push(group);
             }
@@ -1181,12 +1216,12 @@
             banner.classList.remove('hidden');
         }
 
-        // ⏱️ 5 SANİYELİK SORU DURAKLAMASI VE GERİ SAYIM SİSTEMİ
+        // ⏱️ 10 SANİYELİK SORU DURAKLAMASI VE GERİ SAYIM SİSTEMİ
         function startQuestionPause(q, isLeftCorrect, isHard) {
             if (!isRunning || isQuestionPaused) return;
 
             isQuestionPaused = true;
-            questionPauseSeconds = 5;
+            questionPauseSeconds = 10;
 
             // Ses efekti (Tik)
             AudioFX.countdownTick(false);
@@ -1455,12 +1490,14 @@
                 }
             }
 
-            // 6. Yıldız Tozu Puanları
+            // 6. 🪙 Parlak Altın Paralar (Subway Surfers Tarzı Dönen Altınlar)
             for (let i = activeCoins.length - 1; i >= 0; i--) {
                 const coin = activeCoins[i];
                 coin.position.z += step;
-                coin.rotation.y += 3.8 * delta;
-                coin.rotation.z += 2.2 * delta;
+                coin.rotation.y += 4.0 * delta; // Kendi dikey ekseni etrafında parlak dönüş
+                if (coin.userData.initialY) {
+                    coin.position.y = coin.userData.initialY + Math.sin(now * 0.005 + (coin.userData.offsetIndex || 0)) * 0.12;
+                }
 
                 const dist = coin.position.distanceTo(astronautMesh.position.clone().add(new THREE.Vector3(0, 1, 0)));
                 if (dist < 1.7) {
