@@ -757,7 +757,7 @@
 
             renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: 'high-performance' });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
             renderer.shadowMap.enabled = false;
 
             // Işıklar
@@ -787,7 +787,7 @@
         // Kozmik Derin Uzay Arka Planı (Binlerce Parlayan Yıldız)
         function createCosmicBackground() {
             const starGeo = new THREE.BufferGeometry();
-            const count = 1800;
+            const count = 1600;
             const pos = new Float32Array(count * 3);
             for (let i = 0; i < count * 3; i += 3) {
                 pos[i] = (Math.random() - 0.5) * 600;
@@ -795,7 +795,7 @@
                 pos[i + 2] = (Math.random() - 0.5) * 600;
             }
             starGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.85 });
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 1.1, transparent: true, opacity: 0.85, depthWrite: false });
             const stars = new THREE.Points(starGeo, starMat);
             scene.add(stars);
         }
@@ -848,6 +848,25 @@
         const SEGMENT_LEN = 45;
         const NUM_SEGMENTS = 7;
 
+        let TRACK_ASSETS = null;
+        function getTrackAssets() {
+            if (!TRACK_ASSETS) {
+                TRACK_ASSETS = {
+                    carGeo: new THREE.BoxGeometry(11.5, 3.2, SEGMENT_LEN - 1.5),
+                    carMat: new THREE.MeshLambertMaterial({ color: 0x1e293b }),
+                    roofGeo: new THREE.BoxGeometry(11.4, 0.25, SEGMENT_LEN - 1.5),
+                    roofMat: new THREE.MeshLambertMaterial({ color: 0x0f172a }),
+                    railGeo: new THREE.BoxGeometry(0.18, 0.08, SEGMENT_LEN),
+                    railMat: new THREE.MeshBasicMaterial({ color: 0x00f0ff }),
+                    glowGeo: new THREE.BoxGeometry(1.6, 0.02, SEGMENT_LEN),
+                    glowMat: new THREE.MeshBasicMaterial({ color: 0x1e1b4b, transparent: true, opacity: 0.6 }),
+                    winGeo: new THREE.BoxGeometry(0.1, 1.2, SEGMENT_LEN - 3),
+                    winMat: new THREE.MeshBasicMaterial({ color: 0x00f0ff })
+                };
+            }
+            return TRACK_ASSETS;
+        }
+
         function createScienceTrainSystem() {
             trackSegments.forEach(s => scene.remove(s));
             trackSegments = [];
@@ -860,51 +879,34 @@
         }
 
         function buildTrainTrackSegment(zPos) {
+            const assets = getTrackAssets();
             const group = new THREE.Group();
             group.position.z = zPos;
 
-            // 1. Bilim Treni Vagon Gövdesi (Metalik Aerodinamik Gövde)
-            const carGeo = new THREE.BoxGeometry(11.5, 3.2, SEGMENT_LEN - 1.5);
-            const carMat = new THREE.MeshStandardMaterial({
-                color: 0x1e293b,
-                metalness: 0.85,
-                roughness: 0.25
-            });
-            const car = new THREE.Mesh(carGeo, carMat);
+            // 1. Bilim Treni Vagon Gövdesi
+            const car = new THREE.Mesh(assets.carGeo, assets.carMat);
             car.position.y = -1.6;
             group.add(car);
 
-            // 2. Vagon Üst Yüzeyi (Koşu Alanı / Güverte)
-            const roofGeo = new THREE.BoxGeometry(11.4, 0.25, SEGMENT_LEN - 1.5);
-            const roofMat = new THREE.MeshStandardMaterial({
-                color: 0x0f172a,
-                roughness: 0.4
-            });
-            const roof = new THREE.Mesh(roofGeo, roofMat);
+            // 2. Vagon Üst Yüzeyi
+            const roof = new THREE.Mesh(assets.roofGeo, assets.roofMat);
             roof.position.y = 0.05;
             group.add(roof);
 
-            // 3. Kuantum Işıklı Ray Hatları (Görseldeki Gibi 3 Şerit)
+            // 3. Kuantum Işıklı Ray Hatları (3 Şerit)
             LANES.forEach(lx => {
-                const railGeo = new THREE.BoxGeometry(0.18, 0.08, SEGMENT_LEN);
-                const railMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-                const rail = new THREE.Mesh(railGeo, railMat);
+                const rail = new THREE.Mesh(assets.railGeo, assets.railMat);
                 rail.position.set(lx, 0.16, 0);
                 group.add(rail);
 
-                // Altın ve mor enerji hatları
-                const glowGeo = new THREE.BoxGeometry(1.6, 0.02, SEGMENT_LEN);
-                const glowMat = new THREE.MeshBasicMaterial({ color: 0x1e1b4b, transparent: true, opacity: 0.6 });
-                const glow = new THREE.Mesh(glowGeo, glowMat);
+                const glow = new THREE.Mesh(assets.glowGeo, assets.glowMat);
                 glow.position.set(lx, 0.12, 0);
                 group.add(glow);
             });
 
             // 4. Tren Yan Neon Pencereleri
             [-5.8, 5.8].forEach(px => {
-                const winGeo = new THREE.BoxGeometry(0.1, 1.2, SEGMENT_LEN - 3);
-                const winMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-                const win = new THREE.Mesh(winGeo, winMat);
+                const win = new THREE.Mesh(assets.winGeo, assets.winMat);
                 win.position.set(px, -1.2, 0);
                 group.add(win);
             });
@@ -983,61 +985,69 @@
         }
 
         // --- 7. PAYLAŞILAN 3D GEOMETRİ VE MATERYAL HAVUZU (DONMAYI VE BELLEK SIZINTISINI ÖNLER) ---
+        function createStarGeometry(outerR, innerR, depth) {
+            const shape = new THREE.Shape();
+            const points = 5;
+            for (let i = 0; i < points * 2; i++) {
+                const r = (i % 2 === 0) ? outerR : innerR;
+                const a = (i / (points * 2)) * Math.PI * 2 - Math.PI / 2;
+                const x = Math.cos(a) * r;
+                const y = Math.sin(a) * r;
+                if (i === 0) shape.moveTo(x, y);
+                else shape.lineTo(x, y);
+            }
+            shape.closePath();
+            const geo = new THREE.ExtrudeGeometry(shape, { depth: depth, bevelEnabled: false });
+            geo.center();
+            return geo;
+        }
+
         let SHARED_ASSETS = null;
         function getSharedAssets() {
             if (!SHARED_ASSETS) {
                 SHARED_ASSETS = {
-                    // 🪙 PARLAK 3D ALTIN PARALAR (Subway Surfers Tarzı Dönen Altınlar)
-                    // Dış altın para diski
-                    goldCoinGeo: new THREE.CylinderGeometry(0.52, 0.52, 0.12, 22),
-                    goldCoinMat: new THREE.MeshStandardMaterial({
-                        color: 0xffd700, // Zengin sarı altın
-                        emissive: 0xb45309, // Sıcak altın ışıltısı
-                        emissiveIntensity: 0.45,
-                        metalness: 0.85,
-                        roughness: 0.25
+                    // 🪙 SUBWAY SURFERS TARZI YILDIZLI ALTIN PARALAR (Görselin Birebir Aynısı)
+                    // 1. Dış kalın altın çember (Rim)
+                    coinRimGeo: new THREE.CylinderGeometry(0.58, 0.58, 0.12, 24),
+                    coinRimMat: new THREE.MeshLambertMaterial({
+                        color: 0xf59e0b, // Amber-turuncu altın çerçeve
+                        emissive: 0x78350f
                     }),
-                    // İç kabartmalı altın çekirdek
-                    goldInnerGeo: new THREE.CylinderGeometry(0.38, 0.38, 0.15, 22),
-                    goldInnerMat: new THREE.MeshStandardMaterial({
-                        color: 0xffea00, // Saf parlak altın
-                        emissive: 0xd97706,
-                        emissiveIntensity: 0.55,
-                        metalness: 0.9,
-                        roughness: 0.2
+                    // 2. İç sarı altın disk zemin
+                    coinDiscGeo: new THREE.CylinderGeometry(0.48, 0.48, 0.13, 24),
+                    coinDiscMat: new THREE.MeshLambertMaterial({
+                        color: 0xfde047, // Parlak güneş sarısı altın zemin
+                        emissive: 0xb45309
                     }),
-                    // Merkezdeki pırıltı yıldızı
-                    goldStarGeo: new THREE.OctahedronGeometry(0.2, 0),
-                    goldStarMat: new THREE.MeshBasicMaterial({ color: 0xffffff }),
+                    // 3. Ortadaki 5 köşeli belirgin kabartma altın yıldız (Görseldekiyle birebir aynı)
+                    coinStarGeo: createStarGeometry(0.28, 0.12, 0.16),
+                    coinStarMat: new THREE.MeshLambertMaterial({
+                        color: 0xfffbeb, // Parlak kabartmalı yıldız
+                        emissive: 0xd97706
+                    }),
 
                     // 🌑 DOĞAL ASTEROİT GRİ KAYA ENGELİ (Uzay Gök Taşı - Tamamen Gri Tonlarında)
                     rockGeo: new THREE.DodecahedronGeometry(0.95, 0),
-                    rockMat: new THREE.MeshStandardMaterial({
+                    rockMat: new THREE.MeshLambertMaterial({
                         color: 0x64748b, // Açık kraterli uzay grisi
-                        roughness: 0.88,
-                        metalness: 0.12,
                         flatShading: true
                     }),
                     rockSubGeo: new THREE.DodecahedronGeometry(0.58, 0),
-                    rockSubMat: new THREE.MeshStandardMaterial({
+                    rockSubMat: new THREE.MeshLambertMaterial({
                         color: 0x475569, // Koyu mineral gök taşı grisi
-                        roughness: 0.92,
-                        metalness: 0.08,
                         flatShading: true
                     }),
                     rockAccentGeo: new THREE.TetrahedronGeometry(0.38, 0),
-                    rockAccentMat: new THREE.MeshStandardMaterial({
+                    rockAccentMat: new THREE.MeshLambertMaterial({
                         color: 0x334155, // Koyu gri taş çıkıntısı
-                        roughness: 0.95,
-                        metalness: 0.05,
                         flatShading: true
                     }),
 
-                    // 🛰️ ESKİ UYDU ENKAZI (Gövde + Mavi Güneş Paneli + Kırmızı Yanıp Sönen Uyarı)
+                    // 🛰️ ESKİ UYDU ENKAZI (Hafif ve Hızlı Lambert Materyalleri)
                     satBodyGeo: new THREE.BoxGeometry(0.9, 0.9, 0.9),
-                    satBodyMat: new THREE.MeshPhongMaterial({ color: 0x475569, shininess: 70 }),
+                    satBodyMat: new THREE.MeshLambertMaterial({ color: 0x475569 }),
                     satPanelGeo: new THREE.BoxGeometry(2.5, 0.08, 0.75),
-                    satPanelMat: new THREE.MeshPhongMaterial({ color: 0x1e3a8a, emissive: 0x1d4ed8, emissiveIntensity: 0.35 }),
+                    satPanelMat: new THREE.MeshLambertMaterial({ color: 0x1d4ed8, emissive: 0x1e3a8a }),
                     satLightGeo: new THREE.SphereGeometry(0.14, 8, 8),
                     satLightMat: new THREE.MeshBasicMaterial({ color: 0xff0044 })
                 };
@@ -1094,28 +1104,28 @@
             activeObstacles.push(group);
         }
 
-        // 🪙 ALTIN PARALAR (Subway Surfers Tarzı Dönen 3D Altınlar)
+        // 🪙 ALTIN PARALAR (Subway Surfers Tarzı Dönen 5 Köşeli Yıldızlı Altınlar)
         function spawnGoldCoinGroup(x, startZ) {
             const assets = getSharedAssets();
             for (let i = 0; i < 3; i++) {
                 const group = new THREE.Group();
-                group.position.set(x, 1.05, startZ - (i * 3.2));
+                group.position.set(x, 0.95, startZ - (i * 3.2));
 
-                // Dış Altın Para Silindiri (Öne dik bakar, dönerken parıldar)
-                const coin = new THREE.Mesh(assets.goldCoinGeo, assets.goldCoinMat);
-                coin.rotation.x = Math.PI / 2;
-                group.add(coin);
+                // 1. Dış Kalın Altın Halka (Rim)
+                const rim = new THREE.Mesh(assets.coinRimGeo, assets.coinRimMat);
+                rim.rotation.x = Math.PI / 2;
+                group.add(rim);
 
-                // İç Kabartmalı Altın Göbek
-                const inner = new THREE.Mesh(assets.goldInnerGeo, assets.goldInnerMat);
-                inner.rotation.x = Math.PI / 2;
-                group.add(inner);
+                // 2. İç Sarı Altın Zemin (Disc)
+                const disc = new THREE.Mesh(assets.coinDiscGeo, assets.coinDiscMat);
+                disc.rotation.x = Math.PI / 2;
+                group.add(disc);
 
-                // Merkezdeki Işıltılı Yıldız Çekirdeği
-                const star = new THREE.Mesh(assets.goldStarGeo, assets.goldStarMat);
+                // 3. Ortadaki 5 Köşeli Belirgin Kabartma Altın Yıldız (Star)
+                const star = new THREE.Mesh(assets.coinStarGeo, assets.coinStarMat);
                 group.add(star);
 
-                group.userData = { isGold: true, initialY: 1.05, offsetIndex: i };
+                group.userData = { isGold: true, initialY: 0.95, offsetIndex: i };
                 scene.add(group);
                 activeCoins.push(group);
             }
@@ -1381,7 +1391,7 @@
 
         function animate(now) {
             requestAnimationFrame(animate);
-            const delta = Math.min((now - lastFrame) / 1000, 0.1);
+            const delta = Math.min((now - lastFrame) / 1000, 0.05);
             lastFrame = now;
 
             // Gökyüzündeki gezegenleri zarifçe döndür
@@ -1484,23 +1494,26 @@
                     }
                 }
 
-                if (obs.position.z > 25) {
+                if (obs.position.z > 20) {
                     scene.remove(obs);
                     activeObstacles.splice(i, 1);
                 }
             }
 
-            // 6. 🪙 Parlak Altın Paralar (Subway Surfers Tarzı Dönen Altınlar)
+            // 6. 🪙 Parlak Altın Paralar (Subway Surfers Tarzı Dönen Yıldızlı Altınlar)
             for (let i = activeCoins.length - 1; i >= 0; i--) {
                 const coin = activeCoins[i];
                 coin.position.z += step;
-                coin.rotation.y += 4.0 * delta; // Kendi dikey ekseni etrafında parlak dönüş
+                coin.rotation.y += 2.8 * delta; // Kendi dikey ekseni etrafında zarif dönüş
                 if (coin.userData.initialY) {
-                    coin.position.y = coin.userData.initialY + Math.sin(now * 0.005 + (coin.userData.offsetIndex || 0)) * 0.12;
+                    coin.position.y = coin.userData.initialY + Math.sin(now * 0.005 + (coin.userData.offsetIndex || 0)) * 0.1;
                 }
 
-                const dist = coin.position.distanceTo(astronautMesh.position.clone().add(new THREE.Vector3(0, 1, 0)));
-                if (dist < 1.7) {
+                // Sıfır nesne tahsisli mesafe kontrolü (Donmayı ve bellek takılmalarını %100 önler)
+                const dx = coin.position.x - astronautMesh.position.x;
+                const dy = coin.position.y - (playerY + 0.95);
+                const dz = coin.position.z - astronautMesh.position.z;
+                if ((dx * dx + dy * dy + dz * dz) < 2.89) { // 1.7 * 1.7
                     AudioFX.coin();
                     score += 50;
                     scene.remove(coin);
@@ -1508,7 +1521,7 @@
                     continue;
                 }
 
-                if (coin.position.z > 25) {
+                if (coin.position.z > 20) {
                     scene.remove(coin);
                     activeCoins.splice(i, 1);
                 }
