@@ -730,6 +730,24 @@ const DEFAULT_CUSTOM_MATERIALS = [
         createdAt: "Yeni Yayınlandı"
     },
     {
+        id: "mat-game-gezegen-kosusu",
+        grade: "all",
+        category: "egitsel-oyunlar",
+        title: "Gezegen Koşusu: Antgravity Galaksisi (3D Subway Surfers)",
+        unit: "1. Ünite: Güneş Sistemi ve Gezegenler",
+        targetSection: "1",
+        desc: "3 şeritli sonsuz uzay koşusu! Güneş Sistemi gezegenlerinde engelleri aş, soru kapılarından doğru geç, solucan deliklerinden ışınlan ve galaktik kütüphaneyi tamamla!",
+        fileName: "Gezegen Koşusu",
+        fileUrl: "oyun-gezegen-kosusu",
+        imageUrl: "assets/logo.jpg",
+        format: "Eğitsel Oyun",
+        hasBlob: false,
+        tags: ["Güneş Sistemi", "Gezegenler", "3D Runner", "Subway Surfers", "Eğitsel Oyun"],
+        visibility: "public",
+        downloadCount: "5.800+",
+        createdAt: "Yeni Yayınlandı"
+    },
+    {
         id: "mat-8-lgs-deneme-1",
         grade: "8",
         category: "lgs",
@@ -11948,6 +11966,13 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
+    // 🚀 GEZEGEN KOŞUSU: ANTGRAVITY GALAKSİSİ (3D SUBWAY SURFERS RUNNER)
+    if (checkTitle.includes("gezegen koşusu") || checkTitle.includes("gezegen kosusu") || checkTitle.includes("antgravity galaksi") ||
+        id === "mat-game-gezegen-kosusu" || id === "oyun-gezegen-kosusu" || targetUrl === "oyun-gezegen-kosusu" || targetUrl.includes("gezegen-kosusu")) {
+        openInteractiveGameModal("oyun-gezegen-kosusu", title || (found && found.title) || "Gezegen Koşusu: Antgravity Galaksisi");
+        return;
+    }
+
     // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME
     if (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
         id === "mat-5-lab-kacis-gemini" || id === "oyun-lab-kacis" ||
@@ -13146,6 +13171,38 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
                     <iframe src="oyunlar/laboratuvar-kacis-odasi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        return;
+    }
+
+    // 🚀 Gezegen Koşusu (Subway Surfers Tarzı 3D Eğitsel Uzay Koşusu)
+    if (str.includes("gezegen") || str.includes("runner") || str.includes("subway") || titleStr.includes("gezegen") || resolvedKey === "oyun-gezegen-kosusu") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[98vw] h-[97vh] border border-cyan-500/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-3">
+                        <span class="w-10 h-10 rounded-xl bg-cyan-500 text-slate-950 flex items-center justify-center text-lg font-black shadow-md">
+                            <i class="fa-solid fa-rocket"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-sm sm:text-base font-black text-cyan-400">🚀 Gezegen Koşusu: Antgravity Galaksisi</h3>
+                            <span class="text-[11px] text-slate-400 font-medium">3D Sonsuz Uzay Koşusu & Astronomi Bilgi Kapıları • MEB Müfredatı</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <a href="oyunlar/gezegen-kosusu.html" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/gezegen-kosusu.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
                 </div>
             </div>
         `;

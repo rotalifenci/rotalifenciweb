@@ -1,0 +1,1615 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Gezegen Koşusu: Antgravity Galaksisi | 3D Eğitsel Uzay Koşusu</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        space: {
+                            dark: '#030712',
+                            card: '#0b1329',
+                            cyan: '#06b6d4',
+                            purple: '#8b5cf6',
+                            gold: '#f59e0b',
+                            red: '#ef4444'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Poppins:wght@400;600;700&family=Rajdhani:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <style>
+        html, body {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            width: 100%; height: 100%; height: 100dvh;
+            margin: 0; padding: 0;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            font-family: 'Rajdhani', sans-serif;
+            background-color: #030712;
+            color: #ffffff;
+        }
+
+        #game-canvas {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            display: block;
+        }
+
+        .hud-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        .hud-interactive {
+            pointer-events: auto;
+        }
+
+        .neon-glow-cyan {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.6), inset 0 0 15px rgba(6, 182, 212, 0.4);
+        }
+
+        .neon-glow-gold {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.6), inset 0 0 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .neon-glow-purple {
+            box-shadow: 0 0 25px rgba(139, 92, 246, 0.6), inset 0 0 15px rgba(139, 92, 246, 0.4);
+        }
+
+        .text-glow {
+            text-shadow: 0 0 12px currentColor;
+        }
+
+        /* Warp Tunnel Flash Animation */
+        @keyframes warpFlash {
+            0% { opacity: 0; transform: scale(0.8); }
+            50% { opacity: 0.9; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(1.5); }
+        }
+
+        .warp-active {
+            animation: warpFlash 1.2s ease-out forwards;
+        }
+
+        /* Screen Glitch on Damage */
+        @keyframes damageGlitch {
+            0% { filter: invert(0) saturate(1); transform: translate(0, 0); }
+            20% { filter: invert(0.8) saturate(3) hue-rotate(90deg); transform: translate(-8px, 6px); }
+            40% { filter: invert(0.3) saturate(2); transform: translate(6px, -6px); }
+            60% { filter: invert(0.7) saturate(3) hue-rotate(-90deg); transform: translate(-4px, 4px); }
+            100% { filter: invert(0) saturate(1); transform: translate(0, 0); }
+        }
+
+        .glitch-hit {
+            animation: damageGlitch 0.4s ease-in-out;
+        }
+
+        /* Akıllı Tahta & Dokunmatik Butonlar */
+        .touch-pad-btn {
+            background: rgba(15, 23, 42, 0.75);
+            border: 2px solid rgba(56, 189, 248, 0.4);
+            backdrop-filter: blur(8px);
+            touch-action: manipulation;
+        }
+        .touch-pad-btn:active {
+            background: rgba(56, 189, 248, 0.35);
+            border-color: #38bdf8;
+            transform: scale(0.92);
+        }
+    </style>
+</head>
+<body class="select-none overflow-hidden">
+
+    <!-- 3D Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Warp Geçiş Ekranı -->
+    <div id="warp-overlay" class="absolute inset-0 z-40 bg-cyan-400 pointer-events-none opacity-0 transition-opacity duration-300 flex flex-col items-center justify-center">
+        <div class="text-center">
+            <h2 id="warp-title" class="font-orbitron text-4xl sm:text-6xl font-black text-slate-950 uppercase tracking-widest drop-shadow-lg mb-2">SOLUCAN DELİĞİ!</h2>
+            <p id="warp-sub" class="text-xl sm:text-2xl font-bold text-slate-900 tracking-wider">HİPER UZAY GEÇİŞİ BAŞLADI...</p>
+        </div>
+    </div>
+
+    <!-- Soru Kapısı Karşılama Ekranı (Üst Banner) -->
+    <div id="question-banner" class="absolute top-20 left-1/2 -translate-x-1/2 z-30 max-w-2xl w-[92%] bg-slate-900/90 border-2 border-amber-400 rounded-3xl p-4 shadow-2xl backdrop-blur-md hidden pointer-events-none animate-in fade-in slide-in-from-top-4 duration-300">
+        <div class="flex items-center gap-3 mb-2">
+            <span class="w-8 h-8 rounded-xl bg-amber-500 text-slate-950 font-black flex items-center justify-center shrink-0">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </span>
+            <div class="flex-1">
+                <div class="text-[11px] font-black uppercase text-amber-400 tracking-wider">ASTRONOMİ BİLGİ KAPISI</div>
+                <div id="question-text" class="text-base sm:text-lg font-black text-white leading-tight">Güneş Sistemi'nin en büyük gezegeni hangisidir?</div>
+            </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-700/80 text-xs sm:text-sm font-black">
+            <div class="p-2 rounded-xl bg-cyan-950/80 border border-cyan-500/50 text-cyan-300 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-cyan-500 text-slate-950 flex items-center justify-center font-black">A</span>
+                <span id="gate-option-a">Sol Kapı: Jüpiter</span>
+            </div>
+            <div class="p-2 rounded-xl bg-purple-950/80 border border-purple-500/50 text-purple-300 flex items-center gap-2">
+                <span class="w-6 h-6 rounded-lg bg-purple-500 text-slate-950 flex items-center justify-center font-black">B</span>
+                <span id="gate-option-b">Sağ Kapı: Mars</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bilgi Küpü Pop-up Bildirimi -->
+    <div id="cube-notification" class="absolute top-24 right-4 z-30 max-w-sm bg-gradient-to-r from-amber-600 to-amber-700 text-white p-3.5 rounded-2xl shadow-xl flex items-center gap-3 hidden transition-all duration-300">
+        <span class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-xl shrink-0">
+            <i class="fa-solid fa-cube text-amber-200 animate-bounce"></i>
+        </span>
+        <div>
+            <div class="text-[10px] font-black uppercase tracking-wider text-amber-200">Gezegen Bilgi Küpü Bulundu!</div>
+            <div id="cube-fact-text" class="text-xs font-bold leading-snug">Jüpiter'in etrafında 95'ten fazla doğal uydu bulunur.</div>
+        </div>
+    </div>
+
+    <!-- 🎮 HUD (Oyun İçi Arayüz) -->
+    <div class="hud-overlay flex flex-col justify-between p-3 sm:p-5">
+        
+        <!-- ÜST PANEL -->
+        <div class="flex items-center justify-between gap-3">
+            
+            <!-- Sol: Canlar & Gezegen Rozeti -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Gezegen Rozeti -->
+                <div class="hud-interactive px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-slate-900/80 border border-slate-700/80 backdrop-blur-md flex items-center gap-2.5 shadow-lg">
+                    <span id="planet-icon-box" class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-orange-500 text-white flex items-center justify-center text-xs sm:text-sm font-black shadow-sm">
+                        <i class="fa-solid fa-globe"></i>
+                    </span>
+                    <div>
+                        <div class="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">GEZEGEN</div>
+                        <div id="planet-name-badge" class="text-xs sm:text-sm font-black text-cyan-400 font-orbitron tracking-wide">MERKÜR</div>
+                    </div>
+                </div>
+
+                <!-- Canlar -->
+                <div id="lives-container" class="px-3 py-2 rounded-2xl bg-slate-900/80 border border-slate-700/80 backdrop-blur-md flex items-center gap-1.5 text-rose-500 text-sm sm:text-base">
+                    <i class="fa-solid fa-heart drop-shadow-md"></i>
+                    <i class="fa-solid fa-heart drop-shadow-md"></i>
+                    <i class="fa-solid fa-heart drop-shadow-md"></i>
+                </div>
+            </div>
+
+            <!-- Sağ: Puan, Stellar Veri & Duraklat Butonu -->
+            <div class="flex items-center gap-2 sm:gap-3">
+                <!-- Mesafe / Puan -->
+                <div class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-slate-900/80 border border-slate-700/80 backdrop-blur-md text-right shadow-lg">
+                    <div class="text-[9px] sm:text-[10px] font-black uppercase text-slate-400 tracking-wider">MESAFE</div>
+                    <div id="score-text" class="text-sm sm:text-lg font-black font-orbitron text-white tracking-wider">0 <span class="text-xs text-cyan-400">m</span></div>
+                </div>
+
+                <!-- Stellar Veri Paketleri (Para) -->
+                <div class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl bg-cyan-950/80 border border-cyan-500/50 backdrop-blur-md flex items-center gap-2 shadow-lg">
+                    <i class="fa-solid fa-gem text-cyan-400 text-xs sm:text-sm animate-pulse"></i>
+                    <span id="data-packs-text" class="text-sm sm:text-base font-black font-orbitron text-cyan-300">0</span>
+                </div>
+
+                <!-- Kütüphane / Duraklat Butonları -->
+                <button type="button" onclick="toggleLibraryModal()" class="hud-interactive w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center text-sm shadow-lg transition-transform active:scale-95 cursor-pointer" title="Galaktik Kütüphane">
+                    <i class="fa-solid fa-book-atlas"></i>
+                </button>
+                <button type="button" onclick="toggleAudio()" id="audio-toggle-btn" class="hud-interactive w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 text-amber-400 flex items-center justify-center text-sm shadow-lg transition-transform active:scale-95 cursor-pointer" title="Ses Aç/Kapat">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button type="button" onclick="togglePauseGame()" class="hud-interactive w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white flex items-center justify-center text-sm shadow-lg transition-transform active:scale-95 cursor-pointer" title="Duraklat">
+                    <i class="fa-solid fa-pause"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ORTA: Aktif Güçlendirici Barı -->
+        <div id="powerup-bar-container" class="self-center mb-auto mt-4 hidden">
+            <div class="px-4 py-2 rounded-full bg-slate-900/90 border-2 border-amber-400 text-amber-300 flex items-center gap-3 backdrop-blur-md shadow-2xl animate-pulse">
+                <i id="powerup-icon" class="fa-solid fa-bolt text-lg"></i>
+                <div class="text-xs font-black uppercase tracking-wider" id="powerup-title">İYON BOTLARI AKTİF!</div>
+                <div class="w-24 h-2 bg-slate-800 rounded-full overflow-hidden border border-amber-500/40">
+                    <div id="powerup-timer-fill" class="h-full bg-amber-400 w-full transition-all duration-100"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ALT: Akıllı Tahta & Dokunmatik Kontrol Paneli -->
+        <div class="flex items-end justify-between w-full mt-auto">
+            <!-- Sol / Sağ Değiştirme Butonları -->
+            <div class="hud-interactive flex items-center gap-2 sm:gap-3">
+                <button type="button" id="btn-touch-left" class="touch-pad-btn w-14 h-14 sm:w-16 sm:h-16 rounded-2xl text-cyan-300 flex items-center justify-center text-2xl shadow-xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <button type="button" id="btn-touch-right" class="touch-pad-btn w-14 h-14 sm:w-16 sm:h-16 rounded-2xl text-cyan-300 flex items-center justify-center text-2xl shadow-xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+
+            <!-- Orta: Yerçekimi Göstergesi -->
+            <div class="hidden sm:flex flex-col items-center justify-center px-3 py-1.5 rounded-xl bg-slate-900/60 border border-slate-700/50 backdrop-blur-xs text-[10px] font-bold text-slate-300">
+                <span class="uppercase tracking-widest text-[9px] text-cyan-400">YERÇEKİMİ ETKİSİ</span>
+                <span id="gravity-label">1.0G (Normal)</span>
+            </div>
+
+            <!-- Sağ: Zıpla & Eğil Butonları -->
+            <div class="hud-interactive flex items-center gap-2 sm:gap-3">
+                <button type="button" id="btn-touch-down" class="touch-pad-btn w-14 h-14 sm:w-16 sm:h-16 rounded-2xl text-amber-400 flex flex-col items-center justify-center text-xl shadow-xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-down"></i>
+                    <span class="text-[9px] font-black uppercase">EĞİL</span>
+                </button>
+                <button type="button" id="btn-touch-up" class="touch-pad-btn w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-cyan-600/40 border-cyan-400 text-cyan-200 flex flex-col items-center justify-center text-xl shadow-xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-arrow-up"></i>
+                    <span class="text-[9px] font-black uppercase">ZIPLA</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🌌 BAŞLANGIÇ EKRANI (START MENU) -->
+    <div id="start-menu" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="max-w-lg w-full bg-slate-900 border-2 border-cyan-500/80 rounded-3xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden neon-glow-cyan">
+            
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-cyan-950 border border-cyan-500/50 text-cyan-400 text-xs font-black uppercase tracking-wider mb-4">
+                <i class="fa-solid fa-rocket animate-pulse"></i> ANTGRATİVY 3D EĞİTSEL RUNNER
+            </div>
+
+            <h1 class="font-orbitron text-2xl sm:text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-400 to-indigo-400 tracking-wider mb-2">
+                GEZEGEN KOŞUSU
+            </h1>
+            <p class="text-sm sm:text-base text-slate-300 font-bold mb-6">
+                Güneş Sistemi'nde 3 şeritli sonsuz koşu! Engelleri aş, soru kapılarından doğru geç, solucan delikleriyle gezegenleri keşfet!
+            </p>
+
+            <!-- Gezegen Seçimi (Başlangıç Gezegeni) -->
+            <div class="mb-6 text-left">
+                <label class="block text-xs font-black uppercase text-slate-400 tracking-wider mb-2">
+                    <i class="fa-solid fa-globe text-cyan-400"></i> Başlangıç Gezegenini Seç:
+                </label>
+                <div class="grid grid-cols-4 gap-2 text-center" id="planet-select-grid">
+                    <!-- Javascript doldurur -->
+                </div>
+            </div>
+
+            <!-- Kontroller Bilgi Kutusu -->
+            <div class="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs text-slate-400 mb-6 flex items-center justify-around font-medium">
+                <div><span class="font-black text-white">A / D / ⬅️ ➡️</span> : Şerit Değiş</div>
+                <div><span class="font-black text-white">W / ⬆️ / Boşluk</span> : Zıpla</div>
+                <div><span class="font-black text-white">S / ⬇️</span> : Eğil / Süzül</div>
+            </div>
+
+            <!-- Başla Butonu -->
+            <button type="button" onclick="startGame()" class="w-full py-4 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-orbitron font-black text-lg uppercase tracking-wider rounded-2xl shadow-lg shadow-cyan-500/30 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-play mr-2"></i> GÖREVE BAŞLA!
+            </button>
+
+            <button type="button" onclick="toggleLibraryModal()" class="w-full mt-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-black text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2">
+                <i class="fa-solid fa-book-atlas"></i> Galaktik Kütüphaneyi Aç
+            </button>
+        </div>
+    </div>
+
+    <!-- 💥 OYUN BİTTİ EKRANI (GAME OVER) -->
+    <div id="game-over-modal" class="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-lg flex items-center justify-center p-4 hidden">
+        <div class="max-w-md w-full bg-slate-900 border-2 border-rose-500/80 rounded-3xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
+            <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500 text-rose-500 mx-auto flex items-center justify-center text-3xl mb-4">
+                <i class="fa-solid fa-skull-crossbones"></i>
+            </div>
+            
+            <h2 class="font-orbitron text-2xl sm:text-3xl font-black text-white uppercase tracking-wider mb-1">GÖREV SONA ERDİ!</h2>
+            <p id="game-over-reason" class="text-xs sm:text-sm text-slate-400 font-bold mb-6">Tüm canların tükendi veya bir engele çarptın.</p>
+
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800">
+                    <div class="text-[10px] font-black uppercase text-slate-400">KAT EDİLEN MESAFE</div>
+                    <div id="final-score" class="font-orbitron text-xl font-black text-white">0 m</div>
+                </div>
+                <div class="p-3 bg-slate-950 rounded-2xl border border-slate-800">
+                    <div class="text-[10px] font-black uppercase text-cyan-400">TOPLANAN VERİ</div>
+                    <div id="final-data" class="font-orbitron text-xl font-black text-cyan-300">0</div>
+                </div>
+            </div>
+
+            <!-- Doğru Soru Sayısı -->
+            <div class="p-3 bg-indigo-950/50 border border-indigo-500/40 rounded-2xl text-xs font-bold text-indigo-300 mb-6 flex items-center justify-between">
+                <span><i class="fa-solid fa-check-circle text-emerald-400 mr-1.5"></i> Doğru Bilinen Soru Kapısı:</span>
+                <span id="final-questions-count" class="font-orbitron font-black text-white text-sm">0 Adet</span>
+            </div>
+
+            <div class="flex flex-col gap-2.5">
+                <button type="button" onclick="restartGame()" class="w-full py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-orbitron font-black text-sm uppercase tracking-wider rounded-2xl shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-rotate-right mr-1.5"></i> YENİDEN KOŞ!
+                </button>
+                <button type="button" onclick="toggleLibraryModal()" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all cursor-pointer">
+                    <i class="fa-solid fa-book-atlas mr-1.5"></i> Galaktik Kütüphaneyi İncele
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📚 GALAKTİK KÜTÜPHANE MODALİ -->
+    <div id="library-modal" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 hidden">
+        <div class="max-w-4xl w-full max-h-[92vh] bg-slate-900 border-2 border-indigo-500/80 rounded-3xl p-5 sm:p-7 shadow-2xl flex flex-col relative overflow-hidden">
+            <div class="flex items-center justify-between gap-3 pb-4 border-b border-slate-800 shrink-0">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-lg font-black shadow-md">
+                        <i class="fa-solid fa-book-atlas"></i>
+                    </span>
+                    <div>
+                        <h2 class="font-orbitron text-lg sm:text-2xl font-black text-white uppercase tracking-wider">GALAKTİK KÜTÜPHANE</h2>
+                        <p class="text-xs text-indigo-300 font-bold">Güneş Sistemi Gezegenleri ve Astronomi Bilgi Kartları</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleLibraryModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center text-sm cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Gezegen Kartları Izgarası -->
+            <div class="overflow-y-auto pr-1 py-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5" id="library-cards-container">
+                <!-- Javascript dinamik doldurur -->
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================== -->
+    <!-- 🚀 OYUN MOTORU & THREE.JS MANTIĞI -->
+    <!-- ======================================================== -->
+    <script>
+        // --- 1. ASTRONOMİ VE GEZEGENLER VERİ TABANI ---
+        const PLANETS_DB = [
+            {
+                id: 'mercury',
+                name: 'Merkür',
+                title: 'En Küçük & Güneş\'e En Yakın Gezegen',
+                color: 0x94a3b8,
+                groundColor: 0x475569,
+                fogColor: 0x1e293b,
+                ambientLight: 0xffffff,
+                gravityFactor: 1.0,
+                desc: 'Güneş\'e en yakın gezegendir. Çok ince bir atmosferi vardır, gündüzleri aşırı sıcak, geceleri dondurucu soğuktur.',
+                facts: [
+                    'Uydusu ve halkası yoktur.',
+                    'Güneş etrafındaki turunu sadece 88 günde tamamlar.',
+                    'Yüzeyi Ay gibi devasa kraterlerle kaplıdır.'
+                ],
+                tag: 'Karasal Gezegen'
+            },
+            {
+                id: 'venus',
+                name: 'Venüs',
+                title: 'Güneş Sistemi\'nin En Sıcak Gezegeni',
+                color: 0xf59e0b,
+                groundColor: 0x78350f,
+                fogColor: 0x451a03,
+                ambientLight: 0xfde68a,
+                gravityFactor: 1.0,
+                desc: 'Kalın karbondioksit atmosferi nedeniyle sera etkisi yaşar ve 465°C ile sistemin en sıcak gezegenidir.',
+                facts: [
+                    'Diğer gezegenlerin aksine doğudan batıya (tersine) döner.',
+                    'Gökyüzündeki parlaklığı nedeniyle "Çoban Yıldızı" da denir.',
+                    'Uydusu ve halkası yoktur.'
+                ],
+                tag: 'Karasal Gezegen'
+            },
+            {
+                id: 'earth',
+                name: 'Dünya',
+                title: 'Yaşamın Bulunduğu Mavi Gezegen',
+                color: 0x0284c7,
+                groundColor: 0x065f46,
+                fogColor: 0x082f49,
+                ambientLight: 0xbae6fd,
+                gravityFactor: 1.0,
+                desc: 'Yüzeyinin %71\'i sularla kaplıdır. Canlı yaşamını destekleyen oksijen zengini atmosfere sahiptir.',
+                facts: [
+                    'Tek bir doğal uydusu vardır: Ay.',
+                    'Manyetik alanı bizi Güneş\'in zararlı radyasyonundan korur.',
+                    'Güneş etrafındaki dönüşünü 365 gün 6 saatte tamamlar.'
+                ],
+                tag: 'Karasal Gezegen'
+            },
+            {
+                id: 'mars',
+                name: 'Mars',
+                title: 'Kızıl Gezegen',
+                color: 0xef4444,
+                groundColor: 0x7f1d1d,
+                fogColor: 0x450a0a,
+                ambientLight: 0xfecaca,
+                gravityFactor: 0.65, // Düşük yerçekimi: Süper Yüksek Zıplama!
+                desc: 'Yüzeyindeki demir oksit (pas) nedeniyle kızıl renkte görünür. Güneş Sistemi\'nin en yüksek volkanı Olimpos Dağı buradadır.',
+                facts: [
+                    'Yerçekimi Dünya\'nın üçte biri kadardır, burada çok yükseğe zıplayabilirsiniz!',
+                    'Phobos ve Deimos adında iki küçük uydusu vardır.',
+                    'Kutuplarında su buzu ve kuru buz (CO2) bulunur.'
+                ],
+                tag: 'Düşük Yerçekimi'
+            },
+            {
+                id: 'jupiter',
+                name: 'Jüpiter',
+                title: 'Gezegenlerin Kralı & Gaz Devi',
+                color: 0xd97706,
+                groundColor: 0x78350f,
+                fogColor: 0x3b1e08,
+                ambientLight: 0xfde68a,
+                gravityFactor: 1.35, // Yüksek yerçekimi: Hızlı düşüş!
+                desc: 'Güneş Sistemi\'nin en büyük gezegenidir. İçine yaklaşık 1.300 tane Dünya sığabilir!',
+                facts: [
+                    'Yüzeyinde 300 yıldan uzun süredir dönen dev "Büyük Kırmızı Leke" fırtınası vardır.',
+                    '95\'ten fazla uydusu vardır (En büyüğü Ganymede).',
+                    'Karasal bir yüzeyi yoktur, tamamen hidrojen ve helyum gazından oluşur.'
+                ],
+                tag: 'Dev Gaz Gezegeni'
+            },
+            {
+                id: 'saturn',
+                name: 'Satürn',
+                title: 'Görkemli Buz Halkaları Devi',
+                color: 0xeab308,
+                groundColor: 0x854d0e,
+                fogColor: 0x422006,
+                ambientLight: 0xfef08a,
+                gravityFactor: 0.8, // Hafif yerçekimi
+                desc: 'Buz ve kaya parçalarından oluşan büyüleyici halkalarıyla tanınır. Yoğunluğu sudan bile azdır!',
+                facts: [
+                    'Yeterince büyük bir okyanus olsaydı Satürn suyun üstünde yüzerdi!',
+                    '146 adet onaylanmış doğal uydusu vardır (En büyüğü Titan).',
+                    'Halkaları yüz binlerce kilometre genişlikte ancak sadece birkaç metre kalınlıktadır.'
+                ],
+                tag: 'Halkalı Dev'
+            },
+            {
+                id: 'uranus',
+                name: 'Uranüs',
+                title: 'Yana Yatık Buz Devi',
+                color: 0x06b6d4,
+                groundColor: 0x164e63,
+                fogColor: 0x083344,
+                ambientLight: 0xa5f3fc,
+                gravityFactor: 0.95,
+                desc: 'Güneş Sistemi\'nin en soğuk atmosferine sahip buz devidir (-224°C). Dönme ekseni neredeyse 98 derece yana yatıktır.',
+                facts: [
+                    'Ekseni yana yatık olduğu için yörüngesinde adeta yuvarlanan bir top gibi döner.',
+                    'Metan gazı nedeniyle harika bir turkuaz/camgöbeği renge sahiptir.',
+                    '27 bilinen uydusu vardır.'
+                ],
+                tag: 'Buz Devi'
+            },
+            {
+                id: 'neptune',
+                name: 'Neptün',
+                title: 'En Uzak & Fırtınalı Gezegen',
+                color: 0x3b82f6,
+                groundColor: 0x1e3a8a,
+                fogColor: 0x0f172a,
+                ambientLight: 0x93c5fd,
+                gravityFactor: 1.1,
+                desc: 'Güneş\'e en uzak resmi gezegendir. Saatte 2.000 km\'yi aşan Güneş Sistemi\'nin en şiddetli rüzgarlarına sahiptir.',
+                facts: [
+                    'Güneş etrafındaki tek bir turu tam 165 Dünya yılı sürer!',
+                    'En büyük uydusu Triton, ters yönde yörüngeye sahip nadir uydulardandır.',
+                    'Koyu mavi rengini atmosferindeki metandan alır.'
+                ],
+                tag: 'Buz Devi'
+            }
+        ];
+
+        // --- 2. ASTRONOMİ SORU HAVUZU (Soru Kapıları İçin) ---
+        const ASTRONOMY_QUESTIONS = [
+            {
+                q: "Güneş Sistemi'nin en büyük gezegeni hangisidir?",
+                correct: "Jüpiter",
+                wrong: "Mars",
+                hint: "İçine 1.300'den fazla Dünya sığabilir!"
+            },
+            {
+                q: "Güneş'e en yakın gezegen hangisidir?",
+                correct: "Merkür",
+                wrong: "Venüs",
+                hint: "Güneş'in etrafını 88 günde döner."
+            },
+            {
+                q: "Kızıl Gezegen lakabıyla bilinen gezegen hangisidir?",
+                correct: "Mars",
+                wrong: "Neptün",
+                hint: "Yüzeyindeki paslı demir oksit kayaları nedeniyle kızıldır."
+            },
+            {
+                q: "Buz ve taş parçalarından oluşan muhteşem halkaları olan gezegen hangisidir?",
+                correct: "Satürn",
+                wrong: "Merkür",
+                hint: "Titan adında devasa bir uydusu vardır."
+            },
+            {
+                q: "Güneş Sistemi'nin en sıcak gezegeni hangisidir?",
+                correct: "Venüs",
+                wrong: "Dünya",
+                hint: "Yoğun sera etkisi nedeniyle 465°C'ye ulaşır."
+            },
+            {
+                q: "Dönme ekseni 98 derece yana yatık olan buz devi hangisidir?",
+                correct: "Uranüs",
+                wrong: "Jüpiter",
+                hint: "Yörüngesinde bir varil gibi yuvarlanarak döner."
+            },
+            {
+                q: "Güneş'e en uzak gezegen hangisidir?",
+                correct: "Neptün",
+                wrong: "Venüs",
+                hint: "Güneş etrafındaki turu 165 yıl sürer."
+            },
+            {
+                q: "Hangisi karasal (kayalık) bir gezegendir?",
+                correct: "Dünya",
+                wrong: "Satürn",
+                hint: "Katı bir kabuğu ve dağları vardır."
+            }
+        ];
+
+        // --- 3. SES MOTORU (Web Audio API - Sıfır Bağımlılık) ---
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+            playTone(freq, type = 'sine', duration = 0.15, gain = 0.1) {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    g.gain.setValueAtTime(gain, this.ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            jump() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(600, this.ctx.currentTime + 0.2);
+                    g.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.2);
+                } catch(e) {}
+            }
+            duck() {
+                this.playTone(180, 'sine', 0.12, 0.1);
+            }
+            collect() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587, now);
+                    osc.frequency.setValueAtTime(880, now + 0.06);
+                    g.gain.setValueAtTime(0.08, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(now + 0.18);
+                } catch(e) {}
+            }
+            warp() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(150, now);
+                    osc.frequency.exponentialRampToValueAtTime(1200, now + 0.7);
+                    g.gain.setValueAtTime(0.15, now);
+                    g.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+                    osc.connect(g);
+                    g.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(now + 0.7);
+                } catch(e) {}
+            }
+            correct() {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    const now = this.ctx.currentTime;
+                    [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+                        const osc = this.ctx.createOscillator();
+                        const g = this.ctx.createGain();
+                        osc.frequency.setValueAtTime(freq, now + i * 0.08);
+                        g.gain.setValueAtTime(0.1, now + i * 0.08);
+                        g.gain.exponentialRampToValueAtTime(0.001, now + i * 0.08 + 0.25);
+                        osc.connect(g);
+                        g.connect(this.ctx.destination);
+                        osc.start(now + i * 0.08);
+                        osc.stop(now + i * 0.08 + 0.25);
+                    });
+                } catch(e) {}
+            }
+            wrong() {
+                this.playTone(130, 'sawtooth', 0.35, 0.2);
+            }
+        }
+        const Sounds = new SoundEngine();
+
+        // --- 4. OYUN DEĞİŞKENLERİ VE DURUMU ---
+        const LANES = [-3.5, 0, 3.5]; // 3 Şerit: Sol, Orta, Sağ
+        let currentLaneIndex = 1;      // Başlangıç: Orta şerit
+
+        let scene, camera, renderer;
+        let playerGroup, astronautBody;
+        let groundTiles = [];
+        let activeObstacles = [];
+        let activeDataPacks = [];
+        let activeQuestionGates = [];
+        let activeWarpGate = null;
+        let starField = null;
+
+        // Oyun Döngüsü Durumları
+        let isGameRunning = false;
+        let isPaused = false;
+        let scoreDistance = 0;
+        let collectedDataCount = 0;
+        let playerLives = 3;
+        let currentPlanetIndex = 0;
+        let nextWarpDistance = 600;
+        let nextQuestionDistance = 250;
+        let answeredQuestionsCount = 0;
+
+        // Karakter Fizik ve Hareketi
+        let playerY = 0;
+        let playerYSpeed = 0;
+        let isGrounded = true;
+        let isDucking = false;
+        let duckTimer = 0;
+        let gameSpeed = 38; // Z ekseninde birim/saniye
+        let invulnerableTimer = 0;
+
+        // Power-Up Durumları
+        let activePowerUp = null; // 'boots', 'magnet', 'shield', 'jet'
+        let powerUpTimeLeft = 0;
+
+        // --- 5. THREE.JS SAHNE KURULUMU ---
+        function initThreeScene() {
+            const canvas = document.getElementById('game-canvas');
+            scene = new THREE.Scene();
+            
+            const currentP = PLANETS_DB[currentPlanetIndex];
+            scene.background = new THREE.Color(currentP.fogColor);
+            scene.fog = new THREE.FogExp2(currentP.fogColor, 0.015);
+
+            camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 400);
+            camera.position.set(0, 5, 9);
+            camera.lookAt(0, 2, -15);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            dirLight.position.set(10, 25, 10);
+            dirLight.castShadow = true;
+            scene.add(dirLight);
+
+            // Yıldız Tarlası (Arka Plan)
+            createStarfield();
+
+            // Karakteri Oluştur
+            createPlayer();
+
+            // Pist Zemin Karolarını Oluştur
+            initTrackTiles();
+
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function createStarfield() {
+            const starsGeo = new THREE.BufferGeometry();
+            const starsCount = 1200;
+            const positions = new Float32Array(starsCount * 3);
+            for (let i = 0; i < starsCount * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 300;
+                positions[i + 1] = Math.random() * 150 + 5;
+                positions[i + 2] = (Math.random() - 0.5) * 400;
+            }
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.85 });
+            starField = new THREE.Points(starsGeo, starsMat);
+            scene.add(starField);
+        }
+
+        // --- 6. ASTRONOT / ROBOTİK KARAKTER TASARIMI ---
+        function createPlayer() {
+            playerGroup = new THREE.Group();
+
+            // Gövde (Uzay Kıyafeti)
+            const bodyGeo = new THREE.CylinderGeometry(0.5, 0.45, 1.2, 10);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3, metalness: 0.2 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 1.1;
+            playerGroup.add(body);
+
+            // Kask
+            const helmetGeo = new THREE.SphereGeometry(0.48, 16, 16);
+            const helmetMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+            const helmet = new THREE.Mesh(helmetGeo, helmetMat);
+            helmet.position.y = 1.95;
+            playerGroup.add(helmet);
+
+            // Kask Vizörü (Altın Parıltılı Yansıma)
+            const visorGeo = new THREE.SphereGeometry(0.38, 16, 16, 0, Math.PI);
+            const visorMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, metalness: 0.9, roughness: 0.1 });
+            const visor = new THREE.Mesh(visorGeo, visorMat);
+            visor.position.set(0, 1.95, 0.2);
+            visor.rotation.y = -Math.PI / 2;
+            playerGroup.add(visor);
+
+            // Jetpack (Sırt Roketi)
+            const jetGeo = new THREE.BoxGeometry(0.7, 0.9, 0.35);
+            const jetMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.5 });
+            const jetpack = new THREE.Mesh(jetGeo, jetMat);
+            jetpack.position.set(0, 1.2, -0.4);
+            playerGroup.add(jetpack);
+
+            // Jetpack Alev / İtici Işığı
+            const flameGeo = new THREE.ConeGeometry(0.18, 0.6, 8);
+            const flameMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            const flameL = new THREE.Mesh(flameGeo, flameMat);
+            flameL.rotation.x = Math.PI;
+            flameL.position.set(-0.2, 0.5, -0.4);
+            const flameR = flameL.clone();
+            flameR.position.x = 0.2;
+            playerGroup.add(flameL);
+            playerGroup.add(flameR);
+
+            playerGroup.position.set(LANES[currentLaneIndex], 0, 0);
+            scene.add(playerGroup);
+            astronautBody = playerGroup;
+        }
+
+        // --- 7. PİST & DİNAMİK PARÇA OLUŞTURMA ---
+        const TILE_LENGTH = 50;
+        const NUM_TILES = 6;
+
+        function initTrackTiles() {
+            groundTiles.forEach(t => scene.remove(t));
+            groundTiles = [];
+
+            for (let i = 0; i < NUM_TILES; i++) {
+                const tile = createTrackTile(-i * TILE_LENGTH);
+                scene.add(tile);
+                groundTiles.push(tile);
+            }
+        }
+
+        function createTrackTile(zPos) {
+            const tileGroup = new THREE.Group();
+            tileGroup.position.z = zPos;
+
+            const curPlanet = PLANETS_DB[currentPlanetIndex];
+
+            // Ana Zemin (3 Şerit Genişliğinde Pist)
+            const floorGeo = new THREE.BoxGeometry(13, 0.4, TILE_LENGTH);
+            const floorMat = new THREE.MeshStandardMaterial({
+                color: curPlanet.groundColor,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.position.y = -0.2;
+            tileGroup.add(floor);
+
+            // Neon Şerit Çizgileri
+            [-1.75, 1.75].forEach(x => {
+                const lineGeo = new THREE.BoxGeometry(0.12, 0.02, TILE_LENGTH);
+                const lineMat = new THREE.MeshBasicMaterial({ color: curPlanet.color });
+                const line = new THREE.Mesh(lineGeo, lineMat);
+                line.position.set(x, 0.01, 0);
+                tileGroup.add(line);
+            });
+
+            // Sol ve Sağ Parlayan Neon Bariyerler
+            [-6.5, 6.5].forEach(x => {
+                const railGeo = new THREE.CylinderGeometry(0.18, 0.18, TILE_LENGTH, 8);
+                const railMat = new THREE.MeshBasicMaterial({ color: curPlanet.color });
+                const rail = new THREE.Mesh(railGeo, railMat);
+                rail.rotation.x = Math.PI / 2;
+                rail.position.set(x, 0.3, 0);
+                tileGroup.add(rail);
+            });
+
+            return tileGroup;
+        }
+
+        // --- 8. ENGEL, KRİSTAL VE GEÇİT ÜRETİCİSİ (SPAWNER) ---
+        function spawnElementsAlongTrack(minZ, maxZ) {
+            // Belirli aralıklarla engeller ve kristaller üret
+            for (let z = minZ; z > maxZ; z -= 25) {
+
+                // A) Soru Kapısı Mesafesi Geldiyse:
+                if (Math.abs(z) >= nextQuestionDistance && activeQuestionGates.length === 0) {
+                    spawnQuestionGate(z);
+                    nextQuestionDistance += 320;
+                    continue;
+                }
+
+                // B) Solucan Deliği (Warp) Mesafesi Geldiyse:
+                if (Math.abs(z) >= nextWarpDistance && !activeWarpGate) {
+                    spawnWarpPortal(z);
+                    nextWarpDistance += 650;
+                    continue;
+                }
+
+                // C) Standart Engel veya Kristal Grubu:
+                const randType = Math.random();
+                const lane = Math.floor(Math.random() * 3);
+
+                if (randType < 0.45) {
+                    // Engel (Alçak veya Yüksek)
+                    const isHigh = Math.random() < 0.35;
+                    spawnObstacle(LANES[lane], z, isHigh);
+                } else if (randType < 0.85) {
+                    // Kristal Dizilimi (3 adet)
+                    spawnCrystalArc(LANES[lane], z);
+                } else {
+                    // Nadir: Güçlendirici veya Gezegen Bilgi Küpü
+                    if (Math.random() < 0.5) {
+                        spawnPowerUp(LANES[lane], z);
+                    } else {
+                        spawnKnowledgeCube(LANES[lane], z);
+                    }
+                }
+            }
+        }
+
+        // Engel Oluşturma
+        function spawnObstacle(x, z, isHigh) {
+            const curP = PLANETS_DB[currentPlanetIndex];
+            const group = new THREE.Group();
+            group.position.set(x, 0, z);
+
+            if (isHigh) {
+                // Eğilerek geçilecek yüksek lazer/gaz bariyeri
+                const beamGeo = new THREE.BoxGeometry(3, 0.6, 0.4);
+                const beamMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 0.6 });
+                const beam = new THREE.Mesh(beamGeo, beamMat);
+                beam.position.y = 1.6;
+                group.add(beam);
+
+                [-1.3, 1.3].forEach(px => {
+                    const postGeo = new THREE.CylinderGeometry(0.1, 0.1, 2.2, 8);
+                    const postMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+                    const post = new THREE.Mesh(postGeo, postMat);
+                    post.position.set(px, 1.1, 0);
+                    group.add(post);
+                });
+                group.userData = { isHigh: true, height: 1.6, width: 2.6 };
+            } else {
+                // Zıplanacak alçak meteor/kaya engeli
+                const rockGeo = new THREE.DodecahedronGeometry(0.85);
+                const rockMat = new THREE.MeshStandardMaterial({ color: curP.groundColor, roughness: 0.9 });
+                const rock = new THREE.Mesh(rockGeo, rockMat);
+                rock.position.y = 0.7;
+                group.add(rock);
+                group.userData = { isHigh: false, height: 0.9, width: 1.8 };
+            }
+
+            scene.add(group);
+            activeObstacles.push(group);
+        }
+
+        // Kristal (Stellar Veri Paketi) Oluşturma
+        function spawnCrystalArc(x, zStart) {
+            for (let i = 0; i < 3; i++) {
+                const geo = new THREE.OctahedronGeometry(0.42);
+                const mat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.8, roughness: 0.1 });
+                const crystal = new THREE.Mesh(geo, mat);
+                crystal.position.set(x, 0.9, zStart - (i * 3.5));
+                scene.add(crystal);
+                activeDataPacks.push(crystal);
+            }
+        }
+
+        // Gezegen Bilgi Küpü
+        function spawnKnowledgeCube(x, z) {
+            const geo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+            const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.9 });
+            const cube = new THREE.Mesh(geo, mat);
+            cube.position.set(x, 1.1, z);
+            cube.userData = { isKnowledgeCube: true };
+            scene.add(cube);
+            activeDataPacks.push(cube);
+        }
+
+        // Power-Up Oluşturma
+        function spawnPowerUp(x, z) {
+            const types = ['boots', 'magnet', 'shield'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const geo = new THREE.SphereGeometry(0.55, 12, 12);
+            const color = type === 'boots' ? 0x10b981 : (type === 'magnet' ? 0xec4899 : 0x8b5cf6);
+            const mat = new THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.7 });
+            const pUp = new THREE.Mesh(geo, mat);
+            pUp.position.set(x, 1.2, z);
+            pUp.userData = { isPowerUp: true, powerType: type };
+            scene.add(pUp);
+            activeDataPacks.push(pUp);
+        }
+
+        // Soru Kapıları Üretici (2 Kapı Yan Yana)
+        let currentGateQuestion = null;
+        function spawnQuestionGate(z) {
+            const q = ASTRONOMY_QUESTIONS[Math.floor(Math.random() * ASTRONOMY_QUESTIONS.length)];
+            currentGateQuestion = q;
+
+            // Rastgele: Doğru kapı Sol (0) mu Sağ (2) mi?
+            const isLeftCorrect = Math.random() < 0.5;
+
+            const gateGroup = new THREE.Group();
+            gateGroup.position.z = z;
+
+            // Sol Kapı (Şerit 0: LANES[0])
+            const gateLeftGeo = new THREE.TorusGeometry(1.6, 0.2, 8, 24);
+            const gateLeftMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+            const gateLeft = new THREE.Mesh(gateLeftGeo, gateLeftMat);
+            gateLeft.position.set(LANES[0], 1.8, 0);
+            gateGroup.add(gateLeft);
+
+            // Sağ Kapı (Şerit 2: LANES[2])
+            const gateRightGeo = new THREE.TorusGeometry(1.6, 0.2, 8, 24);
+            const gateRightMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6 });
+            const gateRight = new THREE.Mesh(gateRightGeo, gateRightMat);
+            gateRight.position.set(LANES[2], 1.8, 0);
+            gateGroup.add(gateRight);
+
+            gateGroup.userData = {
+                question: q,
+                isLeftCorrect: isLeftCorrect,
+                correctLaneIndex: isLeftCorrect ? 0 : 2,
+                passed: false
+            };
+
+            scene.add(gateGroup);
+            activeQuestionGates.push(gateGroup);
+
+            // UI'da Soru Başlığını Göster
+            showQuestionBanner(q, isLeftCorrect);
+        }
+
+        function showQuestionBanner(q, isLeftCorrect) {
+            const banner = document.getElementById('question-banner');
+            document.getElementById('question-text').textContent = q.q;
+            document.getElementById('gate-option-a').textContent = `Sol Kapı: ${isLeftCorrect ? q.correct : q.wrong}`;
+            document.getElementById('gate-option-b').textContent = `Sağ Kapı: ${!isLeftCorrect ? q.correct : q.wrong}`;
+            banner.classList.remove('hidden');
+        }
+
+        // Solucan Deliği (Warp Portal) Üretici
+        function spawnWarpPortal(z) {
+            const group = new THREE.Group();
+            group.position.z = z;
+
+            const portalGeo = new THREE.TorusGeometry(5, 0.8, 16, 32);
+            const portalMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            const portal = new THREE.Mesh(portalGeo, portalMat);
+            portal.position.y = 3.5;
+            group.add(portal);
+
+            group.userData = { isWarp: true, passed: false };
+            scene.add(group);
+            activeWarpGate = group;
+        }
+
+        // --- 9. GEZEGEN DEĞİŞİMİ (WARP GEÇİŞİ) ---
+        function triggerPlanetWarp() {
+            Sounds.warp();
+            currentPlanetIndex = (currentPlanetIndex + 1) % PLANETS_DB.length;
+            const newP = PLANETS_DB[currentPlanetIndex];
+
+            // Warp Flash Efekti
+            const overlay = document.getElementById('warp-overlay');
+            document.getElementById('warp-title').textContent = `${newP.name.toUpperCase()} SİSTEMİ!`;
+            document.getElementById('warp-sub').textContent = `Solucan Deliğinden Geçildi • Yerçekimi: ${newP.gravityFactor}G`;
+            overlay.classList.remove('opacity-0');
+            overlay.classList.add('opacity-100');
+
+            setTimeout(() => {
+                // Sahne renklerini yeni gezegene uyarla
+                scene.background = new THREE.Color(newP.fogColor);
+                scene.fog.color = new THREE.Color(newP.fogColor);
+
+                // UI Güncelle
+                document.getElementById('planet-name-badge').textContent = newP.name.toUpperCase();
+                document.getElementById('gravity-label').textContent = `${newP.gravityFactor}G (${newP.tag})`;
+
+                // Zemin Parçalarını Güncelle
+                groundTiles.forEach(t => {
+                    const floor = t.children[0];
+                    if (floor) floor.material.color.setHex(newP.groundColor);
+                });
+
+                overlay.classList.remove('opacity-100');
+                overlay.classList.add('opacity-0');
+            }, 800);
+        }
+
+        // --- 10. KONTROLLER VE HAREKET ---
+        function switchLane(dir) {
+            if (!isGameRunning || isPaused) return;
+            const targetLane = currentLaneIndex + dir;
+            if (targetLane >= 0 && targetLane <= 2) {
+                currentLaneIndex = targetLane;
+                Sounds.duck();
+            }
+        }
+
+        function jumpPlayer() {
+            if (!isGameRunning || isPaused) return;
+            if (isGrounded) {
+                const curP = PLANETS_DB[currentPlanetIndex];
+                // Mars veya Satürn'de zıplama gücü daha fazladır!
+                const baseJump = (activePowerUp === 'boots') ? 22 : 16;
+                const gravityModifier = 1 / Math.sqrt(curP.gravityFactor);
+                playerYSpeed = baseJump * gravityModifier;
+                isGrounded = false;
+                isDucking = false;
+                Sounds.jump();
+            }
+        }
+
+        function duckPlayer() {
+            if (!isGameRunning || isPaused) return;
+            isDucking = true;
+            duckTimer = 0.65; // saniye
+            Sounds.duck();
+            if (!isGrounded) {
+                // Havadaysa anında yere indir (Subway Surfers slam down)
+                playerYSpeed = -20;
+            }
+        }
+
+        // Klavye Dinleyicisi
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') switchLane(-1);
+            else if (e.code === 'ArrowRight' || e.code === 'KeyD') switchLane(1);
+            else if (e.code === 'ArrowUp' || e.code === 'KeyW' || e.code === 'Space') {
+                e.preventDefault();
+                jumpPlayer();
+            }
+            else if (e.code === 'ArrowDown' || e.code === 'KeyS') {
+                e.preventDefault();
+                duckPlayer();
+            }
+        });
+
+        // Swipe (Kaydırma) Dokunmatik Kontroller
+        let touchStartX = 0;
+        let touchStartY = 0;
+        window.addEventListener('touchstart', (e) => {
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+            const diffX = e.changedTouches[0].clientX - touchStartX;
+            const diffY = e.changedTouches[0].clientY - touchStartY;
+            const absX = Math.abs(diffX);
+            const absY = Math.abs(diffY);
+
+            if (Math.max(absX, absY) > 30) {
+                if (absX > absY) {
+                    if (diffX > 0) switchLane(1); // Sağa kaydır
+                    else switchLane(-1);          // Sola kaydır
+                } else {
+                    if (diffY < 0) jumpPlayer();  // Yukarı kaydır
+                    else duckPlayer();            // Aşağı kaydır
+                }
+            }
+        }, { passive: true });
+
+        // Ekran Üzeri Büyük Yön Butonları (Akıllı Tahta İçin)
+        document.getElementById('btn-touch-left').addEventListener('pointerdown', (e) => { e.preventDefault(); switchLane(-1); });
+        document.getElementById('btn-touch-right').addEventListener('pointerdown', (e) => { e.preventDefault(); switchLane(1); });
+        document.getElementById('btn-touch-up').addEventListener('pointerdown', (e) => { e.preventDefault(); jumpPlayer(); });
+        document.getElementById('btn-touch-down').addEventListener('pointerdown', (e) => { e.preventDefault(); duckPlayer(); });
+
+        // --- 11. OYUN DÖNGÜSÜ (ANIMATION FRAME) ---
+        let lastTime = performance.now();
+
+        function gameLoop(now) {
+            requestAnimationFrame(gameLoop);
+            const delta = Math.min((now - lastTime) / 1000, 0.1);
+            lastTime = now;
+
+            if (!isGameRunning || isPaused) return;
+
+            // 1. İlerleme ve Hız
+            const moveStep = gameSpeed * delta;
+            scoreDistance += Math.round(moveStep * 1.5);
+            document.getElementById('score-text').innerHTML = `${scoreDistance} <span class="text-xs text-cyan-400">m</span>`;
+
+            // 2. Karakter X Konum İnterpolasyonu (Şerit Geçişi)
+            const targetX = LANES[currentLaneIndex];
+            playerGroup.position.x += (targetX - playerGroup.position.x) * 16 * delta;
+
+            // 3. Zıplama & Yerçekimi Fiziği
+            const curP = PLANETS_DB[currentPlanetIndex];
+            const gravity = 48 * curP.gravityFactor;
+
+            if (!isGrounded) {
+                playerYSpeed -= gravity * delta;
+                playerY += playerYSpeed * delta;
+                if (playerY <= 0) {
+                    playerY = 0;
+                    playerYSpeed = 0;
+                    isGrounded = true;
+                }
+            }
+            playerGroup.position.y = playerY;
+
+            // Eğilme Animasyonu
+            if (isDucking) {
+                duckTimer -= delta;
+                playerGroup.scale.set(1.1, 0.45, 1.1);
+                if (duckTimer <= 0) {
+                    isDucking = false;
+                    playerGroup.scale.set(1, 1, 1);
+                }
+            } else {
+                playerGroup.scale.set(1, 1, 1);
+            }
+
+            // Koşma Yalpalama Hareketi
+            if (isGrounded && !isDucking) {
+                playerGroup.rotation.z = Math.sin(now * 0.015) * 0.08;
+                playerGroup.rotation.y = Math.sin(now * 0.008) * 0.05;
+            } else {
+                playerGroup.rotation.z = 0;
+            }
+
+            // 4. Pist Parçalarını Başa Döndür (Endless Track Recycling)
+            groundTiles.forEach(tile => {
+                tile.position.z += moveStep;
+                if (tile.position.z > TILE_LENGTH) {
+                    // En arkadaki karoyu bul
+                    let minZ = 0;
+                    groundTiles.forEach(t => { if (t.position.z < minZ) minZ = t.position.z; });
+                    tile.position.z = minZ - TILE_LENGTH;
+
+                    // Yeni karo bölgesine öğeler üret
+                    spawnElementsAlongTrack(tile.position.z, tile.position.z - TILE_LENGTH);
+                }
+            });
+
+            // 5. Engellerin Hareketi ve Çarpışma Testi
+            for (let i = activeObstacles.length - 1; i >= 0; i--) {
+                const obs = activeObstacles[i];
+                obs.position.z += moveStep;
+
+                // Çarpışma Kontrolü
+                if (Math.abs(obs.position.z - playerGroup.position.z) < 1.2) {
+                    if (Math.abs(obs.position.x - playerGroup.position.x) < 1.3) {
+                        const isHit = obs.userData.isHigh ? !isDucking : (playerY < obs.userData.height);
+                        if (isHit && invulnerableTimer <= 0) {
+                            handlePlayerHit();
+                        }
+                    }
+                }
+
+                // Ekrandan çıktıysa sil
+                if (obs.position.z > 20) {
+                    scene.remove(obs);
+                    activeObstacles.splice(i, 1);
+                }
+            }
+
+            // 6. Kristaller & Veri Paketleri
+            for (let i = activeDataPacks.length - 1; i >= 0; i--) {
+                const item = activeDataPacks[i];
+                item.position.z += moveStep;
+                item.rotation.y += 3.5 * delta;
+
+                // Mıknatıs Aktifse Karakteri Çek
+                if (activePowerUp === 'magnet' && Math.abs(item.position.z - playerGroup.position.z) < 25) {
+                    item.position.x += (playerGroup.position.x - item.position.x) * 8 * delta;
+                    item.position.y += (playerGroup.position.y + 1 - item.position.y) * 8 * delta;
+                }
+
+                // Toplama Kontrolü
+                const dist = item.position.distanceTo(playerGroup.position.clone().add(new THREE.Vector3(0, 1, 0)));
+                if (dist < 1.8) {
+                    if (item.userData.isKnowledgeCube) {
+                        collectKnowledgeCube();
+                    } else if (item.userData.isPowerUp) {
+                        activatePowerUp(item.userData.powerType);
+                    } else {
+                        collectDataPack();
+                    }
+                    scene.remove(item);
+                    activeDataPacks.splice(i, 1);
+                    continue;
+                }
+
+                if (item.position.z > 20) {
+                    scene.remove(item);
+                    activeDataPacks.splice(i, 1);
+                }
+            }
+
+            // 7. Soru Kapıları Kontrolü
+            for (let i = activeQuestionGates.length - 1; i >= 0; i--) {
+                const gate = activeQuestionGates[i];
+                gate.position.z += moveStep;
+
+                if (!gate.userData.passed && gate.position.z >= -1) {
+                    gate.userData.passed = true;
+                    // Hangi kapıdan geçti?
+                    const userLane = currentLaneIndex; // 0: Sol, 1: Orta, 2: Sağ
+                    const isCorrect = (userLane === gate.userData.correctLaneIndex);
+
+                    if (isCorrect) {
+                        Sounds.correct();
+                        collectedDataCount += 250;
+                        answeredQuestionsCount++;
+                        document.getElementById('data-packs-text').textContent = collectedDataCount;
+                        showNotification("DOĞRU KAPI!", "+250 Stellar Veri & Hız Bonusu!", "emerald");
+                    } else {
+                        Sounds.wrong();
+                        handlePlayerHit("Yanlış Soru Kapısından Geçtin!");
+                    }
+
+                    document.getElementById('question-banner').classList.add('hidden');
+                }
+
+                if (gate.position.z > 20) {
+                    scene.remove(gate);
+                    activeQuestionGates.splice(i, 1);
+                }
+            }
+
+            // 8. Solucan Deliği (Warp) Kontrolü
+            if (activeWarpGate) {
+                activeWarpGate.position.z += moveStep;
+                activeWarpGate.rotation.z += 2 * delta;
+
+                if (!activeWarpGate.userData.passed && activeWarpGate.position.z >= 0) {
+                    activeWarpGate.userData.passed = true;
+                    triggerPlanetWarp();
+                }
+
+                if (activeWarpGate.position.z > 25) {
+                    scene.remove(activeWarpGate);
+                    activeWarpGate = null;
+                }
+            }
+
+            // 9. Power-Up Zamanlayıcı
+            if (activePowerUp) {
+                powerUpTimeLeft -= delta;
+                const fillEl = document.getElementById('powerup-timer-fill');
+                if (fillEl) fillEl.style.width = `${(powerUpTimeLeft / 12) * 100}%`;
+                if (powerUpTimeLeft <= 0) {
+                    deactivatePowerUp();
+                }
+            }
+
+            // Hasar Dokunulmazlık Süresi
+            if (invulnerableTimer > 0) {
+                invulnerableTimer -= delta;
+                playerGroup.visible = Math.floor(now * 0.02) % 2 === 0;
+            } else {
+                playerGroup.visible = true;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // --- 12. OYUN İÇİ ETKİLEŞİMLER & GERİ BİLDİRİMLER ---
+        function collectDataPack() {
+            Sounds.collect();
+            collectedDataCount += 10;
+            document.getElementById('data-packs-text').textContent = collectedDataCount;
+        }
+
+        function collectKnowledgeCube() {
+            Sounds.correct();
+            collectedDataCount += 50;
+            document.getElementById('data-packs-text').textContent = collectedDataCount;
+
+            const curP = PLANETS_DB[currentPlanetIndex];
+            const fact = curP.facts[Math.floor(Math.random() * curP.facts.length)];
+            
+            const notif = document.getElementById('cube-notification');
+            document.getElementById('cube-fact-text').textContent = fact;
+            notif.classList.remove('hidden');
+            setTimeout(() => notif.classList.add('hidden'), 4500);
+
+            // Bilgiyi Kütüphaneye Kaydet
+            saveFactToStorage(curP.id);
+        }
+
+        function activatePowerUp(type) {
+            Sounds.correct();
+            activePowerUp = type;
+            powerUpTimeLeft = 12; // 12 saniye
+            const bar = document.getElementById('powerup-bar-container');
+            const title = document.getElementById('powerup-title');
+            bar.classList.remove('hidden');
+
+            if (type === 'boots') {
+                title.textContent = "İYON BOTLARI: YÜKSEK ZIPLAMA!";
+            } else if (type === 'magnet') {
+                title.textContent = "VERİ MIKNATISI AKTİF!";
+            } else if (type === 'shield') {
+                title.textContent = "YERÇEKİMİ KALKANI AKTİF!";
+            }
+        }
+
+        function deactivatePowerUp() {
+            activePowerUp = null;
+            document.getElementById('powerup-bar-container').classList.add('hidden');
+        }
+
+        function handlePlayerHit(customReason) {
+            if (activePowerUp === 'shield') {
+                // Kalkan darbeyi emer
+                deactivatePowerUp();
+                showNotification("KALKAN KIRILDI!", "Kalkan seni korudu!", "amber");
+                invulnerableTimer = 1.5;
+                return;
+            }
+
+            Sounds.wrong();
+            playerLives--;
+            invulnerableTimer = 2.0;
+
+            // Ekran Titremesi ve Kırmızı Parlama
+            document.body.classList.add('glitch-hit');
+            setTimeout(() => document.body.classList.remove('glitch-hit'), 400);
+
+            // Can Arayüzünü Güncelle
+            updateLivesUI();
+
+            if (playerLives <= 0) {
+                gameOver(customReason || "Engele çarptın!");
+            }
+        }
+
+        function updateLivesUI() {
+            const container = document.getElementById('lives-container');
+            container.innerHTML = '';
+            for (let i = 0; i < 3; i++) {
+                if (i < playerLives) {
+                    container.innerHTML += '<i class="fa-solid fa-heart drop-shadow-md text-rose-500"></i>';
+                } else {
+                    container.innerHTML += '<i class="fa-regular fa-heart text-slate-600"></i>';
+                }
+            }
+        }
+
+        function showNotification(title, sub, color) {
+            // Basit bildirim
+        }
+
+        // --- 13. OYUN BAŞLATMA, BİTİŞ VE YENİDEN BAŞLATMA ---
+        function startGame() {
+            Sounds.init();
+            document.getElementById('start-menu').classList.add('hidden');
+            document.getElementById('game-over-modal').classList.add('hidden');
+
+            isGameRunning = true;
+            isPaused = false;
+            playerLives = 3;
+            scoreDistance = 0;
+            collectedDataCount = 0;
+            answeredQuestionsCount = 0;
+            currentLaneIndex = 1;
+            playerY = 0;
+            playerYSpeed = 0;
+            activePowerUp = null;
+            nextWarpDistance = 600;
+            nextQuestionDistance = 250;
+
+            updateLivesUI();
+            document.getElementById('score-text').innerHTML = `0 <span class="text-xs text-cyan-400">m</span>`;
+            document.getElementById('data-packs-text').textContent = "0";
+
+            // Engelleri temizle
+            activeObstacles.forEach(o => scene.remove(o));
+            activeObstacles = [];
+            activeDataPacks.forEach(d => scene.remove(d));
+            activeDataPacks = [];
+            activeQuestionGates.forEach(g => scene.remove(g));
+            activeQuestionGates = [];
+            if (activeWarpGate) scene.remove(activeWarpGate);
+            activeWarpGate = null;
+
+            initTrackTiles();
+            // İlk 200 metreye engelleri yerleştir
+            spawnElementsAlongTrack(-50, -250);
+        }
+
+        function gameOver(reason) {
+            isGameRunning = false;
+            document.getElementById('game-over-modal').classList.remove('hidden');
+            document.getElementById('game-over-reason').textContent = reason;
+            document.getElementById('final-score').textContent = `${scoreDistance} m`;
+            document.getElementById('final-data').textContent = collectedDataCount;
+            document.getElementById('final-questions-count').textContent = `${answeredQuestionsCount} Adet`;
+
+            // En Yüksek Puanı Kaydet
+            try {
+                const prevBest = parseInt(localStorage.getItem('rotali_runner_best_score') || '0', 10);
+                if (scoreDistance > prevBest) {
+                    localStorage.setItem('rotali_runner_best_score', String(scoreDistance));
+                }
+            } catch(e) {}
+        }
+
+        function restartGame() {
+            startGame();
+        }
+
+        function togglePauseGame() {
+            if (!isGameRunning) return;
+            isPaused = !isPaused;
+            if (isPaused) {
+                alert("⏸️ Oyun Duraklatıldı! Devam etmek için Tamam'a basın.");
+                isPaused = false;
+            }
+        }
+
+        function toggleAudio() {
+            Sounds.enabled = !Sounds.enabled;
+            const btn = document.getElementById('audio-toggle-btn');
+            btn.innerHTML = Sounds.enabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark text-slate-500"></i>';
+        }
+
+        function toggleLibraryModal() {
+            const modal = document.getElementById('library-modal');
+            const isHidden = modal.classList.contains('hidden');
+            if (isHidden) {
+                renderLibraryCards();
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // --- 14. GALAKTİK KÜTÜPHANE VE VERİ PERSISTENCE ---
+        function renderLibraryCards() {
+            const container = document.getElementById('library-cards-container');
+            container.innerHTML = '';
+
+            PLANETS_DB.forEach(p => {
+                container.innerHTML += `
+                    <div class="bg-slate-950/80 border border-slate-800 hover:border-indigo-500/50 rounded-2xl p-4 transition-all">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-indigo-950 text-indigo-300 border border-indigo-500/30">
+                                ${p.tag}
+                            </span>
+                            <span class="text-xs font-black text-amber-400 font-orbitron">${p.gravityFactor}G Yerçekimi</span>
+                        </div>
+                        <h4 class="font-orbitron text-base font-black text-white mb-1">${p.name}</h4>
+                        <p class="text-xs text-slate-300 font-medium leading-relaxed mb-3">${p.desc}</p>
+                        <div class="space-y-1 pt-2 border-t border-slate-800/80">
+                            ${p.facts.map(f => `
+                                <div class="text-[11px] text-slate-400 flex items-start gap-1.5">
+                                    <i class="fa-solid fa-star text-amber-400 text-[9px] mt-1 shrink-0"></i>
+                                    <span>${f}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function saveFactToStorage(planetId) {
+            try {
+                const unlocked = JSON.parse(localStorage.getItem('rotali_unlocked_planets') || '[]');
+                if (!unlocked.includes(planetId)) {
+                    unlocked.push(planetId);
+                    localStorage.setItem('rotali_unlocked_planets', JSON.stringify(unlocked));
+                }
+            } catch(e) {}
+        }
+
+        function renderStartMenuPlanetSelect() {
+            const grid = document.getElementById('planet-select-grid');
+            grid.innerHTML = '';
+            PLANETS_DB.forEach((p, idx) => {
+                grid.innerHTML += `
+                    <button type="button" onclick="selectStartPlanet(${idx})" class="p-2 rounded-xl border text-center transition-all ${idx === currentPlanetIndex ? 'bg-cyan-950 border-cyan-400 text-cyan-300' : 'bg-slate-950 border-slate-800 text-slate-400 hover:border-slate-700'}">
+                        <div class="text-[11px] font-black uppercase truncate">${p.name}</div>
+                    </button>
+                `;
+            });
+        }
+
+        function selectStartPlanet(idx) {
+            currentPlanetIndex = idx;
+            renderStartMenuPlanetSelect();
+            if (scene) {
+                const p = PLANETS_DB[idx];
+                scene.background = new THREE.Color(p.fogColor);
+                scene.fog.color = new THREE.Color(p.fogColor);
+                document.getElementById('planet-name-badge').textContent = p.name.toUpperCase();
+                document.getElementById('gravity-label').textContent = `${p.gravityFactor}G (${p.tag})`;
+            }
+        }
+
+        function onWindowResize() {
+            if (!camera || !renderer) return;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // Başlat
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeScene();
+            renderStartMenuPlanetSelect();
+            requestAnimationFrame(gameLoop);
+        });
+    </script>
+</body>
+</html>
