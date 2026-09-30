@@ -240,7 +240,7 @@
                     </span>
                     <div>
                         <div class="text-[8px] sm:text-[9px] font-black uppercase text-cyan-300 tracking-wider">MESAFE</div>
-                        <div id="hud-distance" class="font-orbitron text-xs sm:text-base font-black text-white tracking-wider">0,00 <span class="text-[10px] text-cyan-300 font-bold">ly</span></div>
+                        <div id="hud-distance" class="font-orbitron text-xs sm:text-base font-black text-white tracking-wider"><span id="hud-dist-val">0,00</span> <span class="text-[10px] text-cyan-300 font-bold">ly</span></div>
                     </div>
                 </div>
             </div>
@@ -459,9 +459,9 @@
 
             <!-- Kontroller Kutusu -->
             <div class="p-3 bg-slate-950/80 rounded-2xl border border-slate-800 text-xs text-slate-400 mb-6 flex items-center justify-around font-bold">
-                <div><span class="text-cyan-400 font-black">A / D / ⬅️ ➡️</span> : Şerit Değiş</div>
-                <div><span class="text-amber-400 font-black">W / ⬆️ / Boşluk</span> : Zıpla</div>
-                <div><span class="text-purple-400 font-black">S / ⬇️</span> : Eğil</div>
+                <div><span class="text-cyan-400 font-black">⬅️ ➡️ / A-D</span> : Şerit Değiş</div>
+                <div><span class="text-amber-400 font-black">⬆️ / W</span> : Zıpla (Kaya Üstü)</div>
+                <div><span class="text-purple-400 font-black">⬇️ / S</span> : Eğil (Bariyer Altı)</div>
             </div>
 
             <button type="button" onclick="startGameNow()" class="w-full py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 hover:from-cyan-300 hover:to-indigo-500 text-slate-950 font-orbitron font-black text-lg uppercase tracking-wider rounded-2xl shadow-xl shadow-cyan-500/30 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer">
@@ -830,15 +830,17 @@
             const canvas = document.getElementById('game-canvas');
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x020617);
-            scene.fog = new THREE.FogExp2(0x020617, 0.008);
+            // Akıllı tahta ve düşük GPU'lar için hafif doğrusal (linear) sis
+            scene.fog = new THREE.Fog(0x020617, 30, 200);
 
             camera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 800);
             camera.position.set(0, 5.2, 10.5);
             camera.lookAt(0, 2.2, -18);
 
+            // Düşük donanımlarda donmayı önlemek için antialias kapalı ve sabit 1.0 pixelRatio
             renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, powerPreference: 'high-performance' });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+            renderer.setPixelRatio(1.0);
             renderer.shadowMap.enabled = false;
 
             // Işıklar
@@ -865,10 +867,10 @@
             onResize();
         }
 
-        // Kozmik Derin Uzay Arka Planı (Binlerce Parlayan Yıldız)
+        // Kozmik Derin Uzay Arka Planı (Optimize edilmiş hafif parlayan yıldızlar)
         function createCosmicBackground() {
             const starGeo = new THREE.BufferGeometry();
-            const count = 1600;
+            const count = 450;
             const pos = new Float32Array(count * 3);
             for (let i = 0; i < count * 3; i += 3) {
                 pos[i] = (Math.random() - 0.5) * 600;
@@ -881,25 +883,23 @@
             scene.add(stars);
         }
 
-        // Gökyüzünde Gerçekçi 3D Gezegenler (NASA Tarzı Dokular / Gerçek Renkler)
+        // Gökyüzünde Gerçekçi 3D Gezegenler (Hafif ve Hızlı Gouraud / Lambert Shading)
         function createSkyPlanets() {
             PLANETS.forEach((p, idx) => {
                 const group = new THREE.Group();
-                const geo = new THREE.SphereGeometry(p.size, 32, 32);
+                const geo = new THREE.SphereGeometry(p.size, 16, 12);
                 
-                // Yüksek kaliteli gerçekçi gezegen materyali
-                const mat = new THREE.MeshStandardMaterial({
-                    color: p.color,
-                    roughness: 0.7,
-                    metalness: 0.15
+                // Hızlı, hafif ve akıcı MeshLambertMaterial (Akıllı tahtalarda 60 FPS garantisi)
+                const mat = new THREE.MeshLambertMaterial({
+                    color: p.color
                 });
                 const sphere = new THREE.Mesh(geo, mat);
                 group.add(sphere);
 
                 // Eğer Satürn ise devasa buz halkalarını ekle!
                 if (p.id === 'saturn') {
-                    const ringGeo = new THREE.RingGeometry(p.size * 1.4, p.size * 2.3, 36);
-                    const ringMat = new THREE.MeshStandardMaterial({
+                    const ringGeo = new THREE.RingGeometry(p.size * 1.4, p.size * 2.3, 24);
+                    const ringMat = new THREE.MeshLambertMaterial({
                         color: 0xd8ba85,
                         side: THREE.DoubleSide,
                         transparent: true,
@@ -927,7 +927,7 @@
 
         // --- 5. BİLİM TRENİ (UZAY EKSPRESİ) & KUANTUM RAY SİSTEMİ ---
         const SEGMENT_LEN = 45;
-        const NUM_SEGMENTS = 7;
+        const NUM_SEGMENTS = 5;
 
         let TRACK_ASSETS = null;
         function getTrackAssets() {
@@ -999,9 +999,9 @@
         function createAstronaut() {
             astronautMesh = new THREE.Group();
 
-            // Beyaz Yüksek Teknoloji Uzay Kıyafeti
-            const suitMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, metalness: 0.1 });
-            const darkMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.4 });
+            // Hafif ve Hızlı MeshLambertMaterial (Akıllı tahta donmasını önler)
+            const suitMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+            const darkMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
 
             // Gövde
             const torsoGeo = new THREE.CylinderGeometry(0.55, 0.48, 1.25, 12);
@@ -1027,14 +1027,14 @@
             astronautMesh.add(flameR);
 
             // Kask
-            const helmetGeo = new THREE.SphereGeometry(0.52, 20, 20);
+            const helmetGeo = new THREE.SphereGeometry(0.52, 16, 16);
             const helmet = new THREE.Mesh(helmetGeo, suitMat);
             helmet.position.y = 2.05;
             astronautMesh.add(helmet);
 
-            // Altın Yansımalı Vizör
-            const visorGeo = new THREE.SphereGeometry(0.42, 16, 16, 0, Math.PI);
-            const visorMat = new THREE.MeshStandardMaterial({ color: 0x00f0ff, metalness: 0.95, roughness: 0.05 });
+            // Parlak Mavi Vizör
+            const visorGeo = new THREE.SphereGeometry(0.42, 12, 12, 0, Math.PI);
+            const visorMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
             const visor = new THREE.Mesh(visorGeo, visorMat);
             visor.position.set(0, 2.05, 0.22);
             visor.rotation.y = -Math.PI / 2;
@@ -1130,37 +1130,61 @@
                     satPanelGeo: new THREE.BoxGeometry(2.5, 0.08, 0.75),
                     satPanelMat: new THREE.MeshLambertMaterial({ color: 0x1d4ed8, emissive: 0x1e3a8a }),
                     satLightGeo: new THREE.SphereGeometry(0.14, 8, 8),
-                    satLightMat: new THREE.MeshBasicMaterial({ color: 0xff0044 })
+                    satLightMat: new THREE.MeshBasicMaterial({ color: 0xff0044 }),
+
+                    // 🚧 YÜKSEK EĞİLME BARİYERİ (Karakterin altından kayarak geçeceği kuantum lazer kapısı)
+                    barrierPostGeo: new THREE.BoxGeometry(0.18, 2.3, 0.2),
+                    barrierPostMat: new THREE.MeshLambertMaterial({ color: 0x334155 }),
+                    barrierBeamGeo: new THREE.BoxGeometry(2.8, 0.45, 0.28),
+                    barrierBeamMat: new THREE.MeshLambertMaterial({ color: 0xd97706 }), // Uyarıcı amber sarısı
+                    barrierStripeGeo: new THREE.BoxGeometry(2.6, 0.09, 0.32),
+                    barrierStripeMat: new THREE.MeshBasicMaterial({ color: 0xfef08a }), // Parlak uyarı şeridi
+                    barrierArrowGeo: new THREE.ConeGeometry(0.24, 0.42, 8),
+                    barrierArrowMat: new THREE.MeshBasicMaterial({ color: 0xfffbeb })  // Aşağıyı gösteren ⬇️ ok
                 };
             }
             return SHARED_ASSETS;
         }
 
-        // Doğal Gri Asteroit Kayası veya Uydu Enkazı Engeli
+        // Engeller: Yüksek Eğilme Bariyeri, Doğal Gri Asteroit Kayası veya Uydu Enkazı
         function spawnObstacle(x, z) {
             const assets = getSharedAssets();
             const group = new THREE.Group();
             group.position.set(x, 0, z);
 
-            const isSatellite = Math.random() < 0.4;
+            const r = Math.random();
 
-            if (isSatellite) {
-                // Uydu Enkazı: Gövde + Güneş Paneli + Kırmızı Yanıp Sönen Flaş
-                const body = new THREE.Mesh(assets.satBodyGeo, assets.satBodyMat);
-                body.position.y = 0.85;
-                group.add(body);
+            if (r < 0.38) {
+                // 🚧 1. YÜKSEK EĞİLME BARİYERİ (Öğrencinin Yalnızca Aşağı Eğilerek Altından Geçeceği Özel Engel)
+                // Sol Dikme
+                const postL = new THREE.Mesh(assets.barrierPostGeo, assets.barrierPostMat);
+                postL.position.set(-1.25, 1.15, 0);
+                group.add(postL);
 
-                const panel = new THREE.Mesh(assets.satPanelGeo, assets.satPanelMat);
-                panel.position.y = 0.85;
-                group.add(panel);
+                // Sağ Dikme
+                const postR = new THREE.Mesh(assets.barrierPostGeo, assets.barrierPostMat);
+                postR.position.set(1.25, 1.15, 0);
+                group.add(postR);
 
-                const beacon = new THREE.Mesh(assets.satLightGeo, assets.satLightMat);
-                beacon.position.y = 1.45;
-                group.add(beacon);
+                // Yüksek Yatay Bariyer Kirişi (Yerden 1.85m yükseklikte - Sadece eğilerek geçilir)
+                const beam = new THREE.Mesh(assets.barrierBeamGeo, assets.barrierBeamMat);
+                beam.position.set(0, 1.85, 0);
+                group.add(beam);
 
-                group.userData = { height: 1.4, isSatellite: true };
-            } else {
-                // 🌑 Doğal Gri Asteroit / Uzay Kayası (Asla turuncu/kırmızı içermez; saf gri tonlarında)
+                // Kiriş Üzeri Fosforlu İkaz Şeridi
+                const stripe = new THREE.Mesh(assets.barrierStripeGeo, assets.barrierStripeMat);
+                stripe.position.set(0, 1.85, 0.02);
+                group.add(stripe);
+
+                // "AŞAĞI EĞİL" İkaz Oku (Aşağıyı gösteren ⬇️ koni)
+                const arrow = new THREE.Mesh(assets.barrierArrowGeo, assets.barrierArrowMat);
+                arrow.position.set(0, 1.48, 0.16);
+                arrow.rotation.z = Math.PI; // Tam aşağı bakar
+                group.add(arrow);
+
+                group.userData = { height: 1.85, isOverheadBarrier: true, isSatellite: false };
+            } else if (r < 0.72) {
+                // 🌑 2. DOĞAL GRİ ASTEROİT / UZAY KAYASI (Zıplayarak Üzerinden Geçilebilir)
                 const rock = new THREE.Mesh(assets.rockGeo, assets.rockMat);
                 rock.position.y = 0.85;
                 rock.rotation.set(0.35, 0.45, 0.2);
@@ -1178,7 +1202,22 @@
                 accentRock.rotation.set(0.2, 0.7, 0.5);
                 group.add(accentRock);
 
-                group.userData = { height: 1.25, isSatellite: false };
+                group.userData = { height: 1.25, isSatellite: false, isOverheadBarrier: false };
+            } else {
+                // 🛰️ 3. ESKİ UYDU ENKAZI (Hem Zıplayarak Hem Eğilerek Geçilebilir)
+                const body = new THREE.Mesh(assets.satBodyGeo, assets.satBodyMat);
+                body.position.y = 0.85;
+                group.add(body);
+
+                const panel = new THREE.Mesh(assets.satPanelGeo, assets.satPanelMat);
+                panel.position.y = 0.85;
+                group.add(panel);
+
+                const beacon = new THREE.Mesh(assets.satLightGeo, assets.satLightMat);
+                beacon.position.y = 1.45;
+                group.add(beacon);
+
+                group.userData = { height: 1.4, isSatellite: true, isOverheadBarrier: false };
             }
 
             scene.add(group);
@@ -1388,10 +1427,10 @@
         function doDuck() {
             if (!isRunning) return;
             isDucking = true;
-            duckDuration = 0.65;
+            duckDuration = 0.85; // Rahat ve konforlu kayma süresi (bariyerin altından kolayca kayar)
             AudioFX.duck();
             if (!isGrounded) {
-                playerYSpeed = -26; // Anında yere çakılma (Fast drop)
+                playerYSpeed = -28; // Anında yere çakılma ve kayma (Fast slide drop)
             }
         }
 
@@ -1469,6 +1508,9 @@
 
         // --- 9. ANA ANİMASYON & OYUN DÖNGÜSÜ ---
         let lastFrame = performance.now();
+        let cachedHudScore = null;
+        let cachedHudDistVal = null;
+        let hudFrameCounter = 0;
 
         function animate(now) {
             requestAnimationFrame(animate);
@@ -1500,8 +1542,15 @@
             const step = speed * delta;
             score += Math.round(step * 2.2);
             lightYears += (step * 0.00045);
-            document.getElementById('hud-score').textContent = score.toLocaleString('tr-TR');
-            document.getElementById('hud-distance').innerHTML = `${lightYears.toFixed(2)} <span class="text-[10px] text-cyan-300 font-bold">ly</span>`;
+
+            // Akıllı tahta ve düşük donanımlarda donmayı (layout thrashing) önlemek için HUD 6 karede bir güncellenir
+            hudFrameCounter++;
+            if (hudFrameCounter % 6 === 0) {
+                if (!cachedHudScore) cachedHudScore = document.getElementById('hud-score');
+                if (!cachedHudDistVal) cachedHudDistVal = document.getElementById('hud-dist-val');
+                if (cachedHudScore) cachedHudScore.textContent = score.toLocaleString('tr-TR');
+                if (cachedHudDistVal) cachedHudDistVal.textContent = lightYears.toFixed(2);
+            }
 
             // 2. Karakter X Şerit Hareketi
             const targetX = LANES[currentLane];
@@ -1522,7 +1571,7 @@
             }
             astronautMesh.position.y = playerY;
 
-            // Eğilme (Uydu altından kayarak geçme imkanı)
+            // Eğilme (Bariyer altından kayarak geçme)
             if (isDucking) {
                 duckDuration -= delta;
                 astronautMesh.scale.set(1.2, 0.42, 1.2);
@@ -1561,16 +1610,24 @@
                 if (Math.abs(obs.position.z - astronautMesh.position.z) < 1.25) {
                     if (Math.abs(obs.position.x - astronautMesh.position.x) < 1.35) {
                         let hit = false;
-                        if (obs.userData.isSatellite) {
-                            // Uydu enkazı (Kırmızı butonlu engel): Hem üzerinden zıplayarak hem de eğilerek hasar almadan geçilebilir!
+                        if (obs.userData.isOverheadBarrier) {
+                            // 🚧 Yüksek Kuantum Bariyeri: YALNIZCA eğilerek (isDucking) altından geçilebilir!
+                            // Karakter ayaktaysa veya zıplıyorsa çarpar!
+                            hit = !isDucking;
+                        } else if (obs.userData.isSatellite) {
+                            // Uydu enkazı: Hem üzerinden zıplayarak hem de eğilerek hasar almadan geçilebilir!
                             hit = !isDucking && (playerY < 0.85);
                         } else {
-                            // Meteor / Kaya: Zıplayarak üzerinden geçilebilir!
+                            // Doğal Asteroit / Kaya: Zıplayarak üzerinden geçilebilir!
                             hit = playerY < obs.userData.height;
                         }
 
                         if (hit && invulnerableTime <= 0) {
-                            takeDamage("Bir uzay engeline çarptın!");
+                            if (obs.userData.isOverheadBarrier) {
+                                takeDamage("Yüksek bariyere çarptın! Eğilerek (Aşağı Ok / Aşağı Kaydırma) altından geçmelisin!");
+                            } else {
+                                takeDamage("Bir uzay engeline çarptın!");
+                            }
                         }
                     }
                 }
@@ -1739,6 +1796,11 @@
             playerYSpeed = 0;
             nextQuestionTimer = 10; // İlk soru kapısı 10 saniye sonra gelir
 
+            if (!cachedHudScore) cachedHudScore = document.getElementById('hud-score');
+            if (!cachedHudDistVal) cachedHudDistVal = document.getElementById('hud-dist-val');
+            if (cachedHudScore) cachedHudScore.textContent = '0';
+            if (cachedHudDistVal) cachedHudDistVal.textContent = '0,00';
+
             // Her oynayan kişide ve her yeni oyunda 100 soruluk havuzu baştan karıştır (Tamamen benzersiz sıra)
             activeQuestionDeck = shuffleArray(ALL_100_MAARIF_QUESTIONS);
 
@@ -1814,7 +1876,18 @@
             }
             camera.lookAt(0, 2.0, -20);
             camera.updateProjectionMatrix();
-            renderer.setSize(w, h);
+
+            // Akıllı tahta (4K / 3840px ekranlar) ve tüm cihazlarda donmayı önleyen çözünürlük optimizasyonu:
+            // 1920 genişliği aştığında dahili render boyutunu 1920'ye sınırla, GPU fill-rate yükünü %75 azalt
+            const maxRenderW = 1920;
+            if (w > maxRenderW) {
+                const scale = maxRenderW / w;
+                renderer.setSize(Math.round(w * scale), Math.round(h * scale), false);
+                renderer.domElement.style.width = '100%';
+                renderer.domElement.style.height = '100%';
+            } else {
+                renderer.setSize(w, h, true);
+            }
         }
 
         window.addEventListener('DOMContentLoaded', () => {
