@@ -335,6 +335,237 @@ app.get('/api/curriculum', (req, res) => {
   res.json(curr);
 });
 
+// Gök Cisimleri Base64 Varlık Endpoint'i (html2canvas ve PDF için sıfır gecikmeli, %100 çevrimdışı)
+app.get('/api/celestial-assets', (req, res) => {
+  try {
+    const sunPath = path.join(__dirname, 'public', 'images', 'sun.jpg');
+    const earthPath = path.join(__dirname, 'public', 'images', 'earth.jpg');
+    const moonPath = path.join(__dirname, 'public', 'images', 'moon.jpg');
+    
+    const sun = fs.existsSync(sunPath) ? 'data:image/jpeg;base64,' + fs.readFileSync(sunPath).toString('base64') : '';
+    const earth = fs.existsSync(earthPath) ? 'data:image/jpeg;base64,' + fs.readFileSync(earthPath).toString('base64') : '';
+    const moon = fs.existsSync(moonPath) ? 'data:image/jpeg;base64,' + fs.readFileSync(moonPath).toString('base64') : '';
+    
+    res.json({ success: true, assets: { sun, earth, moon } });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// LaTeX ve Bozuk Karakter Temizleme Motoru
+function cleanTurkishAndLatex(str) {
+  if (typeof str !== 'string') return str || '';
+  let text = str;
+  // Strip LaTeX math delimiters ($...$ veya $$...$$)
+  text = text.replace(/\$\$([\s\S]*?)\$\$/g, '$1');
+  text = text.replace(/\$([^$]+)\$/g, '$1');
+  // Strip common LaTeX commands
+  text = text.replace(/\\(text|mathbf|mathrm|mathit)\{([^}]+)\}/g, '$2');
+  // Replace escaped math relational symbols
+  text = text.replace(/\\>/g, '>');
+  text = text.replace(/\\</g, '<');
+  text = text.replace(/\\ge(q)?/g, '≥');
+  text = text.replace(/\\le(q)?/g, '≤');
+  // Fix corrupt Turkish characters & spellings
+  text = text.replace(/\bDiinya\b/g, 'Dünya');
+  text = text.replace(/\bdiinya\b/g, 'dünya');
+  text = text.replace(/\bGiines\b/g, 'Güneş');
+  text = text.replace(/\bgiines\b/g, 'güneş');
+  text = text.replace(/\bGunes\b/g, 'Güneş');
+  text = text.replace(/\bgunes\b/g, 'güneş');
+  text = text.replace(/\bDunya\b/g, 'Dünya');
+  text = text.replace(/\bdunya\b/g, 'dünya');
+  text = text.replace(/\bisik\b/g, 'ışık');
+  text = text.replace(/\bIsik\b/g, 'Işık');
+  text = text.replace(/rotamenci/gi, 'Rotalı Fenci');
+  // Fix comparison spacing (örn: "Ay>Dünya>Güneş" -> "Ay > Dünya > Güneş")
+  text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*>\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 > $2');
+  text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*<\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 < $2');
+  return text.trim();
+}
+
+// Gerçekçi Gök Cisimleri (Güneş, Dünya, Ay) Görsel Şablon ve Zenginleştirme Motoru
+// KURAL: Siyah / Koyu zeminler kesinlikle kullanılmaz. Saf beyaz (#ffffff) veya şeffaf zemin ve koyu net metinler kullanılır.
+function enhanceCelestialVisual(visual_svg, question, options = {}) {
+  const textToScan = `${question || ''} ${Object.values(options || {}).join(' ')} ${visual_svg || ''}`.toLowerCase();
+  
+  const hasGunes = textToScan.includes('güneş') || textToScan.includes('gunes') || textToScan.includes('sun');
+  const hasDunya = textToScan.includes('dünya') || textToScan.includes('dunya') || textToScan.includes('earth');
+  const hasAy = textToScan.includes('ay') || textToScan.includes('moon') || textToScan.includes('hilal') || textToScan.includes('dolunay');
+
+  // SVG'lerdeki olası koyu/siyah arka planları ve yıldız noktalarını beyaz zemin standardına dönüştür
+  function sanitizeToWhiteBackground(svgContent) {
+    if (!svgContent) return '';
+    let cleaned = svgContent;
+    if (!cleaned.includes('xmlns:xlink')) {
+      cleaned = cleaned.replace('<svg', '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+    // Font ailesini Times New Roman standardına geçir
+    cleaned = cleaned.replace(/font-family=["'][^"']*["']/gi, 'font-family="\'Times New Roman\', Times, serif"');
+    // Siyah/koyu zemin rect'lerini beyaz/şeffaf ve ince gri bordürlü yap
+    cleaned = cleaned.replace(/fill=["']#(070a12|090d16|0b0f19|000000|0f172a|030712|1e1b4b|1e293b|000)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
+    cleaned = cleaned.replace(/fill=["']black["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
+    cleaned = cleaned.replace(/fill=["']rgba?\(\s*0\s*,\s*0\s*,\s*0[^)]*\)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
+    // Yıldız noktalarını temizle
+    cleaned = cleaned.replace(/<circle[^>]*opacity=["']0\.[0-9]+["'][^>]*fill=["']#(fff|ffffff)["'][^>]*\/?>/gi, '');
+    cleaned = cleaned.replace(/<circle[^>]*fill=["']#(fff|ffffff)["'][^>]*opacity=["']0\.[0-9]+["'][^>]*\/?>/gi, '');
+    // Koyu zemindeki açık/beyaz metinleri beyaz zemin için koyu renge dönüştür
+    cleaned = cleaned.replace(/fill=["']#fbbf24["']/gi, 'fill="#b45309"'); // Güneş açık sarı -> koyu kehribar
+    cleaned = cleaned.replace(/fill=["']#38bdf8["']/gi, 'fill="#0369a1"'); // Dünya açık mavi -> koyu okyanus mavisi
+    cleaned = cleaned.replace(/fill=["']#e2e8f0["']/gi, 'fill="#334155"'); // Ay açık gri -> koyu arduvaz gri
+    cleaned = cleaned.replace(/fill=["']#(f8fafc|ffffff|fff)["'](?=[^>]*font-)/gi, 'fill="#0f172a"'); // Beyaz yazılar -> koyu lacivert
+    // SVG içindeki bozuk kelimeleri düzelt
+    cleaned = cleaned.replace(/\bDiinya\b/g, 'Dünya');
+    cleaned = cleaned.replace(/\bdiinya\b/g, 'dünya');
+    cleaned = cleaned.replace(/\bGiines\b/g, 'Güneş');
+    cleaned = cleaned.replace(/\bgiines\b/g, 'güneş');
+    cleaned = cleaned.replace(/\bGunes\b/g, 'Güneş');
+    cleaned = cleaned.replace(/\bgunes\b/g, 'güneş');
+    cleaned = cleaned.replace(/\bDunya\b/g, 'Dünya');
+    cleaned = cleaned.replace(/\bdunya\b/g, 'dünya');
+    return cleaned;
+  }
+
+  // Eğer zaten /images/ barındırıyorsa, koyu zeminleri temizle ve döndür
+  if (visual_svg && visual_svg.includes('/images/') && visual_svg.includes('<image')) {
+    return sanitizeToWhiteBackground(visual_svg);
+  }
+
+  // Gök cisimleri ile ilgili olup olmadığını belirle
+  const isSizeComparison = (hasGunes && hasDunya && hasAy) || 
+                           ((textToScan.includes('büyüklük') || textToScan.includes('boyut') || textToScan.includes('kıyas') || textToScan.includes('basketbol topu') || textToScan.includes('sıralama') || textToScan.includes('hacim')) && (hasGunes || hasDunya || hasAy));
+                           
+  const isLightReflection = textToScan.includes('ışık kaynağı') || textToScan.includes('isik kaynagi') || textToScan.includes('yansıt') || textToScan.includes('yansit');
+  
+  const isShapeQuestion = (textToScan.includes('geometrik şekil') || textToScan.includes('geometrik sekil') || textToScan.includes('küre') || textToScan.includes('kure')) && (hasGunes && hasAy);
+
+  // Şablon 1: Güneş, Dünya ve Ay 3 Cisim Boyut Karşılaştırması (Güneş >> Dünya > Ay) - Beyaz Zemin (Büyük Görsel)
+  if (isSizeComparison || (hasGunes && hasDunya && hasAy)) {
+    return `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScaleClip"><circle cx="110" cy="95" r="76"/></clipPath>
+    <clipPath id="earthScaleClip"><circle cx="315" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScaleClip"><circle cx="435" cy="95" r="12"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="190" y1="95" x2="280" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="348" y1="95" x2="418" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="34" y="19" width="152" height="152" clip-path="url(#sunScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="76" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="287" y="67" width="56" height="56" clip-path="url(#earthScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="315" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="423" y="83" width="24" height="24" clip-path="url(#moonScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="435" cy="95" r="12" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Büyük (Yıldız)</text>
+  <text x="315" y="186" text-anchor="middle" fill="#0369a1" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">DÜNYA</text>
+  <text x="315" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Orta Büyüklükte (Gezegen)</text>
+  <text x="435" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="435" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Küçük (Uydu)</text>
+</svg>`;
+  }
+
+  // Şablon 2: Işık Kaynağı ve Yansıtıcı (Güneş & Ay Işık İlişkisi) - Beyaz Zemin (Büyük Görsel)
+  if (isLightReflection && hasGunes && hasAy) {
+    return `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunLightClip"><circle cx="410" cy="95" r="68"/></clipPath>
+    <clipPath id="moonLightClip"><circle cx="110" cy="95" r="38"/></clipPath>
+    <marker id="arrowLight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="335" y1="80" x2="155" y2="80" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowLight)"/>
+  <line x1="335" y1="95" x2="155" y2="95" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrowLight)"/>
+  <line x1="335" y1="110" x2="155" y2="110" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowLight)"/>
+  <rect x="195" y="83" width="110" height="24" rx="4" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="250" y="99" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="10.5" font-weight="700">IŞIK IŞINLARI</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="72" y="57" width="76" height="76" clip-path="url(#moonLightClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="38" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Işık Kaynağı Değil (Yansıtıcı)</text>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="342" y="27" width="136" height="136" clip-path="url(#sunLightClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="410" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="410" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="410" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Doğal Işık ve Isı Kaynağı</text>
+</svg>`;
+  }
+
+  // Şablon 3: Güneş ve Ay Geometrik Şekil Karşılaştırması - Beyaz Zemin (Büyük Görsel)
+  if (isShapeQuestion || (hasGunes && hasAy && !hasDunya)) {
+    return `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunComp2Clip"><circle cx="145" cy="95" r="72"/></clipPath>
+    <clipPath id="moonComp2Clip"><circle cx="375" cy="95" r="46"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="73" y="23" width="144" height="144" clip-path="url(#sunComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="145" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="145" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="145" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="329" y="49" width="92" height="92" clip-path="url(#moonComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="375" cy="95" r="46" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="375" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="375" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+</svg>`;
+  }
+
+  // Şablon 4: Tek Başına Güneş - Beyaz Zemin (Büyük Görsel)
+  if (hasGunes && !hasDunya && !hasAy) {
+    return `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunSoloClip"><circle cx="260" cy="95" r="76"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="184" y="19" width="152" height="152" clip-path="url(#sunSoloClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="76" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="2">GÜNEŞ</text>
+  <text x="260" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Orta Büyüklükte Bir Yıldız • Isı ve Işık Kaynağı • Küresel Şekil</text>
+</svg>`;
+  }
+
+  // Şablon 5: Tek Başına Ay - Beyaz Zemin (Büyük Görsel)
+  if (hasAy && !hasGunes && !hasDunya) {
+    return `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonSoloClip"><circle cx="260" cy="95" r="74"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="186" y="21" width="148" height="148" clip-path="url(#moonSoloClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="74" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="260" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="2">AY</text>
+  <text x="260" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Dünya'nın Doğal Uydusu • Yüzeyinde Kraterler Bulunur • İnce Atmosfer</text>
+</svg>`;
+  }
+
+  // Şablon 6: Tek Başına Dünya - Beyaz Zemin (Büyük Görsel)
+  if (hasDunya && !hasGunes && !hasAy) {
+    return `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="earthSoloClip"><circle cx="260" cy="95" r="72"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="188" y="23" width="144" height="144" clip-path="url(#earthSoloClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="72" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <text x="260" y="186" text-anchor="middle" fill="#0369a1" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="2">DÜNYA</text>
+  <text x="260" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Mavi Gezegen • Canlı Yaşamı • Katmanlı Atmosfer</text>
+</svg>`;
+  }
+
+  // Genel daireli veya diğer SVG çizimlerini sanitize et
+  if (visual_svg) {
+    if (visual_svg.includes('<circle') && (hasGunes || hasDunya || hasAy)) {
+      if (hasGunes && (hasDunya || hasAy)) {
+        return enhanceCelestialVisual('', 'güneş dünya ay boyut kıyaslama', {});
+      }
+    }
+    return sanitizeToWhiteBackground(visual_svg);
+  }
+
+  return visual_svg;
+}
+
 // Soru Üretim Endpoint'i (Tüm Soru Türlerini Destekler)
 app.post('/api/generate-questions', async (req, res) => {
   try {
@@ -365,13 +596,14 @@ app.post('/api/generate-questions', async (req, res) => {
 
     const genAI = new GoogleGenerativeAI(apiKey);
     
-    const model = genAI.getGenerativeModel({
-      model: "gemini-3.6-flash",
-      generationConfig: {
-        responseMimeType: "application/json",
-        temperature: 0.35
-      }
-    });
+    // Model yoğunluğuna karşı otomatik yedekli model listesi (Fallback Engine)
+    const CANDIDATE_MODELS = [
+      "gemini-3.5-flash-lite",
+      "gemini-3.1-flash-lite",
+      "gemini-3.6-flash",
+      "gemini-3.5-flash",
+      "gemini-pro-latest"
+    ];
 
     const outcomesText = outcomesList.map((o, idx) => `${idx + 1}. ${o}`).join('\n');
 
@@ -425,8 +657,37 @@ Verilen sınıf seviyesi (${grade}. Sınıf), ders (${subject}), seçilen öğre
 
 ${typeSpecificInstructions}
 
-GÖRSEL VE ŞEKİL ÇİZİM KURALLARI:
-- Her soru için "visual_svg" alanında soruya ait bilimsel şekli, deney düzeneğini, şemayı, kavram haritasını, grid ızgarasını veya V diyagramını gösteren GEÇERLİ, RENKLİ ve TEMİZ bir inline SVG kodu üret (viewBox="0 0 420 180" veya uygun ölçek).
+GÖRSEL, DENEY DÜZENEĞİ VE ŞEKİL ÇİZİM KURALLARI (ZORUNLU - ÇOK BÜYÜK, GERÇEKÇİ VE NET OLMALI):
+- Her soru için "visual_svg" alanında soruya ait bilimsel şekli, deney düzeneğini, şemayı, grafik tablosunu veya kavram modelini gösteren GEÇERLİ, CANLI, BÜYÜK VE NET bir inline SVG kodu üret.
+- ARKA PLAN VE ZEMİN KURALI (KESİNLİKLE ŞEFFAF VEYA SAF BEYAZ - ÇOK KRİTİK):
+  * Siyah, koyu gri, lacivert veya koyu renkli arka planlar (<rect fill="#000..."/>, fill="#070a12", fill="#0f172a" vb.) KESİNLİKLE KULLANILMAYACAKTIR!
+  * Yazıcı mürekkebini ve tonerini tüketmemek için tüm görsel ve şema konteynerlerinin arka planı tamamen ŞEFFAF veya SAF BEYAZ (#ffffff) olmalıdır.
+  * Şema alanı sınırları için yalnızca çok ince, zarif bir dış kenar çizgisi (<rect x="0" y="0" width="520" height="200" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>) kullanılabilir.
+  * Yıldız noktacıkları veya koyu uzay kutuları KESİNLİKLE ÇİZİLMEYECEKTİR.
+  * Tüm metinler, değerler ve etiketler beyaz zemin üzerinde %100 net okunacak şekilde KOYU RENKLERLE yazılmalıdır (Güneş için fill="#b45309", Dünya için fill="#0369a1", Ay için fill="#334155", diğer yazılar fill="#0f172a"). Beyaz veya açık sarı yazı KULLANILMAYACAKTIR.
+- GÖK CİSİMLERİ (GÜNEŞ, DÜNYA, AY) İÇİN GERÇEKÇİ FOTOĞRAFİK DOKU KURALLARI:
+  * Basit, düz renkli ve vektörel daire çizimleri KESİNLİKLE YASAKTIR!
+  * Sistemde yüksek çözünürlüklü gerçekçi fotoğrafik dokular bulunmaktadır:
+    - Güneş için: "/images/sun.jpg" (Alevli, patlamalı, detaylı yüzey plazma dokulu gerçek Güneş fotoğrafı)
+    - Dünya için: "/images/earth.jpg" (Okyanusları, kıtaları ve bulutları net Blue Marble Dünya fotoğrafı)
+    - Ay için: "/images/moon.jpg" (Kraterleri, denizleri ve Tycho ışınları net gerçekçi Ay yüzeyi fotoğrafı)
+  * Bu görseller SVG içerisinde <defs><clipPath id="..."><circle cx="..." cy="..." r="..."/></clipPath></defs> ile dairesel maskelenmeli ve <image href="/images/..." xlink:href="/images/..." ... clip-path="url(#...)" preserveAspectRatio="xMidYMid slice" /> şeklinde yerleştirilmelidir.
+- BİLİMSEL BOYUT ORANTISI (ÇOK KRİTİK):
+  * Güneş, Dünya ve Ay karşılaştırmalarında:
+    - Güneş: Belirgin şekilde ÇOK BÜYÜK (çapı ~130-140px, r="66" civarı, çevresinde ince altın rengi kontur stroke="#f59e0b" stroke-width="2").
+    - Dünya: Orta büyüklükte (çapı ~50px, r="25" civarı, çevresinde ince mavi atmosfer konturu stroke="#0284c7" stroke-width="1.5").
+    - Ay: Belirgin şekilde EN KÜÇÜK (çapı ~20px, r="10" civarı, çevresinde ince gri kontur stroke="#94a3b8" stroke-width="1.5").
+    - Güneş >> Dünya > Ay büyüklük farkı hemen fark edilmelidir. Cisimlerin aynı boyutta çizilmesi KESİNLİKLE YASAKTIR.
+- METİN VE ETİKET ÇAKIŞMA KORUMASI (ÖNEMLİ):
+  * Şema üzerindeki tüm metinler, değerler, cisim isimleri ve etiketler şekillerin, okların veya dairelerin ÜZERİNE BİNMEYECEK şekilde ferah boşluklara yerleştirilmelidir.
+  * Cisim isimleri cisimlerin altına yazılmalıdır (text-anchor="middle", font-family="'Times New Roman', Times, serif", font-weight="800", font-size="13", Güneş için fill="#b45309", Dünya için fill="#0369a1", Ay için fill="#334155").
+- SVG kodunda <html> veya markdown etiketi olmamalı, doğrudan <svg ...>...</svg> formatında string olmalıdır.
+
+TİPOGRAFİ, İMLA VE KARAKTER KURALLARI (ÇOK KRİTİK):
+- KESİNLİKLE VE ASLA LaTeX sembolleri ($...$, $$...$$, \\text{...} vb.) KULLANILMAYACAKTIR!
+- Büyüklük, boyut ve sıralama kıyaslamalarını ham matematik formülleri ($...$) olarak değil, doğrudan düzgün Türkçe kelimelerle ve ' > ' işareti ile yaz (Örnek: 'Güneş > Dünya > Ay' veya 'Güneş, Dünya ve Ay').
+- Asla '$Ay>Diinya>Giines$' gibi bozuk karakterler ('Diinya', 'Giines') ve semboller üretilmeyecektir. Her zaman düzgün Türkçe karakterler ('Dünya', 'Güneş', 'Ay', 'Işık') kullanılacaktır.
+- SVG çizimlerindeki tüm metinlerde font-family="'Times New Roman', Times, serif" kullanılmalıdır.
 
 GENEL KURALLAR:
 1. Her soru seçilen öğrenme çıktılarından birini doğrudan ölçmelidir.
@@ -438,7 +699,7 @@ GENEL KURALLAR:
   {
     "id": 1,
     "type": "multiple_choice | short_answer | open_ended | structured_grid | concept_map | v_diagram",
-    "visual_svg": "<svg viewBox=\"0 0 420 180\" width=\"100%\" height=\"180\" xmlns=\"http://www.w3.org/2000/svg\">...</svg>",
+    "visual_svg": "<svg viewBox=\"0 0 460 150\" width=\"100%\" height=\"100%\" xmlns=\"http://www.w3.org/2000/svg\">...</svg>",
     "question": "Soru metni veya yönelgesi...",
     "grid_items": ["1. Terim", "2. Terim", ...] // Sadece yapılandırılmış grid ise (9 elemanlı), yoksa boş dizi []
     "options": {
@@ -467,13 +728,39 @@ ${outcomesText}
 
 Yanıtı sadece belirtilen JSON formatında ver.`;
 
-    const result = await model.generateContent({
-      contents: [
-        { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
-      ]
-    });
+    let responseText = null;
+    let lastError = null;
 
-    const responseText = result.response.text();
+    for (const modelName of CANDIDATE_MODELS) {
+      try {
+        console.log(`[Gemini API] Soru üretimi deneniyor: ${modelName}`);
+        const model = genAI.getGenerativeModel({
+          model: modelName,
+          generationConfig: {
+            responseMimeType: "application/json",
+            temperature: 0.35
+          }
+        });
+
+        const result = await model.generateContent({
+          contents: [
+            { role: 'user', parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }] }
+          ]
+        });
+
+        responseText = result.response.text();
+        console.log(`[Gemini API] Başarılı model: ${modelName}`);
+        break; // Başarılı olunca döngüden çık
+      } catch (err) {
+        console.warn(`[Gemini API] ${modelName} modelinde hata: ${err.message}. Sonraki modele geçiliyor...`);
+        lastError = err;
+      }
+    }
+
+    if (!responseText) {
+      throw lastError || new Error("Hiçbir Gemini modeli yanıt veremedi.");
+    }
+
     let questions;
     try {
       questions = JSON.parse(responseText);
@@ -493,19 +780,19 @@ Yanıtı sadece belirtilen JSON formatında ver.`;
     const normalizedQuestions = questions.map((q, idx) => ({
       id: q.id || idx + 1,
       type: q.type || question_type || "multiple_choice",
-      visual_svg: q.visual_svg || "",
-      grid_items: Array.isArray(q.grid_items) ? q.grid_items : [],
-      question: q.question || "",
+      visual_svg: enhanceCelestialVisual(q.visual_svg || "", q.question || "", q.options || {}),
+      grid_items: Array.isArray(q.grid_items) ? q.grid_items.map(cleanTurkishAndLatex) : [],
+      question: cleanTurkishAndLatex(q.question || ""),
       options: q.options && Object.keys(q.options).length > 0 ? {
-        A: q.options?.A || "",
-        B: q.options?.B || "",
-        C: q.options?.C || "",
-        D: q.options?.D || ""
+        A: cleanTurkishAndLatex(q.options?.A || ""),
+        B: cleanTurkishAndLatex(q.options?.B || ""),
+        C: cleanTurkishAndLatex(q.options?.C || ""),
+        D: cleanTurkishAndLatex(q.options?.D || "")
       } : {},
-      correct_answer: (q.correct_answer || "").trim(),
+      correct_answer: cleanTurkishAndLatex((q.correct_answer || "").trim()),
       learning_outcome: q.learning_outcome || outcomesList[0],
       difficulty: q.difficulty || difficulty,
-      explanation: q.explanation || ""
+      explanation: cleanTurkishAndLatex(q.explanation || "")
     }));
 
     return res.json({
@@ -570,16 +857,16 @@ app.post('/api/export-docx', async (req, res) => {
     // Başlık
     docChildren.push(
       new Paragraph({
-        text: "T.C. MİLLİ EĞİTİM BAKANLIĞI",
+        text: "T.C. MİLLÎ EĞİTİM BAKANLIĞI",
         alignment: AlignmentType.CENTER,
         heading: HeadingLevel.HEADING_2,
         spacing: { after: 100 }
       }),
       new Paragraph({
-        text: `${grade}. SINIF ${subject.toUpperCase()} DERSİ YAPRAK TESTİ`,
+        text: `${grade}. SINIF ${subject.toUpperCase()} DENEME SINAVI / YAPRAK TESTİ`,
         alignment: AlignmentType.CENTER,
         heading: HeadingLevel.HEADING_1,
-        spacing: { after: 200 }
+        spacing: { after: 160 }
       })
     );
 
@@ -590,7 +877,7 @@ app.post('/api/export-docx', async (req, res) => {
             new TextRun({ text: "Ünite / Konu: ", bold: true }),
             new TextRun({ text: learning_area })
           ],
-          spacing: { after: 200 }
+          spacing: { after: 180 }
         })
       );
     }
@@ -610,7 +897,7 @@ app.post('/api/export-docx', async (req, res) => {
                   new Paragraph({
                     children: [
                       new TextRun({ text: "Adı Soyadı: ........................................................" }),
-                      new TextRun({ text: "   Sınıfı / No: ............ / ............" })
+                      new TextRun({ text: "   Sınıfı / Şube: ............ / ............" })
                     ]
                   })
                 ]
@@ -630,13 +917,13 @@ app.post('/api/export-docx', async (req, res) => {
           })
         ]
       }),
-      new Paragraph({ text: "", spacing: { after: 300 } })
+      new Paragraph({ text: "", spacing: { after: 240 } })
     );
 
     const target_pages = parseInt(req.body.target_pages, 10) || 1;
     const questionsPerPage = Math.ceil(questions.length / Math.min(target_pages, Math.max(1, questions.length)));
 
-    // Soruları Ekle (Hedef Sayfa Sayısına Göre Sayfa Sonu Ekleyerek)
+    // Soruları Ekle
     questions.forEach((q, idx) => {
       let typeLabel = "";
       if (q.type === "open_ended") typeLabel = "[Açık Uçlu]";
@@ -651,11 +938,11 @@ app.post('/api/export-docx', async (req, res) => {
         new Paragraph({
           pageBreakBefore: shouldPageBreak,
           children: [
-            new TextRun({ text: `${idx + 1}. `, bold: true, size: 24, color: "2B3A4A" }),
-            typeLabel ? new TextRun({ text: `${typeLabel} `, bold: true, size: 20, color: "666666" }) : new TextRun({ text: "" }),
-            new TextRun({ text: q.question, size: 22 })
+            new TextRun({ text: `${idx + 1}. `, bold: true, size: 23, color: "1E293B" }),
+            typeLabel ? new TextRun({ text: `${typeLabel} `, bold: true, size: 19, color: "4F46E5" }) : new TextRun({ text: "" }),
+            new TextRun({ text: q.question, size: 21 })
           ],
-          spacing: { before: shouldPageBreak ? 100 : 200, after: 120 }
+          spacing: { before: shouldPageBreak ? 80 : 160, after: 100 }
         })
       );
 
@@ -681,38 +968,87 @@ app.post('/api/export-docx', async (req, res) => {
             width: { size: 100, type: WidthType.PERCENTAGE },
             rows: gridRows
           }),
-          new Paragraph({ text: "", spacing: { after: 120 } })
+          new Paragraph({ text: "", spacing: { after: 100 } })
         );
       }
 
       // Çoktan Seçmeli Seçenekleri
       if (q.options && q.options.A) {
-        ['A', 'B', 'C', 'D'].forEach(opt => {
+        const maxLen = Math.max(
+          (q.options.A || '').length,
+          (q.options.B || '').length,
+          (q.options.C || '').length,
+          (q.options.D || '').length
+        );
+
+        if (maxLen <= 18) {
+          // Tek satırda 4 şık
           docChildren.push(
             new Paragraph({
               children: [
-                new TextRun({ text: `   ${opt}) `, bold: true, size: 22 }),
-                new TextRun({ text: q.options[opt] || "", size: 22 })
+                new TextRun({ text: "   A) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.A}      `, size: 21 }),
+                new TextRun({ text: "B) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.B}      `, size: 21 }),
+                new TextRun({ text: "C) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.C}      `, size: 21 }),
+                new TextRun({ text: "D) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.D}`, size: 21 })
               ],
               spacing: { after: 80 }
             })
           );
-        });
+        } else if (maxLen <= 38) {
+          // 2 satırda 2şer şık
+          docChildren.push(
+            new Paragraph({
+              children: [
+                new TextRun({ text: "   A) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.A}            `, size: 21 }),
+                new TextRun({ text: "B) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.B}`, size: 21 })
+              ],
+              spacing: { after: 40 }
+            }),
+            new Paragraph({
+              children: [
+                new TextRun({ text: "   C) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.C}            `, size: 21 }),
+                new TextRun({ text: "D) ", bold: true, size: 21 }),
+                new TextRun({ text: `${q.options.D}`, size: 21 })
+              ],
+              spacing: { after: 80 }
+            })
+          );
+        } else {
+          // Alt alta şıklar
+          ['A', 'B', 'C', 'D'].forEach(opt => {
+            docChildren.push(
+              new Paragraph({
+                children: [
+                  new TextRun({ text: `   ${opt}) `, bold: true, size: 21 }),
+                  new TextRun({ text: q.options[opt] || "", size: 21 })
+                ],
+                spacing: { after: 60 }
+              })
+            );
+          });
+        }
       } else {
         // Açık Uçlu / Kısa Cevaplı Çizgili Yazı Alanı
         docChildren.push(
           new Paragraph({
             text: "Cevap: ........................................................................................................................................................................",
-            spacing: { after: 100 }
+            spacing: { after: 80 }
           }),
           new Paragraph({
             text: "........................................................................................................................................................................................",
-            spacing: { after: 120 }
+            spacing: { after: 100 }
           })
         );
       }
 
-      docChildren.push(new Paragraph({ text: "", spacing: { after: 150 } }));
+      docChildren.push(new Paragraph({ text: "", spacing: { after: 100 } }));
     });
 
     // Cevap Anahtarı

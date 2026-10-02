@@ -198,16 +198,14 @@
             
             <!-- Sol: Rotalı Fenci - Uzay Ekspresi Logo -->
             <div class="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
-                <div class="neon-card-blue px-2.5 py-1 sm:px-4 sm:py-2 rounded-2xl flex items-center gap-2">
-                    <span class="w-7 h-7 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center text-white text-xs sm:text-lg shadow-lg">
-                        <i class="fa-solid fa-rocket animate-pulse"></i>
-                    </span>
+                <div class="neon-card-blue px-2 py-1 sm:px-3.5 sm:py-1.5 rounded-2xl flex items-center gap-2 sm:gap-2.5">
+                    <img src="karakter-astronot.jpg" alt="Türk Astronot Kaşif" class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-cover border-2 border-red-500/80 shadow-[0_0_10px_#ef4444] shrink-0" onerror="this.onerror=null; this.src='../assets/karakter-astronot.jpg'">
                     <div>
                         <div class="font-orbitron text-[11px] sm:text-base font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-white to-amber-300 leading-tight">
                             ROTALI FENCİ
                         </div>
                         <div class="text-[8px] sm:text-[10px] font-black tracking-widest text-cyan-400 uppercase hidden sm:block">
-                            UZAY EKSPRESİ • 6. SINIF
+                            TÜRK ASTRONOT • 6. SINIF
                         </div>
                     </div>
                 </div>
@@ -416,20 +414,20 @@
     <div id="start-modal" class="absolute inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
         <div class="max-w-xl w-full neon-card-blue border-2 border-cyan-400 rounded-3xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
             
-            <div class="relative w-full h-36 sm:h-44 rounded-2xl overflow-hidden mb-3 border border-cyan-400/40 shadow-lg">
-                <img src="rotali-uzay-ekspresi.jpg" alt="Rotalı Fenci - Uzay Ekspresi" class="w-full h-full object-cover" onerror="this.src='../assets/rotali-uzay-ekspresi.jpg'">
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent"></div>
+            <div class="relative w-full h-44 sm:h-56 rounded-2xl overflow-hidden mb-3 border-2 border-red-500/50 shadow-xl">
+                <img src="karakter-astronot.jpg" alt="Rotalı Fenci - Türk Çocuk Astronot" class="w-full h-full object-cover object-top" onerror="this.src='../assets/karakter-astronot.jpg'">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent"></div>
                 <div class="absolute top-2 left-2">
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-cyan-950/80 backdrop-blur-md border border-cyan-500/50 text-cyan-300 text-[10px] font-black uppercase tracking-wider">
-                        <i class="fa-solid fa-certificate text-amber-400"></i> TÜRKİYE YÜZYILI MAARİF MODELİ
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-950/80 backdrop-blur-md border border-red-500/60 text-red-300 text-[10px] font-black uppercase tracking-wider">
+                        <i class="fa-solid fa-star text-white"></i> TÜRKİYE YÜZYILI MAARİF MODELİ
                     </span>
                 </div>
                 <div class="absolute bottom-2 left-3 right-3 flex items-center justify-between">
                     <span class="px-2.5 py-0.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-[10px] font-black text-amber-300 border border-amber-400/40 uppercase">
                         🪐 6. Sınıf 1. Ünite
                     </span>
-                    <span class="px-2.5 py-0.5 rounded-lg bg-slate-950/80 backdrop-blur-md text-[10px] font-black text-cyan-300 border border-cyan-400/40 uppercase">
-                        🚀 3D Kuantum Treni
+                    <span class="px-2.5 py-0.5 rounded-lg bg-red-950/80 backdrop-blur-md text-[10px] font-black text-white border border-red-500/60 uppercase flex items-center gap-1">
+                        🚀 Türk Çocuk Astronot
                     </span>
                 </div>
             </div>
@@ -474,8 +472,11 @@
     <div id="game-over-modal" class="absolute inset-0 z-50 bg-slate-950/95 backdrop-blur-lg flex items-center justify-center p-4 hidden">
         <div class="max-w-md w-full neon-card-purple border-2 border-rose-500/80 rounded-3xl p-6 sm:p-8 text-center shadow-2xl relative overflow-hidden">
             
-            <div class="w-16 h-16 rounded-2xl bg-rose-500/20 border border-rose-500 text-rose-500 mx-auto flex items-center justify-center text-3xl mb-3">
-                <i class="fa-solid fa-satellite-dish animate-pulse"></i>
+            <div class="relative w-20 h-20 mx-auto mb-3">
+                <img src="karakter-astronot.jpg" alt="Türk Çocuk Astronot" class="w-20 h-20 rounded-2xl object-cover border-2 border-red-500 shadow-[0_0_15px_#f43f5e] mx-auto" onerror="this.src='../assets/karakter-astronot.jpg'">
+                <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-red-600 border border-white text-white text-[10px] flex items-center justify-center font-bold">
+                    <i class="fa-solid fa-star"></i>
+                </span>
             </div>
 
             <h2 class="font-orbitron text-2xl sm:text-3xl font-black text-white uppercase tracking-wider mb-1">
@@ -995,50 +996,368 @@
             return group;
         }
 
-        // --- 6. ASTRONOT KARAKTERİ ---
+        // --- 6. TÜRK ASTRONOT KARAKTERİ (Görselin Birebir Aynısı: Ay-Yıldızlı Çanta, Şeffaf Kask, Kırmızı Detaylar) ---
+        function createTurkishFlagTexture(isCircle = true) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+
+            if (isCircle) {
+                // Yuvarlak Kırmızı Rozet (Çanta & Kask Kulaklıkları)
+                ctx.fillStyle = '#dc2626';
+                ctx.beginPath();
+                ctx.arc(64, 64, 60, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.lineWidth = 5;
+                ctx.strokeStyle = '#ffffff';
+                ctx.stroke();
+            } else {
+                // Dikdörtgen Kol Bayrağı
+                ctx.fillStyle = '#dc2626';
+                ctx.fillRect(0, 0, 128, 128);
+                ctx.lineWidth = 6;
+                ctx.strokeStyle = '#ffffff';
+                ctx.strokeRect(0, 0, 128, 128);
+            }
+
+            // Hilal Dış Çember (Beyaz)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(52, 64, 30, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Hilal İç Çember (Kırmızı oyuk)
+            ctx.fillStyle = '#dc2626';
+            ctx.beginPath();
+            ctx.arc(60, 64, 24, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 5 Köşeli Yıldız
+            ctx.fillStyle = '#ffffff';
+            const cx = 82, cy = 64, outerR = 12, innerR = 5.2;
+            ctx.beginPath();
+            for (let i = 0; i < 10; i++) {
+                const r = (i % 2 === 0) ? outerR : innerR;
+                const a = (i * Math.PI / 5) - Math.PI / 2;
+                const x = cx + Math.cos(a) * r;
+                const y = cy + Math.sin(a) * r;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            const tex = new THREE.CanvasTexture(canvas);
+            tex.needsUpdate = true;
+            return tex;
+        }
+
+        let FLAG_CIRCLE_TEX = null;
+        let FLAG_RECT_TEX = null;
+        function getFlagCircleTex() {
+            if (!FLAG_CIRCLE_TEX) FLAG_CIRCLE_TEX = createTurkishFlagTexture(true);
+            return FLAG_CIRCLE_TEX;
+        }
+        function getFlagRectTex() {
+            if (!FLAG_RECT_TEX) FLAG_RECT_TEX = createTurkishFlagTexture(false);
+            return FLAG_RECT_TEX;
+        }
+
         function createAstronaut() {
             astronautMesh = new THREE.Group();
 
-            // Hafif ve Hızlı MeshLambertMaterial (Akıllı tahta donmasını önler)
-            const suitMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
-            const darkMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+            // Akıllı tahtalarda 60 FPS garantili hafif Lambert ve Basic materyaller
+            const suitWhiteMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+            const redAccentMat = new THREE.MeshLambertMaterial({ color: 0xdc2626 }); // Canlı Türk Kırmızısı
+            const darkMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });       // Koyu antrasit / füme
+            const skinMat = new THREE.MeshLambertMaterial({ color: 0xfad3b8 });       // Sevimli çocuk ten rengi
+            const hairMat = new THREE.MeshLambertMaterial({ color: 0x45220c });       // Dalgalı kahverengi saç
+            const soleMat = new THREE.MeshLambertMaterial({ color: 0xb91c1c });       // Bot altı kırmızı kalın taban
+            const visorGlassMat = new THREE.MeshLambertMaterial({ 
+                color: 0xe0f2fe, 
+                transparent: true, 
+                opacity: 0.35, 
+                depthWrite: false 
+            });
+            const flagBadgeCircleMat = new THREE.MeshBasicMaterial({ map: getFlagCircleTex(), transparent: true });
+            const flagBadgeRectMat = new THREE.MeshBasicMaterial({ map: getFlagRectTex(), transparent: true });
 
-            // Gövde
-            const torsoGeo = new THREE.CylinderGeometry(0.55, 0.48, 1.25, 12);
-            const torso = new THREE.Mesh(torsoGeo, suitMat);
-            torso.position.y = 1.15;
-            astronautMesh.add(torso);
+            // 1. GÖVDE (Tulum & Kırmızı Roba & Kemer)
+            const bodyGroup = new THREE.Group();
+            
+            // Beyaz tulum ana gövdesi
+            const torsoGeo = new THREE.CylinderGeometry(0.54, 0.46, 1.15, 12);
+            const torso = new THREE.Mesh(torsoGeo, suitWhiteMat);
+            torso.position.y = 1.18;
+            bodyGroup.add(torso);
 
-            // Sırt Yaşam Destek Ünitesi (Backpack)
-            const packGeo = new THREE.BoxGeometry(0.75, 0.95, 0.4);
-            const pack = new THREE.Mesh(packGeo, darkMat);
-            pack.position.set(0, 1.25, -0.45);
-            astronautMesh.add(pack);
+            // Kırmızı Göğüs/Omuz Şeridi (Görseldeki kırmızı roba çizgisi)
+            const redChestGeo = new THREE.CylinderGeometry(0.55, 0.53, 0.22, 12);
+            const redChest = new THREE.Mesh(redChestGeo, redAccentMat);
+            redChest.position.y = 1.56;
+            bodyGroup.add(redChest);
 
-            // Sırt Roketi İtici Işıkları (Cyan Neon Alevler)
-            const thrusterGeo = new THREE.ConeGeometry(0.15, 0.5, 8);
+            // Koyu Renk Bel Kemeri
+            const beltGeo = new THREE.CylinderGeometry(0.48, 0.48, 0.14, 12);
+            const belt = new THREE.Mesh(beltGeo, darkMat);
+            belt.position.y = 0.68;
+            bodyGroup.add(belt);
+
+            // Kemer Üstü Kırmızı Kutu / Klips
+            const beltBoxGeo = new THREE.BoxGeometry(0.18, 0.12, 0.14);
+            const beltBox = new THREE.Mesh(beltBoxGeo, redAccentMat);
+            beltBox.position.set(0, 0.68, 0.46);
+            bodyGroup.add(beltBox);
+
+            // 2. SIRT YAŞAM DESTEK ÜNİTESİ (Görseldeki Ay-Yıldızlı Çantanın Birebir Aynısı)
+            const packGroup = new THREE.Group();
+            packGroup.position.set(0, 1.30, -0.42);
+
+            // Ana Beyaz Çanta Kasası
+            const packGeo = new THREE.BoxGeometry(0.82, 1.05, 0.38);
+            const pack = new THREE.Mesh(packGeo, suitWhiteMat);
+            packGroup.add(pack);
+
+            // Çanta Üstü 2 Adet Kırmızı Batarya/Tüp Başlığı (Görseldeki kırmızı şeritli kısımlar)
+            const topCanisterGeo = new THREE.BoxGeometry(0.20, 0.24, 0.28);
+            const canL = new THREE.Mesh(topCanisterGeo, redAccentMat);
+            canL.position.set(-0.22, 0.58, 0.02);
+            const canR = new THREE.Mesh(topCanisterGeo, redAccentMat);
+            canR.position.set(0.22, 0.58, 0.02);
+            packGroup.add(canL);
+            packGroup.add(canR);
+
+            // Çanta Yan Kırmızı Kilit Mandalları
+            const latchGeo = new THREE.BoxGeometry(0.08, 0.38, 0.14);
+            const latchL = new THREE.Mesh(latchGeo, redAccentMat);
+            latchL.position.set(-0.43, 0.08, 0);
+            const latchR = new THREE.Mesh(latchGeo, redAccentMat);
+            latchR.position.set(0.43, 0.08, 0);
+            packGroup.add(latchL);
+            packGroup.add(latchR);
+
+            // Çantanın Arkasındaki BÜYÜK AY-YILDIZ ARMASI (Kameraya tam bakan merkezi kırmızı yuvarlak)
+            const packEmblemRimGeo = new THREE.CylinderGeometry(0.26, 0.26, 0.04, 24);
+            const packEmblemRim = new THREE.Mesh(packEmblemRimGeo, suitWhiteMat);
+            packEmblemRim.position.set(0, 0.08, -0.21);
+            packEmblemRim.rotation.x = Math.PI / 2;
+            packGroup.add(packEmblemRim);
+
+            const packFlagGeo = new THREE.CircleGeometry(0.24, 24);
+            const packFlag = new THREE.Mesh(packFlagGeo, flagBadgeCircleMat);
+            packFlag.position.set(0, 0.08, -0.235);
+            packFlag.rotation.y = Math.PI; // Oyuncuya/kameraya doğru bakar
+            packGroup.add(packFlag);
+
+            // Çanta Altı Metalik Kanca / Vana
+            const hookGeo = new THREE.CylinderGeometry(0.06, 0.06, 0.16, 8);
+            const hookMat = new THREE.MeshLambertMaterial({ color: 0xf59e0b });
+            const hook = new THREE.Mesh(hookGeo, hookMat);
+            hook.position.set(0, -0.58, 0.02);
+            hook.rotation.z = Math.PI / 2;
+            packGroup.add(hook);
+
+            // Sırt Roketi İtici Alevleri (Cyan Neon)
+            const thrusterGeo = new THREE.ConeGeometry(0.12, 0.40, 8);
             const thrusterMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
             const flameL = new THREE.Mesh(thrusterGeo, thrusterMat);
             flameL.rotation.x = Math.PI;
-            flameL.position.set(-0.22, 0.65, -0.45);
+            flameL.position.set(-0.24, -0.65, 0.05);
             const flameR = flameL.clone();
-            flameR.position.x = 0.22;
-            astronautMesh.add(flameL);
-            astronautMesh.add(flameR);
+            flameR.position.x = 0.24;
+            packGroup.add(flameL);
+            packGroup.add(flameR);
 
-            // Kask
-            const helmetGeo = new THREE.SphereGeometry(0.52, 16, 16);
-            const helmet = new THREE.Mesh(helmetGeo, suitMat);
-            helmet.position.y = 2.05;
-            astronautMesh.add(helmet);
+            bodyGroup.add(packGroup);
 
-            // Parlak Mavi Vizör
-            const visorGeo = new THREE.SphereGeometry(0.42, 12, 12, 0, Math.PI);
-            const visorMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
-            const visor = new THREE.Mesh(visorGeo, visorMat);
-            visor.position.set(0, 2.05, 0.22);
-            visor.rotation.y = -Math.PI / 2;
-            astronautMesh.add(visor);
+            // 3. KASK VE SEVİMLİ ÇOCUK YÜZÜ (Görseldeki Şeffaf Vizörlü Türk Çocuk)
+            const headGroup = new THREE.Group();
+            headGroup.position.set(0, 2.05, 0);
+
+            // Çocuğun Başı (Ten Rengi)
+            const boyHeadGeo = new THREE.SphereGeometry(0.36, 14, 14);
+            const boyHead = new THREE.Mesh(boyHeadGeo, skinMat);
+            headGroup.add(boyHead);
+
+            // Dalgalı Kahverengi Saçlar (Kask içindeki saçlar)
+            const hairCapGeo = new THREE.SphereGeometry(0.38, 12, 12);
+            const hairCap = new THREE.Mesh(hairCapGeo, hairMat);
+            hairCap.position.set(0, 0.06, -0.06);
+            headGroup.add(hairCap);
+
+            // Alındaki Kıvırcık Sevimli Kahküller
+            [-0.14, 0.0, 0.14].forEach(hx => {
+                const curlGeo = new THREE.SphereGeometry(0.11, 8, 8);
+                const curl = new THREE.Mesh(curlGeo, hairMat);
+                curl.position.set(hx, 0.24, 0.26);
+                headGroup.add(curl);
+            });
+
+            // Büyük Çizgi Dizi / Anime Gözler
+            const eyeGeo = new THREE.SphereGeometry(0.07, 8, 8);
+            const eyeMat = new THREE.MeshBasicMaterial({ color: 0x27170e });
+            const eyeL = new THREE.Mesh(eyeGeo, eyeMat);
+            eyeL.position.set(-0.13, 0.06, 0.32);
+            const eyeR = eyeL.clone();
+            eyeR.position.x = 0.13;
+            headGroup.add(eyeL);
+            headGroup.add(eyeR);
+
+            // Gülümseyen Ağız
+            const smileGeo = new THREE.TorusGeometry(0.08, 0.02, 6, 10, Math.PI);
+            const smileMat = new THREE.MeshBasicMaterial({ color: 0xd97706 });
+            const smile = new THREE.Mesh(smileGeo, smileMat);
+            smile.position.set(0, -0.10, 0.34);
+            smile.rotation.x = Math.PI / 1.3;
+            headGroup.add(smile);
+
+            // Beyaz Dış Kask Gövdesi (Arkası ve Yanları Koruyan Kabuk)
+            const helmetShellGeo = new THREE.SphereGeometry(0.54, 16, 16);
+            const helmetShell = new THREE.Mesh(helmetShellGeo, suitWhiteMat);
+            headGroup.add(helmetShell);
+
+            // Şeffaf Cam Vizör (Görseldeki gibi içi berrak görünen kask camı)
+            const visorDomeGeo = new THREE.SphereGeometry(0.51, 16, 16, 0, Math.PI);
+            const visorDome = new THREE.Mesh(visorDomeGeo, visorGlassMat);
+            visorDome.position.set(0, 0, 0.08);
+            visorDome.rotation.y = -Math.PI / 2;
+            headGroup.add(visorDome);
+
+            // Kask Yan Kulaklıkları (Görseldeki Ay-Yıldızlı Kırmızı Yuvarlak Rozetler)
+            [-0.54, 0.54].forEach((ex) => {
+                const earGeo = new THREE.CylinderGeometry(0.18, 0.18, 0.10, 16);
+                const ear = new THREE.Mesh(earGeo, suitWhiteMat);
+                ear.position.set(ex, 0, 0);
+                ear.rotation.z = Math.PI / 2;
+                headGroup.add(ear);
+
+                const earBadgeGeo = new THREE.CircleGeometry(0.16, 16);
+                const earBadge = new THREE.Mesh(earBadgeGeo, flagBadgeCircleMat);
+                earBadge.position.set(ex > 0 ? ex + 0.06 : ex - 0.06, 0, 0);
+                earBadge.rotation.y = ex > 0 ? Math.PI / 2 : -Math.PI / 2;
+                headGroup.add(earBadge);
+            });
+
+            bodyGroup.add(headGroup);
+            astronautMesh.add(bodyGroup);
+
+            // 4. BACAKLAR VE KIRMIZI TABANLI BOTLAR (Animasyonlu)
+            function buildLeg(isLeft) {
+                const legGroup = new THREE.Group();
+                const sign = isLeft ? -1 : 1;
+                legGroup.position.set(sign * 0.28, 0.65, 0);
+
+                // Üst Bacak (Beyaz Tulum)
+                const thighGeo = new THREE.CylinderGeometry(0.20, 0.18, 0.38, 10);
+                const thigh = new THREE.Mesh(thighGeo, suitWhiteMat);
+                thigh.position.y = -0.19;
+                legGroup.add(thigh);
+
+                // Kırmızı Diz Halkası (Görseldeki kalın kırmızı diz bandı)
+                const kneeGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.10, 12);
+                const knee = new THREE.Mesh(kneeGeo, redAccentMat);
+                knee.position.y = -0.36;
+                legGroup.add(knee);
+
+                // Alt Bacak (Beyaz Tulum)
+                const shinGeo = new THREE.CylinderGeometry(0.18, 0.20, 0.32, 10);
+                const shin = new THREE.Mesh(shinGeo, suitWhiteMat);
+                shin.position.y = -0.52;
+                legGroup.add(shin);
+
+                // Astronot Botu (Görseldeki Beyaz ve Kırmızı Tabanlı Bot)
+                const bootGroup = new THREE.Group();
+                bootGroup.position.y = -0.68;
+
+                const bootBodyGeo = new THREE.BoxGeometry(0.28, 0.18, 0.44);
+                const bootBody = new THREE.Mesh(bootBodyGeo, suitWhiteMat);
+                bootBody.position.set(0, 0.06, 0.06);
+                bootGroup.add(bootBody);
+
+                // Kırmızı Tırtıklı Kalın Taban (Görselde adım atarken altında görünen kırmızı taban)
+                const bootSoleGeo = new THREE.BoxGeometry(0.30, 0.08, 0.46);
+                const bootSole = new THREE.Mesh(bootSoleGeo, soleMat);
+                bootSole.position.set(0, -0.05, 0.06);
+                bootGroup.add(bootSole);
+
+                // Burun ve Topuk Koyu Koruyucu
+                const tipGeo = new THREE.BoxGeometry(0.24, 0.12, 0.10);
+                const tip = new THREE.Mesh(tipGeo, darkMat);
+                tip.position.set(0, 0.04, 0.26);
+                bootGroup.add(tip);
+
+                legGroup.add(bootGroup);
+                return legGroup;
+            }
+
+            const leftLeg = buildLeg(true);
+            const rightLeg = buildLeg(false);
+            astronautMesh.add(leftLeg);
+            astronautMesh.add(rightLeg);
+
+            // 5. KOLLAR VE SİYAH ELDİVENLER (Animasyonlu)
+            function buildArm(isLeft) {
+                const armGroup = new THREE.Group();
+                const sign = isLeft ? -1 : 1;
+                armGroup.position.set(sign * 0.58, 1.55, 0);
+
+                // Omuz ve Üst Kol (Beyaz)
+                const shoulderGeo = new THREE.CylinderGeometry(0.16, 0.15, 0.38, 10);
+                const shoulder = new THREE.Mesh(shoulderGeo, suitWhiteMat);
+                shoulder.position.y = -0.19;
+                armGroup.add(shoulder);
+
+                // Kolda Kırmızı Şerit ve Türk Bayrağı Arması (Görseldeki gibi)
+                const armBandGeo = new THREE.CylinderGeometry(0.17, 0.17, 0.10, 12);
+                const armBand = new THREE.Mesh(armBandGeo, redAccentMat);
+                armBand.position.y = -0.22;
+                armGroup.add(armBand);
+
+                if (isLeft) {
+                    // Sol Kol Türk Bayrağı Arması
+                    const flagPatchGeo = new THREE.PlaneGeometry(0.14, 0.10);
+                    const flagPatch = new THREE.Mesh(flagPatchGeo, flagBadgeRectMat);
+                    flagPatch.position.set(-0.18, -0.14, 0);
+                    flagPatch.rotation.y = -Math.PI / 2;
+                    armGroup.add(flagPatch);
+                }
+
+                // Alt Kol (Beyaz)
+                const forearmGeo = new THREE.CylinderGeometry(0.15, 0.14, 0.30, 10);
+                const forearm = new THREE.Mesh(forearmGeo, suitWhiteMat);
+                forearm.position.y = -0.44;
+                armGroup.add(forearm);
+
+                // Siyah Astronot Eldiveni (Görseldeki antrasit eldiven)
+                const gloveGeo = new THREE.BoxGeometry(0.18, 0.20, 0.16);
+                const glove = new THREE.Mesh(gloveGeo, darkMat);
+                glove.position.set(0, -0.62, 0.02);
+                armGroup.add(glove);
+
+                // Eldiven Üstü Beyaz Koruyucu Plaka
+                const plateGeo = new THREE.BoxGeometry(0.14, 0.10, 0.05);
+                const plate = new THREE.Mesh(plateGeo, suitWhiteMat);
+                plate.position.set(0, -0.60, 0.10);
+                armGroup.add(plate);
+
+                return armGroup;
+            }
+
+            const leftArm = buildArm(true);
+            const rightArm = buildArm(false);
+            astronautMesh.add(leftArm);
+            astronautMesh.add(rightArm);
+
+            // Uzuvları animasyon için sakla
+            astronautMesh.userData = {
+                leftLeg: leftLeg,
+                rightLeg: rightLeg,
+                leftArm: leftArm,
+                rightArm: rightArm,
+                head: headGroup,
+                pack: packGroup
+            };
 
             astronautMesh.position.set(LANES[currentLane], 0, 0);
             scene.add(astronautMesh);
@@ -1569,12 +1888,11 @@
                     isGrounded = true;
                 }
             }
-            astronautMesh.position.y = playerY;
 
             // Eğilme (Bariyer altından kayarak geçme)
             if (isDucking) {
                 duckDuration -= delta;
-                astronautMesh.scale.set(1.2, 0.42, 1.2);
+                astronautMesh.scale.set(1.15, 0.42, 1.15);
                 if (duckDuration <= 0) {
                     isDucking = false;
                     astronautMesh.scale.set(1, 1, 1);
@@ -1583,10 +1901,39 @@
                 astronautMesh.scale.set(1, 1, 1);
             }
 
-            // Koşma Hareketi (Hafif adımlama sallantısı)
-            if (isGrounded && !isDucking) {
-                astronautMesh.rotation.z = Math.sin(now * 0.016) * 0.06;
+            // Karakter Koşma & Atlama & Kayma (Görseldeki Türk Çocuk Astronot Animasyonu)
+            if (astronautMesh.userData && astronautMesh.userData.leftLeg) {
+                if (isGrounded && !isDucking) {
+                    // Koşma: Bacaklar ve kollar ritmik şekilde ileri-geri sallanır
+                    const runCycle = now * 0.016;
+                    const legAngle = Math.sin(runCycle) * 0.55;
+                    astronautMesh.userData.leftLeg.rotation.x = legAngle;
+                    astronautMesh.userData.rightLeg.rotation.x = -legAngle;
+                    astronautMesh.userData.leftArm.rotation.x = -legAngle * 0.75;
+                    astronautMesh.userData.rightArm.rotation.x = legAngle * 0.75;
+
+                    // Doğal adımlama yaylanması
+                    astronautMesh.position.y = playerY + Math.abs(Math.sin(runCycle)) * 0.08;
+                    astronautMesh.rotation.z = Math.sin(runCycle * 0.5) * 0.03;
+                } else if (!isGrounded) {
+                    // Zıplarken (Havada dinamik atılma pozu)
+                    astronautMesh.userData.leftLeg.rotation.x = -0.4;
+                    astronautMesh.userData.rightLeg.rotation.x = 0.25;
+                    astronautMesh.userData.leftArm.rotation.x = 0.85;
+                    astronautMesh.userData.rightArm.rotation.x = 0.85;
+                    astronautMesh.position.y = playerY;
+                    astronautMesh.rotation.z = 0;
+                } else if (isDucking) {
+                    // Eğilirken / Kayarken (Slide pozu: Ön bacak öne uzanır, kollar arkaya doğru dengeler)
+                    astronautMesh.userData.leftLeg.rotation.x = 1.25;
+                    astronautMesh.userData.rightLeg.rotation.x = -0.8;
+                    astronautMesh.userData.leftArm.rotation.x = -0.6;
+                    astronautMesh.userData.rightArm.rotation.x = -0.6;
+                    astronautMesh.position.y = playerY;
+                    astronautMesh.rotation.z = 0;
+                }
             } else {
+                astronautMesh.position.y = playerY;
                 astronautMesh.rotation.z = 0;
             }
 
@@ -1795,6 +2142,18 @@
             playerY = 0;
             playerYSpeed = 0;
             nextQuestionTimer = 10; // İlk soru kapısı 10 saniye sonra gelir
+
+            isDucking = false;
+            if (astronautMesh) {
+                astronautMesh.scale.set(1, 1, 1);
+                astronautMesh.rotation.set(0, 0, 0);
+                if (astronautMesh.userData && astronautMesh.userData.leftLeg) {
+                    astronautMesh.userData.leftLeg.rotation.set(0, 0, 0);
+                    astronautMesh.userData.rightLeg.rotation.set(0, 0, 0);
+                    astronautMesh.userData.leftArm.rotation.set(0, 0, 0);
+                    astronautMesh.userData.rightArm.rotation.set(0, 0, 0);
+                }
+            }
 
             if (!cachedHudScore) cachedHudScore = document.getElementById('hud-score');
             if (!cachedHudDistVal) cachedHudDistVal = document.getElementById('hud-dist-val');

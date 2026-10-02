@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const printOutcomeText = document.getElementById('printOutcomeText');
 
   // Action Buttons
+  const downloadPdfBtn = document.getElementById('downloadPdfBtn');
   const downloadDocxBtn = document.getElementById('downloadDocxBtn');
   const downloadJsonBtn = document.getElementById('downloadJsonBtn');
   const copyAllBtn = document.getElementById('copyAllBtn');
@@ -60,6 +61,103 @@ document.addEventListener('DOMContentLoaded', () => {
     const newGrade = e.target.value;
     loadCurriculum(newGrade);
   });
+
+  // 1.b Gök Cisimleri Gerçekçi Varlıklarını (Güneş, Dünya, Ay) Önyükle
+  let celestialAssets = { sun: '', earth: '', moon: '' };
+  async function loadCelestialAssets() {
+    try {
+      const res = await fetch('/api/celestial-assets');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.assets) {
+          celestialAssets = data.assets;
+          window.CELESTIAL_ASSETS = data.assets;
+        }
+      }
+    } catch (err) {
+      console.warn('Gök cismi varlıkları yüklenirken hata:', err);
+    }
+  }
+  loadCelestialAssets();
+
+  // LaTeX ve Bozuk Karakter Temizleme Motoru
+  function cleanTurkishAndLatex(str) {
+    if (typeof str !== 'string') return str || '';
+    let text = str;
+    // Strip LaTeX math delimiters ($...$ veya $$...$$)
+    text = text.replace(/\$\$([\s\S]*?)\$\$/g, '$1');
+    text = text.replace(/\$([^$]+)\$/g, '$1');
+    // Strip common LaTeX commands
+    text = text.replace(/\\(text|mathbf|mathrm|mathit)\{([^}]+)\}/g, '$2');
+    // Replace escaped math relational symbols
+    text = text.replace(/\\>/g, '>');
+    text = text.replace(/\\</g, '<');
+    text = text.replace(/\\ge(q)?/g, '≥');
+    text = text.replace(/\\le(q)?/g, '≤');
+    // Fix corrupt Turkish characters & spellings
+    text = text.replace(/\bDiinya\b/g, 'Dünya');
+    text = text.replace(/\bdiinya\b/g, 'dünya');
+    text = text.replace(/\bGiines\b/g, 'Güneş');
+    text = text.replace(/\bgiines\b/g, 'güneş');
+    text = text.replace(/\bGunes\b/g, 'Güneş');
+    text = text.replace(/\bgunes\b/g, 'güneş');
+    text = text.replace(/\bDunya\b/g, 'Dünya');
+    text = text.replace(/\bdunya\b/g, 'dünya');
+    text = text.replace(/\bisik\b/g, 'ışık');
+    text = text.replace(/\bIsik\b/g, 'Işık');
+    text = text.replace(/rotamenci/gi, 'Rotalı Fenci');
+    // Fix comparison spacing (örn: "Ay>Dünya>Güneş" -> "Ay > Dünya > Güneş")
+    text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*>\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 > $2');
+    text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*<\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 < $2');
+    return text.trim();
+  }
+
+  function prepareSvgForDisplay(svgStr) {
+    if (!svgStr) return '';
+    let out = svgStr;
+    if (!out.includes('xmlns:xlink')) {
+      out = out.replace('<svg', '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+    }
+
+    // Font ailesini Times New Roman standardına geçir
+    out = out.replace(/font-family=["'][^"']*["']/gi, 'font-family="\'Times New Roman\', Times, serif"');
+
+    // Siyah/koyu zemin rect'lerini beyaz/şeffaf ve ince gri bordürlü standarda dönüştür
+    out = out.replace(/fill=["']#(070a12|090d16|0b0f19|000000|0f172a|030712|1e1b4b|1e293b|000)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
+    out = out.replace(/fill=["']black["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
+    out = out.replace(/fill=["']rgba?\(\s*0\s*,\s*0\s*,\s*0[^)]*\)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
+
+    // Yıldız noktacıklarını temizle (mürekkep tasarrufu ve temiz beyaz sayfa)
+    out = out.replace(/<circle[^>]*opacity=["']0\.[0-9]+["'][^>]*fill=["']#(fff|ffffff)["'][^>]*\/?>/gi, '');
+    out = out.replace(/<circle[^>]*fill=["']#(fff|ffffff)["'][^>]*opacity=["']0\.[0-9]+["'][^>]*\/?>/gi, '');
+
+    // Koyu zemindeki açık/beyaz metinleri beyaz zemin için yüksek kontrastlı koyu renklere dönüştür
+    out = out.replace(/fill=["']#fbbf24["']/gi, 'fill="#b45309"'); // Güneş açık sarı -> koyu kehribar
+    out = out.replace(/fill=["']#38bdf8["']/gi, 'fill="#0369a1"'); // Dünya açık mavi -> koyu okyanus mavisi
+    out = out.replace(/fill=["']#e2e8f0["']/gi, 'fill="#334155"'); // Ay açık gri -> koyu arduvaz gri
+    out = out.replace(/fill=["']#(f8fafc|ffffff|fff)["'](?=[^>]*font-)/gi, 'fill="#0f172a"'); // Beyaz yazılar -> koyu lacivert
+
+    // SVG içindeki bozuk kelimeleri düzelt
+    out = out.replace(/\bDiinya\b/g, 'Dünya');
+    out = out.replace(/\bdiinya\b/g, 'dünya');
+    out = out.replace(/\bGiines\b/g, 'Güneş');
+    out = out.replace(/\bgiines\b/g, 'güneş');
+    out = out.replace(/\bGunes\b/g, 'Güneş');
+    out = out.replace(/\bgunes\b/g, 'güneş');
+    out = out.replace(/\bDunya\b/g, 'Dünya');
+    out = out.replace(/\bdunya\b/g, 'dünya');
+
+    if (celestialAssets.sun && out.includes('/images/sun.jpg')) {
+      out = out.split('/images/sun.jpg').join(celestialAssets.sun);
+    }
+    if (celestialAssets.earth && out.includes('/images/earth.jpg')) {
+      out = out.split('/images/earth.jpg').join(celestialAssets.earth);
+    }
+    if (celestialAssets.moon && out.includes('/images/moon.jpg')) {
+      out = out.split('/images/moon.jpg').join(celestialAssets.moon);
+    }
+    return out;
+  }
 
   // 2. Ünite Butonlarını (Pills) Oluştur
   function renderUnits(units) {
@@ -170,7 +268,22 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error(data.error || data.details || 'Sorular oluşturulamadı.');
       }
 
-      currentQuestions = data.questions;
+      currentQuestions = (data.questions || []).map(q => {
+        const cleanedQ = { ...q };
+        cleanedQ.question = cleanTurkishAndLatex(cleanedQ.question);
+        if (cleanedQ.options) {
+          cleanedQ.options = { ...cleanedQ.options };
+          ['A', 'B', 'C', 'D'].forEach(opt => {
+            if (cleanedQ.options[opt]) cleanedQ.options[opt] = cleanTurkishAndLatex(cleanedQ.options[opt]);
+          });
+        }
+        if (cleanedQ.correct_answer) cleanedQ.correct_answer = cleanTurkishAndLatex(cleanedQ.correct_answer);
+        if (cleanedQ.explanation) cleanedQ.explanation = cleanTurkishAndLatex(cleanedQ.explanation);
+        if (cleanedQ.grid_items && Array.isArray(cleanedQ.grid_items)) {
+          cleanedQ.grid_items = cleanedQ.grid_items.map(item => cleanTurkishAndLatex(item));
+        }
+        return cleanedQ;
+      });
       currentMeta = data.meta;
       editingQuestionIndex = -1;
       renderQuestions();
@@ -183,74 +296,200 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  let targetPageCount = 1;
+  let targetPageCount = 'auto'; // 'auto' | 1 | 2 | 4 | 6
 
-  // 5. Üretilen Soruları Ekrana Çizme (Kesin Sayfa Sayısı ve Doğal Sütun Akışı)
+  // Profesyonel Kitapçık Sayfa Hesaplayıcı (2 veya 4 Sayfa Standardı)
+  function partitionQuestions(questions, mode) {
+    const total = questions.length;
+    if (total === 0) return [];
+
+    // Sayfa başına maksimum soru sayısı (3 sol + 3 sağ = 6 → A4 yüksekliğini aşmaz)
+    const MAX_PER_PAGE = 6;
+
+    let targetPages = 2; // Varsayılan: 2 Sayfa (1 Yaprak Önlü-Arkalı)
+
+    if (mode === 1 || mode === '1') {
+      targetPages = 1;
+    } else if (mode === 2 || mode === '2') {
+      targetPages = 2;
+    } else if (mode === 4 || mode === '4') {
+      targetPages = 4;
+    } else if (mode === 6 || mode === '6') {
+      targetPages = 6;
+    } else {
+      // OTOMATİK MOD: Soru sayısına göre sayfa belirle
+      if (total <= 4) {
+        targetPages = 1; // 1-4 soru için 1 sayfa
+      } else if (total <= 10) {
+        targetPages = 2; // 5-10 soru için kesinlikle 2 sayfa (önlü-arkalı)
+      } else {
+        targetPages = 4; // 11-20+ soru için kesinlikle 4 sayfa (tam deneme kitapçığı)
+      }
+    }
+
+    // Sayfa sayısını soru kapasitesine göre yukarı yuvarlayarak taşmayı önle
+    const minPagesForCapacity = Math.ceil(total / MAX_PER_PAGE);
+    targetPages = Math.max(targetPages, minPagesForCapacity);
+    targetPages = Math.min(targetPages, total);
+
+    // Soruları sayfalara homojen ve dengeli dağıt
+    const basePer = Math.floor(total / targetPages);
+    let remainder = total % targetPages;
+    const pages = [];
+    let currentIdx = 0;
+
+    for (let p = 0; p < targetPages; p++) {
+      const take = basePer + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder--;
+      const pageSlice = questions.slice(currentIdx, currentIdx + take);
+      if (pageSlice.length > 0) {
+        pages.push(pageSlice);
+      }
+      currentIdx += take;
+    }
+
+    return pages;
+  }
+
+  // 5. Üretilen Soruları Ekrana Çizme (Profesyonel Sınav Kitapçığı)
   function renderQuestions() {
     const { grade = "5", subject = "Fen Bilimleri", learning_area = "", selected_outcomes = [] } = currentMeta;
     const total_questions = currentQuestions.length;
 
-    testMetaTitle.textContent = `${grade}. Sınıf ${subject} - ${learning_area}`;
-    questionCountBadge.textContent = `${total_questions} Soru (${targetPageCount} Sayfa)`;
-    printTitle.textContent = `${grade}. SINIF ${subject.toUpperCase()} DERSİ YAPRAK TESTİ`;
-    printOutcomeText.textContent = selected_outcomes.join(' | ');
+    const dynamicExamTitle = `${grade}. SINIF ${subject.toUpperCase()} DENEME SINAVI`;
 
-    questionsContainer.innerHTML = '';
-    answerKeyGrid.innerHTML = '';
+    if (testMetaTitle) testMetaTitle.textContent = `${grade}. Sınıf ${subject} - ${learning_area}`;
+    if (questionCountBadge) questionCountBadge.textContent = `${total_questions} Soru`;
+    if (printTitle) printTitle.textContent = dynamicExamTitle;
+    if (printOutcomeText) printOutcomeText.textContent = selected_outcomes.join(' | ');
 
-    // Kullanıcının seçtiği KESİN sayfa sayısı (1, 2, 3, 4)
-    const effectivePages = Math.min(targetPageCount, Math.max(1, total_questions));
-    const questionsPerPage = Math.ceil(total_questions / effectivePages);
+    // Sınıf seviyesine göre gövde teması uygula (5, 6, 7 veya 8)
+    document.body.classList.remove('grade-theme-5', 'grade-theme-6-7', 'grade-theme-8');
+    if (grade === "5") document.body.classList.add('grade-theme-5');
+    else if (grade === "8") document.body.classList.add('grade-theme-8');
+    else document.body.classList.add('grade-theme-6-7');
 
-    // Her sayfa için dinamik ölçek sınıfı belirle (Taşmayı önlemek için)
-    let densityClass = 'density-normal';
-    if (questionsPerPage >= 5) densityClass = 'density-compact';
-    else if (questionsPerPage >= 3) densityClass = 'density-medium';
+    if (questionsContainer) questionsContainer.innerHTML = '';
+    if (answerKeyGrid) answerKeyGrid.innerHTML = '';
 
-    for (let pIdx = 0; pIdx < effectivePages; pIdx++) {
-      const startIdx = pIdx * questionsPerPage;
-      const endIdx = Math.min(startIdx + questionsPerPage, total_questions);
-      const pageQuestions = currentQuestions.slice(startIdx, endIdx);
+    const targetMode = targetPageCount === 'auto' ? 'auto' : parseInt(targetPageCount, 10);
+    const pages = partitionQuestions(currentQuestions, targetMode);
+    const totalPagesCount = pages.length;
 
-      if (pageQuestions.length === 0) continue;
+    if (questionCountBadge) {
+      questionCountBadge.textContent = `${total_questions} Soru (${totalPagesCount} Sayfa)`;
+    }
+
+    let questionGlobalCounter = 1;
+
+    pages.forEach((pageQuestions, pIdx) => {
+      const pageNumber = pIdx + 1;
+      const isFirstPage = (pageNumber === 1);
+      const isLastPage = (pageNumber === totalPagesCount);
 
       const pageSheet = document.createElement('div');
-      pageSheet.className = `a4-sheet-container ${densityClass}`;
-      pageSheet.id = `a4-page-${pIdx + 1}`;
+      pageSheet.className = `a4-booklet-sheet ${totalPagesCount === 1 ? 'density-compact' : ''}`;
+      pageSheet.id = `booklet-page-${pageNumber}`;
 
-      // Sayfa Üst Bilgi Başlığı (Web Görünümü ve Baskı Başlığı)
-      const isFirstPage = (pIdx === 0);
-      pageSheet.innerHTML = `
+      // Başlık Alanı (İlk Sayfa: Tam Öğrenci Tablosu, Sonraki Sayfalar: Kompakt Başlık)
+      let headerHtml = '';
+      if (isFirstPage) {
+        headerHtml = `
+          <div class="booklet-exam-header">
+            <div class="exam-header-top">
+              <img src="rotali-fenci.jpg" class="exam-logo-left" alt="Logo">
+              <div class="exam-title-center">
+                <div class="exam-ministry">T.C. MİLLÎ EĞİTİM BAKANLIĞI</div>
+                <h1 class="exam-main-title">${dynamicExamTitle}</h1>
+                <div class="exam-subtitle">${escapeHtml(learning_area || 'Kazanım Değerlendirme & Yaprak Test')}</div>
+              </div>
+              <img src="rotali-fenci.jpg" class="exam-logo-right" alt="Logo">
+            </div>
+
+            <div class="student-exam-table">
+              <div class="st-field st-field-name">
+                <span class="st-label">Adı Soyadı:</span>
+                <span class="st-fill-line"></span>
+              </div>
+              <div class="st-field st-field-class">
+                <span class="st-label">Sınıf / Şube:</span>
+                <span class="st-fill-line st-fill-short"></span>
+              </div>
+              <div class="st-field st-field-no">
+                <span class="st-label">Okul No:</span>
+                <span class="st-fill-line st-fill-short"></span>
+              </div>
+              <div class="st-field st-field-date">
+                <span class="st-label">Tarih:</span>
+                <span class="st-date-val">..... / ..... / 2026</span>
+              </div>
+              <div class="st-field st-field-score">
+                <span class="st-score-tag">D: <span class="st-box"></span></span>
+                <span class="st-score-tag">Y: <span class="st-box"></span></span>
+                <span class="st-score-tag">Puan: <span class="st-box st-box-wide"></span></span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else {
+        headerHtml = `
+          <div class="booklet-mini-header">
+            <span class="mini-header-title">${dynamicExamTitle}</span>
+            <span class="mini-header-tag">Rotalı Fenci</span>
+          </div>
+        `;
+      }
+
+      // Sayfa Üst Bilgi Rozeti (Sadece Web Arayüzü İçin)
+      const webBadgeHtml = `
         <div class="page-top-badge no-print">
-          <span>📄 Sayfa ${pIdx + 1} / ${effectivePages}</span>
-          <span>${pageQuestions.length} Soru</span>
+          <span>📄 Sayfa ${pageNumber} / ${totalPagesCount}</span>
+          <span>${pageQuestions.length} Soru (Bu Sayfada)</span>
         </div>
-
-        ${!isFirstPage ? `
-          <div class="print-mini-header print-only">
-            <div class="mini-header-text"><strong>${grade}. SINIF ${subject.toUpperCase()} YAPRAK TESTİ</strong> - Sayfa ${pIdx + 1}</div>
-          </div>
-        ` : ''}
-
-        <!-- 2 Sütunlu Doğal Akış Alanı (Alt Alta Biterse Yana Geçer) -->
-        <div class="a4-page-content-columns"></div>
-
-        ${(pIdx === effectivePages - 1) ? `
-          <!-- Son Sayfanın Altına Cevap Anahtarı Şeridi -->
-          <div class="a4-page-footer-ans no-print">
-            <span class="ans-strip-label">Cevap Anahtarı:</span>
-            <span class="ans-strip-content" id="miniAnsStrip"></span>
-          </div>
-        ` : ''}
       `;
 
-      const columnsContainer = pageSheet.querySelector('.a4-page-content-columns');
+      // 2 Sütunlu Kararlı Mizanpaj (Sol ve Sağ Sütunlar)
+      pageSheet.innerHTML = `
+        ${webBadgeHtml}
+        ${headerHtml}
+        <div class="booklet-columns-grid">
+          <div class="booklet-col booklet-col-left"></div>
+          <div class="booklet-col-divider">
+            <svg class="gutter-brand-svg" viewBox="0 0 16 180" width="16" height="180" xmlns="http://www.w3.org/2000/svg">
+              <rect x="0" y="10" width="16" height="160" fill="#ffffff" />
+              <text x="8" y="90" text-anchor="middle" dominant-baseline="central" transform="rotate(90 8 90)" fill="#94a3b8" font-family="'Times New Roman', Times, serif" font-size="9" font-weight="700" letter-spacing="4">ROTALI FENCİ</text>
+            </svg>
+          </div>
+          <div class="booklet-col booklet-col-right"></div>
+        </div>
+        <div class="booklet-page-footer">
+          <div class="footer-left-brand">
+            <svg class="instagram-icon" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+            <span class="instagram-username">Rotalı Fenci</span>
+          </div>
+          <div class="footer-page-center">
+            Sayfa ${pageNumber} / ${totalPagesCount}
+          </div>
+          <div class="footer-right-web">
+            <span class="footer-website-text">https://rotalifenci.vercel.app/</span>
+          </div>
+        </div>
+      `;
 
-      pageQuestions.forEach((q, relIdx) => {
-        const qIdx = startIdx + relIdx;
-        const qNum = qIdx + 1;
+      const leftColContainer = pageSheet.querySelector('.booklet-col-left');
+      const rightColContainer = pageSheet.querySelector('.booklet-col-right');
+
+      const mid = Math.ceil(pageQuestions.length / 2);
+      const leftPageQuestions = pageQuestions.slice(0, mid);
+      const rightPageQuestions = pageQuestions.slice(mid);
+
+      function buildCard(q, qNum) {
         const card = document.createElement('div');
-        card.className = `question-card ${editingQuestionIndex === qIdx ? 'is-editing' : ''}`;
+        card.className = `question-card ${editingQuestionIndex === (qNum - 1) ? 'is-editing' : ''}`;
         card.id = `q-card-${qNum}`;
 
         const diffClass = q.difficulty === 'Kolay' ? 'tag-diff-Kolay' : (q.difficulty === 'Zor' ? 'tag-diff-Zor' : 'tag-diff-Orta');
@@ -262,13 +501,12 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (q.type === "concept_map") typeLabel = "Kavram Haritası";
         else if (q.type === "v_diagram") typeLabel = "V Diyagramı";
 
-        if (editingQuestionIndex === qIdx) {
+        if (editingQuestionIndex === (qNum - 1)) {
           // DÜZENLEME MODU
           const isMultipleChoice = q.options && q.options.A;
           card.innerHTML = `
             <div class="question-header">
-              <div class="question-number">Soru ${qNum} (Düzenleniyor)</div>
-              <div class="tag tag-outcome">${typeLabel}</div>
+              <div class="question-number">${qNum}. Soru (Düzenleniyor)</div>
             </div>
             
             <div class="edit-field-group">
@@ -308,20 +546,15 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
             </div>
 
-            <div class="edit-field-group">
-              <label><strong>Açıklama / Rubrik:</strong></label>
-              <textarea class="edit-textarea edit-explanation" rows="2">${escapeHtml(q.explanation || '')}</textarea>
-            </div>
-
             <div class="edit-actions-footer">
               <button type="button" class="btn btn-secondary btn-sm" onclick="cancelEditQuestion()">İptal</button>
-              <button type="button" class="btn btn-primary btn-sm" onclick="saveEditQuestion(${qIdx})">💾 Kaydet</button>
+              <button type="button" class="btn btn-primary btn-sm" onclick="saveEditQuestion(${qNum - 1})">💾 Kaydet</button>
             </div>
           `;
         } else {
-          // NORMAL GÖRÜNÜM
+          // NORMAL KART GÖRÜNÜMÜ
           const visualBoxHtml = q.visual_svg && q.visual_svg.trim() 
-            ? `<div class="question-visual-box">${q.visual_svg}</div>` 
+            ? `<div class="question-visual-box">${prepareSvgForDisplay(q.visual_svg)}</div>` 
             : '';
 
           let gridHtml = '';
@@ -340,14 +573,26 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
           }
 
+          // Seçenek Yerleşimi (Dinamik 1 Satır / 2x2 / Alt Alta)
           let contentBodyHtml = '';
           if (q.options && q.options.A) {
+            const maxOptLen = Math.max(
+              (q.options.A || '').length,
+              (q.options.B || '').length,
+              (q.options.C || '').length,
+              (q.options.D || '').length
+            );
+
+            let optLayoutClass = 'options-stacked';
+            if (maxOptLen <= 4) optLayoutClass = 'options-inline-row';
+            else if (maxOptLen <= 24) optLayoutClass = 'options-grid-2x2';
+
             contentBodyHtml = `
-              <div class="options-grid">
+              <div class="options-container ${optLayoutClass}">
                 ${['A', 'B', 'C', 'D'].map(opt => `
                   <div class="option-item ${opt === q.correct_answer ? 'is-correct' : ''}">
-                    <div class="option-letter">${opt}</div>
-                    <div class="option-text">${escapeHtml(q.options[opt] || '')}</div>
+                    <span class="option-letter">${opt}</span>
+                    <span class="option-text">${escapeHtml(q.options[opt] || '')}</span>
                   </div>
                 `).join('')}
               </div>
@@ -355,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
           } else if (q.type === 'open_ended') {
             contentBodyHtml = `
               <div class="open-ended-answer-area">
-                <div class="answer-lines-prompt">Cevabınızı aşağıdaki alana gerekçeleriyle yazınız:</div>
+                <div class="answer-lines-prompt">Cevabınızı ve bilimsel gerekçenizi yazınız:</div>
                 <div class="student-writing-lines">
                   <div class="write-line"></div>
                   <div class="write-line"></div>
@@ -373,20 +618,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
           card.innerHTML = `
             <div class="question-header">
-              <div class="question-number">${qNum}. Soru <span class="badge-type">${typeLabel}</span></div>
-              <div class="question-meta-tags">
-                <span class="tag ${diffClass}">${q.difficulty || 'Orta'}</span>
-              </div>
+              <div class="question-number">${qNum}. Soru</div>
               <div class="question-card-actions no-print">
-                <button type="button" class="btn-action-icon" title="Düzenle" onclick="startEditQuestion(${qIdx})">✏️</button>
-                <button type="button" class="btn-action-icon" title="Yeniden Üret" onclick="regenerateQuestion(${qIdx})">🔄</button>
-                <button type="button" class="btn-action-icon btn-action-delete" title="Sil" onclick="deleteQuestion(${qIdx})">🗑️</button>
+                <button type="button" class="btn-action-icon" title="Düzenle" onclick="startEditQuestion(${qNum - 1})">✏️</button>
+                <button type="button" class="btn-action-icon" title="Yeniden Üret" onclick="regenerateQuestion(${qNum - 1})">🔄</button>
+                <button type="button" class="btn-action-icon btn-action-delete" title="Sil" onclick="deleteQuestion(${qNum - 1})">🗑️</button>
               </div>
             </div>
             ${visualBoxHtml}
             ${gridHtml}
-            <div class="question-body">${escapeHtml(q.question)}</div>
-            ${contentBodyHtml}
+            <div class="question-text-and-options">
+              <div class="question-body">${escapeHtml(q.question)}</div>
+              ${contentBodyHtml}
+            </div>
             <div class="solution-box" style="display: ${showSolutions ? 'block' : 'none'};">
               <strong>💡 Doğru Cevap: ${escapeHtml(q.correct_answer)}</strong>
               <div>${escapeHtml(q.explanation || 'Açıklama mevcut değil.')}</div>
@@ -394,23 +638,52 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         }
 
-        columnsContainer.appendChild(card);
-
-        // Cevap Anahtarı Listesine Ekle
+        // Cevap Anahtarı Grid'ine Ekle
         const akItem = document.createElement('div');
         akItem.className = 'answer-key-item';
         akItem.innerHTML = `<span class="q-no">${qNum}.</span> <span class="q-ans">${escapeHtml(q.correct_answer || '-')}</span>`;
         answerKeyGrid.appendChild(akItem);
+
+        return card;
+      }
+
+      // Sol sütuna soruları ekle
+      leftPageQuestions.forEach(q => {
+        const qNum = questionGlobalCounter++;
+        leftColContainer.appendChild(buildCard(q, qNum));
       });
 
-      questionsContainer.appendChild(pageSheet);
-    }
+      // Sağ sütuna soruları ekle
+      rightPageQuestions.forEach(q => {
+        const qNum = questionGlobalCounter++;
+        rightColContainer.appendChild(buildCard(q, qNum));
+      });
 
-    // Mini Cevap Şeridini Doldur
-    const miniStrip = document.getElementById('miniAnsStrip');
-    if (miniStrip) {
-      miniStrip.textContent = currentQuestions.map((q, idx) => `${idx + 1}-${q.correct_answer || '?'}`).join('  |  ');
-    }
+      // Son Sayfanın Altına Mini Cevap Anahtarı Tablosu
+      if (isLastPage) {
+        const answerKeyStrip = document.createElement('div');
+        answerKeyStrip.className = 'booklet-answer-key-strip';
+        answerKeyStrip.innerHTML = `
+          <div class="ans-strip-title">🎯 CEVAP VE KODLAMA ANAHTARI</div>
+          <div class="ans-strip-items">
+            ${currentQuestions.map((cq, cIdx) => `
+              <div class="ans-strip-cell">
+                <span class="cell-q">${cIdx + 1}</span>
+                <span class="cell-a">${escapeHtml(cq.correct_answer || '-')}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        const footer = pageSheet.querySelector('.booklet-page-footer');
+        if (footer) {
+          pageSheet.insertBefore(answerKeyStrip, footer);
+        } else {
+          pageSheet.appendChild(answerKeyStrip);
+        }
+      }
+
+      questionsContainer.appendChild(pageSheet);
+    });
 
     // En alta "Yeni Soru Ekle" Butonu
     const addQBar = document.createElement('div');
@@ -521,7 +794,21 @@ document.addEventListener('DOMContentLoaded', () => {
         throw new Error('Soru yeniden üretilemedi.');
       }
 
-      currentQuestions[idx] = data.questions[0];
+      const rawQ = data.questions[0];
+      const cleanedQ = { ...rawQ };
+      cleanedQ.question = cleanTurkishAndLatex(cleanedQ.question);
+      if (cleanedQ.options) {
+        cleanedQ.options = { ...cleanedQ.options };
+        ['A', 'B', 'C', 'D'].forEach(opt => {
+          if (cleanedQ.options[opt]) cleanedQ.options[opt] = cleanTurkishAndLatex(cleanedQ.options[opt]);
+        });
+      }
+      if (cleanedQ.correct_answer) cleanedQ.correct_answer = cleanTurkishAndLatex(cleanedQ.correct_answer);
+      if (cleanedQ.explanation) cleanedQ.explanation = cleanTurkishAndLatex(cleanedQ.explanation);
+      if (cleanedQ.grid_items && Array.isArray(cleanedQ.grid_items)) {
+        cleanedQ.grid_items = cleanedQ.grid_items.map(item => cleanTurkishAndLatex(item));
+      }
+      currentQuestions[idx] = cleanedQ;
       editingQuestionIndex = -1;
       renderQuestions();
 
@@ -605,10 +892,83 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.removeChild(a);
   });
 
-  // 8. Bilgisayara Kaydetme: PDF / Yazdır
-  printBtn.addEventListener('click', () => {
-    window.print();
-  });
+  // 8. Bilgisayara Doğrudan PDF Olarak İndir (Önizleme İle %100 Birebir Net Çıktı)
+  if (downloadPdfBtn) {
+    downloadPdfBtn.addEventListener('click', async () => {
+      if (currentQuestions.length === 0) return;
+
+      const sheets = document.querySelectorAll('.a4-booklet-sheet');
+      if (sheets.length === 0) return;
+
+      try {
+        downloadPdfBtn.disabled = true;
+        downloadPdfBtn.innerHTML = '<span class="icon">⏳</span> PDF İndiriliyor...';
+
+        // PDF dışa aktarma modunu aktifleştir (butonları ve arayüz rozetlerini gizle)
+        document.body.classList.add('pdf-export-mode');
+        await new Promise(resolve => setTimeout(resolve, 150));
+
+        const jsPdfLib = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
+        if (!jsPdfLib || !window.html2canvas) {
+          throw new Error('PDF kütüphanesi yüklenemedi.');
+        }
+
+        const pdf = new jsPdfLib({
+          orientation: 'portrait',
+          unit: 'mm',
+          format: 'a4',
+          compress: true
+        });
+
+        for (let i = 0; i < sheets.length; i++) {
+          const sheet = sheets[i];
+
+          const canvas = await html2canvas(sheet, {
+            scale: 2.2,
+            useCORS: true,
+            logging: false,
+            backgroundColor: '#ffffff',
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 794
+          });
+
+          const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+          if (i > 0) {
+            pdf.addPage('a4', 'portrait');
+          }
+
+          // A4 boyutları: 210mm x 297mm - Orantılı ve taşmasız yerleşim
+          const pdfW = 210;
+          const pdfH = 297;
+          const imgH = (canvas.height * pdfW) / canvas.width;
+          const finalH = Math.min(imgH, pdfH);
+
+          pdf.addImage(imgData, 'JPEG', 0, 0, pdfW, finalH, undefined, 'FAST');
+        }
+
+        const filename = `${currentMeta.grade || '5'}_Sinif_Fen_Bilimleri_Deneme_Sinavi_${Date.now()}.pdf`;
+        pdf.save(filename);
+
+      } catch (err) {
+        console.error('PDF indirme hatası:', err);
+        // Hata durumunda standart tarayıcı penceresini aç
+        window.print();
+      } finally {
+        document.body.classList.remove('pdf-export-mode');
+        downloadPdfBtn.disabled = false;
+        downloadPdfBtn.innerHTML = '<span class="icon">📥</span> PDF İndir';
+      }
+    });
+  }
+
+  // Doğrudan Yazıcıya Gönder (Yazdır Butonu)
+  if (printBtn) {
+    printBtn.addEventListener('click', () => {
+      window.print();
+    });
+  }
 
   // 9. Metin Olarak Kopyala
   copyAllBtn.addEventListener('click', () => {
@@ -691,19 +1051,23 @@ document.addEventListener('DOMContentLoaded', () => {
       .replace(/'/g, "&#039;");
   }
 
-  // 11. 1, 2, 3, 4 Sayfa Buton Kontrolleri (Global Fonksiyon)
+  // 11. Sayfa Mizanpajı & Sayfa Sayısı Kontrolleri (Global Fonksiyon)
   window.setTargetPages = function(pages) {
-    targetPageCount = parseInt(pages, 10) || 1;
+    if (pages === 'auto' || pages === '"auto"') {
+      targetPageCount = 'auto';
+    } else {
+      targetPageCount = parseInt(pages, 10) || 1;
+    }
 
     // Butonların aktifliğini senkronize et
     document.querySelectorAll('.btn-page-count').forEach(btn => {
-      const p = parseInt(btn.getAttribute('data-pages'), 10);
-      btn.classList.toggle('active', p === targetPageCount);
+      const p = btn.getAttribute('data-pages');
+      btn.classList.toggle('active', p === String(targetPageCount));
     });
 
     document.querySelectorAll('.btn-quick-page').forEach(btn => {
-      const p = parseInt(btn.getAttribute('data-pages'), 10);
-      btn.classList.toggle('active', p === targetPageCount);
+      const p = btn.getAttribute('data-pages');
+      btn.classList.toggle('active', p === String(targetPageCount));
     });
 
     const targetInput = document.getElementById('targetPageCount');
@@ -712,22 +1076,23 @@ document.addEventListener('DOMContentLoaded', () => {
     // Geri Bildirim Banner'ını Güncelle
     const feedback = document.getElementById('pageCountFeedback');
     if (feedback) {
-      if (targetPageCount === 1) {
+      if (targetPageCount === 'auto') {
+        feedback.innerHTML = `<span>🎯 <strong>Akıllı Otomatik Mod:</strong> Soru hacmine göre A4 sayfaları %90-95 dolulukla otomatik ayarlanır.</span>`;
+        feedback.style.borderColor = '#4f46e5';
+      } else if (targetPageCount === 1) {
         feedback.innerHTML = `<span>⚡ <strong>1 Sayfa Seçildi:</strong> Test tek bir A4 yaprağına sığdırılacak.</span>`;
         feedback.style.borderColor = '#818cf8';
       } else if (targetPageCount === 2) {
         feedback.innerHTML = `<span>📑 <strong>2 Sayfa Seçildi:</strong> Test 2 sayfaya (önlü-arkalı) dengeli dağıtılacak.</span>`;
         feedback.style.borderColor = '#10b981';
-      } else if (targetPageCount === 3) {
-        feedback.innerHTML = `<span>📑 <strong>3 Sayfa Seçildi:</strong> Test 3 ayrı A4 sayfasına dağıtılacak.</span>`;
-        feedback.style.borderColor = '#0ea5e9';
       } else if (targetPageCount === 4) {
-        feedback.innerHTML = `<span>📚 <strong>4 Sayfa Seçildi:</strong> Test 4 tam sayfaya (kitapçık formatı) dağıtılacak.</span>`;
+        feedback.innerHTML = `<span>📚 <strong>4 Sayfa Seçildi:</strong> Test 4 tam sayfaya (LGS kitapçık formatı) dağıtılacak.</span>`;
         feedback.style.borderColor = '#f59e0b';
+      } else if (targetPageCount === 6) {
+        feedback.innerHTML = `<span>📖 <strong>6 Sayfa Seçildi:</strong> Kapsamlı ünite değerlendirme kitapçığı formatı.</span>`;
+        feedback.style.borderColor = '#ec4899';
       }
     }
-
-    document.body.classList.toggle('fit-1-page-print', targetPageCount === 1);
 
     // Eğer ekranda sorular varsa anında yeni sayfa sayısına göre yeniden çiz
     if (currentQuestions && currentQuestions.length > 0) {

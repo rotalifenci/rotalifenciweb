@@ -31,11 +31,13 @@
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-main);
   color: var(--text-main);
-  line-height: 1.6;
+  line-height: 1.5;
   min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .app-container {
@@ -137,7 +139,7 @@ body {
 /* Main Layout */
 .main-layout {
   display: grid;
-  grid-template-columns: 460px 1fr;
+  grid-template-columns: 440px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
 }
@@ -383,22 +385,42 @@ label {
   background-color: #1e293b;
 }
 
+.question-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  padding: 1px 2px;
+  border-radius: 4px;
+  z-index: 10;
+}
+
 .btn-action-icon {
-  background: #f8fafc;
-  border: 1px solid var(--border);
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
   color: #475569;
-  padding: 4px 8px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 10px;
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all 0.15s ease;
+  line-height: 1;
 }
 
 .btn-action-icon:hover {
   background: var(--primary-light);
   color: var(--primary);
   border-color: var(--border-focus);
+  transform: scale(1.08);
 }
 
 .btn-action-delete:hover {
@@ -423,6 +445,17 @@ label {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  min-width: 0;
+  width: 100%;
+}
+
+.questions-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-x: auto;
+  padding: 4px 0 16px 0;
 }
 
 .toolbar {
@@ -529,104 +562,902 @@ label {
   color: white;
 }
 
-/* A4 Sayfa Kutusu ve 2 Sütunlu Doğal Akış */
-.a4-sheet-container {
-  background: #ffffff;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  padding: 16px 20px;
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  width: 100%;
-  margin-bottom: 24px;
-  box-sizing: border-box;
+/* ==========================================================================
+   A4 SAYFA STANDARTLARI & SORU BÖLÜNME KORUMASI (BREAK-INSIDE AVOID)
+   ========================================================================== */
+
+.question-card,
+.question-block,
+.question-visual-box,
+.question-text-and-options,
+.question-body,
+.q-text,
+.options-container,
+.options-group,
+.option-item,
+.opt-label,
+.structured-grid-container,
+.open-ended-answer-area,
+.booklet-exam-header,
+.student-exam-table,
+.booklet-mini-header,
+.sheet-header,
+.booklet-page-footer,
+.booklet-answer-key-strip,
+.answer-key-section,
+.solution-box,
+.booklet-col {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  -webkit-column-break-inside: avoid !important;
 }
 
-.page-top-badge {
+/* ==========================================================================
+   PDF DIŞA AKTARMA MODU (ÖNİZLEME İLE %100 BİREBİR A4 NET ÇIKTI)
+   ========================================================================== */
+body.pdf-export-mode {
+  background: #ffffff !important;
+}
+
+body.pdf-export-mode .question-card-actions,
+body.pdf-export-mode .page-top-badge,
+body.pdf-export-mode .add-question-bar,
+body.pdf-export-mode .watermark-overlay,
+body.pdf-export-mode .question-meta-tags,
+body.pdf-export-mode .badge-type,
+body.pdf-export-mode .tag,
+body.pdf-export-mode .no-print {
+  display: none !important;
+}
+
+body.pdf-export-mode,
+body.pdf-export-mode * {
+  font-family: 'Times New Roman', Times, serif !important;
+}
+
+body.pdf-export-mode .a4-booklet-sheet {
+  font-family: 'Times New Roman', Times, serif !important;
+  width: 794px !important; /* 210mm */
+  min-height: 1123px !important; /* 297mm */
+  height: auto !important;
+  max-height: none !important;
+  margin: 0 0 20px 0 !important;
+  padding: 18px 24px !important;
+  border: 1.5px solid #000000 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  background: #ffffff !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+body.pdf-export-mode .booklet-exam-header {
+  border: 1.5px solid #000000 !important;
+  background: #ffffff !important;
+  padding: 6px 10px !important;
+  margin-bottom: 8px !important;
+  flex-shrink: 0 !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+body.pdf-export-mode .booklet-mini-header {
+  border-bottom: 1.5px solid #000000 !important;
+  background: #ffffff !important;
+  padding-bottom: 3px !important;
+  margin-bottom: 8px !important;
+  font-size: 8pt !important;
+  flex-shrink: 0 !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+}
+
+body.pdf-export-mode .booklet-columns-grid {
+  flex: 1 1 0 !important;
+  min-height: 0 !important;
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  gap: 10px !important;
+  margin-bottom: 4px !important;
+  align-items: stretch !important;
+  overflow: hidden !important;
+  position: relative !important;
+  height: auto !important;
+}
+
+body.pdf-export-mode .booklet-col-divider {
+  position: relative !important;
+  width: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: auto !important;
+  min-height: 100% !important;
+}
+
+body.pdf-export-mode .booklet-col-divider::before {
+  content: '' !important;
+  position: absolute !important;
+  top: 6px !important;
+  bottom: 6px !important;
+  left: 50% !important;
+  width: 1px !important;
+  background: #cbd5e1 !important;
+  transform: translateX(-50%) !important;
+  z-index: 1 !important;
+}
+
+body.pdf-export-mode .gutter-brand-svg {
+  position: relative !important;
+  z-index: 2 !important;
+  width: 16px !important;
+  height: 180px !important;
+  display: block !important;
+}
+
+body.pdf-export-mode .booklet-col {
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 6px !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+body.pdf-export-mode .booklet-col .question-card {
+  flex: 0 0 auto !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  gap: 5px !important;
+  padding: 5px 7px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  box-sizing: border-box !important;
+  margin-bottom: 0 !important;
+  overflow: visible !important;
+  height: auto !important;
+  min-height: fit-content !important;
+}
+
+body.pdf-export-mode .question-header {
+  height: 18px !important;
+  min-height: 18px !important;
+  position: relative !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+}
+
+body.pdf-export-mode .question-visual-box {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: 125px !important;
+  margin: 2px auto 4px auto !important;
+  padding: 2px 4px !important; /* compact p-1 ila p-2 standardı */
+  background: transparent !important;
+  border: none !important;
+  box-sizing: border-box !important;
+  flex: 0 0 auto !important;
+  overflow: hidden !important;
+}
+
+body.pdf-export-mode .question-visual-box svg {
+  max-height: 120px !important;
+  min-height: 75px !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+}
+
+body.pdf-export-mode .question-visual-box svg image {
+  image-rendering: auto !important;
+}
+
+body.pdf-export-mode .question-text-and-options {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 5px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+}
+
+body.pdf-export-mode .question-body {
+  font-size: 9.5px !important;
+  line-height: 1.35 !important;
+  color: #000000 !important;
+  font-weight: 500 !important;
+  margin-bottom: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+body.pdf-export-mode .options-container {
+  margin-top: 0 !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  min-height: fit-content !important;
+  overflow: visible !important;
+}
+
+body.pdf-export-mode .options-inline-row {
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 4px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+body.pdf-export-mode .options-grid-2x2 {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  grid-auto-rows: 1fr !important;
+  align-items: stretch !important;
+  gap: 4px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+body.pdf-export-mode .options-stacked {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  width: 100% !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+body.pdf-export-mode .option-item {
+  display: flex !important;
+  align-items: flex-start !important;
+  gap: 5px !important;
+  padding: 3px 5px !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 3px !important;
+  background: #ffffff !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  overflow: visible !important;
+}
+
+body.pdf-export-mode .option-letter {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  border-radius: 50% !important;
+  background: #f1f5f9 !important;
+  border: 1px solid #334155 !important;
+  font-size: 9px !important;
+  font-weight: 800 !important;
+  color: #000000 !important;
+  flex-shrink: 0 !important;
+  margin-top: 1px !important;
+}
+
+body.pdf-export-mode .option-text {
+  font-size: 9.5px !important;
+  line-height: 1.35 !important;
+  color: #000000 !important;
+  font-weight: 500 !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  flex: 1 !important;
+}
+
+body.pdf-export-mode .booklet-page-footer {
+  display: grid !important;
+  grid-template-columns: 1fr auto 1fr !important;
+  align-items: center !important;
+  border-top: 1px solid #000000 !important;
+  padding-top: 6px !important;
+  margin-top: auto !important;
+  font-size: 9px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  flex-shrink: 0 !important;
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  background: #ffffff !important;
+}
+
+body.pdf-export-mode .footer-left-brand {
+  justify-self: start !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+body.pdf-export-mode .footer-page-center {
+  justify-self: center !important;
+  text-align: center !important;
+  font-weight: 800 !important;
+}
+
+body.pdf-export-mode .footer-right-web {
+  justify-self: end !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+/* ==========================================================================
+   PROFESYONEL MEB & LGS SINAV KİTAPÇIĞI MİZANPAJ MOTORU (ULTRAFEN STANDARDI)
+   ========================================================================== */
+
+/* A4 Sınav Kitapçığı Sayfa Kapsayıcısı (Önizleme) */
+.a4-booklet-sheet {
+  font-family: 'Times New Roman', Times, serif !important;
+  background: #ffffff;
+  border-radius: 4px;
+  border: 1.5px solid #1e293b;
+  width: 794px;
+  max-width: 100%;
+  min-height: 1123px;
+  padding: 18px 24px;
+  margin: 0 auto 24px auto;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.a4-booklet-sheet,
+.a4-booklet-sheet *,
+.booklet-exam-header,
+.booklet-exam-header *,
+.booklet-mini-header,
+.booklet-mini-header *,
+.booklet-columns-grid,
+.booklet-col,
+.question-card,
+.question-card *,
+.question-header,
+.question-number,
+.question-body,
+.question-text-and-options,
+.options-container,
+.option-item,
+.option-letter,
+.option-text,
+.booklet-page-footer,
+.booklet-page-footer *,
+.footer-left-brand,
+.footer-page-center,
+.footer-right-web,
+.footer-website-text,
+.booklet-answer-key-strip,
+.booklet-answer-key-strip *,
+.ans-strip-title,
+.cell-q,
+.cell-a,
+.gutter-brand-svg text {
+  font-family: 'Times New Roman', Times, serif !important;
+}
+
+/* İlk Sayfa: Resmi Sınav Başlığı ve Öğrenci Bilgi Tablosu */
+.booklet-exam-header {
+  border: 1.5px solid #000000;
+  border-radius: 3px;
+  padding: 4px 8px;
+  margin-bottom: 8px;
+  background: #ffffff;
+}
+
+.exam-header-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: #f1f5f9;
-  border: 1px dashed #cbd5e1;
-  border-radius: 6px;
-  padding: 4px 10px;
-  margin-bottom: 12px;
-  font-size: 11.5px;
+  border-bottom: 1px solid #000000;
+  padding-bottom: 3px;
+  margin-bottom: 3px;
+}
+
+.exam-logo-left, .exam-logo-right {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+
+.exam-title-center {
+  text-align: center;
+  flex: 1;
+  padding: 0 6px;
+}
+
+.exam-ministry {
+  font-size: 10px;
   font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #334155;
+}
+
+.exam-main-title {
+  font-family: 'Times New Roman', Times, serif !important;
+  font-size: 14px;
+  font-weight: 800;
+  color: #000000;
+  margin: 1px 0;
+  letter-spacing: 0.3px;
+}
+
+.exam-subtitle {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--primary);
+}
+
+/* Öğrenci Bilgi Tablosu */
+.student-exam-table {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 3px;
+  padding: 3px 8px;
+  box-sizing: border-box;
+}
+
+.st-field {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 9.5px;
+  color: #0f172a;
+  white-space: nowrap;
+}
+
+.st-field-name {
+  flex: 2;
+  min-width: 130px;
+}
+
+.st-field-class {
+  flex: 1;
+  min-width: 75px;
+}
+
+.st-field-no {
+  flex: 1;
+  min-width: 60px;
+}
+
+.st-field-date {
+  flex: 1;
+  min-width: 80px;
+}
+
+.st-field-score {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 6px;
+  border-left: 1px solid #cbd5e1;
+}
+
+.st-label {
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.st-fill-line {
+  display: inline-block;
+  flex: 1;
+  min-width: 20px;
+  border-bottom: 1.5px dotted #64748b;
+  height: 12px;
+  margin-top: 1px;
+}
+
+.st-date-val {
+  font-weight: 600;
   color: #475569;
 }
 
-/* 2 Sütunlu Doğal Akış: Sorular solda alt alta iner, bitince sağ sütuna geçer */
-.a4-page-content-columns {
-  columns: 2;
-  column-gap: 20px;
-  column-fill: auto;
-  width: 100%;
-}
-
-.a4-sheet-container .question-card {
-  break-inside: avoid;
-  page-break-inside: avoid;
-  display: inline-block;
-  width: 100%;
-  margin-bottom: 14px;
-  box-sizing: border-box;
-  padding: 12px 14px;
-}
-
-/* Yoğunluk Ölçekleri (Sayfa Sayısına Göre Otomatik Taşma Önleme) */
-.density-compact .question-card {
-  padding: 8px 10px !important;
-  margin-bottom: 8px !important;
-}
-
-.density-compact .question-body {
-  font-size: 12px !important;
-  line-height: 1.4 !important;
-  margin-bottom: 6px !important;
-}
-
-.density-compact .option-item {
-  padding: 3px 6px !important;
-  font-size: 11.5px !important;
-}
-
-.density-compact .question-visual-box svg {
-  max-height: 95px !important;
-}
-
-.density-medium .question-visual-box svg {
-  max-height: 120px !important;
-}
-
-.a4-page-footer-ans {
-  margin-top: 10px;
-  padding: 6px 12px;
-  background: #f8fafc;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  font-size: 11.5px;
+.st-score-tag {
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 2px;
+  color: #0f172a;
+  font-size: 9.5px;
 }
 
-.ans-strip-label {
+.st-box {
+  display: inline-block;
+  width: 14px;
+  height: 13px;
+  border: 1px solid #475569;
+  border-radius: 2px;
+  background: #ffffff;
+}
+
+.st-box-wide {
+  width: 22px;
+}
+
+/* Sonraki Sayfalar İçin Kompakt Başlık (Sayfa 2, 3...) */
+.booklet-mini-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1.5px solid #000000;
+  padding-bottom: 3px;
+  margin-bottom: 8px;
+}
+
+.mini-header-title {
+  font-size: 11px;
+  font-weight: 800;
+  color: #000000;
+  letter-spacing: 0.3px;
+}
+
+.mini-header-tag {
+  font-size: 10px;
   font-weight: 700;
   color: var(--primary);
 }
 
-.ans-strip-content {
+/* 2 Sütunlu Kararlı Grid Mizanpajı */
+.booklet-columns-grid {
+  flex: 1 1 0;        /* 0 basis: shrinks/grows to fill space between header and footer */
+  min-height: 0;      /* crucial: allows flex child to shrink below content size */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 10px;
+  align-items: stretch;
+  width: 100%;
+  overflow: hidden;   /* clip overflowing content so it never reaches footer */
+  position: relative;
+}
+
+.booklet-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 6px;
+  height: 100%;       /* fill the grid row height */
+  min-height: 0;
+  overflow: hidden;   /* prevent last question card from overflowing into footer */
+}
+
+.booklet-col-divider {
+  position: relative;
+  width: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: auto;
+  min-height: 100%;
+}
+
+.booklet-col-divider::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 50%;
+  width: 1px;
+  background: #cbd5e1;
+  transform: translateX(-50%);
+  z-index: 1;
+}
+
+.gutter-brand-svg {
+  position: relative;
+  z-index: 2;
+  width: 16px;
+  height: 180px;
+  display: block;
+}
+
+.booklet-col .question-card {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 5px;
+  width: 100%;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  padding: 5px 7px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  background: #ffffff;
+  overflow: visible;
+  height: auto;
+  min-height: fit-content;
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #f1f5f9;
+  padding-bottom: 2px;
+  margin-bottom: 2px;
+  height: 18px;
+  min-height: 18px;
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.question-number {
+  font-size: 10px;
+  font-weight: 800;
+  color: #000000;
+  line-height: 1;
+}
+
+.question-visual-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: 125px; /* Soru alanını ve şıkları rahatlatan kompakt yükseklik */
+  margin: 2px 0 4px 0;
+  padding: 2px 4px; /* compact p-1 ila p-2 standardı */
+  background: transparent;
+  border: none;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  overflow: hidden;
+}
+
+.question-visual-box svg {
+  max-height: 120px !important;
+  min-height: 75px !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+  display: block;
+  margin: 0 auto;
+  object-fit: contain;
+}
+
+.question-visual-box svg image {
+  image-rendering: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+.question-text-and-options {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.question-body {
+  font-size: 9.5px;
+  line-height: 1.35;
+  color: #000000;
+  font-weight: 500;
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+/* Dinamik Seçenek Yerleşimleri (1 Satır / 2x2 / Alt Alta) */
+.options-container {
+  margin-top: 0;
+  width: 100%;
+  flex-shrink: 0 !important;
+  min-height: fit-content;
+  overflow: visible !important;
+}
+
+.options-inline-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 4px;
+  width: 100%;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+.options-grid-2x2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: 1fr;
+  align-items: stretch;
+  gap: 4px;
+  width: 100%;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+.options-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+
+.option-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 5px;
+  padding: 3px 6px;
+  border-radius: 3px;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.option-letter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1px solid #334155;
+  font-size: 9.5px;
+  font-weight: 800;
+  color: #000000;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.option-text {
+  font-size: 10px;
+  line-height: 1.35;
+  color: #000000;
+  font-weight: 500;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  flex: 1;
+}
+
+/* Sayfa Alt Bilgisi (Footer) - 3 Sütunlu Kusursuz Ortalanmış Grid */
+.booklet-page-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  border-top: 1px solid #334155;
+  padding-top: 6px;
+  margin-top: auto;
+  font-size: 9px;
   font-weight: 600;
+  color: #475569;
+  box-sizing: border-box;
+  width: 100%;
+  flex-shrink: 0;
+  background: #ffffff;
+}
+
+.footer-left-brand {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 700;
   color: #1e293b;
 }
 
-.print-mini-header {
-  border-bottom: 1.5px solid #000;
-  padding-bottom: 4px;
-  margin-bottom: 10px;
-  font-size: 9.5pt;
+.instagram-icon {
+  width: 13px;
+  height: 13px;
+  color: #e1306c;
+  flex-shrink: 0;
 }
+
+.instagram-username {
+  font-size: 9px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: 0.2px;
+}
+
+.footer-page-center {
+  justify-self: center;
+  text-align: center;
+  font-weight: 800;
+  color: #0f172a;
+  font-size: 9.5px;
+  letter-spacing: 0.3px;
+}
+
+.footer-right-web {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  text-align: right;
+}
+
+.footer-website-text {
+  font-size: 9px;
+  font-weight: 600;
+  color: #0284c7;
+  letter-spacing: 0.2px;
+}
+
+/* Son Sayfa Cevap & Optik Kodlama Şeridi */
+.booklet-answer-key-strip {
+  margin-top: 4px;
+  padding: 3px 6px;
+  background: #f8fafc;
+  border: 1.5px solid #000000;
+  border-radius: 3px;
+}
+
+.ans-strip-title {
+  font-size: 8.5px;
+  font-weight: 800;
+  color: #000000;
+  margin-bottom: 2px;
+  text-align: center;
+}
+
+.ans-strip-items {
+  display: flex;
+  gap: 3px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ans-strip-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #000000;
+  border-radius: 2px;
+  background: #ffffff;
+  padding: 1px 3px;
+  min-width: 20px;
+}
+
+.cell-q {
+  font-size: 7.5px;
+  font-weight: 700;
+  color: #334155;
+  border-bottom: 1px solid #cbd5e1;
+  width: 100%;
+  text-align: center;
+}
+
+.cell-a {
+  font-size: 9.5px;
+  font-weight: 800;
+  color: var(--primary);
+}
+
+/* Sınıf Seviyesine Göre Yaş Uyarlamaları */
+.grade-theme-5 .question-body { font-size: 13.5px; line-height: 1.5; }
+.grade-theme-5 .option-item { font-size: 13px; padding: 5px 8px; }
+
+.grade-theme-8 .question-card { padding: 8px 10px; margin-bottom: 10px; }
+.grade-theme-8 .question-body { font-size: 12px; line-height: 1.4; }
+.grade-theme-8 .option-item { font-size: 11.5px; }
 
 .column-controls {
   display: flex;
@@ -848,21 +1679,21 @@ label {
 
 /* Yapılandırılmış Grid 3x3 Stilleri */
 .structured-grid-container {
-  margin: 12px 0 16px 0;
+  margin: 4px 0 6px 0;
 }
 
 .grid-boxes-3x3 {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 6px;
 }
 
 .grid-box-cell {
   background: #ffffff;
-  border: 2px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 10px;
-  min-height: 64px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 6px 8px;
+  min-height: 52px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -1192,132 +2023,315 @@ label {
   border-radius: 4px;
 }
 
-/* Print Styles */
-.print-only { display: none; }
-
+/* ==========================================================================
+   YAZDIRMA & PDF ÇIKTISI (@media print) - KESİN 2 VEYA 4 SAYFA VE TAM DOLULUK
+   ========================================================================== */
 @media print {
   @page {
     size: A4 portrait;
-    margin: 8mm;
+    margin: 10mm 15mm;
   }
 
-  body {
-    background: white !important;
-    color: black !important;
-    font-size: 9.5pt;
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-sizing: border-box !important;
+    font-family: 'Times New Roman', Times, serif !important;
   }
 
-  .app-container {
-    max-width: 100% !important;
+  html, body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 8pt !important;
+    margin: 0 !important;
     padding: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
   }
 
-  .no-print { display: none !important; }
-  .print-only { display: block !important; }
-  .main-layout { display: block !important; }
-
+  .sidebar-panel,
+  .toolbar,
+  .view-controls-bar,
+  .no-print,
+  .question-card-actions,
+  .page-top-badge,
+  .watermark-overlay,
+  .add-question-bar,
+  .answer-key-box,
   .print-sheet-header {
-    border: 1.5px solid #000;
-    padding: 6px 10px;
-    margin-bottom: 10px;
+    display: none !important;
   }
 
-  .print-meta-top {
-    text-align: center;
-    border-bottom: 1px solid #333;
-    padding-bottom: 4px;
-    margin-bottom: 6px;
-  }
-
-  .print-header-layout {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .print-logo-img {
-    width: 42px;
-    height: 42px;
-    object-fit: cover;
-    border-radius: 4px;
-  }
-
-  .sheet-title {
-    font-size: 11pt;
-    font-weight: 800;
-  }
-
-  .student-info-box {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 6px;
-    font-size: 8.5pt;
-    padding-bottom: 4px;
-    border-bottom: 1px dashed #666;
-  }
-
-  .learning-outcome-info {
-    font-size: 8pt;
-    margin-top: 3px;
-  }
-
-  .a4-sheet-container {
+  .app-container,
+  .main-layout,
+  .preview-panel,
+  .questions-container {
+    display: block !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
     border: none !important;
     box-shadow: none !important;
-    padding: 0 !important;
+    overflow: visible !important;
+  }
+
+  .a4-booklet-sheet {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 0 4mm 0 !important;
     margin: 0 !important;
     page-break-after: always !important;
     break-after: page !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
-    max-height: 275mm !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
     box-sizing: border-box !important;
+    overflow: visible !important;
   }
 
-  .a4-sheet-container:last-child {
+  .a4-booklet-sheet:last-child {
     page-break-after: auto !important;
     break-after: auto !important;
   }
 
-  .a4-page-content-columns {
-    columns: 2 !important;
-    column-gap: 14px !important;
-    column-fill: auto !important;
+  .booklet-columns-grid {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    gap: 12px !important;
     width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+    flex: 1 1 0 !important;
+    align-items: stretch !important;
+    margin-bottom: 4px !important;
+    overflow: hidden !important;
+    position: relative !important;
   }
 
-  .question-card {
-    border: 1px solid #777 !important;
-    background: transparent !important;
+  .booklet-col {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+
+  .booklet-col-divider {
+    position: relative !important;
+    width: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: auto !important;
+    min-height: 100% !important;
+  }
+
+  .booklet-col-divider::before {
+    content: '' !important;
+    position: absolute !important;
+    top: 6px !important;
+    bottom: 6px !important;
+    left: 50% !important;
+    width: 1px !important;
+    background: #cbd5e1 !important;
+    transform: translateX(-50%) !important;
+    z-index: 1 !important;
+  }
+
+  .gutter-brand-svg {
+    position: relative !important;
+    z-index: 2 !important;
+    width: 16px !important;
+    height: 180px !important;
+    display: block !important;
+  }
+
+  .booklet-col .question-card {
+    border: 1px solid #cbd5e1 !important;
+    background: #ffffff !important;
     box-shadow: none !important;
     padding: 6px 8px !important;
-    break-inside: avoid-column !important;
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important;
+    gap: 6px !important;
+    margin-bottom: 0 !important;
+    break-inside: avoid !important;
     page-break-inside: avoid !important;
-    display: inline-block !important;
-    width: 100% !important;
-    margin-bottom: 8px !important;
+    -webkit-column-break-inside: avoid !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+
+  .question-header {
+    height: 20px !important;
+    min-height: 20px !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+    box-sizing: border-box !important;
+    border-bottom: 1px solid #cbd5e1 !important;
+    padding-bottom: 2px !important;
+    margin-bottom: 2px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .question-number {
-    font-size: 9.5pt !important;
+    font-size: 8.5pt !important;
     font-weight: 800 !important;
+    color: #000 !important;
+  }
+
+  .badge-type {
+    display: none !important;
+  }
+
+  .question-meta-tags .tag {
+    font-size: 7pt !important;
+    padding: 1px 4px !important;
+    border: 1px solid #94a3b8 !important;
+    color: #334155 !important;
+    background: transparent !important;
+  }
+
+  .question-visual-box {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: 125px !important;
+    margin: 2px auto 4px auto !important;
+    padding: 2px 4px !important; /* compact p-1 ila p-2 standardı */
+    background: transparent !important;
+    border: none !important;
+    box-sizing: border-box !important;
+    flex: 0 0 auto !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+
+  .question-visual-box svg {
+    max-height: 120px !important;
+    min-height: 75px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+  }
+
+  .question-visual-box svg image {
+    image-rendering: auto !important;
+  }
+
+  .question-text-and-options {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 5px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    margin-top: 1px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
   }
 
   .question-body {
-    font-size: 8.5pt !important;
+    font-size: 8pt !important;
     line-height: 1.35 !important;
-    margin-bottom: 4px !important;
+    margin-bottom: 0 !important;
+    color: #000 !important;
+    flex-shrink: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .options-container {
+    margin-top: 0 !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    min-height: fit-content !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+  }
+
+  .options-inline-row {
+    display: grid !important;
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 4px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .options-grid-2x2 {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    grid-auto-rows: 1fr !important;
+    align-items: stretch !important;
+    gap: 4px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .options-stacked {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 3px !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
   }
 
   .option-item {
-    padding: 1.5px 3px !important;
-    border: none !important;
+    display: flex !important;
+    align-items: flex-start !important;
     gap: 5px !important;
+    padding: 2px 4px !important;
+    border: 1px solid #cbd5e1 !important;
+    background: transparent !important;
+    font-size: 8pt !important;
+    overflow: visible !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
   }
 
   .option-letter {
-    width: 16px !important;
-    height: 16px !important;
-    font-size: 8pt !important;
+    width: 14px !important;
+    height: 14px !important;
+    font-size: 7pt !important;
     background: transparent !important;
     border: 1px solid #000 !important;
     border-radius: 50% !important;
@@ -1325,30 +2339,126 @@ label {
   }
 
   .option-text {
-    font-size: 8pt !important;
-  }
-
-  .question-visual-box {
-    margin: 3px 0 !important;
-    padding: 1px !important;
-  }
-
-  .question-visual-box svg {
-    max-height: 85px !important;
-  }
-
-  .a4-page-footer-ans {
-    break-inside: avoid !important;
-    margin-top: 6px !important;
-    padding: 4px 8px !important;
-    border: 1px solid #000 !important;
-    box-shadow: none !important;
     font-size: 7.5pt !important;
+    color: #000 !important;
+  }
+
+  .booklet-exam-header {
+    border: 1.5px solid #000000 !important;
+    background: #ffffff !important;
+    padding: 5px 8px !important;
+    margin-bottom: 10px !important;
+    flex-shrink: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    box-sizing: border-box !important;
+  }
+
+  .exam-logo-left, .exam-logo-right {
+    width: 38px !important;
+    height: 38px !important;
+  }
+
+  .student-exam-table {
+    border: 1px solid #333333 !important;
+    background: transparent !important;
+    font-size: 7.5pt !important;
+    padding: 3px 5px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .booklet-mini-header {
+    border-bottom: 1.5px solid #000000 !important;
+    background: #ffffff !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 10px !important;
+    font-size: 8pt !important;
+    flex-shrink: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    box-sizing: border-box !important;
+  }
+
+  .booklet-page-footer {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    border-top: 1px solid #000000 !important;
+    padding-top: 6px !important;
+    margin-top: auto !important;
+    font-size: 7.5pt !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    flex-shrink: 0 !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    background: #ffffff !important;
+  }
+
+  .footer-left-brand {
+    justify-self: start !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .footer-page-center {
+    justify-self: center !important;
+    text-align: center !important;
+    font-weight: 800 !important;
+  }
+
+  .footer-right-web {
+    justify-self: end !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
+  .booklet-answer-key-strip {
+    border: 1.5px solid #000000 !important;
+    background: transparent !important;
+    padding: 4px 6px !important;
+    margin-top: 8px !important;
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+    -webkit-column-break-inside: avoid !important;
+    flex-shrink: 0 !important;
+  }
+
+  .ans-strip-title {
+    font-size: 8pt !important;
+    margin-bottom: 2px !important;
+  }
+
+  .ans-strip-cell {
+    border: 1px solid #000 !important;
+    padding: 1px 3px !important;
+    min-width: 22px !important;
+  }
+
+  .cell-q {
+    font-size: 6.5pt !important;
+  }
+
+  .cell-a {
+    font-size: 8pt !important;
+    color: #000 !important;
   }
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1380px) {
+  .main-layout {
+    grid-template-columns: 380px minmax(0, 1fr);
+    gap: 16px;
+  }
+}
+
+@media (max-width: 1220px) {
   .main-layout {
     grid-template-columns: 1fr;
+    gap: 20px;
   }
 }
