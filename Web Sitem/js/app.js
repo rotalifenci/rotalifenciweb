@@ -13480,6 +13480,20 @@ function closeInteractiveGameModal() {
     currentActiveGame = null;
     const modal = document.getElementById("interactive-game-modal");
     if (modal) {
+        const iframes = modal.querySelectorAll("iframe");
+        iframes.forEach(iframe => {
+            try {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'STOP_GAME_CLEANUP' }, '*');
+                }
+            } catch (e) {}
+            try {
+                iframe.src = "about:blank";
+            } catch (e) {}
+            try {
+                iframe.remove();
+            } catch (e) {}
+        });
         modal.innerHTML = "";
         modal.classList.add("hidden");
     }
@@ -13553,6 +13567,20 @@ function openInteractiveSimulationModal(targetUrl, title = "Fen Laboratuvarı Si
 function closeInteractiveSimulationModal() {
     const modal = document.getElementById("interactive-sim-modal");
     if (modal) {
+        const iframes = modal.querySelectorAll("iframe");
+        iframes.forEach(iframe => {
+            try {
+                if (iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({ type: 'STOP_GAME_CLEANUP' }, '*');
+                }
+            } catch (e) {}
+            try {
+                iframe.src = "about:blank";
+            } catch (e) {}
+            try {
+                iframe.remove();
+            } catch (e) {}
+        });
         modal.innerHTML = "";
         modal.remove();
     }

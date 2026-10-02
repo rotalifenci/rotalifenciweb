@@ -1632,38 +1632,46 @@
             }
         }
 
-        // Soru Kapıları (Normal ve Altın/Zor Kapılar)
+        let GATE_ASSETS = null;
+        function getGateAssets() {
+            if (!GATE_ASSETS) {
+                GATE_ASSETS = {
+                    frameGeo: new THREE.BoxGeometry(11.4, 0.65, 0.65),
+                    frameMatNormal: new THREE.MeshLambertMaterial({ color: 0x1e293b }),
+                    frameMatHard: new THREE.MeshLambertMaterial({ color: 0xffd166, emissive: 0xd97706 }),
+                    archGeo: new THREE.TorusGeometry(1.65, 0.2, 8, 20),
+                    archMatOrange: new THREE.MeshBasicMaterial({ color: 0xf59e0b }),
+                    archMatBlue: new THREE.MeshBasicMaterial({ color: 0x00f0ff }),
+                    archMatRose: new THREE.MeshBasicMaterial({ color: 0xf43f5e })
+                };
+            }
+            return GATE_ASSETS;
+        }
+
+        // Soru Kapıları (Normal ve Altın/Zor Kapılar - Önbellekli Geometri & Materyal)
         function spawnQuestionGatePair(z) {
             const q = getNextMaarifQuestion();
             const isLeftCorrect = Math.random() < 0.5;
             const isHard = !!q.isHard;
+            const gateAssets = getGateAssets();
 
             const gateGroup = new THREE.Group();
             gateGroup.position.z = z;
 
             // Kapı Kemer Çerçevesi (Büyük Portal)
-            const frameGeo = new THREE.BoxGeometry(11.4, 0.65, 0.65);
-            const frameMat = new THREE.MeshPhongMaterial({ 
-                color: isHard ? 0xffd166 : 0x1e293b, 
-                metalness: 0.9,
-                emissive: isHard ? 0xd97706 : 0x000000,
-                emissiveIntensity: isHard ? 0.35 : 0
-            });
-            const topBar = new THREE.Mesh(frameGeo, frameMat);
+            const frameMat = isHard ? gateAssets.frameMatHard : gateAssets.frameMatNormal;
+            const topBar = new THREE.Mesh(gateAssets.frameGeo, frameMat);
             topBar.position.y = 4.2;
             gateGroup.add(topBar);
 
-            // Sol Kapı Kemeri (Turuncu)
-            const leftArchGeo = new THREE.TorusGeometry(1.65, 0.2, 8, 24);
-            const leftArchMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
-            const leftPortal = new THREE.Mesh(leftArchGeo, leftArchMat);
+            // Sol Kapı Kemeri
+            const leftPortal = new THREE.Mesh(gateAssets.archGeo, gateAssets.archMatOrange);
             leftPortal.position.set(LANES[0], 2.0, 0);
             gateGroup.add(leftPortal);
 
-            // Sağ Kapı Kemeri (Mavi)
-            const rightArchGeo = new THREE.TorusGeometry(1.65, 0.2, 8, 24);
-            const rightArchMat = new THREE.MeshBasicMaterial({ color: isHard ? 0xf43f5e : 0x00f0ff });
-            const rightPortal = new THREE.Mesh(rightArchGeo, rightArchMat);
+            // Sağ Kapı Kemeri
+            const rightMat = isHard ? gateAssets.archMatRose : gateAssets.archMatBlue;
+            const rightPortal = new THREE.Mesh(gateAssets.archGeo, rightMat);
             rightPortal.position.set(LANES[2], 2.0, 0);
             gateGroup.add(rightPortal);
 
@@ -1888,13 +1896,14 @@
         }, { passive: false });
 
         // --- 9. ANA ANİMASYON & OYUN DÖNGÜSÜ ---
+        let animationFrameId = null;
         let lastFrame = performance.now();
         let cachedHudScore = null;
         let cachedHudDistVal = null;
         let hudFrameCounter = 0;
 
         function animate(now) {
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
             const delta = Math.min((now - lastFrame) / 1000, 0.05);
             lastFrame = now;
 
@@ -2344,7 +2353,43 @@
 
         window.addEventListener('DOMContentLoaded', () => {
             initScene();
-            requestAnimationFrame(animate);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(animate);
+        });
+
+        // Modal kapatıldığında veya sekmeden çıkıldığında tam temizlik
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'STOP_GAME_CLEANUP') {
+                isRunning = false;
+                isQuestionPaused = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                if (questionPauseInterval) {
+                    clearInterval(questionPauseInterval);
+                    questionPauseInterval = null;
+                }
+                if (robotTimer) {
+                    clearTimeout(robotTimer);
+                    robotTimer = null;
+                }
+                if (AudioFX && AudioFX.ctx && AudioFX.ctx.state !== 'closed') {
+                    try { AudioFX.ctx.suspend(); } catch (err) {}
+                }
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            isRunning = false;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (questionPauseInterval) clearInterval(questionPauseInterval);
+        });
+
+        window.addEventListener('pagehide', () => {
+            isRunning = false;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            if (questionPauseInterval) clearInterval(questionPauseInterval);
         });
     </script>
 </body>
