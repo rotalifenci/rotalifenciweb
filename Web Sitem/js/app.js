@@ -4222,11 +4222,6 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <!-- Görsel Kapak Kutusu -->
                                         <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${openFunc}">
                                             <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                            <div class="absolute bottom-2.5 right-2.5">
-                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-amber-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-eye"></i> GÖRSELİ AÇ
-                                                </span>
-                                            </div>
                                         </div>
                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
                                             ${item.desc || (isMainBook ? 'Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.' : 'Ders kitabı eki ve bölüm dokümanı.')}
@@ -4235,7 +4230,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                     <div>
                                         <button type="button" onclick="${openFunc}" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
                                             <i class="fa-solid ${isBookReader ? 'fa-book-open-reader' : (isImg ? 'fa-eye' : 'fa-book-open')} text-sm"></i>
-                                            <span>${isBookReader ? 'Kitabı Aç & Oku' : (isImg ? 'İncele & Aç' : 'Aç & Oku')}</span>
+                                            <span>Görüntüle</span>
                                         </button>
                                         ${isAdmin ? `
                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -4345,11 +4340,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         <!-- Görsel Kapak Kutusu -->
                                                         <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:${isSunum ? 'border-orange-500/40' : 'border-blue-500/40'} cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')">
                                                             <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                                            <div class="absolute bottom-2.5 right-2.5">
-                                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:${isSunum ? 'bg-orange-600' : 'bg-blue-600'} text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                                    <i class="fa-solid fa-eye"></i> İncele & Aç
-                                                                </span>
-                                                            </div>
+
                                                         </div>
                                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
                                                             ${item.desc || (isSunum ? 'MEB kazanımlarına uygun sınıf içi akıllı tahta ders sunumu.' : 'MEB kazanımlarına uygun özet föy ve kavram haritası.')}
@@ -4358,7 +4349,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                     <div>
                                                         <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${isSunum ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-600/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
                                                             <i class="fa-solid ${isSunum ? 'fa-file-powerpoint' : (isPdfReady ? 'fa-file-lines' : 'fa-book-open')}"></i>
-                                                            <span>${isSunum ? 'Sunumu İncele & Aç' : (isPdfReady ? 'Notu İncele & Oku' : 'Notu Görüntüle')}</span>
+                                                            <span>${isSunum ? 'Sunumu Görüntüle' : 'Görüntüle'}</span>
                                                         </button>
                                                         ${isAdmin ? `
                                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -5127,18 +5118,14 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         <!-- Görsel Kapak Kutusu -->
                                         <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', '${labGuideItem.format || 'PDF'}')">
                                             <img src="${resolveMaterialCover(labGuideItem) || 'assets/lab-guvenligi.svg'}" alt="${labGuideItem.title || 'Laboratuvar Rehberi'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                            <div class="absolute bottom-2.5 right-2.5">
-                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-eye"></i> Kılavuzu Aç
-                                                </span>
-                                            </div>
+
                                         </div>
                                         <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
                                     </div>
                                     <div>
                                         <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', '${labGuideItem.format || 'PDF'}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
                                             <i class="fa-solid fa-eye text-xs"></i>
-                                            <span>Kılavuzu Aç & İncele</span>
+                                            <span>Görüntüle</span>
                                         </button>
                                         ${isAdmin ? `
                                             <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
@@ -10676,7 +10663,10 @@ async function setupVerticalPdfSlots(pdf) {
                     <div class="w-5 h-5 border-2 border-red-500 border-t-transparent rounded-full animate-spin"></div>
                     <span>Sayfa ${p} Hazırlanıyor...</span>
                 </div>
-                <canvas id="pdf-canvas-${p}" class="block bg-white max-w-full max-h-full object-contain"></canvas>
+                <div id="pdf-canvas-wrap-${p}" class="relative inline-block max-w-full max-h-full">
+                    <canvas id="pdf-canvas-${p}" class="block bg-white max-w-full max-h-full object-contain"></canvas>
+                    <div id="pdf-links-layer-${p}" class="absolute inset-0 pointer-events-auto z-20 overflow-hidden"></div>
+                </div>
             </div>
         `;
         fragment.appendChild(slot);
@@ -10784,6 +10774,12 @@ async function renderSinglePdfPage(pageNum) {
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+        const wrap = document.getElementById(`pdf-canvas-wrap-${pageNum}`);
+        if (wrap) {
+            wrap.style.width = cssWidth + "px";
+            wrap.style.height = cssHeight + "px";
+        }
+
         await page.render({
             canvasContext: ctx,
             viewport: viewport,
@@ -10792,6 +10788,82 @@ async function renderSinglePdfPage(pageNum) {
 
         DigitalBookState.renderedPages.add(pageNum);
         if (spinner) spinner.remove();
+
+        // 🔗 PDF Link ve Anotasyon Katmanı (YouTube / Video ve Dış Bağlantılar)
+        const linksLayer = document.getElementById(`pdf-links-layer-${pageNum}`);
+        if (linksLayer) {
+            linksLayer.innerHTML = "";
+            try {
+                const annotations = await page.getAnnotations({ intent: "display" });
+                const cssVp = page.getViewport({ scale: baseFitScale * zoom });
+                if (Array.isArray(annotations) && annotations.length > 0) {
+                    for (const ann of annotations) {
+                        if (ann.subtype === "Link" && (ann.url || ann.dest)) {
+                            const rect = cssVp.convertToViewportRectangle(ann.rect);
+                            const left = Math.min(rect[0], rect[2]);
+                            const top = Math.min(rect[1], rect[3]);
+                            const width = Math.abs(rect[2] - rect[0]);
+                            const height = Math.abs(rect[3] - rect[1]);
+
+                            if (width <= 0 || height <= 0) continue;
+
+                            const linkEl = document.createElement("a");
+                            linkEl.className = "absolute transition-all hover:bg-blue-500/20 hover:ring-2 hover:ring-blue-500 rounded cursor-pointer z-30";
+                            linkEl.style.left = `${left}px`;
+                            linkEl.style.top = `${top}px`;
+                            linkEl.style.width = `${width}px`;
+                            linkEl.style.height = `${height}px`;
+
+                            const targetUrl = ann.url || "";
+                            if (targetUrl) {
+                                linkEl.href = targetUrl;
+                                linkEl.title = targetUrl;
+                                const isYt = targetUrl.includes("youtube.com") || targetUrl.includes("youtu.be");
+                                if (isYt) {
+                                    linkEl.setAttribute("data-video-url", targetUrl);
+                                    linkEl.addEventListener("click", (e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        if (typeof openInPageVideoModal === "function") {
+                                            openInPageVideoModal(targetUrl, "Ders Videosu", false);
+                                        } else {
+                                            window.open(targetUrl, "_blank", "noopener,noreferrer");
+                                        }
+                                    });
+                                } else {
+                                    linkEl.target = "_blank";
+                                    linkEl.rel = "noopener noreferrer";
+                                    linkEl.addEventListener("click", (e) => {
+                                        e.stopPropagation();
+                                    });
+                                }
+                            } else if (ann.dest) {
+                                linkEl.title = "Sayfaya Git";
+                                linkEl.addEventListener("click", async (e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    try {
+                                        let explicitDest = ann.dest;
+                                        if (typeof explicitDest === "string") {
+                                            explicitDest = await DigitalBookState.pdfDoc.getDestination(explicitDest);
+                                        }
+                                        if (Array.isArray(explicitDest) && explicitDest[0]) {
+                                            const pageIdx = await DigitalBookState.pdfDoc.getPageIndex(explicitDest[0]);
+                                            scrollBookToPage(pageIdx + 1);
+                                        }
+                                    } catch(dErr) {
+                                        console.warn("Destination resolve error:", dErr);
+                                    }
+                                });
+                            }
+                            linksLayer.appendChild(linkEl);
+                        }
+                    }
+                }
+            } catch(annErr) {
+                console.warn(`Sayfa ${pageNum} link okuma hatası:`, annErr);
+            }
+        }
     } catch(err) {
         if (err && err.name !== "RenderingCancelledException") {
             console.warn(`Sayfa ${pageNum} çizim hatası:`, err);
@@ -10953,6 +11025,11 @@ async function applyBookZoomInPlace() {
                 canvas.style.maxWidth = "100%";
                 canvas.style.maxHeight = "100%";
             }
+            const wrap = slot.querySelector(`[id^="pdf-canvas-wrap-"]`);
+            if (wrap) {
+                wrap.style.width = newWidth + "px";
+                wrap.style.height = newHeight + "px";
+            }
         });
 
         // Mevcut sayfayı yeniden çiz
@@ -11028,6 +11105,11 @@ function initBookEventListeners() {
             e.preventDefault();
             resetBookZoom();
         } else if (e.key === "Escape") {
+            const videoModal = document.getElementById("inpage-video-modal");
+            if (videoModal) {
+                closeInPageVideoModal();
+                return;
+            }
             closeDigitalBookModal();
         }
     };
@@ -11590,7 +11672,7 @@ async function openFullScreenPresentationModal(item) {
         currentSlide: 1,
         totalSlides: slides.length,
         slides: slides,
-        viewMode: (targetUrl && targetUrl.startsWith("http") && (targetUrl.includes("drive.google.com") || targetUrl.includes("canva.com") || targetUrl.endsWith(".pptx"))) ? "embed" : "slides",
+        viewMode: (targetUrl && targetUrl.startsWith("http") && (targetUrl.includes("drive.google.com/presentation") || targetUrl.includes("canva.com") || targetUrl.includes("slides.google.com"))) ? "embed" : "slides",
         solutionRevealed: false
     };
 
@@ -11618,7 +11700,7 @@ function renderFullScreenPresentationModal() {
     const { item, currentSlide, totalSlides, slides, viewMode, solutionRevealed } = presentationModalState;
     const cur = slides[currentSlide - 1] || slides[0];
     const isWebUrl = item.rawUrl && item.rawUrl.startsWith("http");
-    const googleDocsViewerUrl = isWebUrl ? `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true` : "";
+    const googleDocsViewerUrl = isWebUrl ? (item.rawUrl.endsWith(".pptx") ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.rawUrl)}` : `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true`) : "";
     const hasDownload = item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "";
 
     let bodyHtml = "";
@@ -12672,7 +12754,7 @@ function openInPageVideoModal(videoSrc, videoTitle = "Ders Videosu", isBlob = fa
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "inpage-video-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all";
+        modal.className = "fixed inset-0 z-[10000] bg-slate-950/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all";
         modal.onclick = function(e) {
             if (e.target === this) closeInPageVideoModal();
         };
