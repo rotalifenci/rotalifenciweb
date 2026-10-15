@@ -2107,6 +2107,37 @@ function showNumpadConsole() {
             initGameSession();
             render();
         });
+
+        // Modal kapatıldığında veya sekmeden çıkıldığında tam temizlik
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'STOP_GAME_CLEANUP') {
+                isGameRunning = false;
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                }
+                if (questionTimerInterval) {
+                    clearInterval(questionTimerInterval);
+                    questionTimerInterval = null;
+                }
+                if (toastTimeout) {
+                    clearTimeout(toastTimeout);
+                    toastTimeout = null;
+                }
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            isGameRunning = false;
+            if (timerInterval) clearInterval(timerInterval);
+            if (questionTimerInterval) clearInterval(questionTimerInterval);
+        });
+
+        window.addEventListener('pagehide', () => {
+            isGameRunning = false;
+            if (timerInterval) clearInterval(timerInterval);
+            if (questionTimerInterval) clearInterval(questionTimerInterval);
+        });
     </script>
 </body>
 </html>

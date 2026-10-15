@@ -736,18 +736,17 @@
             camera.position.set(0, 5, 9);
             camera.lookAt(0, 2, -15);
 
-            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: false, alpha: false, powerPreference: 'high-performance' });
             renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-            renderer.shadowMap.enabled = true;
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+            renderer.shadowMap.enabled = false;
 
             // Işıklandırma
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.85);
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
 
-            const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
             dirLight.position.set(10, 25, 10);
-            dirLight.castShadow = true;
             scene.add(dirLight);
 
             // Yıldız Tarlası (Arka Plan)
@@ -830,7 +829,75 @@
         const TILE_LENGTH = 50;
         const NUM_TILES = 6;
 
+        let TRACK_TILES_ASSETS = null;
+        function getTrackTileAssets() {
+            if (!TRACK_TILES_ASSETS) {
+                TRACK_TILES_ASSETS = {
+                    floorGeo: new THREE.BoxGeometry(13, 0.4, TILE_LENGTH),
+                    lineGeo: new THREE.BoxGeometry(0.12, 0.02, TILE_LENGTH),
+                    railGeo: new THREE.CylinderGeometry(0.18, 0.18, TILE_LENGTH, 8)
+                };
+            }
+            return TRACK_TILES_ASSETS;
+        }
+
+        let RUNNER_ASSETS = null;
+        function getRunnerAssets() {
+            if (!RUNNER_ASSETS) {
+                RUNNER_ASSETS = {
+                    // Yüksek Engel (Lazer/Bariyer)
+                    beamGeo: new THREE.BoxGeometry(3, 0.6, 0.4),
+                    beamMat: new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 0.6 }),
+                    postGeo: new THREE.CylinderGeometry(0.1, 0.1, 2.2, 8),
+                    postMat: new THREE.MeshStandardMaterial({ color: 0x475569 }),
+                    // Alçak Engel (Kaya)
+                    rockGeo: new THREE.DodecahedronGeometry(0.85),
+                    rockMats: {}, // Gezegen rengine göre önbellek
+                    // Kristal (Stellar Veri Paketi)
+                    crystalGeo: new THREE.OctahedronGeometry(0.42),
+                    crystalMat: new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.8, roughness: 0.1 }),
+                    // Bilgi Küpü
+                    cubeGeo: new THREE.BoxGeometry(0.8, 0.8, 0.8),
+                    cubeMat: new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.9 }),
+                    // Güçlendiriciler
+                    powerUpGeo: new THREE.SphereGeometry(0.55, 12, 12),
+                    powerUpMats: {
+                        boots: new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.7 }),
+                        magnet: new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xec4899, emissiveIntensity: 0.7 }),
+                        shield: new THREE.MeshStandardMaterial({ color: 0x8b5cf6, emissive: 0x8b5cf6, emissiveIntensity: 0.7 })
+                    },
+                    // Soru Kapıları
+                    gateRingGeo: new THREE.TorusGeometry(1.6, 0.2, 8, 20),
+                    gateLeftMat: new THREE.MeshBasicMaterial({ color: 0x06b6d4 }),
+                    gateRightMat: new THREE.MeshBasicMaterial({ color: 0x8b5cf6 }),
+                    // Warp Portalı
+                    portalGeo: new THREE.TorusGeometry(5, 0.8, 16, 28),
+                    portalMat: new THREE.MeshBasicMaterial({ color: 0x38bdf8 })
+                };
+            }
+            return RUNNER_ASSETS;
+        }
+
+        function getRockMaterial(planetIndex) {
+            const assets = getRunnerAssets();
+            if (!assets.rockMats[planetIndex]) {
+                assets.rockMats[planetIndex] = new THREE.MeshStandardMaterial({
+                    color: PLANETS_DB[planetIndex].groundColor,
+                    roughness: 0.9
+                });
+            }
+            return assets.rockMats[planetIndex];
+        }
+
         function initTrackTiles() {
+            if (groundTiles.length === NUM_TILES) {
+                // Önceden oluşturulmuş pist karolarını sadece yeniden hizala (Sıfır bellek tüketimi)
+                for (let i = 0; i < NUM_TILES; i++) {
+                    groundTiles[i].position.z = -i * TILE_LENGTH;
+                }
+                return;
+            }
+
             groundTiles.forEach(t => scene.remove(t));
             groundTiles = [];
 
@@ -842,36 +909,34 @@
         }
 
         function createTrackTile(zPos) {
+            const assets = getTrackTileAssets();
             const tileGroup = new THREE.Group();
             tileGroup.position.z = zPos;
 
             const curPlanet = PLANETS_DB[currentPlanetIndex];
 
             // Ana Zemin (3 Şerit Genişliğinde Pist)
-            const floorGeo = new THREE.BoxGeometry(13, 0.4, TILE_LENGTH);
             const floorMat = new THREE.MeshStandardMaterial({
                 color: curPlanet.groundColor,
                 roughness: 0.7,
                 metalness: 0.1
             });
-            const floor = new THREE.Mesh(floorGeo, floorMat);
+            const floor = new THREE.Mesh(assets.floorGeo, floorMat);
             floor.position.y = -0.2;
             tileGroup.add(floor);
 
             // Neon Şerit Çizgileri
             [-1.75, 1.75].forEach(x => {
-                const lineGeo = new THREE.BoxGeometry(0.12, 0.02, TILE_LENGTH);
                 const lineMat = new THREE.MeshBasicMaterial({ color: curPlanet.color });
-                const line = new THREE.Mesh(lineGeo, lineMat);
+                const line = new THREE.Mesh(assets.lineGeo, lineMat);
                 line.position.set(x, 0.01, 0);
                 tileGroup.add(line);
             });
 
             // Sol ve Sağ Parlayan Neon Bariyerler
             [-6.5, 6.5].forEach(x => {
-                const railGeo = new THREE.CylinderGeometry(0.18, 0.18, TILE_LENGTH, 8);
                 const railMat = new THREE.MeshBasicMaterial({ color: curPlanet.color });
-                const rail = new THREE.Mesh(railGeo, railMat);
+                const rail = new THREE.Mesh(assets.railGeo, railMat);
                 rail.rotation.x = Math.PI / 2;
                 rail.position.set(x, 0.3, 0);
                 tileGroup.add(rail);
@@ -921,33 +986,27 @@
             }
         }
 
-        // Engel Oluşturma
+        // Engel Oluşturma (Önbellekli Geometri & Materyal ile Bellek Sızıntısı Yok)
         function spawnObstacle(x, z, isHigh) {
-            const curP = PLANETS_DB[currentPlanetIndex];
+            const assets = getRunnerAssets();
             const group = new THREE.Group();
             group.position.set(x, 0, z);
 
             if (isHigh) {
                 // Eğilerek geçilecek yüksek lazer/gaz bariyeri
-                const beamGeo = new THREE.BoxGeometry(3, 0.6, 0.4);
-                const beamMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444, emissiveIntensity: 0.6 });
-                const beam = new THREE.Mesh(beamGeo, beamMat);
+                const beam = new THREE.Mesh(assets.beamGeo, assets.beamMat);
                 beam.position.y = 1.6;
                 group.add(beam);
 
                 [-1.3, 1.3].forEach(px => {
-                    const postGeo = new THREE.CylinderGeometry(0.1, 0.1, 2.2, 8);
-                    const postMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
-                    const post = new THREE.Mesh(postGeo, postMat);
+                    const post = new THREE.Mesh(assets.postGeo, assets.postMat);
                     post.position.set(px, 1.1, 0);
                     group.add(post);
                 });
                 group.userData = { isHigh: true, height: 1.6, width: 2.6 };
             } else {
                 // Zıplanacak alçak meteor/kaya engeli
-                const rockGeo = new THREE.DodecahedronGeometry(0.85);
-                const rockMat = new THREE.MeshStandardMaterial({ color: curP.groundColor, roughness: 0.9 });
-                const rock = new THREE.Mesh(rockGeo, rockMat);
+                const rock = new THREE.Mesh(assets.rockGeo, getRockMaterial(currentPlanetIndex));
                 rock.position.y = 0.7;
                 group.add(rock);
                 group.userData = { isHigh: false, height: 0.9, width: 1.8 };
@@ -959,10 +1018,9 @@
 
         // Kristal (Stellar Veri Paketi) Oluşturma
         function spawnCrystalArc(x, zStart) {
+            const assets = getRunnerAssets();
             for (let i = 0; i < 3; i++) {
-                const geo = new THREE.OctahedronGeometry(0.42);
-                const mat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.8, roughness: 0.1 });
-                const crystal = new THREE.Mesh(geo, mat);
+                const crystal = new THREE.Mesh(assets.crystalGeo, assets.crystalMat);
                 crystal.position.set(x, 0.9, zStart - (i * 3.5));
                 scene.add(crystal);
                 activeDataPacks.push(crystal);
@@ -971,9 +1029,8 @@
 
         // Gezegen Bilgi Küpü
         function spawnKnowledgeCube(x, z) {
-            const geo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-            const mat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.9 });
-            const cube = new THREE.Mesh(geo, mat);
+            const assets = getRunnerAssets();
+            const cube = new THREE.Mesh(assets.cubeGeo, assets.cubeMat);
             cube.position.set(x, 1.1, z);
             cube.userData = { isKnowledgeCube: true };
             scene.add(cube);
@@ -982,12 +1039,11 @@
 
         // Power-Up Oluşturma
         function spawnPowerUp(x, z) {
+            const assets = getRunnerAssets();
             const types = ['boots', 'magnet', 'shield'];
             const type = types[Math.floor(Math.random() * types.length)];
-            const geo = new THREE.SphereGeometry(0.55, 12, 12);
-            const color = type === 'boots' ? 0x10b981 : (type === 'magnet' ? 0xec4899 : 0x8b5cf6);
-            const mat = new THREE.MeshStandardMaterial({ color: color, emissive: color, emissiveIntensity: 0.7 });
-            const pUp = new THREE.Mesh(geo, mat);
+            const mat = assets.powerUpMats[type] || assets.powerUpMats.boots;
+            const pUp = new THREE.Mesh(assets.powerUpGeo, mat);
             pUp.position.set(x, 1.2, z);
             pUp.userData = { isPowerUp: true, powerType: type };
             scene.add(pUp);
@@ -997,6 +1053,7 @@
         // Soru Kapıları Üretici (2 Kapı Yan Yana)
         let currentGateQuestion = null;
         function spawnQuestionGate(z) {
+            const assets = getRunnerAssets();
             const q = ASTRONOMY_QUESTIONS[Math.floor(Math.random() * ASTRONOMY_QUESTIONS.length)];
             currentGateQuestion = q;
 
@@ -1007,16 +1064,12 @@
             gateGroup.position.z = z;
 
             // Sol Kapı (Şerit 0: LANES[0])
-            const gateLeftGeo = new THREE.TorusGeometry(1.6, 0.2, 8, 24);
-            const gateLeftMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
-            const gateLeft = new THREE.Mesh(gateLeftGeo, gateLeftMat);
+            const gateLeft = new THREE.Mesh(assets.gateRingGeo, assets.gateLeftMat);
             gateLeft.position.set(LANES[0], 1.8, 0);
             gateGroup.add(gateLeft);
 
             // Sağ Kapı (Şerit 2: LANES[2])
-            const gateRightGeo = new THREE.TorusGeometry(1.6, 0.2, 8, 24);
-            const gateRightMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6 });
-            const gateRight = new THREE.Mesh(gateRightGeo, gateRightMat);
+            const gateRight = new THREE.Mesh(assets.gateRingGeo, assets.gateRightMat);
             gateRight.position.set(LANES[2], 1.8, 0);
             gateGroup.add(gateRight);
 
@@ -1044,12 +1097,11 @@
 
         // Solucan Deliği (Warp Portal) Üretici
         function spawnWarpPortal(z) {
+            const assets = getRunnerAssets();
             const group = new THREE.Group();
             group.position.z = z;
 
-            const portalGeo = new THREE.TorusGeometry(5, 0.8, 16, 32);
-            const portalMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
-            const portal = new THREE.Mesh(portalGeo, portalMat);
+            const portal = new THREE.Mesh(assets.portalGeo, assets.portalMat);
             portal.position.y = 3.5;
             group.add(portal);
 
@@ -1172,19 +1224,38 @@
         document.getElementById('btn-touch-down').addEventListener('pointerdown', (e) => { e.preventDefault(); duckPlayer(); });
 
         // --- 11. OYUN DÖNGÜSÜ (ANIMATION FRAME) ---
+        let animationFrameId = null;
         let lastTime = performance.now();
+        let cachedScoreText = null;
+        let cachedDataPacksText = null;
+        let lastDisplayedDistance = -1;
+        let hudFrameCounter = 0;
 
         function gameLoop(now) {
-            requestAnimationFrame(gameLoop);
-            const delta = Math.min((now - lastTime) / 1000, 0.1);
+            animationFrameId = requestAnimationFrame(gameLoop);
+            const delta = Math.min((now - lastTime) / 1000, 0.05);
             lastTime = now;
 
-            if (!isGameRunning || isPaused) return;
+            if (!isGameRunning || isPaused) {
+                if (renderer && scene && camera) {
+                    renderer.render(scene, camera);
+                }
+                return;
+            }
 
             // 1. İlerleme ve Hız
             const moveStep = gameSpeed * delta;
             scoreDistance += Math.round(moveStep * 1.5);
-            document.getElementById('score-text').innerHTML = `${scoreDistance} <span class="text-xs text-cyan-400">m</span>`;
+
+            // DOM güncellemelerini 6 karede bir çalıştır (60 FPS DOM parsing yerine ~10 FPS hafif throttle)
+            hudFrameCounter++;
+            if (hudFrameCounter % 6 === 0) {
+                if (!cachedScoreText) cachedScoreText = document.getElementById('score-text');
+                if (cachedScoreText && lastDisplayedDistance !== scoreDistance) {
+                    lastDisplayedDistance = scoreDistance;
+                    cachedScoreText.innerHTML = `${scoreDistance} <span class="text-xs text-cyan-400">m</span>`;
+                }
+            }
 
             // 2. Karakter X Konum İnterpolasyonu (Şerit Geçişi)
             const targetX = LANES[currentLaneIndex];
@@ -1229,7 +1300,6 @@
             groundTiles.forEach(tile => {
                 tile.position.z += moveStep;
                 if (tile.position.z > TILE_LENGTH) {
-                    // En arkadaki karoyu bul
                     let minZ = 0;
                     groundTiles.forEach(t => { if (t.position.z < minZ) minZ = t.position.z; });
                     tile.position.z = minZ - TILE_LENGTH;
@@ -1239,14 +1309,19 @@
                 }
             });
 
-            // 5. Engellerin Hareketi ve Çarpışma Testi
+            const playerPosX = playerGroup.position.x;
+            const playerPosY = playerGroup.position.y;
+            const playerPosZ = playerGroup.position.z;
+            const playerTargetY = playerPosY + 1.0;
+
+            // 5. Engellerin Hareketi ve Çarpışma Testi (Sıfır Nesne Tahsisi)
             for (let i = activeObstacles.length - 1; i >= 0; i--) {
                 const obs = activeObstacles[i];
                 obs.position.z += moveStep;
 
                 // Çarpışma Kontrolü
-                if (Math.abs(obs.position.z - playerGroup.position.z) < 1.2) {
-                    if (Math.abs(obs.position.x - playerGroup.position.x) < 1.3) {
+                if (Math.abs(obs.position.z - playerPosZ) < 1.2) {
+                    if (Math.abs(obs.position.x - playerPosX) < 1.3) {
                         const isHit = obs.userData.isHigh ? !isDucking : (playerY < obs.userData.height);
                         if (isHit && invulnerableTimer <= 0) {
                             handlePlayerHit();
@@ -1261,21 +1336,25 @@
                 }
             }
 
-            // 6. Kristaller & Veri Paketleri
+            // 6. Kristaller & Veri Paketleri (Sıfır Nesne Tahsisli Hızlı Mesafe)
             for (let i = activeDataPacks.length - 1; i >= 0; i--) {
                 const item = activeDataPacks[i];
                 item.position.z += moveStep;
                 item.rotation.y += 3.5 * delta;
 
                 // Mıknatıs Aktifse Karakteri Çek
-                if (activePowerUp === 'magnet' && Math.abs(item.position.z - playerGroup.position.z) < 25) {
-                    item.position.x += (playerGroup.position.x - item.position.x) * 8 * delta;
-                    item.position.y += (playerGroup.position.y + 1 - item.position.y) * 8 * delta;
+                if (activePowerUp === 'magnet' && Math.abs(item.position.z - playerPosZ) < 25) {
+                    item.position.x += (playerPosX - item.position.x) * 8 * delta;
+                    item.position.y += (playerTargetY - item.position.y) * 8 * delta;
                 }
 
-                // Toplama Kontrolü
-                const dist = item.position.distanceTo(playerGroup.position.clone().add(new THREE.Vector3(0, 1, 0)));
-                if (dist < 1.8) {
+                // Toplama Kontrolü (GC baskısını sıfırlamak için clone ve new THREE.Vector3 kaldırıldı)
+                const dx = item.position.x - playerPosX;
+                const dy = item.position.y - playerTargetY;
+                const dz = item.position.z - playerPosZ;
+                const distSq = dx * dx + dy * dy + dz * dz;
+
+                if (distSq < 3.24) { // 1.8 * 1.8 = 3.24
                     if (item.userData.isKnowledgeCube) {
                         collectKnowledgeCube();
                     } else if (item.userData.isPowerUp) {
@@ -1309,7 +1388,8 @@
                         Sounds.correct();
                         collectedDataCount += 250;
                         answeredQuestionsCount++;
-                        document.getElementById('data-packs-text').textContent = collectedDataCount;
+                        if (!cachedDataPacksText) cachedDataPacksText = document.getElementById('data-packs-text');
+                        if (cachedDataPacksText) cachedDataPacksText.textContent = collectedDataCount;
                         showNotification("DOĞRU KAPI!", "+250 Stellar Veri & Hız Bonusu!", "emerald");
                     } else {
                         Sounds.wrong();
@@ -1449,6 +1529,28 @@
             // Basit bildirim
         }
 
+        function clearDynamicObjects() {
+            for (let i = 0; i < activeObstacles.length; i++) {
+                scene.remove(activeObstacles[i]);
+            }
+            activeObstacles.length = 0;
+
+            for (let i = 0; i < activeDataPacks.length; i++) {
+                scene.remove(activeDataPacks[i]);
+            }
+            activeDataPacks.length = 0;
+
+            for (let i = 0; i < activeQuestionGates.length; i++) {
+                scene.remove(activeQuestionGates[i]);
+            }
+            activeQuestionGates.length = 0;
+
+            if (activeWarpGate) {
+                scene.remove(activeWarpGate);
+                activeWarpGate = null;
+            }
+        }
+
         // --- 13. OYUN BAŞLATMA, BİTİŞ VE YENİDEN BAŞLATMA ---
         function startGame() {
             Sounds.init();
@@ -1472,15 +1574,8 @@
             document.getElementById('score-text').innerHTML = `0 <span class="text-xs text-cyan-400">m</span>`;
             document.getElementById('data-packs-text').textContent = "0";
 
-            // Engelleri temizle
-            activeObstacles.forEach(o => scene.remove(o));
-            activeObstacles = [];
-            activeDataPacks.forEach(d => scene.remove(d));
-            activeDataPacks = [];
-            activeQuestionGates.forEach(g => scene.remove(g));
-            activeQuestionGates = [];
-            if (activeWarpGate) scene.remove(activeWarpGate);
-            activeWarpGate = null;
+            // Engelleri ve dinamik nesneleri temizle
+            clearDynamicObjects();
 
             initTrackTiles();
             // İlk 200 metreye engelleri yerleştir
@@ -1608,7 +1703,33 @@
         window.addEventListener('DOMContentLoaded', () => {
             initThreeScene();
             renderStartMenuPlanetSelect();
-            requestAnimationFrame(gameLoop);
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            animationFrameId = requestAnimationFrame(gameLoop);
+        });
+
+        // Modal kapatıldığında veya sekmeden çıkıldığında tam temizlik
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'STOP_GAME_CLEANUP') {
+                isGameRunning = false;
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                    animationFrameId = null;
+                }
+                clearDynamicObjects();
+                if (Sounds && Sounds.ctx && Sounds.ctx.state !== 'closed') {
+                    try { Sounds.ctx.suspend(); } catch (err) {}
+                }
+            }
+        });
+
+        window.addEventListener('beforeunload', () => {
+            isGameRunning = false;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        });
+
+        window.addEventListener('pagehide', () => {
+            isGameRunning = false;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
         });
     </script>
 </body>
