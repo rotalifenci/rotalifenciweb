@@ -13,5 +13,8 @@
   "license": "MIT",
   "devDependencies": {
     "sharp": "^0.35.4"
+  },
+  "scripts": {
+    "yayinla": "node scripts/yayinla.js"
   }
 }
