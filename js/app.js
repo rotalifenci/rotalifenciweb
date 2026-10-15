@@ -12296,22 +12296,31 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 0.2 🖼️ GÖRSEL / İNFOGRAFİK / ÜNİTE TABLOSU (5.Sınıf İşlenecek Üniteler vb.)
+    // 0.2 🖼️ GÖRSEL / İNFOGRAFİK / ÜNİTE TABLOSU (5.Sınıf İşlenecek Üniteler, İlk Ders Notu vb.)
     const isInfographicOrUnitChart = !isPdfFile && !isPresentation && !isOtherOffice && (
         checkTitle.includes("işlenecek") || checkTitle.includes("islenec") ||
         checkTitle.includes("ünite bilgilendirme") || checkTitle.includes("unite bilgilendirme") ||
         (checkTitle.includes("ünite") && (checkTitle.includes("konu") || checkTitle.includes("plan") || checkTitle.includes("dağılım"))) ||
+        checkTitle.includes("ilk ders") ||
         ["GÖRSEL", "RESİM", "İNFOGRAFİK", "INFOGRAFIK", "SVG", "PNG", "JPG", "WEBP"].includes(checkFormat) ||
         checkFile.endsWith(".svg") || checkFile.endsWith(".png") || checkFile.endsWith(".jpg") || checkFile.endsWith(".jpeg") || checkFile.endsWith(".webp")
     );
 
     if (isInfographicOrUnitChart) {
-        let activeImg = (targetUrl && targetUrl !== "#" && !targetUrl.toLowerCase().endsWith(".pdf")) ? targetUrl : coverUrl;
-        if (!activeImg || activeImg === "#" || activeImg === "" || activeImg.includes("assets/kapak-")) {
-            activeImg = (coverUrl && !coverUrl.includes("assets/kapak-")) ? coverUrl : "assets/unite-bilgilendirmeleri-gorsel.png";
+        let activeImg = coverUrl;
+        if (coverUrl && coverUrl.startsWith("data:image")) {
+            activeImg = coverUrl;
+        } else if (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg"))) {
+            activeImg = targetUrl;
+        } else if (coverUrl && !coverUrl.includes("assets/kapak-")) {
+            activeImg = coverUrl;
+        } else if (targetUrl && targetUrl !== "#" && !targetUrl.toLowerCase().endsWith(".pdf")) {
+            activeImg = targetUrl;
+        } else {
+            activeImg = "assets/unite-bilgilendirmeleri-gorsel.png";
         }
         if (activeImg) {
-            openInPageDocumentModal(activeImg, title || (found && found.title) || "İşlenecek Üniteler", fileName, true, targetUrl, coverUrl);
+            openInPageDocumentModal(activeImg, title || (found && found.title) || "Fen Bilimleri Görseli", fileName, true, targetUrl, coverUrl);
             return;
         }
     }
@@ -12392,7 +12401,9 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     if (isImageContent) {
         const hasWorkingCover = coverUrl && (coverUrl.startsWith("data:image") || coverUrl.includes(".png") || coverUrl.includes(".jpg") || coverUrl.includes(".jpeg") || coverUrl.includes(".webp") || coverUrl.includes(".svg")) && !coverUrl.includes("assets/kapak-");
         let activeImg = coverUrl;
-        if (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg"))) {
+        if (coverUrl && coverUrl.startsWith("data:image")) {
+            activeImg = coverUrl;
+        } else if (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg"))) {
             activeImg = targetUrl;
         } else if (hasWorkingCover) {
             activeImg = coverUrl;
@@ -12498,60 +12509,88 @@ function initImagePanDragListeners() {
 // 🖼️ Modal İçi Görsel Hata Yakalayıcı ve Akıllı Kurtarıcı
 function handleInPageModalImageError(imgEl, fallbackCover, docTitle, externalUrl) {
     if (!imgEl) return;
-    console.warn("Görsel yüklenemedi, akıllı kurtarıcı devrede:", docTitle, imgEl.src);
-    
+    const step = parseInt(imgEl.dataset.fallbackStep || "0", 10);
+    imgEl.dataset.fallbackStep = String(step + 1);
+    console.warn("Görsel yüklenemedi (Adım " + step + "):", docTitle, imgEl.src);
+
     // 1. Doğrudan geçilen fallbackCover'ı dene
-    if (fallbackCover && fallbackCover !== "#" && fallbackCover !== "" && fallbackCover !== imgEl.src && !fallbackCover.includes("placeholder")) {
+    if (step === 0 && fallbackCover && fallbackCover !== "#" && fallbackCover !== "" && fallbackCover !== imgEl.src && !fallbackCover.includes("placeholder")) {
         imgEl.src = fallbackCover;
         return;
     }
 
     // 2. Kartın DOM üzerindeki yüklü görselini al
-    if (docTitle) {
+    if (step <= 1 && docTitle) {
         const cleanT = docTitle.toLowerCase().trim();
-        const allImgs = Array.from(document.querySelectorAll('.mat-preview-box img, img[alt]'));
-        const matched = allImgs.find(i => {
+        const allCards = Array.from(document.querySelectorAll('.mat-preview-box img, img[alt]'));
+        const matched = allCards.find(i => {
             const alt = (i.alt || "").toLowerCase().trim();
             return alt && (alt.includes(cleanT) || cleanT.includes(alt));
         });
-        if (matched && matched.src && matched.src !== imgEl.src && !matched.src.includes("placeholder")) {
-            imgEl.src = matched.src;
-            return;
-        }
-    }
-
-    // 3. Materyal havuzundan bul
-    if (typeof findMaterialByIdOrTitle === "function" && docTitle) {
-        const found = findMaterialByIdOrTitle("", docTitle);
-        if (found) {
-            const cover = found.imageUrl || found.cover || found.kapakResmi || (typeof resolveMaterialCover === "function" ? resolveMaterialCover(found) : "");
-            if (cover && cover !== imgEl.src && !cover.includes("placeholder")) {
-                imgEl.src = cover;
+        if (matched) {
+            if (matched.complete && matched.naturalWidth > 0) {
+                try {
+                    const c = document.createElement("canvas");
+                    c.width = matched.naturalWidth;
+                    c.height = matched.naturalHeight;
+                    const ctx = c.getContext("2d");
+                    ctx.drawImage(matched, 0, 0);
+                    const dUrl = c.toDataURL("image/png");
+                    if (dUrl && dUrl.length > 100) {
+                        imgEl.src = dUrl;
+                        return;
+                    }
+                } catch(e) {}
+            }
+            if (matched.src && matched.src !== imgEl.src && !matched.src.includes("placeholder")) {
+                imgEl.src = matched.src;
                 return;
             }
         }
     }
 
-    // 4. Genel ünite veya işlenecek konular afişi ise
-    const lowerT = (docTitle || "").toLowerCase();
-    if (lowerT.includes("ünite") || lowerT.includes("işlenecek") || lowerT.includes("konular")) {
-        imgEl.src = "assets/unite-bilgilendirmeleri-gorsel.png";
-        return;
+    // 3. Materyal havuzundan bul
+    if (step <= 2 && docTitle) {
+        try {
+            const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+            const cleanT = docTitle.toLowerCase().trim();
+            const found = customList.find(m => m && (m.title || "").toLowerCase().trim().includes(cleanT));
+            if (found) {
+                const candidates = [found.imageUrl, found.kapakResmi, found.cover, found.fileUrl];
+                for (const c of candidates) {
+                    if (c && c.startsWith("data:image") && c !== imgEl.src) {
+                        imgEl.src = c;
+                        return;
+                    }
+                }
+            }
+        } catch(e) {}
     }
 
-    // 5. Harici bir web bağlantısı ise zengin buton kartına dönüştür
+    // 4. Genel ünite veya işlenecek konular afişi ise
+    if (step <= 3) {
+        const lowerT = (docTitle || "").toLowerCase();
+        if (lowerT.includes("ünite") || lowerT.includes("işlenecek") || lowerT.includes("konular") || lowerT.includes("ilk ders") || lowerT.includes("afiş")) {
+            if (!imgEl.src.includes("assets/unite-bilgilendirmeleri-gorsel.png")) {
+                imgEl.src = "assets/unite-bilgilendirmeleri-gorsel.png";
+                return;
+            }
+        }
+    }
+
+    // 5. Harici bir web bağlantısı veya ulaşılamayan dosya ise zengin, interaktif butona dönüştür
     const container = document.getElementById("inpage-modal-zoom-container");
     if (container) {
-        const targetLink = externalUrl || imgEl.src || "#";
+        const targetLink = (externalUrl && externalUrl !== "#") ? externalUrl : ((imgEl.src && !imgEl.src.includes("data:")) ? imgEl.src : "#");
         container.innerHTML = `
-            <div class="flex flex-col items-center justify-center py-10 px-6 text-center gap-4 max-w-md mx-auto animate-in fade-in duration-200">
-                <div class="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-3xl border border-blue-500/30 shadow-lg">
-                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+            <div class="flex flex-col items-center justify-center py-10 px-6 text-center gap-4 max-w-lg mx-auto animate-in fade-in duration-200">
+                <div class="w-16 h-16 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-3xl border border-amber-500/30 shadow-lg">
+                    <i class="fa-solid fa-file-circle-check"></i>
                 </div>
                 <h3 class="text-base sm:text-lg font-black text-white">${docTitle || 'Ders İçeriği'}</h3>
-                <p class="text-xs text-slate-300 leading-relaxed font-medium">Bu içerik harici bir web sayfası veya etkileşimli dokümandır. Sayfa içinde açılmıyorsa aşağıdaki butondan yeni sekmede açabilirsiniz.</p>
+                <p class="text-xs text-slate-300 leading-relaxed font-medium">Bu içerik bulut bağlantısı veya harici web sayfasıdır. Aşağıdaki seçenekleri kullanarak içeriğe doğrudan erişebilirsiniz.</p>
                 <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full mt-2">
-                    ${targetLink && targetLink !== "#" ? `
+                    ${targetLink && targetLink.startsWith("http") ? `
                         <a href="${targetLink}" target="_blank" rel="noopener noreferrer" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer">
                             <i class="fa-solid fa-arrow-up-right-from-square"></i> Yeni Sekmede Aç
                         </a>

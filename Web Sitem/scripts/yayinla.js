@@ -54,7 +54,7 @@ for (const item of SYNC) {
 const message = process.argv.slice(2).join(" ").trim();
 if (message) {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: "inherit" });
-    git("add", "-A", "--", ...SYNC, ...SYNC.map((p) => `Web Sitem/${p}`));
+    git("add", "-A");
     git("commit", "-m", `${message} [v${VERSION}]`);
     git("push", "origin", "main");
     console.log("🚀 GitHub'a gönderildi. Vercel 1-2 dk içinde yayınlar.");

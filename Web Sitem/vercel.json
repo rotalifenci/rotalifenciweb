@@ -1,10 +1,4 @@
 {
-  "version": 2,
-  "name": "rotali-fenci",
-  "framework": null,
-  "buildCommand": null,
-  "installCommand": null,
-  "outputDirectory": ".",
   "cleanUrls": true,
   "headers": [
     {

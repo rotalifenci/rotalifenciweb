@@ -1,14 +1,9 @@
 {
   "name": "rotalifenci",
   "version": "2.0.0",
+  "private": true,
   "description": "Rotalı Fenci - Ortaokul Fen Bilimleri ve LGS Eğitim Platformu",
-  "main": "index.html",
-  "keywords": [
-    "fen-bilimleri",
-    "lgs",
-    "egitim",
-    "rotalifenci"
-  ],
-  "author": "Rotalı Fenci",
-  "license": "MIT"
+  "scripts": {
+    "yayinla": "node Web Sitem/scripts/yayinla.js"
+  }
 }
