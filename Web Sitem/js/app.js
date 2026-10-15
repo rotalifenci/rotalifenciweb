@@ -4203,7 +4203,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 const isBookReader = isMainBook || (item.category === "ders-kitabi") || (item.format && item.format.includes("KİTAP"));
                                 const openFunc = isBookReader
                                     ? `openDigitalBookModal({ id: '${item.id}', fileUrl: '${(item.fileUrl && item.fileUrl !== '#' ? item.fileUrl : '')}', title: '${(item.title || '').replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })`
-                                    : `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || cover || '#'}', '${(item.title || '').replace(/'/g, "\\'")}', '${item.category || 'ders-notu'}', '${(item.title || '').replace(/'/g, "\\'")}')`;
+                                    : `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || cover || '#'}', '${(item.fileName || item.title || '').replace(/'/g, "\\'")}', '${item.category || 'ders-notu'}', '${(item.title || '').replace(/'/g, "\\'")}', '${item.format || ''}')`;
                                 const badgeText = isMainBook ? "MEB 2026-2027 • DERS KİTABI" : (item.format || (isImg ? 'GÖRSEL / AFİŞ' : 'PDF KİTAP'));
                                 const badgeSub = isMainBook ? (item.pages || currentBook.pages || '240 Sayfa') : (item.pages || 'Özel İçerik');
 
@@ -12308,10 +12308,10 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     if (isInfographicOrUnitChart) {
         let activeImg = (targetUrl && targetUrl !== "#" && !targetUrl.toLowerCase().endsWith(".pdf")) ? targetUrl : coverUrl;
         if (!activeImg || activeImg === "#" || activeImg === "" || activeImg.includes("assets/kapak-")) {
-            activeImg = "assets/unite-bilgilendirmeleri-gorsel.png";
+            activeImg = (coverUrl && !coverUrl.includes("assets/kapak-")) ? coverUrl : "assets/unite-bilgilendirmeleri-gorsel.png";
         }
         if (activeImg) {
-            openInPageDocumentModal(activeImg, title || (found && found.title) || "İşlenecek Üniteler", fileName, true, "");
+            openInPageDocumentModal(activeImg, title || (found && found.title) || "İşlenecek Üniteler", fileName, true, targetUrl, coverUrl);
             return;
         }
     }
@@ -12390,9 +12390,17 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
                            ((!targetUrl || targetUrl === "#" || targetUrl === "") && coverUrl && (coverUrl.startsWith("data:image") || !coverUrl.includes("assets/kapak-")));
 
     if (isImageContent) {
-        const activeImg = (targetUrl && targetUrl !== "#" && !targetUrl.includes(".pdf")) ? targetUrl : coverUrl;
+        const hasWorkingCover = coverUrl && (coverUrl.startsWith("data:image") || coverUrl.includes(".png") || coverUrl.includes(".jpg") || coverUrl.includes(".jpeg") || coverUrl.includes(".webp") || coverUrl.includes(".svg")) && !coverUrl.includes("assets/kapak-");
+        let activeImg = coverUrl;
+        if (targetUrl && (targetUrl.startsWith("data:image") || targetUrl.endsWith(".jpg") || targetUrl.endsWith(".jpeg") || targetUrl.endsWith(".png") || targetUrl.endsWith(".webp") || targetUrl.endsWith(".svg"))) {
+            activeImg = targetUrl;
+        } else if (hasWorkingCover) {
+            activeImg = coverUrl;
+        } else if (targetUrl && targetUrl !== "#" && !targetUrl.includes(".pdf")) {
+            activeImg = targetUrl;
+        }
         if (activeImg) {
-            openInPageDocumentModal(activeImg, title || (found && found.title) || "Fen Bilimleri Görseli", fileName, true, "");
+            openInPageDocumentModal(activeImg, title || (found && found.title) || "Fen Bilimleri Görseli", fileName, true, targetUrl, coverUrl);
             return;
         }
     }
@@ -12486,7 +12494,80 @@ function initImagePanDragListeners() {
     };
 }
 
-function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false, externalPdf = "") {
+
+// 🖼️ Modal İçi Görsel Hata Yakalayıcı ve Akıllı Kurtarıcı
+function handleInPageModalImageError(imgEl, fallbackCover, docTitle, externalUrl) {
+    if (!imgEl) return;
+    console.warn("Görsel yüklenemedi, akıllı kurtarıcı devrede:", docTitle, imgEl.src);
+    
+    // 1. Doğrudan geçilen fallbackCover'ı dene
+    if (fallbackCover && fallbackCover !== "#" && fallbackCover !== "" && fallbackCover !== imgEl.src && !fallbackCover.includes("placeholder")) {
+        imgEl.src = fallbackCover;
+        return;
+    }
+
+    // 2. Kartın DOM üzerindeki yüklü görselini al
+    if (docTitle) {
+        const cleanT = docTitle.toLowerCase().trim();
+        const allImgs = Array.from(document.querySelectorAll('.mat-preview-box img, img[alt]'));
+        const matched = allImgs.find(i => {
+            const alt = (i.alt || "").toLowerCase().trim();
+            return alt && (alt.includes(cleanT) || cleanT.includes(alt));
+        });
+        if (matched && matched.src && matched.src !== imgEl.src && !matched.src.includes("placeholder")) {
+            imgEl.src = matched.src;
+            return;
+        }
+    }
+
+    // 3. Materyal havuzundan bul
+    if (typeof findMaterialByIdOrTitle === "function" && docTitle) {
+        const found = findMaterialByIdOrTitle("", docTitle);
+        if (found) {
+            const cover = found.imageUrl || found.cover || found.kapakResmi || (typeof resolveMaterialCover === "function" ? resolveMaterialCover(found) : "");
+            if (cover && cover !== imgEl.src && !cover.includes("placeholder")) {
+                imgEl.src = cover;
+                return;
+            }
+        }
+    }
+
+    // 4. Genel ünite veya işlenecek konular afişi ise
+    const lowerT = (docTitle || "").toLowerCase();
+    if (lowerT.includes("ünite") || lowerT.includes("işlenecek") || lowerT.includes("konular")) {
+        imgEl.src = "assets/unite-bilgilendirmeleri-gorsel.png";
+        return;
+    }
+
+    // 5. Harici bir web bağlantısı ise zengin buton kartına dönüştür
+    const container = document.getElementById("inpage-modal-zoom-container");
+    if (container) {
+        const targetLink = externalUrl || imgEl.src || "#";
+        container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-10 px-6 text-center gap-4 max-w-md mx-auto animate-in fade-in duration-200">
+                <div class="w-16 h-16 rounded-2xl bg-blue-600/20 text-blue-400 flex items-center justify-center text-3xl border border-blue-500/30 shadow-lg">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                </div>
+                <h3 class="text-base sm:text-lg font-black text-white">${docTitle || 'Ders İçeriği'}</h3>
+                <p class="text-xs text-slate-300 leading-relaxed font-medium">Bu içerik harici bir web sayfası veya etkileşimli dokümandır. Sayfa içinde açılmıyorsa aşağıdaki butondan yeni sekmede açabilirsiniz.</p>
+                <div class="flex flex-col sm:flex-row items-center gap-2.5 w-full mt-2">
+                    ${targetLink && targetLink !== "#" ? `
+                        <a href="${targetLink}" target="_blank" rel="noopener noreferrer" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Yeni Sekmede Aç
+                        </a>
+                    ` : ''}
+                    <label class="w-full cursor-pointer py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition-all active:scale-95">
+                        <i class="fa-solid fa-image"></i> Cihazdan Görsel Seç
+                        <input type="file" accept="image/*" class="hidden" onchange="handleCrossDeviceImageUpload(this, '${targetLink}')">
+                    </label>
+                </div>
+            </div>
+        `;
+    }
+}
+window.handleInPageModalImageError = handleInPageModalImageError;
+
+function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName = "dokuman.pdf", forceImage = false, externalPdf = "", fallbackCover = "") {
     inPageModalZoom = 1.0;
     inPageModalPanX = 0;
     inPageModalPanY = 0;
@@ -12570,7 +12651,7 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
 
                 <!-- Görsel Alanı -->
                 <div id="inpage-modal-zoom-container" class="p-0 m-0 bg-slate-950 flex items-center justify-center overflow-hidden relative touch-none select-none cursor-grab" title="İmleçle basılı tutup kaydırabilirsiniz">
-                    ${docUrl ? `<img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" draggable="false" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" class="max-h-[82vh] sm:max-h-[86vh] max-w-[95vw] sm:max-w-[90vw] w-auto h-auto object-contain block mx-auto select-none pointer-events-auto" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;" loading="lazy">` : `
+                    ${docUrl ? `<img id="inpage-modal-zoom-img" src="${docUrl}" alt="${docTitle}" draggable="false" ondblclick="changeImageModalZoom(inPageModalZoom > 1.0 ? -0.5 : 0.5)" onerror="handleInPageModalImageError(this, \`${(fallbackCover || '').replace(/'/g, "\\'")}\`, \`${(docTitle || '').replace(/'/g, "\\'")}\`, \`${(externalPdf || '').replace(/'/g, "\\'")}\`)" class="max-h-[82vh] sm:max-h-[86vh] max-w-[95vw] sm:max-w-[90vw] w-auto h-auto object-contain block mx-auto select-none pointer-events-auto shadow-2xl rounded-lg" style="transform: translate(0px, 0px) scale(1); transform-origin: center center;">` : `
                         <div class="flex flex-col items-center justify-center py-12 px-6 text-center gap-4">
                             <div class="w-16 h-16 rounded-2xl bg-amber-500/20 flex items-center justify-center text-3xl text-amber-400 border border-amber-500/30">
                                 <i class="fa-solid fa-image"></i>
@@ -12618,8 +12699,16 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                 </div>
 
                 <!-- Belge Alanı -->
-                <div class="flex-1 bg-slate-950 p-2 overflow-hidden relative">
-                    <iframe src="${docUrl}" class="w-full h-full rounded-xl sm:rounded-2xl border-0 bg-white" allow="autoplay; fullscreen; encrypted-media" loading="lazy"></iframe>
+                <div class="flex-1 bg-slate-950 p-2 overflow-hidden relative flex flex-col">
+                    ${docUrl && docUrl.startsWith("http") ? `
+                        <div class="px-3 py-1.5 bg-slate-800/90 border-b border-slate-700 text-xs text-slate-300 flex items-center justify-between gap-2 shrink-0 rounded-t-xl">
+                            <span class="truncate text-[11px]"><i class="fa-solid fa-circle-info text-amber-400 mr-1"></i> Sayfa içinde açılmazsa:</span>
+                            <a href="${docUrl}" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-bold text-[11px] flex items-center gap-1.5 shrink-0 transition-all shadow-sm">
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> Yeni Sekmede Aç
+                            </a>
+                        </div>
+                    ` : ''}
+                    <iframe src="${docUrl}" class="w-full flex-1 rounded-b-xl border-0 bg-white" allow="autoplay; fullscreen; encrypted-media" loading="lazy"></iframe>
                 </div>
             </div>
         `;
