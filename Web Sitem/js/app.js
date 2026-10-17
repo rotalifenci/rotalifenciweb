@@ -301,6 +301,9 @@ const CloudSyncManager = {
         console.log("☁️ CloudSyncManager başlatılıyor...");
         await this.syncWithCloud(false);
         this.startLiveSync();
+        if (typeof verifySmartboardSync === "function") {
+            verifySmartboardSync(false);
+        }
     },
 
     // ⚡ Anlık Canlı Senkronizasyon (Pencere odaklandığında, sekme değiştiğinde, internet gelince ve 8 saniyede bir)
@@ -611,6 +614,9 @@ const CloudSyncManager = {
             }
 
             this.lastSyncedAt = new Date();
+            if (typeof updateSmartboardSyncBadge === "function") {
+                updateSmartboardSyncBadge(finalMergedList.length, true);
+            }
 
             if (notify) {
                 showToast(`✅ Eşitleme başarılı! ${finalMergedList.length} materyal tüm cihazlarda aktif.`, "success");
@@ -741,6 +747,9 @@ const CloudSyncManager = {
                 }
             }
             console.log(`✅ Materyal sunucudan (Gist + data/materials.json) anında ve kalıcı olarak silindi: ${id}`);
+            if (typeof updateSmartboardSyncBadge === "function") {
+                updateSmartboardSyncBadge(updatedList ? updatedList.length : 0, true);
+            }
             return true;
         } catch(delErr) {
             console.warn("Buluttan hafif silme isteği uyarısı, uploadToCloud ile deneniyor:", delErr);
@@ -748,6 +757,207 @@ const CloudSyncManager = {
         }
     }
 };
+
+// =========================================================================
+// 🖥️ AKILLI TAHTA (PARDUS / FIREFOX) OTOMATİK VERİ DENETLEYİCİ (SELF-CHECK)
+// =========================================================================
+function updateSmartboardSyncBadge(activeCount, isSynced = true, customText = "") {
+    if (typeof document === "undefined") return;
+    let badge = document.getElementById("smartboard-sync-badge");
+    if (!badge) {
+        const footerRight = document.querySelector("footer .flex.items-center.gap-3, footer .flex-wrap");
+        if (footerRight) {
+            badge = document.createElement("button");
+            badge.type = "button";
+            badge.id = "smartboard-sync-badge";
+            badge.setAttribute("onclick", "verifySmartboardSync(true)");
+            footerRight.insertBefore(badge, footerRight.firstChild);
+        }
+    }
+    if (!badge) return;
+
+    if (customText) {
+        badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-950/80 border border-amber-500/40 text-amber-300 text-[11px] font-bold transition-all cursor-pointer shadow-sm";
+        badge.innerHTML = `<span>${customText}</span>`;
+        return;
+    }
+
+    if (isSynced) {
+        const list = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : (Array.isArray(ROTALI_MATERIALS_CACHE) ? ROTALI_MATERIALS_CACHE : []);
+        const count = typeof activeCount === "number" && activeCount > 0 ? activeCount : list.length;
+        const videoCount = list.filter(m => m && (m.category === "videolar" || m.category === "video" || String(m.format || "").toUpperCase().includes("VİDEO"))).length;
+        badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold transition-all cursor-pointer shadow-sm";
+        badge.title = `Pardus Akıllı Tahta Senkronize (${count} İçerik, ${videoCount} Video Aktif) — Tıklayarak Zorla Yenile`;
+        badge.innerHTML = `<span>🟢 Akıllı Tahta Senkronize • ${count} İçerik Aktif</span>`;
+    } else {
+        badge.className = "inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-950/80 border border-red-500/40 text-red-300 text-[11px] font-bold transition-all cursor-pointer shadow-sm";
+        badge.innerHTML = `<span>🔴 Senkronizasyon Bekleniyor — Tıkla Yenile</span>`;
+    }
+}
+
+async function verifySmartboardSync(forceReload = false) {
+    try {
+        updateSmartboardSyncBadge(0, false, "🔄 Akıllı Tahta Veri Denetimi Yapılıyor...");
+
+        const ts = Date.now();
+        const apiUrl = (typeof CloudSyncManager !== "undefined" && CloudSyncManager.apiEndpoint)
+            ? `${CloudSyncManager.apiEndpoint}?t=${ts}&_sb=1`
+            : `/api/sync?t=${ts}&_sb=1`;
+        const staticUrl = `/data/materials.json?t=${ts}&_sb=1`;
+
+        const [apiRes, staticRes] = await Promise.allSettled([
+            fetch(apiUrl, { cache: "no-store", headers: { "Cache-Control": "no-cache" } }),
+            fetch(staticUrl, { cache: "no-store", headers: { "Cache-Control": "no-cache" } })
+        ]);
+
+        let apiMaterials = [];
+        let apiDeletedIds = [];
+        if (apiRes.status === "fulfilled" && apiRes.value && apiRes.value.ok) {
+            try {
+                const data = await apiRes.value.json();
+                if (Array.isArray(data)) {
+                    apiMaterials = data;
+                } else if (data && typeof data === "object") {
+                    if (Array.isArray(data.materials)) apiMaterials = data.materials;
+                    if (Array.isArray(data.deletedIds)) apiDeletedIds = data.deletedIds;
+                }
+            } catch (e) {}
+        }
+
+        let staticMaterials = [];
+        if (staticRes.status === "fulfilled" && staticRes.value && staticRes.value.ok) {
+            try {
+                const sData = await staticRes.value.json();
+                if (Array.isArray(sData)) staticMaterials = sData;
+            } catch (e) {}
+        }
+
+        const serverDeletedSet = new Set([
+            ...(typeof getDeletedMaterialIds === "function" ? getDeletedMaterialIds() : []),
+            ...apiDeletedIds,
+            "mat-5-unite-bilgi",
+            "mat-5-lab-guvenlik-gorsel"
+        ]);
+
+        const serverMap = new Map();
+        staticMaterials.forEach(item => {
+            if (item && item.id && item.id !== "sys-deleted-registry" && !serverDeletedSet.has(item.id)) {
+                serverMap.set(item.id, item);
+            }
+        });
+        apiMaterials.forEach(item => {
+            if (item && item.id && item.id !== "sys-deleted-registry" && !serverDeletedSet.has(item.id)) {
+                const st = serverMap.get(item.id);
+                if (st) {
+                    const merged = { ...st, ...item };
+                    if ((!merged.fileUrl || merged.fileUrl === "#" || merged.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || merged.fileUrl === "assets/unite-bilgilendirmeleri-gorsel.png" || merged.fileUrl === "assets/ilk-ders-notu.png") && st.fileUrl && st.fileUrl !== "#") {
+                        merged.fileUrl = st.fileUrl;
+                    }
+                    if ((!merged.imageUrl || merged.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || merged.imageUrl === "assets/unite-bilgilendirmeleri-gorsel.png" || merged.imageUrl === "assets/ilk-ders-notu.png") && st.imageUrl) {
+                        merged.imageUrl = st.imageUrl;
+                        merged.kapakResmi = st.kapakResmi || st.imageUrl;
+                    }
+                    if (st.format === "GÖRSEL") merged.format = "GÖRSEL";
+                    serverMap.set(item.id, merged);
+                } else {
+                    serverMap.set(item.id, item);
+                }
+            }
+        });
+
+        if (serverMap.size === 0) {
+            const currentLocal = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+            updateSmartboardSyncBadge(currentLocal.length, true);
+            return currentLocal;
+        }
+
+        const currentList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+        const currentIds = new Set(currentList.map(m => m && m.id).filter(Boolean));
+
+        // Denetim Kriterleri:
+        // a) Tahtadaki içerik sayısı sunucudakinden eksik mi?
+        // b) Sunucudaki herhangi bir ID (özellikle videolar) tahtada eksik mi?
+        // c) Silinmiş bir ID (serverDeletedSet) hâlâ bellekte/localStorage'da duruyor mu?
+        // d) Eski kırık/silinmiş görsel veya '#' link bellekte kalmış mı?
+        let missingServerItem = false;
+        for (const [srvId, srvItem] of serverMap.entries()) {
+            if (!currentIds.has(srvId)) {
+                missingServerItem = true;
+                break;
+            }
+            const locItem = currentList.find(m => m && m.id === srvId);
+            if (locItem) {
+                if ((locItem.fileUrl === "#" && srvItem.fileUrl && srvItem.fileUrl !== "#") ||
+                    (locItem.fileUrl && locItem.fileUrl.includes("unite-bilgilendirmeleri-gorsel.png")) ||
+                    (locItem.imageUrl && locItem.imageUrl.includes("unite-bilgilendirmeleri-gorsel.png"))) {
+                    missingServerItem = true;
+                    break;
+                }
+            }
+        }
+
+        const hasLingeringDeletedId = currentList.some(m => m && serverDeletedSet.has(m.id));
+        const countMismatch = currentList.length < serverMap.size;
+
+        if (forceReload || missingServerItem || hasLingeringDeletedId || countMismatch) {
+            console.log("🛠️ [verifySmartboardSync] Uyumsuzluk tespit edildi veya zorla yenileme istendi. Sunucu verisi zorla uygulanıyor...", {
+                forceReload,
+                missingServerItem,
+                hasLingeringDeletedId,
+                countMismatch,
+                localCount: currentList.length,
+                serverCount: serverMap.size
+            });
+
+            // Silinen ID'leri güncelle
+            try {
+                localStorage.setItem("rotali_deleted_materials", JSON.stringify(Array.from(serverDeletedSet)));
+            } catch (e) {}
+
+            // Sunucu listesini baz al (Admin ise ve henüz buluta gitmemiş yepyeni bir içerik varsa onu koru)
+            const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+            const freshList = Array.from(serverMap.values());
+            if (isAdmin && !forceReload) {
+                currentList.forEach(loc => {
+                    if (loc && loc.id && !serverMap.has(loc.id) && !serverDeletedSet.has(loc.id) && loc.isNewLocal) {
+                        freshList.unshift(loc);
+                    }
+                });
+            }
+
+            // Eski localStorage verisini sıfırla ve güncel veriyi yaz
+            try {
+                localStorage.removeItem("rotali_custom_materials");
+            } catch (e) {}
+
+            APP_MATERIALS_CACHE = freshList;
+            ROTALI_MATERIALS_CACHE = freshList;
+            window.APP_MATERIALS_CACHE = freshList;
+            saveCustomMaterialsSafe(freshList);
+
+            const isModalOpen = document.getElementById("edit-material-modal") || document.getElementById("material-upload-modal") || document.getElementById("digital-book-modal") || document.getElementById("inpage-document-modal");
+            if (!isModalOpen && typeof handleRouteChange === "function") {
+                handleRouteChange({ preserveScroll: true });
+            }
+
+            if (forceReload && typeof showToast === "function") {
+                showToast(`🟢 Akıllı Tahta Senkronize Edildi: ${freshList.length} içerik aktif!`, "success");
+            }
+            updateSmartboardSyncBadge(freshList.length, true);
+            return freshList;
+        }
+
+        updateSmartboardSyncBadge(currentList.length, true);
+        return currentList;
+    } catch (err) {
+        console.warn("verifySmartboardSync uyarı:", err);
+        const fallbackList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
+        updateSmartboardSyncBadge(fallbackList.length, fallbackList.length > 0);
+        return fallbackList;
+    }
+}
+window.verifySmartboardSync = verifySmartboardSync;
+window.updateSmartboardSyncBadge = updateSmartboardSyncBadge;
 
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU

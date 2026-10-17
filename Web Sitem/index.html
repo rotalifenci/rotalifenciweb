@@ -62,14 +62,14 @@
 
     <!-- Font Awesome & Custom Style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=20261017_1823">
+    <link rel="stylesheet" href="css/style.css?v=20261017_1839">
     <!-- Alpine.js & Collapse Plugin (Sabit sürüm: tüm cihazlarda aynı Alpine çalışsın) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.17.4/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.4/dist/cdn.min.js"></script>
 
     <!-- 🔄 Sürüm Kontrolü: Yeni yayın varsa "Yenile" bandı gösterir (Pardus/Firefox, mobil, PC) -->
     <script>
-        window.ROTALI_BUILD = "20261017_1823";
+        window.ROTALI_BUILD = "20261017_1839";
         (function () {
             var shown = false;
             function showBanner() {
@@ -353,11 +353,12 @@
                 <div>
                     &copy; 2026 <strong class="text-brand-red">ROTALI FENCİ</strong> | Tüm Hakları Saklıdır. <span class="text-sky-400 font-bold">ROTAMIZ FEN!</span>
                 </div>
-                <div class="flex items-center gap-3">
+                <div class="flex flex-wrap items-center justify-center sm:justify-end gap-3">
                     <div id="admin-status-indicator" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300"></div>
-                    <button onclick="triggerUploadModal()" class="text-xs text-slate-600 hover:text-slate-400 transition-colors flex items-center gap-1" title="Yönetici Girişi"><i class="fa-solid fa-lock text-[10px]"></i> Yönetici Paneli</button>
-                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                    <span>Vercel & Netlify Uyumlu</span>
+                    <button type="button" id="smartboard-sync-badge" onclick="verifySmartboardSync(true)" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold transition-all cursor-pointer shadow-sm" title="Akıllı Tahta Veri Denetleyicisi — Tıklayarak Şimdi Zorla Senkronize Et">
+                        <span>🟢 Akıllı Tahta Senkronize • 34 İçerik Aktif</span>
+                    </button>
+                    <button onclick="triggerUploadModal()" class="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1" title="Yönetici Girişi"><i class="fa-solid fa-lock text-[10px]"></i> Yönetici Paneli</button>
                 </div>
             </div>
         </div>
@@ -373,9 +374,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/cloud-config.js?v=20261017_1823"></script>
-    <script src="js/data.js?v=20261017_1823"></script>
-    <script src="js/app.js?v=20261017_1823"></script>
+    <script src="js/cloud-config.js?v=20261017_1839"></script>
+    <script src="js/data.js?v=20261017_1839"></script>
+    <script src="js/app.js?v=20261017_1839"></script>
     <!-- 🐞 Sabit Hata & Eksik Bildir Butonu (Tüm Sayfalarda Sağ Altta) -->
     <button type="button" onclick="openIssueReportModal()" class="fixed bottom-18 sm:bottom-5 right-3.5 sm:right-5 z-40 px-4 py-2.5 bg-slate-900/90 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-2xl backdrop-blur-md border border-slate-700/80 hover:border-red-500 transition-all flex items-center gap-2 group hover:scale-105 transform cursor-pointer" title="Sayfadaki eksikleri veya açılmayanları bildirin">
         <i class="fa-solid fa-bug text-red-500 group-hover:text-white transition-colors text-sm"></i>
