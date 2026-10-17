@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slayt 13 ve Slayt 14 | 3D Sinematik Fen Bilimleri Sunumu</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,700;0,800;0,900;1,800&family=Poppins:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+        }
+
+        :root {
+            --bg-deep: #030712;
+            --neon-cyan: #22d3ee;
+            --neon-gold: #fbbf24;
+            --neon-orange: #f97316;
+            --neon-red: #ef4444;
+            --neon-purple: #c084fc;
+            --neon-green: #4ade80;
+            --neon-blue: #38bdf8;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            background-color: var(--bg-deep);
+            font-family: 'Poppins', sans-serif;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #presentation-stage {
+            width: 1920px;
+            height: 1080px;
+            flex-shrink: 0;
+            position: relative;
+            background: radial-gradient(circle at 50% 30%, #0d1527 0%, #060913 65%, #02040a 100%);
+            overflow: hidden;
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.95);
+            transform-origin: center center;
+        }
+
+        /* Kozmik Yıldızlar Arka Planı */
+        .stars-bg {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                radial-gradient(1.5px 1.5px at 100px 150px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 300px 450px, #38bdf8, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 600px 200px, #fef08a, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 850px 750px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 1200px 300px, #c084fc, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 1500px 600px, #38bdf8, rgba(0,0,0,0)),
+                radial-gradient(1.5px 1.5px at 1750px 150px, #ffffff, rgba(0,0,0,0));
+            background-size: 1920px 1080px;
+            opacity: 0.7;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* SLAYT TAŞIYICILARI */
+        .slide-frame {
+            position: absolute;
+            inset: 0;
+            width: 1920px;
+            height: 1080px;
+            padding: 30px 45px 35px 45px;
+            display: none;
+            flex-direction: column;
+            z-index: 10;
+        }
+        .slide-frame.active {
+            display: flex;
+            animation: slideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.99); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* ÜST BAŞLIK ALANI */
+        .top-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+            z-index: 30;
+            position: relative;
+        }
+
+        /* Siber HUD Rozeti (Sol Üst) */
+        .cyber-hud-badge {
+            display: inline-flex;
+            flex-direction: column;
+            gap: 3px;
+            background: rgba(15, 23, 42, 0.85);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 16px;
+            padding: 8px 18px;
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.3), inset 0 0 15px rgba(34, 211, 238, 0.15);
+            backdrop-filter: blur(12px);
+        }
+        .hud-line-1 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .hud-line-2 {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--neon-cyan);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* 3D Metalik Başlık Şeridi (Üst Orta) */
+        .header-3d-banner {
+            display: inline-flex;
+            align-items: center;
+            gap: 16px;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 24px;
+            padding: 10px 32px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.7), 0 0 30px rgba(34, 211, 238, 0.4), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        .header-badge-num {
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            color: #ffffff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            padding: 4px 16px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(234, 88, 12, 0.5), inset 0 2px 2px rgba(255,255,255,0.4);
+            border: 1.5px solid #fef08a;
+        }
+        .header-title-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 42px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ffffff 30%, #e0f2fe 70%, #38bdf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.8));
+        }
+
+        /* Orijinal Rotalı Fenci Logosu (Sağ Üst) */
+        .rotali-logo-badge {
+            width: 95px;
+            height: 95px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            filter: drop-shadow(0 6px 20px rgba(0,0,0,0.8));
+        }
+        .rotali-logo-badge:hover {
+            transform: scale(1.06);
+        }
+        .rotali-logo-badge img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        /* Sabit Instagram Rozeti (Sol Alt) */
+        .fixed-insta-badge {
+            position: absolute;
+            bottom: 25px;
+            left: 45px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1.5px solid rgba(244, 114, 182, 0.5);
+            padding: 8px 20px;
+            border-radius: 30px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+        .fixed-insta-badge i {
+            font-size: 24px;
+            background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .fixed-insta-badge span {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
+        }
+
+        /* =========================================================
+           SLAYT 13 ÖZEL STİLLERİ (GÜNEŞ LEKELERİ & GALILEO GALILEI)
+           ========================================================= */
+        .slide-13-content {
+            display: flex;
+            gap: 36px;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            z-index: 20;
+        }
+
+        /* Sol: Dev 3D Güneş Lekesi Görseli ve Ok Etiketleri */
+        .sunspot-macro-panel {
+            flex: 1.15;
+            position: relative;
+            border-radius: 28px;
+            overflow: hidden;
+            border: 2px solid rgba(249, 115, 22, 0.6);
+            box-shadow: 0 0 50px rgba(249, 115, 22, 0.25), 0 25px 60px rgba(0,0,0,0.8);
+            background: #0b1120;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .sunspot-macro-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+        .sunspot-macro-panel:hover .sunspot-macro-img {
+            transform: scale(1.02);
+        }
+
+        /* Lekeleri İşaret Eden 3D Bilimsel Etiketler */
+        .spot-pointer-tag {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(10, 15, 30, 0.92);
+            border: 2px solid var(--neon-cyan);
+            border-radius: 16px;
+            padding: 8px 16px;
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.6);
+            backdrop-filter: blur(14px);
+            z-index: 10;
+            animation: pulseGlow 2.5s infinite alternate;
+        }
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 20px rgba(34, 211, 238, 0.4); }
+            100% { box-shadow: 0 0 35px rgba(34, 211, 238, 0.85); }
+        }
+        .spot-pin-dot {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ef4444;
+            border: 2px solid #ffffff;
+            box-shadow: 0 0 12px #ef4444;
+            animation: radarPulse 1.5s infinite;
+        }
+        @keyframes radarPulse {
+            0% { transform: scale(0.9); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(0.9); }
+        }
+        .spot-tag-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: #ffffff;
+        }
+        .spot-tag-sub {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fef08a;
+        }
+
+        /* Sağ: 3 Büyük Neon Bilgi Kartı */
+        .sunspot-info-column {
+            flex: 1.1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .neon-info-box {
+            background: rgba(15, 23, 42, 0.82);
+            border-radius: 22px;
+            padding: 18px 24px;
+            backdrop-filter: blur(16px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+            transition: all 0.25s ease;
+        }
+        .neon-info-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .box-cyan {
+            border: 2px solid var(--neon-cyan);
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.2);
+        }
+        .box-orange {
+            border: 2px solid var(--neon-orange);
+            box-shadow: 0 0 30px rgba(249, 115, 22, 0.2);
+        }
+        .box-purple {
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .neon-box-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+        }
+        .neon-box-desc {
+            font-size: 20px;
+            font-weight: 500;
+            line-height: 1.45;
+            color: #f1f5f9;
+        }
+        .neon-box-desc strong {
+            color: #fef08a;
+            font-weight: 800;
+        }
+
+        /* Galileo Özel Kartı ve 3D İllüstrasyonu */
+        .galileo-card-layout {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+        }
+        .galileo-thumb-frame {
+            width: 140px;
+            height: 140px;
+            flex-shrink: 0;
+            border-radius: 18px;
+            border: 2px solid var(--neon-purple);
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.4);
+            background: #000;
+        }
+        .galileo-thumb-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Alt Dikkat & Kavram Yanılgısı Uyarı Şeridi (İnstagram ve Nav Bar Arasında Ortalanmış) */
+        .bottom-alert-banner {
+            position: absolute;
+            bottom: 18px;
+            left: 235px;
+            right: 360px;
+            background: linear-gradient(90deg, rgba(127, 29, 29, 0.92) 0%, rgba(185, 28, 28, 0.92) 50%, rgba(127, 29, 29, 0.92) 100%);
+            border: 2px solid #ef4444;
+            border-radius: 20px;
+            padding: 8px 22px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.45);
+            backdrop-filter: blur(14px);
+            z-index: 55;
+        }
+        .alert-icon-box {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(254, 242, 242, 0.15);
+            border: 2px solid #fecaca;
+            color: #fef08a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+            box-shadow: 0 0 12px rgba(254, 240, 138, 0.5);
+        }
+        .alert-text-body {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.35;
+        }
+        .alert-text-body span.alert-highlight {
+            color: #fef08a;
+            font-weight: 900;
+            text-decoration: underline;
+        }
+
+
+        /* =========================================================
+           SLAYT 14 ÖZEL STİLLERİ (GÜNEŞ DÜNYA İÇİN NEDEN HAYATİDİR?)
+           ========================================================= */
+        .slide-14-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 22px;
+            flex: 1;
+            min-height: 0;
+            position: relative;
+            z-index: 20;
+            margin-bottom: 50px;
+        }
+
+        .life-card {
+            background: rgba(15, 23, 42, 0.84);
+            border-radius: 24px;
+            padding: 18px 24px;
+            backdrop-filter: blur(18px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .life-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .life-card-gold {
+            border: 2px solid var(--neon-gold);
+            box-shadow: 0 0 35px rgba(251, 191, 36, 0.25);
+        }
+        .life-card-green {
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 35px rgba(74, 222, 128, 0.25);
+        }
+        .life-card-blue {
+            border: 2px solid var(--neon-blue);
+            box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);
+        }
+        .life-card-purple {
+            border: 2px solid var(--neon-purple);
+            box-shadow: 0 0 35px rgba(192, 132, 252, 0.25);
+        }
+
+        /* Kartın %40-45'ini Kaplayan Büyük Öğretici Görsel Çerçevesi */
+        .life-img-frame {
+            width: 320px;
+            height: 205px;
+            flex-shrink: 0;
+            border-radius: 18px;
+            overflow: hidden;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            background: #000;
+            position: relative;
+        }
+        .life-img-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .life-card:hover .life-img-frame img {
+            transform: scale(1.05);
+        }
+
+        .life-text-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .life-card-title {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            letter-spacing: -0.3px;
+        }
+        .life-card-desc {
+            font-size: 21px;
+            font-weight: 500;
+            line-height: 1.45;
+            color: #e2e8f0;
+        }
+        .life-card-desc strong {
+            color: #fef08a;
+            font-weight: 800;
+        }
+
+
+        /* Akıllı Tahta Geçiş Butonları (Sağ Alt) */
+        .nav-dock-bar {
+            position: absolute;
+            bottom: 22px;
+            right: 45px;
+            z-index: 60;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(10, 15, 30, 0.88);
+            border: 1.5px solid rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(20px);
+            border-radius: 40px;
+            padding: 6px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+        }
+        .nav-dock-btn {
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            color: #f1f5f9;
+            width: 48px;
+            height: 48px;
+            border-radius: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-dock-btn:hover {
+            background: rgba(51, 65, 85, 1);
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+        .nav-dock-btn.primary {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            border-color: #60a5fa;
+            width: auto;
+            padding: 0 20px;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 19px;
+        }
+        .nav-badge {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            color: #f8fafc;
+            min-width: 90px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div id="presentation-stage">
+        <!-- Kozmik Yıldızlar Arka Planı -->
+        <div class="stars-bg"></div>
+
+        <!-- SABİT INSTAGRAM ROZETİ (SOL ALT) -->
+        <div class="fixed-insta-badge">
+            <i class="fa-brands fa-instagram"></i>
+            <span>@rotalifenci</span>
+        </div>
+
+        <!-- =========================================================
+             SLAYT 13: GÜNEŞ LEKELERİ VE GALILEO GALILEI
+             ========================================================= -->
+        <div class="slide-frame active" id="slide-13">
+            <div class="top-header-row">
+                <!-- Sol Üst Siber HUD Rozeti -->
+                <div class="cyber-hud-badge">
+                    <span class="hud-line-1"><i class="fa-solid fa-atom"></i> 5. SINIF FEN BİLİMLERİ</span>
+                    <span class="hud-line-2">1. ÜNİTE • GÜNEŞ, DÜNYA VE AY</span>
+                </div>
+
+                <!-- 3D Metalik Başlık -->
+                <div class="header-3d-banner">
+                    <span class="header-badge-num">1.5</span>
+                    <h1 class="header-title-text">GÜNEŞ LEKELERİ VE GALILEO GALILEI</h1>
+                </div>
+
+                <!-- Sağ Üst Orijinal Rotalı Fenci Logosu -->
+                <div class="rotali-logo-badge" title="Rotalı Fenci">
+                    <img src="../assets/rotali-logo-clean.png" alt="Rotalı Fenci Logo">
+                </div>
+            </div>
+
+            <!-- Ana İçerik Gövdesi (Sol: Büyük 3D Güneş Lekesi / Sağ: 3 Neon Bilgi Paneli) -->
+            <div class="slide-13-content">
+                <!-- Sol: Büyük 3D Güneş Yüzeyi & Güneş Lekesi Görseli -->
+                <div class="sunspot-macro-panel">
+                    <img src="../assets/slides/slide_13_sunspots.jpg" alt="Güneş Lekeleri Yakın Plan" class="sunspot-macro-img">
+                    
+                    <!-- Lekeyi İşaret Eden 3D Etiket -->
+                    <div class="spot-pointer-tag" style="top: 45%; left: 32%;">
+                        <div class="spot-pin-dot"></div>
+                        <div>
+                            <div class="spot-tag-title"><i class="fa-solid fa-crosshairs text-cyan-400 mr-1"></i> GÜNEŞ LEKESİ</div>
+                            <div class="spot-tag-sub">Soğuk Bölge (~3.500 °C)</div>
+                        </div>
+                    </div>
+
+                    <!-- Çevre Yüzeyi İşaret Eden 3D Etiket -->
+                    <div class="spot-pointer-tag" style="bottom: 18%; right: 18%;">
+                        <div class="spot-pin-dot" style="background: #f59e0b; box-shadow: 0 0 12px #f59e0b;"></div>
+                        <div>
+                            <div class="spot-tag-title"><i class="fa-solid fa-fire text-amber-400 mr-1"></i> GÜNEŞ YÜZEYİ</div>
+                            <div class="spot-tag-sub">Sıcak Bölge (~5.500 °C)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ: 3 Büyük Neon Bilgi Kartı -->
+                <div class="sunspot-info-column">
+                    <!-- Kart 1: Güneş Lekeleri Nedir? -->
+                    <div class="neon-info-box box-cyan">
+                        <div class="neon-box-header" style="color: var(--neon-cyan);">
+                            <i class="fa-solid fa-circle-dot"></i>
+                            <span>GÜNEŞ LEKELERİ NEDİR?</span>
+                        </div>
+                        <p class="neon-box-desc">
+                            Güneş'in görünür yüzeyinde (ışık küre) yer alan, çevresindeki yüksek sıcaklıktaki gazlara göre <strong>daha soğuk</strong> oldukları için koyu renkli görünen özel bölgelerdir.
+                        </p>
+                    </div>
+
+                    <!-- Kart 2: Neden Koyu Görünürler? -->
+                    <div class="neon-info-box box-orange">
+                        <div class="neon-box-header" style="color: #fb923c;">
+                            <i class="fa-solid fa-temperature-half"></i>
+                            <span>NEDEN KOYU GÖRÜNÜRLER?</span>
+                        </div>
+                        <p class="neon-box-desc">
+                            Güneş'in yüzeyi ortalama <strong>5.500 °C</strong> iken, lekelerin sıcaklığı yaklaşık <strong>3.500 °C</strong>'dir. Aradaki ~2.000 °C'lik fark yüzünden zıtlık oluşur ve teleskopla bakıldığında koyu görünürler. Ancak yine de çok sıcaktırlar!
+                        </p>
+                    </div>
+
+                    <!-- Kart 3: Galileo Galilei'nin Tarihî Gözlemi -->
+                    <div class="neon-info-box box-purple">
+                        <div class="neon-box-header" style="color: var(--neon-purple);">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>GALILEO GALILEI'NİN GÖZLEMLERİ</span>
+                        </div>
+                        <div class="galileo-card-layout">
+                            <div class="galileo-thumb-frame">
+                                <img src="../assets/slides/slide_13_galileo.jpg" alt="Galileo Galilei Teleskop Gözlemi">
+                            </div>
+                            <p class="neon-box-desc" style="font-size: 19px;">
+                                Ünlü İtalyan bilim insanı <strong>Galileo Galilei</strong>, 1610'lu yıllarda kendi yaptığı teleskopla Güneş lekelerini günlerce takip etmiş ve lekelerin <strong>aynı yöne doğru kaydığını</strong> keşfetmiştir. Bu tarihi keşif, <strong>Güneş'in kendi ekseni etrafında döndüğünün</strong> en büyük kanıtı olmuştur!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alt Pedagojik Uyarı Şeridi -->
+            <div class="bottom-alert-banner">
+                <div class="alert-icon-box">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="alert-text-body">
+                    <strong>DİKKAT!</strong> Güneş lekeleri asla Güneş'in yüzeyindeki <span class="alert-highlight">delikler, çukurlar veya boşluklar DEĞİLDİR!</span> Yalnızca güçlü manyetik alanlar sebebiyle sıcaklığı daha düşük olan gaz bölgeleridir.
+                </div>
+            </div>
+        </div>
+
+
+        <!-- =========================================================
+             SLAYT 14: GÜNEŞ DÜNYA İÇİN NEDEN HAYATİDİR?
+             ========================================================= -->
+        <div class="slide-frame" id="slide-14">
+            <div class="top-header-row">
+                <!-- Sol Üst Siber HUD Rozeti -->
+                <div class="cyber-hud-badge">
+                    <span class="hud-line-1"><i class="fa-solid fa-earth-americas"></i> 5. SINIF FEN BİLİMLERİ</span>
+                    <span class="hud-line-2">1. ÜNİTE • GÜNEŞ, DÜNYA VE AY</span>
+                </div>
+
+                <!-- 3D Metalik Başlık -->
+                <div class="header-3d-banner">
+                    <span class="header-badge-num">1.6</span>
+                    <h1 class="header-title-text">GÜNEŞ DÜNYA İÇİN NEDEN HAYATİDİR?</h1>
+                </div>
+
+                <!-- Sağ Üst Orijinal Rotalı Fenci Logosu -->
+                <div class="rotali-logo-badge" title="Rotalı Fenci">
+                    <img src="../assets/rotali-logo-clean.png" alt="Rotalı Fenci Logo">
+                </div>
+            </div>
+
+            <!-- 4 Büyük Görselli Yaşam Kartı Grid Alanı -->
+            <div class="slide-14-grid">
+                <!-- 1. ISI VE IŞIK KAYNAĞI -->
+                <div class="life-card life-card-gold">
+                    <div class="life-img-frame">
+                        <img src="../assets/slides/slide_14_sun_earth.jpg" alt="Isı ve Işık Kaynağı Güneş">
+                    </div>
+                    <div class="life-text-content">
+                        <div class="life-card-title" style="color: var(--neon-gold);">
+                            <i class="fa-solid fa-sun"></i>
+                            <span>1. ISI VE IŞIK</span>
+                        </div>
+                        <p class="life-card-desc">
+                            Güneş, Dünya'mızın <strong>temel doğal ısı ve ışık kaynağıdır</strong>. Güneş olmasaydı gezegenimiz mutlak karanlığa gömülür, okyanuslar donar ve yaşam tamamen sona ererdi.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 2. FOTOSENTEZ VE YAŞAMIN TEMELİ -->
+                <div class="life-card life-card-green">
+                    <div class="life-img-frame">
+                        <img src="../assets/slides/slide_14_photosynthesis.jpg" alt="Fotosentez ve Besin Üretimi">
+                    </div>
+                    <div class="life-text-content">
+                        <div class="life-card-title" style="color: var(--neon-green);">
+                            <i class="fa-solid fa-seedling"></i>
+                            <span>2. FOTOSENTEZ</span>
+                        </div>
+                        <p class="life-card-desc">
+                            Yeşil bitkiler Güneş ışığını kullanarak <strong>besin ve oksijen</strong> üretir (fotosentez). Dünya'daki tüm canlıların tükettiği besinlerin ve soluduğumuz havanın kökeni Güneş enerjisidir.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 3. SU DÖNGÜSÜNÜN MOTORU -->
+                <div class="life-card life-card-blue">
+                    <div class="life-img-frame">
+                        <img src="../assets/slides/slide_14_water_cycle.jpg" alt="Su Döngüsü ve Buharlaşma">
+                    </div>
+                    <div class="life-text-content">
+                        <div class="life-card-title" style="color: var(--neon-blue);">
+                            <i class="fa-solid fa-cloud-showers-heavy"></i>
+                            <span>3. SU DÖNGÜSÜ</span>
+                        </div>
+                        <p class="life-card-desc">
+                            Güneş'in yaydığı enerji denizlerdeki ve göllerdeki suyu buharlaştırır. Gökyüzünde <strong>bulutları oluşturur ve yağmur olarak</strong> geri döndürerek yeryüzündeki tatlı su döngüsünü kesintisiz çalıştırır.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- 4. HAVA OLAYLARI VE RÜZGÂRLAR -->
+                <div class="life-card life-card-purple">
+                    <div class="life-img-frame">
+                        <img src="../assets/slides/slide_14_weather.jpg" alt="Hava Olayları ve Rüzgarlar">
+                    </div>
+                    <div class="life-text-content">
+                        <div class="life-card-title" style="color: var(--neon-purple);">
+                            <i class="fa-solid fa-wind"></i>
+                            <span>4. HAVA OLAYLARI</span>
+                        </div>
+                        <p class="life-card-desc">
+                            Güneş ışınları Dünya'nın eğik şekli nedeniyle her bölgeyi eşit ısıtmaz. Sıcak ve soğuk bölgeler arasındaki sıcaklık farkları basınç oluşturarak <strong>rüzgârları ve hava olaylarını</strong> meydana getirir.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Akıllı Tahta Geçiş Butonları (Sağ Alt) -->
+        <div class="nav-dock-bar">
+            <button class="nav-dock-btn" onclick="toggleSlide(13)" title="Slayt 13'e Geç"><i class="fa-solid fa-chevron-left"></i></button>
+            <span class="nav-badge" id="slide-num-badge">SLAYT 13</span>
+            <button class="nav-dock-btn primary" onclick="toggleSlide(14)" title="Slayt 14'e Geç">
+                <span>Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
+            </button>
+            <button class="nav-dock-btn" onclick="toggleFullscreen()" title="Tam Ekran"><i class="fa-solid fa-expand"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // 16:9 Ekran Otomatik Ölçekleme (Pardus / Firefox / Chrome)
+        function scaleStage() {
+            const stage = document.getElementById('presentation-stage');
+            if (!stage) return;
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const scale = Math.min(vw / 1920, vh / 1080);
+            stage.style.transform = `scale(${scale})`;
+        }
+        window.addEventListener('resize', scaleStage);
+        window.addEventListener('DOMContentLoaded', scaleStage);
+
+        function toggleSlide(n) {
+            document.querySelectorAll('.slide-frame').forEach(f => f.classList.remove('active'));
+            const target = document.getElementById('slide-' + n);
+            if (target) {
+                target.classList.add('active');
+                document.getElementById('slide-num-badge').innerText = 'SLAYT ' + n;
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // Klavye Kontrolleri
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+                toggleSlide(14);
+            } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+                toggleSlide(13);
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>

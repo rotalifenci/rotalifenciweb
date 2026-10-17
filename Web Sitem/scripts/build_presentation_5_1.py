@@ -42,48 +42,21 @@ slides = [
     # SLAYT 2 — ÜNİTE KONULARIMIZ
     {
         "num": 2,
-        "kicker": "ÖĞRENME ROTAMIZ",
-        "title": "1. Ünite Bölümlerimiz ve Hedeflerimiz",
-        "subtitle": "Bu ünitede 4 ana bölümü adım adım keşfedeceğiz!",
+        "kicker": "1. ÜNİTE • GÜNEŞ, DÜNYA VE AY",
+        "title": "ÜNİTE KONULARIMIZ VE ÖĞRENME ROTAMIZ",
+        "subtitle": "Bu ünitede 8 ana bölümü adım adım keşfedeceğiz!",
         "html": """
-            <div class="slide-body" style="flex-direction: column; justify-content: center;">
-                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; width: 100%;">
-                    <div class="info-card glow-gold" style="padding: 30px 24px; cursor: pointer;" onclick="showSlide(5)">
-                        <div style="width: 70px; height: 70px; border-radius: 20px; background: rgba(245, 158, 11, 0.25); color: #fbbf24; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 15px;">
-                            <i class="fa-solid fa-sun"></i>
-                        </div>
-                        <span style="font-size: 18px; font-weight: 800; color: #fbbf24; letter-spacing: 1px;">1. BÖLÜM</span>
-                        <h3 style="font-size: 26px; font-weight: 800; color: #fff; margin: 6px 0 12px 0;">Güneş'in Yapısı ve Özellikleri</h3>
-                        <p style="font-size: 18px; color: #cbd5e1; line-height: 1.4;">Katmanlar, dev sıcaklık, hidrojen-helyum enerjisi ve dönme hareketi.</p>
-                    </div>
+            <div class="slide-body" style="padding: 0; position: relative; width: 100%; height: 100%; min-height: 820px; background: url('../assets/sunum5/slide_unite_konularimiz_ultra.jpg') no-repeat center center / 100% 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+                <!-- 8 Bölüm İnteraktif Tıklama Alanları -->
+                <div style="position: absolute; top: 38%; left: 22%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="1. Güneş'in Yapısı ve Özellikleri" onclick="showSlide(5)"></div>
+                <div style="position: absolute; top: 38%; left: 40%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="2. Güneş'in Dünya'ya Etkileri" onclick="showSlide(14)"></div>
+                <div style="position: absolute; top: 38%; left: 58%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="3. Dünya'nın Hareketleri ve Sonuçları" onclick="showSlide(12)"></div>
+                <div style="position: absolute; top: 38%; left: 76%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="4. Ay'ın Yapısı ve Özellikleri" onclick="showSlide(16)"></div>
 
-                    <div class="info-card glow-cyan" style="padding: 30px 24px; cursor: pointer;" onclick="showSlide(16)">
-                        <div style="width: 70px; height: 70px; border-radius: 20px; background: rgba(6, 182, 212, 0.25); color: #22d3ee; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 15px;">
-                            <i class="fa-solid fa-moon"></i>
-                        </div>
-                        <span style="font-size: 18px; font-weight: 800; color: #22d3ee; letter-spacing: 1px;">2. BÖLÜM</span>
-                        <h3 style="font-size: 26px; font-weight: 800; color: #fff; margin: 6px 0 12px 0;">Ay'ın Yapısı ve Özellikleri</h3>
-                        <p style="font-size: 18px; color: #cbd5e1; line-height: 1.4;">Kraterler, atmosfer yokluğu, gece-gündüz sıcaklık farkı ve yer çekimi.</p>
-                    </div>
-
-                    <div class="info-card glow-blue" style="padding: 30px 24px; cursor: pointer;" onclick="showSlide(23)">
-                        <div style="width: 70px; height: 70px; border-radius: 20px; background: rgba(59, 130, 246, 0.25); color: #60a5fa; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 15px;">
-                            <i class="fa-solid fa-arrows-spin"></i>
-                        </div>
-                        <span style="font-size: 18px; font-weight: 800; color: #60a5fa; letter-spacing: 1px;">3. BÖLÜM</span>
-                        <h3 style="font-size: 26px; font-weight: 800; color: #fff; margin: 6px 0 12px 0;">Ay'ın Hareketleri ve Evreleri</h3>
-                        <p style="font-size: 18px; color: #cbd5e1; line-height: 1.4;">Dönme-dolanma, 4 ana evre, 4 ara evre ve 29.5 günlük döngü.</p>
-                    </div>
-
-                    <div class="info-card glow-red" style="padding: 30px 24px; cursor: pointer;" onclick="showSlide(36)">
-                        <div style="width: 70px; height: 70px; border-radius: 20px; background: rgba(239, 68, 68, 0.25); color: #f87171; display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 15px;">
-                            <i class="fa-solid fa-scale-balanced"></i>
-                        </div>
-                        <span style="font-size: 18px; font-weight: 800; color: #f87171; letter-spacing: 1px;">4. BÖLÜM</span>
-                        <h3 style="font-size: 26px; font-weight: 800; color: #fff; margin: 6px 0 12px 0;">Güneş, Dünya ve Ay</h3>
-                        <p style="font-size: 18px; color: #cbd5e1; line-height: 1.4;">Boyut karşılaştırmaları, sınıf modelleri ve interaktif değerlendirme.</p>
-                    </div>
-                </div>
+                <div style="position: absolute; top: 64%; left: 22%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="5. Ay'ın Hareketleri ve Sonuçları" onclick="showSlide(22)"></div>
+                <div style="position: absolute; top: 64%; left: 40%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="6. Ay'ın Evreleri" onclick="showSlide(26)"></div>
+                <div style="position: absolute; top: 64%; left: 58%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="7. Güneş, Dünya ve Ay'ın Karşılaştırılması" onclick="showSlide(35)"></div>
+                <div style="position: absolute; top: 64%; left: 76%; width: 16%; height: 23%; cursor: pointer; border-radius: 20px;" title="8. Ünite Değerlendirme" onclick="showSlide(38)"></div>
             </div>
         """
     },
@@ -152,33 +125,21 @@ slides = [
     },
 
     # SLAYT 5 — GÜNEŞ NEDİR?
+    # SLAYT 5 — GÜNEŞ NEDİR?
     {
         "num": 5,
         "kicker": "1. BÖLÜM: GÜNEŞ'İN YAPISI VE ÖZELLİKLERİ",
-        "title": "Güneş Nedir? Yaşam Kaynağımızı Tanıyalım",
-        "subtitle": "Gündüz görebildiğimiz tek ve en yakın yıldız!",
+        "title": "1.1 GÜNEŞ NEDİR?",
+        "subtitle": "Kendi ışık ve ısısını üreten yaşam kaynağımız dev yıldız!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-star text-amber-400"></i> <span>Güneş bir <strong>YILDIZDIR</strong>. Katı bir yüzeyi yoktur; akkor hâlindeki çok sıcak gazlardan oluşur.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-lightbulb text-amber-400"></i> <span>Kendi enerjisini kendi üretir; doğal bir <strong>ISI VE IŞIK KAYNAĞIDIR</strong>.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-arrows-to-dot text-amber-400"></i> <span>Dünya'mıza <strong>EN YAKIN YILDIZDIR</strong>. Diğer yıldızlar çok uzakta olduğu için nokta gibi görünürken, Güneş bize yakın olduğu için büyük ve parlak görünür.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-sun text-orange-400"></i> <span>Gündüz vakti gökyüzünde görebildiğimiz <strong>TEK YILDIZ</strong> Güneş'tir!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-hourglass-half text-amber-400"></i> <span>Güneş orta büyüklükte ve orta sıcaklıkta sarı cüce bir yıldızdır. Yaşı yaklaşık <strong>4,6 MİLYAR YILDIR</strong>.</span></li>
-                        </ul>
-                    </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-seedling"></i>
-                        <div><strong>HAYATİ ÖNEM:</strong> Güneş olmasaydı Dünya buz tutar, bitkiler fotosentez yapamaz ve Dünya üzerinde hiçbir canlı yaşayamazdı!</div>
-                    </div>
-                </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_3.jpg" alt="Güneş Nedir">
-                    </div>
-                </div>
+            <div class="slide-body" style="padding: 0; position: relative; width: 100%; height: 100%; min-height: 820px; background: url('../assets/sunum5/slide_1_1_gunes_nedir_ultra.jpg') no-repeat center center / 100% 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+                <!-- 5 İnteraktif Bilgi Kartı Dokunma Alanları -->
+                <div style="position: absolute; top: 22%; right: 2%; width: 32%; height: 25%; cursor: pointer; border-radius: 24px;" title="Güneş bir Yıldızdır" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 49%; right: 2%; width: 32%; height: 18%; cursor: pointer; border-radius: 24px;" title="Güneş Çok Sıcaktır (5.500 °C / 15 Milyon °C)" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 69%; right: 2%; width: 28%; height: 28%; cursor: pointer; border-radius: 24px;" title="Güneş Çok Yaşlıdır (4,6 Milyar Yıl)" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 69%; left: 17%; width: 30%; height: 28%; cursor: pointer; border-radius: 24px;" title="Güneş Çevresine Isı ve Işık Yayar" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 69%; left: 48%; width: 23%; height: 28%; cursor: pointer; border-radius: 24px;" title="Güneş Gazlardan Oluşur (Hidrojen & Helyum)" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 16%; left: 24%; width: 42%; height: 52%; border-radius: 50%; cursor: pointer;" title="Güneş Küresi" onclick="playChime(true)"></div>
             </div>
         """
     },
@@ -187,33 +148,16 @@ slides = [
     {
         "num": 6,
         "kicker": "1. BÖLÜM: GÜNEŞ'İN YAPISI VE ÖZELLİKLERİ",
-        "title": "Güneş'in Katmanlı 3D Yapısı",
-        "subtitle": "Tıpkı bir soğan veya Dünya gibi iç içe geçmiş katmanlar!",
+        "title": "1. GÜNEŞ'İN YAPISI VE ÖZELLİKLERİ",
+        "subtitle": "İç içe geçmiş katmanlar, dev sıcaklık ve 3D kesit modeli!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(245,158,11,0.2); color: #fbbf24;"><i class="fa-solid fa-layer-group"></i></div>
-                            <div class="card-title">İçten Dışa Doğru 4 Temel Katman</div>
-                        </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-1 text-red-400"></i> <span><strong class="highlight-red">Çekirdek:</strong> En içte yer alan, Güneş'in dev enerjisinin üretildiği en sıcak merkez bölgedir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-2 text-amber-400"></i> <span><strong class="highlight-gold">Işık Küre (Fotosfer):</strong> Gözümüzle gördüğümüz parlak sarı renkli yüzey katmanıdır. Güneş lekeleri buradadır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-3 text-orange-400"></i> <span><strong style="color: #fb923c;">Renk Küre (Kromosfer):</strong> Işık kürenin hemen üzerindeki kırmızımsı pembe renkli ince gaz katmanıdır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-4 text-purple-400"></i> <span><strong style="color: #c084fc;">Taç Küre (Korona):</strong> Güneş'in en dışındaki, milyonlarca kilometre uzanan çok sıcak gaz atmosferidir.</span></li>
-                        </ul>
-                    </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <div>Güneş katı bir yapıya sahip değildir. Bütünüyle çok sıcak gaz ve plazma hâlindedir!</div>
-                    </div>
-                </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_4.jpg" alt="Güneş Katmanları">
-                    </div>
-                </div>
+            <div class="slide-body" style="padding: 0; position: relative; width: 100%; height: 100%; min-height: 820px; background: url('../assets/sunum5/slide_1_gunes_yapisi_ozellikleri_ultra.jpg') no-repeat center center / 100% 100%; border-radius: 28px; overflow: hidden; box-shadow: 0 25px 60px rgba(0,0,0,0.8);">
+                <!-- Katmanlar ve Bilgi Panelleri İnteraktif Alanları -->
+                <div style="position: absolute; top: 24%; right: 2%; width: 14%; height: 10%; cursor: pointer;" title="Taç Katmanı (Korona)" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 36%; right: 2%; width: 14%; height: 10%; cursor: pointer;" title="Renk Küre (Kromosfer)" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 48%; right: 2%; width: 14%; height: 10%; cursor: pointer;" title="Işık Küre (Fotosfer)" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 60%; right: 2%; width: 14%; height: 10%; cursor: pointer;" title="Taş Küre" onclick="playChime(true)"></div>
+                <div style="position: absolute; top: 61%; left: 51%; width: 12%; height: 12%; cursor: pointer;" title="Çekirdek (15 Milyon °C)" onclick="playChime(true)"></div>
             </div>
         """
     },
@@ -408,8 +352,8 @@ slides = [
                     </div>
                 </div>
                 <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_7.jpg" alt="Uzaklık Etkisi">
+                    <div class="visual-frame" style="border: 2px solid rgba(56, 189, 248, 0.5); box-shadow: 0 0 35px rgba(56, 189, 248, 0.3);">
+                        <img src="../assets/slides/slide_11_perspective.jpg" alt="Dünya Güneş Uzaklık ve Perspektif Modeli" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -439,7 +383,7 @@ slides = [
                 </div>
                 <div class="visual-panel">
                     <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_9.jpg" alt="Güneş Hareketleri">
+                        <img src="../assets/slides/slide_14_sun_earth.jpg" alt="Güneş ve Gezegenler Hareketi">
                     </div>
                 </div>
             </div>
@@ -450,26 +394,46 @@ slides = [
     {
         "num": 13,
         "kicker": "1. BÖLÜM: GÜNEŞ'İN YAPISI VE ÖZELLİKLERİ",
-        "title": "Güneş Lekeleri ve Galileo Galilei",
-        "subtitle": "Yüzeydeki soğuk adacıklar ve büyük keşif!",
+        "title": "GÜNEŞ LEKELERİ VE GALILEO GALILEI",
+        "subtitle": "Yüzeydeki soğuk adacıklar ve Güneş'in dönmesinin kanıtı!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-circle-dot text-amber-400"></i> <span>Güneş'in ışık küre (yüzey) katmanında çevresine göre <strong>DAHA SOĞUK</strong> olan bölgeler bulunur. Bu bölgelere <strong class="highlight-gold">GÜNEŞ LEKELERİ</strong> denir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-temperature-arrow-down text-blue-400"></i> <span>Çevre yüzey 6.000 °C iken lekelerin sıcaklığı 3.500 - 4.000 °C civarındadır. Çevresinden daha soğuk olduğu için göze <strong>KOYU RENKLİ</strong> görünür.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-binoculars text-cyan-400"></i> <span><strong>Galileo Galilei'nin Keşfi:</strong> 1610 yılında kendi yaptığı teleskopla Güneş lekelerini incelemiş, lekelerin hep aynı yöne kaydığını gözlemleyerek <strong>GÜNEŞ'İN DÖNDÜĞÜNÜ</strong> kanıtlamıştır!</span></li>
-                        </ul>
+            <div class="slide-body" style="flex-direction: column; gap: 14px;">
+                <div style="display: flex; gap: 28px; flex: 1; min-height: 0;">
+                    <!-- Sol: 3D Güneş Yüzeyi & Güneş Lekesi Görseli -->
+                    <div style="flex: 1.15; position: relative; border-radius: 24px; overflow: hidden; border: 2px solid rgba(249, 115, 22, 0.6); box-shadow: 0 0 40px rgba(249, 115, 22, 0.25); background: #000;">
+                        <img src="../assets/slides/slide_13_sunspots.jpg" alt="Güneş Lekeleri Yakın Plan" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 45%; left: 30%; background: rgba(10,15,30,0.92); border: 2px solid #22d3ee; border-radius: 14px; padding: 6px 14px; box-shadow: 0 0 20px #22d3ee; font-size: 16px; font-weight: 800;">
+                            <span style="color: #ef4444;">●</span> GÜNEŞ LEKESİ <span style="color: #fef08a;">(~3.500 °C)</span>
+                        </div>
                     </div>
-                    <div class="callout-box warning">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        <div><strong>BİLİMSEL YANILGI UYARISI:</strong> Güneş lekeleri Güneş üzerinde bir delik veya boşluk DEĞİLDİR! Sadece çevresinden 2.000 °C daha soğuk gaz bölgeleridir.</div>
+
+                    <!-- Sağ: 3 Büyük Neon Bilgi Kartı -->
+                    <div style="flex: 1.1; display: flex; flex-direction: column; gap: 14px;">
+                        <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                            <div style="font-size: 22px; font-weight: 800; color: #22d3ee; margin-bottom: 4px;"><i class="fa-solid fa-circle-dot mr-2"></i> GÜNEŞ LEKELERİ NEDİR?</div>
+                            <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş'in görünür yüzeyinde (ışık küre) yer alan, çevresindeki akkor gazlara göre <strong>daha soğuk</strong> oldukları için koyu renkli görünen bölgelerdir.</p>
+                        </div>
+
+                        <div class="info-card glow-gold" style="padding: 16px 20px;">
+                            <div style="font-size: 22px; font-weight: 800; color: #fb923c; margin-bottom: 4px;"><i class="fa-solid fa-temperature-half mr-2"></i> NEDEN KOYU GÖRÜNÜRLER?</div>
+                            <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş yüzeyi ortalama <strong>5.500 °C</strong> iken, lekelerin sıcaklığı <strong>~3.500 °C</strong>'dir. Aradaki ~2.000 °C'lik sıcaklık farkı sebebiyle zıtlık oluşur ve koyu görünürler.</p>
+                        </div>
+
+                        <div class="info-card glow-purple" style="padding: 16px 20px;">
+                            <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 4px;"><i class="fa-solid fa-compass mr-2"></i> GALILEO GALILEI'NİN GÖZLEMLERİ</div>
+                            <div style="display: flex; gap: 16px; align-items: center;">
+                                <img src="../assets/slides/slide_13_galileo.jpg" alt="Galileo Teleskop" style="width: 110px; height: 110px; object-fit: cover; border-radius: 14px; border: 2px solid #c084fc;">
+                                <p style="font-size: 18px; color: #f1f5f9; line-height: 1.35;">Galileo, 1610'lu yıllarda teleskopla lekelerin hep aynı yöne kaydığını gözlemleyerek <strong>Güneş'in kendi ekseni etrafında döndüğünü</strong> tarihte ilk kez kanıtlamıştır!</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_9.jpg" alt="Güneş Lekeleri">
+
+                <!-- Alt Dikkat & Kavram Yanılgısı Şeridi -->
+                <div style="background: linear-gradient(90deg, rgba(127,29,29,0.92), rgba(185,28,28,0.92)); border: 2px solid #ef4444; border-radius: 16px; padding: 10px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 0 25px rgba(239,68,68,0.4);">
+                    <i class="fa-solid fa-triangle-exclamation text-yellow-300 text-2xl"></i>
+                    <div style="font-size: 18px; font-weight: 700; color: #ffffff;">
+                        <strong>DİKKAT!</strong> Güneş lekeleri Güneş'in yüzeyindeki delikler veya çukurlar <u>DEĞİLDİR!</u> Sadece çevresinden 2.000 °C daha soğuk gaz bölgeleridir.
                     </div>
                 </div>
             </div>
@@ -480,41 +444,45 @@ slides = [
     {
         "num": 14,
         "kicker": "1. BÖLÜM: GÜNEŞ'İN YAPISI VE ÖZELLİKLERİ",
-        "title": "Güneş Dünya İçin Neden Hayatidir?",
-        "subtitle": "Tüm canlılığın, besin zincirinin ve hava olaylarının temeli!",
+        "title": "GÜNEŞ DÜNYA İÇİN NEDEN HAYATİDİR?",
+        "subtitle": "Isı, ışık, fotosentez, su döngüsü ve hava olaylarının temeli!",
         "html": """
-            <div class="slide-body" style="align-items: stretch;">
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%;">
-                    <div class="info-card glow-gold">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(245,158,11,0.2); color: #fbbf24;"><i class="fa-solid fa-temperature-half"></i></div>
-                            <div class="card-title">1. Isı ve Yaşam Dengesi</div>
+            <div class="slide-body" style="padding: 10px 0;">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 100%;">
+                    <!-- 1. Isı ve Işık -->
+                    <div class="info-card glow-gold" style="display: flex; flex-direction: row; gap: 18px; align-items: center; padding: 16px 20px;">
+                        <img src="../assets/slides/slide_14_sun_earth.jpg" alt="Isı ve Işık" style="width: 250px; height: 160px; object-fit: cover; border-radius: 14px; border: 2px solid #fbbf24;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-sun mr-1"></i> 1. ISI VE IŞIK</div>
+                            <p style="font-size: 19px; color: #e2e8f0; line-height: 1.4;">Dünya'mızın temel doğal ısı ve ışık kaynağıdır. Gezegenimizin donmasını önler ve yaşamı sürdürür.</p>
                         </div>
-                        <p style="font-size: 22px; color: #e2e8f0; line-height: 1.45;">Dünya'nın donmasını önler; okyanusların, atmosferin ve canlıların yaşaması için ideal sıcaklık ortamını sağlar.</p>
                     </div>
 
-                    <div class="info-card glow-cyan">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(6,182,212,0.2); color: #22d3ee;"><i class="fa-solid fa-seedling"></i></div>
-                            <div class="card-title">2. Fotosentez ve Oksijen</div>
+                    <!-- 2. Fotosentez -->
+                    <div class="info-card glow-green" style="display: flex; flex-direction: row; gap: 18px; align-items: center; padding: 16px 20px;">
+                        <img src="../assets/slides/slide_14_photosynthesis.jpg" alt="Fotosentez" style="width: 250px; height: 160px; object-fit: cover; border-radius: 14px; border: 2px solid #4ade80;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: 800; color: #4ade80; margin-bottom: 6px;"><i class="fa-solid fa-seedling mr-1"></i> 2. FOTOSENTEZ</div>
+                            <p style="font-size: 19px; color: #e2e8f0; line-height: 1.4;">Yeşil bitkiler Güneş ışığını kullanarak besin ve oksijen üretir. Tüm besin zincirinin temeli Güneş'tir.</p>
                         </div>
-                        <p style="font-size: 22px; color: #e2e8f0; line-height: 1.45;">Yeşil bitkiler Güneş ışığını kullanarak besin ve oksijen üretir. Dünyadaki tüm besin zinciri Güneş enerjisiyle başlar!</p>
                     </div>
 
-                    <div class="info-card glow-blue">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(59,130,246,0.2); color: #60a5fa;"><i class="fa-solid fa-cloud-rain"></i></div>
-                            <div class="card-title">3. Su Döngüsü ve Yağışlar</div>
+                    <!-- 3. Su Döngüsü -->
+                    <div class="info-card glow-blue" style="display: flex; flex-direction: row; gap: 18px; align-items: center; padding: 16px 20px;">
+                        <img src="../assets/slides/slide_14_water_cycle.jpg" alt="Su Döngüsü" style="width: 250px; height: 160px; object-fit: cover; border-radius: 14px; border: 2px solid #38bdf8;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-cloud-showers-heavy mr-1"></i> 3. SU DÖNGÜSÜ</div>
+                            <p style="font-size: 19px; color: #e2e8f0; line-height: 1.4;">Suyu buharlaştırarak bulutları oluşturur ve yağmur olarak yeryüzüne döndürerek su döngüsünü çalıştırır.</p>
                         </div>
-                        <p style="font-size: 22px; color: #e2e8f0; line-height: 1.45;">Deniz ve göllerdeki suyu buharlaştırarak bulutları oluşturur; yağmur ve kar yağışı ile tatlı su kaynaklarını yeniler.</p>
                     </div>
 
-                    <div class="info-card glow-red">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(239,68,68,0.2); color: #f87171;"><i class="fa-solid fa-wind"></i></div>
-                            <div class="card-title">4. Rüzgâr ve İklimler</div>
+                    <!-- 4. Hava Olayları -->
+                    <div class="info-card glow-purple" style="display: flex; flex-direction: row; gap: 18px; align-items: center; padding: 16px 20px;">
+                        <img src="../assets/slides/slide_14_weather.jpg" alt="Hava Olayları" style="width: 250px; height: 160px; object-fit: cover; border-radius: 14px; border: 2px solid #c084fc;">
+                        <div>
+                            <div style="font-size: 24px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-wind mr-1"></i> 4. HAVA OLAYLARI</div>
+                            <p style="font-size: 19px; color: #e2e8f0; line-height: 1.4;">Dünya'yı farklı oranlarda ısıtarak sıcaklık ve basınç farkları yaratır; rüzgârları ve hava olaylarını oluşturur.</p>
                         </div>
-                        <p style="font-size: 22px; color: #e2e8f0; line-height: 1.45;">Dünya'nın farklı bölgelerini farklı açılarla ısıtarak basınç farkları, rüzgârlar ve mevsimsel hava olaylarını meydana getirir.</p>
                     </div>
                 </div>
             </div>
