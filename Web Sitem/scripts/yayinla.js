@@ -91,7 +91,16 @@ const message = process.argv.slice(2).join(" ").trim();
 if (message) {
     const git = (...args) => execFileSync("git", args, { cwd: ROOT, stdio: "inherit" });
     git("add", "-A");
-    git("commit", "-m", `${message} [v${VERSION}]`);
+    try {
+        git("commit", "-m", `${message} [v${VERSION}]`);
+    } catch(e) {
+        console.log("ℹ Commit edilmeye hazır yeni dosya yok veya zaten commit edildi.");
+    }
+    try {
+        git("pull", "--rebase", "origin", "main");
+    } catch(e) {
+        console.warn("Pull warning:", e.message);
+    }
     git("push", "origin", "main");
     console.log("🚀 GitHub'a gönderildi. Vercel 1-2 dk içinde yayınlar.");
 } else {
