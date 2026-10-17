@@ -7025,7 +7025,7 @@ window.projectFilterData = function() {
                 tags: ['CodeWeek', 'eTwinning', 'Algoritma', 'Yeşil Gezegen', '5-6-7. Sınıf']
             }
         ],
-        codeWeekGradeTab: 'all',
+        codeWeekGradeTab: '5',
         codeWeekActivities: [
             {
                 id: 'cw-5-1',
@@ -7103,39 +7103,37 @@ window.projectFilterData = function() {
                 id: 'cw-7-1',
                 grade: '7',
                 badge: '7. SINIF • ETKİNLİK 1',
-                title: 'Akıllı Şehir & Yenilenebilir Enerji Şebekesi (Smart Grid)',
-                outcome: 'Çoklu koşul blokları, sensör algoritmaları ve optimizasyon',
-                subtitle: 'Temiz enerjiyi yönet, şehri akıllıca aydınlat!',
-                image: '',
-                icon: 'fa-solid fa-solar-panel text-amber-500',
-                description: 'Güneş panelleri ve rüzgâr türbinlerinden gelen anlık enerji üretim verisini analiz eden; batarya şarjını ve sokak lambalarını optimize eden algoritmik akış şeması.',
+                title: 'Akıllı Sera Algoritmaları',
+                outcome: 'Veri yorumlama, koşul ve algoritma kurma',
+                subtitle: 'Sensör verilerine göre sistemi yönet!',
+                image: 'assets/codeweek/7-sinif-etkinlik-1-akilli-sera-algoritmalari.jpg',
+                description: 'Sıcaklık, nem, ışık ve toprak nemi sensör verilerine göre havalandırma fanı, damla sulama ve lambaların yönetilmesi; koşullu karar ağacı ve akış şeması (Flowchart) tamamlama.',
                 sections: [
-                    '1. Çoklu Koşul Blokları: EĞER Güneş Işığı > 700 W/m² VE Rüzgar > 20 km/s İSE şebekeyi besle',
-                    '2. Batarya Depolama Kararı: Batarya doluluğu < %20 ise acil enerji tasarrufu modunu devreye al',
-                    '3. Sensör Entegrasyonu: Gün batımı sensörü ile hareket sensörünü birleştiren LED parlaklık algoritması',
-                    '4. Verimlilik Hesaplama: 1 ayda tasarruf edilen kWh enerjiyi ve önlenen CO₂ miktarını hesapla'
+                    '1. Veriyi Oku: Sıcaklık, nem, ışık (lüks) ve toprak yüzdesine göre fan, sulama ve lamba eylemlerini belirle',
+                    '2. Koşulu Tamamla: Sıcaklık çok yüksekse (>30°C), düşükse (<20°C), toprak kuruysa (<%30), ışık azsa (<200 lüks) kararlarını yaz',
+                    '3. Akış Şeması: Başla -> Sıcaklık > 30°C mi? -> Toprak nemi < %30 mu? -> Işık < 200 lüks mü? karar diyagramını doldur',
+                    '4. Kodlama Sorusu: Sıcaklık yüksek (32°C) ve toprak kuru (%25) senaryosunda doğru komut sırasını ve lambayı açan koşulu işaretle'
                 ],
-                themeColor: 'amber',
-                motto: 'Akıllı Enerji, Sıfır Karbon, Sürdürülebilir Gelecek!'
+                themeColor: 'purple',
+                motto: 'Teknoloji Daha Yeşil Yarınlar İçin • Akıllı Seralar Daha Temiz Bir Dünya İçin!'
             },
             {
                 id: 'cw-7-2',
                 grade: '7',
                 badge: '7. SINIF • ETKİNLİK 2',
-                title: 'Biyoçeşitlilik Dedektifi & Karbon Ayak İzi Simülatörü',
-                outcome: 'Değişken tanımlama, matematiksel modelleme ve döngüsel hesaplama',
-                subtitle: 'Karbon ayak izini hesapla, yeşil gezegen hedefini kodla!',
-                image: '',
-                icon: 'fa-solid fa-calculator text-emerald-500',
-                description: 'Öğrencilerin ev ve okulundaki elektrik, su, atık ve ulaşım verilerini değişken olarak alıp karbon ayak izi puanını hesaplayan ve azaltma önerileri üreten yeşil simülatör algoritması.',
+                title: 'Yeşil Okul Veri Görevi',
+                outcome: 'Veri analizi, yorumlama ve sürdürülebilir çözüm üretme',
+                subtitle: 'Verileri analiz et, en iyi çözümü seç!',
+                image: 'assets/codeweek/7-sinif-etkinlik-2-yesil-okul-veri-gorevi.jpg',
+                description: 'Okulun haftalık elektrik tüketimi sütun grafiğini inceleme, enerji ve su israfı sorunlarını tespit etme, teneffüste açık kalan cihazlara sürdürülebilir çözümler bulma ve Yeşil Okul projesi tasarlama.',
                 sections: [
-                    '1. Değişken Tanımla: Günlük elektrik tüketimi (kWh), su harcaması (Litre), üretilen plastik atık (kg)',
-                    '2. Formül Algoritması: Karbon Skoru = (Elektrik * 0.45) + (Ulaşım_km * 0.14) + (Atık * 1.2)',
-                    '3. Karar Ağacı: Skor > 50 ise "Okul Bahçesi Kompost & Ağaçlandırma Eylem Planı" tetikle',
-                    '4. eTwinning Uluslararası Eşleşme: Avrupa partner okullarla karbon skorlarını karşılaştır ve yarıştır'
+                    '1. Grafiği İncele: Pazartesi-Cuma elektrik tüketimini (kWh) analiz et, en fazla/en az günleri ve perşembe artış nedenini açıkla',
+                    '2. Sorunu Bul: Açık kalan ışıklar, damlayan musluklar, gereksiz çıktılar ve açık pencereler için Enerji Kaybı / Su İsrafı / Doğru Uygulama işaretle',
+                    '3. En Uygun Çözüm: Teneffüste açık kalan bilgisayarlar, çok sıcak sınıflar ve yemekhane atıkları için en sürdürülebilir çözümü seç',
+                    '4. Tasarım Köşesi: "Benim Yeşil Okul Fikrim" alanına okulunu daha çevreci yapacak projenin adını, çizimini ve işe yarayışını yaz'
                 ],
-                themeColor: 'emerald',
-                motto: 'Küçük Adımlar, Büyük Değişimler Yaratır • Code for a Greener Planet!'
+                themeColor: 'purple',
+                motto: 'Doğayı Koru, Enerjiyi Tasarruf Et, Geri Dönüştür • Küçük Fikirler Büyük Değişimler Yaratır!'
             }
         ],
         matchesCodeWeekGrade(act) {
@@ -7167,6 +7165,12 @@ window.projectFilterData = function() {
             return this.projects.filter(p => this.matchesFilter(p)).length;
         },
         openCodeWeekModal(act) {
+            if (act && act.image) {
+                if (typeof openInPageDocumentModal === 'function') {
+                    openInPageDocumentModal(act.image, act.title || 'CodeWeek Çalışma Kâğıdı', act.title + '.jpg', true);
+                    return;
+                }
+            }
             if (typeof window.openCodeWeekImageModal === 'function') {
                 window.openCodeWeekImageModal(act);
             }
@@ -7366,19 +7370,8 @@ function renderProjectsPage(container) {
                         </div>
                     </div>
 
-                    <!-- 🎛️ SINIF SEVİYESİ FİLTRELEME BUTONLARI (CodeWeek Tabs) -->
+                    <!-- 🎛️ SINIF SEVİYESİ FİLTRELEME BUTONLARI (5, 6 ve 7. Sınıf) -->
                     <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
-                        <button 
-                            type="button" 
-                            @click="codeWeekGradeTab = 'all'" 
-                            class="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
-                            :class="codeWeekGradeTab === 'all' 
-                                ? 'bg-white text-slate-950 shadow-lg scale-105' 
-                                : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white border border-white/10'"
-                        >
-                            <span>Tümü</span>
-                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" :class="codeWeekGradeTab === 'all' ? 'bg-slate-900 text-white' : 'bg-white/20 text-white'">6</span>
-                        </button>
                         <button 
                             type="button" 
                             @click="codeWeekGradeTab = '5'" 
@@ -7421,7 +7414,7 @@ function renderProjectsPage(container) {
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                         <template x-for="act in codeWeekActivities" :key="act.id">
                             <div 
-                                x-show="codeWeekGradeTab === 'all' || codeWeekGradeTab === String(act.grade)"
+                                x-show="codeWeekGradeTab === String(act.grade)"
                                 x-transition:enter="transition-all ease-out duration-200"
                                 x-transition:enter-start="opacity-0 scale-95"
                                 x-transition:enter-end="opacity-100 scale-100"
@@ -7831,13 +7824,13 @@ window.openCodeWeekImageModal = function(act) {
             <!-- Modal İçerik (Kaydırılabilir) -->
             <div class="p-5 sm:p-7 overflow-y-auto space-y-6 flex-1">
                 ${act.image ? `
-                    <!-- Görsel Alanı (Tıklanıp tam çözünürlükte yeni sekmede açılabilir) -->
-                    <div class="bg-slate-100 rounded-2xl p-2 border border-slate-200 text-center relative group">
-                        <img src="${act.image}" alt="${act.title}" class="w-full max-h-[60vh] object-contain rounded-xl mx-auto shadow-sm">
-                        <div class="mt-2 text-center">
-                            <span class="text-[11px] text-slate-500 font-semibold inline-flex items-center gap-1.5">
-                                <i class="fa-regular fa-image text-slate-400"></i>
-                                <span>Çalışma Kâğıdı Orijinal Baskı Formatı</span>
+                    <!-- Görsel Alanı (Tıklanıp tam ekranda ve zoom ile açılabilir) -->
+                    <div class="bg-slate-900 rounded-2xl p-2.5 border border-slate-800 text-center relative group cursor-pointer" onclick="if(typeof openInPageDocumentModal==='function') openInPageDocumentModal('${act.image}', '${(act.title || '').replace(/'/g, "\\'")}', '${(act.title || '').replace(/'/g, "\\'")}.jpg', true)">
+                        <img src="${act.image}" alt="${act.title}" class="w-full max-h-[70vh] object-contain rounded-xl mx-auto shadow-md transition-transform duration-300 group-hover:scale-[1.01]">
+                        <div class="mt-2 text-center flex items-center justify-center gap-2">
+                            <span class="px-3 py-1 rounded-full bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 text-xs font-black inline-flex items-center gap-1.5 shadow-sm">
+                                <i class="fa-solid fa-magnifying-glass-plus text-xs"></i>
+                                <span>Görsele Tıklayarak Tam Ekran ve %100 Büyütme ile İnceleyin</span>
                             </span>
                         </div>
                     </div>

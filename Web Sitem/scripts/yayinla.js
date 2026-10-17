@@ -60,6 +60,14 @@ const codeweekAssets = [
     {
         src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792269746675_5287b98e.jpg"),
         dest: path.join(codeweekDir, "6-sinif-etkinlik-2-geri-donusum-dedektifi.jpg")
+    },
+    {
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792270867543_464df79a.jpg"),
+        dest: path.join(codeweekDir, "7-sinif-etkinlik-1-akilli-sera-algoritmalari.jpg")
+    },
+    {
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792270867531_a050137b.jpg"),
+        dest: path.join(codeweekDir, "7-sinif-etkinlik-2-yesil-okul-veri-gorevi.jpg")
     }
 ];
 
