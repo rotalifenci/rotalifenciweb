@@ -2459,6 +2459,16 @@ html_template = """<!DOCTYPE html>
             }
         }
 
+        // Dış Pencere (Parent Frame) İletişimi
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'ROTALI_SLIDE_CMD') {
+                if (e.data.command === 'nextSlide') nextSlide();
+                else if (e.data.command === 'prevSlide') prevSlide();
+                else if (e.data.command === 'toggleDrawer') toggleDrawer();
+                else if (e.data.command === 'showSlide' && typeof e.data.arg === 'number') showSlide(e.data.arg);
+            }
+        });
+
         // Klavye Kontrolleri
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
