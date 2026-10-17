@@ -1821,56 +1821,40 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                     const actionUI = getMaterialActionUI(item, item.category);
 
                     return `
-                        <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative overflow-hidden group">
+                        <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between w-full max-w-full overflow-hidden">
                             <div>
-                                <!-- Üst Bilgi ve Format -->
+                                <!-- Rozetler -->
                                 <div class="flex items-center justify-between gap-2 mb-3">
-                                    <span class="px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-[11px] font-black tracking-wider uppercase inline-block border border-slate-200">
-                                        ${item.grade === 'all' ? 'TÜM SINIFLAR' : item.grade + '. SINIF'} • ${item.format || 'DOKÜMAN'}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80">
+                                        ${item.grade === 'all' ? 'Tüm Sınıflar' : item.grade + '. Sınıf'} • ${item.category === 'videolar' ? 'Video' : (item.category === 'egitsel-oyunlar' ? 'Oyun' : 'Ders Notu')}
                                     </span>
-                                    <span class="text-[11px] font-bold text-slate-400">${item.createdAt || 'Bugün'}</span>
+                                    <span class="text-[11px] font-bold text-slate-400 shrink-0">
+                                        ${item.format || 'DOKÜMAN'}
+                                    </span>
                                 </div>
 
-                                <!-- Ünite / Konu -->
-                                ${item.unit ? `
-                                    <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide truncate">
-                                        <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${item.unit}
-                                    </div>
-                                ` : ''}
-
                                 <!-- Başlık -->
-                                <h4 class="text-base sm:text-lg font-black text-slate-900 mb-2.5 leading-snug group-hover:text-red-600 transition-colors">
+                                <h4 class="text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
                                     ${item.title}
                                 </h4>
 
-                                <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
-                                <div class="mat-preview-box relative w-full h-72 sm:h-80 bg-gradient-to-b from-slate-100 to-slate-200/90 p-3 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '.jpg')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'gorseller'))}', '${item.title.replace(/'/g, "\\'")}')">
-                                    <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${itemGrade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                    <div class="absolute bottom-2.5 right-2.5">
-                                        <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                            <i class="${actionUI.icon}"></i> ${actionUI.text}
-                                        </span>
-                                    </div>
+                                <!-- Görsel: Mobilde taşmayı engelleyen 'aspect-ratio' kullanımı -->
+                                <div class="relative w-full aspect-[4/3] max-h-56 sm:max-h-64 bg-slate-100 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/60 flex items-center justify-center cursor-pointer" onclick="openOrDownloadMaterial('${item.id}')">
+                                    <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="w-full h-full object-contain p-2" loading="lazy" />
                                 </div>
 
-                                <!-- Açıklama -->
-                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium">
+                                <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
+                                <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2 break-words">
                                     ${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
                                 </p>
-
-                                <!-- Etiketler -->
-                                ${item.tags && item.tags.length > 0 ? `
-                                    <div class="flex flex-wrap gap-1 mb-4">
-                                        ${((item && item.tags) || []).map(t => `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 text-[10px] font-bold">#${t}</span>`).join("")}
-                                    </div>
-                                ` : ''}
                             </div>
 
                             <!-- Butonlar -->
                             <div class="pt-3 border-t border-slate-100 flex flex-col gap-2">
-                                <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || (isBook ? '#' : validImgUrl) || '#'}', '${(item.fileName || item.title + (isBook ? '.pdf' : '')).replace(/'/g, "\\'")}', '${item.category || (isBook ? 'ders-kitabi' : (isVideo ? 'videolar' : 'ders-notu'))}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${actionUI.bg} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
-                                    <i class="${actionUI.icon}"></i>
-                                    <span>${actionUI.text}</span>
+                                <!-- Buton: Akıllı tahta dokunmatik hedefleri için min-h-[44px] -->
+                                <button type="button" onclick="openOrDownloadMaterial('${item.id}')" class="w-full min-h-[44px] py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                    <i class="fa-solid fa-eye text-sm"></i>
+                                    <span>Görüntüle</span>
                                 </button>
 
                                 ${isAdmin ? `
@@ -4516,32 +4500,37 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             const isSunum = (item.category === "ders-sunumu" || item.category === "sunum" || item.category === "slayt" || (item.format && (item.format.toLowerCase().includes("ppt") || item.format.toLowerCase().includes("sunum"))));
                                             const isPdfReady = item.fileUrl && item.fileUrl !== "#";
                                             return `
-                                                <div class="bg-white rounded-3xl p-6 border border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between relative group ${isSunum ? 'hover:border-orange-400' : 'hover:border-blue-400'}">
+                                                <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between w-full max-w-full overflow-hidden">
                                                     <div>
+                                                        <!-- Rozetler -->
                                                         <div class="flex items-center justify-between gap-2 mb-3">
-                                                            <span class="px-3 py-1 rounded-full ${isSunum ? 'bg-orange-50 text-orange-700 border-orange-200' : 'bg-blue-50 text-blue-700 border-blue-100'} text-[11px] font-black tracking-wider uppercase inline-block border">
-                                                                ${isSunum ? (item.format || '📊 PPTX SUNUM') : (item.format || item.badge || '📝 PDF NOT')}
+                                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider ${isSunum ? 'bg-orange-50 text-orange-800 border border-orange-200/80' : 'bg-amber-50 text-amber-800 border border-amber-200/80'}">
+                                                                ${grade.number}. Sınıf • ${isSunum ? 'Ders Sunumu' : 'Ders Notu'}
                                                             </span>
-                                                            <span class="text-[11px] font-black text-slate-400">${item.pages || (isCustom ? (isSunum ? 'Özel Sunum' : 'Özel Not') : 'MEB 2026-2027')}</span>
+                                                            <span class="text-[11px] font-bold text-slate-400 shrink-0">
+                                                                ${item.format || (isSunum ? 'Sunum' : 'PDF Not')}
+                                                            </span>
                                                         </div>
-                                                        <div class="text-[11px] font-black text-red-600 mb-1.5 uppercase tracking-wide">
-                                                            <i class="fa-solid fa-bookmark text-xs mr-1"></i> ${unitNum}. Ünite
-                                                        </div>
-                                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:${isSunum ? 'text-orange-600' : 'text-blue-600'} transition-colors">
-                                                            ${item.title}
-                                                        </h5>
-                                                        <!-- Görsel Kapak Kutusu -->
-                                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:${isSunum ? 'border-orange-500/40' : 'border-blue-500/40'} cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')">
-                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
 
+                                                        <!-- Başlık -->
+                                                        <h4 class="text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
+                                                            ${item.title}
+                                                        </h4>
+
+                                                        <!-- Görsel: Mobilde taşmayı engelleyen 'aspect-ratio' kullanımı -->
+                                                        <div class="relative w-full aspect-[4/3] max-h-56 sm:max-h-64 bg-slate-100 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/60 flex items-center justify-center cursor-pointer" onclick="openOrDownloadMaterial('${item.id}')">
+                                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full object-contain p-2" loading="lazy" />
                                                         </div>
-                                                        <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-3">
+
+                                                        <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
+                                                        <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2 break-words">
                                                             ${item.desc || (isSunum ? 'MEB kazanımlarına uygun sınıf içi akıllı tahta ders sunumu.' : 'MEB kazanımlarına uygun özet föy ve kavram haritası.')}
                                                         </p>
                                                     </div>
                                                     <div>
-                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${isSunum ? 'ders-sunumu' : 'ders-notu'}', '${item.title.replace(/'/g, "\\'")}')" class="w-full py-2.5 ${isSunum ? 'bg-orange-600 hover:bg-orange-700 shadow-orange-600/20' : 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'} text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md active:scale-95 cursor-pointer">
-                                                            <i class="fa-solid ${isSunum ? 'fa-file-powerpoint' : (isPdfReady ? 'fa-file-lines' : 'fa-book-open')}"></i>
+                                                        <!-- Buton: Akıllı tahta dokunmatik hedefleri için min-h-[44px] -->
+                                                        <button type="button" onclick="openOrDownloadMaterial('${item.id}')" class="w-full min-h-[44px] py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm active:scale-95 cursor-pointer">
+                                                            <i class="fa-solid ${isSunum ? 'fa-file-powerpoint' : (isPdfReady ? 'fa-file-lines' : 'fa-eye')} text-sm"></i>
                                                             <span>${isSunum ? 'Sunumu Görüntüle' : 'Görüntüle'}</span>
                                                         </button>
                                                         ${isAdmin ? `
