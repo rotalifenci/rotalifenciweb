@@ -313,10 +313,10 @@
     "title": "İlk ders notu",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf",
-    "fileUrl": "assets/ilk-ders-notu.png",
-    "imageUrl": "assets/ilk-ders-notu.png",
-    "format": "Web Bağlantısı",
+    "fileName": "İlk ders notu",
+    "fileUrl": "assets/ilk-ders-notu.jpg",
+    "imageUrl": "assets/ilk-ders-notu.jpg",
+    "format": "GÖRSEL",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -328,7 +328,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:55:52.673908+00:00",
     "updatedAt": "2026-09-30T19:00:05.957+00:00",
-    "kapakResmi": "assets/ilk-ders-notu.png",
+    "kapakResmi": "assets/ilk-ders-notu.jpg",
     "isCloud": true
   },
   {
@@ -339,11 +339,11 @@
     "title": "7.Sınıf İşlenecek Konular",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "7.Sınıf İşlenecek Konular",
+    "fileName": "7.Sınıf İşlenecek Konular.jpg",
     "fileUrl": "assets/7-sinif-islenecek-konular.jpg",
     "imageUrl": "assets/7-sinif-islenecek-konular.jpg",
     "kapakResmi": "assets/7-sinif-islenecek-konular.jpg",
-    "format": "Web Bağlantısı",
+    "format": "GÖRSEL",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -366,7 +366,7 @@
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.",
     "fileName": "8. Sınıf Fen Bilimleri MEB Ders Kitabı.pdf",
-    "fileUrl": "#",
+    "fileUrl": "https://drive.google.com/file/d/10Wt4s9ZVgnJAum9fiCKVX13yI7YrvNwc/preview",
     "imageUrl": "assets/ders-kitabi-8.jpg",
     "format": "PDF",
     "hasBlob": false,
@@ -391,10 +391,10 @@
     "title": "İlk ders notu",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "gunes-sistemi.pdf",
-    "fileUrl": "assets/ilk-ders-notu.png",
-    "imageUrl": "assets/ilk-ders-notu.png",
-    "format": "Web Bağlantısı",
+    "fileName": "İlk ders notu",
+    "fileUrl": "assets/ilk-ders-notu.jpg",
+    "imageUrl": "assets/ilk-ders-notu.jpg",
+    "format": "GÖRSEL",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -406,7 +406,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:55:52.421855+00:00",
     "updatedAt": "2026-09-30T19:00:06.749+00:00",
-    "kapakResmi": "assets/ilk-ders-notu.png",
+    "kapakResmi": "assets/ilk-ders-notu.jpg",
     "isCloud": true
   },
   {
@@ -468,9 +468,9 @@
     "title": "5.Sınıf İşlenecek Konular",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "5.Sınıf İşlenecek Konular",
-    "fileUrl": "assets/unite-bilgilendirmeleri-gorsel.png",
-    "format": "Web Bağlantısı",
+    "fileName": "5.Sınıf İşlenecek Konular.jpg",
+    "fileUrl": "assets/5-sinif-islenecek-konular.jpg",
+    "format": "GÖRSEL",
     "hasBlob": true,
     "tags": [
       "MEB 2026-2027"
@@ -478,10 +478,10 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:04.560626+00:00",
-    "imageUrl": "assets/unite-bilgilendirmeleri-gorsel.png",
+    "imageUrl": "assets/5-sinif-islenecek-konular.jpg",
     "updatedAt": "2026-09-30T19:00:07.321+00:00",
     "targetSection": "kitap",
-    "kapakResmi": "assets/unite-bilgilendirmeleri-gorsel.png",
+    "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
     "isCloud": true
   },
   {
@@ -493,10 +493,10 @@
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
     "fileName": "İlk ders notu",
-    "fileUrl": "assets/ilk-ders-notu.png",
-    "imageUrl": "assets/ilk-ders-notu.png",
-    "kapakResmi": "assets/ilk-ders-notu.png",
-    "format": "Web Bağlantısı",
+    "fileUrl": "assets/ilk-ders-notu.jpg",
+    "imageUrl": "assets/ilk-ders-notu.jpg",
+    "kapakResmi": "assets/ilk-ders-notu.jpg",
+    "format": "GÖRSEL",
     "hasBlob": true,
     "tags": [
       "fenbilimleri",
@@ -621,6 +621,32 @@
     "isCloud": true
   },
   {
+    "id": "mat-6-islenecek-konular",
+    "grade": "6",
+    "category": "ders-notu",
+    "targetSection": "kitap",
+    "title": "6.Sınıf İşlenecek Konular",
+    "unit": "Ders Kitabı & Ünite PDF'leri",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "6.Sınıf İşlenecek Konular.jpg",
+    "fileUrl": "assets/6-sinif-islenecek-konular.jpg",
+    "imageUrl": "assets/6-sinif-islenecek-konular.jpg",
+    "kapakResmi": "assets/6-sinif-islenecek-konular.jpg",
+    "format": "GÖRSEL",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T18:59:10.000+00:00",
+    "updatedAt": "2026-09-30T19:00:08.500+00:00",
+    "isCloud": true
+  },
+  {
     "id": "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
     "grade": "6",
     "category": "ders-notu",
@@ -629,9 +655,9 @@
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
     "fileName": "İlk ders notu",
-    "fileUrl": "assets/ilk-ders-notu.png",
-    "imageUrl": "assets/ilk-ders-notu.png",
-    "format": "Web Bağlantısı",
+    "fileUrl": "assets/ilk-ders-notu.jpg",
+    "imageUrl": "assets/ilk-ders-notu.jpg",
+    "format": "GÖRSEL",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -643,7 +669,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-30T18:59:21.296828+00:00",
     "updatedAt": "2026-09-30T19:00:08.562+00:00",
-    "kapakResmi": "assets/ilk-ders-notu.png",
+    "kapakResmi": "assets/ilk-ders-notu.jpg",
     "isCloud": true
   },
   {
