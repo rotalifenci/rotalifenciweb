@@ -962,7 +962,7 @@ window.updateSmartboardSyncBadge = updateSmartboardSyncBadge;
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
-const ROTALI_DATA_SCHEMA_VERSION = 20261017_01;
+const ROTALI_DATA_SCHEMA_VERSION = 20261018_01;
 
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;
@@ -999,9 +999,26 @@ function sanitizeMaterialItem(raw) {
     return item;
 }
 
-// 🚫 SABİT (HARDCODED) VARSAYILAN MATERYALLER TAMAMEN KALDIRILDI!
-// Tüm materyaller yalnızca merkezi sunucu (data/materials.json & /api/sync) ve Yönetim Panelinden yönetilir.
-const DEFAULT_CUSTOM_MATERIALS = [];
+// 🎮 YERLEŞİK VE MERKEZİ MATERYAL SEED TANIMLAMALARI
+const DEFAULT_CUSTOM_MATERIALS = [
+    {
+        id: "mat-5-1-oyun-ayin-evreleri-3d",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        targetSection: "1",
+        title: "5. Sınıf Ay'ın Evreleri 3D Etkileşimli Uzay Simülatörü",
+        unit: "1. Ünite: Güneş, Dünya ve Ay",
+        desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfedin. Ay'ı yörüngesinde parmağınızla sürükleyin, Dünya'dan görünen 8 evreyi canlı teleskopla izleyin.",
+        fileName: "ayin-evreleri-3d.html",
+        fileUrl: "oyunlar/ayin-evreleri-3d.html",
+        imageUrl: "assets/ayin-evreleri-3d-kapak.svg",
+        kapakResmi: "assets/ayin-evreleri-3d-kapak.svg",
+        format: "3D SİMÜLATÖR",
+        hasBlob: false,
+        tags: ["güneş", "dünya", "ay", "evreler", "3d uzay", "simülatör", "5. sınıf"],
+        downloadCount: "🌟 1. Ünite Başyapıtı"
+    }
+];
 
 function saveCustomMaterialsSafe(list) {
     if (!Array.isArray(list)) return;
@@ -1601,6 +1618,11 @@ function resolveMaterialCover(item) {
     if (rawFile && rawFile !== "#" && rawFile !== "null" && !rawFile.includes("cdn.eba.gov.tr") &&
         (rawFile.startsWith("data:image") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp"))) {
         return rawFile;
+    }
+
+    // 2.5. Ay'ın Evreleri 3D Simülatörü Özel Kapağı
+    if (title.includes("ay'ın evreleri") || title.includes("ayin evreleri") || title.includes("ay evreleri") || (item.id && (item.id.includes("ayin-evreleri") || item.id === "oyun-5-gunes"))) {
+        return "assets/ayin-evreleri-3d-kapak.svg";
     }
 
     // 3. Laboratuvar / Güvenlik Sembolleri / Kurallar
@@ -4740,8 +4762,52 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     };
     const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
 
-    // Müfredat Yerleşik Eğitsel Oyun Haritası (Sabit/Hardcoded varsayılan oyunlar kaldırıldı; yalnızca merkezi veritabanındaki oyunlar listelenir)
-    const builtinUnitGamesMap = { "5": {}, "6": {}, "7": {}, "8": {} };
+    // Müfredat Yerleşik Eğitsel Oyun Haritası
+    const builtinUnitGamesMap = {
+        "5": {
+            "1": [
+                {
+                    id: "oyun-5-gunes",
+                    title: "5. Sınıf Ay'ın Evreleri 3D Etkileşimli Uzay Simülatörü",
+                    icon: "fa-solid fa-moon",
+                    desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfedin. Ay'ı yörüngesinde parmağınızla sürükleyin, Dünya'dan görünen 8 evreyi canlı teleskopla izleyin.",
+                    type: "3D Planetaryum Simülatörü",
+                    format: "3D SİMÜLATÖR",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/ayin-evreleri-3d.html",
+                    kapakResmi: "assets/ayin-evreleri-3d-kapak.svg"
+                }
+            ]
+        },
+        "6": {
+            "1": [
+                {
+                    id: "oyun-uzay-ekspresi",
+                    title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi",
+                    icon: "fa-solid fa-train-subway",
+                    desc: "3D sonsuz uzay treninde gezegenleri keşfet, meteorlardan kaç, bilgi kapılarından doğru geç!",
+                    type: "3D Tren Oyunu",
+                    format: "3D OYUN",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/uzay-ekspresi.html",
+                    kapakResmi: "assets/rotali-uzay-ekspresi.jpg"
+                },
+                {
+                    id: "oyun-gezegen-kosusu",
+                    title: "Gezegen Koşusu: Antgravity Galaksisi",
+                    icon: "fa-solid fa-rocket",
+                    desc: "3D Sonsuz Uzay Koşusu & Astronomi Bilgi Kapıları.",
+                    type: "3D Koşu Oyunu",
+                    format: "3D OYUN",
+                    badge: "Popüler Oyun",
+                    fileUrl: "oyunlar/gezegen-kosusu.html",
+                    kapakResmi: "assets/logo.jpg"
+                }
+            ]
+        },
+        "7": {},
+        "8": {}
+    };
 
     // 7 Bölümün Yapılandırma Bilgileri
     const sectionConfigs = {
@@ -4884,6 +4950,104 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             </div>
 
             <!-- Özel materyaller doğrudan kendi ünite akordeonlarına yerleştirildi -->
+
+            ${(normSubTab === "egitsel-oyunlar" && gNum === "5") ? `
+            <!-- 🌟 5. SINIF ÖNE ÇIKAN BAŞYAPIT SİMÜLASYONU (AY'IN EVRELERİ) -->
+            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/60 border-2 border-cyan-400/90 rounded-3xl p-6 sm:p-8 lg:p-10 mb-6 shadow-2xl overflow-hidden text-white group hover:border-cyan-300 transition-all">
+                <!-- Arka Plan Dekoratif Parıltılar -->
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+                    <!-- Sol: Simülasyon Logosu & Başlık Bilgisi -->
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="relative shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-600 shadow-[0_0_35px_rgba(6,182,212,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
+                                <div class="w-full h-full rounded-[22px] bg-slate-950 flex flex-col items-center justify-center text-cyan-300">
+                                    <i class="fa-solid fa-moon text-4xl mb-1"></i>
+                                    <span class="text-[9px] font-black tracking-widest uppercase text-cyan-400">3D UZAY</span>
+                                </div>
+                            </div>
+                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-cyan-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
+                                🌕 3D MODEL
+                            </span>
+                        </div>
+
+                        <div class="max-w-xl">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full bg-cyan-400/20 border border-cyan-300/40 text-cyan-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT SİMÜLASYONU
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                    ✓ Fotogerçekçi Planetaryum & Akıllı Tahta Uyumlu
+                                </span>
+                            </div>
+                            <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-400 mb-2">
+                                Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
+                                Güneş, Dünya ve Ay'ın hareketlerini NASA kalitesinde fotogerçekçi 3D uzay ortamında keşfet! Ay'ı yörüngesinde parmağınla sürükle, Dünya'dan görünen 8 evreyi canlı teleskopla izle, 10 soruluk interaktif yarışma ve yörünge görevleriyle öğrenmeni pekiştir!
+                            </p>
+                            <!-- Özellik Rozetleri -->
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🌒 8 Ana & Ara Evre
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔄 Canlı Yörünge Sürükleme
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔭 Dünya'dan Canlı Teleskop
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔊 Türkçe Sesli Rehber
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🎯 10 Soruluk Quiz
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Hızlı Başlatma Butonları -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(6,182,212,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-cyan-300">
+                            <i class="fa-solid fa-play text-base"></i> SİMÜLATÖRÜ AÇ (TAM EKRAN)
+                        </button>
+                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        </a>
+                    </div>
+                </div>
+            </div>
+            ` : (normSubTab === "egitsel-oyunlar" && gNum === "6") ? `
+            <!-- 🌟 6. SINIF ÖNE ÇIKAN BAŞYAPIT OYUNU (UZAY EKSPRESİ) -->
+            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-2 border-amber-400/90 rounded-3xl p-6 sm:p-8 lg:p-10 mb-6 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center shrink-0 overflow-hidden">
+                            <img src="assets/rotali-uzay-ekspresi.jpg" alt="Rotalı Fenci - Uzay Ekspresi" class="w-full h-full object-cover rounded-[22px]" onerror="this.src='rotali-fenci-logo.png'">
+                        </div>
+                        <div class="max-w-xl">
+                            <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase inline-block mb-2">
+                                <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT OYUNU
+                            </span>
+                            <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-orange-400 mb-2">
+                                Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3">
+                                3D uzay treninde gezegenleri keşfet, meteorlardan kaç, Maarif Modeli bilgi kapılarından geç!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi')" class="px-8 py-3.5 bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider shadow-lg transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-play"></i> OYUNU AÇ (TAM EKRAN)
+                        </button>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
 
             <!-- 2. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye + LABORATUVAR) -->
             <div class="space-y-4">
