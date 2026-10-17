@@ -53,10 +53,49 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #f1f5f9;
             color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Desktop & Smartboard Layout */
+        @media (min-width: 1024px) {
+            body {
+                overflow: hidden;
+                height: 100vh;
+            }
+        }
+        /* Mobile & Tablet Responsive Flow */
+        @media (max-width: 1023px) {
+            body {
+                overflow-x: hidden;
+                overflow-y: auto;
+                min-height: 100vh;
+                min-height: 100dvh;
+                padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+            }
+        }
+        /* Mobile Landscape Optimization */
+        @media (max-height: 520px) and (orientation: landscape) {
+            body {
+                overflow-y: auto;
+            }
+            .mobile-landscape-row {
+                flex-direction: row !important;
+            }
+            .mobile-landscape-canvas {
+                height: 75vh !important;
+                min-height: 240px !important;
+                flex: 1 1 60% !important;
+            }
+            .mobile-landscape-side {
+                flex: 1 1 40% !important;
+            }
+        }
+        /* Touch gestures & Prevent Pull-to-refresh on 3D canvas */
+        #main-webgl-canvas {
+            touch-action: none;
+            -webkit-touch-callout: none;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
@@ -69,6 +108,13 @@
         ::-webkit-scrollbar-thumb {
             background: rgba(15, 23, 42, 0.2);
             border-radius: 9999px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         /* Smooth Range Slider */
         input[type="range"] {
@@ -108,13 +154,13 @@
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-slate-100 p-1 sm:p-1.5">
+<body class="w-full flex flex-col justify-between bg-slate-100 p-1 sm:p-1.5 min-h-screen lg:h-screen lg:overflow-hidden">
 
     <!-- 🌟 ÜST BÖLÜM: ULTRA KOMPAKT SLİM BAŞLIK, 6 MODÜL SEKMESİ & KONTROL BUTONLARI -->
-    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[42px]">
+    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[46px] overflow-x-auto no-scrollbar">
         
         <!-- Sol: Başlık & Sınıf Rozeti -->
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 shrink-0">
             <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-tr from-amber-500 via-orange-500 to-red-600 text-white flex items-center justify-center text-xs sm:text-sm shadow-xs shrink-0">
                 <i class="fa-solid fa-sun text-yellow-200 animate-spin" style="animation-duration: 25s;"></i>
             </div>
@@ -122,42 +168,48 @@
                 <h1 class="text-xs sm:text-sm font-black text-slate-900 tracking-tight whitespace-nowrap">
                     GÜNEŞ'İ KEŞFEDİYORUM
                 </h1>
-                <span class="px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-[9px] font-extrabold uppercase whitespace-nowrap">
+                <span class="px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-[9px] font-extrabold uppercase whitespace-nowrap hidden xs:inline">
                     5. Sınıf Fen
                 </span>
             </div>
         </div>
 
-        <!-- Orta: 6 Ana Modül Sekmeleri (Hızlı Geçiş Butonları) -->
-        <nav class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/90 text-xs font-bold overflow-x-auto no-scrollbar max-w-[55vw] lg:max-w-none">
-            <button id="tab-btn-intro" onclick="switchModule('intro')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 bg-white text-amber-600 shadow-xs text-[11px] font-extrabold whitespace-nowrap">
+        <!-- Orta: 6 Ana Modül Sekmeleri (Hızlı Geçiş Butonları - Mobilde Yatay Kaydırılabilir) -->
+        <nav id="module-tabs-nav" class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/90 text-xs font-bold overflow-x-auto no-scrollbar gap-1 snap-x max-w-[55vw] sm:max-w-[70vw] lg:max-w-none">
+            <button id="tab-btn-intro" onclick="switchModule('intro')" class="mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 bg-white text-amber-600 shadow-xs text-[11px] font-extrabold whitespace-nowrap min-h-[32px]">
                 <i class="fa-solid fa-sun text-amber-500 text-[10px]"></i>
                 <span>Güneş'i Tanıyalım</span>
             </button>
-            <button id="tab-btn-layers" onclick="switchModule('layers')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+            <button id="tab-btn-layers" onclick="switchModule('layers')" class="mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap min-h-[32px]">
                 <i class="fa-solid fa-layer-group text-orange-500 text-[10px]"></i>
                 <span>Katmanları</span>
             </button>
-            <button id="tab-btn-rotation" onclick="switchModule('rotation')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+            <button id="tab-btn-rotation" onclick="switchModule('rotation')" class="mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap min-h-[32px]">
                 <i class="fa-solid fa-arrows-rotate text-blue-500 text-[10px]"></i>
                 <span>Dönme Hareketi</span>
             </button>
-            <button id="tab-btn-light" onclick="switchModule('light')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+            <button id="tab-btn-light" onclick="switchModule('light')" class="mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap min-h-[32px]">
                 <i class="fa-solid fa-bolt-lightning text-yellow-500 text-[10px]"></i>
                 <span>Işık Yolculuğu</span>
             </button>
-            <button id="tab-btn-scale" onclick="switchModule('scale')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+            <button id="tab-btn-scale" onclick="switchModule('scale')" class="mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap min-h-[32px]">
                 <i class="fa-solid fa-scale-balanced text-emerald-500 text-[10px]"></i>
                 <span>Büyüklükler</span>
             </button>
-            <button id="tab-btn-quiz" onclick="switchModule('quiz')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+            <button id="tab-btn-quiz" onclick="switchModule('quiz')" class="mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap min-h-[32px]">
                 <i class="fa-solid fa-gamepad text-purple-500 text-[10px]"></i>
                 <span>Oyunlar & Quiz</span>
             </button>
         </nav>
 
-        <!-- Sağ: Araçlar (Öğretmen Modu, Güvenlik, Ses, Tam Ekran & Logo) -->
+        <!-- Sağ: Grafik Kalitesi, Öğretmen Modu, Güvenlik, Ses, Tam Ekran & Logo -->
         <div class="flex items-center gap-1 shrink-0">
+            <!-- Grafik Kalitesi Seçici (Otomatik, Performans, Yüksek) -->
+            <button id="btn-quality" onclick="toggleQualityMode()" class="px-1.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-extrabold transition-all flex items-center gap-1 shadow-2xs" title="Grafik Kalitesi: Pil Tasarrufu / Performans / Yüksek">
+                <i class="fa-solid fa-sliders text-amber-600 text-[10px]"></i>
+                <span id="quality-mode-text" class="hidden md:inline">Oto Kalite</span>
+            </button>
+
             <!-- Öğretmen Modu Butonu -->
             <button id="btn-teacher-mode" onclick="toggleTeacherMode()" class="px-2 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold transition-all flex items-center gap-1 shadow-2xs" title="Öğretmen Modu: Yanıtları/Etiketleri Gizle & Sunum Modu">
                 <i class="fa-solid fa-chalkboard-user text-indigo-600 text-xs"></i>
@@ -188,10 +240,10 @@
     </header>
 
     <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON UZAY SAHNESİ & DİNAMİK BİLGİ PANELİ -->
-    <main class="flex-1 my-1 grid grid-cols-1 lg:grid-cols-12 gap-1.5 min-h-0 relative overflow-hidden">
+    <main class="flex-1 my-1 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 min-h-0 relative mobile-landscape-row">
 
         <!-- 🚀 SOL/ORTA PANEL (%75): GENİŞLETİLMİŞ DEV 3D UZAY LABORATUVARI -->
-        <div id="sim-viewport-panel" class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-full min-h-0 sun-canvas-container">
+        <div id="sim-viewport-panel" class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-[50vh] min-h-[300px] max-h-[560px] lg:h-full lg:max-h-none min-h-0 sun-canvas-container shrink-0 mobile-landscape-canvas">
             
             <!-- Üst Rozetler & Modül Bilgilendirmesi -->
             <div class="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 flex flex-wrap items-center gap-1.5 pointer-events-none">
@@ -258,7 +310,7 @@
         </div>
 
         <!-- 🌕 SAĞ PANEL (%25): DİNAMİK BİLİMSEL AÇIKLAMALAR & EĞİTSEL KARTLAR -->
-        <div id="side-info-panel" class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden h-full min-h-0">
+        <div id="side-info-panel" class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden h-auto lg:h-full min-h-0 mobile-landscape-side">
             
             <!-- Panel Üst Bar: Modül Başlığı & Bilimsel Rozet -->
             <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 shrink-0">
@@ -299,37 +351,37 @@
     <footer class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 p-1.5 shrink-0 z-20 space-y-1">
         
         <!-- Üst Satır: Oynatma, Zaman İlerlemesi, Mesafe & Hız Seçimi -->
-        <div class="flex items-center justify-between gap-2 flex-nowrap">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 flex-nowrap">
             
             <!-- Sol: Oynat / Durdur / Sıfırla / Adım -->
             <div class="flex items-center gap-1 shrink-0">
-                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-2.5 sm:px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95 touch-manipulation">
                     <i id="play-pause-icon" class="fa-solid fa-play text-xs"></i>
                     <span id="play-pause-text">Döndür</span>
                 </button>
-                <button onclick="resetSimulationScene()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-2xs" title="Sahneyi ve Kamerayı Sıfırla">
+                <button onclick="resetSimulationScene()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-2xs touch-manipulation active:scale-95" title="Sahneyi ve Kamerayı Sıfırla">
                     <i class="fa-solid fa-rotate-left text-xs"></i>
                 </button>
             </div>
 
             <!-- Orta: Modüle Özel Canlı Sayaç & Gösterge (Dönüş Günü veya Işık Mesafesi) -->
-            <div id="footer-center-metric" class="flex-1 flex items-center justify-center gap-2 min-w-0">
+            <div id="footer-center-metric" class="flex-1 flex items-center justify-center gap-1.5 sm:gap-2 min-w-0">
                 <!-- Dönme Modülü: 25 Günlük Sayaç -->
-                <div id="rotation-metric-bar" class="flex items-center gap-2 w-full max-w-md">
-                    <span class="text-[10px] font-black text-slate-400 font-mono shrink-0">0G</span>
+                <div id="rotation-metric-bar" class="flex items-center gap-1.5 sm:gap-2 w-full max-w-md">
+                    <span class="text-[10px] font-black text-slate-400 font-mono shrink-0 hidden sm:inline">0G</span>
                     <input type="range" id="rotation-slider" min="0" max="25" step="0.1" value="0" class="w-full cursor-pointer h-1.5" oninput="onRotationSliderInput(this.value)">
-                    <div class="px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-mono font-black text-[11px] shrink-0 whitespace-nowrap">
-                        <span id="rotation-day-label">0.0</span> / 25.0 Gün (Ekvator Dönüşü)
+                    <div class="px-1.5 sm:px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-mono font-black text-[10px] sm:text-[11px] shrink-0 whitespace-nowrap">
+                        <span id="rotation-day-label">0.0</span> / 25.0G
                     </div>
                 </div>
 
                 <!-- Işık Modülü: Canlı Mesafe & Kronometre -->
-                <div id="light-metric-bar" class="hidden flex items-center gap-3 w-full max-w-lg">
-                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 font-mono font-black text-xs">
+                <div id="light-metric-bar" class="hidden flex flex-wrap sm:flex-nowrap items-center justify-center gap-1 sm:gap-3 w-full max-w-lg">
+                    <div class="flex items-center gap-1 px-2 py-0.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 font-mono font-black text-[10px] sm:text-xs">
                         <i class="fa-solid fa-route text-blue-600"></i>
-                        <span id="light-odometer">0</span> / 149.600.000 KM
+                        <span id="light-odometer">0</span> / 149.6M KM
                     </div>
-                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 font-mono font-black text-xs">
+                    <div class="flex items-center gap-1 px-2 py-0.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 font-mono font-black text-[10px] sm:text-xs">
                         <i class="fa-regular fa-clock text-amber-600"></i>
                         <span id="light-stopwatch">00:00</span> / 08:20
                     </div>
@@ -345,7 +397,7 @@
                 </div>
                 <button onclick="openEnergyFusionModal()" class="px-2 py-1 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-900 font-black text-[11px] transition-all flex items-center gap-1 shadow-2xs" title="Nükleer Füzyon Enerjisi">
                     <i class="fa-solid fa-atom text-orange-600"></i>
-                    <span class="hidden sm:inline">Enerji Kaynağı</span>
+                    <span class="hidden sm:inline">Enerji</span>
                 </button>
             </div>
         </div>
@@ -592,7 +644,9 @@
             lightDurationSeconds: 15, // Hızlandırılmış varsayılan mod
             teacherMode: false,
             voiceEnabled: true,
-            selectedLayerId: null
+            selectedLayerId: null,
+            qualityMode: 'auto',       // 'auto' | 'performance' | 'high'
+            isPageVisible: true
         };
 
         // -----------------------------------------------------------------
@@ -822,6 +876,7 @@
             controls.dampingFactor = 0.05;
             controls.minDistance = 7;
             controls.maxDistance = 120;
+            controls.enablePan = false; // Mobilde sahnenin yanlışlıkla ekran dışına kaymasını engelle
 
             // Ortam ve Yönsel Işıklandırma
             const ambient = new THREE.AmbientLight(0xffffff, 0.45);
@@ -969,9 +1024,20 @@
             if (!container || !renderer || !camera) return;
             const w = container.clientWidth;
             const h = container.clientHeight;
-            camera.aspect = w / h;
+            const aspect = w / h;
+            camera.aspect = aspect;
             camera.updateProjectionMatrix();
             renderer.setSize(w, h);
+
+            // Mobil dikey ekranda (aspect < 1.0) Güneş ve Dünya'nın tam kadrajda kalması için
+            if (appState.currentModule === "light") {
+                const targetZ = aspect < 1.0 ? Math.max(36, 36 / Math.max(aspect * 0.85, 0.55)) : 36;
+                camera.position.set(0, 0, targetZ);
+            } else if (appState.currentModule === "scale") {
+                const targetZ = aspect < 1.0 ? Math.max(26, 26 / Math.max(aspect * 0.9, 0.6)) : 26;
+                camera.position.set(0, 0, targetZ);
+            }
+            if (controls) controls.update();
         }
 
         // 3D Katman Tıklama & Raycasting Etkileşimi
@@ -979,11 +1045,11 @@
             const raycaster = new THREE.Raycaster();
             const mouse = new THREE.Vector2();
 
-            canvas.addEventListener('click', (e) => {
+            function handleInteraction(clientX, clientY) {
                 if (appState.currentModule !== "layers" || !appState.isCutawayOpen) return;
                 const rect = canvas.getBoundingClientRect();
-                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
                 raycaster.setFromCamera(mouse, camera);
                 const intersects = raycaster.intersectObjects(layerMeshes);
@@ -994,6 +1060,15 @@
                         selectLayer(hit.userData.layerId);
                         playTone(600, 'triangle', 0.1);
                     }
+                }
+            }
+
+            canvas.addEventListener('click', (e) => {
+                handleInteraction(e.clientX, e.clientY);
+            });
+            canvas.addEventListener('touchend', (e) => {
+                if (e.changedTouches && e.changedTouches.length > 0) {
+                    handleInteraction(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
                 }
             });
         }
@@ -1007,11 +1082,16 @@
 
             // Tab Butonlarını Güncelle
             document.querySelectorAll('.mod-tab-btn').forEach(btn => {
-                btn.className = 'mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap';
+                btn.className = 'mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap min-h-[32px]';
             });
             const activeTab = document.getElementById(`tab-btn-${modId}`);
             if (activeTab) {
-                activeTab.className = 'mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 bg-white text-amber-600 shadow-xs text-[11px] font-extrabold whitespace-nowrap';
+                activeTab.className = 'mod-tab-btn snap-start shrink-0 px-2.5 py-1 rounded-md transition-all flex items-center gap-1 bg-white text-amber-600 shadow-xs text-[11px] font-extrabold whitespace-nowrap min-h-[32px]';
+                // Mobilde sekmeyi görünür alana ortala
+                const nav = document.getElementById('module-tabs-nav');
+                if (nav && window.innerWidth < 1024) {
+                    activeTab.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                }
             }
 
             // Arayüz Rozetlerini Güncelle
@@ -1053,6 +1133,9 @@
             layerMeshes.forEach(m => m.visible = false);
             appState.isCutawayOpen = false;
 
+            const container = document.getElementById('canvas-container');
+            const aspect = container ? (container.clientWidth / container.clientHeight) : 1.0;
+
             if (modId === "intro") {
                 camera.position.set(0, 0, 22);
                 controls.target.set(0, 0, 0);
@@ -1073,7 +1156,8 @@
                 earthGroup.scale.set(1, 1, 1);
                 earthGroup.visible = true;
                 lightLineMesh.visible = true;
-                camera.position.set(0, 0, 36);
+                const targetZ = aspect < 1.0 ? Math.max(36, 36 / Math.max(aspect * 0.85, 0.55)) : 36;
+                camera.position.set(0, 0, targetZ);
                 controls.target.set(0, 0, 0);
                 speakTurkish("Güneş ışığı yaklaşık 150 milyon kilometrelik mesafeyi 8 dakika 20 saniyede kat ederek Dünya'mıza ulaşır.");
             } else if (modId === "scale") {
@@ -1082,7 +1166,8 @@
                 earthGroup.position.set(6, 0, 0);
                 earthGroup.scale.set(0.18, 0.18, 0.18); // Başlangıçta görünür kıl, butonla tam 109 kat küçült
                 earthGroup.visible = true;
-                camera.position.set(0, 0, 26);
+                const targetZ = aspect < 1.0 ? Math.max(26, 26 / Math.max(aspect * 0.9, 0.6)) : 26;
+                camera.position.set(0, 0, targetZ);
                 controls.target.set(0, 0, 0);
                 speakTurkish("Güneş ile Dünya'nın büyüklükleri. Güneş'in çapı Dünya'nın yaklaşık 109 katıdır.");
             } else if (modId === "quiz") {
@@ -1726,15 +1811,52 @@
             }
         }
 
+        // Grafik Kalitesi Modları (Otomatik, Performans, Yüksek Kalite)
+        function toggleQualityMode() {
+            const modes = ['auto', 'performance', 'high'];
+            const curIdx = modes.indexOf(appState.qualityMode || 'auto');
+            const nextMode = modes[(curIdx + 1) % modes.length];
+            setQualityMode(nextMode);
+        }
+
+        function setQualityMode(mode) {
+            appState.qualityMode = mode;
+            const btnText = document.getElementById('quality-mode-text');
+            let ratio = 1.0;
+            if (mode === 'performance') {
+                ratio = 1.0;
+                if (btnText) btnText.innerText = 'Performans';
+            } else if (mode === 'high') {
+                ratio = Math.min(window.devicePixelRatio || 1, 2.0);
+                if (btnText) btnText.innerText = 'Yüksek';
+            } else { // auto
+                ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+                if (btnText) btnText.innerText = 'Oto Kalite';
+            }
+            if (renderer) renderer.setPixelRatio(ratio);
+            playTone(520, 'sine', 0.08);
+        }
+
         // -----------------------------------------------------------------
-        // 9. ANA ANİMASYON DÖNGÜSÜ (RENDER LOOP - 60 FPS)
+        // 9. ANA ANİMASYON DÖNGÜSÜ (RENDER LOOP - 60 FPS & PİL TASARRUFU)
         // -----------------------------------------------------------------
         let lastTimestamp = performance.now();
+
+        // Sekme arka plana geçtiğinde render'ı durdur (pil & aşırı ısınmayı önleme)
+        document.addEventListener('visibilitychange', () => {
+            appState.isPageVisible = !document.hidden;
+            if (appState.isPageVisible) {
+                lastTimestamp = performance.now();
+            }
+        });
 
         function animate(now) {
             requestAnimationFrame(animate);
 
-            const dt = (now - lastTimestamp) / 1000;
+            // Sekme arka plandaysa hesaplama ve render'ı atla
+            if (!appState.isPageVisible) return;
+
+            const dt = Math.min((now - lastTimestamp) / 1000, 0.1);
             lastTimestamp = now;
 
             // Güneş'in Kendi Ekseni Dönüşü
@@ -1802,7 +1924,9 @@
         // Başlatma
         window.addEventListener('DOMContentLoaded', () => {
             initThreeScene();
+            setQualityMode('auto');
             switchModule('intro');
+            onWindowResize();
             requestAnimationFrame(animate);
         });
     </script>

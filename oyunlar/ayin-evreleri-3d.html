@@ -51,15 +51,54 @@
         body {
             margin: 0;
             padding: 0;
-            overflow: hidden;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #f1f5f9;
             color: #0f172a;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Desktop & Smartboard Layout */
+        @media (min-width: 1024px) {
+            body {
+                overflow: hidden;
+                height: 100vh;
+            }
+        }
+        /* Mobile & Tablet Responsive Flow */
+        @media (max-width: 1023px) {
+            body {
+                overflow-x: hidden;
+                overflow-y: auto;
+                min-height: 100vh;
+                min-height: 100dvh;
+                padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+            }
+        }
+        /* Mobile Landscape Optimization */
+        @media (max-height: 520px) and (orientation: landscape) {
+            body {
+                overflow-y: auto;
+            }
+            .mobile-landscape-row {
+                flex-direction: row !important;
+            }
+            .mobile-landscape-canvas {
+                height: 75vh !important;
+                min-height: 240px !important;
+                flex: 1 1 60% !important;
+            }
+            .mobile-landscape-side {
+                flex: 1 1 40% !important;
+            }
+        }
+        /* Touch gestures & Prevent Pull-to-refresh on 3D canvas */
+        #orbit-canvas, #telescope-canvas {
+            touch-action: none;
+            -webkit-touch-callout: none;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
             background: rgba(15, 23, 42, 0.05);
@@ -67,6 +106,13 @@
         ::-webkit-scrollbar-thumb {
             background: rgba(15, 23, 42, 0.2);
             border-radius: 9999px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         /* Smooth Range Slider */
         input[type="range"] {
@@ -106,12 +152,12 @@
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-slate-100 p-1 sm:p-1.5">
+<body class="w-full flex flex-col justify-between bg-slate-100 p-1 sm:p-1.5 min-h-screen lg:h-screen lg:overflow-hidden">
 
     <!-- 🌟 ÜST BÖLÜM: ULTRA KOMPAKT SLİM BAŞLIK, MOD SEÇİMİ & KONTROL BUTONLARI -->
-    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[42px]">
+    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[46px] overflow-x-auto no-scrollbar">
         <!-- Sol: Başlık -->
-        <div class="flex items-center gap-1.5">
+        <div class="flex items-center gap-1.5 shrink-0">
             <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center text-xs sm:text-sm shadow-xs shrink-0">
                 <i class="fa-solid fa-moon"></i>
             </div>
@@ -119,14 +165,14 @@
                 <h1 class="text-xs sm:text-sm font-black text-slate-900 tracking-tight whitespace-nowrap">
                     AY'IN EVRELERİ
                 </h1>
-                <span class="px-1.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-[9px] font-extrabold uppercase whitespace-nowrap">
+                <span class="px-1.5 py-0.5 rounded-md bg-blue-50 border border-blue-200 text-blue-700 text-[9px] font-extrabold uppercase whitespace-nowrap hidden xs:inline">
                     5. Sınıf Fen
                 </span>
             </div>
         </div>
 
         <!-- Orta: Mod Seçici (Keşfet, Tahmin Et, Yörüngeye Yerleştir) -->
-        <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/90 text-xs font-bold">
+        <div class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/90 text-xs font-bold shrink-0">
             <button id="btn-mode-explore" onclick="setAppMode('explore')" class="px-2 py-0.5 rounded-md transition-all flex items-center gap-1 bg-white text-blue-700 shadow-xs text-[11px] font-extrabold">
                 <i class="fa-solid fa-compass text-[10px]"></i>
                 <span>Keşfet</span>
@@ -141,8 +187,14 @@
             </button>
         </div>
 
-        <!-- Sağ: Yardım, Ses, Kamera & Tam Ekran & Logo -->
-        <div class="flex items-center gap-1">
+        <!-- Sağ: Grafik Kalitesi, Yardım, Ses, Kamera & Tam Ekran & Logo -->
+        <div class="flex items-center gap-1 shrink-0">
+            <!-- Grafik Kalitesi Seçici (Otomatik, Performans, Yüksek) -->
+            <button id="btn-quality" onclick="toggleQualityMode()" class="px-1.5 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[10px] font-extrabold transition-all flex items-center gap-1 shadow-2xs" title="Grafik Kalitesi: Pil Tasarrufu / Performans / Yüksek">
+                <i class="fa-solid fa-sliders text-emerald-600 text-[10px]"></i>
+                <span id="quality-mode-text" class="hidden md:inline">Oto Kalite</span>
+            </button>
+
             <!-- Sesli Anlatım Butonu -->
             <button id="btn-voice" onclick="toggleVoiceNarration()" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Sesli Anlatımı Aç / Kapat">
                 <i id="voice-icon" class="fa-solid fa-volume-high text-xs text-blue-600"></i>
@@ -172,11 +224,11 @@
         </div>
     </header>
 
-    <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON ALANI (GENİŞLETİLMİŞ BÜYÜK UZAY SAHNESİ) -->
-    <main class="flex-1 my-1 grid grid-cols-1 lg:grid-cols-12 gap-1.5 min-h-0 relative overflow-hidden">
+    <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON ALANI (MOBİLDE DİKEY AKIŞ, MASAÜSTÜNDE 12 SÜTUN GRID) -->
+    <main class="flex-1 my-1 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 min-h-0 relative mobile-landscape-row">
 
         <!-- 🚀 SOL PANEL (%75): YÖRÜNGE GÖRÜNÜMÜ (DEV 3D UZAY SİMÜLASYON SAHNESİ) -->
-        <div class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-full min-h-0 orbit-canvas-container">
+        <div class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-[50vh] min-h-[300px] max-h-[560px] lg:h-full lg:max-h-none min-h-0 orbit-canvas-container shrink-0 mobile-landscape-canvas">
             <!-- Simülasyon Üst Bilgi Rozetleri -->
             <div class="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
                 <span class="px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm">
@@ -242,7 +294,7 @@
         </div>
 
         <!-- 🌕 SAĞ PANEL (%25): DÜNYA'DAN AY NASIL GÖRÜNÜR? (CANLI TELESKOPİK 3D MODELİ & BİLİMSEL BİLGİLER) -->
-        <div class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden h-full min-h-0">
+        <div class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden h-auto lg:h-full min-h-0 mobile-landscape-side">
             
             <!-- Panel Üstü: Başlık & Evre Rozeti -->
             <div class="flex flex-col flex-1 min-h-0 justify-between">
@@ -344,11 +396,11 @@
                 </div>
 
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <button onclick="setAppMode('explore')" class="px-2.5 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold">
-                        <i class="fa-solid fa-arrow-left"></i> Keşfe Dön
+                    <button onclick="setAppMode('explore')" class="px-2.5 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold min-h-[40px] flex items-center">
+                        <i class="fa-solid fa-arrow-left mr-1"></i> Keşfe Dön
                     </button>
-                    <button id="btn-quiz-next" onclick="nextQuizQuestion()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase transition-all shadow-sm hidden">
-                        Sonraki Soru <i class="fa-solid fa-forward"></i>
+                    <button id="btn-quiz-next" onclick="nextQuizQuestion()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase transition-all shadow-sm hidden min-h-[40px] flex items-center">
+                        Sonraki Soru <i class="fa-solid fa-forward ml-1"></i>
                     </button>
                 </div>
             </div>
@@ -367,48 +419,48 @@
     <footer class="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xs border border-slate-200/80 p-2 sm:p-2.5 shrink-0 z-20 space-y-1.5">
         
         <!-- Üst Kontrol Şeridi: Tek Satırda Oynat/Durdur, Slider ve Hız -->
-        <div class="flex items-center justify-between gap-2 sm:gap-3 flex-nowrap">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-3 flex-nowrap">
             
             <!-- Sol: Oynatma ve Adım Butonları -->
             <div class="flex items-center gap-1 shrink-0">
-                <button id="btn-prev-phase" onclick="stepPhase(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Önceki Evre">
+                <button id="btn-prev-phase" onclick="stepPhase(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs touch-manipulation active:scale-95" title="Önceki Evre">
                     <i class="fa-solid fa-backward-step text-xs"></i>
                 </button>
-                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95">
+                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-3 sm:px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95 touch-manipulation">
                     <i id="play-pause-icon" class="fa-solid fa-play text-xs"></i>
                     <span id="play-pause-text">Oynat</span>
                 </button>
-                <button id="btn-next-phase" onclick="stepPhase(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Sonraki Evre">
+                <button id="btn-next-phase" onclick="stepPhase(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs touch-manipulation active:scale-95" title="Sonraki Evre">
                     <i class="fa-solid fa-forward-step text-xs"></i>
                 </button>
-                <button onclick="resetSimulation()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-2xs" title="Sıfırla">
+                <button onclick="resetSimulation()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-2xs touch-manipulation active:scale-95" title="Sıfırla">
                     <i class="fa-solid fa-rotate-left text-xs"></i>
                 </button>
             </div>
 
             <!-- Orta: 29.5 Günlük Süre Kaydırıcısı (Timeline Slider) -->
-            <div class="flex-1 flex items-center gap-2 min-w-0">
+            <div class="flex-1 flex items-center gap-1.5 sm:gap-2 min-w-0">
                 <span class="text-[10px] sm:text-xs font-black text-slate-400 font-mono shrink-0 hidden sm:inline">0G</span>
                 <div class="relative flex-1 flex items-center">
                     <input type="range" id="timeline-slider" min="0" max="29.5" step="0.1" value="0" class="w-full cursor-pointer h-2" oninput="onTimelineSliderInput(this.value)">
                 </div>
-                <div class="px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono font-black text-[11px] shrink-0 whitespace-nowrap">
+                <div class="px-1.5 sm:px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono font-black text-[10px] sm:text-[11px] shrink-0 whitespace-nowrap">
                     <span id="slider-day-label">0.0</span> / 29.5G
                 </div>
             </div>
 
             <!-- Sağ: Simülasyon Hızı Seçimi -->
-            <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-xs font-bold shrink-0">
-                <button onclick="setSpeed(0.5, this)" class="speed-btn px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-xs">0.5x</button>
-                <button onclick="setSpeed(1.0, this)" class="speed-btn px-2 py-1 rounded-md transition-all bg-white text-blue-700 shadow-2xs text-xs">1x</button>
-                <button onclick="setSpeed(2.0, this)" class="speed-btn px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-xs">2x</button>
+            <div class="flex items-center gap-0.5 sm:gap-1 bg-slate-100 p-0.5 rounded-lg text-xs font-bold shrink-0">
+                <button onclick="setSpeed(0.5, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[11px] sm:text-xs">0.5x</button>
+                <button onclick="setSpeed(1.0, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all bg-white text-blue-700 shadow-2xs text-[11px] sm:text-xs">1x</button>
+                <button onclick="setSpeed(2.0, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[11px] sm:text-xs">2x</button>
             </div>
         </div>
 
-        <!-- Alt: 8 Etkileşimli Evre Kartı (Yatay Kompakt Çipler - Tek Tıkla Evreye Git) -->
-        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 sm:gap-1.5 pt-1 border-t border-slate-100 overflow-x-auto">
+        <!-- Alt: 8 Etkileşimli Evre Kartı (Mobilde Yatay Kaydırılabilir Swipeable Çipler, Masaüstünde 8 Kolon Grid) -->
+        <div id="phase-cards-container" class="flex overflow-x-auto no-scrollbar sm:grid sm:grid-cols-8 gap-1.5 pt-1 border-t border-slate-100 snap-x py-0.5">
             <!-- 1. Yeni Ay -->
-            <button onclick="jumpToPhase(0)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="0">
+            <button onclick="jumpToPhase(0)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="0">
                 <span class="text-base shrink-0">🌑</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Yeni Ay</span>
@@ -417,7 +469,7 @@
             </button>
 
             <!-- 2. Hilal (Büyüyen) -->
-            <button onclick="jumpToPhase(1)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="1">
+            <button onclick="jumpToPhase(1)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="1">
                 <span class="text-base shrink-0">🌒</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Hilal (B)</span>
@@ -426,7 +478,7 @@
             </button>
 
             <!-- 3. İlk Dördün -->
-            <button onclick="jumpToPhase(2)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="2">
+            <button onclick="jumpToPhase(2)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="2">
                 <span class="text-base shrink-0">🌓</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">İlk Dördün</span>
@@ -435,7 +487,7 @@
             </button>
 
             <!-- 4. Şişkin Ay (Büyüyen) -->
-            <button onclick="jumpToPhase(3)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="3">
+            <button onclick="jumpToPhase(3)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="3">
                 <span class="text-base shrink-0">🌔</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Şişkin (B)</span>
@@ -444,7 +496,7 @@
             </button>
 
             <!-- 5. Dolunay -->
-            <button onclick="jumpToPhase(4)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="4">
+            <button onclick="jumpToPhase(4)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="4">
                 <span class="text-base shrink-0">🌕</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Dolunay</span>
@@ -453,7 +505,7 @@
             </button>
 
             <!-- 6. Şişkin Ay (Küçülen) -->
-            <button onclick="jumpToPhase(5)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="5">
+            <button onclick="jumpToPhase(5)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="5">
                 <span class="text-base shrink-0">🌖</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Şişkin (K)</span>
@@ -462,7 +514,7 @@
             </button>
 
             <!-- 7. Son Dördün -->
-            <button onclick="jumpToPhase(6)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="6">
+            <button onclick="jumpToPhase(6)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="6">
                 <span class="text-base shrink-0">🌗</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Son Dördün</span>
@@ -471,7 +523,7 @@
             </button>
 
             <!-- 8. Hilal (Küçülen) -->
-            <button onclick="jumpToPhase(7)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="7">
+            <button onclick="jumpToPhase(7)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="7">
                 <span class="text-base shrink-0">🌘</span>
                 <div class="min-w-0 flex-1 leading-tight">
                     <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Hilal (K)</span>
@@ -688,7 +740,9 @@
             cameraPerspective: 'top',  // 'top' | 'perspective'
             showSunRays: true,
             showLabels: true,
-            isDraggingMoon: false
+            isDraggingMoon: false,
+            qualityMode: 'auto',       // 'auto' | 'performance' | 'high'
+            isPageVisible: true
         };
 
         // -----------------------------------------------------------------
@@ -950,6 +1004,7 @@
             orbitControls.dampingFactor = 0.05;
             orbitControls.maxDistance = 65;
             orbitControls.minDistance = 8;
+            orbitControls.enablePan = false; // Mobilde sahnenin yanlışlıkla ekran dışına kaymasını engelle
             orbitControls.maxPolarAngle = Math.PI / 2 + 0.1; // Yerin altına girmesin
 
             // Derin Uzay Yıldız Alanı (Starfield)
@@ -1111,7 +1166,27 @@
             if (orbitContainer && orbitRenderer && orbitCamera) {
                 const w = orbitContainer.clientWidth;
                 const h = orbitContainer.clientHeight;
-                orbitCamera.aspect = w / h;
+                const aspect = w / h;
+                orbitCamera.aspect = aspect;
+
+                // Mobil dikey ekranda (aspect < 1.0) Güneş, Dünya ve Ay'ın yörüngesinin kadrajda tam kalması için:
+                if (appState.cameraPerspective === 'top') {
+                    if (aspect < 1.0) {
+                        // Dikey telefon ekranı: kamera mesafesini orantılı artır
+                        const targetY = Math.max(25, 25 / Math.max(aspect * 0.95, 0.55));
+                        orbitCamera.position.set(0, targetY, 0);
+                    } else {
+                        orbitCamera.position.set(0, 25, 0);
+                    }
+                } else if (appState.cameraPerspective === 'perspective') {
+                    if (aspect < 1.0) {
+                        const factor = 1.0 / Math.max(aspect * 0.95, 0.6);
+                        orbitCamera.position.set(0, 14 * factor, 23 * factor);
+                    } else {
+                        orbitCamera.position.set(0, 14, 23);
+                    }
+                }
+                orbitCamera.lookAt(0, 0, 0);
                 orbitCamera.updateProjectionMatrix();
                 orbitRenderer.setSize(w, h);
             }
@@ -1127,7 +1202,7 @@
         }
 
         // -----------------------------------------------------------------
-        // 5. ETKİLEŞİMLİ AY SÜRÜKLEME (RAYCASTING & DRAG-AND-DROP)
+        // 5. ETKİLEŞİMLİ AY SÜRÜKLEME (RAYCASTING & DOKUNMATİK DRAG-AND-DROP)
         // -----------------------------------------------------------------
         function setupOrbitDragControls(canvas) {
             const raycaster = new THREE.Raycaster();
@@ -1137,8 +1212,8 @@
 
             function getPointerAngle(e) {
                 const rect = canvas.getBoundingClientRect();
-                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+                const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
 
                 mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
                 mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
@@ -1146,8 +1221,6 @@
                 raycaster.setFromCamera(mouse, orbitCamera);
                 if (raycaster.ray.intersectPlane(orbitPlane, planeIntersect)) {
                     // Koordinat: Sun at (-X), Moon starts at (-R, 0, 0) for theta = 0
-                    // x = -R * cos(theta), z = R * sin(theta)
-                    // => cos(theta) = -x / R, sin(theta) = z / R
                     let angle = Math.atan2(planeIntersect.z, -planeIntersect.x);
                     if (angle < 0) angle += Math.PI * 2;
                     return angle;
@@ -1158,20 +1231,24 @@
             function onPointerDown(e) {
                 const angle = getPointerAngle(e);
                 if (angle !== null) {
-                    // Ay'a veya yörüngeye yakın bir yere tıklandıysa sürüklemeyi başlat
                     const clickDist = Math.hypot(planeIntersect.x, planeIntersect.z);
-                    if (Math.abs(clickDist - ORBIT_RADIUS) < 3.8) {
+                    // Dokunmatik ekranda parmak alanı daha geniş olduğu için tolerans artırıldı (5.2 vs 3.8)
+                    const isTouch = ('ontouchstart' in window) || (e.touches && e.touches.length > 0);
+                    const tolerance = isTouch ? 5.2 : 3.8;
+                    if (Math.abs(clickDist - ORBIT_RADIUS) < tolerance) {
                         appState.isDraggingMoon = true;
                         appState.isPlaying = false;
                         updatePlayPauseUI();
-                        orbitControls.enabled = false;
+                        if (orbitControls) orbitControls.enabled = false;
                         setSimulationAngle(angle);
+                        if (e.cancelable) e.preventDefault();
                     }
                 }
             }
 
             function onPointerMove(e) {
                 if (!appState.isDraggingMoon) return;
+                if (e.cancelable) e.preventDefault();
                 const angle = getPointerAngle(e);
                 if (angle !== null) {
                     setSimulationAngle(angle);
@@ -1181,20 +1258,23 @@
             function onPointerUp() {
                 if (appState.isDraggingMoon) {
                     appState.isDraggingMoon = false;
-                    orbitControls.enabled = true;
+                    if (orbitControls) orbitControls.enabled = true;
                     // Eğer ses etkinse evre adını seslendir
                     const currentPhase = getCurrentPhaseInfo(appState.currentAngleRad);
                     speakTurkish(currentPhase.name);
                 }
             }
 
+            // Fare Dinleyicileri
             canvas.addEventListener('mousedown', onPointerDown);
             window.addEventListener('mousemove', onPointerMove);
             window.addEventListener('mouseup', onPointerUp);
 
-            canvas.addEventListener('touchstart', onPointerDown, { passive: true });
-            window.addEventListener('touchmove', onPointerMove, { passive: true });
+            // Dokunmatik Dinleyicileri (non-passive: sayfa kaymasını engellemek için)
+            canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+            window.addEventListener('touchmove', onPointerMove, { passive: false });
             window.addEventListener('touchend', onPointerUp);
+            window.addEventListener('touchcancel', onPointerUp);
         }
 
         // -----------------------------------------------------------------
@@ -1275,11 +1355,19 @@
             document.querySelectorAll('.phase-card').forEach(card => {
                 const pIdx = parseInt(card.getAttribute('data-phase-idx'));
                 if (pIdx === phase.index) {
-                    card.classList.remove('border-slate-200', 'bg-slate-50/50');
-                    card.classList.add('border-blue-600', 'bg-blue-50/80', 'shadow-md', 'scale-105');
+                    card.classList.remove('border-slate-200', 'bg-slate-50/80');
+                    card.classList.add('border-blue-600', 'bg-blue-50', 'ring-2', 'ring-blue-500/40', 'shadow-xs');
+                    // Mobilde yatay listede aktif kartı görünür alana ortala
+                    const container = document.getElementById('phase-cards-container');
+                    if (container && window.innerWidth < 640 && !appState.isDraggingMoon) {
+                        const cardLeft = card.offsetLeft;
+                        const cardWidth = card.offsetWidth;
+                        const containerWidth = container.clientWidth;
+                        container.scrollTo({ left: cardLeft - containerWidth / 2 + cardWidth / 2, behavior: 'smooth' });
+                    }
                 } else {
-                    card.classList.remove('border-blue-600', 'bg-blue-50/80', 'shadow-md', 'scale-105');
-                    card.classList.add('border-slate-200', 'bg-slate-50/50');
+                    card.classList.remove('border-blue-600', 'bg-blue-50', 'ring-2', 'ring-blue-500/40', 'shadow-xs');
+                    card.classList.add('border-slate-200', 'bg-slate-50/80');
                 }
             });
         }
@@ -1434,6 +1522,33 @@
 
         function closeInfoModal() {
             document.getElementById('info-modal').classList.add('hidden');
+        }
+
+        // Grafik Kalitesi Modları (Otomatik, Performans, Yüksek Kalite)
+        function toggleQualityMode() {
+            const modes = ['auto', 'performance', 'high'];
+            const curIdx = modes.indexOf(appState.qualityMode || 'auto');
+            const nextMode = modes[(curIdx + 1) % modes.length];
+            setQualityMode(nextMode);
+        }
+
+        function setQualityMode(mode) {
+            appState.qualityMode = mode;
+            const btnText = document.getElementById('quality-mode-text');
+            let ratio = 1.0;
+            if (mode === 'performance') {
+                ratio = 1.0;
+                if (btnText) btnText.innerText = 'Performans';
+            } else if (mode === 'high') {
+                ratio = Math.min(window.devicePixelRatio || 1, 2.0);
+                if (btnText) btnText.innerText = 'Yüksek';
+            } else { // auto
+                ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+                if (btnText) btnText.innerText = 'Oto Kalite';
+            }
+            if (orbitRenderer) orbitRenderer.setPixelRatio(ratio);
+            if (telescopeRenderer) telescopeRenderer.setPixelRatio(ratio);
+            playTone(520, 'sine', 0.08);
         }
 
         // -----------------------------------------------------------------
@@ -1652,14 +1767,25 @@
         }
 
         // -----------------------------------------------------------------
-        // 10. ANA ANİMASYON DÖNGÜSÜ (RENDER LOOP - 60 FPS)
+        // 10. ANA ANİMASYON DÖNGÜSÜ (RENDER LOOP - 60 FPS & PİL TASARRUFU)
         // -----------------------------------------------------------------
         let lastTime = performance.now();
+
+        // Sekme arka plana geçtiğinde pil tasarrufu için render'ı durdur
+        document.addEventListener('visibilitychange', () => {
+            appState.isPageVisible = !document.hidden;
+            if (appState.isPageVisible) {
+                lastTime = performance.now();
+            }
+        });
 
         function animate(now) {
             requestAnimationFrame(animate);
 
-            const deltaSeconds = (now - lastTime) / 1000;
+            // Sekme arka plandaysa CPU/GPU tüketimini durdur
+            if (!appState.isPageVisible) return;
+
+            const deltaSeconds = Math.min((now - lastTime) / 1000, 0.1);
             lastTime = now;
 
             // Otomatik Yörünge Hareketi (Play durumunda)
@@ -1694,7 +1820,9 @@
         // -----------------------------------------------------------------
         window.addEventListener('DOMContentLoaded', () => {
             initThreeEngines();
+            setQualityMode('auto');
             setSimulationAngle(0);
+            onWindowResize();
             requestAnimationFrame(animate);
         });
     </script>
