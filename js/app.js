@@ -145,21 +145,27 @@ function removeDeletedMaterialId(id) {
 // =============================================================
 // ⚡ MERKEZİ VERİ ÇEKME & CACHE-BUSTING FONKSİYONLARI
 // =============================================================
+// 1. Önbellek kırıcı (cache-busting) ile güncel veri çekme
 async function fetchFreshData(endpoint = "/data/materials.json") {
     const timestamp = Date.now();
     const url = `${endpoint}?v=${timestamp}`;
     try {
         const response = await fetch(url, {
-            headers: { "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache" },
+            headers: { 
+                "Cache-Control": "no-cache, no-store, must-revalidate", 
+                "Pragma": "no-cache" 
+            },
             cache: "no-store"
         });
         if (!response.ok) throw new Error("HTTP Hatası");
         return await response.json();
     } catch (err) {
+        console.warn("Sunucudan veri çekilemedi, yerel kopyaya dönülüyor.", err);
         return null;
     }
 }
 
+// 2. Akıllı tahta (Firefox) ve mobilde geri tuşu (bfcache) kullanıldığında veriyi tazeleme
 window.addEventListener("pageshow", (event) => {
     if (event.persisted && typeof loadCentralizedMaterials === "function") {
         loadCentralizedMaterials().then(() => {
@@ -170,12 +176,15 @@ window.addEventListener("pageshow", (event) => {
     }
 });
 
+// 3. Merkezi Veri Yükleme ve Yedekleme Fonksiyonu
 let APP_MATERIALS_CACHE = [];
 async function loadCentralizedMaterials() {
     let freshMaterials = await fetchFreshData("/data/materials.json");
+
     if (Array.isArray(freshMaterials) && freshMaterials.length > 0) {
         APP_MATERIALS_CACHE = freshMaterials;
         ROTALI_MATERIALS_CACHE = freshMaterials;
+        // Başarılı çekimden sonra, çevrimdışı kullanım için yereli güncelle
         try {
             const slim = freshMaterials.map(m => {
                 const c = { ...m };
@@ -183,19 +192,32 @@ async function loadCentralizedMaterials() {
                 return c;
             });
             localStorage.setItem("rotali_custom_materials", JSON.stringify(slim));
-        } catch(e) {}
-    } else {
-        try {
-            APP_MATERIALS_CACHE = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
-            if (Array.isArray(APP_MATERIALS_CACHE) && APP_MATERIALS_CACHE.length > 0) {
-                ROTALI_MATERIALS_CACHE = APP_MATERIALS_CACHE;
-            }
         } catch(e) {
-            APP_MATERIALS_CACHE = [];
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(freshMaterials));
+        }
+    } else {
+        // Çevrimdışıysa veya fetch başarısız olursa son çalışan kopyayı kullan
+        APP_MATERIALS_CACHE = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+        if (Array.isArray(APP_MATERIALS_CACHE) && APP_MATERIALS_CACHE.length > 0) {
+            ROTALI_MATERIALS_CACHE = APP_MATERIALS_CACHE;
         }
     }
+    
+    // Alpine.js veya dinamik arayüzü anında besle
+    if (window.Alpine && window.Alpine.store) {
+        try {
+            if (window.Alpine.store("materials")) {
+                window.Alpine.store("materials").list = APP_MATERIALS_CACHE;
+            }
+        } catch(e) {}
+    }
+    
     return APP_MATERIALS_CACHE;
 }
+
+window.fetchFreshData = fetchFreshData;
+window.loadCentralizedMaterials = loadCentralizedMaterials;
+window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
 
 const CloudSyncManager = {
     // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder
@@ -1054,6 +1076,11 @@ function getCustomMaterialsList() {
     const deletedIds = new Set(getDeletedMaterialIds());
     deletedIds.add("mat-5-unite-bilgi");
     deletedIds.add("mat-5-lab-guvenlik-gorsel");
+
+    // 🌟 MERKEZİ VERİ KAYNAĞI ÖNCELİĞİ: loadCentralizedMaterials() verisi doğrudan kullanılır
+    if (Array.isArray(APP_MATERIALS_CACHE) && APP_MATERIALS_CACHE.length > 0) {
+        return APP_MATERIALS_CACHE.filter(item => item && item.id && !deletedIds.has(item.id));
+    }
 
     let curVer = 0;
     try {
