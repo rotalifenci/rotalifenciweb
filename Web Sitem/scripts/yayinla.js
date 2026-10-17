@@ -40,7 +40,35 @@ html = html
     .replace(/window\.ROTALI_BUILD\s*=\s*"[^"]*"/, `window.ROTALI_BUILD = "${VERSION}"`);
 fs.writeFileSync(indexPath, html, "utf8");
 fs.writeFileSync(path.join(SITE, "version.json"), JSON.stringify({ v: VERSION }) + "\n", "utf8");
-console.log(`✔ Sürüm: ${VERSION}`);
+// 2.5 CodeWeek Görsellerini Assets Klasörüne Eşitle
+const codeweekDir = path.join(SITE, "assets", "codeweek");
+if (!fs.existsSync(codeweekDir)) fs.mkdirSync(codeweekDir, { recursive: true });
+
+const codeweekAssets = [
+    {
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792269677763_22e0d2ef.jpg"),
+        dest: path.join(codeweekDir, "5-sinif-etkinlik-1-geri-donusum-robotu.jpg")
+    },
+    {
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792269677804_c84c7da1.jpg"),
+        dest: path.join(codeweekDir, "5-sinif-etkinlik-2-temiz-dunya-algoritmasi.jpg")
+    },
+    {
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792269746683_cb03e894.jpg"),
+        dest: path.join(codeweekDir, "6-sinif-etkinlik-1-akilli-sulama-kararlari.jpg")
+    },
+    {
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792269746675_5287b98e.jpg"),
+        dest: path.join(codeweekDir, "6-sinif-etkinlik-2-geri-donusum-dedektifi.jpg")
+    }
+];
+
+for (const cw of codeweekAssets) {
+    if (fs.existsSync(cw.src)) {
+        fs.copyFileSync(cw.src, cw.dest);
+        console.log(`✔ CodeWeek görseli kopyalandı: ${path.basename(cw.dest)}`);
+    }
+}
 
 // 3. Depo köküne kopyala (kökteki fazladan dosyalar silinmez)
 for (const item of SYNC) {
