@@ -1794,6 +1794,12 @@ function getMaterialActionUI(item, fallbackCat = "") {
         format.includes("VİDEO") || format.includes("VIDEO") || format === "MP4" || file.endsWith(".mp4") || file.endsWith(".webm") || url.includes("youtube.com") || url.includes("youtu.be") || cat === "videolar"
     );
 
+    // 0. Ay'ın Evreleri 3D Simülatör ve Astronomi Animasyonu Özel Butonu
+    const isAyinEvreleri = title.includes("ay'ın evreleri") || title.includes("ayin evreleri") || file.includes("ayin-evreleri") || url.includes("ayin-evreleri") || (item && (item.id === "oyun-5-gunes" || item.id === "mat-5-1-oyun-ayin-evreleri-3d" || item.id === "oyun-ayin-evreleri-3d"));
+    if (isAyinEvreleri) {
+        return { text: "Animasyonu Görüntüle", icon: "fa-solid fa-play", bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30" };
+    }
+
     if (isPdf) {
         if (cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi")) {
             return { text: "Kitabı Aç", icon: "fa-solid fa-book-open", bg: "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20" };
@@ -5068,7 +5074,16 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     let unitBuiltinGames = [];
                     if (normSubTab === "egitsel-oyunlar") {
                         const allBuiltinsForGrade = (builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum][String(unitNum)]) || [];
-                        unitBuiltinGames = allBuiltinsForGrade.filter(g => !deletedIds.has(g.id));
+                        unitBuiltinGames = allBuiltinsForGrade.filter(g => {
+                            if (deletedIds.has(g.id)) return false;
+                            // unitCustoms içinde aynı simülatör veya oyun varsa tekilleştir
+                            const alreadyExists = unitCustoms.some(c => 
+                                (c.fileUrl && g.fileUrl && (c.fileUrl.includes("ayin-evreleri") && g.fileUrl.includes("ayin-evreleri") || c.fileUrl === g.fileUrl)) ||
+                                (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim()) ||
+                                (c.id && (c.id === g.id || c.id.includes("ayin-evreleri") && g.id.includes("ayin-evreleri")))
+                            );
+                            return !alreadyExists;
+                        });
                     }
                     const totalItems = [...unitCustoms, ...unitBuiltinGames];
 
@@ -5103,14 +5118,24 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         ${totalItems.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("oyun-");
                                             const isBuiltinGame = String(item.id).startsWith("oyun-");
-                                            const actionCall = isBuiltinGame
-                                                ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
-                                                : (isCustom
-                                                    ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
-                                                    : cfg.btnAction(item));
-                                            const itemActionUI = isBuiltinGame
-                                                ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Oyunu Oyna", icon: "fa-solid fa-play" }
-                                                : getMaterialActionUI(item, normSubTab);
+                                            const isAyinEvreleriItem = (item.fileUrl && item.fileUrl.includes("ayin-evreleri")) ||
+                                                (item.title && (item.title.toLowerCase().includes("ay'ın evreleri") || item.title.toLowerCase().includes("ayin evreleri"))) ||
+                                                (item.id && String(item.id).includes("ayin-evreleri"));
+
+                                            const actionCall = isAyinEvreleriItem
+                                                ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay\\'ın Evreleri 3D Simülatörü')`
+                                                : (isBuiltinGame
+                                                    ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
+                                                    : (isCustom
+                                                        ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
+                                                        : cfg.btnAction(item)));
+
+                                            const itemActionUI = isAyinEvreleriItem
+                                                ? { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
+                                                : (isBuiltinGame
+                                                    ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Oyunu Oyna", icon: "fa-solid fa-play" }
+                                                    : getMaterialActionUI(item, normSubTab));
+
                                             const itemCover = resolveMaterialCover(item);
 
                                             return `
@@ -14924,12 +14949,16 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "interactive-game-modal";
-        modal.className = "fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 md:p-6 transition-all duration-300";
+        modal.className = "fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-1 sm:p-3 transition-all duration-300";
         modal.onclick = function(e) {
             if (e.target === this) closeInteractiveGameModal();
         };
         document.body.appendChild(modal);
+    } else {
+        modal.className = "fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-1 sm:p-3 transition-all duration-300";
     }
+    modal.style.display = "flex";
+    modal.classList.remove("hidden");
 
     let resolvedKey = gameKeyOrUrl;
     const str = String(gameKeyOrUrl || "").toLowerCase();
@@ -14963,6 +14992,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
             </div>
         `;
+        modal.style.display = "flex";
         modal.classList.remove("hidden");
         return;
     }
@@ -15198,8 +15228,11 @@ function closeInteractiveGameModal() {
         });
         modal.innerHTML = "";
         modal.classList.add("hidden");
+        modal.style.display = "none";
     }
 }
+window.openInteractiveGameModal = openInteractiveGameModal;
+window.closeInteractiveGameModal = closeInteractiveGameModal;
 
 // -------------------------------------------------------------
 // 🔬 İNTERAKTİF LABORATUVAR & PHET 3D SİMÜLASYON MODALI

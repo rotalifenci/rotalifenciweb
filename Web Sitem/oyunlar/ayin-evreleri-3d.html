@@ -106,223 +106,225 @@
         }
     </style>
 </head>
-<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-slate-100 p-2 sm:p-3 lg:p-4">
+<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-slate-100 p-1.5 sm:p-2 lg:p-2.5">
 
     <!-- 🌟 ÜST BÖLÜM: BAŞLIK, MOD SEÇİMİ & KONTROL BUTONLARI -->
-    <header class="bg-white rounded-2xl shadow-sm border border-slate-200/80 px-4 py-2.5 sm:px-6 sm:py-3 flex flex-wrap items-center justify-between gap-3 shrink-0 z-20">
+    <header class="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xs border border-slate-200/80 px-3 py-1.5 sm:px-4 sm:py-2 flex flex-wrap items-center justify-between gap-2 shrink-0 z-20">
         <!-- Sol: Başlık ve Açıklama -->
-        <div class="flex items-center gap-3.5">
-            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center text-xl sm:text-2xl shadow-md shadow-blue-500/20 shrink-0">
+        <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center text-lg sm:text-xl shadow-md shadow-blue-500/20 shrink-0">
                 <i class="fa-solid fa-moon"></i>
             </div>
             <div>
-                <div class="flex items-center gap-2">
-                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                <div class="flex items-center gap-1.5">
+                    <h1 class="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-1.5">
                         AY'IN EVRELERİ
                     </h1>
-                    <span class="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-extrabold uppercase">
+                    <span class="px-2 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-extrabold uppercase">
                         5. Sınıf Fen
                     </span>
                 </div>
-                <p class="text-xs sm:text-sm text-slate-500 font-semibold hidden sm:block">
-                    Güneş, Dünya ve Ay'ın hareketlerini keşfet! Gerçek zamanlı fotogerçekçi 3D uzay simülasyonu.
+                <p class="text-[11px] text-slate-500 font-semibold hidden md:block leading-none mt-0.5">
+                    Güneş, Dünya ve Ay'ın hareketlerini keşfet • Fotogerçekçi 3D Uzay Planetaryumu
                 </p>
             </div>
         </div>
 
         <!-- Orta: Mod Seçici (Keşfet, Tahmin Et, Yörüngeye Yerleştir) -->
-        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/90 text-xs font-bold">
-            <button id="btn-mode-explore" onclick="setAppMode('explore')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-blue-700 shadow-sm">
+        <div class="flex items-center bg-slate-100 p-0.5 sm:p-1 rounded-xl border border-slate-200/90 text-xs font-bold">
+            <button id="btn-mode-explore" onclick="setAppMode('explore')" class="px-2.5 sm:px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 bg-white text-blue-700 shadow-xs text-xs">
                 <i class="fa-solid fa-compass"></i>
                 <span>Keşfet</span>
             </button>
-            <button id="btn-mode-quiz" onclick="setAppMode('quiz')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+            <button id="btn-mode-quiz" onclick="setAppMode('quiz')" class="px-2.5 sm:px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 text-xs">
                 <i class="fa-solid fa-circle-question"></i>
-                <span>Evreyi Tahmin Et</span>
+                <span class="hidden sm:inline">Evreyi</span> Tahmin Et
             </button>
-            <button id="btn-mode-orbit-drag" onclick="setAppMode('challenge')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+            <button id="btn-mode-orbit-drag" onclick="setAppMode('challenge')" class="px-2.5 sm:px-3 py-1 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900 text-xs">
                 <i class="fa-solid fa-bullseye"></i>
-                <span>Yörüngeye Yerleştir</span>
+                <span>Yörünge Görevi</span>
             </button>
         </div>
 
         <!-- Sağ: Yardım, Ses, Kamera & Tam Ekran & Logo -->
-        <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1.5">
             <!-- Sesli Anlatım Butonu -->
-            <button id="btn-voice" onclick="toggleVoiceNarration()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Sesli Anlatımı Aç / Kapat">
-                <i id="voice-icon" class="fa-solid fa-volume-high text-sm"></i>
+            <button id="btn-voice" onclick="toggleVoiceNarration()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Sesli Anlatımı Aç / Kapat">
+                <i id="voice-icon" class="fa-solid fa-volume-high text-xs sm:text-sm text-blue-600"></i>
             </button>
 
             <!-- Biliyor Musun? Modalı Butonu -->
-            <button onclick="openInfoModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center transition-all shadow-xs" title="Bilimsel Bilgiler ve Kavram Yanılgıları">
-                <i class="fa-solid fa-lightbulb text-sm"></i>
+            <button onclick="openInfoModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center transition-all shadow-2xs" title="Bilimsel Bilgiler ve Kavram Yanılgıları">
+                <i class="fa-solid fa-lightbulb text-xs sm:text-sm"></i>
             </button>
 
             <!-- Kamera Görünümü Değiştirici -->
-            <button id="btn-camera-view" onclick="toggleCameraPerspective()" class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs" title="Kamera Açısını Değiştir">
-                <i class="fa-solid fa-video text-blue-600"></i>
-                <span id="camera-view-text" class="hidden md:inline">Kuşbakışı</span>
+            <button id="btn-camera-view" onclick="toggleCameraPerspective()" class="px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1 shadow-2xs" title="Kamera Açısını Değiştir">
+                <i class="fa-solid fa-video text-blue-600 text-xs"></i>
+                <span id="camera-view-text" class="hidden sm:inline">Kuşbakışı</span>
             </button>
 
             <!-- Tam Ekran Butonu -->
-            <button onclick="toggleFullScreen()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Tam Ekran Modu">
-                <i class="fa-solid fa-expand text-sm"></i>
+            <button onclick="toggleFullScreen()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Tam Ekran Modu">
+                <i class="fa-solid fa-expand text-xs sm:text-sm"></i>
             </button>
 
             <!-- Rotalı Fenci Logo / Rozet -->
             <div class="hidden lg:flex items-center gap-2 pl-2 border-l border-slate-200">
-                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-9 h-9 rounded-xl object-cover shadow-xs border border-slate-200" onerror="this.src='../rotali-fenci-logo.png'">
+                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-8 h-8 rounded-xl object-cover shadow-2xs border border-slate-200" onerror="this.src='../rotali-fenci-logo.png'">
                 <div class="leading-none text-left">
                     <span class="text-xs font-black text-slate-900 block tracking-tight">ROTALI FENCİ</span>
-                    <span class="text-[10px] font-bold text-red-600 block">Eğitim Portalı</span>
+                    <span class="text-[9px] font-bold text-red-600 block">Eğitim Portalı</span>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON ALANI (İKİLİ GÖRÜNÜM: YÖRÜNGE VE DÜNYA'DAN BAKIŞ) -->
-    <main class="flex-1 my-2 sm:my-3 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0 relative">
+    <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON ALANI (GENİŞLETİLMİŞ BÜYÜK UZAY SAHNESİ) -->
+    <main class="flex-1 my-1.5 sm:my-2 grid grid-cols-1 lg:grid-cols-12 gap-2 sm:gap-2.5 min-h-0 relative overflow-hidden">
 
-        <!-- 🚀 SOL PANEL (%65): YÖRÜNGE GÖRÜNÜMÜ (GÜNEŞ, DÜNYA, AY DOLANMA YÖRÜNGESİ) -->
-        <div class="lg:col-span-8 bg-slate-950 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col orbit-canvas-container">
+        <!-- 🚀 SOL PANEL (%67): YÖRÜNGE GÖRÜNÜMÜ (DEV 3D UZAY SİMÜLASYON SAHNESİ) -->
+        <div class="lg:col-span-8 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-full min-h-0 orbit-canvas-container">
             <!-- Simülasyon Üst Bilgi Rozetleri -->
-            <div class="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
-                <span class="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+            <div class="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
+                <span class="px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-satellite"></i>
                     <span>UZAYDAN BAKIŞ (KUZEY KUTBU ÜSTÜNDEN)</span>
                 </span>
-                <span class="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-amber-300 border border-amber-500/30 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+                <span class="px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-amber-300 border border-amber-500/30 text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-sun"></i>
-                    <span>Güneş Işığı: Sol Taraftan Gelir</span>
+                    <span>Güneş Işığı: Sol Kenardan Gelir</span>
                 </span>
             </div>
 
             <!-- Sağ Üst: Yörünge İpuçları & Etkileşim Butonları -->
-            <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-2">
-                <button id="btn-toggle-rays" onclick="toggleSunRays()" class="px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+            <div class="absolute top-2.5 right-2.5 sm:top-3.5 sm:right-3.5 z-10 flex items-center gap-1.5">
+                <button id="btn-toggle-rays" onclick="toggleSunRays()" class="px-2.5 py-1 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-bolt-lightning text-amber-400"></i>
                     <span class="hidden sm:inline">Işık Işınları</span>
                 </button>
-                <button id="btn-toggle-labels" onclick="toggleLabels()" class="px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                <button id="btn-toggle-labels" onclick="toggleLabels()" class="px-2.5 py-1 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-tags text-cyan-400"></i>
                     <span class="hidden sm:inline">İsimler</span>
                 </button>
             </div>
 
             <!-- Etkileşim İpucu / Bilgilendirme Kartı -->
-            <div class="absolute bottom-3 left-3 z-10 pointer-events-none">
-                <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-800 text-[11px] font-bold text-slate-300 flex items-center gap-2 shadow-sm">
+            <div class="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
+                <div class="px-3 py-1 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] sm:text-[11px] font-bold text-slate-300 flex items-center gap-2 shadow-sm">
                     <i class="fa-solid fa-hand-pointer text-cyan-400 animate-bounce"></i>
-                    <span>Ay'ı yörünge üzerinde fareniz veya dokunarak sürükleyebilirsiniz!</span>
+                    <span>Ay'ı yörünge üzerinde parmağınızla veya fareyle serbestçe sürükleyebilirsiniz!</span>
                 </div>
             </div>
 
-            <!-- Three.js Orbit Canvas -->
-            <div id="orbit-container" class="w-full h-full relative">
+            <!-- Three.js Orbit Canvas: 100% genişlik ve yükseklik -->
+            <div id="orbit-container" class="w-full h-full relative flex-1 min-h-0">
                 <canvas id="orbit-canvas" class="w-full h-full block"></canvas>
             </div>
 
             <!-- Challenge (Yörüngeye Yerleştir) Görev Paneli (Gizli / Görünür) -->
-            <div id="challenge-panel" class="hidden absolute inset-x-4 top-16 z-20 bg-slate-900/95 backdrop-blur-md border-2 border-amber-400 rounded-2xl p-4 text-white shadow-2xl animate-in fade-in duration-200">
+            <div id="challenge-panel" class="hidden absolute inset-x-3 top-14 z-20 bg-slate-900/95 backdrop-blur-md border-2 border-amber-400 rounded-2xl p-3.5 text-white shadow-2xl animate-in fade-in duration-200">
                 <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0">
+                        <div class="w-9 h-9 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-base font-black shrink-0">
                             <i class="fa-solid fa-flag-checkered"></i>
                         </div>
                         <div>
-                            <span class="text-[11px] font-black uppercase text-amber-400 tracking-wider">YÖRÜNGE GÖREVİ #<span id="challenge-step-num">1</span> / 8</span>
-                            <h3 class="text-base sm:text-lg font-black text-white" id="challenge-task-title">
+                            <span class="text-[10px] font-black uppercase text-amber-400 tracking-wider">YÖRÜNGE GÖREVİ #<span id="challenge-step-num">1</span> / 4</span>
+                            <h3 class="text-sm sm:text-base font-black text-white" id="challenge-task-title">
                                 Ay'ı <span class="text-amber-300 underline underline-offset-4 font-black">"DOLUNAY"</span> konumuna sürükle!
                             </h3>
                         </div>
                     </div>
                     <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <button onclick="checkChallengeAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all transform active:scale-95 cursor-pointer">
+                        <button onclick="checkChallengeAnswer()" class="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all transform active:scale-95 cursor-pointer">
                             <i class="fa-solid fa-circle-check"></i> Konumu Onayla
                         </button>
-                        <button onclick="nextChallengeTask()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                        <button onclick="nextChallengeTask()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer">
                             Geç <i class="fa-solid fa-forward"></i>
                         </button>
                     </div>
                 </div>
-                <div id="challenge-feedback" class="mt-2 text-xs font-bold text-amber-200 hidden"></div>
+                <div id="challenge-feedback" class="mt-1.5 text-xs font-bold text-amber-200 hidden"></div>
             </div>
         </div>
 
-        <!-- 🌕 SAĞ PANEL (%35): DÜNYA'DAN AY NASIL GÖRÜNÜR? (CANLI TELESKOPİK 3D MODELİ & BİLİMSEL BİLGİLER) -->
-        <div class="lg:col-span-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl flex flex-col justify-between p-4 sm:p-5 relative overflow-hidden">
+        <!-- 🌕 SAĞ PANEL (%33): DÜNYA'DAN AY NASIL GÖRÜNÜR? (CANLI TELESKOPİK 3D MODELİ & BİLİMSEL BİLGİLER) -->
+        <div class="lg:col-span-4 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-3 sm:p-4 relative overflow-hidden h-full min-h-0">
             
             <!-- Panel Üstü: Başlık & Evre Rozeti -->
-            <div>
-                <div class="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-100">
-                    <div class="flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-black">
-                            <i class="fa-solid fa-binoculars"></i>
-                        </span>
-                        <div>
-                            <h2 class="text-xs sm:text-sm font-extrabold text-slate-800 uppercase tracking-tight">
-                                Dünya'dan Ay Nasıl Görünür?
-                            </h2>
-                            <span class="text-[10px] text-slate-400 font-bold block">Teleskop / Çıplak Gözle Canlı Gözlem</span>
+            <div class="flex flex-col flex-1 min-h-0 justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-2 pb-2 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-black">
+                                <i class="fa-solid fa-binoculars"></i>
+                            </span>
+                            <div>
+                                <h2 class="text-xs font-extrabold text-slate-800 uppercase tracking-tight leading-none">
+                                    Dünya'dan Görünüm
+                                </h2>
+                                <span class="text-[9px] text-slate-400 font-bold block mt-0.5">Canlı Teleskopik Gözlem</span>
+                            </div>
                         </div>
+                        <span id="phase-type-badge" class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-black uppercase tracking-wider">
+                            ANA EVRE
+                        </span>
                     </div>
-                    <span id="phase-type-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
-                        ANA EVRE
-                    </span>
+
+                    <!-- Büyük Evre Başlığı -->
+                    <div class="text-center my-1">
+                        <h3 id="current-phase-name" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
+                            YENİ AY
+                        </h3>
+                        <p id="current-phase-subtitle" class="text-[11px] sm:text-xs font-bold text-blue-600 mt-0.5 leading-none">
+                            Ay karanlıktır, gökyüzünde görünmez
+                        </p>
+                    </div>
                 </div>
 
-                <!-- Büyük Evre Başlığı -->
-                <div class="text-center my-1">
-                    <h3 id="current-phase-name" class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
-                        YENİ AY
-                    </h3>
-                    <p id="current-phase-subtitle" class="text-xs sm:text-sm font-bold text-blue-600 mt-0.5">
-                        Ay karanlıktır, gökyüzünde görünmez
-                    </p>
-                </div>
-
-                <!-- 3D Earth View Telescope Sphere Viewport -->
-                <div class="relative w-full aspect-square max-h-[220px] sm:max-h-[250px] mx-auto my-2 rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center">
+                <!-- 3D Earth View Telescope Sphere Viewport: Kompakt & Orantılı -->
+                <div class="relative w-full aspect-square max-h-[160px] sm:max-h-[190px] xl:max-h-[220px] mx-auto my-1.5 rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center shrink-0">
                     <!-- Canlı 3D Telescope Canvas -->
                     <canvas id="telescope-canvas" class="w-full h-full block"></canvas>
                     
                     <!-- Canlı Aydınlanma Rozeti -->
-                    <div class="absolute bottom-2 left-2 px-2.5 py-1 rounded-lg bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[11px] font-black text-cyan-400 font-mono shadow">
+                    <div class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] font-black text-cyan-400 font-mono shadow">
                         Aydınlık: <span id="illumination-percent">0%</span>
                     </div>
 
                     <!-- Canlı Yörünge Açısı Rozeti -->
-                    <div class="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[11px] font-black text-amber-400 font-mono shadow">
+                    <div class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] font-black text-amber-400 font-mono shadow">
                         Açı: <span id="orbit-angle-degree">0°</span>
                     </div>
                 </div>
 
                 <!-- Bilimsel İstatistikler Tablosu (5. Sınıf Seviyesi) -->
-                <div class="grid grid-cols-2 gap-2 my-2 text-xs">
-                    <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Geçen Süre</span>
-                        <span class="text-sm font-black text-slate-800 font-mono" id="stat-elapsed-days">0.0 Gün</span>
-                        <span class="text-[10px] text-slate-500 font-semibold block">/ 29.5 Günlük Ay Döngüsü</span>
+                <div class="grid grid-cols-2 gap-1.5 my-1 text-xs">
+                    <div class="p-2 bg-slate-50 border border-slate-200/80 rounded-xl">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">Geçen Süre</span>
+                        <span class="text-xs sm:text-sm font-black text-slate-800 font-mono" id="stat-elapsed-days">0.0 Gün</span>
+                        <span class="text-[9px] text-slate-500 font-semibold block">/ 29.5 Günlük Döngü</span>
                     </div>
-                    <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
-                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Görünen Şekil</span>
-                        <span class="text-sm font-black text-slate-800" id="stat-shape-desc">Tamamen Karanlık</span>
-                        <span class="text-[10px] text-blue-600 font-semibold block" id="stat-side-desc">Işık Arkasında</span>
+                    <div class="p-2 bg-slate-50 border border-slate-200/80 rounded-xl">
+                        <span class="text-[9px] font-bold text-slate-400 uppercase block">Görünen Şekil</span>
+                        <span class="text-xs sm:text-sm font-black text-slate-800 truncate block" id="stat-shape-desc">Tamamen Karanlık</span>
+                        <span class="text-[9px] text-blue-600 font-semibold block truncate" id="stat-side-desc">Işık Arkasında</span>
                     </div>
                 </div>
 
                 <!-- Açıklama / Pedagojik Özet Kutusu -->
-                <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-slate-700 leading-relaxed font-medium" id="phase-explanation-text">
+                <div class="p-2.5 bg-blue-50/70 border border-blue-100 rounded-xl text-[11px] text-slate-700 leading-relaxed font-medium line-clamp-3" id="phase-explanation-text">
                     <strong>Yeni Ay:</strong> Ay, Dünya ile Güneş arasındadır. Ay'ın Güneş gören aydınlık yüzü Güneş'e dönüktür; Dünya'ya bakan karanlık yüzü ise ışık almadığı için gökyüzünde görünmez.
                 </div>
             </div>
 
             <!-- Quiz Modu Alanı (Sadece Quiz modunda açılır) -->
-            <div id="quiz-overlay" class="hidden absolute inset-0 z-30 bg-white/98 backdrop-blur-md p-4 sm:p-5 flex flex-col justify-between">
+            <div id="quiz-overlay" class="hidden absolute inset-0 z-30 bg-white/98 backdrop-blur-md p-3 sm:p-4 flex flex-col justify-between">
                 <div>
-                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 font-black text-xs">
+                    <div class="flex items-center justify-between pb-2 border-b border-slate-200">
+                        <div class="flex items-center gap-1.5">
+                            <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 font-black text-xs">
                                 Soru <span id="quiz-q-num">1</span> / 10
                             </span>
                             <span class="text-xs font-bold text-slate-500">Evreyi Bil!</span>
@@ -332,36 +334,36 @@
                         </div>
                     </div>
 
-                    <div class="my-3 text-center">
-                        <h4 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug" id="quiz-question-title">
+                    <div class="my-2 text-center">
+                        <h4 class="text-xs sm:text-sm font-extrabold text-slate-900 leading-snug" id="quiz-question-title">
                             Yukarıdaki teleskop görüntüsüne göre Ay hangi evrededir?
                         </h4>
-                        <p class="text-xs text-slate-500 font-medium mt-1">
-                            İpucu: Sağ tarafı mı yoksa sol tarafı mı aydınlık? Hangi harfe benziyor?
+                        <p class="text-[10px] text-slate-500 font-medium mt-0.5">
+                            İpucu: Sağ tarafı mı yoksa sol tarafı mı aydınlık?
                         </p>
                     </div>
 
                     <!-- 4 Çoktan Seçmeli Seçenek -->
-                    <div class="grid grid-cols-2 gap-2 my-2" id="quiz-options-container">
+                    <div class="grid grid-cols-2 gap-1.5 my-2" id="quiz-options-container">
                         <!-- JS ile dolacak -->
                     </div>
 
-                    <div id="quiz-feedback-box" class="p-3 rounded-xl text-xs font-bold hidden my-2 leading-relaxed"></div>
+                    <div id="quiz-feedback-box" class="p-2.5 rounded-xl text-[11px] font-bold hidden my-1 leading-relaxed"></div>
                 </div>
 
                 <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <button onclick="setAppMode('explore')" class="px-3 py-2 text-slate-500 hover:text-slate-800 text-xs font-bold">
-                        <i class="fa-solid fa-arrow-left"></i> Keşif Moduna Dön
+                    <button onclick="setAppMode('explore')" class="px-2.5 py-1.5 text-slate-500 hover:text-slate-800 text-xs font-bold">
+                        <i class="fa-solid fa-arrow-left"></i> Keşfe Dön
                     </button>
-                    <button id="btn-quiz-next" onclick="nextQuizQuestion()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase transition-all shadow-sm hidden">
+                    <button id="btn-quiz-next" onclick="nextQuizQuestion()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase transition-all shadow-sm hidden">
                         Sonraki Soru <i class="fa-solid fa-forward"></i>
                     </button>
                 </div>
             </div>
 
             <!-- Alt Bilgi: Ölçek Uyarısı & Instagram -->
-            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium shrink-0">
-                <span class="flex items-center gap-1 text-[10px]">
+            <div class="pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-medium shrink-0 mt-1">
+                <span class="flex items-center gap-1">
                     <i class="fa-solid fa-circle-info text-blue-500"></i> Boyutlar eğitim amaçlı ölçeklidir.
                 </span>
                 <span class="font-bold text-slate-500">@rotalifenci</span>
@@ -369,121 +371,120 @@
         </div>
     </main>
 
-    <!-- 🎮 ALT BÖLÜM: ZAMAN ÇİZELGESİ, HIZ KONTROLLERİ & 8 İNTERAKTİF EVRE KARTI -->
-    <footer class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3 sm:p-4 shrink-0 z-20 space-y-3">
+    <!-- 🎮 ALT BÖLÜM: ULTRA KOMPAKT ZAMAN ÇİZELGESİ, HIZ KONTROLLERİ & 8 İNTERAKTİF EVRE KARTI -->
+    <footer class="bg-white/95 backdrop-blur-md rounded-xl sm:rounded-2xl shadow-xs border border-slate-200/80 p-2 sm:p-2.5 shrink-0 z-20 space-y-1.5">
         
-        <!-- Üst Kontrol Şeridi: Oynat/Durdur, Zaman Çubuğu, Hız Seçenekleri -->
-        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+        <!-- Üst Kontrol Şeridi: Tek Satırda Oynat/Durdur, Slider ve Hız -->
+        <div class="flex items-center justify-between gap-2 sm:gap-3 flex-nowrap">
             
             <!-- Sol: Oynatma ve Adım Butonları -->
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
-                <button id="btn-prev-phase" onclick="stepPhase(-1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Önceki Evre">
-                    <i class="fa-solid fa-backward-step"></i>
+            <div class="flex items-center gap-1 shrink-0">
+                <button id="btn-prev-phase" onclick="stepPhase(-1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Önceki Evre">
+                    <i class="fa-solid fa-backward-step text-xs"></i>
                 </button>
-                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md shadow-blue-600/20 active:scale-95">
-                    <i id="play-pause-icon" class="fa-solid fa-play"></i>
+                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95">
+                    <i id="play-pause-icon" class="fa-solid fa-play text-xs"></i>
                     <span id="play-pause-text">Oynat</span>
                 </button>
-                <button id="btn-next-phase" onclick="stepPhase(1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Sonraki Evre">
-                    <i class="fa-solid fa-forward-step"></i>
+                <button id="btn-next-phase" onclick="stepPhase(1)" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Sonraki Evre">
+                    <i class="fa-solid fa-forward-step text-xs"></i>
                 </button>
-                <button onclick="resetSimulation()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-xs" title="Sıfırla">
-                    <i class="fa-solid fa-rotate-left"></i>
+                <button onclick="resetSimulation()" class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-2xs" title="Sıfırla">
+                    <i class="fa-solid fa-rotate-left text-xs"></i>
                 </button>
             </div>
 
             <!-- Orta: 29.5 Günlük Süre Kaydırıcısı (Timeline Slider) -->
-            <div class="flex-1 w-full flex items-center gap-3">
-                <span class="text-xs font-black text-slate-500 font-mono shrink-0">0 Gün</span>
+            <div class="flex-1 flex items-center gap-2 min-w-0">
+                <span class="text-[10px] sm:text-xs font-black text-slate-400 font-mono shrink-0 hidden sm:inline">0G</span>
                 <div class="relative flex-1 flex items-center">
-                    <input type="range" id="timeline-slider" min="0" max="29.5" step="0.1" value="0" class="w-full cursor-pointer" oninput="onTimelineSliderInput(this.value)">
+                    <input type="range" id="timeline-slider" min="0" max="29.5" step="0.1" value="0" class="w-full cursor-pointer h-2" oninput="onTimelineSliderInput(this.value)">
                 </div>
-                <div class="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono font-black text-xs shrink-0">
-                    <span id="slider-day-label">0.0</span> / 29.5 Gün
+                <div class="px-2 py-0.5 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono font-black text-[11px] shrink-0 whitespace-nowrap">
+                    <span id="slider-day-label">0.0</span> / 29.5G
                 </div>
             </div>
 
             <!-- Sağ: Simülasyon Hızı Seçimi -->
-            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold shrink-0">
-                <span class="text-[10px] text-slate-400 px-2 uppercase font-extrabold hidden md:inline">Hız</span>
-                <button onclick="setSpeed(0.5, this)" class="speed-btn px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-slate-900">0.5x</button>
-                <button onclick="setSpeed(1.0, this)" class="speed-btn px-2.5 py-1 rounded-lg transition-all bg-white text-blue-700 shadow-xs">1x</button>
-                <button onclick="setSpeed(2.0, this)" class="speed-btn px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-slate-900">2x</button>
+            <div class="flex items-center gap-1 bg-slate-100 p-0.5 rounded-lg text-xs font-bold shrink-0">
+                <button onclick="setSpeed(0.5, this)" class="speed-btn px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-xs">0.5x</button>
+                <button onclick="setSpeed(1.0, this)" class="speed-btn px-2 py-1 rounded-md transition-all bg-white text-blue-700 shadow-2xs text-xs">1x</button>
+                <button onclick="setSpeed(2.0, this)" class="speed-btn px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-xs">2x</button>
             </div>
         </div>
 
-        <!-- Alt: 8 Etkileşimli Evre Kartı (Tek Tıkla Evreye Git) -->
-        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 pt-1 border-t border-slate-100 overflow-x-auto">
+        <!-- Alt: 8 Etkileşimli Evre Kartı (Yatay Kompakt Çipler - Tek Tıkla Evreye Git) -->
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 sm:gap-1.5 pt-1 border-t border-slate-100 overflow-x-auto">
             <!-- 1. Yeni Ay -->
-            <button onclick="jumpToPhase(0)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="0">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-slate-600 mb-1 group-hover:scale-105 transition-transform">
-                    🌑
+            <button onclick="jumpToPhase(0)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="0">
+                <span class="text-base shrink-0">🌑</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Yeni Ay</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 block font-mono">0. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Yeni Ay</span>
-                <span class="text-[9px] font-bold text-slate-400 block font-mono">0. Gün</span>
             </button>
 
             <!-- 2. Hilal (Büyüyen) -->
-            <button onclick="jumpToPhase(1)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="1">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-200 mb-1 group-hover:scale-105 transition-transform">
-                    🌒
+            <button onclick="jumpToPhase(1)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="1">
+                <span class="text-base shrink-0">🌒</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Hilal (B)</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 block font-mono">3.7. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Hilal (B)</span>
-                <span class="text-[9px] font-bold text-slate-400 block font-mono">3.7. Gün</span>
             </button>
 
             <!-- 3. İlk Dördün -->
-            <button onclick="jumpToPhase(2)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="2">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
-                    🌓
+            <button onclick="jumpToPhase(2)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="2">
+                <span class="text-base shrink-0">🌓</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">İlk Dördün</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-emerald-600 block font-mono font-black">7.4. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">İlk Dördün</span>
-                <span class="text-[9px] font-bold text-emerald-600 block font-mono font-black">7.4. Gün</span>
             </button>
 
             <!-- 4. Şişkin Ay (Büyüyen) -->
-            <button onclick="jumpToPhase(3)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="3">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
-                    🌔
+            <button onclick="jumpToPhase(3)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="3">
+                <span class="text-base shrink-0">🌔</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Şişkin (B)</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 block font-mono">11.1. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Şişkin (B)</span>
-                <span class="text-[9px] font-bold text-slate-400 block font-mono">11.1. Gün</span>
             </button>
 
             <!-- 5. Dolunay -->
-            <button onclick="jumpToPhase(4)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="4">
-                <div class="w-8 h-8 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-xs text-amber-500 mb-1 group-hover:scale-105 transition-transform shadow-xs">
-                    🌕
+            <button onclick="jumpToPhase(4)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="4">
+                <span class="text-base shrink-0">🌕</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Dolunay</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-emerald-600 block font-mono font-black">14.8. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Dolunay</span>
-                <span class="text-[9px] font-bold text-emerald-600 block font-mono font-black">14.8. Gün</span>
             </button>
 
             <!-- 6. Şişkin Ay (Küçülen) -->
-            <button onclick="jumpToPhase(5)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="5">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
-                    🌖
+            <button onclick="jumpToPhase(5)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="5">
+                <span class="text-base shrink-0">🌖</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Şişkin (K)</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 block font-mono">18.5. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Şişkin (K)</span>
-                <span class="text-[9px] font-bold text-slate-400 block font-mono">18.5. Gün</span>
             </button>
 
             <!-- 7. Son Dördün -->
-            <button onclick="jumpToPhase(6)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="6">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
-                    🌗
+            <button onclick="jumpToPhase(6)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="6">
+                <span class="text-base shrink-0">🌗</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Son Dördün</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-emerald-600 block font-mono font-black">22.1. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Son Dördün</span>
-                <span class="text-[9px] font-bold text-emerald-600 block font-mono font-black">22.1. Gün</span>
             </button>
 
             <!-- 8. Hilal (Küçülen) -->
-            <button onclick="jumpToPhase(7)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="7">
-                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-200 mb-1 group-hover:scale-105 transition-transform">
-                    🌘
+            <button onclick="jumpToPhase(7)" class="phase-card group h-10 px-1.5 py-1 rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/60 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer" data-phase-idx="7">
+                <span class="text-base shrink-0">🌘</span>
+                <div class="min-w-0 flex-1 leading-tight">
+                    <span class="text-[10px] sm:text-[11px] font-black text-slate-800 truncate block">Hilal (K)</span>
+                    <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 block font-mono">25.8. Gün</span>
                 </div>
-                <span class="text-[11px] font-black text-slate-800 leading-tight block">Hilal (K)</span>
-                <span class="text-[9px] font-bold text-slate-400 block font-mono">25.8. Gün</span>
             </button>
         </div>
     </footer>
@@ -567,7 +568,7 @@
         const SYNODIC_MONTH_DAYS = 29.53; // Bir ay döngüsü
         const ORBIT_RADIUS = 13.5;         // Three.js sahne içi yörünge yarıçapı
 
-        // 8 Ay Evresi Tanımlamaları (Astronomik & MEB Uyumlu)
+        // 8 Ay Evresi Tanımlamaları (Astronomik & MEB 5. Sınıf Müfredatına Tam Uyumlu)
         const PHASES = [
             {
                 index: 0,
@@ -581,7 +582,7 @@
                 sideDesc: "Işık Arkasında (Görünmez)",
                 subtitle: "Ay karanlıktır, gökyüzünde görünmez",
                 explanation: "Ay, Dünya ile Güneş arasındadır. Ay'ın Güneş gören aydınlık yüzü Güneş'e dönüktür; Dünya'ya bakan karanlık yüzü ise ışık almadığı için gökyüzünde görünmez.",
-                voiceText: "Yeni Ay evresinde Ay, Dünya ile Güneş arasındadır. Ay'ın karanlık yüzü Dünya'ya baktığı için gökyüzünde görünmez."
+                voiceText: "Yeni Ay evresi. Ay, Güneş ile Dünya arasındadır. Güneş gören aydınlık yüzü arkada kaldığı için Dünya'dan bakıldığında gökyüzünde görünmez."
             },
             {
                 index: 1,
@@ -595,7 +596,7 @@
                 sideDesc: "Sağ Taraf Aydınlık",
                 subtitle: "Güneş battıktan sonra batı ufkunda görülür",
                 explanation: "Yeni Ay evresinden birkaç gün sonra Ay'ın Dünya'dan bakıldığında sağ kenarı ince bir yay ('C' harfinin tersi) şeklinde aydınlık görünür.",
-                voiceText: "Büyüyen Hilal evresinde Ay'ın sağ kenarında ince bir aydınlık yay görünür."
+                voiceText: "Büyüyen Hilal evresi. Yeni Ay'dan sonra Ay'ın sağ kenarında ince aydınlık bir yay oluşur. Aydınlık kısım her gece büyür."
             },
             {
                 index: 2,
@@ -609,7 +610,7 @@
                 sideDesc: "Sağ Yarısı Aydınlık",
                 subtitle: "Düz 'D' harfi şeklinde yarım daire",
                 explanation: "Yeni Ay'dan 1 hafta sonra gerçekleşir. Ay'ın Dünya'ya bakan yüzünün sağ yarısı Güneş ışığı alır. Gökyüzünde düz 'D' harfi şeklinde bir yarım daire görülür.",
-                voiceText: "İlk Dördün evresinde Ay'ın sağ yarısı aydınlık görünür ve düz D harfine benzer."
+                voiceText: "İlk Dördün evresi. Yeni Ay'dan bir hafta sonra oluşur. Ay'ın Dünya'dan görülen sağ yarısı aydınlıktır ve düz D harfine benzer."
             },
             {
                 index: 3,
@@ -623,7 +624,7 @@
                 sideDesc: "Sağ Taraf Hakim",
                 subtitle: "İlk Dördün ile Dolunay arasındaki ara evre",
                 explanation: "Ay'ın Dünya'ya bakan yüzünün yarısından fazlası aydınlık görünür. Dolunay evresine doğru aydınlanan alan her gece büyür.",
-                voiceText: "Büyüyen Şişkin Ay evresinde Ay'ın yarısından fazlası aydınlanmıştır."
+                voiceText: "Büyüyen Şişkin Ay evresi. Ay'ın aydınlık yüzü yarısından fazladır ve Dolunay'a doğru büyümektedir."
             },
             {
                 index: 4,
@@ -637,7 +638,7 @@
                 sideDesc: "Bütün Yüzü Aydınlık",
                 subtitle: "Tam bir daire şeklinde pırıl pırıl parlar",
                 explanation: "İlk Dördün'den 1 hafta sonra (Yeni Ay'dan 2 hafta sonra) oluşur. Dünya, Güneş ile Ay arasındadır. Ay'ın Dünya'ya bakan yüzünün tamamı Güneş ışığıyla aydınlanır.",
-                voiceText: "Dolunay evresinde Ay'ın Dünya'ya bakan yüzü tamamen aydınlanır ve gökyüzünde parlak bir daire şeklinde parlar."
+                voiceText: "Dolunay evresi. Yeni Ay'dan iki hafta sonra oluşur. Dünya, Güneş ile Ay arasındadır. Ay'ın Dünya'ya bakan yüzünün tamamı aydınlanır ve parlak bir daire şeklinde parlar."
             },
             {
                 index: 5,
@@ -651,7 +652,7 @@
                 sideDesc: "Sol Taraf Hakim",
                 subtitle: "Dolunaydan sonra aydınlık alan küçülmeye başlar",
                 explanation: "Dolunaydan sonra aydınlık kısım doğudan batıya doğru küçülmeye başlar. Sol tarafı hâlâ yarım daireden daha büyüktür.",
-                voiceText: "Küçülen Şişkin Ay evresinde Ay'ın sol tarafı aydınlıktır ve küçülmeye devam etmektedir."
+                voiceText: "Küçülen Şişkin Ay evresi. Dolunaydan sonra Ay'ın aydınlık kısmı küçülmeye başlar. Sol tarafı aydınlıktır."
             },
             {
                 index: 6,
@@ -665,7 +666,7 @@
                 sideDesc: "Sol Yarısı Aydınlık",
                 subtitle: "Ters 'D' harfi şeklinde yarım daire",
                 explanation: "Dolunaydan 1 hafta sonra oluşur. Ay'ın Dünya'ya bakan yüzünün sol yarısı aydınlık görünür. Gökyüzünde ters 'D' harfi şeklindedir.",
-                voiceText: "Son Dördün evresinde Ay'ın sol yarısı aydınlık görünür ve ters D harfine benzer."
+                voiceText: "Son Dördün evresi. Dolunaydan bir hafta sonra oluşur. Ay'ın Dünya'ya bakan yüzünün sol yarısı aydınlıktır ve ters D harfine benzer."
             },
             {
                 index: 7,
@@ -679,7 +680,7 @@
                 sideDesc: "Sol Kenar Aydınlık ('C' Harfi)",
                 subtitle: "Sabaha karşı doğu ufkunda görülen 'C' harfi",
                 explanation: "Son Dördün evresinden sonra Ay'ın sol kenarı ince bir yay şeklinde ('C' harfi) aydınlık görünür. Birkaç gün sonra tekrar Yeni Ay evresi başlar.",
-                voiceText: "Küçülen Hilal evresinde Ay gökyüzünde C harfi şeklinde ince bir yay olarak görünür."
+                voiceText: "Küçülen Hilal evresi. Ay'ın sol kenarı ince bir yay şeklindedir ve C harfine benzer. Döngü tamamlanmak üzeredir."
             }
         ];
 
@@ -729,26 +730,52 @@
             playTone(180, 'sawtooth', 0.25);
         }
 
+        // 🌟 YÜKSEK KALİTELİ DOĞAL TÜRKÇE SES SEÇİCİ & SENTEZLEYİCİ
+        let naturalTrVoice = null;
+        function loadTurkishVoices() {
+            if (!('speechSynthesis' in window)) return;
+            try {
+                const voices = window.speechSynthesis.getVoices();
+                if (!voices || voices.length === 0) return;
+                const trVoices = voices.filter(v => v.lang && (v.lang.toLowerCase().startsWith('tr') || v.lang.toLowerCase().includes('tr')));
+                if (trVoices.length > 0) {
+                    // Doğal / Neural / Online / Microsoft / Google / Yelda Türkçe seslerini öncele
+                    naturalTrVoice = trVoices.find(v => /natural|neural|online|google|microsoft|yelda|ahmet|tolga|emel/i.test(v.name)) || trVoices[0];
+                }
+            } catch(e) {}
+        }
+
+        if (typeof window !== "undefined" && 'speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadTurkishVoices;
+            loadTurkishVoices();
+        }
+
         // Web Speech API Sesli Anlatım Fonksiyonu
         function speakTurkish(text) {
             if (!appState.voiceEnabled) return;
             if (!('speechSynthesis' in window)) return;
-            window.speechSynthesis.cancel(); // Önceki seslendirmeyi durdur
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'tr-TR';
-            utterance.rate = 1.05;
-            utterance.pitch = 1.0;
-            window.speechSynthesis.speak(utterance);
+            try {
+                window.speechSynthesis.cancel(); // Önceki konuşmayı anında kes
+                if (!naturalTrVoice) loadTurkishVoices();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'tr-TR';
+                if (naturalTrVoice) utterance.voice = naturalTrVoice;
+                utterance.rate = 0.98;   // Anlaşılır ve dengeli hız
+                utterance.pitch = 1.0;  // Doğal perde
+                window.speechSynthesis.speak(utterance);
+            } catch(e) {
+                console.warn("Seslendirme hatası:", e);
+            }
         }
 
         function toggleVoiceNarration() {
             appState.voiceEnabled = !appState.voiceEnabled;
             const icon = document.getElementById('voice-icon');
             if (appState.voiceEnabled) {
-                icon.className = 'fa-solid fa-volume-high text-sm text-blue-600';
+                icon.className = 'fa-solid fa-volume-high text-xs sm:text-sm text-blue-600';
                 speakTurkish("Sesli rehber aktif.");
             } else {
-                icon.className = 'fa-solid fa-volume-xmark text-sm text-slate-400';
+                icon.className = 'fa-solid fa-volume-xmark text-xs sm:text-sm text-slate-400';
                 if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             }
         }
