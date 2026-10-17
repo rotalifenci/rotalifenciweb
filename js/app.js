@@ -7048,34 +7048,34 @@ function renderProjectsPage(container) {
                 </p>
             </div>
 
-            <!-- 🔘 KATEGORİ FİLTRELEME BUTONLARI (Hap Biçimli, Renkli Nokta Göstergeli) -->
-            <div class="mb-8">
-                <div class="flex items-center justify-start lg:justify-center gap-2 sm:gap-3 overflow-x-auto no-scrollbar py-2 px-1 -mx-2 sm:mx-0">
+            <!-- 🔘 KATEGORİ FİLTRELEME KUTUSU (Ekrana Tam Sığan Kutu İçi Tasarım - Kaydırma Yok) -->
+            <div class="mb-8 max-w-6xl mx-auto bg-slate-100/90 border-2 border-slate-200/90 rounded-3xl p-3 sm:p-4 shadow-xs">
+                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
                     <!-- 1. Tüm Projeler (Gri Nokta) -->
                     <button 
                         type="button" 
                         @click="activeCategory = 'all'" 
-                        class="rounded-2xl border-2 px-4 py-2.5 sm:px-5 sm:py-3 transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95"
+                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
                         :class="activeCategory === 'all' 
-                            ? 'bg-slate-100 border-slate-600 text-slate-950 ring-2 ring-slate-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white border-slate-200/90 text-slate-800 hover:bg-slate-50 hover:border-slate-400'"
+                            ? 'bg-white border-slate-600 text-slate-950 ring-2 ring-slate-400/40 shadow-sm scale-[1.02]' 
+                            : 'bg-white/80 border-slate-200/90 text-slate-700 hover:bg-white hover:border-slate-400 hover:text-slate-950'"
                     >
                         <span class="w-3.5 h-3.5 rounded-full bg-slate-400 ring-2 ring-slate-300/40 shrink-0"></span>
                         <span>Tüm Projeler</span>
-                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'all' ? 'bg-slate-300 text-slate-900' : 'bg-slate-100 text-slate-600'">10</span>
+                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'all' ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-600'">10</span>
                     </button>
 
                     <!-- 2. TÜBİTAK 2204-B Ortaokul Araştırma (Zümrüt Yeşili Nokta) -->
                     <button 
                         type="button" 
                         @click="activeCategory = 'tubitak-2204b'" 
-                        class="rounded-2xl border-2 px-4 py-2.5 sm:px-5 sm:py-3 transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95"
+                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
                         :class="activeCategory === 'tubitak-2204b' 
                             ? 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white border-emerald-200/90 text-slate-800 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-950'"
+                            : 'bg-white/80 border-emerald-200/90 text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-950'"
                     >
                         <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-300/40 shrink-0"></span>
-                        <span>TÜBİTAK 2204-B Ortaokul Araştırma</span>
+                        <span>TÜBİTAK 2204-B <span class="hidden md:inline">Ortaokul Araştırma</span></span>
                         <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'tubitak-2204b' ? 'bg-emerald-200 text-emerald-900' : 'bg-emerald-50 text-emerald-700'">3</span>
                     </button>
 
@@ -7083,13 +7083,13 @@ function renderProjectsPage(container) {
                     <button 
                         type="button" 
                         @click="activeCategory = 'tubitak-4006'" 
-                        class="rounded-2xl border-2 px-4 py-2.5 sm:px-5 sm:py-3 transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95"
+                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
                         :class="activeCategory === 'tubitak-4006' 
                             ? 'bg-blue-50 border-blue-500 text-blue-950 ring-2 ring-blue-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white border-blue-200/90 text-slate-800 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-950'"
+                            : 'bg-white/80 border-blue-200/90 text-slate-700 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-950'"
                     >
                         <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-300/40 shrink-0"></span>
-                        <span>Okul Bilim Fuarı (TÜBİTAK 4006)</span>
+                        <span><span class="hidden md:inline">Okul Bilim Fuarı </span>(TÜBİTAK 4006)</span>
                         <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'tubitak-4006' ? 'bg-blue-200 text-blue-900' : 'bg-blue-50 text-blue-700'">3</span>
                     </button>
 
@@ -7097,13 +7097,13 @@ function renderProjectsPage(container) {
                     <button 
                         type="button" 
                         @click="activeCategory = 'teknofest'" 
-                        class="rounded-2xl border-2 px-4 py-2.5 sm:px-5 sm:py-3 transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95"
+                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
                         :class="activeCategory === 'teknofest' 
                             ? 'bg-amber-50 border-amber-500 text-amber-950 ring-2 ring-amber-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white border-amber-200/90 text-slate-800 hover:bg-amber-50 hover:border-amber-400 hover:text-amber-950'"
+                            : 'bg-white/80 border-amber-200/90 text-slate-700 hover:bg-amber-50 hover:border-amber-400 hover:text-amber-950'"
                     >
                         <span class="w-3.5 h-3.5 rounded-full bg-amber-500 ring-2 ring-amber-300/40 shrink-0"></span>
-                        <span>Teknoloji Yarışması (TEKNOFEST)</span>
+                        <span><span class="hidden md:inline">Teknoloji Yarışması </span>(TEKNOFEST)</span>
                         <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'teknofest' ? 'bg-amber-200 text-amber-900' : 'bg-amber-50 text-amber-700'">2</span>
                     </button>
 
@@ -7111,13 +7111,13 @@ function renderProjectsPage(container) {
                     <button 
                         type="button" 
                         @click="activeCategory = 'etwinning'" 
-                        class="rounded-2xl border-2 px-4 py-2.5 sm:px-5 sm:py-3 transition-all duration-200 flex items-center gap-2.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95"
+                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
                         :class="activeCategory === 'etwinning' 
                             ? 'bg-rose-50 border-rose-500 text-rose-950 ring-2 ring-rose-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white border-rose-200/90 text-slate-800 hover:bg-rose-50 hover:border-rose-400 hover:text-rose-950'"
+                            : 'bg-white/80 border-rose-200/90 text-slate-700 hover:bg-rose-50 hover:border-rose-400 hover:text-rose-950'"
                     >
                         <span class="w-3.5 h-3.5 rounded-full bg-rose-500 ring-2 ring-rose-300/40 shrink-0"></span>
-                        <span>Avrupa Topluluğu (eTwinning)</span>
+                        <span><span class="hidden md:inline">Avrupa Topluluğu </span>(eTwinning)</span>
                         <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'etwinning' ? 'bg-rose-200 text-rose-900' : 'bg-rose-50 text-rose-700'">2</span>
                     </button>
                 </div>
