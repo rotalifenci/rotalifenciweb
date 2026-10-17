@@ -542,25 +542,32 @@ slides = [
         "title": "Ay Nedir? Dünya'mızın Tek Doğal Uydusu",
         "subtitle": "Gökyüzünün en yakın ve en gizemli komşusu!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-satellite text-cyan-400"></i> <span>Ay, Dünya'mızın <strong>TEK DOĞAL UYDUSUDUR</strong>.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle text-slate-300"></i> <span>Şekli tıpkı Güneş ve Dünya gibi <strong>KÜRESELDİR</strong>.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-location-dot text-red-400"></i> <span>Dünya'mıza <strong>EN YAKIN</strong> gök cismidir! Ortalama uzaklığı yaklaşık <span class="highlight-cyan">384.400 KM</span>'dir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-lightbulb text-amber-400"></i> <span>Ay bir ışık kaynağı <strong>DEĞİLDİR!</strong> Kendi ışığını üretemez. Güneş'ten üzerine çarpan ışığı bir ayna gibi Dünya'ya yansıtır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-ruler-combined text-emerald-400"></i> <span>Çapı yaklaşık <strong>3.476 km</strong> olup, Dünya'nın çapının yaklaşık <strong>4'te 1'i (1/3.7)</strong> kadardır.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-satellite mr-2"></i> DOĞAL UYDU VE ŞEKİL</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Ay, Dünya'mızın <strong>TEK DOĞAL UYDUSUDUR</strong>. Tıpkı Güneş ve Dünya gibi şekli <strong>KÜRESELDİR</strong>.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-rocket"></i>
-                        <div>Güneş'e arabayla gitmek yaklaşık 170 yıl sürerken, Ay'a giden Apollo astronotları bu mesafeyi sadece 3 günde katetmiştir!</div>
+
+                    <div class="info-card glow-blue" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #60a5fa; margin-bottom: 6px;"><i class="fa-solid fa-location-dot mr-2"></i> EN YAKIN KOMŞUMUZ (384.400 KM)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya'ya <strong>EN YAKIN</strong> gök cismidir (~384.400 km). Çapı (~3.476 km) Dünya'nın yaklaşık <strong>4'te 1'i (1/4)</strong> kadardır.</p>
+                    </div>
+
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-lightbulb mr-2"></i> IŞIK KAYNAĞI DEĞİLDİR!</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Kendi ışığını üretemez. Güneş'ten aldığı ışığı bir dev ayna gibi Dünya'ya yansıttığı için geceleri parlak görünür.</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-rocket text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;">Güneş'e arabayla gitmek ~170 yıl sürerken, Ay'a giden Apollo astronotları bu mesafeyi sadece 3 günde katetmiştir!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_11.jpg" alt="Ay Nedir">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(56, 189, 248, 0.6); box-shadow: 0 0 40px rgba(56, 189, 248, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_16_moon_globe.jpg" alt="Ay Doğal Uydu Yüksek Çözünürlüklü Küre" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -574,24 +581,38 @@ slides = [
         "title": "Ay'ın Yüzey Yapısı: Dağlar, Vadiler ve Düzlükler",
         "subtitle": "Ay'ın yüzeyi pürüzsüz ve düz bir zemin değildir!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-mountain text-slate-300"></i> <span><strong>Ay Dağları ve Yaylaları (Terrae):</strong> Açık renkli, engebeli ve kayalık yüksek bölgelerdir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-water text-blue-400"></i> <span><strong>Ay Denizleri (Maria):</strong> Koyu renkli görünen düzlüklerdir. Ancak buralarda su yoktur! Milyarlarca yıl önceki lav akıntılarının soğumasıyla oluşan bazalt taşlarıdır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle-dot text-amber-400"></i> <span><strong>Kraterler:</strong> Yüzeyde gök taşlarının çarpmasıyla oluşmuş irili ufaklı milyonlarca derin çukur bulunur.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-wind text-cyan-400"></i> <span><strong>Regolit (Ay Tozu):</strong> Yüzey, meteor çarpmalarıyla ufalanmış çok ince ve keskin camımsı toz tabakasıyla kaplıdır.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-mountain mr-2"></i> 1. AY DAĞLARI VE YAYLALARI (TERRAE)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Açık renkli, engebeli ve kayalık yüksek bölgelerdir. Ay yüzeyinin büyük bölümünü bu dağlık yaylalar kaplar.</p>
                     </div>
-                    <div class="callout-box remember">
-                        <i class="fa-solid fa-circle-info"></i>
-                        <div>Ay'daki koyu renkli bölgelere eski gökbilimciler su zannederek 'Deniz' (Maria) demiştir; ancak Ay yüzeyinde sıvı su kesinlikle yoktur!</div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-water mr-2"></i> 2. AY DENİZLERİ (MARIA — SU YOKTUR!)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Koyu renkli görünen geniş düzlüklerdir. <strong>Su kesinlikle yoktur!</strong> Milyarlarca yıl önceki lav akıntılarının soğumasıyla oluşan koyu bazalt kayalarıdır.</p>
+                    </div>
+
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-wind mr-2"></i> 3. REGOLİT (KESKİN AY TOZU)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Ay yüzeyi, milyarlarca yıllık gök taşı çarpmalarıyla ufalanmış camımsı, çok ince ve mikroskobik toz tabakasıyla örtülüdür.</p>
+                    </div>
+
+                    <div class="callout-box remember" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-circle-info text-amber-300 text-2xl"></i>
+                        <div style="font-size: 18px;">Eski gökbilimciler teleskopla baktıklarında koyu alanları deniz zannettikleri için Latince 'Maria' (Deniz) adını vermişlerdir.</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_12.jpg" alt="Ay Yüzeyi">
+
+                <div class="visual-panel" style="flex: 1.1; position: relative;">
+                    <div class="visual-frame" style="border: 2px solid rgba(192, 132, 252, 0.6); box-shadow: 0 0 40px rgba(192, 132, 252, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_16_moon_globe.jpg" alt="Ay Yüzeyi ve Denizler" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 30%; right: 15%; background: rgba(10,15,30,0.9); border: 2px solid #38bdf8; border-radius: 12px; padding: 6px 12px; font-size: 15px; font-weight: 800; color: #38bdf8;">
+                            ● AY DENİZİ (SOĞUMUŞ LAV)
+                        </div>
+                        <div style="position: absolute; bottom: 20%; left: 15%; background: rgba(10,15,30,0.9); border: 2px solid #fbbf24; border-radius: 12px; padding: 6px 12px; font-size: 15px; font-weight: 800; color: #fbbf24;">
+                            ● TYCHO KRATERİ IŞINLARI
+                        </div>
                     </div>
                 </div>
             </div>
@@ -605,23 +626,32 @@ slides = [
         "title": "Ay'daki Kraterler Nasıl Oluşmuştur?",
         "subtitle": "Uzay taşlarının yüzeyi bombalama tarihi!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-meteor text-amber-400"></i> <span><strong>Krater Nedir?:</strong> Uzayda başıboş dolaşan gök taşlarının (meteorların) Ay yüzeyine yüksek hızla çarpması sonucu oluşan çanak şeklindeki derin çukurlardır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-shield-halved text-red-400"></i> <span><strong>Neden Ay'da Çok Fazla Krater Var?:</strong> Ay'ın koruyucu bir atmosferi olmadığı için en küçük meteorlar bile yanıp yok olmadan doğrudan yüzeye çarpar!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-clock-rotate-left text-cyan-400"></i> <span><strong>Neden Silinmezler?:</strong> Ay'da rüzgâr, yağmur ve akarsu gibi aşındırıcı hava olayları olmadığı için oluşan kraterler milyarlarca yıldır hiç bozulmadan kalmıştır!</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-meteor mr-2"></i> KRATER NEDİR VE NASIL OLUŞUR?</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Uzayda başıboş dolaşan gök taşlarının (meteorların) Ay yüzeyine yüksek hızla çarpması sonucu açılan devasa derin çukurlardır.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-earth-americas"></i>
-                        <div>Dünya'mız da gök taşlarına maruz kalır; ancak kalın atmosferimiz meteorları sürtünmeyle yakar ve erozyon kraterleri zamanla siler!</div>
+
+                    <div class="info-card glow-red" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #f87171; margin-bottom: 6px;"><i class="fa-solid fa-shield-halved mr-2"></i> NEDEN AY'DA ÇOK FAZLA KRATER VAR?</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Ay'ın koruyucu bir atmosferi olmadığı için en minik gök taşları bile yanıp parçalanmadan doğrudan yüzeye çarparak krater açar.</p>
+                    </div>
+
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-clock-rotate-left mr-2"></i> KRATERLER NEDEN MİLYARLARCA YIL SİLİNMEZ?</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Ay'da rüzgâr, yağmur, kar veya akarsu gibi hava ve aşınma olayları bulunmadığı için kraterler ilk günkü gibi bozulmadan kalır.</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-earth-americas text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;">Dünya'mızın kalın atmosferi meteorları sürtünmeyle yakarak yok eder; ayrıca rüzgâr ve yağmurlar eski kraterleri zamanla siler!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_12.jpg" alt="Kraterler">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 40px rgba(245, 158, 11, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_18_krater_detay.jpg" alt="Ay Kraterleri ve Tycho Krater Işınları Yakın Plan" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -693,12 +723,22 @@ slides = [
         "html": """
             <div class="slide-body" style="align-items: stretch;">
                 <div class="info-card glow-blue" style="width: 100%; padding: 25px 35px;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 24px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 22px;">
                         <thead>
                             <tr style="border-bottom: 3px solid rgba(255,255,255,0.25); color: #38bdf8;">
                                 <th style="padding: 14px 10px;">ÖZELLİK</th>
-                                <th style="padding: 14px 10px; color: #60a5fa;"><i class="fa-solid fa-earth-americas mr-2"></i> DÜNYA</th>
-                                <th style="padding: 14px 10px; color: #cbd5e1;"><i class="fa-solid fa-moon mr-2"></i> AY</th>
+                                <th style="padding: 14px 10px; color: #60a5fa;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="../assets/slides/slide_earth_hd.jpg" alt="Dünya" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.5);">
+                                        <span>DÜNYA</span>
+                                    </div>
+                                </th>
+                                <th style="padding: 14px 10px; color: #cbd5e1;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="../assets/slides/slide_16_moon_globe.jpg" alt="Ay" style="width: 44px; height: 44px; border-radius: 50%; border: 2px solid #cbd5e1; box-shadow: 0 0 15px rgba(203,213,225,0.5);">
+                                        <span>AY</span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -714,23 +754,23 @@ slides = [
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                                 <td style="padding: 14px 10px; font-weight: 800; color: #fde047;">Atmosfer</td>
-                                <td style="padding: 14px 10px; color: #4ade80;">Kalın ve koruyucu (Yaşam gazları)</td>
-                                <td style="padding: 14px 10px; color: #f87171;">Yok denecek kadar ince</td>
+                                <td style="padding: 14px 10px; color: #4ade80; font-weight: 700;">Kalın ve koruyucu (Yaşam gazları)</td>
+                                <td style="padding: 14px 10px; color: #f87171; font-weight: 700;">Yok denecek kadar ince</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                                 <td style="padding: 14px 10px; font-weight: 800; color: #fde047;">Hava Olayları</td>
-                                <td style="padding: 14px 10px; color: #4ade80;">Yağmur, kar, rüzgâr var</td>
-                                <td style="padding: 14px 10px; color: #f87171;">Hiçbir hava olayı yok</td>
+                                <td style="padding: 14px 10px; color: #4ade80; font-weight: 700;">Yağmur, kar, rüzgâr var</td>
+                                <td style="padding: 14px 10px; color: #f87171; font-weight: 700;">Hiçbir hava olayı yok</td>
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                                 <td style="padding: 14px 10px; font-weight: 800; color: #fde047;">Sıcaklık Farkı</td>
                                 <td style="padding: 14px 10px;">Ilıman ve dengeli</td>
-                                <td style="padding: 14px 10px; color: #f87171;">Aşırı yüksek (-153 °C ile +107 °C)</td>
+                                <td style="padding: 14px 10px; color: #f87171; font-weight: 700;">Aşırı yüksek (-153 °C ile +107 °C)</td>
                             </tr>
                             <tr>
                                 <td style="padding: 14px 10px; font-weight: 800; color: #fde047;">Yer Çekimi</td>
                                 <td style="padding: 14px 10px;">1G (Güçlü çekim)</td>
-                                <td style="padding: 14px 10px;">Dünya'nın yaklaşık 1/6'sı</td>
+                                <td style="padding: 14px 10px; color: #38bdf8; font-weight: 700;">Dünya'nın yaklaşık 1/6'sı</td>
                             </tr>
                         </tbody>
                     </table>
@@ -746,20 +786,35 @@ slides = [
         "title": "Ay Neden Parlar? Işık Kaynağı Mıdır?",
         "subtitle": "Karanlık bir gök cismi gecemizi nasıl aydınlatır?",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-circle-question text-cyan-400"></i> <span>Geceleyin gökyüzüne baktığımızda Ay sanki devasa bir ampul gibi bembeyaz parlar. Peki bu ışık nereden gelir?</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-ban text-red-400"></i> <span><strong>AY IŞIK KAYNAĞI DEĞİLDİR!</strong> Kendi enerjisini ve ışığını kesinlikle kendisi üretemez.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-sun text-amber-400"></i> <span>Ay, <strong>GÜNEŞ'TEN ALDIĞI IŞIĞI YANSITIR</strong>. Tıpkı karanlık bir odada el feneri tutulan bir ayna gibi, üzerine düşen güneş ışığını Dünya'mıza geri saçar.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-shapes text-green-400"></i> <span><strong>Kavram Ayrımı:</strong><br>• <strong>Işık Kaynağı:</strong> Güneş, yıldızlar, yanan ampul, meşale.<br>• <strong>Yansıtıcı Cisim:</strong> Ay, Dünya, ayna, alüminyum folyo.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-circle-question mr-2"></i> GECELERİ AY NASIL PARLAR?</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Gökyüzüne baktığımızda Ay adeta dev bir fener gibi bembeyaz ışıldar. Ancak bu parlaklık kendi enerjisi değildir!</p>
+                    </div>
+
+                    <div class="info-card glow-red" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #f87171; margin-bottom: 6px;"><i class="fa-solid fa-ban mr-2"></i> AY IŞIK KAYNAĞI DEĞİLDİR!</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Kendi ışığını kesinlikle kendisi üretemez. Güneş'ten aldığı ışığı bir dev ayna gibi Dünya'mıza yansıtır.</p>
+                    </div>
+
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-shapes mr-2"></i> KAVRAM AYRIMI</div>
+                        <p style="font-size: 18px; color: #f1f5f9; line-height: 1.4;">
+                            • <strong style="color: #fbbf24;">Işık Kaynağı:</strong> Güneş, yıldızlar, yanan ampul, ateş böceği.<br>
+                            • <strong style="color: #38bdf8;">Yansıtıcı Cisim:</strong> Ay, Dünya, ayna, alüminyum folyo.
+                        </p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;">Tıpkı karanlık bir odada el feneri tutulan bir aynanın parlaması gibi, Ay da Güneş ışığını yansıtarak parlar!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_11.jpg" alt="Ay Neden Parlar">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(251, 191, 36, 0.6); box-shadow: 0 0 40px rgba(251, 191, 36, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_30_dolunay.jpg" alt="Ay Yansıtıcı Parlak Dolunay Modeli" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -946,24 +1001,32 @@ slides = [
         "title": "Yeni Ay Evresi: Gökyüzünde Kaybolan Ay",
         "subtitle": "Ay Güneş ile Dünya arasına girdiğinde oluşur!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-arrows-left-right text-blue-400"></i> <span><strong>Konum:</strong> Ay, Güneş ile Dünya arasına girdiğinde gerçekleşir (Güneş - Ay - Dünya).</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-moon text-slate-400"></i> <span>Ay'ın Güneş'e bakan arka yüzü aydınlanır; ancak Dünya'ya bakan ön yüzü tamamen karanlıkta kalır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-eye-slash text-red-400"></i> <span>Bu nedenle Dünya'dan bakıldığında <strong>AY GÖKYÜZÜNDE GÖRÜLMEZ</strong>.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-clock text-amber-400"></i> <span>Güneş ile birlikte doğar ve Güneş ile birlikte batar.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-blue" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #60a5fa; margin-bottom: 6px;"><i class="fa-solid fa-arrows-left-right mr-2"></i> KONUM (GÜNEŞ - AY - DÜNYA)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Ay, Güneş ile Dünya'nın arasına girer. Güneş ışığı Ay'ın Dünya'dan görünmeyen arka yüzünü aydınlatır.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-lightbulb"></i>
-                        <div>Yeni Ay evresinde Ay'ın Güneş alan 'Görünmeyen Yüzü' tamamen pırıl pırıl aydınlıktır; sadece Dünya'ya dönük yüzü karanlıktır!</div>
+
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-eye-slash mr-2"></i> DÜNYA'DAN GÖRÜLMEZ!</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya'ya bakan ön yüzü tamamen karanlıkta kaldığı için gökyüzünde <strong>AY HİÇ GÖRÜNMEZ</strong>.</p>
+                    </div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-clock mr-2"></i> GÜNEŞ İLE BİRLİKTE DOĞAR / BATAR</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Sabah Güneş ile birlikte doğar, gün boyu Güneş ile gökyüzünde seyreder ve akşam Güneş batarken batar.</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;">Yeni Ay evresinde Ay'ın arka yüzü tamamen aydınlıktır; sadece Dünya'ya bakan yüzü karanlıktır!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame contain-img">
-                        <img src="../assets/sunum5/slide_ref_15.jpg" alt="Yeni Ay">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(96, 165, 250, 0.6); box-shadow: 0 0 40px rgba(96, 165, 250, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_28_yeni_ay.jpg" alt="Yeni Ay Evresi 3D Model" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -977,24 +1040,32 @@ slides = [
         "title": "İlk Dördün Evresi: Sağ Taraf Aydınlık (D Harfi)",
         "subtitle": "Yeni Ay'dan yaklaşık 1 hafta (7 gün) sonra görülür!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-calendar-check text-cyan-400"></i> <span>Yeni Ay evresinden yaklaşık <strong>1 HAFTA SONRA</strong> gerçekleşir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle-half-stroke text-amber-400"></i> <span>Dünya'dan bakıldığında Ay'ın <strong>SAĞ TARAFI AYDINLIK</strong>, sol tarafı karanlık görünür.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-font text-green-400"></i> <span>Aydınlık olan sağ taraf düz <strong class="highlight-cyan">'D' HARFİNE</strong> benzer! (D = Düz / Doğru / İlk).</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-clock text-blue-400"></i> <span>Öğle saatlerinde doğar, gün batımında gökyüzünün en tepesinde pırıl pırıl parlar ve gece yarısı batar.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-calendar-check mr-2"></i> YENİ AY'DAN 1 HAFTA (7 GÜN) SONRA</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Yeni Ay evresinden yaklaşık 7 gün sonra gerçekleşir. Ay, yörüngesinin 1/4'ünü tamamlamıştır.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-brain"></i>
-                        <div><strong>ŞİFRE:</strong> 'D' harfi gibi olan İLK Dördün'dür! Sağ tarafı aydınlıktır.</div>
+
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-circle-half-stroke mr-2"></i> SAĞ TARAF AYDINLIK (DÜZ 'D' HARFİ)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya'dan bakıldığında Ay'ın <strong>SAĞ YARISI AYDINLIK</strong>, sol yarısı karanlık görünür. Düz <strong>'D' harfine</strong> benzer.</p>
+                    </div>
+
+                    <div class="info-card glow-green" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #4ade80; margin-bottom: 6px;"><i class="fa-solid fa-clock mr-2"></i> DOĞUŞ VE BATIŞ ZAMANI</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Öğle saatlerinde doğar, gün batımında gökyüzünün en tepesinde parlar ve gece yarısı batar.</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-brain text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>KOLAY ŞİFRE:</strong> Düz <strong>'D'</strong> harfi = <strong>İLK DÖRDÜN</strong> (Sağ taraf aydınlık).</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame contain-img">
-                        <img src="../assets/sunum5/slide_ref_15.jpg" alt="İlk Dördün">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(56, 189, 248, 0.6); box-shadow: 0 0 40px rgba(56, 189, 248, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_29_ilk_dordun.jpg" alt="İlk Dördün Evresi 3D Model" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -1008,24 +1079,32 @@ slides = [
         "title": "Dolunay Evresi: Işıl Işıl Parlayan Tam Daire",
         "subtitle": "İlk Dördün'den 1 hafta, Yeni Ay'dan 2 hafta sonra!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-arrows-left-right text-amber-400"></i> <span><strong>Konum:</strong> Dünya, Güneş ile Ay'ın arasındadır (Güneş - Dünya - Ay hizası).</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle text-yellow-300"></i> <span>Ay'ın Dünya'ya bakan yüzünün <strong>TAMAMI</strong> Güneş ışığı alır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-certificate text-amber-400"></i> <span>Dünya'dan bakıldığında parlak, kusursuz bir <strong>DAİRE</strong> şeklinde görülür.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-moon text-blue-300"></i> <span>Güneş batarken doğar, bütün gece gökyüzünü aydınlatır ve sabah gün doğarken batar.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-arrows-left-right mr-2"></i> KONUM (GÜNEŞ - DÜNYA - AY)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya, Güneş ile Ay'ın arasındadır. Yeni Ay'dan yaklaşık <strong>14 gün (2 hafta) sonra</strong> gerçekleşir.</p>
                     </div>
-                    <div class="callout-box remember">
-                        <i class="fa-solid fa-star"></i>
-                        <div>Dolunay evresinde Ay'ın parlaklığı en üst seviyededir ve yüzeyindeki krater detayları harika bir şekilde gözlemlenir!</div>
+
+                    <div class="info-card glow-yellow" style="padding: 16px 20px; border: 2px solid rgba(254, 240, 138, 0.4);">
+                        <div style="font-size: 22px; font-weight: 800; color: #fde047; margin-bottom: 6px;"><i class="fa-solid fa-circle mr-2"></i> TAM DAİRE PARLAKLIK</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya'ya bakan yüzünün <strong>TAMAMI</strong> Güneş ışığı alır. Gökyüzünde kusursuz, parlak bir <strong>DAİRE</strong> olarak parıldar.</p>
+                    </div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-moon mr-2"></i> BÜTÜN GECE GÖKYÜZÜNÜ AYDINLATIR</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş batarken doğar, bütün gece boyunca yeryüzünü aydınlatır ve sabah gün doğumunda batar.</p>
+                    </div>
+
+                    <div class="callout-box remember" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-star text-amber-300 text-2xl"></i>
+                        <div style="font-size: 18px;">Dolunay evresinde Ay'ın parlaklığı zirvededir ve yüzeyindeki krater/deniz desenleri çıplak gözle net seçilir!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame contain-img">
-                        <img src="../assets/sunum5/slide_ref_15.jpg" alt="Dolunay">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(251, 191, 36, 0.6); box-shadow: 0 0 40px rgba(251, 191, 36, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_30_dolunay.jpg" alt="Dolunay Evresi 3D Model" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -1039,24 +1118,32 @@ slides = [
         "title": "Son Dördün Evresi: Sol Taraf Aydınlık (Ters D)",
         "subtitle": "Dolunay'dan 1 hafta sonra gökyüzünde son durak!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-calendar-check text-blue-400"></i> <span>Dolunay evresinden yaklaşık <strong>1 HAFTA SONRA</strong> gerçekleşir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle-half-stroke text-blue-300"></i> <span>Dünya'dan bakıldığında Ay'ın <strong>SOL TARAFI AYDINLIK</strong>, sağ tarafı karanlık görünür.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-font text-purple-400"></i> <span>Aydınlık olan sol taraf <strong class="highlight-cyan">TERS 'D' HARFİNE</strong> benzer!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-clock text-amber-400"></i> <span>Gece yarısı doğar, sabah ve öğleye kadar gündüz gökyüzünde belirgin olarak görülebilir.</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-blue" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #60a5fa; margin-bottom: 6px;"><i class="fa-solid fa-calendar-check mr-2"></i> DOLUNAY'DAN 1 HAFTA (~21 GÜN) SONRA</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dolunay evresinden yaklaşık 7 gün, Yeni Ay'dan ise yaklaşık <strong>21 gün (3 hafta) sonra</strong> oluşur.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-brain"></i>
-                        <div><strong>KOLAY AYIRT ETME ŞİFRESİ:</strong><br>• Düz D harfi = <strong>İLK</strong> Dördün (Sağ aydınlık)<br>• Ters D harfi = <strong>SON</strong> Dördün (Sol aydınlık)</div>
+
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-circle-half-stroke mr-2"></i> SOL TARAF AYDINLIK (TERS 'D' HARFİ)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya'dan bakıldığında Ay'ın <strong>SOL YARISI AYDINLIK</strong>, sağ yarısı karanlık görünür. <strong>Ters 'D' harfine</strong> benzer.</p>
+                    </div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-clock mr-2"></i> GÜNDÜZ GÖKYÜZÜNDE GÖRÜLEBİLİR</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Gece yarısı doğar, sabah ve öğle saatlerine kadar gündüz gökyüzünde beyaz bir silüet olarak izlenebilir.</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-brain text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>KOLAY AYIRT ETME ŞİFRESİ:</strong><br>• Düz D = <strong>İLK</strong> Dördün (Sağ aydınlık) &nbsp;|&nbsp; • Ters D = <strong>SON</strong> Dördün (Sol aydınlık)</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame contain-img">
-                        <img src="../assets/sunum5/slide_ref_15.jpg" alt="Son Dördün">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(96, 165, 250, 0.6); box-shadow: 0 0 40px rgba(96, 165, 250, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_31_son_dordun.jpg" alt="Son Dördün Evresi 3D Model" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -1235,13 +1322,28 @@ slides = [
         "html": """
             <div class="slide-body" style="align-items: stretch;">
                 <div class="info-card glow-gold" style="width: 100%; padding: 25px 35px;">
-                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 24px;">
+                    <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 22px;">
                         <thead>
                             <tr style="border-bottom: 3px solid rgba(255,255,255,0.25); color: #fbbf24;">
                                 <th style="padding: 12px 10px;">ÖZELLİK</th>
-                                <th style="padding: 12px 10px; color: #f59e0b;"><i class="fa-solid fa-sun mr-2"></i> GÜNEŞ</th>
-                                <th style="padding: 12px 10px; color: #38bdf8;"><i class="fa-solid fa-earth-americas mr-2"></i> DÜNYA</th>
-                                <th style="padding: 12px 10px; color: #cbd5e1;"><i class="fa-solid fa-moon mr-2"></i> AY</th>
+                                <th style="padding: 12px 10px; color: #f59e0b;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="../assets/slides/slide_sun_hd.jpg" alt="Güneş" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #f59e0b; box-shadow: 0 0 15px rgba(245,158,11,0.5);">
+                                        <span>GÜNEŞ</span>
+                                    </div>
+                                </th>
+                                <th style="padding: 12px 10px; color: #38bdf8;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="../assets/slides/slide_earth_hd.jpg" alt="Dünya" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #38bdf8; box-shadow: 0 0 15px rgba(56,189,248,0.5);">
+                                        <span>DÜNYA</span>
+                                    </div>
+                                </th>
+                                <th style="padding: 12px 10px; color: #cbd5e1;">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <img src="../assets/slides/slide_16_moon_globe.jpg" alt="Ay" style="width: 48px; height: 48px; border-radius: 50%; border: 2px solid #cbd5e1; box-shadow: 0 0 15px rgba(203,213,225,0.5);">
+                                        <span>AY</span>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1259,7 +1361,7 @@ slides = [
                             </tr>
                             <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                                 <td style="padding: 12px 10px; font-weight: 800; color: #fde047;">Işık Durumu</td>
-                                <td style="padding: 12px 10px; color: #4ade80;">Işık Kaynağı</td>
+                                <td style="padding: 12px 10px; color: #4ade80; font-weight: 700;">Işık Kaynağı</td>
                                 <td style="padding: 12px 10px; color: #94a3b8;">Yansıtıcı Cisim</td>
                                 <td style="padding: 12px 10px; color: #94a3b8;">Yansıtıcı Cisim</td>
                             </tr>
@@ -1276,8 +1378,8 @@ slides = [
                                 <td style="padding: 12px 10px; color: #38bdf8;"><strong>3 Hareket</strong></td>
                             </tr>
                             <tr>
-                                <td style="padding: 12px 10px; font-weight: 800; color: #fde047;">Büyüklük</td>
-                                <td colspan="3" style="padding: 12px 10px; font-weight: 900; color: #f59e0b;">GÜNEŞ > DÜNYA > AY</td>
+                                <td style="padding: 12px 10px; font-weight: 800; color: #fde047;">Büyüklük Sırası</td>
+                                <td colspan="3" style="padding: 12px 10px; font-weight: 900; color: #f59e0b; font-size: 24px;">GÜNEŞ > DÜNYA > AY</td>
                             </tr>
                         </tbody>
                     </table>
