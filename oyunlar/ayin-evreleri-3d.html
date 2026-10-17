@@ -228,7 +228,7 @@
     <main class="flex-1 my-1 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 min-h-0 relative mobile-landscape-row">
 
         <!-- 🚀 SOL PANEL (%75): YÖRÜNGE GÖRÜNÜMÜ (DEV 3D UZAY SİMÜLASYON SAHNESİ) -->
-        <div class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-[50vh] min-h-[300px] max-h-[560px] lg:h-full lg:max-h-none min-h-0 orbit-canvas-container shrink-0 mobile-landscape-canvas">
+        <div class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-[34vh] min-h-[220px] max-h-[340px] sm:h-[40vh] sm:min-h-[280px] lg:h-full lg:max-h-none min-h-0 orbit-canvas-container shrink-0 mobile-landscape-canvas">
             <!-- Simülasyon Üst Bilgi Rozetleri -->
             <div class="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
                 <span class="px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm">
@@ -254,10 +254,10 @@
             </div>
 
             <!-- Etkileşim İpucu / Bilgilendirme Kartı -->
-            <div class="absolute bottom-2.5 left-2.5 z-10 pointer-events-none">
-                <div class="px-3 py-1 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] sm:text-[11px] font-bold text-slate-300 flex items-center gap-2 shadow-sm">
+            <div class="absolute bottom-2 left-2 z-10 pointer-events-none">
+                <div class="px-2.5 py-0.5 rounded-lg bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] font-bold text-slate-300 flex items-center gap-1.5 shadow-sm">
                     <i class="fa-solid fa-hand-pointer text-cyan-400 animate-bounce"></i>
-                    <span>Ay'ı yörünge üzerinde parmağınızla veya fareyle serbestçe sürükleyebilirsiniz!</span>
+                    <span>Ay'ı parmağınızla yörüngede sürükleyebilirsiniz!</span>
                 </div>
             </div>
 
@@ -294,21 +294,21 @@
         </div>
 
         <!-- 🌕 SAĞ PANEL (%25): DÜNYA'DAN AY NASIL GÖRÜNÜR? (CANLI TELESKOPİK 3D MODELİ & BİLİMSEL BİLGİLER) -->
-        <div class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden h-auto lg:h-full min-h-0 mobile-landscape-side">
+        <div class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2 sm:p-2.5 lg:p-3 relative overflow-hidden h-auto lg:h-full min-h-0 shrink-0 mobile-landscape-side">
             
             <!-- Panel Üstü: Başlık & Evre Rozeti -->
             <div class="flex flex-col flex-1 min-h-0 justify-between">
                 <div>
-                    <div class="flex items-center justify-between mb-1.5 pb-1.5 border-b border-slate-100">
+                    <div class="flex items-center justify-between mb-1 pb-1 border-b border-slate-100">
                         <div class="flex items-center gap-1.5">
-                            <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-black">
+                            <span class="w-5 h-5 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-[11px] font-black">
                                 <i class="fa-solid fa-binoculars"></i>
                             </span>
                             <div>
                                 <h2 class="text-xs font-extrabold text-slate-800 uppercase tracking-tight leading-none">
                                     Dünya'dan Görünüm
                                 </h2>
-                                <span class="text-[9px] text-slate-400 font-bold block mt-0.5">Canlı Teleskopik Gözlem</span>
+                                <span class="text-[8px] text-slate-400 font-bold block mt-0.5 leading-none">Canlı Teleskopik Gözlem</span>
                             </div>
                         </div>
                         <span id="phase-type-badge" class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-black uppercase tracking-wider">
@@ -316,8 +316,8 @@
                         </span>
                     </div>
 
-                    <!-- Büyük Evre Başlığı -->
-                    <div class="text-center my-0.5">
+                    <!-- Büyük Evre Başlığı (Masaüstünde belirgin) -->
+                    <div class="hidden lg:block text-center my-0.5">
                         <h3 id="current-phase-name" class="text-lg sm:text-xl font-black text-slate-900 tracking-tight leading-tight">
                             YENİ AY
                         </h3>
@@ -327,39 +327,55 @@
                     </div>
                 </div>
 
-                <!-- 3D Earth View Telescope Sphere Viewport: Kompakt & Orantılı -->
-                <div class="relative w-full aspect-square max-h-[145px] sm:max-h-[170px] xl:max-h-[195px] mx-auto my-1 rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center shrink-0">
-                    <!-- Canlı 3D Telescope Canvas -->
-                    <canvas id="telescope-canvas" class="w-full h-full block"></canvas>
-                    
-                    <!-- Canlı Aydınlanma Rozeti -->
-                    <div class="absolute bottom-1.5 left-1.5 px-2 py-0.5 rounded-md bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] font-black text-cyan-400 font-mono shadow">
-                        Aydınlık: <span id="illumination-percent">0%</span>
+                <!-- Mobilde Yatay Kompakt Düzen / Masaüstünde Dikey Düzen -->
+                <div class="flex flex-row lg:flex-col gap-2 sm:gap-2.5 items-center lg:items-stretch my-0.5">
+                    <!-- 3D Earth View Telescope Sphere Viewport: Mobilde Kompakt 88px, Masaüstünde Geniş -->
+                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-full lg:aspect-square lg:max-h-[150px] xl:max-h-[185px] mx-auto rounded-xl lg:rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center shrink-0">
+                        <!-- Canlı 3D Telescope Canvas -->
+                        <canvas id="telescope-canvas" class="w-full h-full block"></canvas>
+                        
+                        <!-- Canlı Aydınlanma Rozeti -->
+                        <div class="absolute bottom-1 left-1 px-1.5 py-0.5 rounded bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[8px] sm:text-[9px] font-black text-cyan-400 font-mono shadow">
+                            <span id="illumination-percent">%0</span>
+                        </div>
+
+                        <!-- Canlı Yörünge Açısı Rozeti -->
+                        <div class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[8px] sm:text-[9px] font-black text-amber-400 font-mono shadow">
+                            <span id="orbit-angle-degree">0°</span>
+                        </div>
                     </div>
 
-                    <!-- Canlı Yörünge Açısı Rozeti -->
-                    <div class="absolute bottom-1.5 right-1.5 px-2 py-0.5 rounded-md bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] font-black text-amber-400 font-mono shadow">
-                        Açı: <span id="orbit-angle-degree">0°</span>
-                    </div>
-                </div>
+                    <!-- Mobilde Yan Bilgi Kolonu (Evre Adı, İstatistikler & Özet) -->
+                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                        <!-- Mobilde Evre Başlığı -->
+                        <div class="lg:hidden mb-1">
+                            <div class="flex items-center gap-1.5">
+                                <h3 id="current-phase-name-mob" class="text-sm font-black text-slate-900 tracking-tight leading-none">
+                                    YENİ AY
+                                </h3>
+                            </div>
+                            <p id="current-phase-subtitle-mob" class="text-[9px] font-bold text-blue-600 mt-0.5 truncate leading-none">
+                                Ay karanlıktır, gökyüzünde görünmez
+                            </p>
+                        </div>
 
-                <!-- Bilimsel İstatistikler Tablosu (5. Sınıf Seviyesi) -->
-                <div class="grid grid-cols-2 gap-1.5 my-1 text-xs">
-                    <div class="p-2 bg-slate-50 border border-slate-200/80 rounded-xl">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase block">Geçen Süre</span>
-                        <span class="text-xs sm:text-sm font-black text-slate-800 font-mono" id="stat-elapsed-days">0.0 Gün</span>
-                        <span class="text-[9px] text-slate-500 font-semibold block">/ 29.5 Günlük Döngü</span>
-                    </div>
-                    <div class="p-2 bg-slate-50 border border-slate-200/80 rounded-xl">
-                        <span class="text-[9px] font-bold text-slate-400 uppercase block">Görünen Şekil</span>
-                        <span class="text-xs sm:text-sm font-black text-slate-800 truncate block" id="stat-shape-desc">Tamamen Karanlık</span>
-                        <span class="text-[9px] text-blue-600 font-semibold block truncate" id="stat-side-desc">Işık Arkasında</span>
-                    </div>
-                </div>
+                        <!-- Bilimsel İstatistikler Tablosu (5. Sınıf Seviyesi) -->
+                        <div class="grid grid-cols-2 gap-1 my-0.5 text-xs">
+                            <div class="p-1 sm:p-1.5 bg-slate-50 border border-slate-200/80 rounded-lg sm:rounded-xl">
+                                <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase block">Geçen Süre</span>
+                                <span class="text-[11px] sm:text-xs font-black text-slate-800 font-mono block leading-none" id="stat-elapsed-days">0.0 Gün</span>
+                            </div>
+                            <div class="p-1 sm:p-1.5 bg-slate-50 border border-slate-200/80 rounded-lg sm:rounded-xl">
+                                <span class="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase block">Görünen Şekil</span>
+                                <span class="text-[11px] sm:text-xs font-black text-slate-800 truncate block leading-none" id="stat-shape-desc">Karanlık</span>
+                            </div>
+                        </div>
 
-                <!-- Açıklama / Pedagojik Özet Kutusu -->
-                <div class="p-2.5 bg-blue-50/70 border border-blue-100 rounded-xl text-[11px] text-slate-700 leading-relaxed font-medium line-clamp-3" id="phase-explanation-text">
-                    <strong>Yeni Ay:</strong> Ay, Dünya ile Güneş arasındadır. Ay'ın Güneş gören aydınlık yüzü Güneş'e dönüktür; Dünya'ya bakan karanlık yüzü ise ışık almadığı için gökyüzünde görünmez.
+                        <!-- Açıklama / Pedagojik Özet Kutusu -->
+                        <div class="p-1.5 sm:p-2 bg-blue-50/70 border border-blue-100 rounded-lg sm:rounded-xl text-[9px] sm:text-[10px] text-slate-700 leading-snug font-medium line-clamp-2 lg:line-clamp-3" id="phase-explanation-text">
+                            <strong>Yeni Ay:</strong> Ay, Dünya ile Güneş arasındadır. Karanlık yüzü Dünya'ya dönüktür.
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1210,15 +1226,18 @@
             const orbitPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // y = 0 düzlemi
             const planeIntersect = new THREE.Vector3();
 
-            function getPointerAngle(e) {
+            function updatePointerRay(e) {
                 const rect = canvas.getBoundingClientRect();
                 const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
                 const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
 
                 mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
                 mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
-
                 raycaster.setFromCamera(mouse, orbitCamera);
+            }
+
+            function getPointerAngle(e) {
+                updatePointerRay(e);
                 if (raycaster.ray.intersectPlane(orbitPlane, planeIntersect)) {
                     // Koordinat: Sun at (-X), Moon starts at (-R, 0, 0) for theta = 0
                     let angle = Math.atan2(planeIntersect.z, -planeIntersect.x);
@@ -1228,19 +1247,46 @@
                 return null;
             }
 
-            function onPointerDown(e) {
-                const angle = getPointerAngle(e);
-                if (angle !== null) {
+            function isHitMoonOrOrbit(e) {
+                updatePointerRay(e);
+                const isTouch = ('ontouchstart' in window) || (e.touches && e.touches.length > 0);
+
+                // 1. Ay küresine doğrudan dokunuldu mu?
+                if (moonMesh) {
+                    const hits = raycaster.intersectObject(moonMesh, true);
+                    if (hits.length > 0) return true;
+                }
+
+                // 2. Yörünge düzleminde Ay'a yakın mı?
+                if (raycaster.ray.intersectPlane(orbitPlane, planeIntersect)) {
+                    if (moonMesh) {
+                        const distToMoon = planeIntersect.distanceTo(moonMesh.position);
+                        if (distToMoon < (isTouch ? 8.5 : 5.0)) return true;
+                    }
+                    // 3. Yörünge dairesine yakın mı?
                     const clickDist = Math.hypot(planeIntersect.x, planeIntersect.z);
-                    // Dokunmatik ekranda parmak alanı daha geniş olduğu için tolerans artırıldı (5.2 vs 3.8)
-                    const isTouch = ('ontouchstart' in window) || (e.touches && e.touches.length > 0);
-                    const tolerance = isTouch ? 5.2 : 3.8;
-                    if (Math.abs(clickDist - ORBIT_RADIUS) < tolerance) {
+                    if (Math.abs(clickDist - ORBIT_RADIUS) < (isTouch ? 6.5 : 4.0)) return true;
+                }
+                return false;
+            }
+
+            function onPointerDown(e) {
+                // İki parmakla kıstırma (zoom) yapılıyorsa serbest bırak
+                if (e.touches && e.touches.length > 1) return;
+                if (e.button && e.button !== 0) return; // Sadece sol tık
+
+                if (isHitMoonOrOrbit(e)) {
+                    const angle = getPointerAngle(e);
+                    if (angle !== null) {
                         appState.isDraggingMoon = true;
                         appState.isPlaying = false;
                         updatePlayPauseUI();
                         if (orbitControls) orbitControls.enabled = false;
                         setSimulationAngle(angle);
+
+                        // OrbitControls'un bu olayı almasını kesinlikle engelle
+                        e.stopPropagation();
+                        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
                         if (e.cancelable) e.preventDefault();
                     }
                 }
@@ -1248,33 +1294,37 @@
 
             function onPointerMove(e) {
                 if (!appState.isDraggingMoon) return;
+                e.stopPropagation();
+                if (e.stopImmediatePropagation) e.stopImmediatePropagation();
                 if (e.cancelable) e.preventDefault();
+
                 const angle = getPointerAngle(e);
                 if (angle !== null) {
                     setSimulationAngle(angle);
                 }
             }
 
-            function onPointerUp() {
+            function onPointerUp(e) {
                 if (appState.isDraggingMoon) {
                     appState.isDraggingMoon = false;
                     if (orbitControls) orbitControls.enabled = true;
+                    if (e && e.stopPropagation) e.stopPropagation();
                     // Eğer ses etkinse evre adını seslendir
                     const currentPhase = getCurrentPhaseInfo(appState.currentAngleRad);
                     speakTurkish(currentPhase.name);
                 }
             }
 
-            // Fare Dinleyicileri
-            canvas.addEventListener('mousedown', onPointerDown);
-            window.addEventListener('mousemove', onPointerMove);
-            window.addEventListener('mouseup', onPointerUp);
+            // Fare Dinleyicileri (Capture phase ile OrbitControls'den önce yakala)
+            canvas.addEventListener('mousedown', onPointerDown, { capture: true });
+            window.addEventListener('mousemove', onPointerMove, { capture: true });
+            window.addEventListener('mouseup', onPointerUp, { capture: true });
 
-            // Dokunmatik Dinleyicileri (non-passive: sayfa kaymasını engellemek için)
-            canvas.addEventListener('touchstart', onPointerDown, { passive: false });
-            window.addEventListener('touchmove', onPointerMove, { passive: false });
-            window.addEventListener('touchend', onPointerUp);
-            window.addEventListener('touchcancel', onPointerUp);
+            // Dokunmatik Dinleyicileri (Capture phase & passive: false ile doğrudan Ay'ı kontrol et)
+            canvas.addEventListener('touchstart', onPointerDown, { passive: false, capture: true });
+            window.addEventListener('touchmove', onPointerMove, { passive: false, capture: true });
+            window.addEventListener('touchend', onPointerUp, { passive: false, capture: true });
+            window.addEventListener('touchcancel', onPointerUp, { passive: false, capture: true });
         }
 
         // -----------------------------------------------------------------
@@ -1335,15 +1385,36 @@
             const phase = getCurrentPhaseInfo(angleRad);
 
             // DOM Güncellemeleri
-            document.getElementById('current-phase-name').innerText = phase.name;
-            document.getElementById('current-phase-subtitle').innerText = phase.subtitle;
-            document.getElementById('phase-explanation-text').innerHTML = `<strong>${phase.shortName}:</strong> ${phase.explanation}`;
-            document.getElementById('phase-type-badge').innerText = phase.type;
-            document.getElementById('illumination-percent').innerText = `%${illuminationPercent}`;
-            document.getElementById('orbit-angle-degree').innerText = `${Math.round(deg)}°`;
-            document.getElementById('stat-elapsed-days').innerText = `${elapsedDays.toFixed(1)} Gün`;
-            document.getElementById('stat-shape-desc').innerText = phase.shapeDesc;
-            document.getElementById('stat-side-desc').innerText = phase.sideDesc;
+            const nameEl = document.getElementById('current-phase-name');
+            if (nameEl) nameEl.innerText = phase.name;
+            const nameMobEl = document.getElementById('current-phase-name-mob');
+            if (nameMobEl) nameMobEl.innerText = phase.name;
+
+            const subEl = document.getElementById('current-phase-subtitle');
+            if (subEl) subEl.innerText = phase.subtitle;
+            const subMobEl = document.getElementById('current-phase-subtitle-mob');
+            if (subMobEl) subMobEl.innerText = phase.subtitle;
+
+            const expEl = document.getElementById('phase-explanation-text');
+            if (expEl) expEl.innerHTML = `<strong>${phase.shortName}:</strong> ${phase.explanation}`;
+
+            const badgeEl = document.getElementById('phase-type-badge');
+            if (badgeEl) badgeEl.innerText = phase.type;
+
+            const illEl = document.getElementById('illumination-percent');
+            if (illEl) illEl.innerText = `%${illuminationPercent}`;
+
+            const degEl = document.getElementById('orbit-angle-degree');
+            if (degEl) degEl.innerText = `${Math.round(deg)}°`;
+
+            const daysEl = document.getElementById('stat-elapsed-days');
+            if (daysEl) daysEl.innerText = `${elapsedDays.toFixed(1)} Gün`;
+
+            const shapeEl = document.getElementById('stat-shape-desc');
+            if (shapeEl) shapeEl.innerText = phase.shapeDesc;
+
+            const sideEl = document.getElementById('stat-side-desc');
+            if (sideEl) sideEl.innerText = phase.sideDesc;
 
             if (syncSlider) {
                 const slider = document.getElementById('timeline-slider');
