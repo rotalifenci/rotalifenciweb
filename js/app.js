@@ -14967,28 +14967,28 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     // 🌕 5. Sınıf Ay'ın Evreleri 3D Etkileşimli Planetaryum Uzay Simülatörü
     if (str.includes("ayin-evreleri") || str.includes("ay'ın evreleri") || str.includes("ayin_evreleri") || str.includes("ay-evreleri") || str.includes("oyun-5-gunes") || str.includes("oyun-ayin-evreleri-3d") || titleStr.includes("ay'ın evreleri") || titleStr.includes("yörünge") || titleStr.includes("yorunge") || resolvedKey === "oyun-5-gunes" || resolvedKey === "oyun-ayin-evreleri-3d") {
         modal.innerHTML = `
-            <div class="bg-slate-950 rounded-2xl w-full max-w-[99vw] h-[98vh] h-[98dvh] border border-cyan-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
-                    <div class="flex items-center gap-2 sm:gap-3">
-                        <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm sm:text-lg font-black shadow-md">
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
+                <div class="px-3 py-1 sm:py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[36px] max-h-[40px]">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
                             <i class="fa-solid fa-moon"></i>
                         </span>
-                        <div>
-                            <h3 class="text-xs sm:text-base font-black text-cyan-300">🌕 Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü</h3>
-                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:inline">5. Sınıf Fen Bilimleri • Fotogerçekçi Planetaryum & Canlı Yörünge Deneyimi</span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-cyan-300">🌕 Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri Planetaryumu</span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-1.5 sm:gap-2">
-                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
-                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
                         </a>
-                        <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
-                            <i class="fa-solid fa-xmark"></i>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-7 h-7 rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center font-black transition-all cursor-pointer shadow-sm" title="Kapat">
+                            <i class="fa-solid fa-xmark text-xs"></i>
                         </button>
                     </div>
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
-                    <iframe src="oyunlar/ayin-evreleri-3d.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                    <iframe src="oyunlar/ayin-evreleri-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
