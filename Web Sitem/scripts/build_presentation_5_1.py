@@ -68,24 +68,32 @@ slides = [
         "title": "Uzay ve Evren Nedir? Gök Cisimleri Nelerdir?",
         "subtitle": "Kavramları doğru öğrenelim, birbirine karıştırmayalım!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-infinity text-blue-400"></i> <span><strong class="highlight-cyan">Evren:</strong> Dünya'mız da dâhil olmak üzere var olan tüm maddeleri, enerjiyi, galaksileri ve sonsuz boşluğu içine alan bütündür. (Evren HER ŞEYİ kapsar!)</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle-notch text-blue-400"></i> <span><strong class="highlight-cyan">Uzay:</strong> Dünya'mızın atmosferi dışında kalan, gök cisimlerinin yüzdüğü sonsuz boşluktur.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-meteor text-amber-400"></i> <span><strong class="highlight-gold">Gök Cismi:</strong> Uzay boşluğunda bulunan yıldızlar, gezegenler, uydular, asteroitler ve kuyruklu yıldızların her birine gök cismi denir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-satellite text-emerald-400"></i> <span><strong class="highlight-green">Doğal Uydu:</strong> Bir gezegenin çekiminde bulunarak onun etrafında dolanan gök cismidir (Ay, Dünya'nın tek doğal uydusudur).</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-infinity mr-2"></i> 1. EVREN (HER ŞEYİ KAPSAR)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya'mız da dâhil olmak üzere var olan tüm maddeleri, enerjiyi, galaksileri, yıldızları ve sonsuz boşluğu içine alan bütündür.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-lightbulb"></i>
-                        <div><strong>BÜYÜKLÜK SIRALAMASI:</strong> EVREN > UZAY > DÜNYA<br><span style="font-size: 18px; font-weight: 500; opacity: 0.9;">Dünya uzayın içinde, uzay ise evrenin içindedir!</span></div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-circle-notch mr-2"></i> 2. UZAY (ATMOSFER DIŞI BOŞLUK)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya atmosferinin dışında kalan, gök cisimlerinin yüzdüğü sonsuz karanlık boşluktur. <em>(Dünya uzayın içinde bir adadır!)</em></p>
+                    </div>
+
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-meteor mr-2"></i> 3. GÖK CİSMİ VE DOĞAL UYDU</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Uzaydaki yıldızlar, gezegenler ve asteroitlerin her biridir. <strong>Ay</strong>, Dünya'nın çekimindeki tek doğal uydumuzdur.</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>ALTIN KURAL:</strong> EVREN > UZAY > DÜNYA &nbsp;|&nbsp; Dünya uzayın içinde, uzay ise evrenin içindedir!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_1.jpg" alt="Uzay ve Evren">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(56, 189, 248, 0.6); box-shadow: 0 0 40px rgba(56, 189, 248, 0.3); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_3_universe_space.jpg" alt="Evren, Uzay ve Dünya Hiyerarşisi" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -99,25 +107,32 @@ slides = [
         "title": "Mavi Gezegen Dünya'nın Temel Özellikleri",
         "subtitle": "Canlıların ev sahibi, uzayın masmavi incisi!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-globe text-cyan-400"></i> <span>Dünya bir <strong>GEZEGENDİR</strong>. Kendi ışığını üretemez, Güneş'ten aldığı ışığı yansıtır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-shapes text-cyan-400"></i> <span>Şekli <strong>KÜRESELDİR</strong> (Kutuplardan hafif basık, ekvatordan şişkin geoit biçimdedir).</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-water text-blue-400"></i> <span>Yüzeyinin yaklaşık <strong>%71'i (3/4'ü) sularla</strong>, %29'u (1/4'ü) karalarla kaplıdır. Bu yüzden uzaydan mavi görünür ve <span class="highlight-cyan">'Mavi Gezegen'</span> denir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-heart-pulse text-red-400"></i> <span>Evrende üzerinde yaşam olduğu kesin olarak bilinen <strong>TEK</strong> gök cismidir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-layer-group text-amber-400"></i> <span>Katmanları: Hava küre (Atmosfer), Su küre, Taş küre, Ateş küre (Manto) ve Ağır küre (Çekirdek).</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-globe mr-2"></i> GEZEGEN VE ŞEKİL ÖZELLİĞİ</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Dünya bir <strong>GEZEGENDİR</strong>. Kendi ışığı yoktur, Güneş'ten aldığı ışığı yansıtır. Şekli kutuplardan basık, ekvatordan şişkin <strong>GEOİT (KÜRESEL)</strong> yapıdadır.</p>
                     </div>
-                    <div class="callout-box remember">
-                        <i class="fa-solid fa-compass"></i>
-                        <div><strong>TARİH NOTU:</strong> Ferdinand Macellan, Dünya çevresinde sürekli aynı yöne yelken açarak Dünya'nın küresel olduğunu deniz yoluyla ilk kez kanıtlamıştır!</div>
+
+                    <div class="info-card glow-blue" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #60a5fa; margin-bottom: 6px;"><i class="fa-solid fa-water mr-2"></i> %71 SULARLA KAPLI (MAVİ GEZEGEN)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Yüzeyinin yaklaşık <strong>%71'i (3/4'ü) sularla</strong>, %29'u (1/4'ü) karalarla kaplıdır. Uzaydan parlak mavi göründüğü için <span class="highlight-cyan">'Mavi Gezegen'</span> denir.</p>
+                    </div>
+
+                    <div class="info-card glow-green" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #4ade80; margin-bottom: 6px;"><i class="fa-solid fa-heart-pulse mr-2"></i> YAŞAM VE KATMANLAR</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Üzerinde yaşam olduğu bilinen tek gök cismidir. Katmanları: Hava küre (Atmosfer), Su küre, Taş küre (Yer kabuğu), Ateş küre (Manto) ve Çekirdek'tir.</p>
+                    </div>
+
+                    <div class="callout-box remember" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-compass text-amber-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>TARİH NOTU:</strong> Ferdinand Macellan, sürekli aynı yöne giderek Dünya'nın küreselliğini deniz yoluyla ilk kez kanıtlamıştır!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_10.jpg" alt="Dünya">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(14, 165, 233, 0.6); box-shadow: 0 0 40px rgba(14, 165, 233, 0.3); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_4_earth_globe.jpg" alt="Mavi Gezegen Dünya 3D Model" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -169,54 +184,37 @@ slides = [
         "title": "Güneş Katmanlarının Ayrıntılı Özellikleri",
         "subtitle": "Merkezden uzaya doğru dev bir nükleer fırın!",
         "html": """
-            <div class="slide-body" style="align-items: stretch;">
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; width: 100%;">
-                    <div class="info-card glow-red">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(239,68,68,0.2); color: #f87171;"><i class="fa-solid fa-fire-burner"></i></div>
-                            <div class="card-title">1. Çekirdek (Merkez)</div>
+            <div class="slide-body" style="gap: 28px;">
+                <!-- Sol: 3D Katman Kesit Modeli -->
+                <div class="visual-panel" style="flex: 1.15; position: relative;">
+                    <div class="visual-frame" style="border: 2px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 40px rgba(245, 158, 11, 0.3); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_7_sun_layers.jpg" alt="Güneş Katmanları 3D Kesit Modeli" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(10,15,30,0.92); border: 2px solid #ef4444; border-radius: 14px; padding: 6px 14px; box-shadow: 0 0 20px rgba(239,68,68,0.5); font-size: 16px; font-weight: 800; color: #fff;">
+                            <span style="color: #ef4444;">●</span> ÇEKİRDEK: <span style="color: #fef08a;">15 MİLYON °C</span>
                         </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-check text-red-400"></i> <span>Güneş'in kalbidir ve enerjinin doğduğu yerdir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-red-400"></i> <span>Sıcaklığı yaklaşık <strong>15 MİLYON °C</strong>'dir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-red-400"></i> <span>Hidrojen gazları burada helyuma dönüşür.</span></li>
-                        </ul>
+                    </div>
+                </div>
+
+                <!-- Sağ: 4 Katmanın Özellikleri -->
+                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 12px;">
+                    <div class="info-card glow-red" style="padding: 12px 18px;">
+                        <div style="font-size: 20px; font-weight: 800; color: #f87171; margin-bottom: 4px;"><i class="fa-solid fa-fire-burner mr-2"></i> 1. ÇEKİRDEK (MERKEZ) — 15 MİLYON °C</div>
+                        <p style="font-size: 17px; color: #f1f5f9; line-height: 1.35;">Güneş'in kalbidir. Aşırı basınç ve sıcaklıkta hidrojen helyuma dönüşür; tüm yaşam enerjisi burada doğar.</p>
                     </div>
 
-                    <div class="info-card glow-gold">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(245,158,11,0.2); color: #fbbf24;"><i class="fa-solid fa-eye"></i></div>
-                            <div class="card-title">2. Işık Küre (Fotosfer)</div>
-                        </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-check text-amber-400"></i> <span>Güneş'in görünür parlak yüzeyidir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-amber-400"></i> <span>Sıcaklığı yaklaşık <strong>5.500 °C - 6.000 °C</strong>'dir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-amber-400"></i> <span>Güneş lekeleri bu katman üzerinde yer alır.</span></li>
-                        </ul>
+                    <div class="info-card glow-gold" style="padding: 12px 18px;">
+                        <div style="font-size: 20px; font-weight: 800; color: #fbbf24; margin-bottom: 4px;"><i class="fa-solid fa-eye mr-2"></i> 2. IŞIK KÜRE (FOTOSFER) — ~5.500 °C</div>
+                        <p style="font-size: 17px; color: #f1f5f9; line-height: 1.35;">Güneş'in gördüğümüz parlak sarı yüzeyidir. Güneş lekeleri bu katman üzerinde yer alır.</p>
                     </div>
 
-                    <div class="info-card" style="border-color: rgba(251, 146, 60, 0.4);">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(251,146,60,0.2); color: #fb923c;"><i class="fa-solid fa-cloud-bolt"></i></div>
-                            <div class="card-title">3. Renk Küre (Kromosfer)</div>
-                        </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-check text-orange-400"></i> <span>Işık kürenin hemen üzerindeki atmosfer katmanıdır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-orange-400"></i> <span>Kırmızımsı renkte gaz patlamaları görülür.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-orange-400"></i> <span>Kalınlığı yaklaşık 2.000 kilometredir.</span></li>
-                        </ul>
+                    <div class="info-card glow-orange" style="padding: 12px 18px; border: 2px solid rgba(251, 146, 60, 0.4);">
+                        <div style="font-size: 20px; font-weight: 800; color: #fb923c; margin-bottom: 4px;"><i class="fa-solid fa-cloud-bolt mr-2"></i> 3. RENK KÜRE (KROMOSFER)</div>
+                        <p style="font-size: 17px; color: #f1f5f9; line-height: 1.35;">Işık küreyi saran yaklaşık 2.000 km kalınlığında kırmızımsı parlama ve gaz fışkırmaları katmanıdır.</p>
                     </div>
 
-                    <div class="info-card" style="border-color: rgba(192, 132, 252, 0.4);">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(192,132,252,0.2); color: #c084fc;"><i class="fa-solid fa-crown"></i></div>
-                            <div class="card-title">4. Taç Küre (Korona)</div>
-                        </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-check text-purple-400"></i> <span>En dıştaki dev gaz halesidir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-purple-400"></i> <span>Sıcaklığı şaşırtıcı şekilde <strong>1.000.000 °C</strong>'den fazladır!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-check text-purple-400"></i> <span>Tam Güneş tutulmasında çıplak gözle beyaz taç gibi ışıldar.</span></li>
-                        </ul>
+                    <div class="info-card glow-purple" style="padding: 12px 18px;">
+                        <div style="font-size: 20px; font-weight: 800; color: #c084fc; margin-bottom: 4px;"><i class="fa-solid fa-crown mr-2"></i> 4. TAÇ KÜRE (KORONA) — 1.000.000 °C</div>
+                        <p style="font-size: 17px; color: #f1f5f9; line-height: 1.35;">En dıştaki dev gaz halesidir. Tam Güneş tutulması anında çıplak gözle muhteşem beyaz bir taç gibi ışıldar.</p>
                     </div>
                 </div>
             </div>
@@ -230,24 +228,32 @@ slides = [
         "title": "Güneş'in Gaz İçeriği ve Sonsuz Enerjisi",
         "subtitle": "Hidrojenin Helyuma dönüşüm reaksiyonu!",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-flask text-amber-400"></i> <span>Güneş katı veya sıvı değildir; sıcak gazlardan oluşur.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-atom text-blue-400"></i> <span>Güneş'in yaklaşık <strong>%73'ü Hidrojen (H)</strong> gazıdır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-fire text-amber-400"></i> <span>Yaklaşık <strong>%25'i Helyum (He)</strong> gazıdır. Kalan %2'lik kısım ise diğer ağır elementlerdir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-bolt text-yellow-300"></i> <span><strong>Enerjinin Kaynağı:</strong> Çekirdekteki devasa basınç ve sıcaklıkta hidrojen gazı helyum gazına dönüşür (Füzyon). Bu dönüşüm sırasında akıl almaz bir enerji uzaya ısı ve ışık olarak yayılır!</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-flask mr-2"></i> GAZ BİLEŞİMİ</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş katı veya sıvı değildir, devasa akkor bir gaz topudur: Yaklaşık <strong>%73 Hidrojen (H)</strong>, <strong>%25 Helyum (He)</strong> ve %2 diğer elementlerden oluşur.</p>
                     </div>
-                    <div class="callout-box tip">
-                        <i class="fa-solid fa-calculator"></i>
-                        <div>Güneş her bir saniyede 4 milyon ton maddeyi saf enerjiye dönüştürür ve bu enerji 5 milyar yıldır hiç durmadan devam etmektedir!</div>
+
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-atom mr-2"></i> NÜKLEER FÜZYON ENERJİSİ</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Çekirdekteki aşırı sıcaklık ve basınçta hidrojen atomları birleşerek helyuma dönüşür. Bu dönüşüm sırasında açığa çıkan devasa enerji uzaya ışık ve ısı olarak yayılır.</p>
+                    </div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-bolt mr-2"></i> HER SANİYE 4 MİLYON TON MADDE</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş her bir saniyede tam <strong>4 milyon ton maddeyi</strong> saf enerjiye dönüştürür ve bu süreç 5 milyar yıldır hiç aksamadan devam etmektedir!</p>
+                    </div>
+
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>BİLİYOR MUYDUNUZ?</strong> Güneş'in yaydığı enerjinin yalnızca iki milyarda biri Dünya'mıza ulaşır; bu küçücük pay bile gezegenimizdeki tüm yaşama yeter!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/sunum5/slide_ref_6.jpg" alt="Güneş İçeriği">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 40px rgba(245, 158, 11, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_8_fusion_energy.jpg" alt="Güneş Füzyon Enerjisi 3D Görselleştirme" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -367,23 +373,32 @@ slides = [
         "title": "Güneş'in Hareketleri: Kendi Ekseni ve Galaksi",
         "subtitle": "Güneş uzayda sabit midir, hareket eder mi?",
         "html": """
-            <div class="slide-body">
-                <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-rotate text-amber-400"></i> <span><strong>1. Kendi Ekseni Etrafında Dönme Hareketi:</strong> Güneş, kendi ekseni etrafında <strong>SAAT YÖNÜNÜN TERSİNE</strong> (batıdan doğuya) döner.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-clock text-amber-400"></i> <span>Gaz yapıda olduğu için Güneş'in her yeri aynı hızda dönmez: Ekvator bölgesi yaklaşık <strong>25 günde</strong>, kutup bölgeleri ise yaklaşık <strong>35 günde</strong> bir tur döner.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-arrows-spin text-purple-400"></i> <span><strong>2. Samanyolu Galaksisi Etrafında Dolanma:</strong> Güneş sistemiyle birlikte Samanyolu merkezinin etrafında dev bir yörüngede dolanır (Bu dolanma yaklaşık 225-250 milyon yıl sürer).</span></li>
-                        </ul>
+            <div class="slide-body" style="gap: 28px;">
+                <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
+                    <div class="info-card glow-gold" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #fbbf24; margin-bottom: 6px;"><i class="fa-solid fa-rotate mr-2"></i> 1. KENDİ EKSENİ ETRAFINDA DÖNME</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş, kendi ekseni etrafında <strong>SAAT YÖNÜNÜN TERSİNE</strong> (batıdan doğuya / soldan sağa) döner. Bunu ilk kez Galileo lekeleri izleyerek kanıtlamıştır.</p>
                     </div>
-                    <div class="callout-box remember">
-                        <i class="fa-solid fa-compass"></i>
-                        <div><strong>ALTIN KURAL:</strong> Güneş, Dünya ve Ay'ın üçü de kendi eksenleri etrafında SAAT YÖNÜNÜN TERSİNE (soldan sağa / batıdan doğuya) döner!</div>
+
+                    <div class="info-card glow-cyan" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 6px;"><i class="fa-solid fa-clock mr-2"></i> DÖNME SÜRELERİ (GAZ YAPI)</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Katı olmadığı için Güneş'in her yeri aynı hızda dönmez: <strong>Ekvator bölgesi ~25 günde</strong>, kutup bölgeleri ise <strong>~35 günde</strong> bir tam turunu tamamlar.</p>
+                    </div>
+
+                    <div class="info-card glow-purple" style="padding: 16px 20px;">
+                        <div style="font-size: 22px; font-weight: 800; color: #c084fc; margin-bottom: 6px;"><i class="fa-solid fa-arrows-spin mr-2"></i> 2. SAMANYOLU ETRAFINDA DOLANMA</div>
+                        <p style="font-size: 19px; color: #f1f5f9; line-height: 1.4;">Güneş tüm sistemiyle beraber Samanyolu Galaksisi'nin merkezi etrafında dolanır; bir tam tur yaklaşık <strong>230 milyon yıl</strong> sürer!</p>
+                    </div>
+
+                    <div class="callout-box remember" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-compass text-amber-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>ALTIN KURAL:</strong> Güneş, Dünya ve Ay'ın üçü de kendi eksenleri etrafında SAAT YÖNÜNÜN TERSİNE döner!</div>
                     </div>
                 </div>
-                <div class="visual-panel">
-                    <div class="visual-frame">
-                        <img src="../assets/slides/slide_14_sun_earth.jpg" alt="Güneş ve Gezegenler Hareketi">
+
+                <div class="visual-panel" style="flex: 1.1;">
+                    <div class="visual-frame" style="border: 2px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 40px rgba(245, 158, 11, 0.35); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_12_sun_rotation.jpg" alt="Güneş Dönme Hareketi ve Dönme Ekseni" style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
                 </div>
             </div>
