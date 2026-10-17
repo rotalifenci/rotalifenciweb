@@ -48,46 +48,33 @@
             user-select: none;
             -webkit-user-select: none;
         }
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            height: 100svh;
             margin: 0;
             padding: 0;
+            overflow: hidden;
+            position: fixed;
             font-family: 'Plus Jakarta Sans', sans-serif;
             background: #f1f5f9;
             color: #0f172a;
             -webkit-tap-highlight-color: transparent;
-        }
-        /* Desktop & Smartboard Layout */
-        @media (min-width: 1024px) {
-            body {
-                overflow: hidden;
-                height: 100vh;
-            }
-        }
-        /* Mobile & Tablet Responsive Flow */
-        @media (max-width: 1023px) {
-            body {
-                overflow-x: hidden;
-                overflow-y: auto;
-                min-height: 100vh;
-                min-height: 100dvh;
-                padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
-            }
+            touch-action: manipulation;
         }
         /* Mobile Landscape Optimization */
         @media (max-height: 520px) and (orientation: landscape) {
-            body {
-                overflow-y: auto;
-            }
             .mobile-landscape-row {
                 flex-direction: row !important;
             }
             .mobile-landscape-canvas {
-                height: 75vh !important;
-                min-height: 240px !important;
+                height: 100% !important;
                 flex: 1 1 60% !important;
             }
             .mobile-landscape-side {
                 flex: 1 1 40% !important;
+                height: 100% !important;
             }
         }
         /* Touch gestures & Prevent Pull-to-refresh on 3D canvas */
@@ -152,12 +139,16 @@
         }
     </style>
 </head>
-<body class="w-full flex flex-col justify-between bg-slate-100 p-1 sm:p-1.5 min-h-screen lg:h-screen lg:overflow-hidden">
+<body class="w-full h-full h-[100dvh] h-[100svh] flex flex-col justify-between bg-slate-100 p-1 sm:p-1.5 overflow-hidden fixed inset-0">
 
     <!-- 🌟 ÜST BÖLÜM: ULTRA KOMPAKT SLİM BAŞLIK, MOD SEÇİMİ & KONTROL BUTONLARI -->
-    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[46px] overflow-x-auto no-scrollbar">
-        <!-- Sol: Başlık -->
+    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[36px] max-h-[44px] overflow-x-auto no-scrollbar">
+        <!-- Sol: Çıkış Butonu & Başlık -->
         <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="exitSimulation()" class="px-2 sm:px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] sm:text-xs flex items-center gap-1 shadow-sm shrink-0 active:scale-95 touch-manipulation cursor-pointer" title="Simülasyondan Çıkış Yap">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                <span>Çıkış</span>
+            </button>
             <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center text-xs sm:text-sm shadow-xs shrink-0">
                 <i class="fa-solid fa-moon"></i>
             </div>
@@ -225,10 +216,10 @@
     </header>
 
     <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON ALANI (MOBİLDE DİKEY AKIŞ, MASAÜSTÜNDE 12 SÜTUN GRID) -->
-    <main class="flex-1 my-1 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 min-h-0 relative mobile-landscape-row">
+    <main class="flex-1 my-1 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 min-h-0 relative mobile-landscape-row overflow-hidden">
 
         <!-- 🚀 SOL PANEL (%75): YÖRÜNGE GÖRÜNÜMÜ (DEV 3D UZAY SİMÜLASYON SAHNESİ) -->
-        <div class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-[34vh] min-h-[220px] max-h-[340px] sm:h-[40vh] sm:min-h-[280px] lg:h-full lg:max-h-none min-h-0 orbit-canvas-container shrink-0 mobile-landscape-canvas">
+        <div class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col flex-1 lg:flex-none lg:h-full min-h-[140px] orbit-canvas-container shrink-0 mobile-landscape-canvas">
             <!-- Simülasyon Üst Bilgi Rozetleri -->
             <div class="absolute top-2.5 left-2.5 sm:top-3.5 sm:left-3.5 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
                 <span class="px-2.5 py-1 rounded-full bg-slate-900/85 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-[11px] font-extrabold flex items-center gap-1.5 shadow-sm">
@@ -465,16 +456,24 @@
                 </div>
             </div>
 
-            <!-- Sağ: Simülasyon Hızı Seçimi -->
-            <div class="flex items-center gap-0.5 sm:gap-1 bg-slate-100 p-0.5 rounded-lg text-xs font-bold shrink-0">
-                <button onclick="setSpeed(0.5, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[11px] sm:text-xs">0.5x</button>
-                <button onclick="setSpeed(1.0, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all bg-white text-blue-700 shadow-2xs text-[11px] sm:text-xs">1x</button>
-                <button onclick="setSpeed(2.0, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[11px] sm:text-xs">2x</button>
+            <!-- Sağ: Simülasyon Hızı Seçimi & Mobilde Evre Seçim Butonu -->
+            <div class="flex items-center gap-1 shrink-0">
+                <div class="flex items-center gap-0.5 sm:gap-1 bg-slate-100 p-0.5 rounded-lg text-xs font-bold">
+                    <button onclick="setSpeed(0.5, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[10px] sm:text-xs">0.5x</button>
+                    <button onclick="setSpeed(1.0, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all bg-white text-blue-700 shadow-2xs text-[10px] sm:text-xs">1x</button>
+                    <button onclick="setSpeed(2.0, this)" class="speed-btn px-1.5 sm:px-2 py-1 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[10px] sm:text-xs">2x</button>
+                </div>
+                <!-- Mobilde Kompakt Evre Seçici Butonu (Sayfa taşmasını önler) -->
+                <button onclick="openMobilePhaseModal()" class="sm:hidden px-2 py-1 rounded-lg bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-700 font-extrabold text-[11px] flex items-center gap-1 shrink-0 active:scale-95 touch-manipulation shadow-2xs" title="8 Evreyi Gör ve Seç">
+                    <span id="mob-phase-current-icon">🌑</span>
+                    <span>Evre Seç</span>
+                    <i class="fa-solid fa-chevron-up text-[9px]"></i>
+                </button>
             </div>
         </div>
 
-        <!-- Alt: 8 Etkileşimli Evre Kartı (Mobilde Yatay Kaydırılabilir Swipeable Çipler, Masaüstünde 8 Kolon Grid) -->
-        <div id="phase-cards-container" class="flex overflow-x-auto no-scrollbar sm:grid sm:grid-cols-8 gap-1.5 pt-1 border-t border-slate-100 snap-x py-0.5">
+        <!-- Alt: 8 Etkileşimli Evre Kartı (Masaüstü ve Tablette Açık Gösterilir) -->
+        <div id="phase-cards-container" class="hidden sm:grid sm:grid-cols-8 gap-1.5 pt-1 border-t border-slate-100 py-0.5">
             <!-- 1. Yeni Ay -->
             <button onclick="jumpToPhase(0)" class="phase-card group h-11 sm:h-10 px-2 sm:px-1.5 py-1 rounded-xl sm:rounded-lg border border-slate-200 hover:border-blue-500 bg-slate-50/80 hover:bg-blue-50 transition-all text-left flex items-center gap-1.5 cursor-pointer shrink-0 min-w-[102px] sm:min-w-0 sm:shrink snap-start touch-manipulation active:scale-95" data-phase-idx="0">
                 <span class="text-base shrink-0">🌑</span>
@@ -548,6 +547,81 @@
             </button>
         </div>
     </footer>
+
+    <!-- 🌑 MOBİL EVRE SEÇİM MODALI (2x4 GRID) -->
+    <div id="mobile-phase-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-end sm:items-center justify-center p-2 sm:p-4" onclick="if(event.target === this) closeMobilePhaseModal()">
+        <div class="bg-white rounded-2xl w-full max-w-md p-3.5 shadow-2xl border border-slate-200 max-h-[85vh] overflow-y-auto animate-in slide-in-from-bottom duration-200" onclick="event.stopPropagation()">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-100 mb-2.5">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs font-black">
+                        <i class="fa-solid fa-moon"></i>
+                    </span>
+                    <h3 class="text-xs sm:text-sm font-black text-slate-800 uppercase tracking-tight">Ay'ın Evresini Seç</h3>
+                </div>
+                <button onclick="closeMobilePhaseModal()" class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-black">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="jumpToPhase(0); closeMobilePhaseModal();" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌑</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-slate-900">Yeni Ay (Ana)</div>
+                        <div class="text-[9px] font-bold text-slate-500">0. Gün • %0 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(1); closeMobilePhaseModal();" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌒</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-slate-900">Hilal (Büyüyen)</div>
+                        <div class="text-[9px] font-bold text-slate-500">3.7. Gün • %15 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(2); closeMobilePhaseModal();" class="p-2 rounded-xl border border-emerald-300 hover:border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌓</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-emerald-900">İlk Dördün (Ana)</div>
+                        <div class="text-[9px] font-bold text-emerald-600">7.4. Gün • %50 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(3); closeMobilePhaseModal();" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌔</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-slate-900">Şişkin Ay (Büyüyen)</div>
+                        <div class="text-[9px] font-bold text-slate-500">11.1. Gün • %85 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(4); closeMobilePhaseModal();" class="p-2 rounded-xl border border-emerald-300 hover:border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌕</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-emerald-900">Dolunay (Ana)</div>
+                        <div class="text-[9px] font-bold text-emerald-600">14.8. Gün • %100 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(5); closeMobilePhaseModal();" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌖</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-slate-900">Şişkin Ay (Küçülen)</div>
+                        <div class="text-[9px] font-bold text-slate-500">18.5. Gün • %85 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(6); closeMobilePhaseModal();" class="p-2 rounded-xl border border-emerald-300 hover:border-emerald-500 bg-emerald-50/50 hover:bg-emerald-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌗</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-emerald-900">Son Dördün (Ana)</div>
+                        <div class="text-[9px] font-bold text-emerald-600">22.1. Gün • %50 Aydınlık</div>
+                    </div>
+                </button>
+                <button onclick="jumpToPhase(7); closeMobilePhaseModal();" class="p-2 rounded-xl border border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50 flex items-center gap-2 text-left active:scale-95 transition-all cursor-pointer">
+                    <span class="text-xl">🌘</span>
+                    <div class="leading-tight">
+                        <div class="text-xs font-black text-slate-900">Hilal (Küçülen)</div>
+                        <div class="text-[9px] font-bold text-slate-500">25.8. Gün • %15 Aydınlık</div>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- 📖 "BİLİYOR MUSUN?" BİLİMSEL BİLGİ & KAVRAM YANILGILARI MODALI -->
     <div id="info-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6" onclick="if(event.target === this) closeInfoModal()">
@@ -1172,48 +1246,60 @@
 
             // Resize Dinleyicisi
             window.addEventListener('resize', onWindowResize);
+            window.addEventListener('orientationchange', onWindowResize);
 
             // Ay'ı Sürükleme (Drag & Drop) Dinleyicileri
             setupOrbitDragControls(orbitCanvas);
+
+            // Başlangıç kamera kadrajını tam ayarla
+            updateCameraView();
+        }
+
+        function updateCameraView() {
+            if (!orbitCamera || !orbitRenderer) return;
+            const orbitContainer = document.getElementById('orbit-container');
+            if (!orbitContainer) return;
+            const w = orbitContainer.clientWidth;
+            const h = orbitContainer.clientHeight;
+            if (w <= 0 || h <= 0) return;
+            const aspect = w / h;
+            orbitCamera.aspect = aspect;
+
+            // Kamera hedefi ve merkezi: Güneş (-32) ile Ay yörüngesi (+15) tam merkez = (-8.5, 0, 0)
+            const centerX = -8.5;
+            const vFovRad = (orbitCamera.fov * Math.PI) / 180;
+            const requiredWidth = 58;  // Güneş (-32) sol kenarı -36'dan yörünge (+15) sağ kenarı +17'ye kadar: 53 + tolerans
+            const requiredHeight = 36; // Yörünge Z ekseninde -15'ten +15'e: 30 + tolerans
+
+            const distForHeight = (requiredHeight / 2) / Math.tan(vFovRad / 2);
+            const distForWidth = (requiredWidth / 2) / (Math.tan(vFovRad / 2) * Math.max(aspect, 0.42));
+            const targetY = Math.max(distForHeight, distForWidth);
+
+            if (appState.cameraPerspective === 'top') {
+                orbitCamera.position.set(centerX, targetY, 0);
+                if (orbitControls) orbitControls.target.set(centerX, 0, 0);
+            } else {
+                orbitCamera.position.set(centerX, targetY * 0.65, targetY * 0.75);
+                if (orbitControls) orbitControls.target.set(centerX, 0, 0);
+            }
+            orbitCamera.lookAt(centerX, 0, 0);
+            orbitCamera.updateProjectionMatrix();
+            if (orbitControls) orbitControls.update();
+            orbitRenderer.setSize(w, h);
         }
 
         function onWindowResize() {
-            const orbitContainer = document.getElementById('orbit-container');
-            if (orbitContainer && orbitRenderer && orbitCamera) {
-                const w = orbitContainer.clientWidth;
-                const h = orbitContainer.clientHeight;
-                const aspect = w / h;
-                orbitCamera.aspect = aspect;
-
-                // Mobil dikey ekranda (aspect < 1.0) Güneş, Dünya ve Ay'ın yörüngesinin kadrajda tam kalması için:
-                if (appState.cameraPerspective === 'top') {
-                    if (aspect < 1.0) {
-                        // Dikey telefon ekranı: kamera mesafesini orantılı artır
-                        const targetY = Math.max(25, 25 / Math.max(aspect * 0.95, 0.55));
-                        orbitCamera.position.set(0, targetY, 0);
-                    } else {
-                        orbitCamera.position.set(0, 25, 0);
-                    }
-                } else if (appState.cameraPerspective === 'perspective') {
-                    if (aspect < 1.0) {
-                        const factor = 1.0 / Math.max(aspect * 0.95, 0.6);
-                        orbitCamera.position.set(0, 14 * factor, 23 * factor);
-                    } else {
-                        orbitCamera.position.set(0, 14, 23);
-                    }
-                }
-                orbitCamera.lookAt(0, 0, 0);
-                orbitCamera.updateProjectionMatrix();
-                orbitRenderer.setSize(w, h);
-            }
+            updateCameraView();
 
             const teleCanvas = document.getElementById('telescope-canvas');
             if (teleCanvas && teleCanvas.parentElement && telescopeRenderer && telescopeCamera) {
                 const tw = teleCanvas.parentElement.clientWidth;
                 const th = teleCanvas.parentElement.clientHeight;
-                telescopeCamera.aspect = tw / th;
-                telescopeCamera.updateProjectionMatrix();
-                telescopeRenderer.setSize(tw, th);
+                if (tw > 0 && th > 0) {
+                    telescopeCamera.aspect = tw / th;
+                    telescopeCamera.updateProjectionMatrix();
+                    telescopeRenderer.setSize(tw, th);
+                }
             }
         }
 
@@ -1257,15 +1343,19 @@
                     if (hits.length > 0) return true;
                 }
 
-                // 2. Yörünge düzleminde Ay'a yakın mı?
+                // 2. Yörünge düzleminde dokunuldu mu?
                 if (raycaster.ray.intersectPlane(orbitPlane, planeIntersect)) {
-                    if (moonMesh) {
-                        const distToMoon = planeIntersect.distanceTo(moonMesh.position);
-                        if (distToMoon < (isTouch ? 8.5 : 5.0)) return true;
+                    // Dünya merkezinden (0, 0) uzaklık
+                    const distToEarth = Math.hypot(planeIntersect.x, planeIntersect.z);
+                    if (isTouch) {
+                        // Mobilde tek parmakla dokunulduğunda, Dünya merkezi hariç (dist > 1.8)
+                        // uzaydaki tüm tek parmak dokunuşlarını anında yakala ve yörüngede kaydır!
+                        if (distToEarth >= 1.8 && distToEarth <= 42.0) return true;
+                    } else {
+                        // Masaüstünde fare ile: Ay'a veya yörünge çemberine yakınsa
+                        if (moonMesh && planeIntersect.distanceTo(moonMesh.position) < 6.5) return true;
+                        if (Math.abs(distToEarth - ORBIT_RADIUS) < 5.0) return true;
                     }
-                    // 3. Yörünge dairesine yakın mı?
-                    const clickDist = Math.hypot(planeIntersect.x, planeIntersect.z);
-                    if (Math.abs(clickDist - ORBIT_RADIUS) < (isTouch ? 6.5 : 4.0)) return true;
                 }
                 return false;
             }
@@ -1422,6 +1512,10 @@
                 document.getElementById('slider-day-label').innerText = elapsedDays.toFixed(1);
             }
 
+            const phaseIcons = ['🌑', '🌒', '🌓', '🌔', '🌕', '🌖', '🌗', '🌘'];
+            const mobIcon = document.getElementById('mob-phase-current-icon');
+            if (mobIcon) mobIcon.innerText = phaseIcons[phase.index] || '🌑';
+
             // 8 Evre Kartlarının Aktiflik Durumunu Vurgula
             document.querySelectorAll('.phase-card').forEach(card => {
                 const pIdx = parseInt(card.getAttribute('data-phase-idx'));
@@ -1549,19 +1643,46 @@
             const btnText = document.getElementById('camera-view-text');
             if (appState.cameraPerspective === 'top') {
                 appState.cameraPerspective = 'perspective';
-                btnText.innerText = '3D Açılı';
-                // Açılı 3D Kamera Pozisyonu (Daha yakın & büyük)
-                orbitCamera.position.set(0, 14, 23);
-                orbitCamera.lookAt(0, 0, 0);
+                if (btnText) btnText.innerText = '3D Açılı';
             } else {
                 appState.cameraPerspective = 'top';
-                btnText.innerText = 'Kuşbakışı';
-                // Üstten Kuşbakışı Pozisyonu (Daha yakın & büyük)
-                orbitCamera.position.set(0, 25, 0);
-                orbitCamera.lookAt(0, 0, 0);
+                if (btnText) btnText.innerText = 'Kuşbakışı';
             }
-            orbitControls.update();
+            updateCameraView();
             playTone(500, 'sine', 0.1);
+        }
+
+        // Çıkış Fonksiyonu (Hem Modal içinden hem doğrudan sekmeden çıkışı garantiler)
+        function exitSimulation() {
+            try {
+                if (window.parent && window.parent !== window && typeof window.parent.closeInteractiveGameModal === 'function') {
+                    window.parent.closeInteractiveGameModal();
+                    return;
+                }
+            } catch(e) {}
+            if (window.history.length > 1) {
+                window.history.back();
+            } else {
+                window.location.href = '../index.html';
+            }
+        }
+
+        // Mobil Evre Seçim Modalı
+        function openMobilePhaseModal() {
+            const m = document.getElementById('mobile-phase-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+            }
+            playTone(520, 'sine', 0.08);
+        }
+
+        function closeMobilePhaseModal() {
+            const m = document.getElementById('mobile-phase-modal');
+            if (m) {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
         }
 
         function toggleSunRays() {

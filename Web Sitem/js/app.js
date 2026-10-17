@@ -15039,23 +15039,24 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     // ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
     if (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunes-3d") || str.includes("oyun-gunesi-kesfediyorum-3d") || (str.includes("gunes") && str.includes("3d")) || (titleStr.includes("güneş'i keşfediyorum") || (titleStr.includes("güneş") && titleStr.includes("3d"))) || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d") {
         modal.innerHTML = `
-            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
-                <div class="px-3 py-1 sm:py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[36px] max-h-[40px]">
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
                     <div class="flex items-center gap-2">
                         <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 via-orange-500 to-red-600 text-slate-950 flex items-center justify-center text-xs font-black shadow-sm">
                             <i class="fa-solid fa-sun"></i>
                         </span>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-xs sm:text-sm font-black text-amber-300">☀️ Güneş'i Keşfediyorum: 3D Etkileşimli Uzay Laboratuvarı</h3>
-                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri Simülasyonu</span>
+                            <h3 class="text-xs sm:text-sm font-black text-amber-300">☀️ Güneş'i Keşfediyorum: 3D Uzay Laboratuvarı</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <a href="oyunlar/gunesi-kesfediyorum-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
                             <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
                         </a>
-                        <button type="button" onclick="closeInteractiveGameModal()" class="w-7 h-7 rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center font-black transition-all cursor-pointer shadow-sm" title="Kapat">
-                            <i class="fa-solid fa-xmark text-xs"></i>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
                         </button>
                     </div>
                 </div>
@@ -15072,23 +15073,24 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     // 🌕 5. Sınıf Ay'ın Evreleri 3D Etkileşimli Planetaryum Uzay Simülatörü
     if (str.includes("ayin-evreleri") || str.includes("ay'ın evreleri") || str.includes("ayin_evreleri") || str.includes("ay-evreleri") || str.includes("oyun-5-gunes") || str.includes("oyun-ayin-evreleri-3d") || titleStr.includes("ay'ın evreleri") || titleStr.includes("yörünge") || titleStr.includes("yorunge") || resolvedKey === "oyun-5-gunes" || resolvedKey === "oyun-ayin-evreleri-3d") {
         modal.innerHTML = `
-            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
-                <div class="px-3 py-1 sm:py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[36px] max-h-[40px]">
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
                     <div class="flex items-center gap-2">
                         <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
                             <i class="fa-solid fa-moon"></i>
                         </span>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-xs sm:text-sm font-black text-cyan-300">🌕 Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü</h3>
-                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri Planetaryumu</span>
+                            <h3 class="text-xs sm:text-sm font-black text-cyan-300">🌕 Ay'ın Evreleri: 3D Uzay Simülatörü</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
                         <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
                             <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
                         </a>
-                        <button type="button" onclick="closeInteractiveGameModal()" class="w-7 h-7 rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center font-black transition-all cursor-pointer shadow-sm" title="Kapat">
-                            <i class="fa-solid fa-xmark text-xs"></i>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
                         </button>
                     </div>
                 </div>
