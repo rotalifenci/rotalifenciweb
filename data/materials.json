@@ -13,7 +13,13 @@
     "kapakResmi": "assets/unite-bilgilendirmeleri-gorsel.png",
     "format": "WEB BAĞLANTISI",
     "hasBlob": false,
-    "tags": ["5. Sınıf", "İşlenecek Konular", "MEB 2026-2027", "Maarif Modeli", "Afiş"],
+    "tags": [
+      "5. Sınıf",
+      "İşlenecek Konular",
+      "MEB 2026-2027",
+      "Maarif Modeli",
+      "Afiş"
+    ],
     "visibility": "public",
     "downloadCount": "2.450+",
     "createdAt": "2026-10-15T20:00:00.000Z",
@@ -33,7 +39,12 @@
     "kapakResmi": "assets/ilk-ders-notu.png",
     "format": "WEB BAĞLANTISI",
     "hasBlob": false,
-    "tags": ["5. Sınıf", "İlk Ders Notu", "Fen Bilimleri", "MEB 2026-2027"],
+    "tags": [
+      "5. Sınıf",
+      "İlk Ders Notu",
+      "Fen Bilimleri",
+      "MEB 2026-2027"
+    ],
     "visibility": "public",
     "downloadCount": "3.120+",
     "createdAt": "2026-10-15T20:15:00.000Z",
@@ -52,7 +63,13 @@
     "imageUrl": "assets/kapak-7.jpg",
     "format": "PDF",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "7.sınıf", "dersnotu", "fen", "uzay cagi"],
+    "tags": [
+      "MEB 2026-2027",
+      "7.sınıf",
+      "dersnotu",
+      "fen",
+      "uzay cagi"
+    ],
     "visibility": "public",
     "downloadCount": "1.850+",
     "createdAt": "16.09.2026",
@@ -71,7 +88,16 @@
     "imageUrl": "assets/kapak-8.jpg",
     "format": "YouTube Video",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "LGS", "Liseye Geçiş", "video", "rehberlik", "ortaokul", "fenbilimleri", "fen"],
+    "tags": [
+      "MEB 2026-2027",
+      "LGS",
+      "Liseye Geçiş",
+      "video",
+      "rehberlik",
+      "ortaokul",
+      "fenbilimleri",
+      "fen"
+    ],
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "15.09.2026",
@@ -90,7 +116,13 @@
     "imageUrl": "assets/kapak-5.jpg",
     "format": "YouTube Video",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "video", "güvenlik", "5.sınıf", "laboratuvar"],
+    "tags": [
+      "MEB 2026-2027",
+      "video",
+      "güvenlik",
+      "5.sınıf",
+      "laboratuvar"
+    ],
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "15.09.2026",
@@ -109,7 +141,13 @@
     "imageUrl": "assets/kapak-8.jpg",
     "format": "YouTube Video",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "video", "güvenlik", "8.sınıf", "laboratuvar"],
+    "tags": [
+      "MEB 2026-2027",
+      "video",
+      "güvenlik",
+      "8.sınıf",
+      "laboratuvar"
+    ],
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "15.09.2026",
@@ -128,7 +166,12 @@
     "imageUrl": "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
     "format": "Eğitsel Oyun",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "Laboratuvar", "Eşleştirme", "İnteraktif Oyun"],
+    "tags": [
+      "MEB 2026-2027",
+      "Laboratuvar",
+      "Eşleştirme",
+      "İnteraktif Oyun"
+    ],
     "visibility": "public",
     "downloadCount": "1.450+",
     "createdAt": "08.09.2026",
@@ -147,7 +190,12 @@
     "imageUrl": "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
     "format": "Eğitsel Oyun",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "Laboratuvar", "Güvenlik Kuralları", "Fen Dünyası"],
+    "tags": [
+      "MEB 2026-2027",
+      "Laboratuvar",
+      "Güvenlik Kuralları",
+      "Fen Dünyası"
+    ],
     "visibility": "public",
     "downloadCount": "2.120+",
     "createdAt": "Yeni Yayınlandı",
@@ -166,7 +214,13 @@
     "imageUrl": "assets/astronot-kacis-odasi.png",
     "format": "Eğitsel Oyun",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "Laboratuvar", "Kaçış Odası", "Astronot", "İnteraktif Oyun"],
+    "tags": [
+      "MEB 2026-2027",
+      "Laboratuvar",
+      "Kaçış Odası",
+      "Astronot",
+      "İnteraktif Oyun"
+    ],
     "visibility": "public",
     "downloadCount": "4.250+",
     "createdAt": "Yeni Yayınlandı",
@@ -187,7 +241,14 @@
     "cover": "assets/rotali-uzay-ekspresi.jpg",
     "format": "Eğitsel Oyun",
     "hasBlob": false,
-    "tags": ["6. Sınıf", "1. Ünite", "Güneş Sistemi", "Gezegenler", "Uzay Ekspresi", "3D Oyun"],
+    "tags": [
+      "6. Sınıf",
+      "1. Ünite",
+      "Güneş Sistemi",
+      "Gezegenler",
+      "Uzay Ekspresi",
+      "3D Oyun"
+    ],
     "visibility": "public",
     "downloadCount": "6.400+",
     "createdAt": "Yeni Yayınlandı",
@@ -206,7 +267,13 @@
     "imageUrl": "assets/logo.jpg",
     "format": "Eğitsel Oyun",
     "hasBlob": false,
-    "tags": ["Güneş Sistemi", "Gezegenler", "3D Runner", "Subway Surfers", "Eğitsel Oyun"],
+    "tags": [
+      "Güneş Sistemi",
+      "Gezegenler",
+      "3D Runner",
+      "Subway Surfers",
+      "Eğitsel Oyun"
+    ],
     "visibility": "public",
     "downloadCount": "5.800+",
     "createdAt": "Yeni Yayınlandı",
@@ -224,7 +291,12 @@
     "fileUrl": "#",
     "format": "PDF",
     "hasBlob": false,
-    "tags": ["MEB 2026-2027", "LGS 2027", "Branş Denemesi", "Yeni Nesil"],
+    "tags": [
+      "MEB 2026-2027",
+      "LGS 2027",
+      "Branş Denemesi",
+      "Yeni Nesil"
+    ],
     "visibility": "public",
     "downloadCount": "3.480+",
     "createdAt": "Yeni Yayınlandı",
@@ -244,10 +316,90 @@
     "imageUrl": "assets/kapak-7.jpg",
     "format": "YouTube Video",
     "hasBlob": false,
-    "tags": ["7.sınıf", "video", "uzay cagi", "MEB 2026-2027"],
+    "tags": [
+      "7.sınıf",
+      "video",
+      "uzay cagi",
+      "MEB 2026-2027"
+    ],
     "visibility": "public",
     "downloadCount": "1.200+",
     "createdAt": "2026-10-16T05:33:46.023Z",
     "updatedAt": "2026-10-16T05:33:46.023Z"
+  },
+  {
+    "id": "mat-1789665265173-g6",
+    "grade": "6",
+    "category": "videolar",
+    "targetSection": "lab",
+    "title": "Güvenlik Sembolleri Video",
+    "unit": "Laboratuvar & Deneyler",
+    "desc": "6. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
+    "fileName": "Güvenlik Sembolleri.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=E-0C1f0Ksqw",
+    "imageUrl": "assets/kapak-6.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "MEB 2026-2027",
+      "video",
+      "güvenlik",
+      "6.sınıf",
+      "laboratuvar"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T17:06:02.468Z",
+    "updatedAt": "2026-10-17T12:00:00.000Z"
+  },
+  {
+    "id": "book-6",
+    "grade": "6",
+    "category": "ders-notu",
+    "targetSection": "kitap",
+    "title": "6. Sınıf Fen Bilimleri MEB Ders Kitabı-1",
+    "unit": "Ders Kitabı & Ünite PDF'leri",
+    "desc": "Milli Eğitim Bakanlığı tarafından onaylanan 6. Sınıf güncel müfredat ders kitabı.",
+    "fileName": "fenbilimleri6-1.pdf",
+    "fileUrl": "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri6-1.pdf",
+    "imageUrl": "assets/ders-kitabi-6.jpg",
+    "kapakResmi": "assets/ders-kitabi-6.jpg",
+    "format": "Ders Kitabı",
+    "hasBlob": false,
+    "tags": [
+      "MEB 2026-2027",
+      "ders kitabı",
+      "6.sınıf",
+      "fenbilimleri"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T17:06:03.711Z",
+    "updatedAt": "2026-10-17T12:00:00.000Z"
+  },
+  {
+    "id": "book-5",
+    "grade": "5",
+    "category": "ders-notu",
+    "targetSection": "kitap",
+    "title": "5. Sınıf Fen Bilimleri MEB Ders Kitabı-1",
+    "unit": "Ders Kitabı & Ünite PDF'leri",
+    "desc": "Milli Eğitim Bakanlığı tarafından onaylanan 5. Sınıf güncel müfredat ders kitabı.",
+    "fileName": "fenbilimleri5-1.pdf",
+    "fileUrl": "https://cdn.eba.gov.tr/temel-egitim/yayin/2026-2027/ktp/fenbilimleri5-1.pdf",
+    "imageUrl": "assets/ders-kitabi-5.jpg",
+    "kapakResmi": "assets/ders-kitabi-5.jpg",
+    "format": "Ders Kitabı",
+    "hasBlob": false,
+    "tags": [
+      "MEB 2026-2027",
+      "ders kitabı",
+      "5.sınıf",
+      "fenbilimleri"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T17:06:03.711Z",
+    "updatedAt": "2026-10-17T12:00:00.000Z"
   }
 ]

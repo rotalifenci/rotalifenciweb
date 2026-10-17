@@ -143,6 +143,26 @@ function removeDeletedMaterialId(id) {
 }
 
 // =============================================================
+// 🚫 SERVICE WORKER (SW) TEMİZLİĞİ: Eski verilerin önbellekten gelmesini engelle
+// =============================================================
+if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
+    try {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (const registration of registrations) {
+                registration.unregister().then(unregistered => {
+                    if (unregistered) console.log("🧹 Service Worker devre dışı bırakıldı ve önbellek temizlendi.");
+                });
+            }
+        });
+        if (typeof caches !== "undefined") {
+            caches.keys().then(names => {
+                for (const name of names) caches.delete(name);
+            });
+        }
+    } catch(swErr) {}
+}
+
+// =============================================================
 // ⚡ MERKEZİ VERİ ÇEKME & CACHE-BUSTING FONKSİYONLARI
 // =============================================================
 // 1. Önbellek kırıcı (cache-busting) ile güncel veri çekme
@@ -180,24 +200,51 @@ window.addEventListener("pageshow", (event) => {
 let APP_MATERIALS_CACHE = [];
 async function loadCentralizedMaterials() {
     let freshMaterials = await fetchFreshData("/data/materials.json");
+    const deletedIds = new Set(getDeletedMaterialIds());
+
+    // 1. Yerelde kullanıcının yeni eklediği ama henüz materials.json'a yazılmamış ögeleri koru
+    let localStored = [];
+    try {
+        const storedStr = localStorage.getItem("rotali_custom_materials");
+        if (storedStr) {
+            const parsed = JSON.parse(storedStr);
+            if (Array.isArray(parsed)) localStored = parsed;
+        }
+    } catch(e) {}
+
+    const localNewItems = localStored.filter(item => item && item.id && item.isNewLocal && !deletedIds.has(item.id));
 
     if (Array.isArray(freshMaterials) && freshMaterials.length > 0) {
-        APP_MATERIALS_CACHE = freshMaterials;
-        ROTALI_MATERIALS_CACHE = freshMaterials;
-        // Başarılı çekimden sonra, çevrimdışı kullanım için yereli güncelle
+        // Silinmişleri sunucu verisinden de süz
+        let cleanMaterials = freshMaterials.filter(m => m && m.id && !deletedIds.has(m.id));
+
+        // Yereldeki henüz sunucuya girmemiş yeni içerikleri koru ve birleştir
+        const combinedMap = new Map();
+        cleanMaterials.forEach(m => combinedMap.set(m.id, m));
+        localNewItems.forEach(lm => {
+            if (!combinedMap.has(lm.id)) {
+                combinedMap.set(lm.id, lm);
+            }
+        });
+
+        const mergedList = Array.from(combinedMap.values());
+        APP_MATERIALS_CACHE = mergedList;
+        ROTALI_MATERIALS_CACHE = mergedList;
+
+        // Çevrimdışı kullanım için yereli güncelle
         try {
-            const slim = freshMaterials.map(m => {
+            const slim = mergedList.map(m => {
                 const c = { ...m };
                 if (c.fileUrl && c.fileUrl.startsWith("data:") && c.fileUrl.length > 50000) c.fileUrl = "";
                 return c;
             });
             localStorage.setItem("rotali_custom_materials", JSON.stringify(slim));
         } catch(e) {
-            localStorage.setItem("rotali_custom_materials", JSON.stringify(freshMaterials));
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(mergedList));
         }
     } else {
         // Çevrimdışıysa veya fetch başarısız olursa son çalışan kopyayı kullan
-        APP_MATERIALS_CACHE = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+        APP_MATERIALS_CACHE = localStored.filter(item => item && item.id && !deletedIds.has(item.id));
         if (Array.isArray(APP_MATERIALS_CACHE) && APP_MATERIALS_CACHE.length > 0) {
             ROTALI_MATERIALS_CACHE = APP_MATERIALS_CACHE;
         }
@@ -1023,16 +1070,15 @@ function migrateAndSanitizeMaterials(rawList, forceMigrate = false) {
         }
     }
 
-    // 2. Varsayılan (DEFAULT_CUSTOM_MATERIALS) havuzunu birleştir
-    for (const defRaw of DEFAULT_CUSTOM_MATERIALS) {
+    // 2. Varsayılan havuzdan silinmiş içerikleri ASLA zorla ekleme (Re-seeding kaldırıldı).
+    // Yalnızca listede zaten mevcut olan ögelerin bozuk alanları varsa güncellenir.
+    for (const defRaw of (Array.isArray(DEFAULT_CUSTOM_MATERIALS) ? DEFAULT_CUSTOM_MATERIALS : [])) {
         const defItem = sanitizeMaterialItem(defRaw);
         if (!defItem || !defItem.id || deletedIds.has(defItem.id)) continue;
 
         if (map.has(defItem.id)) {
-            // Zaten var; eğer şema yükseltmesi gerekiyorsa veya eski kayıt bozuk / eksik URL içeriyorsa güncelle
             const existing = map.get(defItem.id);
             if (needsMigration) {
-                // Güncelle: fileUrl, format, hasBlob, title ve category'yi default ile senkronize et ama kullanıcının özel notlarını koru
                 existing.fileUrl = defItem.fileUrl;
                 existing.format = defItem.format;
                 existing.hasBlob = defItem.hasBlob;
@@ -1045,10 +1091,8 @@ function migrateAndSanitizeMaterials(rawList, forceMigrate = false) {
                 if (defItem.imageUrl && (!existing.imageUrl || existing.imageUrl === "#")) existing.imageUrl = defItem.imageUrl;
                 existing.updatedAt = "17.09.2026";
             }
-        } else {
-            // Kullanıcı silmemiş ve listede yok, doğrudan ekle
-            map.set(defItem.id, defItem);
         }
+        // NOT: Kullanıcı materyali sildiyse veya listede yoksa ARTIK otomatik olarak geri eklenmez!
     }
 
     // 3. Benzersiz id ve görsel doğrulama
@@ -7833,14 +7877,22 @@ function renderTeacherDashboardPage(container) {
 
             <!-- Canlı Materyal Listesi -->
             <div class="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8">
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-slate-100">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100">
                     <div>
                         <h3 class="text-xl font-black text-slate-900">Yayınlanan Materyal Envanteri</h3>
                         <p class="text-xs text-slate-500 mt-0.5">Tüm sınıflarda ve sekmelerde canlı olarak yayında olan içerikleriniz.</p>
                     </div>
-                    <button onclick="triggerUploadModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black uppercase rounded-xl transition-all flex items-center gap-1.5">
-                        <i class="fa-solid fa-plus"></i> İçerik Ekle
-                    </button>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <button onclick="exportCurrentMaterialsJson()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-black uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="Güncel materials.json dosyasını bilgisayarına indir">
+                            <i class="fa-solid fa-file-arrow-down"></i> materials.json İndir
+                        </button>
+                        <button onclick="copyCurrentMaterialsJson()" class="px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-black uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-sm" title="materials.json içeriğini panoya kopyala">
+                            <i class="fa-solid fa-copy"></i> JSON Kopyala
+                        </button>
+                        <button onclick="triggerUploadModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-black uppercase rounded-xl transition-all flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-plus"></i> İçerik Ekle
+                        </button>
+                    </div>
                 </div>
 
                 ${customList.length === 0 ? `
@@ -9472,6 +9524,42 @@ function deleteCustomMaterial(id) {
 }
 window.deleteCustomMaterial = deleteCustomMaterial;
 window.triggerDeleteMaterial = deleteCustomMaterial;
+
+// 🌟 Admin Paneli İçin Güncel materials.json Dışa Aktarma / Kopyalama Mekanizması
+function exportCurrentMaterialsJson() {
+    checkAdminAccess(() => {
+        const list = getCustomMaterialsList();
+        const jsonStr = JSON.stringify(list, null, 2);
+        const blob = new Blob([jsonStr], { type: "application/json;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "materials.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("✅ Güncel materials.json bilgisayarınıza indirildi. Projedeki data/ klasörüne kopyalayabilirsiniz.", "success");
+    });
+}
+window.exportCurrentMaterialsJson = exportCurrentMaterialsJson;
+
+function copyCurrentMaterialsJson() {
+    checkAdminAccess(() => {
+        const list = getCustomMaterialsList();
+        const jsonStr = JSON.stringify(list, null, 2);
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(jsonStr).then(() => {
+                showToast("📋 Güncel materials.json içeriği panoya kopyalandı!", "success");
+            }).catch(() => {
+                prompt("Aşağıdaki JSON metnini kopyalayıp data/materials.json dosyasına yapıştırın:", jsonStr);
+            });
+        } else {
+            prompt("Aşağıdaki JSON metnini kopyalayıp data/materials.json dosyasına yapıştırın:", jsonStr);
+        }
+    });
+}
+window.copyCurrentMaterialsJson = copyCurrentMaterialsJson;
 
 function editCustomMaterial(id) {
     checkAdminAccess(() => {
@@ -15624,6 +15712,7 @@ async function handleAdvMaterialSubmit(e) {
                     kapakResmi: chosenCover || (fileDataUrl && fileDataUrl.startsWith("data:image") ? fileDataUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
                     format: fileFormat,
                     hasBlob: hasBlob,
+                    isNewLocal: true,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : ["fenbilimleri", "fen", "ortaokul", "MEB 2026-2027"],
                     visibility: visibility,
                     downloadCount: "Yeni",
