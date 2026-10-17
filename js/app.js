@@ -214,31 +214,56 @@ const CloudSyncManager = {
             deletedIds.add("mat-5-unite-bilgi");
             deletedIds.add("mat-5-lab-guvenlik-gorsel");
 
+            // 🌟 ADIM 0: Statik /data/materials.json (Tüm cihazlar ve ağlar için en hızlı, sıfır-kota garantili kaynak)
+            let staticMaterials = [];
+            try {
+                const staticRes = await fetch(`/data/materials.json?v=${Date.now()}&_r=${Math.random()}`, {
+                    headers: { "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache" },
+                    cache: "no-store"
+                });
+                if (staticRes.ok) {
+                    const sData = await staticRes.json();
+                    if (Array.isArray(sData) && sData.length > 0) {
+                        staticMaterials = sData;
+                    }
+                }
+            } catch(stErr) {
+                console.warn("data/materials.json fetch error:", stErr);
+            }
+
             // 1. Buluttaki en güncel materyalleri çek (Cache-Busting zaman damgasıyla)
             let cloudMaterials = [];
             let cloudDeletedIds = [];
             let fetchSuccess = false;
 
-            // 🌟 0. ÖNCELİK: Supabase Bulut Veritabanı (Çoklu cihaz senkronizasyonu)
+            // 🌟 0. ÖNCELİK: Supabase Bulut Veritabanı (Kota kontrolü ve zaman aşımı korumalı)
             let isSupabaseSource = false;
-            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            if (!window.ROTALI_SUPABASE_QUOTA_EXCEEDED && typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
                 try {
-                    // Buluttaki mezarlık sicilini çek (Kalıcı silinmiş id'ler)
-                    const sbDeleted = await RotaliCloud.fetchDeletedIds();
+                    const sbPromise = Promise.all([
+                        RotaliCloud.fetchDeletedIds(),
+                        RotaliCloud.fetchMaterials()
+                    ]);
+                    const timeoutPromise = new Promise((_, reject) => setTimeout(() => reject(new Error("Supabase timeout")), 2500));
+                    const [sbDeleted, sbMaterials] = await Promise.race([sbPromise, timeoutPromise]);
+
                     if (Array.isArray(sbDeleted) && sbDeleted.length > 0) {
                         sbDeleted.forEach(dId => {
                             if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId);
                         });
                     }
 
-                    const sbMaterials = await RotaliCloud.fetchMaterials();
-                    if (Array.isArray(sbMaterials)) {
+                    if (Array.isArray(sbMaterials) && sbMaterials.length > 0) {
                         cloudMaterials = sbMaterials;
                         fetchSuccess = true;
                         isSupabaseSource = true;
                     }
                 } catch(sbErr) {
-                    console.warn("Supabase sync fetch error:", sbErr);
+                    const msg = String(sbErr?.message || sbErr || "");
+                    if (msg.includes("402") || msg.includes("quota") || msg.includes("timeout")) {
+                        window.ROTALI_SUPABASE_QUOTA_EXCEEDED = true;
+                    }
+                    console.warn("Supabase sync bypassed:", msg);
                 }
             }
 
@@ -336,9 +361,15 @@ const CloudSyncManager = {
                 } catch(e) {}
             }
 
-            // 3. 🌟 BULUT ÖNCELİKLİ AKILLI BİRLEŞTİRME (Cloud First Source of Truth)
-            // Telefondan yapılan değişiklikler bilgisayarı, bilgisayardan yapılanlar telefonu anında günceller!
+            // 3. 🌟 BULUT ÖNCELİKLİ AKILLI BİRLEŞTİRME (Statik JSON + Bulut API + Yerel Hafıza)
             const cloudMap = new Map();
+            // Önce statik garantili materyalleri haritaya koy
+            staticMaterials.forEach(item => {
+                if (item && item.id && item.id !== "sys-deleted-registry" && !activeDeletedSet.has(item.id)) {
+                    cloudMap.set(item.id, item);
+                }
+            });
+            // Ardından buluttan gelen canlı verileri üzerine yaz
             cloudMaterials.forEach(item => {
                 if (item && item.id && item.id !== "sys-deleted-registry" && !activeDeletedSet.has(item.id)) {
                     cloudMap.set(item.id, item);
@@ -440,20 +471,23 @@ const CloudSyncManager = {
             const deletedIds = getDeletedMaterialIds();
             // Bellekteki tam DataURL'leri kullanarak buluta gönder (Tüm cihazlarda açılabilmesi için)
             // fileUrl DataURL ise ve 5MB altındaysa bulutta saklanır, üzerindeyse IndexedDB'ye bırakılır
-            const MAX_CLOUD_DATAURL_SIZE = 5 * 1024 * 1024; // 5MB
+            const MAX_CLOUD_DATAURL_SIZE = 120 * 1024; // 120KB Vercel/Gist yük sınırı
             const cleanMaterials = materialsList.map(item => {
                 const copy = { ...item };
-                // Bellekteki tam veriyi geri yükle (localStorage kırpmış olabilir)
+                // Bellekteki tam veriyi geri yükle
                 if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
                     const cached = ROTALI_MATERIALS_CACHE.find(c => c && c.id === copy.id);
                     if (cached && cached.fileUrl && cached.fileUrl.startsWith("data:") && (!copy.fileUrl || copy.fileUrl === "")) {
                         copy.fileUrl = cached.fileUrl;
                     }
                 }
-                // Sadece eski Gist/Vercel senkronizasyonunda 5MB üstü DataURL'ler sınırlandırılır (Supabase Storage varsa kısıtlama yapılmaz)
-                if (!window.RotaliCloud?.isConfigured() && copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
+                // Gist ve Vercel API yük sınırını (413 Payload Too Large) aşmamak için büyük DataURL'leri kırp
+                if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
                     copy.fileUrl = "";
-                    copy.hasBlob = true; // Bu cihazda IndexedDB'de saklanır işareti
+                    copy.hasBlob = true;
+                }
+                if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 80 * 1024) {
+                    copy.imageUrl = "";
                 }
                 // Duplicate imageUrl/fileUrl temizliği
                 if (copy.imageUrl && copy.fileUrl && copy.imageUrl === copy.fileUrl && copy.fileUrl.startsWith("data:")) {
@@ -603,6 +637,65 @@ function sanitizeMaterialItem(raw) {
 }
 
 const DEFAULT_CUSTOM_MATERIALS = [
+    {
+        id: "mat-5-islenecek-konular",
+        grade: "5",
+        category: "ders-kitabi",
+        targetSection: "kitap",
+        title: "5.Sınıf İşlenecek Konular",
+        unit: "Ders Kitabı & Ünite PDF'leri",
+        desc: "Türkiye Yüzyılı Maarif Modeli 5. Sınıf Fen Bilimleri yıllık ünite ve konu dağılımı infografik tablosu.",
+        fileName: "5.Sinif_Islenecek_Konular.png",
+        fileUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
+        imageUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
+        kapakResmi: "assets/unite-bilgilendirmeleri-gorsel.png",
+        format: "WEB BAĞLANTISI",
+        hasBlob: false,
+        tags: ["5. Sınıf", "İşlenecek Konular", "MEB 2026-2027", "Maarif Modeli", "Afiş"],
+        visibility: "public",
+        downloadCount: "2.450+",
+        createdAt: "2026-10-15T20:00:00.000Z",
+        updatedAt: "2026-10-17T12:00:00.000Z"
+    },
+    {
+        id: "mat-5-ilk-ders-notu",
+        grade: "5",
+        category: "ders-kitabi",
+        targetSection: "kitap",
+        title: "İlk ders notu",
+        unit: "Ders Kitabı & Ünite PDF'leri",
+        desc: "Fen Bilimleri Dersi Bize Ne Kazandırır? Doğayı anla, bilimi keşfet, geleceği inşa et kapsamlı görsel ders notu.",
+        fileName: "Ilk_Ders_Notu.png",
+        fileUrl: "assets/ilk-ders-notu.png",
+        imageUrl: "assets/ilk-ders-notu.png",
+        kapakResmi: "assets/ilk-ders-notu.png",
+        format: "WEB BAĞLANTISI",
+        hasBlob: false,
+        tags: ["5. Sınıf", "İlk Ders Notu", "Fen Bilimleri", "MEB 2026-2027"],
+        visibility: "public",
+        downloadCount: "3.120+",
+        createdAt: "2026-10-15T20:15:00.000Z",
+        updatedAt: "2026-10-17T12:00:00.000Z"
+    },
+    {
+        id: "mat-5af99640-7aaf-423f-9643-0e157023d717",
+        grade: "7",
+        category: "ders-notu",
+        targetSection: "1",
+        title: "7.1. Videolar",
+        unit: "1. Ünite: Uzay Çağı",
+        desc: "7. Sınıf 1. Ünite Uzay Çağı video anlatım içerikleri ve ders kaynakları.",
+        fileName: "7-1-videolar.mp4",
+        fileUrl: "https://www.youtube.com/watch?v=5F2v_25gqj8",
+        imageUrl: "assets/kapak-7.jpg",
+        format: "YouTube Video",
+        hasBlob: false,
+        tags: ["7.sınıf", "video", "uzay cagi", "MEB 2026-2027"],
+        visibility: "public",
+        downloadCount: "1.200+",
+        createdAt: "2026-10-16T05:33:46.023Z",
+        updatedAt: "2026-10-16T05:33:46.023Z"
+    },
     {
         id: "not-7-1",
         grade: "7",
@@ -1803,6 +1896,16 @@ function initPortal() {
             }
         }
     } catch(e) {}
+
+    // 📱 Mobil Safari (iOS) ve Pardus (Firefox) bfcache (geri/ileri önbellek) geri dönüşünde verileri tazele
+    window.addEventListener("pageshow", (event) => {
+        if (event.persisted) {
+            console.log("📱 bfcache geri dönüşü algılandı, veriler tazeleniyor...");
+            if (typeof CloudSyncManager !== "undefined") {
+                CloudSyncManager.syncWithCloud(false);
+            }
+        }
+    });
 
     handleRouteChange();
     updateUserInterface();
@@ -4197,10 +4300,11 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     <div id="notu-sec-kitap" class="accordion-body-collapsible ${isKitapActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                             ${allKitapItems.length > 0 ? allKitapItems.map(item => {
-                                const isMainBook = (item.id === `book-${grade.number}` || item.id === `book-${gNum}` || item.isDefaultMebBook || item.category === "ders-kitabi");
-                                const isImg = (item.format === 'GÖRSEL' || String(item.title || '').toLowerCase().includes('ünite') || String(item.title || '').toLowerCase().includes('işlenecek') || String(item.title || '').toLowerCase().includes('bilgi'));
+                                const isImg = (item.format === 'GÖRSEL' || item.format === 'WEB BAĞLANTISI' || String(item.title || '').toLowerCase().includes('ünite') || String(item.title || '').toLowerCase().includes('işlenecek') || String(item.title || '').toLowerCase().includes('bilgi') || String(item.title || '').toLowerCase().includes('ilk ders') || Boolean(item.fileUrl && item.fileUrl.match(/\.(png|jpe?g|webp|svg)($|\?)/i)));
+                                const isMainBook = (item.id === `book-${grade.number}` || item.id === `book-${gNum}` || item.isDefaultMebBook);
                                 const cover = resolveMaterialCover(item) || item.cover || `assets/kapak-${grade.number || 5}.jpg`;
-                                const isBookReader = isMainBook || (item.category === "ders-kitabi") || (item.format && item.format.includes("KİTAP"));
+                                const isPdfBook = !isImg && (isMainBook || (item.format && item.format.includes("KİTAP")) || (item.fileUrl && item.fileUrl.toLowerCase().endsWith(".pdf")));
+                                const isBookReader = isPdfBook;
                                 const openFunc = isBookReader
                                     ? `openDigitalBookModal({ id: '${item.id}', fileUrl: '${(item.fileUrl && item.fileUrl !== '#' ? item.fileUrl : '')}', title: '${(item.title || '').replace(/'/g, "\\'")}', grade: '${grade.number}', cover: '${cover}', fileName: '${grade.number}-sinif-fen-bilimleri-meb-ders-kitabi.pdf', category: 'ders-kitabi' })`
                                     : `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || cover || '#'}', '${(item.fileName || item.title || '').replace(/'/g, "\\'")}', '${item.category || 'ders-notu'}', '${(item.title || '').replace(/'/g, "\\'")}', '${item.format || ''}')`;
@@ -10101,6 +10205,18 @@ async function openDigitalBookModal(options = {}) {
             grade: arguments[2] || "5",
             cover: arguments[3] || ""
         };
+    }
+
+    // 🖼️ Görsel veya afiş içerikleri doğrudan görsel modalında aç (PDF okuyucunun çökmesini kesinlikle önler)
+    const reqUrl = String(options.fileUrl || "").toLowerCase();
+    const reqFile = String(options.fileName || "").toLowerCase();
+    const reqFormat = String(options.format || "").toUpperCase();
+    const isImageDoc = reqUrl.match(/\.(png|jpe?g|webp|svg)($|\?)/i) || 
+                       reqFile.match(/\.(png|jpe?g|webp|svg)($|\?)/i) || 
+                       reqFormat === "GÖRSEL" || reqFormat === "WEB BAĞLANTISI" || 
+                       options.id === "mat-5-islenecek-konular" || options.id === "mat-5-ilk-ders-notu";
+    if (isImageDoc) {
+        return openInPageDocumentModal(options.fileUrl || options.cover || options.imageUrl, options.title, options.fileName, true, options.fileUrl, options.cover);
     }
     const bookTitle = options.title || "Fen Bilimleri Ders Dokümanı";
     const grade = String(options.grade || "5").replace(/^grade-/, "").trim();
