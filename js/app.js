@@ -142,6 +142,61 @@ function removeDeletedMaterialId(id) {
     } catch(e) {}
 }
 
+// =============================================================
+// ⚡ MERKEZİ VERİ ÇEKME & CACHE-BUSTING FONKSİYONLARI
+// =============================================================
+async function fetchFreshData(endpoint = "/data/materials.json") {
+    const timestamp = Date.now();
+    const url = `${endpoint}?v=${timestamp}`;
+    try {
+        const response = await fetch(url, {
+            headers: { "Cache-Control": "no-cache, no-store, must-revalidate", "Pragma": "no-cache" },
+            cache: "no-store"
+        });
+        if (!response.ok) throw new Error("HTTP Hatası");
+        return await response.json();
+    } catch (err) {
+        return null;
+    }
+}
+
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted && typeof loadCentralizedMaterials === "function") {
+        loadCentralizedMaterials().then(() => {
+            if (typeof handleRouteChange === "function") {
+                handleRouteChange({ preserveScroll: true });
+            }
+        });
+    }
+});
+
+let APP_MATERIALS_CACHE = [];
+async function loadCentralizedMaterials() {
+    let freshMaterials = await fetchFreshData("/data/materials.json");
+    if (Array.isArray(freshMaterials) && freshMaterials.length > 0) {
+        APP_MATERIALS_CACHE = freshMaterials;
+        ROTALI_MATERIALS_CACHE = freshMaterials;
+        try {
+            const slim = freshMaterials.map(m => {
+                const c = { ...m };
+                if (c.fileUrl && c.fileUrl.startsWith("data:") && c.fileUrl.length > 50000) c.fileUrl = "";
+                return c;
+            });
+            localStorage.setItem("rotali_custom_materials", JSON.stringify(slim));
+        } catch(e) {}
+    } else {
+        try {
+            APP_MATERIALS_CACHE = JSON.parse(localStorage.getItem("rotali_custom_materials") || "[]");
+            if (Array.isArray(APP_MATERIALS_CACHE) && APP_MATERIALS_CACHE.length > 0) {
+                ROTALI_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+            }
+        } catch(e) {
+            APP_MATERIALS_CACHE = [];
+        }
+    }
+    return APP_MATERIALS_CACHE;
+}
+
 const CloudSyncManager = {
     // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder
     apiEndpoint: (typeof window !== "undefined" && window.location && typeof window.location.hostname === "string" && window.location.hostname.includes("vercel.app")) 
@@ -1708,7 +1763,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
                 ${items.map(item => {
                     // Görsel & Kapak Çözümleme
                     let validImgUrl = "";
@@ -1904,6 +1959,13 @@ function initPortal() {
             if (typeof CloudSyncManager !== "undefined") {
                 CloudSyncManager.syncWithCloud(false);
             }
+        }
+    });
+
+    // ⚡ Merkezi veriyi cache-busting ile anında yükle
+    loadCentralizedMaterials().then(() => {
+        if (typeof handleRouteChange === "function") {
+            handleRouteChange({ preserveScroll: true });
         }
     });
 
@@ -4298,7 +4360,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                     </button>
 
                     <div id="notu-sec-kitap" class="accordion-body-collapsible ${isKitapActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
                             ${allKitapItems.length > 0 ? allKitapItems.map(item => {
                                 const isImg = (item.format === 'GÖRSEL' || item.format === 'WEB BAĞLANTISI' || String(item.title || '').toLowerCase().includes('ünite') || String(item.title || '').toLowerCase().includes('işlenecek') || String(item.title || '').toLowerCase().includes('bilgi') || String(item.title || '').toLowerCase().includes('ilk ders') || Boolean(item.fileUrl && item.fileUrl.match(/\.(png|jpe?g|webp|svg)($|\?)/i)));
                                 const isMainBook = (item.id === `book-${grade.number}` || item.id === `book-${gNum}` || item.isDefaultMebBook);
@@ -4312,28 +4374,28 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                 const badgeSub = isMainBook ? (item.pages || currentBook.pages || '240 Sayfa') : (item.pages || 'Özel İçerik');
 
                                 return `
-                                <div class="bg-white p-5 rounded-3xl border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group">
+                                <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 flex flex-col justify-between w-full overflow-hidden">
                                     <div>
-                                        <div class="flex items-center justify-between gap-2 mb-2">
-                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200">
+                                        <div class="flex items-center justify-between gap-2 mb-3">
+                                            <span class="inline-flex px-2 py-0.5 rounded text-xs font-bold bg-amber-50 text-amber-800 border border-amber-200">
                                                 ${badgeText}
                                             </span>
                                             <span class="text-[11px] font-bold text-slate-400">${badgeSub}</span>
                                         </div>
-                                        <h5 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-amber-700 transition-colors">
+                                        <h4 class="text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
                                             ${item.title}
-                                        </h5>
-                                        <!-- Görsel Kapak Kutusu -->
-                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-amber-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${openFunc}">
-                                            <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        </h4>
+                                        <div class="relative w-full aspect-[4/3] max-h-56 bg-slate-100 rounded-xl overflow-hidden mb-3 border border-slate-200 flex items-center justify-center cursor-pointer" onclick="${openFunc}">
+                                            <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-full h-full object-contain p-2" loading="lazy" />
                                         </div>
                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
                                             ${item.desc || (isMainBook ? 'Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.' : 'Ders kitabı eki ve bölüm dokümanı.')}
                                         </p>
                                     </div>
                                     <div>
-                                        <button type="button" onclick="${openFunc}" class="w-full py-2.5 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-md shadow-amber-600/20 active:scale-95 cursor-pointer">
-                                            <i class="fa-solid ${isBookReader ? 'fa-book-open-reader' : (isImg ? 'fa-eye' : 'fa-book-open')} text-sm"></i>
+                                        <!-- Akıllı tahta dokunmatik hedefleri için min-h-[44px] -->
+                                        <button type="button" onclick="${openFunc}" class="w-full min-h-[44px] py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-95">
+                                            <i class="fa-solid ${isBookReader ? 'fa-book-open-reader' : 'fa-eye'} text-sm"></i>
                                             <span>Görüntüle</span>
                                         </button>
                                         ${isAdmin ? `
@@ -4421,7 +4483,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                             <!-- Akordeon Gövdesi -->
                             <div id="${accordionId}" class="accordion-body-collapsible ${isThisUnitActive ? '' : 'hidden'} border-t border-slate-100 p-4 sm:p-6 bg-slate-50/50">
                                 ${allNotesForUnit.length > 0 ? `
-                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 w-full">
                                         ${allNotesForUnit.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("foy-") && !String(item.id).startsWith("grade-");
                                             const isSunum = (item.category === "ders-sunumu" || item.category === "sunum" || item.category === "slayt" || (item.format && (item.format.toLowerCase().includes("ppt") || item.format.toLowerCase().includes("sunum"))));
