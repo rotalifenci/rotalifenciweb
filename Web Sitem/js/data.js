@@ -1063,8 +1063,8 @@ function getGradeSubSectionsData(gradeNumber) {
 
                 // 7. EĞİTSEL OYUNLAR (HER SINIF İÇİN TAM ENTEGRE & İNTERAKTİF)
         egitselOyunlar: gNum === 5 ? [
+            { id: "oyun-5-gunes", title: "5. Sınıf Ay'ın Evreleri 3D Etkileşimli Uzay Simülatörü", icon: "fa-solid fa-moon", desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfedin. Ay'ı yörüngesinde sürükleyin, Dünya'dan görünen evreleri canlı inceleyin.", type: "3D Planetaryum Simülatörü", badge: "🌟 1. Ünite Başyapıtı", fileUrl: "oyunlar/ayin-evreleri-3d.html" },
             { id: "oyun-5-lab", title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu", icon: "fa-solid fa-flask", desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eğlenerek eşleştirin ve tanıyın.", type: "İnteraktif Laboratuvar Oyunu", badge: "Popüler Oyun" },
-            { id: "oyun-5-gunes", title: "5. Sınıf Güneş, Dünya ve Ay 3D Yörünge Simülatörü", icon: "fa-solid fa-earth-americas", desc: "Ay'ın evrelerini ve Dünya etrafındaki dolanmasını 3D simülasyonda deneyimleyin.", type: "3D Uzay Simülatörü", badge: "Simülasyon" },
             { id: "oyun-5-canlilar", title: "5. Sınıf Canlılar Dünyası ve Mantarlar Sınıflandırma Oyunu", icon: "fa-solid fa-paw", desc: "Omurgalı/omurgasız hayvanları ve bitkileri doğru kutulara sürükleyip puanları toplayın.", type: "Sürükle-Bırak Oyunu", badge: "Kavram Oyunu" },
             { id: "oyun-5-cark", title: "5. Sınıf Fen Çarkıfeleği & Terim Yarışması", icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, 5. sınıf fen sorularını 30 saniyede bilip puanları topla!", type: "İnteraktif Çark", badge: "Yarışma" }
         ] : gNum === 6 ? [

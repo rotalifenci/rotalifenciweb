@@ -5578,6 +5578,74 @@ function renderGradeEducationalGames(grade, subData) {
                     </div>
                 </div>
             </div>
+            ` : gNum === "5" ? `
+            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/50 border-2 border-cyan-400/90 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-cyan-300 transition-all">
+                <!-- Arka Plan Dekoratif Parıltılar -->
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+                    <!-- Sol: Simülasyon Logosu & Başlık Bilgisi -->
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="relative shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-600 shadow-[0_0_35px_rgba(6,182,212,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
+                                <div class="w-full h-full rounded-[22px] bg-slate-950 flex flex-col items-center justify-center text-cyan-300">
+                                    <i class="fa-solid fa-moon text-4xl mb-1"></i>
+                                    <span class="text-[9px] font-black tracking-widest uppercase text-cyan-400">3D UZAY</span>
+                                </div>
+                            </div>
+                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-cyan-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
+                                🌕 3D MODEL
+                            </span>
+                        </div>
+
+                        <div class="max-w-xl">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full bg-cyan-400/20 border border-cyan-300/40 text-cyan-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT SİMÜLASYONU
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                    ✓ Fotogerçekçi Planetaryum & Akıllı Tahta Uyumlu
+                                </span>
+                            </div>
+                            <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-400 mb-2">
+                                Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
+                                Güneş, Dünya ve Ay'ın hareketlerini NASA kalitesinde fotogerçekçi 3D uzay ortamında keşfet! Ay'ı yörüngesinde parmağınla sürükle, Dünya'dan görünen 8 evreyi canlı teleskopla izle, 10 soruluk interaktif yarışma ve yörünge görevleriyle öğrenmeni pekiştir!
+                            </p>
+                            <!-- Özellik Rozetleri -->
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🌒 8 Ana & Ara Evre
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔄 Canlı Yörünge Sürükleme
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔭 Dünya'dan Canlı Teleskop
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔊 Türkçe Sesli Rehber
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🎯 10 Soruluk İnteraktif Quiz
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Hızlı Başlatma Butonları -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(6,182,212,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-cyan-300">
+                            <i class="fa-solid fa-play text-base"></i> SİMÜLATÖRÜ AÇ (TAM EKRAN)
+                        </button>
+                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        </a>
+                    </div>
+                </div>
+            </div>
             ` : `
             <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/80 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
                 <!-- Arka Plan Dekoratif Parıltılar -->
@@ -14702,6 +14770,38 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     let resolvedKey = gameKeyOrUrl;
     const str = String(gameKeyOrUrl || "").toLowerCase();
     const titleStr = String(gameTitle || "").toLowerCase();
+
+    // 🌕 5. Sınıf Ay'ın Evreleri 3D Etkileşimli Planetaryum Uzay Simülatörü
+    if (str.includes("ayin-evreleri") || str.includes("ay'ın evreleri") || str.includes("ayin_evreleri") || str.includes("ay-evreleri") || str.includes("oyun-5-gunes") || str.includes("oyun-ayin-evreleri-3d") || titleStr.includes("ay'ın evreleri") || titleStr.includes("yörünge") || titleStr.includes("yorunge") || resolvedKey === "oyun-5-gunes" || resolvedKey === "oyun-ayin-evreleri-3d") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[99vw] h-[98vh] h-[98dvh] border border-cyan-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm sm:text-lg font-black shadow-md">
+                            <i class="fa-solid fa-moon"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-xs sm:text-base font-black text-cyan-300">🌕 Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü</h3>
+                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:inline">5. Sınıf Fen Bilimleri • Fotogerçekçi Planetaryum & Canlı Yörünge Deneyimi</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/ayin-evreleri-3d.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        return;
+    }
 
     // Kaçış Odası veya Gemini ise kesinlikle yerel Kaçış Odası oyunumuzu hedefle
     if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis") {

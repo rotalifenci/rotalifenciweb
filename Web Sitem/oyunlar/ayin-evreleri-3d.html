@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ay'ın Evreleri – 3D Etkileşimli Uzay Simülasyonu | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0f172a',
+                            deepSpace: '#030712',
+                            blue: '#1d4ed8',
+                            cyan: '#06b6d4',
+                            amber: '#f59e0b',
+                            purple: '#7c3aed'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js CDN & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(15, 23, 42, 0.2);
+            border-radius: 9999px;
+        }
+        /* Smooth Range Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 8px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(37, 99, 235, 0.4);
+            border: 2px solid #ffffff;
+            transition: transform 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        .glow-pulse {
+            animation: pulse-glow 2s infinite alternate;
+        }
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 10px rgba(6, 182, 212, 0.3); }
+            to { box-shadow: 0 0 25px rgba(6, 182, 212, 0.75); }
+        }
+        .orbit-canvas-container {
+            cursor: grab;
+        }
+        .orbit-canvas-container:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-slate-100 p-2 sm:p-3 lg:p-4">
+
+    <!-- 🌟 ÜST BÖLÜM: BAŞLIK, MOD SEÇİMİ & KONTROL BUTONLARI -->
+    <header class="bg-white rounded-2xl shadow-sm border border-slate-200/80 px-4 py-2.5 sm:px-6 sm:py-3 flex flex-wrap items-center justify-between gap-3 shrink-0 z-20">
+        <!-- Sol: Başlık ve Açıklama -->
+        <div class="flex items-center gap-3.5">
+            <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center text-xl sm:text-2xl shadow-md shadow-blue-500/20 shrink-0">
+                <i class="fa-solid fa-moon"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                        AY'IN EVRELERİ
+                    </h1>
+                    <span class="px-2.5 py-0.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[11px] font-extrabold uppercase">
+                        5. Sınıf Fen
+                    </span>
+                </div>
+                <p class="text-xs sm:text-sm text-slate-500 font-semibold hidden sm:block">
+                    Güneş, Dünya ve Ay'ın hareketlerini keşfet! Gerçek zamanlı fotogerçekçi 3D uzay simülasyonu.
+                </p>
+            </div>
+        </div>
+
+        <!-- Orta: Mod Seçici (Keşfet, Tahmin Et, Yörüngeye Yerleştir) -->
+        <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200/90 text-xs font-bold">
+            <button id="btn-mode-explore" onclick="setAppMode('explore')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-blue-700 shadow-sm">
+                <i class="fa-solid fa-compass"></i>
+                <span>Keşfet</span>
+            </button>
+            <button id="btn-mode-quiz" onclick="setAppMode('quiz')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>Evreyi Tahmin Et</span>
+            </button>
+            <button id="btn-mode-orbit-drag" onclick="setAppMode('challenge')" class="px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>Yörüngeye Yerleştir</span>
+            </button>
+        </div>
+
+        <!-- Sağ: Yardım, Ses, Kamera & Tam Ekran & Logo -->
+        <div class="flex items-center gap-2">
+            <!-- Sesli Anlatım Butonu -->
+            <button id="btn-voice" onclick="toggleVoiceNarration()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Sesli Anlatımı Aç / Kapat">
+                <i id="voice-icon" class="fa-solid fa-volume-high text-sm"></i>
+            </button>
+
+            <!-- Biliyor Musun? Modalı Butonu -->
+            <button onclick="openInfoModal()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-700 flex items-center justify-center transition-all shadow-xs" title="Bilimsel Bilgiler ve Kavram Yanılgıları">
+                <i class="fa-solid fa-lightbulb text-sm"></i>
+            </button>
+
+            <!-- Kamera Görünümü Değiştirici -->
+            <button id="btn-camera-view" onclick="toggleCameraPerspective()" class="px-3 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs" title="Kamera Açısını Değiştir">
+                <i class="fa-solid fa-video text-blue-600"></i>
+                <span id="camera-view-text" class="hidden md:inline">Kuşbakışı</span>
+            </button>
+
+            <!-- Tam Ekran Butonu -->
+            <button onclick="toggleFullScreen()" class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Tam Ekran Modu">
+                <i class="fa-solid fa-expand text-sm"></i>
+            </button>
+
+            <!-- Rotalı Fenci Logo / Rozet -->
+            <div class="hidden lg:flex items-center gap-2 pl-2 border-l border-slate-200">
+                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-9 h-9 rounded-xl object-cover shadow-xs border border-slate-200" onerror="this.src='../rotali-fenci-logo.png'">
+                <div class="leading-none text-left">
+                    <span class="text-xs font-black text-slate-900 block tracking-tight">ROTALI FENCİ</span>
+                    <span class="text-[10px] font-bold text-red-600 block">Eğitim Portalı</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON ALANI (İKİLİ GÖRÜNÜM: YÖRÜNGE VE DÜNYA'DAN BAKIŞ) -->
+    <main class="flex-1 my-2 sm:my-3 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0 relative">
+
+        <!-- 🚀 SOL PANEL (%65): YÖRÜNGE GÖRÜNÜMÜ (GÜNEŞ, DÜNYA, AY DOLANMA YÖRÜNGESİ) -->
+        <div class="lg:col-span-8 bg-slate-950 rounded-2xl sm:rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col orbit-canvas-container">
+            <!-- Simülasyon Üst Bilgi Rozetleri -->
+            <div class="absolute top-3 left-3 sm:top-4 sm:left-4 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
+                <span class="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-satellite"></i>
+                    <span>UZAYDAN BAKIŞ (KUZEY KUTBU ÜSTÜNDEN)</span>
+                </span>
+                <span class="px-3 py-1 rounded-full bg-slate-900/80 backdrop-blur-md text-amber-300 border border-amber-500/30 text-xs font-extrabold flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-sun"></i>
+                    <span>Güneş Işığı: Sol Taraftan Gelir</span>
+                </span>
+            </div>
+
+            <!-- Sağ Üst: Yörünge İpuçları & Etkileşim Butonları -->
+            <div class="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 flex items-center gap-2">
+                <button id="btn-toggle-rays" onclick="toggleSunRays()" class="px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-bolt-lightning text-amber-400"></i>
+                    <span class="hidden sm:inline">Işık Işınları</span>
+                </button>
+                <button id="btn-toggle-labels" onclick="toggleLabels()" class="px-3 py-1.5 rounded-xl bg-slate-900/85 backdrop-blur-md border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-tags text-cyan-400"></i>
+                    <span class="hidden sm:inline">İsimler</span>
+                </button>
+            </div>
+
+            <!-- Etkileşim İpucu / Bilgilendirme Kartı -->
+            <div class="absolute bottom-3 left-3 z-10 pointer-events-none">
+                <div class="px-3 py-1.5 rounded-xl bg-slate-900/80 backdrop-blur-md border border-slate-800 text-[11px] font-bold text-slate-300 flex items-center gap-2 shadow-sm">
+                    <i class="fa-solid fa-hand-pointer text-cyan-400 animate-bounce"></i>
+                    <span>Ay'ı yörünge üzerinde fareniz veya dokunarak sürükleyebilirsiniz!</span>
+                </div>
+            </div>
+
+            <!-- Three.js Orbit Canvas -->
+            <div id="orbit-container" class="w-full h-full relative">
+                <canvas id="orbit-canvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Challenge (Yörüngeye Yerleştir) Görev Paneli (Gizli / Görünür) -->
+            <div id="challenge-panel" class="hidden absolute inset-x-4 top-16 z-20 bg-slate-900/95 backdrop-blur-md border-2 border-amber-400 rounded-2xl p-4 text-white shadow-2xl animate-in fade-in duration-200">
+                <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-lg font-black shrink-0">
+                            <i class="fa-solid fa-flag-checkered"></i>
+                        </div>
+                        <div>
+                            <span class="text-[11px] font-black uppercase text-amber-400 tracking-wider">YÖRÜNGE GÖREVİ #<span id="challenge-step-num">1</span> / 8</span>
+                            <h3 class="text-base sm:text-lg font-black text-white" id="challenge-task-title">
+                                Ay'ı <span class="text-amber-300 underline underline-offset-4 font-black">"DOLUNAY"</span> konumuna sürükle!
+                            </h3>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button onclick="checkChallengeAnswer()" class="flex-1 sm:flex-none px-5 py-2.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-lg transition-all transform active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-circle-check"></i> Konumu Onayla
+                        </button>
+                        <button onclick="nextChallengeTask()" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-all cursor-pointer">
+                            Geç <i class="fa-solid fa-forward"></i>
+                        </button>
+                    </div>
+                </div>
+                <div id="challenge-feedback" class="mt-2 text-xs font-bold text-amber-200 hidden"></div>
+            </div>
+        </div>
+
+        <!-- 🌕 SAĞ PANEL (%35): DÜNYA'DAN AY NASIL GÖRÜNÜR? (CANLI TELESKOPİK 3D MODELİ & BİLİMSEL BİLGİLER) -->
+        <div class="lg:col-span-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl flex flex-col justify-between p-4 sm:p-5 relative overflow-hidden">
+            
+            <!-- Panel Üstü: Başlık & Evre Rozeti -->
+            <div>
+                <div class="flex items-center justify-between mb-3 pb-2.5 border-b border-slate-100">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm font-black">
+                            <i class="fa-solid fa-binoculars"></i>
+                        </span>
+                        <div>
+                            <h2 class="text-xs sm:text-sm font-extrabold text-slate-800 uppercase tracking-tight">
+                                Dünya'dan Ay Nasıl Görünür?
+                            </h2>
+                            <span class="text-[10px] text-slate-400 font-bold block">Teleskop / Çıplak Gözle Canlı Gözlem</span>
+                        </div>
+                    </div>
+                    <span id="phase-type-badge" class="px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
+                        ANA EVRE
+                    </span>
+                </div>
+
+                <!-- Büyük Evre Başlığı -->
+                <div class="text-center my-1">
+                    <h3 id="current-phase-name" class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+                        YENİ AY
+                    </h3>
+                    <p id="current-phase-subtitle" class="text-xs sm:text-sm font-bold text-blue-600 mt-0.5">
+                        Ay karanlıktır, gökyüzünde görünmez
+                    </p>
+                </div>
+
+                <!-- 3D Earth View Telescope Sphere Viewport -->
+                <div class="relative w-full aspect-square max-h-[220px] sm:max-h-[250px] mx-auto my-2 rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center">
+                    <!-- Canlı 3D Telescope Canvas -->
+                    <canvas id="telescope-canvas" class="w-full h-full block"></canvas>
+                    
+                    <!-- Canlı Aydınlanma Rozeti -->
+                    <div class="absolute bottom-2 left-2 px-2.5 py-1 rounded-lg bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[11px] font-black text-cyan-400 font-mono shadow">
+                        Aydınlık: <span id="illumination-percent">0%</span>
+                    </div>
+
+                    <!-- Canlı Yörünge Açısı Rozeti -->
+                    <div class="absolute bottom-2 right-2 px-2.5 py-1 rounded-lg bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[11px] font-black text-amber-400 font-mono shadow">
+                        Açı: <span id="orbit-angle-degree">0°</span>
+                    </div>
+                </div>
+
+                <!-- Bilimsel İstatistikler Tablosu (5. Sınıf Seviyesi) -->
+                <div class="grid grid-cols-2 gap-2 my-2 text-xs">
+                    <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Geçen Süre</span>
+                        <span class="text-sm font-black text-slate-800 font-mono" id="stat-elapsed-days">0.0 Gün</span>
+                        <span class="text-[10px] text-slate-500 font-semibold block">/ 29.5 Günlük Ay Döngüsü</span>
+                    </div>
+                    <div class="p-2.5 bg-slate-50 border border-slate-200/80 rounded-xl">
+                        <span class="text-[10px] font-bold text-slate-400 uppercase block">Görünen Şekil</span>
+                        <span class="text-sm font-black text-slate-800" id="stat-shape-desc">Tamamen Karanlık</span>
+                        <span class="text-[10px] text-blue-600 font-semibold block" id="stat-side-desc">Işık Arkasında</span>
+                    </div>
+                </div>
+
+                <!-- Açıklama / Pedagojik Özet Kutusu -->
+                <div class="p-3 bg-blue-50/70 border border-blue-100 rounded-xl text-xs text-slate-700 leading-relaxed font-medium" id="phase-explanation-text">
+                    <strong>Yeni Ay:</strong> Ay, Dünya ile Güneş arasındadır. Ay'ın Güneş gören aydınlık yüzü Güneş'e dönüktür; Dünya'ya bakan karanlık yüzü ise ışık almadığı için gökyüzünde görünmez.
+                </div>
+            </div>
+
+            <!-- Quiz Modu Alanı (Sadece Quiz modunda açılır) -->
+            <div id="quiz-overlay" class="hidden absolute inset-0 z-30 bg-white/98 backdrop-blur-md p-4 sm:p-5 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 font-black text-xs">
+                                Soru <span id="quiz-q-num">1</span> / 10
+                            </span>
+                            <span class="text-xs font-bold text-slate-500">Evreyi Bil!</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-xs font-black">
+                            <span class="text-emerald-600"><i class="fa-solid fa-trophy"></i> Skor: <span id="quiz-score">0</span></span>
+                        </div>
+                    </div>
+
+                    <div class="my-3 text-center">
+                        <h4 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug" id="quiz-question-title">
+                            Yukarıdaki teleskop görüntüsüne göre Ay hangi evrededir?
+                        </h4>
+                        <p class="text-xs text-slate-500 font-medium mt-1">
+                            İpucu: Sağ tarafı mı yoksa sol tarafı mı aydınlık? Hangi harfe benziyor?
+                        </p>
+                    </div>
+
+                    <!-- 4 Çoktan Seçmeli Seçenek -->
+                    <div class="grid grid-cols-2 gap-2 my-2" id="quiz-options-container">
+                        <!-- JS ile dolacak -->
+                    </div>
+
+                    <div id="quiz-feedback-box" class="p-3 rounded-xl text-xs font-bold hidden my-2 leading-relaxed"></div>
+                </div>
+
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                    <button onclick="setAppMode('explore')" class="px-3 py-2 text-slate-500 hover:text-slate-800 text-xs font-bold">
+                        <i class="fa-solid fa-arrow-left"></i> Keşif Moduna Dön
+                    </button>
+                    <button id="btn-quiz-next" onclick="nextQuizQuestion()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-black uppercase transition-all shadow-sm hidden">
+                        Sonraki Soru <i class="fa-solid fa-forward"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Alt Bilgi: Ölçek Uyarısı & Instagram -->
+            <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400 font-medium shrink-0">
+                <span class="flex items-center gap-1 text-[10px]">
+                    <i class="fa-solid fa-circle-info text-blue-500"></i> Boyutlar eğitim amaçlı ölçeklidir.
+                </span>
+                <span class="font-bold text-slate-500">@rotalifenci</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- 🎮 ALT BÖLÜM: ZAMAN ÇİZELGESİ, HIZ KONTROLLERİ & 8 İNTERAKTİF EVRE KARTI -->
+    <footer class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-3 sm:p-4 shrink-0 z-20 space-y-3">
+        
+        <!-- Üst Kontrol Şeridi: Oynat/Durdur, Zaman Çubuğu, Hız Seçenekleri -->
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-3">
+            
+            <!-- Sol: Oynatma ve Adım Butonları -->
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-between sm:justify-start">
+                <button id="btn-prev-phase" onclick="stepPhase(-1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Önceki Evre">
+                    <i class="fa-solid fa-backward-step"></i>
+                </button>
+                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-5 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center gap-2 shadow-md shadow-blue-600/20 active:scale-95">
+                    <i id="play-pause-icon" class="fa-solid fa-play"></i>
+                    <span id="play-pause-text">Oynat</span>
+                </button>
+                <button id="btn-next-phase" onclick="stepPhase(1)" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-xs" title="Sonraki Evre">
+                    <i class="fa-solid fa-forward-step"></i>
+                </button>
+                <button onclick="resetSimulation()" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-xs" title="Sıfırla">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+
+            <!-- Orta: 29.5 Günlük Süre Kaydırıcısı (Timeline Slider) -->
+            <div class="flex-1 w-full flex items-center gap-3">
+                <span class="text-xs font-black text-slate-500 font-mono shrink-0">0 Gün</span>
+                <div class="relative flex-1 flex items-center">
+                    <input type="range" id="timeline-slider" min="0" max="29.5" step="0.1" value="0" class="w-full cursor-pointer" oninput="onTimelineSliderInput(this.value)">
+                </div>
+                <div class="px-2.5 py-1 rounded-lg bg-blue-50 border border-blue-200 text-blue-700 font-mono font-black text-xs shrink-0">
+                    <span id="slider-day-label">0.0</span> / 29.5 Gün
+                </div>
+            </div>
+
+            <!-- Sağ: Simülasyon Hızı Seçimi -->
+            <div class="flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold shrink-0">
+                <span class="text-[10px] text-slate-400 px-2 uppercase font-extrabold hidden md:inline">Hız</span>
+                <button onclick="setSpeed(0.5, this)" class="speed-btn px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-slate-900">0.5x</button>
+                <button onclick="setSpeed(1.0, this)" class="speed-btn px-2.5 py-1 rounded-lg transition-all bg-white text-blue-700 shadow-xs">1x</button>
+                <button onclick="setSpeed(2.0, this)" class="speed-btn px-2.5 py-1 rounded-lg transition-all text-slate-600 hover:text-slate-900">2x</button>
+            </div>
+        </div>
+
+        <!-- Alt: 8 Etkileşimli Evre Kartı (Tek Tıkla Evreye Git) -->
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-2 pt-1 border-t border-slate-100 overflow-x-auto">
+            <!-- 1. Yeni Ay -->
+            <button onclick="jumpToPhase(0)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="0">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-slate-600 mb-1 group-hover:scale-105 transition-transform">
+                    🌑
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Yeni Ay</span>
+                <span class="text-[9px] font-bold text-slate-400 block font-mono">0. Gün</span>
+            </button>
+
+            <!-- 2. Hilal (Büyüyen) -->
+            <button onclick="jumpToPhase(1)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="1">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-200 mb-1 group-hover:scale-105 transition-transform">
+                    🌒
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Hilal (B)</span>
+                <span class="text-[9px] font-bold text-slate-400 block font-mono">3.7. Gün</span>
+            </button>
+
+            <!-- 3. İlk Dördün -->
+            <button onclick="jumpToPhase(2)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="2">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
+                    🌓
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">İlk Dördün</span>
+                <span class="text-[9px] font-bold text-emerald-600 block font-mono font-black">7.4. Gün</span>
+            </button>
+
+            <!-- 4. Şişkin Ay (Büyüyen) -->
+            <button onclick="jumpToPhase(3)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="3">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
+                    🌔
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Şişkin (B)</span>
+                <span class="text-[9px] font-bold text-slate-400 block font-mono">11.1. Gün</span>
+            </button>
+
+            <!-- 5. Dolunay -->
+            <button onclick="jumpToPhase(4)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="4">
+                <div class="w-8 h-8 rounded-full bg-amber-100 border border-amber-300 flex items-center justify-center text-xs text-amber-500 mb-1 group-hover:scale-105 transition-transform shadow-xs">
+                    🌕
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Dolunay</span>
+                <span class="text-[9px] font-bold text-emerald-600 block font-mono font-black">14.8. Gün</span>
+            </button>
+
+            <!-- 6. Şişkin Ay (Küçülen) -->
+            <button onclick="jumpToPhase(5)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="5">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
+                    🌖
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Şişkin (K)</span>
+                <span class="text-[9px] font-bold text-slate-400 block font-mono">18.5. Gün</span>
+            </button>
+
+            <!-- 7. Son Dördün -->
+            <button onclick="jumpToPhase(6)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="6">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-300 mb-1 group-hover:scale-105 transition-transform">
+                    🌗
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Son Dördün</span>
+                <span class="text-[9px] font-bold text-emerald-600 block font-mono font-black">22.1. Gün</span>
+            </button>
+
+            <!-- 8. Hilal (Küçülen) -->
+            <button onclick="jumpToPhase(7)" class="phase-card group p-2 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50/50 hover:bg-blue-50/40 transition-all text-center flex flex-col items-center justify-between" data-phase-idx="7">
+                <div class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-xs text-amber-200 mb-1 group-hover:scale-105 transition-transform">
+                    🌘
+                </div>
+                <span class="text-[11px] font-black text-slate-800 leading-tight block">Hilal (K)</span>
+                <span class="text-[9px] font-bold text-slate-400 block font-mono">25.8. Gün</span>
+            </button>
+        </div>
+    </footer>
+
+    <!-- 📖 "BİLİYOR MUSUN?" BİLİMSEL BİLGİ & KAVRAM YANILGILARI MODALI -->
+    <div id="info-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6" onclick="if(event.target === this) closeInfoModal()">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-lg font-black">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-slate-900">Biliyor Musun? Fen Bilgileri</h3>
+                        <p class="text-xs text-slate-500 font-semibold">5. Sınıf Ay'ın Evreleri Kritik Kazanımları</p>
+                    </div>
+                </div>
+                <button onclick="closeInfoModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 hover:text-rose-600 text-slate-500 flex items-center justify-center font-black transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                <!-- 1. Kavram Yanılgısı -->
+                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
+                    <h4 class="font-black text-rose-800 text-sm mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-triangle-exclamation"></i> En Büyük Kavram Yanılgısı!
+                    </h4>
+                    <p class="text-slate-700">
+                        <strong>Ay'ın evreleri Dünya'nın gölgesi yüzünden OLUŞMAZ!</strong><br>
+                        Ay'ın evreleri, Ay'ın Dünya çevresinde dolanırken Güneş gören aydınlık yüzünün Dünya'dan farklı açılarla görülmesi sebebiyle oluşur. Dünya'nın gölgesi sadece <em>Ay Tutulması</em> sırasında Ay'ın üzerine düşer.
+                    </p>
+                </div>
+
+                <!-- 2. Işık Kaynağı Değildir -->
+                <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <h4 class="font-black text-slate-900 text-sm mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-sun text-amber-500"></i> Ay Bir Işık Kaynağı mıdır?
+                    </h4>
+                    <p>
+                        Ay doğal bir ışık kaynağı değildir. Güneş'ten üzerine düşen ışığı ayna gibi yansıtır. Her zaman Ay'ın Güneş'e bakan yarısı aydınlık, diğer yarısı ise karanlıktır.
+                    </p>
+                </div>
+
+                <!-- 3. Neden Hep Aynı Yüzü Görünür? -->
+                <div class="p-4 rounded-2xl bg-blue-50 border border-blue-200">
+                    <h4 class="font-black text-blue-900 text-sm mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-lock text-blue-600"></i> Neden Dünya'dan Hep Aynı Yüzünü Görürüz?
+                    </h4>
+                    <p>
+                        Ay'ın kendi ekseni etrafında dönme süresi ile Dünya etrafında dolanma süresi birbirine eşittir (yaklaşık <strong>27.3 gün</strong>). Bu duruma astronomide <em>Kütleçekim Kilidi</em> denir. Bu sebeple Dünya'dan bakan biri daima Ay'ın aynı yüzünü görür.
+                    </p>
+                </div>
+
+                <!-- 4. Ana ve Ara Evreler Süresi -->
+                <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200">
+                    <h4 class="font-black text-emerald-900 text-sm mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-calendar-check text-emerald-600"></i> Evreler Ne Kadar Sürer?
+                    </h4>
+                    <p>
+                        İki ana evre (Örn: Yeni Ay ile İlk Dördün) arasında yaklaşık <strong>1 hafta (7-8 gün)</strong> geçer. Ay'ın tüm evrelerini tamamlayıp tekrar aynı evreye gelmesi yaklaşık <strong>29.5 gün</strong> sürer (Hicri Takvim / 1 Ay).
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-6 pt-4 border-t border-slate-100 text-right">
+                <button onclick="closeInfoModal()" class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md">
+                    Anladım, Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT: THREE.JS PLANETARYUM MOTORU & ETKİLEŞİM MANTIĞI -->
+    <!-- ============================================================ -->
+    <script>
+        // -----------------------------------------------------------------
+        // 1. SABİTLER, EVRE VERİLERİ & 5. SINIF MÜFREDAT KAZANIMLARI
+        // -----------------------------------------------------------------
+        const SYNODIC_MONTH_DAYS = 29.53; // Bir ay döngüsü
+        const ORBIT_RADIUS = 13.5;         // Three.js sahne içi yörünge yarıçapı
+
+        // 8 Ay Evresi Tanımlamaları (Astronomik & MEB Uyumlu)
+        const PHASES = [
+            {
+                index: 0,
+                name: "YENİ AY",
+                shortName: "Yeni Ay",
+                type: "Ana Evre",
+                angleDeg: 0,
+                day: 0.0,
+                illumination: 0,
+                shapeDesc: "Tamamen Karanlık",
+                sideDesc: "Işık Arkasında (Görünmez)",
+                subtitle: "Ay karanlıktır, gökyüzünde görünmez",
+                explanation: "Ay, Dünya ile Güneş arasındadır. Ay'ın Güneş gören aydınlık yüzü Güneş'e dönüktür; Dünya'ya bakan karanlık yüzü ise ışık almadığı için gökyüzünde görünmez.",
+                voiceText: "Yeni Ay evresinde Ay, Dünya ile Güneş arasındadır. Ay'ın karanlık yüzü Dünya'ya baktığı için gökyüzünde görünmez."
+            },
+            {
+                index: 1,
+                name: "HİLAL (BÜYÜYEN)",
+                shortName: "Hilal",
+                type: "Ara Evre",
+                angleDeg: 45,
+                day: 3.7,
+                illumination: 14.6,
+                shapeDesc: "İnce Yay Şeklinde",
+                sideDesc: "Sağ Taraf Aydınlık",
+                subtitle: "Güneş battıktan sonra batı ufkunda görülür",
+                explanation: "Yeni Ay evresinden birkaç gün sonra Ay'ın Dünya'dan bakıldığında sağ kenarı ince bir yay ('C' harfinin tersi) şeklinde aydınlık görünür.",
+                voiceText: "Büyüyen Hilal evresinde Ay'ın sağ kenarında ince bir aydınlık yay görünür."
+            },
+            {
+                index: 2,
+                name: "İLK DÖRDÜN",
+                shortName: "İlk Dördün",
+                type: "Ana Evre",
+                angleDeg: 90,
+                day: 7.4,
+                illumination: 50.0,
+                shapeDesc: "'D' Harfi Şeklinde",
+                sideDesc: "Sağ Yarısı Aydınlık",
+                subtitle: "Düz 'D' harfi şeklinde yarım daire",
+                explanation: "Yeni Ay'dan 1 hafta sonra gerçekleşir. Ay'ın Dünya'ya bakan yüzünün sağ yarısı Güneş ışığı alır. Gökyüzünde düz 'D' harfi şeklinde bir yarım daire görülür.",
+                voiceText: "İlk Dördün evresinde Ay'ın sağ yarısı aydınlık görünür ve düz D harfine benzer."
+            },
+            {
+                index: 3,
+                name: "ŞİŞKİN AY (BÜYÜYEN)",
+                shortName: "Şişkin Ay",
+                type: "Ara Evre",
+                angleDeg: 135,
+                day: 11.1,
+                illumination: 85.4,
+                shapeDesc: "Yarımdan Fazla Aydınlık",
+                sideDesc: "Sağ Taraf Hakim",
+                subtitle: "İlk Dördün ile Dolunay arasındaki ara evre",
+                explanation: "Ay'ın Dünya'ya bakan yüzünün yarısından fazlası aydınlık görünür. Dolunay evresine doğru aydınlanan alan her gece büyür.",
+                voiceText: "Büyüyen Şişkin Ay evresinde Ay'ın yarısından fazlası aydınlanmıştır."
+            },
+            {
+                index: 4,
+                name: "DOLUNAY",
+                shortName: "Dolunay",
+                type: "Ana Evre",
+                angleDeg: 180,
+                day: 14.8,
+                illumination: 100.0,
+                shapeDesc: "Tam Parlak Daire",
+                sideDesc: "Bütün Yüzü Aydınlık",
+                subtitle: "Tam bir daire şeklinde pırıl pırıl parlar",
+                explanation: "İlk Dördün'den 1 hafta sonra (Yeni Ay'dan 2 hafta sonra) oluşur. Dünya, Güneş ile Ay arasındadır. Ay'ın Dünya'ya bakan yüzünün tamamı Güneş ışığıyla aydınlanır.",
+                voiceText: "Dolunay evresinde Ay'ın Dünya'ya bakan yüzü tamamen aydınlanır ve gökyüzünde parlak bir daire şeklinde parlar."
+            },
+            {
+                index: 5,
+                name: "ŞİŞKİN AY (KÜÇÜLEN)",
+                shortName: "Şişkin Ay",
+                type: "Ara Evre",
+                angleDeg: 225,
+                day: 18.5,
+                illumination: 85.4,
+                shapeDesc: "Yarımdan Fazla Aydınlık",
+                sideDesc: "Sol Taraf Hakim",
+                subtitle: "Dolunaydan sonra aydınlık alan küçülmeye başlar",
+                explanation: "Dolunaydan sonra aydınlık kısım doğudan batıya doğru küçülmeye başlar. Sol tarafı hâlâ yarım daireden daha büyüktür.",
+                voiceText: "Küçülen Şişkin Ay evresinde Ay'ın sol tarafı aydınlıktır ve küçülmeye devam etmektedir."
+            },
+            {
+                index: 6,
+                name: "SON DÖRDÜN",
+                shortName: "Son Dördün",
+                type: "Ana Evre",
+                angleDeg: 270,
+                day: 22.1,
+                illumination: 50.0,
+                shapeDesc: "Ters 'D' Harfi Şeklinde",
+                sideDesc: "Sol Yarısı Aydınlık",
+                subtitle: "Ters 'D' harfi şeklinde yarım daire",
+                explanation: "Dolunaydan 1 hafta sonra oluşur. Ay'ın Dünya'ya bakan yüzünün sol yarısı aydınlık görünür. Gökyüzünde ters 'D' harfi şeklindedir.",
+                voiceText: "Son Dördün evresinde Ay'ın sol yarısı aydınlık görünür ve ters D harfine benzer."
+            },
+            {
+                index: 7,
+                name: "HİLAL (KÜÇÜLEN)",
+                shortName: "Hilal",
+                type: "Ara Evre",
+                angleDeg: 315,
+                day: 25.8,
+                illumination: 14.6,
+                shapeDesc: "İnce Ters Yay Şeklinde",
+                sideDesc: "Sol Kenar Aydınlık ('C' Harfi)",
+                subtitle: "Sabaha karşı doğu ufkunda görülen 'C' harfi",
+                explanation: "Son Dördün evresinden sonra Ay'ın sol kenarı ince bir yay şeklinde ('C' harfi) aydınlık görünür. Birkaç gün sonra tekrar Yeni Ay evresi başlar.",
+                voiceText: "Küçülen Hilal evresinde Ay gökyüzünde C harfi şeklinde ince bir yay olarak görünür."
+            }
+        ];
+
+        // -----------------------------------------------------------------
+        // 2. UYGULAMA DURUM DEĞİŞKENLERİ (STATE)
+        // -----------------------------------------------------------------
+        let appState = {
+            mode: 'explore',           // 'explore' | 'quiz' | 'challenge'
+            currentAngleRad: 0,        // [0, 2pi]
+            isPlaying: false,
+            speedMultiplier: 1.0,
+            voiceEnabled: true,
+            cameraPerspective: 'top',  // 'top' | 'perspective'
+            showSunRays: true,
+            showLabels: true,
+            isDraggingMoon: false
+        };
+
+        // -----------------------------------------------------------------
+        // 3. SES MOTORU (WEB AUDIO API & SES EFEKTLERİ)
+        // -----------------------------------------------------------------
+        let audioCtx = null;
+        function playTone(freq, type = 'sine', duration = 0.15) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playSuccessChime() {
+            playTone(523.25, 'triangle', 0.15); // C5
+            setTimeout(() => playTone(659.25, 'triangle', 0.2), 120); // E5
+            setTimeout(() => playTone(783.99, 'triangle', 0.35), 240); // G5
+        }
+
+        function playErrorBuzz() {
+            playTone(180, 'sawtooth', 0.25);
+        }
+
+        // Web Speech API Sesli Anlatım Fonksiyonu
+        function speakTurkish(text) {
+            if (!appState.voiceEnabled) return;
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel(); // Önceki seslendirmeyi durdur
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'tr-TR';
+            utterance.rate = 1.05;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleVoiceNarration() {
+            appState.voiceEnabled = !appState.voiceEnabled;
+            const icon = document.getElementById('voice-icon');
+            if (appState.voiceEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-sm text-blue-600';
+                speakTurkish("Sesli rehber aktif.");
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-sm text-slate-400';
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 4. THREE.JS MOTORLARI (YÖRÜNGE SAHNESİ & TELESKOPİK DÜNYA SAHNESİ)
+        // -----------------------------------------------------------------
+        let orbitScene, orbitCamera, orbitRenderer, orbitControls;
+        let telescopeScene, telescopeCamera, telescopeRenderer;
+        let moonMesh, earthMesh, cloudsMesh, sunMesh, sunGlowSprite;
+        let orbitLineMesh, rayGroup, labelsGroup;
+        let telescopeMoonMesh, telescopeLight;
+
+        // FOTOGERÇEKÇİ AY YÜZEYİ DOKU ÜRETİCİSİ (NASA LUNAR RECONNAISSANCE ORBITER KALİTESİNDE)
+        function generateProceduralMoonTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Ay Regolit Grisi Temel Renk Tonu
+            ctx.fillStyle = '#83868c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 2. Doğal Koyu Ay Denizleri (Mare Tranquillitatis, Oceanus Procellarum, Mare Imbrium vb.)
+            const maria = [
+                { x: 380, y: 220, rx: 110, ry: 90, color: '#383a40' }, // Oceanus Procellarum
+                { x: 520, y: 190, rx: 70, ry: 60, color: '#33353b' },  // Mare Imbrium
+                { x: 620, y: 210, rx: 55, ry: 45, color: '#3c3e44' },  // Mare Serenitatis
+                { x: 700, y: 230, rx: 65, ry: 50, color: '#36383e' },  // Mare Tranquillitatis
+                { x: 770, y: 220, rx: 35, ry: 30, color: '#2e3035' },  // Mare Crisium
+                { x: 720, y: 290, rx: 45, ry: 40, color: '#3f4147' }   // Mare Fecunditatis
+            ];
+
+            maria.forEach(m => {
+                const grad = ctx.createRadialGradient(m.x, m.y, 5, m.x, m.y, m.rx);
+                grad.addColorStop(0, m.color);
+                grad.addColorStop(0.7, m.color);
+                grad.addColorStop(1, 'transparent');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.ellipse(m.x, m.y, m.rx, m.ry, 0, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // 3. Kraterler ve Işın Sistemleri (Tycho, Copernicus, Kepler vb.)
+            const craters = [
+                { x: 580, y: 390, r: 16, rays: true }, // Tycho Crater
+                { x: 460, y: 230, r: 14, rays: true }, // Copernicus Crater
+                { x: 390, y: 240, r: 10, rays: false },// Kepler
+                { x: 650, y: 310, r: 12, rays: false },
+                { x: 260, y: 180, r: 15, rays: false },
+                { x: 820, y: 260, r: 13, rays: false },
+                { x: 500, y: 120, r: 11, rays: false }
+            ];
+
+            craters.forEach(c => {
+                // Işın hatları
+                if (c.rays) {
+                    ctx.strokeStyle = 'rgba(215, 220, 230, 0.4)';
+                    ctx.lineWidth = 1.5;
+                    for (let a = 0; a < Math.PI * 2; a += Math.PI / 8) {
+                        ctx.beginPath();
+                        ctx.moveTo(c.x, c.y);
+                        ctx.lineTo(c.x + Math.cos(a) * (c.r * 6), c.y + Math.sin(a) * (c.r * 6));
+                        ctx.stroke();
+                    }
+                }
+                // Dış halka
+                ctx.fillStyle = '#abb0b8';
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.r, 0, Math.PI * 2);
+                ctx.fill();
+                // İç çukur
+                ctx.fillStyle = '#2b2c30';
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.r * 0.75, 0, Math.PI * 2);
+                ctx.fill();
+                // Merkez tepeciği
+                ctx.fillStyle = '#dcdfe6';
+                ctx.beginPath();
+                ctx.arc(c.x, c.y, c.r * 0.25, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            // 4. Rastgele Mikro Kraterler ve Yüzey Pürüzlülüğü
+            for (let i = 0; i < 400; i++) {
+                const rx = Math.random() * canvas.width;
+                const ry = Math.random() * canvas.height;
+                const rr = Math.random() * 4 + 1;
+                ctx.fillStyle = Math.random() > 0.5 ? 'rgba(30, 32, 36, 0.4)' : 'rgba(200, 205, 215, 0.35)';
+                ctx.beginPath();
+                ctx.arc(rx, ry, rr, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // FOTOGERÇEKÇİ DÜNYA (BLUE MARBLE) DOKU ÜRETİCİSİ
+        function generateProceduralEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Derin Okyanuslar
+            ctx.fillStyle = '#0a2e5c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Kıtalar (Yeşil ve Kahverengi Doğal Dokular)
+            ctx.fillStyle = '#1e7b42';
+            
+            // Afrika & Avrupa
+            ctx.beginPath();
+            ctx.ellipse(520, 240, 80, 110, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Asya
+            ctx.beginPath();
+            ctx.ellipse(700, 180, 130, 85, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Amerika (Kuzey ve Güney)
+            ctx.beginPath();
+            ctx.ellipse(260, 170, 75, 70, 0, 0, Math.PI * 2);
+            ctx.ellipse(290, 310, 55, 95, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+            // Avustralya
+            ctx.beginPath();
+            ctx.ellipse(820, 340, 45, 35, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Kutuplar (Beyaz Buzullar)
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, canvas.width, 35);
+            ctx.fillRect(0, canvas.height - 35, canvas.width, 35);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // GÜNEŞ KORONA PARLAMA DOKUSU
+        function generateGlowTexture(colorHex) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            grad.addColorStop(0, colorHex);
+            grad.addColorStop(0.3, colorHex);
+            grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // THREE.JS SAHNELERİNİN BAŞLATILMASI
+        function initThreeEngines() {
+            // ==========================================
+            // A. YÖRÜNGE SAHNESİ (ORBIT SCENE)
+            // ==========================================
+            const orbitContainer = document.getElementById('orbit-container');
+            const orbitCanvas = document.getElementById('orbit-canvas');
+
+            orbitScene = new THREE.Scene();
+            orbitScene.background = new THREE.Color(0x030712);
+
+            const w = orbitContainer.clientWidth;
+            const h = orbitContainer.clientHeight;
+
+            orbitCamera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            orbitCamera.position.set(0, 28, 0); // Varsayılan: Üstten kuşbakışı
+            orbitCamera.lookAt(0, 0, 0);
+
+            orbitRenderer = new THREE.WebGLRenderer({ canvas: orbitCanvas, antialias: true, alpha: false });
+            orbitRenderer.setSize(w, h);
+            orbitRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            orbitRenderer.shadowMap.enabled = true;
+
+            orbitControls = new THREE.OrbitControls(orbitCamera, orbitRenderer.domElement);
+            orbitControls.enableDamping = true;
+            orbitControls.dampingFactor = 0.05;
+            orbitControls.maxDistance = 65;
+            orbitControls.minDistance = 8;
+            orbitControls.maxPolarAngle = Math.PI / 2 + 0.1; // Yerin altına girmesin
+
+            // Derin Uzay Yıldız Alanı (Starfield)
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 1200;
+            const starPos = new Float32Array(starCount * 3);
+            for (let i = 0; i < starCount * 3; i += 3) {
+                starPos[i] = (Math.random() - 0.5) * 400;
+                starPos[i + 1] = (Math.random() - 0.5) * 400;
+                starPos[i + 2] = (Math.random() - 0.5) * 400;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.8 });
+            const starPoints = new THREE.Points(starGeo, starMat);
+            orbitScene.add(starPoints);
+
+            // Güneş Işık Kaynağı (Directional Light - Sol taraftan gelen paralel ışınlar)
+            const sunLight = new THREE.DirectionalLight(0xfff8eb, 2.8);
+            sunLight.position.set(-50, 0, 0);
+            sunLight.target.position.set(0, 0, 0);
+            orbitScene.add(sunLight);
+            orbitScene.add(sunLight.target);
+
+            // Hafif Ortam Aydınlatması (Uzay karanlığını bozmayacak kadar)
+            const ambientLight = new THREE.AmbientLight(0x182030, 0.18);
+            orbitScene.add(ambientLight);
+
+            // Güneş Modeli (Sol Kenar)
+            const sunGeo = new THREE.SphereGeometry(3.5, 32, 32);
+            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffbb22 });
+            sunMesh = new THREE.Mesh(sunGeo, sunMat);
+            sunMesh.position.set(-32, 0, 0);
+            orbitScene.add(sunMesh);
+
+            // Güneş Korona Halesi
+            const glowMat = new THREE.SpriteMaterial({
+                map: generateGlowTexture('rgba(255, 180, 50, 0.75)'),
+                color: 0xffaa00,
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+            sunGlowSprite = new THREE.Sprite(glowMat);
+            sunGlowSprite.scale.set(18, 18, 1);
+            sunMesh.add(sunGlowSprite);
+
+            // Güneş Işın Okları (Güneş'ten Dünya ve Ay'a gelen ışık demetleri)
+            rayGroup = new THREE.Group();
+            for (let zOffset = -14; zOffset <= 14; zOffset += 4.5) {
+                const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                    new THREE.Vector3(-28, 0, zOffset),
+                    new THREE.Vector3(22, 0, zOffset)
+                ]);
+                const lineMat = new THREE.LineDashedMaterial({
+                    color: 0xfbbf24,
+                    dashSize: 1.2,
+                    gapSize: 0.8,
+                    opacity: 0.35,
+                    transparent: true
+                });
+                const rayLine = new THREE.Line(lineGeo, lineMat);
+                rayLine.computeLineDistances();
+                rayGroup.add(rayLine);
+            }
+            orbitScene.add(rayGroup);
+
+            // Dünya Modeli (Merkezde)
+            const earthGeo = new THREE.SphereGeometry(2.4, 48, 48);
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: generateProceduralEarthTexture(),
+                roughness: 0.6,
+                metalness: 0.1
+            });
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            earthMesh.position.set(0, 0, 0);
+            orbitScene.add(earthMesh);
+
+            // Dünya Atmosfer Parıltısı
+            const earthGlowMat = new THREE.SpriteMaterial({
+                map: generateGlowTexture('rgba(59, 130, 246, 0.5)'),
+                transparent: true,
+                blending: THREE.AdditiveBlending
+            });
+            const earthGlow = new THREE.Sprite(earthGlowMat);
+            earthGlow.scale.set(7.5, 7.5, 1);
+            earthMesh.add(earthGlow);
+
+            // Ay Yörünge Çizgisi (Çember)
+            const orbitCurve = new THREE.EllipseCurve(0, 0, ORBIT_RADIUS, ORBIT_RADIUS, 0, Math.PI * 2, false, 0);
+            const orbitPoints = orbitCurve.getPoints(96);
+            const orbitPts3D = orbitPoints.map(p => new THREE.Vector3(p.x, 0, p.y));
+            const orbitLineGeo = new THREE.BufferGeometry().setFromPoints(orbitPts3D);
+            const orbitLineMat = new THREE.LineBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.45 });
+            orbitLineMesh = new THREE.Line(orbitLineGeo, orbitLineMat);
+            orbitScene.add(orbitLineMesh);
+
+            // Ay Modeli (Yörüngede Dolanır)
+            const moonGeo = new THREE.SphereGeometry(1.1, 48, 48);
+            const moonMat = new THREE.MeshStandardMaterial({
+                map: generateProceduralMoonTexture(),
+                roughness: 0.9,
+                metalness: 0.05
+            });
+            moonMesh = new THREE.Mesh(moonGeo, moonMat);
+            moonMesh.position.set(-ORBIT_RADIUS, 0, 0);
+            orbitScene.add(moonMesh);
+
+            // Ay Seçim / Hedef Gösterge Halkası (Challenge ve Sürükleme için)
+            const ringGeo = new THREE.RingGeometry(1.5, 1.8, 32);
+            ringGeo.rotateX(Math.PI / 2);
+            const ringMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, side: THREE.DoubleSide, transparent: true, opacity: 0.6 });
+            const moonRing = new THREE.Mesh(ringGeo, ringMat);
+            moonMesh.add(moonRing);
+
+            // ==========================================
+            // B. TELESKOPİK SAHNE (EARTH VIEW TELESCOPE)
+            // ==========================================
+            const teleCanvas = document.getElementById('telescope-canvas');
+            telescopeScene = new THREE.Scene();
+            telescopeScene.background = new THREE.Color(0x020617);
+
+            const tw = teleCanvas.parentElement.clientWidth;
+            const th = teleCanvas.parentElement.clientHeight;
+
+            telescopeCamera = new THREE.PerspectiveCamera(40, tw / th, 0.1, 100);
+            telescopeCamera.position.set(0, 0, 4.5);
+            telescopeCamera.lookAt(0, 0, 0);
+
+            telescopeRenderer = new THREE.WebGLRenderer({ canvas: teleCanvas, antialias: true });
+            telescopeRenderer.setSize(tw, th);
+            telescopeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // Teleskop Işığı (Açıya göre dinamik döner)
+            telescopeLight = new THREE.DirectionalLight(0xfff6e5, 3.2);
+            telescopeLight.position.set(-10, 0, 2);
+            telescopeScene.add(telescopeLight);
+
+            const teleAmbient = new THREE.AmbientLight(0x111827, 0.15); // Kül Işığı (Earthshine etkisi)
+            telescopeScene.add(teleAmbient);
+
+            // Teleskoptaki 3D Ay Küresi
+            const teleMoonGeo = new THREE.SphereGeometry(1.4, 64, 64);
+            const teleMoonMat = new THREE.MeshStandardMaterial({
+                map: generateProceduralMoonTexture(),
+                roughness: 0.88,
+                metalness: 0.02
+            });
+            telescopeMoonMesh = new THREE.Mesh(teleMoonGeo, teleMoonMat);
+            telescopeScene.add(telescopeMoonMesh);
+
+            // Resize Dinleyicisi
+            window.addEventListener('resize', onWindowResize);
+
+            // Ay'ı Sürükleme (Drag & Drop) Dinleyicileri
+            setupOrbitDragControls(orbitCanvas);
+        }
+
+        function onWindowResize() {
+            const orbitContainer = document.getElementById('orbit-container');
+            if (orbitContainer && orbitRenderer && orbitCamera) {
+                const w = orbitContainer.clientWidth;
+                const h = orbitContainer.clientHeight;
+                orbitCamera.aspect = w / h;
+                orbitCamera.updateProjectionMatrix();
+                orbitRenderer.setSize(w, h);
+            }
+
+            const teleCanvas = document.getElementById('telescope-canvas');
+            if (teleCanvas && teleCanvas.parentElement && telescopeRenderer && telescopeCamera) {
+                const tw = teleCanvas.parentElement.clientWidth;
+                const th = teleCanvas.parentElement.clientHeight;
+                telescopeCamera.aspect = tw / th;
+                telescopeCamera.updateProjectionMatrix();
+                telescopeRenderer.setSize(tw, th);
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 5. ETKİLEŞİMLİ AY SÜRÜKLEME (RAYCASTING & DRAG-AND-DROP)
+        // -----------------------------------------------------------------
+        function setupOrbitDragControls(canvas) {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+            const orbitPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // y = 0 düzlemi
+            const planeIntersect = new THREE.Vector3();
+
+            function getPointerAngle(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+
+                mouse.x = ((clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, orbitCamera);
+                if (raycaster.ray.intersectPlane(orbitPlane, planeIntersect)) {
+                    // Koordinat: Sun at (-X), Moon starts at (-R, 0, 0) for theta = 0
+                    // x = -R * cos(theta), z = R * sin(theta)
+                    // => cos(theta) = -x / R, sin(theta) = z / R
+                    let angle = Math.atan2(planeIntersect.z, -planeIntersect.x);
+                    if (angle < 0) angle += Math.PI * 2;
+                    return angle;
+                }
+                return null;
+            }
+
+            function onPointerDown(e) {
+                const angle = getPointerAngle(e);
+                if (angle !== null) {
+                    // Ay'a veya yörüngeye yakın bir yere tıklandıysa sürüklemeyi başlat
+                    const clickDist = Math.hypot(planeIntersect.x, planeIntersect.z);
+                    if (Math.abs(clickDist - ORBIT_RADIUS) < 3.8) {
+                        appState.isDraggingMoon = true;
+                        appState.isPlaying = false;
+                        updatePlayPauseUI();
+                        orbitControls.enabled = false;
+                        setSimulationAngle(angle);
+                    }
+                }
+            }
+
+            function onPointerMove(e) {
+                if (!appState.isDraggingMoon) return;
+                const angle = getPointerAngle(e);
+                if (angle !== null) {
+                    setSimulationAngle(angle);
+                }
+            }
+
+            function onPointerUp() {
+                if (appState.isDraggingMoon) {
+                    appState.isDraggingMoon = false;
+                    orbitControls.enabled = true;
+                    // Eğer ses etkinse evre adını seslendir
+                    const currentPhase = getCurrentPhaseInfo(appState.currentAngleRad);
+                    speakTurkish(currentPhase.name);
+                }
+            }
+
+            canvas.addEventListener('mousedown', onPointerDown);
+            window.addEventListener('mousemove', onPointerMove);
+            window.addEventListener('mouseup', onPointerUp);
+
+            canvas.addEventListener('touchstart', onPointerDown, { passive: true });
+            window.addEventListener('touchmove', onPointerMove, { passive: true });
+            window.addEventListener('touchend', onPointerUp);
+        }
+
+        // -----------------------------------------------------------------
+        // 6. SİMÜLASYON MATEMATİĞİ & AÇISAL HESAPLAMALAR
+        // -----------------------------------------------------------------
+        function setSimulationAngle(angleRad, syncSlider = true) {
+            appState.currentAngleRad = (angleRad % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+
+            // 1. Yörüngedeki Ay'ın Konumunu Güncelle (Saat yönünün tersine dolanma)
+            // x = -R * cos(theta), z = R * sin(theta)
+            const x = -ORBIT_RADIUS * Math.cos(appState.currentAngleRad);
+            const z = ORBIT_RADIUS * Math.sin(appState.currentAngleRad);
+            if (moonMesh) {
+                moonMesh.position.set(x, 0, z);
+                // Kütleçekim Kilidi: Ay kendi ekseni etrafında da döner ve hep aynı yüzünü Dünya'ya bakar!
+                moonMesh.rotation.y = appState.currentAngleRad + Math.PI;
+            }
+
+            // 2. Teleskop Sahnesindeki Ay ve Işık Açılarını Güncelle
+            // Phase Angle alpha: theta = 0 -> Yeni Ay (Işık arkada), theta = pi/2 -> İlk Dördün (Işık sağda)
+            if (telescopeLight) {
+                // Işık yönü: Sağdan aydınlanma (İlk Dördün, theta in [0, pi])
+                // Soldan aydınlanma (Son Dördün, theta in [pi, 2pi])
+                const lightX = Math.sin(appState.currentAngleRad) * 12;
+                const lightZ = -Math.cos(appState.currentAngleRad) * 12;
+                telescopeLight.position.set(lightX, 0, lightZ);
+            }
+
+            // 3. UI Değerlerini ve Metinlerini Güncelle
+            updateUI(syncSlider);
+        }
+
+        // Açıya göre en uygun evreyi tespit et
+        function getCurrentPhaseInfo(angleRad) {
+            let deg = (angleRad * 180 / Math.PI) % 360;
+            if (deg < 0) deg += 360;
+
+            // 8 Evre Açı Eşikleri
+            if (deg >= 348.75 || deg < 11.25) return PHASES[0]; // Yeni Ay (0°)
+            if (deg >= 11.25 && deg < 78.75) return PHASES[1];  // Hilal (Büyüyen) (45°)
+            if (deg >= 78.75 && deg < 101.25) return PHASES[2]; // İlk Dördün (90°)
+            if (deg >= 101.25 && deg < 168.75) return PHASES[3];// Şişkin Ay (Büyüyen) (135°)
+            if (deg >= 168.75 && deg < 191.25) return PHASES[4];// Dolunay (180°)
+            if (deg >= 191.25 && deg < 258.75) return PHASES[5];// Şişkin Ay (Küçülen) (225°)
+            if (deg >= 258.75 && deg < 281.25) return PHASES[6];// Son Dördün (270°)
+            return PHASES[7];                                   // Hilal (Küçülen) (315°)
+        }
+
+        // Arayüzün Canlı Senkronizasyonu
+        function updateUI(syncSlider = true) {
+            const angleRad = appState.currentAngleRad;
+            const deg = (angleRad * 180 / Math.PI) % 360;
+            const elapsedDays = (angleRad / (Math.PI * 2)) * SYNODIC_MONTH_DAYS;
+            
+            // Bilimsel aydınlanma yüzdesi formülü: k = (1 - cos(theta)) / 2 * 100%
+            const illuminationPercent = Math.round(((1 - Math.cos(angleRad)) / 2) * 100);
+
+            const phase = getCurrentPhaseInfo(angleRad);
+
+            // DOM Güncellemeleri
+            document.getElementById('current-phase-name').innerText = phase.name;
+            document.getElementById('current-phase-subtitle').innerText = phase.subtitle;
+            document.getElementById('phase-explanation-text').innerHTML = `<strong>${phase.shortName}:</strong> ${phase.explanation}`;
+            document.getElementById('phase-type-badge').innerText = phase.type;
+            document.getElementById('illumination-percent').innerText = `%${illuminationPercent}`;
+            document.getElementById('orbit-angle-degree').innerText = `${Math.round(deg)}°`;
+            document.getElementById('stat-elapsed-days').innerText = `${elapsedDays.toFixed(1)} Gün`;
+            document.getElementById('stat-shape-desc').innerText = phase.shapeDesc;
+            document.getElementById('stat-side-desc').innerText = phase.sideDesc;
+
+            if (syncSlider) {
+                const slider = document.getElementById('timeline-slider');
+                slider.value = elapsedDays.toFixed(1);
+                document.getElementById('slider-day-label').innerText = elapsedDays.toFixed(1);
+            }
+
+            // 8 Evre Kartlarının Aktiflik Durumunu Vurgula
+            document.querySelectorAll('.phase-card').forEach(card => {
+                const pIdx = parseInt(card.getAttribute('data-phase-idx'));
+                if (pIdx === phase.index) {
+                    card.classList.remove('border-slate-200', 'bg-slate-50/50');
+                    card.classList.add('border-blue-600', 'bg-blue-50/80', 'shadow-md', 'scale-105');
+                } else {
+                    card.classList.remove('border-blue-600', 'bg-blue-50/80', 'shadow-md', 'scale-105');
+                    card.classList.add('border-slate-200', 'bg-slate-50/50');
+                }
+            });
+        }
+
+        // -----------------------------------------------------------------
+        // 7. ZAMAN KONTROLLERİ, SLIDER VE OYNAT/DURDUR
+        // -----------------------------------------------------------------
+        function togglePlayAnimation() {
+            appState.isPlaying = !appState.isPlaying;
+            updatePlayPauseUI();
+            if (appState.isPlaying) {
+                playTone(440, 'sine', 0.1);
+            }
+        }
+
+        function updatePlayPauseUI() {
+            const icon = document.getElementById('play-pause-icon');
+            const text = document.getElementById('play-pause-text');
+            const btn = document.getElementById('btn-play-pause');
+
+            if (appState.isPlaying) {
+                icon.className = 'fa-solid fa-pause';
+                text.innerText = 'Durdur';
+                btn.classList.replace('bg-blue-600', 'bg-amber-600');
+                btn.classList.replace('hover:bg-blue-700', 'hover:bg-amber-700');
+            } else {
+                icon.className = 'fa-solid fa-play';
+                text.innerText = 'Oynat';
+                btn.classList.replace('bg-amber-600', 'bg-blue-600');
+                btn.classList.replace('hover:bg-amber-700', 'hover:bg-blue-700');
+            }
+        }
+
+        function onTimelineSliderInput(val) {
+            appState.isPlaying = false;
+            updatePlayPauseUI();
+            const days = parseFloat(val);
+            const angleRad = (days / SYNODIC_MONTH_DAYS) * Math.PI * 2;
+            document.getElementById('slider-day-label').innerText = days.toFixed(1);
+            setSimulationAngle(angleRad, false);
+        }
+
+        function setSpeed(mult, btnEl) {
+            appState.speedMultiplier = mult;
+            document.querySelectorAll('.speed-btn').forEach(b => {
+                b.classList.remove('bg-white', 'text-blue-700', 'shadow-xs');
+                b.classList.add('text-slate-600');
+            });
+            btnEl.classList.remove('text-slate-600');
+            btnEl.classList.add('bg-white', 'text-blue-700', 'shadow-xs');
+            playTone(600, 'sine', 0.08);
+        }
+
+        function jumpToPhase(phaseIdx) {
+            appState.isPlaying = false;
+            updatePlayPauseUI();
+            const targetPhase = PHASES[phaseIdx];
+            const targetRad = (targetPhase.angleDeg * Math.PI) / 180;
+            
+            // Yumuşak geçiş animasyonu
+            animateAngleTransition(appState.currentAngleRad, targetRad, 400);
+            speakTurkish(targetPhase.voiceText);
+            playTone(550, 'sine', 0.12);
+        }
+
+        function stepPhase(direction) {
+            appState.isPlaying = false;
+            updatePlayPauseUI();
+            const curPhase = getCurrentPhaseInfo(appState.currentAngleRad);
+            let nextIdx = curPhase.index + direction;
+            if (nextIdx > 7) nextIdx = 0;
+            if (nextIdx < 0) nextIdx = 7;
+            jumpToPhase(nextIdx);
+        }
+
+        function resetSimulation() {
+            appState.isPlaying = false;
+            updatePlayPauseUI();
+            animateAngleTransition(appState.currentAngleRad, 0, 300);
+            playTone(350, 'sine', 0.15);
+        }
+
+        function animateAngleTransition(startAngle, targetAngle, durationMs) {
+            const startTime = performance.now();
+            let delta = targetAngle - startAngle;
+            // En kısa rotadan dön
+            if (delta > Math.PI) delta -= Math.PI * 2;
+            if (delta < -Math.PI) delta += Math.PI * 2;
+
+            function step(time) {
+                const elapsed = time - startTime;
+                const progress = Math.min(elapsed / durationMs, 1);
+                // Ease-out cubic
+                const ease = 1 - Math.pow(1 - progress, 3);
+                const cur = startAngle + delta * ease;
+                setSimulationAngle(cur);
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        // -----------------------------------------------------------------
+        // 8. KAMERA AÇISI, IŞIK IŞINLARI VE ETİKET KONTROLLERİ
+        // -----------------------------------------------------------------
+        function toggleCameraPerspective() {
+            const btnText = document.getElementById('camera-view-text');
+            if (appState.cameraPerspective === 'top') {
+                appState.cameraPerspective = 'perspective';
+                btnText.innerText = '3D Açılı';
+                // Açılı 3D Kamera Pozisyonu
+                orbitCamera.position.set(0, 16, 26);
+                orbitCamera.lookAt(0, 0, 0);
+            } else {
+                appState.cameraPerspective = 'top';
+                btnText.innerText = 'Kuşbakışı';
+                // Üstten Kuşbakışı Pozisyonu
+                orbitCamera.position.set(0, 28, 0);
+                orbitCamera.lookAt(0, 0, 0);
+            }
+            orbitControls.update();
+            playTone(500, 'sine', 0.1);
+        }
+
+        function toggleSunRays() {
+            appState.showSunRays = !appState.showSunRays;
+            if (rayGroup) rayGroup.visible = appState.showSunRays;
+            const btn = document.getElementById('btn-toggle-rays');
+            btn.classList.toggle('bg-amber-900/40', appState.showSunRays);
+            playTone(450, 'sine', 0.08);
+        }
+
+        function toggleLabels() {
+            appState.showLabels = !appState.showLabels;
+            // İsim etiketlerini aç/kapat
+            playTone(450, 'sine', 0.08);
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        function openInfoModal() {
+            document.getElementById('info-modal').classList.remove('hidden');
+            playTone(520, 'sine', 0.1);
+        }
+
+        function closeInfoModal() {
+            document.getElementById('info-modal').classList.add('hidden');
+        }
+
+        // -----------------------------------------------------------------
+        // 9. ÖĞRENME MODLARI (KEŞFET, QUIZ, YÖRÜNGEYE YERLEŞTİRME GÖREVİ)
+        // -----------------------------------------------------------------
+        function setAppMode(mode) {
+            appState.mode = mode;
+
+            // Buton durumlarını güncelle
+            const btnExplore = document.getElementById('btn-mode-explore');
+            const btnQuiz = document.getElementById('btn-mode-quiz');
+            const btnChallenge = document.getElementById('btn-mode-orbit-drag');
+
+            [btnExplore, btnQuiz, btnChallenge].forEach(b => {
+                b.className = 'px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 text-slate-600 hover:text-slate-900';
+            });
+
+            const quizOverlay = document.getElementById('quiz-overlay');
+            const challengePanel = document.getElementById('challenge-panel');
+
+            quizOverlay.classList.add('hidden');
+            challengePanel.classList.add('hidden');
+
+            if (mode === 'explore') {
+                btnExplore.className = 'px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-blue-700 shadow-sm';
+            } else if (mode === 'quiz') {
+                btnQuiz.className = 'px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-blue-700 shadow-sm';
+                quizOverlay.classList.remove('hidden');
+                startQuizMode();
+            } else if (mode === 'challenge') {
+                btnChallenge.className = 'px-3.5 py-1.5 rounded-lg transition-all flex items-center gap-1.5 bg-white text-blue-700 shadow-sm';
+                challengePanel.classList.remove('hidden');
+                startChallengeMode();
+            }
+            playTone(500, 'triangle', 0.1);
+        }
+
+        // --- QUIZ (EVREYİ TAHMİN ET) MOTORU ---
+        const QUIZ_QUESTIONS = [
+            { targetPhaseIdx: 0, q: "Teleskopta Ay tamamen karanlık ve görünmüyor. Ay Güneş ile Dünya arasındadır. Bu evre hangisidir?", hint: "Güneş gören aydınlık yüzü arkada kalmıştır." },
+            { targetPhaseIdx: 2, q: "Dünya'dan bakıldığında Ay'ın sağ yarısı aydınlık ve düz 'D' harfi şeklindedir. Bu evre hangisidir?", hint: "Yeni Ay'dan 1 hafta sonra oluşur." },
+            { targetPhaseIdx: 4, q: "Ay gökyüzünde pırıl pırıl parlayan tam bir daire şeklinde görünmektedir. Bu evre hangisidir?", hint: "Dünya'ya bakan yüzünün tamamı Güneş ışığı alır." },
+            { targetPhaseIdx: 6, q: "Ay'ın sol yarısı aydınlık ve gökyüzünde ters 'D' harfi şeklinde görünmektedir. Bu evre hangisidir?", hint: "Dolunaydan 1 hafta sonra gerçekleşir." },
+            { targetPhaseIdx: 1, q: "Yeni Ay'dan birkaç gün sonra Ay'ın sağ tarafında incecik bir hilal oluşur. Bu hangi evredir?", hint: "Büyüyen Hilal evresidir." },
+            { targetPhaseIdx: 7, q: "Son Dördün'den sonra sabah saatlerinde gökyüzünde 'C' harfi şeklinde ince bir hilal görünür. Bu evre hangisidir?", hint: "Küçülen Hilal evresidir." },
+            { targetPhaseIdx: 3, q: "Ay'ın sağ tarafı yarım daireden daha fazlasıyla aydınlıktır ve Dolunaya yaklaşmaktadır. Bu evre nedir?", hint: "Şişkin Ay evresidir." },
+            { targetPhaseIdx: 5, q: "Dolunaydan sonra Ay'ın aydınlık alanı küçülmeye başlamış ama sol tarafı hâlâ yarımdan büyüktür. Bu evre nedir?", hint: "Küçülen Şişkin Ay evresidir." },
+            { targetPhaseIdx: 2, q: "Ana evrelerden biri olan İlk Dördün evresinde Ay'ın hangi tarafı aydınlık görünür?", hint: "Düz D harfini hatırla." },
+            { targetPhaseIdx: 4, q: "Ay'ın Dünya etrafındaki dolanması sırasında Güneş-Dünya-Ay sıralaması olduğunda hangi evre gözlenir?", hint: "Dünya ortadayken Ay tam ışık alır." }
+        ];
+
+        let quizState = {
+            currentIdx: 0,
+            score: 0,
+            answered: false
+        };
+
+        function startQuizMode() {
+            quizState.currentIdx = 0;
+            quizState.score = 0;
+            quizState.answered = false;
+            loadQuizQuestion(0);
+        }
+
+        function loadQuizQuestion(idx) {
+            quizState.currentIdx = idx;
+            quizState.answered = false;
+
+            const qData = QUIZ_QUESTIONS[idx];
+            const targetPhase = PHASES[qData.targetPhaseIdx];
+
+            // Teleskobu otomatik olarak bu evreye ayarla
+            setSimulationAngle((targetPhase.angleDeg * Math.PI) / 180);
+
+            document.getElementById('quiz-q-num').innerText = idx + 1;
+            document.getElementById('quiz-score').innerText = quizState.score;
+            document.getElementById('quiz-question-title').innerText = qData.q;
+            document.getElementById('btn-quiz-next').classList.add('hidden');
+            const fbBox = document.getElementById('quiz-feedback-box');
+            fbBox.classList.add('hidden');
+
+            // 4 Seçenek Hazırla
+            const options = [targetPhase.name];
+            const allNames = ["YENİ AY", "İLK DÖRDÜN", "DOLUNAY", "SON DÖRDÜN", "HİLAL (BÜYÜYEN)", "ŞİŞKİN AY (BÜYÜYEN)", "HİLAL (KÜÇÜLEN)"];
+            while (options.length < 4) {
+                const randName = allNames[Math.floor(Math.random() * allNames.length)];
+                if (!options.includes(randName)) options.push(randName);
+            }
+            // Karıştır
+            options.sort(() => Math.random() - 0.5);
+
+            const optContainer = document.getElementById('quiz-options-container');
+            optContainer.innerHTML = options.map(opt => `
+                <button onclick="handleQuizAnswer('${opt}', '${targetPhase.name}', this)" class="quiz-opt-btn p-3 rounded-xl border-2 border-slate-200 hover:border-blue-500 bg-slate-50 hover:bg-blue-50/50 text-slate-800 font-extrabold text-xs transition-all flex items-center justify-center text-center">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function handleQuizAnswer(selected, correct, btnEl) {
+            if (quizState.answered) return;
+            quizState.answered = true;
+
+            const fbBox = document.getElementById('quiz-feedback-box');
+            fbBox.classList.remove('hidden');
+
+            const isCorrect = selected === correct;
+            if (isCorrect) {
+                quizState.score += 10;
+                document.getElementById('quiz-score').innerText = quizState.score;
+                btnEl.classList.remove('border-slate-200', 'bg-slate-50');
+                btnEl.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800');
+                fbBox.className = 'p-3 rounded-xl text-xs font-bold my-2 leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-800';
+                fbBox.innerHTML = `🎉 <strong>Harika Doğru!</strong> Tebrikler, doğru evreyi bildin.`;
+                playSuccessChime();
+            } else {
+                btnEl.classList.remove('border-slate-200', 'bg-slate-50');
+                btnEl.classList.add('border-rose-500', 'bg-rose-50', 'text-rose-800');
+                fbBox.className = 'p-3 rounded-xl text-xs font-bold my-2 leading-relaxed bg-rose-50 border border-rose-200 text-rose-800';
+                fbBox.innerHTML = `❌ <strong>Yanlış Yanıt.</strong> Doğru cevap: <em>${correct}</em> olmalıydı.`;
+                playErrorBuzz();
+            }
+
+            document.getElementById('btn-quiz-next').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            if (quizState.currentIdx + 1 < QUIZ_QUESTIONS.length) {
+                loadQuizQuestion(quizState.currentIdx + 1);
+            } else {
+                // Quiz Bitti
+                confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                const optContainer = document.getElementById('quiz-options-container');
+                optContainer.innerHTML = `
+                    <div class="col-span-2 p-6 bg-gradient-to-tr from-blue-50 to-indigo-50 border border-blue-200 rounded-2xl text-center">
+                        <div class="w-16 h-16 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-3xl mx-auto mb-3 shadow-lg">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h4 class="text-lg font-black text-slate-900 mb-1">Tebrikler! Testi Tamamladın!</h4>
+                        <p class="text-sm font-bold text-blue-700 mb-4">Toplam Puanın: ${quizState.score} / 100</p>
+                        <button onclick="startQuizMode()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-md">
+                            Yeniden Başla
+                        </button>
+                    </div>
+                `;
+                document.getElementById('quiz-question-title').innerText = "Tüm soruları tamamladınız!";
+                document.getElementById('btn-quiz-next').classList.add('hidden');
+                document.getElementById('quiz-feedback-box').classList.add('hidden');
+            }
+        }
+
+        // --- CHALLENGE (YÖRÜNGEYE YERLEŞTİR) MOTORU ---
+        const CHALLENGE_TASKS = [
+            { phaseIdx: 4, name: "DOLUNAY", hint: "Güneş sol tarafta olduğuna göre, Ay'ın tamamen ışık alması için Dünya'nın sağ tarafında (180°) olması gerekir." },
+            { phaseIdx: 2, name: "İLK DÖRDÜN", hint: "Ay'ın sağ yarısının 'D' harfi gibi görünmesi için yörüngenin alt kısmında (90°) olması gerekir." },
+            { phaseIdx: 0, name: "YENİ AY", hint: "Ay'ın karanlık olması için Güneş ile Dünya arasında (0°) olması gerekir." },
+            { phaseIdx: 6, name: "SON DÖRDÜN", hint: "Ay'ın sol yarısının aydınlık olması için yörüngenin üst kısmında (270°) olması gerekir." }
+        ];
+
+        let challengeStep = 0;
+
+        function startChallengeMode() {
+            challengeStep = 0;
+            loadChallengeTask(0);
+        }
+
+        function loadChallengeTask(step) {
+            challengeStep = step;
+            const task = CHALLENGE_TASKS[step];
+            document.getElementById('challenge-step-num').innerText = step + 1;
+            document.getElementById('challenge-task-title').innerHTML = `Ay'ı yörüngede <span class="text-amber-300 underline underline-offset-4 font-black">"${task.name}"</span> konumuna sürükle!`;
+            const fb = document.getElementById('challenge-feedback');
+            fb.classList.add('hidden');
+            speakTurkish(`Görevin: Ay'ı ${task.name} konumuna yerleştir.`);
+        }
+
+        function checkChallengeAnswer() {
+            const task = CHALLENGE_TASKS[challengeStep];
+            const targetPhase = PHASES[task.phaseIdx];
+            const targetDeg = targetPhase.angleDeg;
+
+            let curDeg = (appState.currentAngleRad * 180 / Math.PI) % 360;
+            if (curDeg < 0) curDeg += 360;
+
+            let diff = Math.abs(curDeg - targetDeg);
+            if (diff > 180) diff = 360 - diff;
+
+            const fb = document.getElementById('challenge-feedback');
+            fb.classList.remove('hidden');
+
+            if (diff <= 22) { // 22 derece tolerans
+                confetti({ particleCount: 50, spread: 60 });
+                fb.className = 'mt-2 text-xs font-black text-emerald-300 flex items-center gap-2';
+                fb.innerHTML = `<i class="fa-solid fa-circle-check"></i> Harika Başardın! Ay tam olarak ${task.name} konumuna yerleşti.`;
+                playSuccessChime();
+                speakTurkish(`Harika! Ay'ı başarıyla ${task.name} konumuna yerleştirdin.`);
+                setTimeout(() => nextChallengeTask(), 2200);
+            } else {
+                fb.className = 'mt-2 text-xs font-bold text-amber-300 flex items-center gap-2';
+                fb.innerHTML = `<i class="fa-solid fa-circle-info"></i> Biraz daha yaklaştır! İpucu: ${task.hint}`;
+                playErrorBuzz();
+            }
+        }
+
+        function nextChallengeTask() {
+            if (challengeStep + 1 < CHALLENGE_TASKS.length) {
+                loadChallengeTask(challengeStep + 1);
+            } else {
+                confetti({ particleCount: 120, spread: 80 });
+                const fb = document.getElementById('challenge-feedback');
+                fb.classList.remove('hidden');
+                fb.className = 'mt-2 text-sm font-black text-emerald-300';
+                fb.innerHTML = `🏆 Tebrikler! Tüm yörünge görevlerini başarıyla tamamladın!`;
+                playSuccessChime();
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 10. ANA ANİMASYON DÖNGÜSÜ (RENDER LOOP - 60 FPS)
+        // -----------------------------------------------------------------
+        let lastTime = performance.now();
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+
+            const deltaSeconds = (now - lastTime) / 1000;
+            lastTime = now;
+
+            // Otomatik Yörünge Hareketi (Play durumunda)
+            if (appState.isPlaying) {
+                // 29.5 günlük döngü yaklaşık 20 saniyede tamamlansın (1x hızda)
+                const angularSpeed = (Math.PI * 2 / 20) * appState.speedMultiplier;
+                const nextAngle = appState.currentAngleRad + angularSpeed * deltaSeconds;
+                setSimulationAngle(nextAngle);
+            }
+
+            // Dünya Kendi Ekseni Etrafında Yavaşça Döner
+            if (earthMesh) {
+                earthMesh.rotation.y += 0.003;
+            }
+
+            // OrbitControls Güncellemesi
+            if (orbitControls) {
+                orbitControls.update();
+            }
+
+            // Render
+            if (orbitRenderer && orbitScene && orbitCamera) {
+                orbitRenderer.render(orbitScene, orbitCamera);
+            }
+            if (telescopeRenderer && telescopeScene && telescopeCamera) {
+                telescopeRenderer.render(telescopeScene, telescopeCamera);
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 11. BAŞLATMA
+        // -----------------------------------------------------------------
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeEngines();
+            setSimulationAngle(0);
+            requestAnimationFrame(animate);
+        });
+    </script>
+</body>
+</html>
