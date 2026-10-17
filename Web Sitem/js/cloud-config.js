@@ -61,8 +61,15 @@
             return { ...currentConfig };
         },
 
+        isSupabaseActive() {
+            // dlzlpstheykhrfeijiri.supabase.co projesi 402 Egress Quota sınırı nedeniyle devre dışı;
+            // Kullanıcı kendi yeni Supabase URL'sini girerse aktif olur.
+            return !!(currentConfig.supabaseUrl && !currentConfig.supabaseUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && currentConfig.supabaseAnonKey && supabaseClient);
+        },
+
         isConfigured() {
-            return !!(currentConfig.supabaseUrl && currentConfig.supabaseAnonKey && supabaseClient);
+            // Dosya yükleme (GitHub CDN + /api/sync) her zaman aktiftir
+            return true;
         },
 
         saveConfig(url, key, bucket = "rotali-files", table = "materials") {
@@ -81,13 +88,14 @@
             localStorage.setItem("rotali_supabase_config", JSON.stringify(newCfg));
             currentConfig = newCfg;
             const ok = initClient();
-            if (ok) {
+            if (ok && this.isSupabaseActive()) {
                 this.setupRealtimeListener();
             }
             return ok;
         },
 
         getClient() {
+            if (!this.isSupabaseActive()) return null;
             if (!supabaseClient) initClient();
             return supabaseClient;
         },
@@ -103,17 +111,12 @@
                     .select("id, tags")
                     .eq("id", "sys-deleted-registry");
 
-                if (error) {
-                    console.warn("⚠️ Supabase fetchDeletedIds hatası:", error.message);
-                    return [];
-                }
-
+                if (error) return [];
                 if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0].tags)) {
                     return data[0].tags;
                 }
                 return [];
             } catch (err) {
-                console.warn("fetchDeletedIds beklenmeyen hata:", err);
                 return [];
             }
         },
@@ -129,22 +132,14 @@
                 if (!set.has(id)) {
                     set.add(id);
                     const updatedTags = Array.from(set);
-
-                    // PATCH ile doğrudan tags dizisini güncelle
                     const { error } = await client
                         .from(currentConfig.tableName)
                         .update({ tags: updatedTags, updated_at: new Date().toISOString() })
                         .eq("id", "sys-deleted-registry");
-
-                    if (error) {
-                        console.warn("⚠️ registerDeletedId update hatası:", error.message);
-                        return false;
-                    }
-                    console.log("🪦 Materyal kimliği Supabase silinenler siciline eklendi:", id);
+                    if (error) return false;
                 }
                 return true;
             } catch (err) {
-                console.warn("registerDeletedId hata:", err);
                 return false;
             }
         },
@@ -152,10 +147,7 @@
         // 📥 BULUTTAN TÜM MATERYALLERİ ÇEK (Asenkron)
         async fetchMaterials() {
             const client = this.getClient();
-            if (!client) {
-                console.log("ℹ️ Bulut yapılandırılmamış, yerel veri kullanılıyor.");
-                return null;
-            }
+            if (!client) return null;
 
             try {
                 const { data, error } = await client
@@ -163,16 +155,10 @@
                     .select("*")
                     .order("created_at", { ascending: false });
 
-                if (error) {
-                    console.warn("⚠️ Supabase fetchMaterials hatası:", error.message);
-                    return null;
-                }
+                if (error) return null;
 
                 if (Array.isArray(data)) {
-                    // Sistem ve mezarlık satırlarını filtrele
                     const userRows = data.filter(row => row && row.id !== "sys-deleted-registry" && row.category !== "system");
-
-                    // Veritabanı sütun isimlerini frontend modeline uyarla
                     return userRows.map(row => ({
                         id: row.id,
                         title: row.title || "Başlıksız Materyal",
@@ -196,7 +182,6 @@
                 }
                 return [];
             } catch (err) {
-                console.error("❌ fetchMaterials beklenmeyen hata:", err);
                 return null;
             }
         },
@@ -204,10 +189,7 @@
         // 📤 BULUTA MATERYAL VEYA LINK KAYDET / GÜNCELLE
         async saveMaterial(mat) {
             const client = this.getClient();
-            if (!client || !mat) return false;
-
-            // Sistem mezarlık kaydıysa koru
-            if (mat.id === "sys-deleted-registry") return false;
+            if (!client || !mat || mat.id === "sys-deleted-registry") return false;
 
             try {
                 const payload = {
@@ -232,14 +214,8 @@
                     .from(currentConfig.tableName)
                     .upsert(payload, { onConflict: "id" });
 
-                if (error) {
-                    console.error("❌ Supabase saveMaterial hatası:", error);
-                    return false;
-                }
-                console.log("✅ Materyal buluta başarıyla kaydedildi:", payload.id);
-                return true;
+                return !error;
             } catch (err) {
-                console.error("❌ saveMaterial beklenmeyen hata:", err);
                 return false;
             }
         },
@@ -250,98 +226,115 @@
             if (!client || !id) return false;
 
             try {
-                // 1. Doğrudan tablodan sil
                 const { error } = await client
                     .from(currentConfig.tableName)
                     .delete()
                     .eq("id", id);
-
-                if (error) {
-                    console.error("❌ Supabase deleteMaterial hatası:", error);
-                } else {
-                    console.log("✅ Materyal buluttan silindi:", id);
-                }
-
-                // 2. Mezarlığa (sys-deleted-registry) kaydet ki diğer cihazlar (akıllı tahta, telefon) asla diriltmesin!
                 await this.registerDeletedId(id);
-
                 return !error;
             } catch (err) {
-                console.error("❌ deleteMaterial hata:", err);
                 return false;
             }
         },
 
-        // 📦 FİZİKSEL DOSYA YÜKLEME (SUPABASE STORAGE BUCKET)
-        // PDF, Görsel, Video, PPTX dosyalarını doğrudan Storage'a yükler ve kalıcı CDN linki döndürür
+        // 📦 FİZİKSEL DOSYA YÜKLEME (SIFIR KOTALI GITHUB CDN + SUPABASE DESTEKLİ)
+        // PDF, Görsel, Video, PPTX dosyalarını doğrudan GitHub CDN deposuna yükler ve kalıcı link döndürür
         async uploadFile(file, folder = "uploads") {
-            const client = this.getClient();
-            if (!client) {
-                throw new Error("Bulut istemcisi yapılandırılmamış.");
-            }
-
             if (!file) throw new Error("Yüklenecek dosya seçilmedi.");
 
-            // Dosya adını temizle ve benzersiz bir anahtar üret
             const cleanName = (file.name || "dosya")
                 .toLowerCase()
                 .replace(/[^a-z0-9._-]/g, "_")
                 .replace(/_+/g, "_");
             const fileExt = cleanName.split('.').pop() || "bin";
-            const uniquePath = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${fileExt}`;
+            const uniqueFileName = `${Date.now()}_${Math.random().toString(36).slice(2, 7)}_${cleanName}`;
 
-            console.log(`📤 Dosya Supabase Storage'a yükleniyor (${currentConfig.bucketName}): ${uniquePath}`);
+            // Dosyayı Base64 olarak oku
+            const base64Data = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const res = String(reader.result || "");
+                    resolve(res.includes(",") ? res.split(",")[1] : res);
+                };
+                reader.onerror = err => reject(err);
+                reader.readAsDataURL(file);
+            });
 
-            const mimeType = file.type || (function(ext) {
-                switch(ext) {
-                    case "pdf": return "application/pdf";
-                    case "pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                    case "ppt": return "application/vnd.ms-powerpoint";
-                    case "docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                    case "doc": return "application/msword";
-                    case "xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    case "xls": return "application/vnd.ms-excel";
-                    case "jpg": case "jpeg": return "image/jpeg";
-                    case "png": return "image/png";
-                    case "webp": return "image/webp";
-                    case "svg": return "image/svg+xml";
-                    case "mp4": return "video/mp4";
-                    case "webm": return "video/webm";
-                    case "mp3": return "audio/mpeg";
-                    case "zip": return "application/zip";
-                    case "rar": return "application/x-rar-compressed";
-                    default: return "application/octet-stream";
+            const syncEndpoint = (typeof window !== "undefined" && window.location && window.location.hostname.includes("vercel.app"))
+                ? "/api/sync"
+                : "https://rotalifenci.vercel.app/api/sync";
+
+            // 1. Küçük ve orta boyutlu dosyalar (<= 2.6MB) için doğrudan /api/sync üzerinden yükle
+            if (file.size <= 2.6 * 1024 * 1024) {
+                try {
+                    const res = await fetch(syncEndpoint, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            action: "upload_file",
+                            fileName: cleanName,
+                            folder: folder || "uploads",
+                            base64Data: base64Data
+                        })
+                    });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.publicUrl) {
+                            console.log("✅ Dosya GitHub CDN'e başarıyla yüklendi:", data.publicUrl);
+                            return {
+                                path: data.path,
+                                publicUrl: data.publicUrl,
+                                fileName: file.name,
+                                fileSize: file.size,
+                                fileType: file.type
+                            };
+                        }
+                    }
+                } catch (upErr) {
+                    console.warn("Server upload_file fallback to direct GitHub:", upErr);
                 }
-            })(fileExt.toLowerCase());
-
-            const { data, error } = await client.storage
-                .from(currentConfig.bucketName)
-                .upload(uniquePath, file, {
-                    cacheControl: "3600",
-                    upsert: false,
-                    contentType: mimeType
-                });
-
-            if (error) {
-                console.error("❌ Storage yükleme hatası:", error);
-                throw error;
             }
 
-            // Genel erişim (Public CDN) bağlantısını al
-            const { data: pubData } = client.storage
-                .from(currentConfig.bucketName)
-                .getPublicUrl(uniquePath);
+            // 2. Büyük dosyalar (PPTX, PDF, Video - 100MB'a kadar) için doğrudan GitHub Contents API'ye yükle
+            const cfgRes = await fetch(syncEndpoint, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ action: "get_upload_config" })
+            });
+            if (cfgRes.ok) {
+                const cfg = await cfgRes.json();
+                if (cfg && cfg.token && cfg.repo) {
+                    const safeFolder = String(folder || "uploads").replace(/[^a-z0-9_-]/g, "");
+                    const relPath = `assets/${safeFolder}/${uniqueFileName}`;
+                    const ghUrl = `https://api.github.com/repos/${cfg.repo}/contents/${relPath}`;
+                    const putRes = await fetch(ghUrl, {
+                        method: "PUT",
+                        headers: {
+                            "Accept": "application/vnd.github+json",
+                            "Authorization": `Bearer ${cfg.token}`,
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            message: `feat(upload): add ${cleanName} via Web UI`,
+                            content: base64Data,
+                            branch: cfg.branch || "main"
+                        })
+                    });
+                    if (putRes.ok) {
+                        const publicUrl = `https://raw.githubusercontent.com/${cfg.repo}/${cfg.branch || "main"}/${relPath}`;
+                        console.log("✅ Büyük dosya doğrudan GitHub CDN'e yüklendi:", publicUrl);
+                        return {
+                            path: relPath,
+                            publicUrl: publicUrl,
+                            fileName: file.name,
+                            fileSize: file.size,
+                            fileType: file.type
+                        };
+                    }
+                }
+            }
 
-            const publicUrl = pubData ? pubData.publicUrl : "";
-            console.log("✅ Dosya başarıyla yüklendi! Genel URL:", publicUrl);
-
-            return {
-                path: uniquePath,
-                publicUrl: publicUrl,
-                fileName: file.name,
-                fileSize: file.size,
-                fileType: file.type
-            };
+            throw new Error("Dosya bulut depolamaya yüklenemedi.");
         },
 
         // 🔄 YERELDEKİ (TELEFON / BİLGİSAYAR) TÜM MATERYALLERİ BULUTA EŞİTLE

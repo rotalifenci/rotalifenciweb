@@ -28,61 +28,50 @@ function readFileAsDataURL(file) {
 
 let ROTALI_MATERIALS_CACHE = null;
 
+const PERMANENT_DELETED_MATERIAL_IDS = [
+    "mat-5-unite-bilgi", "mat-1789331179066", "mat-1789331137891", "mat-1789233332632",
+    "mat-5-semboller-video", "mat-1789234385646", "mat-1789331480440", "mat-1789233406841",
+    "mat-1789233618512", "mat-1789074183232", "mat-1789412649246", "mat-5-lab-guvenlik-gorsel",
+    "mat-1789426038463", "mat-1789495187673", "mat-1789502325405", "mat-1789424515381",
+    "mat-1789424685585", "mat-1789494668619", "mat-1789494808381", "mat-1789494840096",
+    "mat-1789494872749", "mat-1789494922903", "mat-1789494959416", "mat-1789495047295",
+    "mat-1789495365682", "mat-1789495424636", "mat-1789501628135", "mat-1789502414092",
+    "mat-1789502498114", "mat-1789502565644", "mat-1789502601881", "mat-1789502674304",
+    "mat-1789502710150", "mat-1789502752586", "mat-8-ders-kitabi-1", "mat-1788890487438",
+    "mat-5-lab-oyun-2", "mat-5-lab-oyun-1", "mat-1789535941024", "mat-8-lgs-deneme-1",
+    "mat-1789589614660", "mat-1789501786165", "not-5-unite-bilgilendirmeleri",
+    "std-ders-sunumu-5-1", "std-ders-sunumu-6-1", "std-ders-sunumu-7-1", "std-ders-sunumu-8-1",
+    "foy-5-1", "foy-6-1", "foy-7-1", "foy-8-1", "lab-5-2", "lab-5-1", "not-5-1",
+    "mat-42a537f6-fabc-443a-a056-20e157e53587", "mat-b7fa9166-1db2-4dc4-be53-72888666ade6",
+    "mat-949109b2-106d-45b4-a182-7401685cb24b", "mat-f5ac5994-0af1-4ec3-9ae3-315ad2282df5",
+    "mat-2e623580-6601-483b-949d-e4602a7cdc7b", "mat-a9326b86-3be0-4ca0-97c6-b3c36478bcfd",
+    "mat-93c68ec9-b803-4f12-bda8-1cfecc085d6b", "mat-a2330c37-83e1-4a97-9fb8-2f8127543e1a",
+    "mat-c911c44d-734d-4a1c-995f-bcfe82ed7be7", "mat-ec544c30-14a7-4e71-9d5f-f59ed8900f48",
+    "mat-477ab93b-d27e-4fd4-accc-b98496b4936c", "mat-e457f15f-8396-4024-924f-e3a1fc83e662",
+    "mat-918829f2-862f-45a2-b501-def853617613", "mat-07520571-6287-4390-93eb-acd0ce2d7064",
+    "mat-1789589856366", "mat-d9a27a70-3be2-4b52-8b91-9cb3a60b9593", "mat-1789425983469",
+    "mat-fadfd179-2f25-4f73-a961-13c15412e719", "mat-1789641072264", "mat-40370417-37fa-40a3-b7b1-31d5b801b2c4",
+    "mat-62cbb7dd-172e-4bff-a28b-9c0c62dcd019", "lab-8-1", "lab-8-2", "mat-5-lab-kacis-gemini",
+    "mat-e817c59c-9d3a-4098-b70f-fd51ff54a523", "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
+    "lab-5-guide", "mat-37e3be89-e0a9-48e8-9d32-2d52c61bb37a", "mat-cd5c84b1-2806-4462-b796-5e1f964f53d0",
+    "mat-1789535615671", "lab-5-sim", "mat-2f1d1514-88a0-460f-a856-1d8e19a7310d",
+    "mat-b0bf2fd9-7101-4962-b4ff-3c70f0257009", "mat-b30e5f27-431d-408f-8027-509e26e77e1a",
+    "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
+    "mat-e072f771-967e-44c8-ad81-3e67f0934514", "mat-23f656d5-1306-4b7f-bb24-d12ccbe1f4bd",
+    "oyun-6-uzay-ekspresi", "mat-game-gezegen-kosusu", "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
+    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717"
+];
+
 function getDeletedMaterialIds() {
     try {
         const stored = localStorage.getItem("rotali_deleted_materials");
         let list = stored ? JSON.parse(stored) : [];
         if (!Array.isArray(list)) list = [];
-        // Kullanıcı isteğiyle kalıcı olarak kaldırılan id'ler
-        const hardDeleted = [
-            "mat-1789495047295",
-            "mat-1789424685585",
-            "mat-1789424515381",
-            "mat-1789501628135",
-            "mat-1789535615671",
-            "mat-1789495187673",
-            "mat-918829f2-862f-45a2-b501-def853617613",
-            "mat-e817c59c-9d3a-4098-b70f-fd51ff54a523",
-            "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
-            "mat-cd5c84b1-2806-4462-b796-5e1f964f53d0",
-            "mat-1789502601881",
-            "mat-1789502565644",
-            "mat-1789494808381",
-            "mat-1789494668619",
-            "mat-1789495365682",
-            "mat-b0bf2fd9-7101-4962-b4ff-3c70f0257009",
-            "mat-1789502498114",
-            "mat-1789502414092",
-            "mat-1789494872749",
-            "mat-1789494840096",
-            "mat-1789495424636",
-            "mat-b30e5f27-431d-408f-8027-509e26e77e1a",
-            "mat-1789502710150",
-            "mat-1789502674304",
-            "mat-1789502752586",
-            "mat-1789494922903",
-            "mat-1789494959416",
-            "mat-1789589856366",
-            "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad",
-            "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
-            "mat-8-ders-kitabi-1",
-            "mat-e072f771-967e-44c8-ad81-3e67f0934514",
-            "mat-5-lab-guvenlik-gorsel",
-            "mat-5-unite-bilgi",
-            "not-5-unite-bilgilendirmeleri",
-            "std-ders-sunumu-5-1",
-            "std-ders-sunumu-6-1",
-            "std-ders-sunumu-7-1",
-            "std-ders-sunumu-8-1",
-            "foy-5-1",
-            "foy-6-1",
-            "foy-7-1",
-            "foy-8-1"
-        ];
-        hardDeleted.forEach(hd => { if (!list.includes(hd)) list.push(hd); });
-        return list.filter(id => typeof id === "string" && id.trim().length > 0);
+        const set = new Set(list.filter(id => typeof id === "string" && id.trim().length > 0));
+        PERMANENT_DELETED_MATERIAL_IDS.forEach(hd => set.add(hd));
+        return Array.from(set);
     } catch(e) {
-        return ["mat-1789589856366", "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336", "mat-1789495187673", "mat-1789502325405", "not-5-unite-bilgilendirmeleri"];
+        return [...PERMANENT_DELETED_MATERIAL_IDS];
     }
 }
 
@@ -99,6 +88,10 @@ function addDeletedMaterialId(id) {
     if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
         ROTALI_MATERIALS_CACHE = ROTALI_MATERIALS_CACHE.filter(m => m && m.id !== id);
     }
+    if (Array.isArray(APP_MATERIALS_CACHE)) {
+        APP_MATERIALS_CACHE = APP_MATERIALS_CACHE.filter(m => m && m.id !== id);
+        window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+    }
     try {
         const stored = localStorage.getItem("rotali_custom_materials");
         if (stored) {
@@ -113,23 +106,7 @@ function addDeletedMaterialId(id) {
 
 function removeDeletedMaterialId(id) {
     if (!id) return;
-    // Kalıcı olarak silinmiş materyaller asla silinmişler listesinden çıkarılamaz!
-    const hardDeleted = [
-        "mat-1789495187673",
-        "mat-1789502325405",
-        "mat-5-lab-guvenlik-gorsel",
-        "mat-5-unite-bilgi",
-        "not-5-unite-bilgilendirmeleri",
-        "std-ders-sunumu-5-1",
-        "std-ders-sunumu-6-1",
-        "std-ders-sunumu-7-1",
-        "std-ders-sunumu-8-1",
-        "foy-5-1",
-        "foy-6-1",
-        "foy-7-1",
-        "foy-8-1"
-    ];
-    if (hardDeleted.includes(id)) return;
+    if (PERMANENT_DELETED_MATERIAL_IDS.includes(id)) return;
     try {
         const stored = localStorage.getItem("rotali_deleted_materials");
         if (stored) {
@@ -168,7 +145,8 @@ if (typeof navigator !== "undefined" && "serviceWorker" in navigator) {
 // 1. Önbellek kırıcı (cache-busting) ile güncel veri çekme
 async function fetchFreshData(endpoint = "/data/materials.json") {
     const timestamp = Date.now();
-    const url = `${endpoint}?v=${timestamp}`;
+    const sep = endpoint.includes("?") ? "&" : "?";
+    const url = `${endpoint}${sep}v=${timestamp}&_r=${Math.random()}`;
     try {
         const response = await fetch(url, {
             headers: { 
@@ -196,13 +174,30 @@ window.addEventListener("pageshow", (event) => {
     }
 });
 
-// 3. Merkezi Veri Yükleme ve Yedekleme Fonksiyonu
+// 3. Merkezi Veri Yükleme ve Yedekleme Fonksiyonu (Canlı Bulut API + Statik JSON + Yerel Koruma)
 let APP_MATERIALS_CACHE = [];
 async function loadCentralizedMaterials() {
-    let freshMaterials = await fetchFreshData("/data/materials.json");
-    const deletedIds = new Set(getDeletedMaterialIds());
+    const syncApiUrl = (typeof window !== "undefined" && window.location && typeof window.location.hostname === "string" && window.location.hostname.includes("vercel.app"))
+        ? "/api/sync"
+        : "https://rotalifenci.vercel.app/api/sync";
 
-    // 1. Yerelde kullanıcının yeni eklediği ama henüz materials.json'a yazılmamış ögeleri koru
+    const [staticData, cloudResp] = await Promise.all([
+        fetchFreshData("/data/materials.json"),
+        fetchFreshData(syncApiUrl)
+    ]);
+
+    // Buluttan gelen silinmiş ID'leri anında işle
+    if (cloudResp && Array.isArray(cloudResp.deletedIds)) {
+        cloudResp.deletedIds.forEach(dId => {
+            if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId);
+        });
+    }
+
+    const deletedIds = new Set(getDeletedMaterialIds());
+    const staticMaterials = Array.isArray(staticData) ? staticData : [];
+    const cloudMaterials = (cloudResp && Array.isArray(cloudResp.materials)) ? cloudResp.materials : [];
+
+    // Yerel depodaki tüm kullanıcı materyallerini oku (Sadece isNewLocal değil, silinmemiş TÜM yerel verileri koru!)
     let localStored = [];
     try {
         const storedStr = localStorage.getItem("rotali_custom_materials");
@@ -212,44 +207,68 @@ async function loadCentralizedMaterials() {
         }
     } catch(e) {}
 
-    const localNewItems = localStored.filter(item => item && item.id && item.isNewLocal && !deletedIds.has(item.id));
-
-    if (Array.isArray(freshMaterials) && freshMaterials.length > 0) {
-        // Silinmişleri sunucu verisinden de süz
-        let cleanMaterials = freshMaterials.filter(m => m && m.id && !deletedIds.has(m.id));
-
-        // Yereldeki henüz sunucuya girmemiş yeni içerikleri koru ve birleştir
-        const combinedMap = new Map();
-        cleanMaterials.forEach(m => combinedMap.set(m.id, m));
-        localNewItems.forEach(lm => {
-            if (!combinedMap.has(lm.id)) {
-                combinedMap.set(lm.id, lm);
+    // Sunucu haritası oluştur (Önce statik materials.json, üzerine canlı /api/sync)
+    const serverMap = new Map();
+    staticMaterials.forEach(m => {
+        if (m && m.id && m.id !== "sys-deleted-registry" && !deletedIds.has(m.id)) {
+            serverMap.set(m.id, m);
+        }
+    });
+    cloudMaterials.forEach(m => {
+        if (m && m.id && m.id !== "sys-deleted-registry" && !deletedIds.has(m.id)) {
+            const prev = serverMap.get(m.id);
+            if (prev) {
+                const merged = { ...prev, ...m };
+                // Eğer bulutta eski 402 Supabase URL'si kalmışsa statik onarılmış URL'yi koru
+                if (merged.fileUrl && merged.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && prev.fileUrl && !prev.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                    merged.fileUrl = prev.fileUrl;
+                }
+                if ((!merged.imageUrl || merged.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) && prev.imageUrl) {
+                    merged.imageUrl = prev.imageUrl;
+                    merged.kapakResmi = prev.kapakResmi || prev.imageUrl;
+                }
+                serverMap.set(m.id, merged);
+            } else {
+                serverMap.set(m.id, m);
             }
-        });
-
-        const mergedList = Array.from(combinedMap.values());
-        APP_MATERIALS_CACHE = mergedList;
-        ROTALI_MATERIALS_CACHE = mergedList;
-
-        // Çevrimdışı kullanım için yereli güncelle
-        try {
-            const slim = mergedList.map(m => {
-                const c = { ...m };
-                if (c.fileUrl && c.fileUrl.startsWith("data:") && c.fileUrl.length > 50000) c.fileUrl = "";
-                return c;
-            });
-            localStorage.setItem("rotali_custom_materials", JSON.stringify(slim));
-        } catch(e) {
-            localStorage.setItem("rotali_custom_materials", JSON.stringify(mergedList));
         }
-    } else {
-        // Çevrimdışıysa veya fetch başarısız olursa son çalışan kopyayı kullan
-        APP_MATERIALS_CACHE = localStored.filter(item => item && item.id && !deletedIds.has(item.id));
-        if (Array.isArray(APP_MATERIALS_CACHE) && APP_MATERIALS_CACHE.length > 0) {
-            ROTALI_MATERIALS_CACHE = APP_MATERIALS_CACHE;
-        }
+    });
+
+    const combinedMap = new Map();
+    // 1. Önce sunucudaki tüm aktif materyalleri ekle
+    for (const [id, srvItem] of serverMap.entries()) {
+        combinedMap.set(id, srvItem);
     }
-    
+
+    // 2. Yereldeki silinmemiş materyalleri koru (Eğer sunucuda yoksa silinmemiş demektir -> yereldeki korunsun!)
+    localStored.forEach(localItem => {
+        if (!localItem || !localItem.id || localItem.id === "sys-deleted-registry" || deletedIds.has(localItem.id)) return;
+        if (combinedMap.has(localItem.id)) {
+            const srv = combinedMap.get(localItem.id);
+            const merged = { ...localItem, ...srv };
+            // Kırık 402 Supabase linklerini her zaman sunucudaki sağlam statik linkle değiştir
+            if (srv.fileUrl && !srv.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                merged.fileUrl = srv.fileUrl;
+            }
+            if (srv.imageUrl && !srv.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                merged.imageUrl = srv.imageUrl;
+                merged.kapakResmi = srv.kapakResmi || srv.imageUrl;
+            }
+            combinedMap.set(localItem.id, merged);
+        } else {
+            combinedMap.set(localItem.id, localItem);
+        }
+    });
+
+    const mergedList = Array.from(combinedMap.values()).filter(m => m && m.id && !deletedIds.has(m.id));
+    APP_MATERIALS_CACHE = mergedList;
+    ROTALI_MATERIALS_CACHE = mergedList;
+    window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+
+    if (typeof saveCustomMaterialsSafe === "function") {
+        saveCustomMaterialsSafe(mergedList);
+    }
+
     // Alpine.js veya dinamik arayüzü anında besle
     if (window.Alpine && window.Alpine.store) {
         try {
@@ -258,7 +277,7 @@ async function loadCentralizedMaterials() {
             }
         } catch(e) {}
     }
-    
+
     return APP_MATERIALS_CACHE;
 }
 
@@ -493,43 +512,57 @@ const CloudSyncManager = {
                     cloudMap.set(item.id, item);
                 }
             });
-            // Ardından buluttan gelen canlı verileri üzerine yaz
+            // Ardından buluttan gelen canlı verileri üzerine yaz (Ancak 402 Supabase URL'leri varsa statik onarılmış URL'yi koru)
             cloudMaterials.forEach(item => {
                 if (item && item.id && item.id !== "sys-deleted-registry" && !activeDeletedSet.has(item.id)) {
-                    cloudMap.set(item.id, item);
+                    const st = cloudMap.get(item.id);
+                    if (st) {
+                        const m = { ...st, ...item };
+                        if (m.fileUrl && m.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && st.fileUrl && !st.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                            m.fileUrl = st.fileUrl;
+                        }
+                        if ((!m.imageUrl || m.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) && st.imageUrl) {
+                            m.imageUrl = st.imageUrl;
+                            m.kapakResmi = st.kapakResmi || st.imageUrl;
+                        }
+                        cloudMap.set(item.id, m);
+                    } else {
+                        cloudMap.set(item.id, item);
+                    }
                 }
             });
 
             const mergedMap = new Map();
             let hasNewLocalToUpload = false;
 
-            // Adım A: Yerel cihazdaki materyallerin sırasını koru ve buluttaki güncel verilerle zenginleştir
+            // Adım A: Bulut ve statik sunucudaki materyalleri temel al
+            for (const [id, cloudItem] of cloudMap.entries()) {
+                if (!activeDeletedSet.has(id)) {
+                    mergedMap.set(id, cloudItem);
+                }
+            }
+
+            // Adım B: Yereldeki silinmemiş materyalleri koru (Yeni eklenenleri asla ezme!)
             localMaterials.forEach(localItem => {
                 if (localItem && localItem.id && localItem.id !== "sys-deleted-registry" && !activeDeletedSet.has(localItem.id)) {
                     if (cloudMap.has(localItem.id)) {
                         const inCloud = cloudMap.get(localItem.id);
                         const merged = { ...localItem, ...inCloud };
-                        if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
+                        if (inCloud.fileUrl && !inCloud.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                            merged.fileUrl = inCloud.fileUrl;
+                        } else if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
                             merged.fileUrl = localItem.fileUrl;
                         }
-                        if (localItem.imageUrl && localItem.imageUrl.startsWith("data:") && (!inCloud.imageUrl || inCloud.imageUrl === "" || inCloud.imageUrl === "#")) {
+                        if (inCloud.imageUrl && !inCloud.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                            merged.imageUrl = inCloud.imageUrl;
+                            merged.kapakResmi = inCloud.kapakResmi || inCloud.imageUrl;
+                        } else if (localItem.imageUrl && localItem.imageUrl.startsWith("data:") && (!inCloud.imageUrl || inCloud.imageUrl === "" || inCloud.imageUrl === "#")) {
                             merged.imageUrl = localItem.imageUrl;
                         }
                         mergedMap.set(localItem.id, merged);
-                    } else if (localItem.isNewLocal) {
+                    } else {
                         hasNewLocalToUpload = true;
                         mergedMap.set(localItem.id, localItem);
-                    } else {
-                        mergedMap.set(localItem.id, localItem);
-                    }
-                }
-            });
-
-            // Adım B: Buluttan yeni gelen (yerelde henüz olmayan) materyalleri ekle
-            cloudMaterials.forEach(cloudItem => {
-                if (cloudItem && cloudItem.id && cloudItem.id !== "sys-deleted-registry" && !activeDeletedSet.has(cloudItem.id)) {
-                    if (!mergedMap.has(cloudItem.id)) {
-                        mergedMap.set(cloudItem.id, cloudItem);
                     }
                 }
             });
@@ -569,8 +602,8 @@ const CloudSyncManager = {
                 }
             }
 
-            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa veya Supabase henüz boşsa, buluta gönder
-            if (hasNewLocalToUpload || (isSupabaseSource && cloudMaterials.length === 0 && localMaterials.length > 0)) {
+            // 5. Eğer bu cihazda bulutta olmayan YENİ yerel materyal varsa, buluta gönder
+            if (hasNewLocalToUpload) {
                 await this.uploadToCloud(finalMergedList, false);
             }
 
@@ -589,47 +622,42 @@ const CloudSyncManager = {
         }
     },
 
-    // Buluta liste yükle / silme senkronizasyonu yap
+    // Buluta liste yükle / silme senkronizasyonu yap (Gist + GitHub Repo data/materials.json)
     async uploadToCloud(materialsList, isReplace = false) {
         try {
             const deletedIds = getDeletedMaterialIds();
-            // Bellekteki tam DataURL'leri kullanarak buluta gönder (Tüm cihazlarda açılabilmesi için)
-            // fileUrl DataURL ise ve 5MB altındaysa bulutta saklanır, üzerindeyse IndexedDB'ye bırakılır
-            const MAX_CLOUD_DATAURL_SIZE = 120 * 1024; // 120KB Vercel/Gist yük sınırı
+            const MAX_CLOUD_DATAURL_SIZE = 75 * 1024; // 75KB sınır (413 Payload Too Large hatasını %100 önler)
             const cleanMaterials = materialsList.map(item => {
                 const copy = { ...item };
-                // Bellekteki tam veriyi geri yükle
-                if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
-                    const cached = ROTALI_MATERIALS_CACHE.find(c => c && c.id === copy.id);
-                    if (cached && cached.fileUrl && cached.fileUrl.startsWith("data:") && (!copy.fileUrl || copy.fileUrl === "")) {
-                        copy.fileUrl = cached.fileUrl;
-                    }
-                }
-                // Gist ve Vercel API yük sınırını (413 Payload Too Large) aşmamak için büyük DataURL'leri kırp
+                delete copy.fileDataUrl;
+                delete copy.isNewLocal;
+
                 if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > MAX_CLOUD_DATAURL_SIZE) {
                     copy.fileUrl = "";
                     copy.hasBlob = true;
                 }
-                if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 80 * 1024) {
+                if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > MAX_CLOUD_DATAURL_SIZE) {
                     copy.imageUrl = "";
                 }
-                // Duplicate imageUrl/fileUrl temizliği
+                if (copy.kapakResmi && copy.kapakResmi.startsWith("data:") && copy.kapakResmi.length > MAX_CLOUD_DATAURL_SIZE) {
+                    copy.kapakResmi = copy.imageUrl && !copy.imageUrl.startsWith("data:") ? copy.imageUrl : "";
+                }
+                if (copy.cover && copy.cover.startsWith("data:") && copy.cover.length > MAX_CLOUD_DATAURL_SIZE) {
+                    copy.cover = copy.imageUrl && !copy.imageUrl.startsWith("data:") ? copy.imageUrl : "";
+                }
                 if (copy.imageUrl && copy.fileUrl && copy.imageUrl === copy.fileUrl && copy.fileUrl.startsWith("data:")) {
                     copy.imageUrl = "";
                 }
                 return copy;
             });
 
-            // 🌟 Supabase Bulut Veritabanı ile Anında Eşitle
-            if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+            // 🌟 Aktif özel Supabase yapılandırılmışsa eşitle
+            if (typeof window.RotaliCloud !== "undefined" && typeof RotaliCloud.isSupabaseActive === "function" && RotaliCloud.isSupabaseActive()) {
                 try {
                     for (const m of cleanMaterials) {
                         await RotaliCloud.saveMaterial(m);
                     }
-                    console.log("☁️ Supabase bulut veritabanına tüm materyaller başarıyla eşitlendi.");
-                } catch(sbErr) {
-                    console.warn("Supabase uploadToCloud error:", sbErr);
-                }
+                } catch(sbErr) {}
             }
 
             const payload = {
@@ -666,7 +694,7 @@ const CloudSyncManager = {
             }
 
             if (res && res.ok) {
-                console.log("☁️ Bulut veritabanı güncellendi (Kalıcı Silme & Eşitleme Yapıldı)");
+                console.log("☁️ Sunucu veritabanı (Gist + data/materials.json) kalıcı olarak güncellendi.");
                 return true;
             } else {
                 console.warn("Buluta yükleme başarısız:", res ? res.status : "Bağlantı hatası");
@@ -680,15 +708,13 @@ const CloudSyncManager = {
 
     async deleteMaterial(id, updatedList) {
         addDeletedMaterialId(id);
-        
-        // 🌟 Supabase Bulut Veritabanından ve Storage'dan Sil
-        if (typeof window.RotaliCloud !== "undefined" && RotaliCloud.isConfigured()) {
+
+        if (typeof window.RotaliCloud !== "undefined" && typeof RotaliCloud.isSupabaseActive === "function" && RotaliCloud.isSupabaseActive()) {
             try {
                 await RotaliCloud.deleteMaterial(id);
             } catch(e) {}
         }
 
-        // ⚡ HAFİF VE ANLIK BULUT SİLME (50 Baytlık Doğrudan İstek)
         const deletePayload = {
             action: "delete",
             deleteId: id
@@ -711,7 +737,7 @@ const CloudSyncManager = {
                     });
                 }
             }
-            console.log(`✅ Materyal buluttan anında silindi: ${id}`);
+            console.log(`✅ Materyal sunucudan (Gist + data/materials.json) anında ve kalıcı olarak silindi: ${id}`);
             return true;
         } catch(delErr) {
             console.warn("Buluttan hafif silme isteği uyarısı, uploadToCloud ile deneniyor:", delErr);
@@ -723,7 +749,7 @@ const CloudSyncManager = {
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
-const ROTALI_DATA_SCHEMA_VERSION = 20260927_07;
+const ROTALI_DATA_SCHEMA_VERSION = 20261017_01;
 
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;
@@ -760,274 +786,45 @@ function sanitizeMaterialItem(raw) {
     return item;
 }
 
-const DEFAULT_CUSTOM_MATERIALS = [
-    {
-        id: "mat-5-islenecek-konular",
-        grade: "5",
-        category: "ders-kitabi",
-        targetSection: "kitap",
-        title: "5.Sınıf İşlenecek Konular",
-        unit: "Ders Kitabı & Ünite PDF'leri",
-        desc: "Türkiye Yüzyılı Maarif Modeli 5. Sınıf Fen Bilimleri yıllık ünite ve konu dağılımı infografik tablosu.",
-        fileName: "5.Sinif_Islenecek_Konular.png",
-        fileUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
-        imageUrl: "assets/unite-bilgilendirmeleri-gorsel.png",
-        kapakResmi: "assets/unite-bilgilendirmeleri-gorsel.png",
-        format: "WEB BAĞLANTISI",
-        hasBlob: false,
-        tags: ["5. Sınıf", "İşlenecek Konular", "MEB 2026-2027", "Maarif Modeli", "Afiş"],
-        visibility: "public",
-        downloadCount: "2.450+",
-        createdAt: "2026-10-15T20:00:00.000Z",
-        updatedAt: "2026-10-17T12:00:00.000Z"
-    },
-    {
-        id: "mat-5-ilk-ders-notu",
-        grade: "5",
-        category: "ders-kitabi",
-        targetSection: "kitap",
-        title: "İlk ders notu",
-        unit: "Ders Kitabı & Ünite PDF'leri",
-        desc: "Fen Bilimleri Dersi Bize Ne Kazandırır? Doğayı anla, bilimi keşfet, geleceği inşa et kapsamlı görsel ders notu.",
-        fileName: "Ilk_Ders_Notu.png",
-        fileUrl: "assets/ilk-ders-notu.png",
-        imageUrl: "assets/ilk-ders-notu.png",
-        kapakResmi: "assets/ilk-ders-notu.png",
-        format: "WEB BAĞLANTISI",
-        hasBlob: false,
-        tags: ["5. Sınıf", "İlk Ders Notu", "Fen Bilimleri", "MEB 2026-2027"],
-        visibility: "public",
-        downloadCount: "3.120+",
-        createdAt: "2026-10-15T20:15:00.000Z",
-        updatedAt: "2026-10-17T12:00:00.000Z"
-    },
-    {
-        id: "mat-5af99640-7aaf-423f-9643-0e157023d717",
-        grade: "7",
-        category: "ders-notu",
-        targetSection: "1",
-        title: "7.1. Videolar",
-        unit: "1. Ünite: Uzay Çağı",
-        desc: "7. Sınıf 1. Ünite Uzay Çağı video anlatım içerikleri ve ders kaynakları.",
-        fileName: "7-1-videolar.mp4",
-        fileUrl: "https://www.youtube.com/watch?v=5F2v_25gqj8",
-        imageUrl: "assets/kapak-7.jpg",
-        format: "YouTube Video",
-        hasBlob: false,
-        tags: ["7.sınıf", "video", "uzay cagi", "MEB 2026-2027"],
-        visibility: "public",
-        downloadCount: "1.200+",
-        createdAt: "2026-10-16T05:33:46.023Z",
-        updatedAt: "2026-10-16T05:33:46.023Z"
-    },
-    {
-        id: "not-7-1",
-        grade: "7",
-        category: "ders-notu",
-        title: "7. Sınıf 1. Ünite Notu",
-        unit: "1. Ünite: Uzay Çağı",
-        desc: "7. Sınıf 1. Ünite: Uzay Çağı kapsamlı ders notu ve özet föyü.",
-        fileName: "7.1. Ders Notu.pdf",
-        fileUrl: "assets/docs/7-1-ders-notu.pdf",
-        imageUrl: "assets/kapak-7.jpg",
-        format: "PDF",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "7.sınıf", "dersnotu", "fen", "uzay cagi"],
-        visibility: "public",
-        downloadCount: "1.850+",
-        createdAt: "16.09.2026",
-        updatedAt: "18.09.2026"
-    },
-    {
-        id: "mat-8-liseye-nasil-gidecegiz",
-        grade: "8",
-        category: "videolar",
-        title: "Liseye Nasıl Gideceğiz?",
-        unit: "LGS Rehberlik & Tercih",
-        desc: "8. Sınıf LGS ve liselere geçiş sistemi bilgilendirme ve motivasyon videosu.",
-        fileName: "Liseye Nasıl Gideceğiz.mp4",
-        fileUrl: "https://www.youtube.com/watch?v=5F2v_25gqj8",
-        imageUrl: "assets/kapak-8.jpg",
-        format: "YouTube Video",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "LGS", "Liseye Geçiş", "video", "rehberlik", "ortaokul", "fenbilimleri", "fen"],
-        visibility: "public",
-        downloadCount: "Yeni",
-        createdAt: "15.09.2026",
-        updatedAt: "17.09.2026"
-    },
-    {
-        id: "mat-1789501786165",
-        grade: "5",
-        category: "videolar",
-        title: "Genel Güvenlik Sembolleri Video",
-        unit: "Genel",
-        targetSection: "lab",
-        desc: "5. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
-        fileName: "Güvenlik Sembolleri.mp4",
-        fileUrl: "https://www.youtube.com/watch?v=E-0C1f0Ksqw",
-        imageUrl: "assets/kapak-5.jpg",
-        format: "YouTube Video",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "video", "güvenlik", "5.sınıf", "laboratuvar"],
-        visibility: "public",
-        downloadCount: "Yeni",
-        createdAt: "15.09.2026",
-        updatedAt: "17.09.2026"
-    },
-    {
-        id: "mat-1789503112888",
-        grade: "8",
-        category: "videolar",
-        title: "8. Sınıf Genel Güvenlik Sembolleri Video",
-        unit: "Genel",
-        targetSection: "lab",
-        desc: "8. Sınıf Fen Bilimleri Laboratuvar ve Güvenlik Sembolleri video anlatımı.",
-        fileName: "Güvenlik Sembolleri.mp4",
-        fileUrl: "https://www.youtube.com/watch?v=E-0C1f0Ksqw",
-        imageUrl: "assets/kapak-8.jpg",
-        format: "YouTube Video",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "video", "güvenlik", "8.sınıf", "laboratuvar"],
-        visibility: "public",
-        downloadCount: "Yeni",
-        createdAt: "15.09.2026",
-        updatedAt: "17.09.2026"
-    },
-    {
-        id: "mat-5-lab-oyun-1",
-        grade: "5",
-        category: "egitsel-oyunlar",
-        title: "Laboratuvar Malzemeleri Eşleştirme",
-        unit: "1. Ünite: Güneş, Dünya ve Ay",
-        targetSection: "lab",
-        desc: "Bu interaktif eşleştirme oyunu, ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirerek eğlenceli ve kalıcı bir şekilde öğrenmeyi sağlar.",
-        fileName: "Laboratuvar Malzemeleri Eşleştirme",
-        fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
-        format: "Eğitsel Oyun",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "Laboratuvar", "Eşleştirme", "İnteraktif Oyun"],
-        visibility: "public",
-        downloadCount: "1.450+",
-        createdAt: "08.09.2026"
-    },
-    {
-        id: "mat-5-lab-oyun-2",
-        grade: "5",
-        category: "egitsel-oyunlar",
-        title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları İnteraktif Oyunu",
-        unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
-        targetSection: "lab",
-        desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eğlenerek eşleştirin ve tanıyın.",
-        fileName: "5. Sınıf Laboratuvar Oyunu",
-        fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
-        format: "Eğitsel Oyun",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "Laboratuvar", "Güvenlik Kuralları", "Fen Dünyası"],
-        visibility: "public",
-        downloadCount: "2.120+",
-        createdAt: "Yeni Yayınlandı"
-    },
-    {
-        id: "mat-5-lab-kacis-gemini",
-        grade: "5",
-        category: "egitsel-oyunlar",
-        title: "Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti",
-        unit: "1. Ünite: Laboratuvar ve Fen Dünyası",
-        targetSection: "lab",
-        desc: "Astronot ile 10 kapılı uzay ve bilim labirentinde mahsur kaldın! Ahşap ve güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!",
-        fileName: "Astronotun Kaçış Odası",
-        fileUrl: "oyun-lab-kacis",
-        imageUrl: "assets/astronot-kacis-odasi.png",
-        format: "Eğitsel Oyun",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "Laboratuvar", "Kaçış Odası", "Astronot", "İnteraktif Oyun"],
-        visibility: "public",
-        downloadCount: "4.250+",
-        createdAt: "Yeni Yayınlandı"
-    },
-    {
-        id: "mat-6-oyun-uzay-ekspresi",
-        grade: "6",
-        category: "egitsel-oyunlar",
-        title: "Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Oyunu)",
-        unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
-        targetSection: "1",
-        desc: "Türkiye Yüzyılı Maarif Modeli uyumlu 3D Subway Surfers tarzı uzay treni macerası! Kuantum raylar üzerinde koş, meteor ve uydu enkazlarını aş, gezegen soru kapılarından doğru geç!",
-        fileName: "Uzay Ekspresi",
-        fileUrl: "oyun-uzay-ekspresi",
-        imageUrl: "assets/rotali-uzay-ekspresi.jpg",
-        kapakResmi: "assets/rotali-uzay-ekspresi.jpg",
-        cover: "assets/rotali-uzay-ekspresi.jpg",
-        format: "Eğitsel Oyun",
-        hasBlob: false,
-        tags: ["6. Sınıf", "1. Ünite", "Güneş Sistemi", "Gezegenler", "Uzay Ekspresi", "3D Oyun"],
-        visibility: "public",
-        downloadCount: "6.400+",
-        createdAt: "Yeni Yayınlandı"
-    },
-    {
-        id: "mat-game-gezegen-kosusu",
-        grade: "all",
-        category: "egitsel-oyunlar",
-        title: "Gezegen Koşusu: Antgravity Galaksisi (3D Subway Surfers)",
-        unit: "1. Ünite: Güneş Sistemi ve Gezegenler",
-        targetSection: "1",
-        desc: "3 şeritli sonsuz uzay koşusu! Güneş Sistemi gezegenlerinde engelleri aş, soru kapılarından doğru geç, solucan deliklerinden ışınlan ve galaktik kütüphaneyi tamamla!",
-        fileName: "Gezegen Koşusu",
-        fileUrl: "oyun-gezegen-kosusu",
-        imageUrl: "assets/logo.jpg",
-        format: "Eğitsel Oyun",
-        hasBlob: false,
-        tags: ["Güneş Sistemi", "Gezegenler", "3D Runner", "Subway Surfers", "Eğitsel Oyun"],
-        visibility: "public",
-        downloadCount: "5.800+",
-        createdAt: "Yeni Yayınlandı"
-    },
-    {
-        id: "mat-8-lgs-deneme-1",
-        grade: "8",
-        category: "lgs",
-        title: "8. Sınıf LGS Fen Bilimleri Branş Denemesi (20 Yeni Nesil Soru)",
-        unit: "1. ve 2. Ünite: Mevsimler, İklim ve DNA",
-        desc: "LGS formatında tam kapsamlı fen branş denemesi, detaylı çözümlü ve optik formlu.",
-        fileName: "8_Sinif_LGS_Deneme.pdf",
-        fileUrl: "#",
-        format: "PDF",
-        hasBlob: false,
-        tags: ["MEB 2026-2027", "LGS 2027", "Branş Denemesi", "Yeni Nesil"],
-        visibility: "public",
-        downloadCount: "3.480+",
-        createdAt: "Yeni Yayınlandı"
-    }];
+// 🚫 SABİT (HARDCODED) VARSAYILAN MATERYALLER TAMAMEN KALDIRILDI!
+// Tüm materyaller yalnızca merkezi sunucu (data/materials.json & /api/sync) ve Yönetim Panelinden yönetilir.
+const DEFAULT_CUSTOM_MATERIALS = [];
 
 function saveCustomMaterialsSafe(list) {
     if (!Array.isArray(list)) return;
-    ROTALI_MATERIALS_CACHE = [...list];
+    const deletedSet = new Set(getDeletedMaterialIds());
+    const cleanList = list.filter(item => item && item.id && !deletedSet.has(item.id));
+    ROTALI_MATERIALS_CACHE = [...cleanList];
+    APP_MATERIALS_CACHE = [...cleanList];
+    window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+
     // LocalStorage'a her zaman kısaltılmış hali yaz (kota aşımını önle)
-    // Bellekteki ROTALI_MATERIALS_CACHE her zaman tam DataURL içerir
     try {
-        const slimList = list.map(item => {
+        const slimList = cleanList.map(item => {
             const copy = { ...item };
-            if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > 80000) {
-                copy.fileUrl = ""; // Tam dosya ROTALI_MATERIALS_CACHE ve IndexedDB'de mevcuttur
+            delete copy.fileDataUrl;
+            if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > 60000) {
+                copy.fileUrl = "";
+            }
+            if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 60000) {
+                copy.imageUrl = "";
+            }
+            if (copy.kapakResmi && copy.kapakResmi.startsWith("data:") && copy.kapakResmi.length > 60000) {
+                copy.kapakResmi = copy.imageUrl && !copy.imageUrl.startsWith("data:") ? copy.imageUrl : "";
             }
             return copy;
         });
         localStorage.setItem("rotali_custom_materials", JSON.stringify(slimList));
-        // Sekmeler arası ve cihaz içi anlık güncelleme sinyali
         localStorage.setItem("rotali_materials_sync_signal", Date.now().toString());
     } catch (storageErr) {
         console.warn("LocalStorage quota uyarısı:", storageErr);
         try {
-            const tinyList = list.map(item => {
+            const tinyList = cleanList.map(item => {
                 const copy = { ...item };
-                if (copy.fileUrl && (copy.fileUrl.startsWith("data:") || copy.fileUrl.length > 50000)) {
-                    copy.fileUrl = "";
-                }
-                if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 50000) {
-                    copy.imageUrl = "";
-                }
+                delete copy.fileDataUrl;
+                if (copy.fileUrl && copy.fileUrl.startsWith("data:")) copy.fileUrl = "";
+                if (copy.imageUrl && copy.imageUrl.startsWith("data:")) copy.imageUrl = "";
+                if (copy.kapakResmi && copy.kapakResmi.startsWith("data:")) copy.kapakResmi = "";
                 return copy;
             });
             localStorage.setItem("rotali_custom_materials", JSON.stringify(tinyList));
@@ -1589,7 +1386,7 @@ function resolveMaterialCover(item) {
 
     // 2. fileUrl doğrudan bir görsel ise
     if (rawFile && rawFile !== "#" && rawFile !== "null" && !rawFile.includes("cdn.eba.gov.tr") &&
-        (rawFile.startsWith("data:image") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp") || rawFile.startsWith("assets/"))) {
+        (rawFile.startsWith("data:image") || rawFile.endsWith(".png") || rawFile.endsWith(".jpg") || rawFile.endsWith(".jpeg") || rawFile.endsWith(".svg") || rawFile.endsWith(".webp"))) {
         return rawFile;
     }
 
@@ -4227,26 +4024,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
         cover: resolveMaterialCover(customBookOverride) || baseBook.cover
     } : baseBook;
 
-    // Laboratuvar & Deneyler
-    const labItemsMap = {
-        "5": [
-            { id: "lab-5-1", title: "5. Sınıf Laboratuvar Güvenliği & Malzemeleri Renkli İnfografiği", badge: "İnfografik Föy", desc: "Güvenlik sembolleri, piktogramlar ve temel laboratuvar ekipmanları görsel kılavuzu.", format: "GÖRSEL FÖY", fileUrl: "assets/lab-guvenligi.svg" },
-            { id: "lab-5-2", title: "Güneş, Dünya ve Ay 3D Yörünge Simülatörü", badge: "PhET Simülasyon", desc: "Ay'ın evrelerini ve Dünya çevresindeki dolanma hareketini 3D keşfedin.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" }
-        ],
-        "6": [
-            { id: "lab-6-1", title: "Bileşke Kuvvet ve Sürtünme Simülatörü", badge: "PhET Simülasyon", desc: "Kuvvet vektörleri, net kuvvet hesabı ve hareket gözlemi.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" },
-            { id: "lab-6-2", title: "Destek ve Hareket / Kemik & Eklem İnceleme Deney Föyü", badge: "Deney Föyü", desc: "Kemik çeşitleri, eklemler ve kasların çalışma prensibi laboratuvar föyü.", format: "PDF FÖY", fileUrl: "#" }
-        ],
-        "7": [
-            { id: "lab-7-1", title: "PhET Enerji Kaykay Parkı & Kinetik-Potansiyel Simülatörü", badge: "PhET Simülasyon", desc: "Kinetik ve potansiyel enerji dönüşümlerini sürtünmeli ortamda keşfedin.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" },
-            { id: "lab-7-2", title: "Mitoz & Mayoz Bölünme Mikroskop Gözlem Föyü", badge: "Deney Föyü", desc: "Bitki ve hayvan hücresi bölünme evreleri laboratuvar inceleme rehberi.", format: "PDF FÖY", fileUrl: "#" }
-        ],
-        "8": [
-            { id: "lab-8-1", title: "Sıvı Basıncı, Derinlik & Yoğunluk Simülatörü", badge: "PhET Simülasyon", desc: "Pascal prensibi, U borusu ve sıvı basıncını etkileyen değişkenler deneyi.", format: "SİMÜLASYON", fileUrl: "https://phet.colorado.edu" },
-            { id: "lab-8-2", title: "LGS Bağımlı, Bağımsız & Kontrol Edilen Değişken Kılavuzu", badge: "LGS Deney Modeli", desc: "MEB sınavlarında çıkan deneysel hipotez ve düzenek çözümleri.", format: "PDF / LGS", fileUrl: "#" }
-        ]
-    };
-    const labItems = labItemsMap[gNum] || labItemsMap["8"];
+    // Laboratuvar & Deneyler (Sabit/Hardcoded varsayılan öğeler kaldırıldı; yalnızca merkezi veritabanındaki içerikler listelenir)
+    const labItems = [];
 
     // Resmi MEB 7 Ünitesi
     const unitTitlesMap = {
@@ -4329,20 +4108,16 @@ function renderGradeDersNotuAccordion(grade, subData) {
         allKitapItems = kitapSectionCustom;
     }
 
-    // Özel Laboratuvar Materyalleri (lab-*-guide ve lab-*-sim ayrı kart olarak yönetilir)
-    const labGuideItem = customList.find(m => m && m.id === `lab-${grade.number}-guide`) || {};
-    const labSimItem = customList.find(m => m && m.id === `lab-${grade.number}-sim`) || {};
-
     const customLabItems = customList.filter(m => {
         const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
         if (gClean !== "all" && gClean !== String(grade.number)) return false;
-        if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
-        // Eğitsel oyunları ders notu laboratuvarında ASLA gösterme!
-        if (matchesSubTabCategory(m, "egitsel-oyunlar") || m.category === "egitsel-oyunlar" || m.category === "oyunlar" || m.category === "oyun" || (m.format && m.format.toLowerCase().includes("oyun")) || m.fileUrl === "oyun-lab-kacis" || String(m.title || '').toLowerCase().includes("kaçış") || String(m.title || '').toLowerCase().includes("kacis")) {
+        const cat = String(m.category || "").toLowerCase();
+        // Sadece ders-notu, ders-sunumu veya laboratuvar kategorisindeki lab içeriklerini göster (Videolar ve Eğitsel Oyunlar kendi sekmelerinde gösterilir)
+        if (cat === "egitsel-oyunlar" || cat === "oyunlar" || cat === "oyun" || cat === "videolar" || cat === "video") {
             return false;
         }
         const sec = getMaterialTargetSection(m);
-        return sec === "lab" || m.category === "laboratuvar";
+        return sec === "lab" || cat === "laboratuvar";
     });
 
     // Aktif açık olan üniteyi veya bölümü hatırla (Sayfa yenilendiğinde ilk bölüme atmasını kesin olarak önler)
@@ -4356,7 +4131,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
     const activeUnit = savedUnit || "kitap";
     const isKitapActive = activeUnit === "kitap";
     const isLabActive = activeUnit === "lab";
-    const allLab = [...customLabItems, ...labItems].filter(item => item && !deletedIds.includes(item.id));
+    const allLab = [...customLabItems].filter(item => item && !deletedIds.includes(item.id));
 
     return `
         <div id="ders-notu-accordion-group" class="mb-10 animate-in fade-in duration-300">
@@ -4748,65 +4523,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     };
     const unitList = unitTitlesMap[gNum] || unitTitlesMap["6"];
 
-    // Müfredat Yerleşik Eğitsel Oyun Haritası (Ünitelere ve Laboratuvara Göre Dağılım)
-    const builtinUnitGamesMap = {
-        "5": {
-            "1": [
-                { id: "oyun-5-gunes", title: "Güneş, Dünya ve Ay 3D Yörünge Simülatörü", badge: "3D Simülasyon", desc: "Ay'ın evrelerini, Dünya ve Güneş etrafındaki dolanma hareketlerini 3 boyutlu uzay ortamında inceleyin.", fileUrl: "https://phet.colorado.edu", format: "3D SİMÜLASYON", icon: "fa-solid fa-earth-americas", iconColor: "from-teal-500 to-emerald-600", type: "Uzay Keşfi" },
-                { id: "oyun-5-cark", title: "5. Sınıf Fen Çarkıfeleği & Terim Yarışması", badge: "Yarışma & Çark", desc: "Çarkıfeleği çevirin, 5. sınıf fen terimlerini süre bitmeden doğru cevaplayarak şampiyon olun.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "ÇARKIFELEK", icon: "fa-solid fa-dharmachakra", iconColor: "from-purple-500 to-pink-600", type: "Çarkıfelek" }
-            ],
-            "2": [
-                { id: "oyun-5-canlilar", title: "Canlılar Dünyası ve Mantarlar Sınıflandırma Oyunu", badge: "Sürükle-Bırak", desc: "Omurgalı/omurgasız hayvanları, bitkileri ve mikroskobik canlıları doğru kutulara sürükleyin.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "EŞLEŞTİRME", icon: "fa-solid fa-paw", iconColor: "from-emerald-500 to-green-600", type: "Canlılar Oyunu" }
-            ],
-            "lab": [
-                { id: "oyun-5-lab-wordwall", title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu", badge: "Wordwall İnteraktif", desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eşleştirerek keşfedin.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "EŞLEŞTİRME", icon: "fa-solid fa-flask", iconColor: "from-amber-500 to-orange-600", type: "Eşleştirme Oyunu" },
-                { id: "oyun-5-lab-eslestirme", title: "Laboratuvar Malzemeleri Eşleştirme Bulmacası", badge: "Kavram Eşleştirme", desc: "30 temel fen laboratuvar ekipmanını doğru görsel ve tanımlarla eşleştirerek yüksek puan toplayın.", fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0", format: "BULMACA", icon: "fa-solid fa-vial-circle-check", iconColor: "from-blue-500 to-indigo-600", type: "İnteraktif Bulmaca" }
-            ]
-        },
-        "6": {
-            "1": [
-                { 
-                    id: "oyun-6-uzay-ekspresi", 
-                    title: "Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Oyunu)", 
-                    badge: "3D Subway Surfers", 
-                    desc: "Türkiye Yüzyılı Maarif Modeli uyumlu 3D uzay treni macerası! Kuantum raylarda koş, meteor ve uydu enkazlarını aş, gezegen soru kapılarını çöz!", 
-                    fileUrl: "oyun-uzay-ekspresi", 
-                    imageUrl: "assets/rotali-uzay-ekspresi.jpg", 
-                    cover: "assets/rotali-uzay-ekspresi.jpg", 
-                    format: "3D EĞİTSEL OYUN", 
-                    icon: "fa-solid fa-rocket", 
-                    iconColor: "from-cyan-500 to-indigo-600", 
-                    type: "3D Uzay Koşusu" 
-                },
-                { id: "oyun-6-gezegen", title: "Güneş Sistemi & Tutulmalar 3D Uzay Keşfi", badge: "Simülasyon", desc: "Gezegenlerin büyüklükleri ve Güneş/Ay tutulmalarını interaktif gözlemleyin.", fileUrl: "https://phet.colorado.edu", format: "3D UZAY", icon: "fa-solid fa-meteor", iconColor: "from-amber-500 to-yellow-600", type: "3D Uzay" }
-            ],
-            "2": [
-                { id: "oyun-6-organ", title: "6. Sınıf Vücudumuzdaki Sistemler Organ Eşleştirme", badge: "Turnuva", desc: "Dolaşım, solunum, sindirim ve boşaltım organlarını görevleriyle eşleştirin.", fileUrl: "https://wordwall.net", format: "EŞLEŞTİRME", icon: "fa-solid fa-heart-pulse", iconColor: "from-rose-500 to-red-600", type: "Sistem Eşleştirme" }
-            ],
-            "3": [
-                { id: "oyun-6-cark", title: "6. Sınıf Fen Çarkıfeleği & Terim Yarışması", badge: "Yarışma", desc: "Kuvvet, hareket ve madde kavramlarını çarkıfelek ile yarışarak öğrenin.", fileUrl: "https://wordwall.net", format: "ÇARKIFELEK", icon: "fa-solid fa-dharmachakra", iconColor: "from-purple-500 to-pink-600", type: "Çarkıfelek" }
-            ],
-            "lab": []
-        },
-        "7": {
-            "1": [
-                { id: "oyun-7-galileo", title: "Bilimin Rotası: Teleskop ve Uzay Keşif Oyunu", badge: "Keşif", desc: "Teleskop çeşitleri, aynalar ve uzay araçları simülasyonu.", fileUrl: "https://phet.colorado.edu", format: "SİMÜLASYON", icon: "fa-solid fa-satellite", iconColor: "from-sky-500 to-teal-600", type: "Uzay & Optik" }
-            ],
-            "2": [
-                { id: "oyun-7-hucre", title: "7. Sınıf Hücre ve Organeller 3D Eşleştirme", badge: "Hücre Modeli", desc: "Bitki ve hayvan hücresi organellerini görevleriyle eşleştirin.", fileUrl: "https://wordwall.net", format: "EŞLEŞTİRME", icon: "fa-solid fa-dna", iconColor: "from-indigo-500 to-blue-600", type: "Hücre Oyunu" }
-            ],
-            "lab": []
-        },
-        "8": {
-            "1": [
-                { id: "oyun-8-passaparola", title: "8. Sınıf LGS Fen Passaparola Terim Yarışması", badge: "LGS Passaparola", desc: "A'dan Z'ye 24 LGS Fen terimini süre dolmadan bil, rekor kır!", fileUrl: "https://wordwall.net", format: "PASSAPAROLA", icon: "fa-solid fa-circle-question", iconColor: "from-red-500 to-rose-600", type: "LGS Yarışması" }
-            ],
-            "3": [
-                { id: "oyun-8-basinc", title: "Sıvı ve Gaz Basıncı Sanal Deney Simülatörü", badge: "PhET Simülasyon", desc: "Derinlik, yoğunluk ve açık hava basıncını sanal manometreyle ölçün.", fileUrl: "https://phet.colorado.edu", format: "SİMÜLASYON", icon: "fa-solid fa-atom", iconColor: "from-cyan-500 to-blue-600", type: "Basınç Simülatörü" }
-            ],
-            "lab": []
-        }
-    };
+    // Müfredat Yerleşik Eğitsel Oyun Haritası (Sabit/Hardcoded varsayılan oyunlar kaldırıldı; yalnızca merkezi veritabanındaki oyunlar listelenir)
+    const builtinUnitGamesMap = { "5": {}, "6": {}, "7": {}, "8": {} };
 
     // 7 Bölümün Yapılandırma Bilgileri
     const sectionConfigs = {
@@ -5109,64 +4827,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                     <div id="${containerId}-unit-lab" class="unit-card-body accordion-body-collapsible ${isLabActive ? '' : 'hidden'} border-t ${normSubTab === 'egitsel-oyunlar' ? 'border-amber-100' : 'border-emerald-100'} p-4 sm:p-6 bg-slate-50/50">
                         ${normSubTab === 'egitsel-oyunlar' ? `
-                            <!-- 🌟 1. ÖNE ÇIKAN KAÇIŞ ODASI OYUNU -->
-                            <div class="relative bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-6 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
-                                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                                <div class="absolute -left-16 -top-16 w-80 h-80 bg-fuchsia-500/10 rounded-full blur-3xl pointer-events-none"></div>
-                                
-                                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-                                    <div class="relative w-full sm:w-72 md:w-80 h-48 sm:h-52 shrink-0 rounded-2xl overflow-hidden border-2 border-amber-400/70 shadow-2xl bg-slate-900 group/img">
-                                        <img src="assets/astronot-kacis-odasi.png" alt="Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti" class="w-full h-full object-cover group-hover/img:scale-105 transition-transform duration-300" onerror="this.src='rotali-fenci-logo.png'">
-                                        <div class="absolute top-2.5 left-2.5 w-12 h-12 rounded-2xl p-0.5 bg-gradient-to-tr from-amber-400 to-orange-500 shadow-lg flex items-center justify-center">
-                                            <img src="rotali-fenci-logo.png" alt="Rotalı Fenci Logo" class="w-full h-full object-cover rounded-[14px]" onerror="this.src='ROTALI FENCİ.jpg'">
-                                        </div>
-                                        <span class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-amber-400 text-slate-950 text-xs font-black uppercase rounded-xl shadow font-orbitron">
-                                            🚀 10 KAPI • ŞİFRELER
-                                        </span>
-                                    </div>
-
-                                    <div class="flex-1 text-center sm:text-left">
-                                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
-                                            <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
-                                                <i class="fa-solid fa-trophy text-amber-400"></i> ÖNE ÇIKAN KAÇIŞ OYUNU
-                                            </span>
-                                            <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
-                                                ✓ Akıllı Tahta, PC & Telefon Uyumlu
-                                            </span>
-                                        </div>
-                                        <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-teal-300 mb-2">
-                                            Astronotun Kaçış Odası: 10 Kapılı Bilim Labirenti
-                                        </h4>
-                                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3.5">
-                                            Astronot ile 10 kapılı uzay ve bilim labirentinde mahsur kaldın! Ahşap ve güvenlik kapılarını açmak için fen kurallarını uygula, 3'er soru çözerek kapı şifrelerini hesapla ve büyük çıkış portalına ulaş!
-                                        </p>
-                                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
-                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🚪 10 Ahşap Oda Kapısı</span>
-                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">👨‍🚀 Astronot & Rotalı Fenci</span>
-                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">⏱️ 15sn Soru Sayacı</span>
-                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">❤️ 3 Can Hakkı</span>
-                                            <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">🏆 Maks 10.000 Canlı Skor</span>
-                                        </div>
-                                    </div>
-
-                                    <div class="flex flex-col gap-2.5 shrink-0 w-full sm:w-auto">
-                                        <button type="button" onclick="window.location.href='oyunlar/laboratuvar-kacis-odasi.html'" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm sm:text-base uppercase tracking-wider shadow-[0_0_30px_rgba(245,158,11,0.6)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer border-2 border-amber-300">
-                                            <i class="fa-solid fa-play text-lg"></i>
-                                            <span>OYUNU AÇ (TAM EKRAN)</span>
-                                        </button>
-                                        <a href="oyunlar/laboratuvar-kacis-odasi.html" target="_blank" rel="noopener noreferrer" class="px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
-                                            <i class="fa-solid fa-up-right-from-square"></i> Yeni Sekmede Aç
-                                        </a>
-                                        ${isAdmin ? `
-                                            <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('mat-5-lab-kacis-gemini')" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 shadow cursor-pointer">
-                                                <i class="fa-solid fa-pen-to-square"></i> Oyunu Düzenle
-                                            </button>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- 2. LABORATUVAR EĞİTSEL OYUNLARI & BULMACALARI -->
+                            <!-- LABORATUVAR EĞİTSEL OYUNLARI & BULMACALARI -->
                             <div class="mb-3 flex items-center justify-between">
                                 <h5 class="text-sm font-black text-slate-800 flex items-center gap-1.5">
                                     <i class="fa-solid fa-flask text-fuchsia-600"></i> Laboratuvar Oyunları & Simülasyonlar
@@ -5179,48 +4840,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <!-- Yerleşik Lab Oyunları (Wordwall) -->
-                                ${((builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum]["lab"]) || []).filter(g => !deletedIds.has(g.id)).map(g => `
-                                    <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm flex flex-col justify-between hover:border-fuchsia-400 hover:shadow-md transition-all group">
-                                        <div>
-                                            <div class="flex items-center justify-between mb-3">
-                                                <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">
-                                                    ${g.badge}
-                                                </span>
-                                                <div class="w-9 h-9 rounded-xl bg-gradient-to-tr ${g.iconColor} text-white flex items-center justify-center text-sm shadow-sm">
-                                                    <i class="${g.icon}"></i>
-                                                </div>
-                                            </div>
-                                            <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:text-fuchsia-700 transition-colors">
-                                                ${g.title}
-                                            </h5>
-                                            <p class="text-xs text-slate-500 font-medium mb-3 leading-relaxed line-clamp-3">
-                                                ${g.desc}
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                                                <span class="text-[10px] font-bold text-slate-500">
-                                                    <i class="fa-solid fa-gamepad text-fuchsia-500"></i> ${g.type}
-                                                </span>
-                                                <button type="button" onclick="openInteractiveGameModal('${g.fileUrl}', '${g.title.replace(/'/g, "\\'")}')" class="px-4 py-2 bg-slate-900 hover:bg-fuchsia-700 text-white text-xs font-black rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
-                                                    <i class="fa-solid fa-play text-[10px]"></i> Oyna
-                                                </button>
-                                            </div>
-                                            ${isAdmin ? `
-                                                <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                    <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('${g.id}')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                        <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                    </button>
-                                                    <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('${g.id}')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            ` : ''}
-                                        </div>
-                                    </div>
-                                `).join("")}
-
                                 <!-- Özel Eklenen Lab Oyunları -->
                                 ${customList.filter(m => {
                                     const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
@@ -5333,77 +4952,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                     </div>
                                     `;
                                 }).join("")}
-                                ${!deletedIds.has(`lab-${grade.number}-guide`) ? `
-                                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
-                                    <div>
-                                        <div class="flex items-center justify-between mb-2">
-                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">Deney Föyü</span>
-                                            <span class="text-[11px] font-bold text-slate-400">MEB Uyumlu</span>
-                                        </div>
-                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Güvenliği & Deney Kılavuzu`}</h5>
-                                        <!-- Görsel Kapak Kutusu -->
-                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', '${labGuideItem.format || 'PDF'}')">
-                                            <img src="${resolveMaterialCover(labGuideItem) || 'assets/lab-guvenligi.svg'}" alt="${labGuideItem.title || 'Laboratuvar Rehberi'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-
-                                        </div>
-                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labGuideItem.desc || 'Laboratuvar malzemeleri, güvenlik işaretleri ve sınıf içi deney uygulama föyü.'}</p>
-                                    </div>
-                                    <div>
-                                        <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-guide', '${labGuideItem.fileUrl || 'assets/lab-guvenligi.svg'}', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labGuideItem.title || `${grade.number}. Sınıf Laboratuvar Rehberi`).replace(/'/g, "\\'")}', '${labGuideItem.format || 'PDF'}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
-                                            <i class="fa-solid fa-eye text-xs"></i>
-                                            <span>Görüntüle</span>
-                                        </button>
-                                        ${isAdmin ? `
-                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-guide')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                </button>
-                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-guide')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                                ` : ''}
-
-                                ${!deletedIds.has(`lab-${grade.number}-sim`) ? `
-                                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition-all flex flex-col justify-between group">
-                                    <div>
-                                        <div class="flex items-center justify-between mb-2">
-                                            <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">PhET Simülasyon</span>
-                                            <span class="text-[11px] font-bold text-slate-400">3D İnteraktif</span>
-                                        </div>
-                                        <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${labSimItem.title || `${grade.number}. Sınıf Müfredatı İnteraktif Laboratuvar Simülatörü`}</h5>
-                                        <!-- Görsel Kapak Kutusu -->
-                                        <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', '${labSimItem.format || 'SİMÜLASYON'}')">
-                                            <img src="${resolveMaterialCover(labSimItem)}" alt="${labSimItem.title || 'PhET Simülasyon'}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
-                                            <div class="absolute bottom-2.5 right-2.5">
-                                                <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
-                                                    <i class="fa-solid fa-play"></i> Simülasyonu Aç
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-2">${labSimItem.desc || 'Deneysel değişkenleri test edebileceğiniz tam etkileşimli sanal laboratuvar.'}</p>
-                                    </div>
-                                    <div>
-                                        <button type="button" onclick="openOrDownloadMaterial('lab-${grade.number}-sim', '${labSimItem.fileUrl || 'https://phet.colorado.edu'}', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', 'laboratuvar', '${(labSimItem.title || `${grade.number}. Sınıf Fen Simülasyonu`).replace(/'/g, "\\'")}', '${labSimItem.format || 'SİMÜLASYON'}')" class="w-full py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer active:scale-95">
-                                            <i class="fa-solid fa-play text-xs"></i>
-                                            <span>Simülasyonu Başlat</span>
-                                        </button>
-                                        ${isAdmin ? `
-                                            <div class="flex items-center gap-1.5 mt-2 pt-2 border-t border-slate-100">
-                                                <button type="button" onclick="event.stopPropagation(); triggerEditMaterial('lab-${grade.number}-sim')" class="flex-1 py-1.5 px-2 bg-amber-50 hover:bg-amber-100 text-amber-900 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Düzenle">
-                                                    <i class="fa-solid fa-pen-to-square"></i> Düzenle
-                                                </button>
-                                                <button type="button" onclick="event.stopPropagation(); triggerDeleteMaterial('lab-${grade.number}-sim')" class="py-1.5 px-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-[11px] font-bold rounded-lg transition-colors flex items-center justify-center cursor-pointer shadow-xs active:scale-95" title="Sil">
-                                                    <i class="fa-solid fa-trash"></i>
-                                                </button>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                                ` : ''}
                             </div>
                         `}
                     </div>
@@ -5708,150 +5256,14 @@ function renderGradeEducationalGames(grade, subData) {
         return matchesSubTabCategory(m, "egitsel-oyunlar");
     });
 
-    // 2. Müfredat & Dahili İnteraktif Oyunlar
+    // 2. Müfredat & Dahili İnteraktif Oyunlar (Sabit tohum oyunlar tamamen temizlendi)
     const builtinCurriculumGames = {
-        "5": [
-            {
-                id: "oyun-5-lab-wordwall",
-                title: "5. Sınıf Laboratuvar Malzemeleri ve Güvenlik Kuralları Oyunu",
-                badge: "Wordwall İnteraktif",
-                desc: "Beherglas, erlenmayer, dereceli silindir (mezür), deney tüpleri ve laboratuvar güvenlik kurallarını eşleştirerek keşfedin.",
-                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
-                icon: "fa-solid fa-flask",
-                iconColor: "from-amber-500 to-orange-600",
-                type: "Eşleştirme Oyunu"
-            },
-            {
-                id: "oyun-5-lab-eslestirme",
-                title: "Laboratuvar Malzemeleri Eşleştirme Bulmacası",
-                badge: "Kavram Eşleştirme",
-                desc: "30 temel fen laboratuvar ekipmanını doğru görsel ve tanımlarla eşleştirerek yüksek puan toplayın.",
-                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
-                icon: "fa-solid fa-vial-circle-check",
-                iconColor: "from-blue-500 to-indigo-600",
-                type: "İnteraktif Bulmaca"
-            },
-            {
-                id: "oyun-5-gunes",
-                title: "Güneş, Dünya ve Ay 3D Yörünge Simülatörü",
-                badge: "3D Simülasyon",
-                desc: "Ay'ın evrelerini, Dünya ve Güneş etrafındaki dolanma hareketlerini 3 boyutlu uzay ortamında inceleyin.",
-                fileUrl: "https://phet.colorado.edu",
-                icon: "fa-solid fa-earth-americas",
-                iconColor: "from-teal-500 to-emerald-600",
-                type: "Uzay Keşfi"
-            },
-            {
-                id: "oyun-5-canlilar",
-                title: "Canlılar Dünyası ve Mantarlar Sınıflandırma Oyunu",
-                badge: "Sürükle-Bırak",
-                desc: "Omurgalı/omurgasız hayvanları, bitkileri ve mikroskobik canlıları doğru kutulara sürükleyin.",
-                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
-                icon: "fa-solid fa-paw",
-                iconColor: "from-emerald-500 to-green-600",
-                type: "Canlılar Oyunu"
-            },
-            {
-                id: "oyun-5-cark",
-                title: "5. Sınıf Fen Çarkıfeleği & Terim Yarışması",
-                badge: "Yarışma & Çark",
-                desc: "Çarkıfeleği çevirin, 5. sınıf fen terimlerini süre bitmeden doğru cevaplayarak şampiyon olun.",
-                fileUrl: "https://wordwall.net/tr/embed/6979268307db4efc98ef2b8e8dbf7ee5?themeId=1&templateId=5&fontStackId=0",
-                icon: "fa-solid fa-dharmachakra",
-                iconColor: "from-purple-500 to-pink-600",
-                type: "Çarkıfelek"
-            }
-        ],
-        "6": [
-            {
-                id: "oyun-6-uzay-ekspresi",
-                title: "Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Oyunu)",
-                badge: "3D Uzay Treni",
-                desc: "Türkiye Yüzyılı Maarif Modeli 1. Ünite! Bilim Treni kuantum raylarında koş, meteor ve uydu enkazlarını aş, gezegen soru kapılarını çöz!",
-                fileUrl: "oyun-uzay-ekspresi",
-                imageUrl: "assets/rotali-uzay-ekspresi.jpg",
-                cover: "assets/rotali-uzay-ekspresi.jpg",
-                icon: "fa-solid fa-train-subway",
-                iconColor: "from-amber-500 to-orange-600",
-                type: "3D Sonsuz Koşu"
-            },
-            {
-                id: "oyun-6-organ",
-                title: "6. Sınıf Vücudumuzdaki Sistemler Organ Eşleştirme",
-                badge: "Turnuva",
-                desc: "Dolaşım, solunum, sindirim ve boşaltım organlarını görevleriyle eşleştirin.",
-                fileUrl: "https://wordwall.net",
-                icon: "fa-solid fa-heart-pulse",
-                iconColor: "from-rose-500 to-red-600",
-                type: "Sistem Eşleştirme"
-            },
-            {
-                id: "oyun-6-gezegen",
-                title: "Güneş Sistemi & Tutulmalar 3D Uzay Keşfi",
-                badge: "Simülasyon",
-                desc: "Gezegenlerin büyüklükleri ve Güneş/Ay tutulmalarını interaktif gözlemleyin.",
-                fileUrl: "https://phet.colorado.edu",
-                icon: "fa-solid fa-meteor",
-                iconColor: "from-amber-500 to-yellow-600",
-                type: "3D Uzay"
-            },
-            {
-                id: "oyun-6-cark",
-                title: "6. Sınıf Fen Çarkıfeleği & Terim Yarışması",
-                badge: "Yarışma",
-                desc: "Kuvvet, hareket ve madde kavramlarını çarkıfelek ile yarışarak öğrenin.",
-                fileUrl: "https://wordwall.net",
-                icon: "fa-solid fa-dharmachakra",
-                iconColor: "from-purple-500 to-pink-600",
-                type: "Çarkıfelek"
-            }
-        ],
-        "7": [
-            {
-                id: "oyun-7-hucre",
-                title: "7. Sınıf Hücre ve Organeller 3D Eşleştirme",
-                badge: "Hücre Modeli",
-                desc: "Bitki ve hayvan hücresi organellerini görevleriyle eşleştirin.",
-                fileUrl: "https://wordwall.net",
-                icon: "fa-solid fa-dna",
-                iconColor: "from-indigo-500 to-blue-600",
-                type: "Hücre Oyunu"
-            },
-            {
-                id: "oyun-7-galileo",
-                title: "Bilimin Rotası: Teleskop ve Uzay Keşif Oyunu",
-                badge: "Keşif",
-                desc: "Teleskop çeşitleri, aynalar ve uzay araçları simülasyonu.",
-                fileUrl: "https://phet.colorado.edu",
-                icon: "fa-solid fa-satellite",
-                iconColor: "from-sky-500 to-teal-600",
-                type: "Uzay & Optik"
-            }
-        ],
-        "8": [
-            {
-                id: "oyun-8-passaparola",
-                title: "8. Sınıf LGS Fen Passaparola Terim Yarışması",
-                badge: "LGS Passaparola",
-                desc: "A'dan Z'ye 24 LGS Fen terimini süre dolmadan bil, rekor kır!",
-                fileUrl: "https://wordwall.net",
-                icon: "fa-solid fa-circle-question",
-                iconColor: "from-red-500 to-rose-600",
-                type: "LGS Yarışması"
-            },
-            {
-                id: "oyun-8-basinc",
-                title: "Sıvı ve Gaz Basıncı Sanal Deney Simülatörü",
-                badge: "PhET Simülasyon",
-                desc: "Derinlik, yoğunluk ve açık hava basıncını sanal manometreyle ölçün.",
-                fileUrl: "https://phet.colorado.edu",
-                icon: "fa-solid fa-atom",
-                iconColor: "from-cyan-500 to-blue-600",
-                type: "Basınç Simülatörü"
-            }
-        ]
+        "5": [],
+        "6": [],
+        "7": [],
+        "8": []
     };
-    const currentBuiltins = (builtinCurriculumGames[gNum] || builtinCurriculumGames["5"]).filter(g => !deletedIds.has(g.id));
+    const currentBuiltins = [];
 
     return `
         <div class="mb-10 animate-in fade-in duration-300">
@@ -11928,6 +11340,11 @@ async function openFullScreenPresentationModal(item) {
     if (!item) return;
 
     let targetUrl = item.fileUrl || item.downloadUrl || item.rawUrl || "";
+    if (targetUrl && !targetUrl.startsWith("http") && !targetUrl.startsWith("data:") && !targetUrl.startsWith("blob:") && targetUrl !== "#") {
+        try {
+            targetUrl = new URL(targetUrl, window.location.origin + "/").href;
+        } catch (e) {}
+    }
     let downloadUrl = targetUrl;
     const fileId = item.id || "";
     const fileName = item.fileName || item.title || "sunum.pptx";
@@ -11943,6 +11360,12 @@ async function openFullScreenPresentationModal(item) {
     }
 
     const slides = getPresentationSlidesForMaterial(item);
+    const isEmbeddablePresentation = targetUrl && targetUrl.startsWith("http") && (
+        targetUrl.includes("drive.google.com/presentation") ||
+        targetUrl.includes("canva.com") ||
+        targetUrl.includes("slides.google.com") ||
+        /\.pptx?(\?|$)/i.test(targetUrl)
+    );
     presentationModalState = {
         item: {
             ...item,
@@ -11954,7 +11377,7 @@ async function openFullScreenPresentationModal(item) {
         currentSlide: 1,
         totalSlides: slides.length,
         slides: slides,
-        viewMode: (targetUrl && targetUrl.startsWith("http") && (targetUrl.includes("drive.google.com/presentation") || targetUrl.includes("canva.com") || targetUrl.includes("slides.google.com"))) ? "embed" : "slides",
+        viewMode: isEmbeddablePresentation ? "embed" : "slides",
         solutionRevealed: false
     };
 

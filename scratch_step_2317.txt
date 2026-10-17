@@ -1,7 +1,0 @@
-Created At: 2026-09-13T18:06:19+03:00
-Completed At: 2026-09-13T18:06:21+03:00
-
-The command exited with code 0.
-Output:
-FOUND IDS: ['56DHPdxZTio', 'U9CsNq6Gnco', 'aEGxLDq7Lv4', 'DtzMTrxqMt8', '9O1K-1AAh7Y', 'vulUypD0KAM', 'zKTLupSwcGQ', 'Pdfh6aRzDBA', 'jp6Nvy1vLaY', 'HhXVz4JzwJ4']
-
