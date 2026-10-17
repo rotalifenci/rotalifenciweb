@@ -2318,7 +2318,8 @@ function handleRouteChange(options = {}) {
         } else if (hash === "projects") {
             renderProjectsPage(appEl);
         } else if (hash === "dosyalar" || hash === "files" || hash === "file-manager") {
-            renderFileManagerPage(appEl);
+            window.location.hash = "home";
+            renderHomePage(appEl);
         } else if (hash === "teachers-room") {
             renderLgsPusulasiPage(appEl);
         } else if (hash === "student-portal") {
