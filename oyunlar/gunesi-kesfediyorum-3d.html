@@ -1,0 +1,1810 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Güneş'i Keşfediyorum – 3D Etkileşimli Uzay Laboratuvarı | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0f172a',
+                            deepSpace: '#030712',
+                            blue: '#1d4ed8',
+                            cyan: '#06b6d4',
+                            amber: '#f59e0b',
+                            gold: '#fbbf24',
+                            orange: '#ea580c',
+                            red: '#dc2626'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js CDN & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(15, 23, 42, 0.2);
+            border-radius: 9999px;
+        }
+        /* Smooth Range Slider */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: #e2e8f0;
+            border-radius: 9999px;
+            height: 6px;
+            outline: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b, #ea580c);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
+            border: 2px solid #ffffff;
+            transition: transform 0.15s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.15);
+        }
+        .sun-canvas-container {
+            cursor: grab;
+        }
+        .sun-canvas-container:active {
+            cursor: grabbing;
+        }
+        .pulse-core {
+            animation: pulse-core-anim 2s infinite alternate ease-in-out;
+        }
+        @keyframes pulse-core-anim {
+            from { filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.4)); }
+            to { filter: drop-shadow(0 0 35px rgba(245, 158, 11, 0.85)); }
+        }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col justify-between overflow-hidden bg-slate-100 p-1 sm:p-1.5">
+
+    <!-- 🌟 ÜST BÖLÜM: ULTRA KOMPAKT SLİM BAŞLIK, 6 MODÜL SEKMESİ & KONTROL BUTONLARI -->
+    <header class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[42px]">
+        
+        <!-- Sol: Başlık & Sınıf Rozeti -->
+        <div class="flex items-center gap-1.5">
+            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-tr from-amber-500 via-orange-500 to-red-600 text-white flex items-center justify-center text-xs sm:text-sm shadow-xs shrink-0">
+                <i class="fa-solid fa-sun text-yellow-200 animate-spin" style="animation-duration: 25s;"></i>
+            </div>
+            <div class="flex items-center gap-1.5 leading-none">
+                <h1 class="text-xs sm:text-sm font-black text-slate-900 tracking-tight whitespace-nowrap">
+                    GÜNEŞ'İ KEŞFEDİYORUM
+                </h1>
+                <span class="px-1.5 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-[9px] font-extrabold uppercase whitespace-nowrap">
+                    5. Sınıf Fen
+                </span>
+            </div>
+        </div>
+
+        <!-- Orta: 6 Ana Modül Sekmeleri (Hızlı Geçiş Butonları) -->
+        <nav class="flex items-center bg-slate-100 p-0.5 rounded-lg border border-slate-200/90 text-xs font-bold overflow-x-auto no-scrollbar max-w-[55vw] lg:max-w-none">
+            <button id="tab-btn-intro" onclick="switchModule('intro')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 bg-white text-amber-600 shadow-xs text-[11px] font-extrabold whitespace-nowrap">
+                <i class="fa-solid fa-sun text-amber-500 text-[10px]"></i>
+                <span>Güneş'i Tanıyalım</span>
+            </button>
+            <button id="tab-btn-layers" onclick="switchModule('layers')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+                <i class="fa-solid fa-layer-group text-orange-500 text-[10px]"></i>
+                <span>Katmanları</span>
+            </button>
+            <button id="tab-btn-rotation" onclick="switchModule('rotation')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+                <i class="fa-solid fa-arrows-rotate text-blue-500 text-[10px]"></i>
+                <span>Dönme Hareketi</span>
+            </button>
+            <button id="tab-btn-light" onclick="switchModule('light')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+                <i class="fa-solid fa-bolt-lightning text-yellow-500 text-[10px]"></i>
+                <span>Işık Yolculuğu</span>
+            </button>
+            <button id="tab-btn-scale" onclick="switchModule('scale')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+                <i class="fa-solid fa-scale-balanced text-emerald-500 text-[10px]"></i>
+                <span>Büyüklükler</span>
+            </button>
+            <button id="tab-btn-quiz" onclick="switchModule('quiz')" class="mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap">
+                <i class="fa-solid fa-gamepad text-purple-500 text-[10px]"></i>
+                <span>Oyunlar & Quiz</span>
+            </button>
+        </nav>
+
+        <!-- Sağ: Araçlar (Öğretmen Modu, Güvenlik, Ses, Tam Ekran & Logo) -->
+        <div class="flex items-center gap-1 shrink-0">
+            <!-- Öğretmen Modu Butonu -->
+            <button id="btn-teacher-mode" onclick="toggleTeacherMode()" class="px-2 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold transition-all flex items-center gap-1 shadow-2xs" title="Öğretmen Modu: Yanıtları/Etiketleri Gizle & Sunum Modu">
+                <i class="fa-solid fa-chalkboard-user text-indigo-600 text-xs"></i>
+                <span class="hidden xl:inline">Öğretmen</span>
+            </button>
+
+            <!-- Güneş Gözleminde Güvenlik Butonu -->
+            <button onclick="openSafetyModal()" class="w-7 h-7 rounded-lg bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 flex items-center justify-center transition-all shadow-2xs" title="Güneş Gözleminde Güvenlik Uyarısı (Doğrudan Bakma!)">
+                <i class="fa-solid fa-triangle-exclamation text-xs"></i>
+            </button>
+
+            <!-- Sesli Anlatım Butonu -->
+            <button id="btn-voice" onclick="toggleVoiceNarration()" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Sesli Anlatımı Aç / Kapat">
+                <i id="voice-icon" class="fa-solid fa-volume-high text-xs text-amber-600"></i>
+            </button>
+
+            <!-- Tam Ekran Butonu -->
+            <button onclick="toggleFullScreen()" class="w-7 h-7 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 flex items-center justify-center transition-all shadow-2xs" title="Tam Ekran Modu (F11)">
+                <i class="fa-solid fa-expand text-xs"></i>
+            </button>
+
+            <!-- Rotalı Fenci Logo / Rozet -->
+            <div class="hidden lg:flex items-center gap-1.5 pl-1.5 border-l border-slate-200">
+                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-6 h-6 rounded-md object-cover border border-slate-200" onerror="this.src='../rotali-fenci-logo.png'">
+                <span class="text-[10px] font-black text-slate-900 tracking-tight whitespace-nowrap">ROTALI FENCİ</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🌌 ORTA BÖLÜM: 3D SİMÜLASYON UZAY SAHNESİ & DİNAMİK BİLGİ PANELİ -->
+    <main class="flex-1 my-1 grid grid-cols-1 lg:grid-cols-12 gap-1.5 min-h-0 relative overflow-hidden">
+
+        <!-- 🚀 SOL/ORTA PANEL (%75): GENİŞLETİLMİŞ DEV 3D UZAY LABORATUVARI -->
+        <div id="sim-viewport-panel" class="lg:col-span-8 xl:col-span-9 bg-slate-950 rounded-xl sm:rounded-2xl border border-slate-800 shadow-xl relative overflow-hidden flex flex-col h-full min-h-0 sun-canvas-container">
+            
+            <!-- Üst Rozetler & Modül Bilgilendirmesi -->
+            <div class="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-10 flex flex-wrap items-center gap-1.5 pointer-events-none">
+                <span id="scene-mode-badge" class="px-2.5 py-0.5 rounded-full bg-slate-900/90 backdrop-blur-md text-amber-300 border border-amber-500/30 text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-sun"></i>
+                    <span id="scene-badge-text">1. MODÜL: GÜNEŞ'İ TANIYALIM</span>
+                </span>
+                <span id="scene-sub-badge" class="px-2.5 py-0.5 rounded-full bg-slate-900/90 backdrop-blur-md text-cyan-300 border border-cyan-500/30 text-[10px] font-extrabold flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-satellite"></i>
+                    <span id="scene-sub-text">NASA SDO 3D Spektrum</span>
+                </span>
+            </div>
+
+            <!-- Sağ Üst: Modüle Özel Hızlı Kontroller (Gözlem Spektrumu, Katman Aç/Kapa, Görünüm Modu) -->
+            <div id="viewport-quick-tools" class="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-10 flex items-center gap-1.5">
+                <!-- Modül 1 Görünüm Spektrumu (Görünür Işık / UV / Yüzey Detay) -->
+                <div id="spectrum-controls" class="flex items-center bg-slate-900/90 backdrop-blur-md border border-slate-700 p-0.5 rounded-xl shadow-sm text-[10px] font-bold">
+                    <button onclick="setSpectrumView('visible')" id="btn-spec-visible" class="px-2 py-0.5 rounded-lg bg-amber-500 text-slate-950 font-black transition-all">Görünür Işık</button>
+                    <button onclick="setSpectrumView('uv')" id="btn-spec-uv" class="px-2 py-0.5 rounded-lg text-slate-300 hover:text-white transition-all">Ultraviyole</button>
+                    <button onclick="setSpectrumView('details')" id="btn-spec-details" class="px-2 py-0.5 rounded-lg text-slate-300 hover:text-white transition-all">Yüzey Detayı</button>
+                </div>
+
+                <!-- Modül 2 Katman Kesiti Aç/Kapat Butonu -->
+                <button id="btn-toggle-cutaway" onclick="toggleCutaway()" class="hidden px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95">
+                    <i class="fa-solid fa-cube"></i>
+                    <span id="cutaway-btn-text">Katmanları Aç</span>
+                </button>
+
+                <!-- Modül 4 & 5 Görünüm Modu (Şematik vs Gerçek Ölçekli) -->
+                <div id="scale-controls" class="hidden flex items-center bg-slate-900/90 backdrop-blur-md border border-slate-700 p-0.5 rounded-xl shadow-sm text-[10px] font-bold">
+                    <button onclick="setScaleView('schematic')" id="btn-scale-schematic" class="px-2 py-0.5 rounded-lg bg-cyan-500 text-slate-950 font-black transition-all">Şematik</button>
+                    <button onclick="setScaleView('true-distance')" id="btn-scale-true" class="px-2 py-0.5 rounded-lg text-slate-300 hover:text-white transition-all">Gerçek Uzaklık</button>
+                </div>
+            </div>
+
+            <!-- Alt Sol: Etkileşim İpucu -->
+            <div class="absolute bottom-2 left-2 z-10 pointer-events-none">
+                <div id="canvas-interaction-hint" class="px-2.5 py-0.5 rounded-lg bg-slate-900/85 backdrop-blur-md border border-slate-800 text-[10px] sm:text-[11px] font-bold text-slate-300 flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-hand-pointer text-amber-400 animate-bounce"></i>
+                    <span id="canvas-hint-text">Güneş'i fareyle/parmağınızla 3D döndürebilir, tekerlekle yakınlaştırabilirsiniz.</span>
+                </div>
+            </div>
+
+            <!-- Three.js Ana Uzay Canvası -->
+            <div id="canvas-container" class="w-full h-full relative flex-1 min-h-0">
+                <canvas id="main-webgl-canvas" class="w-full h-full block"></canvas>
+            </div>
+
+            <!-- Canlı Olay / Bildirim Katmanı (Işık Ulaşma & Katman Seçim Bannerı) -->
+            <div id="scene-alert-banner" class="hidden absolute inset-x-4 top-14 z-20 mx-auto max-w-xl bg-slate-900/95 backdrop-blur-md border-2 border-amber-400 rounded-2xl p-3 text-white shadow-2xl flex items-center justify-between gap-3 animate-in fade-in zoom-in-95 duration-200">
+                <div class="flex items-center gap-3">
+                    <div id="alert-icon-box" class="w-9 h-9 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center text-base font-black shrink-0">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                    <div>
+                        <h4 id="alert-title" class="text-xs sm:text-sm font-black text-amber-300 leading-tight">Güneş Işığı Dünya'ya Ulaştı!</h4>
+                        <p id="alert-desc" class="text-[11px] text-slate-200 font-medium">149.600.000 km mesafe ışık hızıyla yaklaşık 8 dakika 20 saniyede kat edildi.</p>
+                    </div>
+                </div>
+                <button onclick="dismissSceneAlert()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs font-black shrink-0">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 🌕 SAĞ PANEL (%25): DİNAMİK BİLİMSEL AÇIKLAMALAR & EĞİTSEL KARTLAR -->
+        <div id="side-info-panel" class="lg:col-span-4 xl:col-span-3 bg-white rounded-xl sm:rounded-2xl border border-slate-200/90 shadow-xl flex flex-col justify-between p-2.5 sm:p-3 relative overflow-hidden h-full min-h-0">
+            
+            <!-- Panel Üst Bar: Modül Başlığı & Bilimsel Rozet -->
+            <div class="flex items-center justify-between pb-1.5 border-b border-slate-100 shrink-0">
+                <div class="flex items-center gap-1.5">
+                    <span id="panel-header-icon" class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-black">
+                        <i class="fa-solid fa-sun"></i>
+                    </span>
+                    <div>
+                        <h2 id="panel-module-title" class="text-xs font-extrabold text-slate-800 uppercase tracking-tight leading-none">
+                            Güneş'in Özellikleri
+                        </h2>
+                        <span id="panel-module-subtitle" class="text-[9px] text-slate-400 font-bold block mt-0.5">5. Sınıf Maarif Modeli</span>
+                    </div>
+                </div>
+                <span id="panel-grade-badge" class="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-[9px] font-black uppercase tracking-wider">
+                    FEN LABORATUVARI
+                </span>
+            </div>
+
+            <!-- Dinamik İçerik Alanı (Aktif Modüle Göre Değişir) -->
+            <div id="panel-dynamic-content" class="flex-1 overflow-y-auto my-1.5 space-y-2 pr-0.5">
+                <!-- Modül 1 Varsayılan İçeriği JS Tarafından Doldurulur -->
+            </div>
+
+            <!-- Alt Köşe: Instagram & Güvenlik Uyarısı -->
+            <div class="pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-medium shrink-0 mt-1">
+                <button onclick="openSafetyModal()" class="text-rose-600 hover:text-rose-700 font-bold flex items-center gap-1">
+                    <i class="fa-solid fa-eye-slash"></i> <span>Göz Güvenliği</span>
+                </button>
+                <a href="https://www.instagram.com/rotalifenci/" target="_blank" rel="noopener noreferrer" class="font-bold text-slate-500 hover:text-red-600 flex items-center gap-1">
+                    <i class="fa-brands fa-instagram text-amber-600"></i> <span>@rotalifenci</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- 🎮 ALT BÖLÜM: ULTRA KOMPAKT KONTROL ŞERİDİ (OYNAT/DURDUR, HIZ, ADIM & SAYAÇ) -->
+    <footer class="bg-white/95 backdrop-blur-md rounded-lg sm:rounded-xl shadow-xs border border-slate-200/80 p-1.5 shrink-0 z-20 space-y-1">
+        
+        <!-- Üst Satır: Oynatma, Zaman İlerlemesi, Mesafe & Hız Seçimi -->
+        <div class="flex items-center justify-between gap-2 flex-nowrap">
+            
+            <!-- Sol: Oynat / Durdur / Sıfırla / Adım -->
+            <div class="flex items-center gap-1 shrink-0">
+                <button id="btn-play-pause" onclick="togglePlayAnimation()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+                    <i id="play-pause-icon" class="fa-solid fa-play text-xs"></i>
+                    <span id="play-pause-text">Döndür</span>
+                </button>
+                <button onclick="resetSimulationScene()" class="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-all shadow-2xs" title="Sahneyi ve Kamerayı Sıfırla">
+                    <i class="fa-solid fa-rotate-left text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Orta: Modüle Özel Canlı Sayaç & Gösterge (Dönüş Günü veya Işık Mesafesi) -->
+            <div id="footer-center-metric" class="flex-1 flex items-center justify-center gap-2 min-w-0">
+                <!-- Dönme Modülü: 25 Günlük Sayaç -->
+                <div id="rotation-metric-bar" class="flex items-center gap-2 w-full max-w-md">
+                    <span class="text-[10px] font-black text-slate-400 font-mono shrink-0">0G</span>
+                    <input type="range" id="rotation-slider" min="0" max="25" step="0.1" value="0" class="w-full cursor-pointer h-1.5" oninput="onRotationSliderInput(this.value)">
+                    <div class="px-2 py-0.5 rounded-md bg-amber-50 border border-amber-200 text-amber-800 font-mono font-black text-[11px] shrink-0 whitespace-nowrap">
+                        <span id="rotation-day-label">0.0</span> / 25.0 Gün (Ekvator Dönüşü)
+                    </div>
+                </div>
+
+                <!-- Işık Modülü: Canlı Mesafe & Kronometre -->
+                <div id="light-metric-bar" class="hidden flex items-center gap-3 w-full max-w-lg">
+                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 bg-blue-50 border border-blue-200 rounded-lg text-blue-900 font-mono font-black text-xs">
+                        <i class="fa-solid fa-route text-blue-600"></i>
+                        <span id="light-odometer">0</span> / 149.600.000 KM
+                    </div>
+                    <div class="flex items-center gap-1.5 px-2.5 py-0.5 bg-amber-50 border border-amber-200 rounded-lg text-amber-900 font-mono font-black text-xs">
+                        <i class="fa-regular fa-clock text-amber-600"></i>
+                        <span id="light-stopwatch">00:00</span> / 08:20
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sağ: Hız Çarpanı & Ekstra Butonlar -->
+            <div class="flex items-center gap-1 shrink-0">
+                <div class="flex items-center gap-0.5 bg-slate-100 p-0.5 rounded-lg text-xs font-bold">
+                    <button onclick="setSimulationSpeed(0.5, this)" class="speed-btn px-1.5 py-0.5 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[10px] font-black">0.5x</button>
+                    <button onclick="setSimulationSpeed(1.0, this)" class="speed-btn px-1.5 py-0.5 rounded-md transition-all bg-white text-amber-600 shadow-2xs text-[10px] font-black">1x</button>
+                    <button onclick="setSimulationSpeed(2.0, this)" class="speed-btn px-1.5 py-0.5 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[10px] font-black">2x</button>
+                </div>
+                <button onclick="openEnergyFusionModal()" class="px-2 py-1 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-900 font-black text-[11px] transition-all flex items-center gap-1 shadow-2xs" title="Nükleer Füzyon Enerjisi">
+                    <i class="fa-solid fa-atom text-orange-600"></i>
+                    <span class="hidden sm:inline">Enerji Kaynağı</span>
+                </button>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- MODAL 1: GÜNEŞ GÖZLEMİNDE GÜVENLİK (DOĞRUDAN BAKMA!) -->
+    <!-- ============================================================ -->
+    <div id="safety-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6" onclick="if(event.target === this) closeSafetyModal()">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl border-2 border-rose-400 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-rose-100 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center text-xl font-black">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">GÜNEŞ'E DOĞRUDAN BAKMA!</h3>
+                        <p class="text-xs text-rose-600 font-bold">5. Sınıf Fen Bilimleri Kritik Güvenlik Uyarısı</p>
+                    </div>
+                </div>
+                <button onclick="closeSafetyModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 hover:text-rose-600 text-slate-500 flex items-center justify-center font-black transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200">
+                    <h4 class="font-black text-rose-900 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-eye-slash text-rose-600"></i> Gözlerimiz Kalıcı Olarak Zarar Görebilir!
+                    </h4>
+                    <p>
+                        Güneş'e çıplak gözle doğrudan bakmak göz merceğine ve retinaya ciddi zarar vererek <strong>kalıcı körlüğe</strong> neden olabilir.
+                    </p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200">
+                    <h4 class="font-black text-amber-900 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-glasses text-amber-600"></i> Normal Güneş Gözlükleri KORUMAZ!
+                    </h4>
+                    <p>
+                        Normal güneş gözlükleri, fotoğraf negatifleri, isli camlar veya röntgen filmleri zararlı ışınları engellemez. Güneş gözlemi için yalnızca <strong>ISO 12312-2 sertifikalı özel güneş tutulması gözlükleri</strong> kullanılmalıdır.
+                    </p>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200">
+                    <h4 class="font-black text-slate-900 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-binoculars text-blue-600"></i> Dürbün ve Teleskopla ASLA Bakmayın!
+                    </h4>
+                    <p>
+                        Önünde özel koruyucu güneş filtresi bulunmayan dürbün, teleskop veya kamera gibi optik araçlarla Güneş'e bakmak saniyeler içinde gözü yakar.
+                    </p>
+                </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-slate-100 text-right">
+                <button onclick="closeSafetyModal()" class="px-5 py-2 bg-slate-900 hover:bg-rose-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md">
+                    Anladım, Dikkat Edeceğim
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL 2: GÜNEŞ ENERJİSİ NEREDEN GELİR? (NÜKLEER FÜZYON ÇEKİRDEK) -->
+    <!-- ============================================================ -->
+    <div id="fusion-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm hidden flex items-center justify-center p-3 sm:p-6" onclick="if(event.target === this) closeEnergyFusionModal()">
+        <div class="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl font-black">
+                        <i class="fa-solid fa-atom"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">GÜNEŞ ENERJİSİ NEREDEN GELİR?</h3>
+                        <p class="text-xs text-amber-600 font-bold">Çekirdekteki Nükleer Füzyon Mucizesi</p>
+                    </div>
+                </div>
+                <button onclick="closeEnergyFusionModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-rose-100 hover:text-rose-600 text-slate-500 flex items-center justify-center font-black transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed font-medium">
+                <!-- Yanma Değil Füzyon -->
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200">
+                    <h4 class="font-black text-amber-900 mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-fire text-orange-600"></i> Güneş Kömür veya Odun Gibi Yanmaz!
+                    </h4>
+                    <p>
+                        Güneş bir ateş topu veya kimyasal bir yangın değildir. Uzay boşluğunda oksijen yoktur. Güneş'in devasa ısı ve ışık enerjisi, çekirdeğinde gerçekleşen <strong>nükleer füzyon (çekirdek birleşmesi)</strong> reaksiyonlarından kaynaklanır.
+                    </p>
+                </div>
+
+                <!-- Basit 4 Adımlı Süreç Şeması -->
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 text-center text-xs">
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="w-8 h-8 rounded-lg bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-1 font-black">1</div>
+                        <strong class="block text-slate-900">Çekirdek</strong>
+                        <span class="text-[10px] text-slate-500">15 Milyon °C'de Hidrojen atomları birleşir.</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mx-auto mb-1 font-black">2</div>
+                        <strong class="block text-slate-900">Füzyon</strong>
+                        <span class="text-[10px] text-slate-500">Hidrojen Helyuma dönüşür, devasa enerji doğar.</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center mx-auto mb-1 font-black">3</div>
+                        <strong class="block text-slate-900">Taşınım</strong>
+                        <span class="text-[10px] text-slate-500">Enerji iç katmanlardan yüzeye doğru aktarılır.</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                        <div class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mx-auto mb-1 font-black">4</div>
+                        <strong class="block text-slate-900">Işık Yayılımı</strong>
+                        <span class="text-[10px] text-slate-500">Işık 8 dk 20 sn'de Dünya'mıza ulaşır.</span>
+                    </div>
+                </div>
+
+                <!-- Bilimsel Dipnot -->
+                <div class="p-3 bg-blue-50 border border-blue-200 rounded-xl text-blue-900 text-xs">
+                    <i class="fa-solid fa-circle-info mr-1 text-blue-600"></i>
+                    <strong>Biliyor muydunuz?</strong> Çekirdekte üretilen bir fotonun Güneş'in yüzeyine kadar çıkması yoğun madde etkileşimleri sebebiyle binlerce yıl sürer; ancak yüzeyden ayrılan ışık uzay boşluğunda Dünya'ya sadece <strong>8 dakika 20 saniyede</strong> varır!
+                </div>
+            </div>
+
+            <div class="mt-5 pt-3 border-t border-slate-100 text-right">
+                <button onclick="closeEnergyFusionModal()" class="px-5 py-2 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md">
+                    Tamam, Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT: THREE.JS 3D UZAY LABORATUVARI & ETKİLEŞİM MOTORU -->
+    <!-- ============================================================ -->
+    <script>
+        // -----------------------------------------------------------------
+        // 1. SABİTLER, BİLİMSEL VERİLER & 5. SINIF MAARİF MÜFREDATI
+        // -----------------------------------------------------------------
+        const SUN_SPECS = {
+            name: "GÜNEŞ",
+            type: "Yıldız (Sarı Cüce - G2V)",
+            shape: "Küreye Çok Yakın",
+            age: "Yaklaşık 4,6 Milyar Yıl",
+            diameterKm: 1390000,
+            earthDiameterKm: 12742,
+            distanceKm: 149600000,
+            surfaceTemp: "Yaklaşık 5.500 °C",
+            coreTemp: "Yaklaşık 15 Milyon °C",
+            energySource: "Nükleer Füzyon (Hidrojenin Helyuma Dönüşmesi)",
+            composition: "%74 Hidrojen, %24 Helyum, %2 Ağır Elementler (Çok Sıcak Plazma)",
+            rotationEquatorDays: 25.0,
+            lightSpeedKms: 299792,
+            lightTravelSeconds: 499
+        };
+
+        // 6 Güneş Katmanı Tanımı
+        const SUN_LAYERS = [
+            {
+                id: "core",
+                name: "Çekirdek",
+                temp: "15.000.000 °C",
+                depth: "0 - 0.25 R",
+                radius: 1.6,
+                color: 0xffffff,
+                emissive: 0xfef08a,
+                desc: "Güneş'in merkezidir. Çok yüksek sıcaklık ve basınç altında hidrojenin helyuma dönüşmesiyle (nükleer füzyon) devasa enerji açığa çıkar.",
+                voice: "Güneş'in çekirdeği. Sıcaklığı yaklaşık 15 milyon derecedir. Tüm enerjinin üretildiği merkezdir."
+            },
+            {
+                id: "radiative",
+                name: "Işınım Bölgesi",
+                temp: "7.000.000 °C",
+                depth: "0.25 - 0.7 R",
+                radius: 3.2,
+                color: 0xfde047,
+                emissive: 0xf59e0b,
+                desc: "Çekirdekte üretilen enerjinin yoğun madde parçacıkları arasında sürekli saçılıp soğurularak yüzeye doğru aktarıldığı geniş katmandır.",
+                voice: "Işınım bölgesi. Çekirdekte oluşan enerji fotonlarla dışarıya doğru taşınır."
+            },
+            {
+                id: "convective",
+                name: "Taşınım (Konveksiyon) Bölgesi",
+                temp: "2.000.000 °C",
+                depth: "0.7 - 1.0 R",
+                radius: 4.6,
+                color: 0xf97316,
+                emissive: 0xd97706,
+                desc: "Kaynayan su gibi sıcak plazmanın yukarı yükseldiği, soğuyan plazmanın ise dibe çöktüğü döngüsel hareketler bölgesidir.",
+                voice: "Taşınım bölgesi. Sıcak plazma yükselir, soğuyan plazma aşağı iner. Enerjiyi yüzeye taşır."
+            },
+            {
+                id: "photosphere",
+                name: "Işık Küre (Fotosfer)",
+                temp: "5.500 °C",
+                depth: "Görünen Yüzey (~400 km)",
+                radius: 5.6,
+                color: 0xf59e0b,
+                emissive: 0xb45309,
+                desc: "Gözlerimizle gördüğümüz parlak sarı-beyaz yüzeydir. Güneş lekeleri ve kaynayan granül yapılar bu yüzeyde yer alır.",
+                voice: "Işık küre yani Fotosfer. Güneş'in gördüğümüz yüzeyidir. Sıcaklığı 5500 derecedir."
+            },
+            {
+                id: "chromosphere",
+                name: "Renk Küre (Kromosfer)",
+                temp: "10.000 °C",
+                depth: "Yüzeyin Üstü (~2.000 km)",
+                radius: 6.2,
+                color: 0xf43f5e,
+                emissive: 0xe11d48,
+                desc: "Fotosferin hemen üzerindeki ince, pembe-kırmızımsı atmosfer katmanıdır. Güneş tutulmalarında hilal gibi görülebilir.",
+                voice: "Renk küre yani Kromosfer. Güneş atmosferinin pembe kırmızımsı ince katmanıdır."
+            },
+            {
+                id: "corona",
+                name: "Taç Küre (Korona)",
+                temp: "1.000.000 - 3.000.000 °C",
+                depth: "Dış Atmosfer (Milyonlarca km)",
+                radius: 7.2,
+                color: 0x38bdf8,
+                emissive: 0x0284c7,
+                desc: "Güneş'i çevreleyen çok geniş, son derece sıcak ve seyrek dış atmosferdir. Tam Güneş tutulmasında beyaz bir taç şeklinde parlar.",
+                voice: "Taç küre yani Korona. Güneş'in milyonlarca kilometre uzanan çok sıcak dış atmosferidir."
+            }
+        ];
+
+        // -----------------------------------------------------------------
+        // 2. UYGULAMA DURUM DEĞİŞKENLERİ (APP STATE)
+        // -----------------------------------------------------------------
+        let appState = {
+            currentModule: "intro", // 'intro' | 'layers' | 'rotation' | 'light' | 'scale' | 'quiz'
+            spectrumView: "visible",// 'visible' | 'uv' | 'details'
+            scaleView: "schematic", // 'schematic' | 'true-distance'
+            layerDetailLevel: "basic", // 'basic' | 'detailed'
+            isCutawayOpen: false,
+            energyFlowActive: false,
+            isPlaying: true,
+            speedMultiplier: 1.0,
+            rotationAngleRad: 0,
+            rotationDay: 0,
+            trackedSpotIdx: 0,
+            lightRunning: false,
+            lightProgress: 0, // 0 to 1
+            lightDurationSeconds: 15, // Hızlandırılmış varsayılan mod
+            teacherMode: false,
+            voiceEnabled: true,
+            selectedLayerId: null
+        };
+
+        // -----------------------------------------------------------------
+        // 3. SES MOTORU & DOĞAL TÜRKÇE SESLENDİRME
+        // -----------------------------------------------------------------
+        let audioCtx = null;
+        function playTone(freq, type = 'sine', duration = 0.15) {
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function playSuccessChime() {
+            playTone(523.25, 'triangle', 0.15);
+            setTimeout(() => playTone(659.25, 'triangle', 0.2), 120);
+            setTimeout(() => playTone(783.99, 'triangle', 0.35), 240);
+        }
+
+        function playErrorBuzz() {
+            playTone(180, 'sawtooth', 0.25);
+        }
+
+        let naturalTrVoice = null;
+        function loadTurkishVoices() {
+            if (!('speechSynthesis' in window)) return;
+            try {
+                const voices = window.speechSynthesis.getVoices();
+                if (!voices || voices.length === 0) return;
+                const trVoices = voices.filter(v => v.lang && (v.lang.toLowerCase().startsWith('tr') || v.lang.toLowerCase().includes('tr')));
+                if (trVoices.length > 0) {
+                    naturalTrVoice = trVoices.find(v => /natural|neural|online|google|microsoft|yelda|ahmet|tolga|emel/i.test(v.name)) || trVoices[0];
+                }
+            } catch(e) {}
+        }
+        if (typeof window !== "undefined" && 'speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = loadTurkishVoices;
+            loadTurkishVoices();
+        }
+
+        function speakTurkish(text) {
+            if (!appState.voiceEnabled) return;
+            if (!('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                if (!naturalTrVoice) loadTurkishVoices();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'tr-TR';
+                if (naturalTrVoice) utterance.voice = naturalTrVoice;
+                utterance.rate = 0.98;
+                utterance.pitch = 1.0;
+                window.speechSynthesis.speak(utterance);
+            } catch(e) {}
+        }
+
+        function toggleVoiceNarration() {
+            appState.voiceEnabled = !appState.voiceEnabled;
+            const icon = document.getElementById('voice-icon');
+            if (appState.voiceEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-xs text-amber-600';
+                speakTurkish("Sesli anlatım aktif.");
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-xs text-slate-400';
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 4. THREE.JS GRAFİK MOTORU VE DOKU ÜRETECİLERİ
+        // -----------------------------------------------------------------
+        let scene, camera, renderer, controls;
+        let sunMesh, sunCoronaSprite, sunGroup, layerMeshes = [];
+        let earthMesh, cloudsMesh, earthGroup;
+        let photonBeamMesh, lightLineMesh, lightParticles;
+        let starfield;
+
+        // Prosedürel Gerçekçi Güneş Yüzey Dokusu (Görünür / UV / Detay)
+        function generateSunTexture(type = "visible") {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            if (type === "uv") {
+                // NASA SDO 171/304 Å Temsili UV Renk Paleti (Cyan, Neon Purple & Emerald Arc)
+                ctx.fillStyle = '#0f172a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < 400; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const r = 20 + Math.random() * 60;
+                    const grad = ctx.createRadialGradient(x, y, 2, x, y, r);
+                    grad.addColorStop(0, Math.random() > 0.5 ? 'rgba(6, 182, 212, 0.4)' : 'rgba(168, 85, 247, 0.35)');
+                    grad.addColorStop(1, 'transparent');
+                    ctx.fillStyle = grad;
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            } else {
+                // Görünür Işık: Altın sarısı, sıcak turuncu ve granül tanecikleri
+                const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, '#f59e0b');
+                grad.addColorStop(0.5, '#fbbf24');
+                grad.addColorStop(1, '#ea580c');
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Granülasyon Konveksiyon Hücreleri (Sıcak Plazma Kabarcıkları)
+                ctx.fillStyle = 'rgba(254, 243, 199, 0.15)';
+                for (let i = 0; i < 600; i++) {
+                    const x = Math.random() * canvas.width;
+                    const y = Math.random() * canvas.height;
+                    const r = 8 + Math.random() * 22;
+                    ctx.beginPath();
+                    ctx.arc(x, y, r, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // Güneş Lekeleri (Karanlık Umbra ve Lifli Penumbra - 2 Büyük Grup)
+            const sunspots = [
+                { x: 320, y: 220, rx: 22, ry: 15 },
+                { x: 350, y: 235, rx: 14, ry: 9 },
+                { x: 680, y: 270, rx: 26, ry: 18 },
+                { x: 715, y: 260, rx: 15, ry: 11 },
+                { x: 500, y: 310, rx: 18, ry: 12 }
+            ];
+
+            sunspots.forEach(s => {
+                // Penumbra (Açık kahve lifli dış halka)
+                ctx.fillStyle = type === "uv" ? '#083344' : '#78350f';
+                ctx.beginPath();
+                ctx.ellipse(s.x, s.y, s.rx, s.ry, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Umbra (Karanlık iç merkez)
+                ctx.fillStyle = type === "uv" ? '#020617' : '#291405';
+                ctx.beginPath();
+                ctx.ellipse(s.x, s.y, s.rx * 0.55, s.ry * 0.55, 0, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Dünya Dokusu (Mavi Okyanuslar, Kıtalar, Kutuplar)
+        function generateEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#1e3a8a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#22c55e';
+            // Afrika & Avrupa
+            ctx.beginPath();
+            ctx.ellipse(260, 110, 45, 60, 0, 0, Math.PI * 2);
+            ctx.ellipse(280, 160, 35, 50, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Asya
+            ctx.beginPath();
+            ctx.ellipse(370, 95, 75, 45, 0, 0, Math.PI * 2);
+            ctx.fill();
+            // Amerika
+            ctx.beginPath();
+            ctx.ellipse(120, 90, 40, 45, 0, 0, Math.PI * 2);
+            ctx.ellipse(140, 170, 30, 55, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Kutuplar
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, canvas.width, 18);
+            ctx.fillRect(0, canvas.height - 18, canvas.width, 18);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Korona Parıltı Dokusu
+        function generateGlowSpriteTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(128, 128, 0, 128, 128, 128);
+            grad.addColorStop(0, '#ffffff');
+            grad.addColorStop(0.2, '#fde047');
+            grad.addColorStop(0.5, '#ea580c');
+            grad.addColorStop(0.8, 'rgba(234, 88, 12, 0.2)');
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 256, 256);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // 3D Sahnelerin Başlatılması
+        function initThreeScene() {
+            const container = document.getElementById('canvas-container');
+            const canvas = document.getElementById('main-webgl-canvas');
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x030712);
+
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 1000);
+            camera.position.set(0, 0, 22);
+
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 7;
+            controls.maxDistance = 120;
+
+            // Ortam ve Yönsel Işıklandırma
+            const ambient = new THREE.AmbientLight(0xffffff, 0.45);
+            scene.add(ambient);
+
+            // Güneş Modeli Grubu
+            sunGroup = new THREE.Group();
+            scene.add(sunGroup);
+
+            // 1. Ana Güneş Küresi
+            const sunGeo = new THREE.SphereGeometry(5.6, 64, 64);
+            const sunMat = new THREE.MeshBasicMaterial({
+                map: generateSunTexture("visible")
+            });
+            sunMesh = new THREE.Mesh(sunGeo, sunMat);
+            sunGroup.add(sunMesh);
+
+            // 2. Güneş Korona Halesi (Glow Sprite)
+            const spriteMat = new THREE.SpriteMaterial({
+                map: generateGlowSpriteTexture(),
+                color: 0xffffff,
+                transparent: true,
+                blending: THREE.AdditiveBlending,
+                opacity: 0.85
+            });
+            sunCoronaSprite = new THREE.Sprite(spriteMat);
+            sunCoronaSprite.scale.set(16, 16, 1);
+            sunGroup.add(sunCoronaSprite);
+
+            // 3. Güneş Katmanları (Cutaway 3D Modeli)
+            buildSunLayers();
+
+            // 4. Dünya Modeli Grubu
+            buildEarthModel();
+
+            // 5. Işık Işını ve Foton Parçacıkları Grubu
+            buildLightJourneyVisuals();
+
+            // 6. Derin Uzay Yıldız Alanı
+            buildStarfield();
+
+            window.addEventListener('resize', onWindowResize);
+            setupRaycasterInteractions(canvas);
+        }
+
+        // Katmanların 3D İnşası
+        function buildSunLayers() {
+            layerMeshes = [];
+            SUN_LAYERS.forEach((layer, idx) => {
+                // Çeyrek dilim kesit için thetaLength = Math.PI * 1.5 (270° kapalı, 90° açık)
+                const geo = new THREE.SphereGeometry(layer.radius, 48, 48, 0, Math.PI * 1.5);
+                const mat = new THREE.MeshStandardMaterial({
+                    color: layer.color,
+                    emissive: layer.emissive,
+                    emissiveIntensity: 0.35,
+                    roughness: 0.5,
+                    side: THREE.DoubleSide
+                });
+                const mesh = new THREE.Mesh(geo, mat);
+                mesh.visible = false;
+                mesh.userData = { layerId: layer.id, layerIndex: idx, layerName: layer.name };
+                sunGroup.add(mesh);
+                layerMeshes.push(mesh);
+            });
+        }
+
+        // Dünya Modeli İnşası
+        function buildEarthModel() {
+            earthGroup = new THREE.Group();
+            earthGroup.position.set(24, 0, 0); // Varsayılan konum
+            earthGroup.visible = false;
+            scene.add(earthGroup);
+
+            // Dünya Küresi
+            const earthGeo = new THREE.SphereGeometry(1.4, 48, 48);
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: generateEarthTexture(),
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            earthGroup.add(earthMesh);
+
+            // Atmosfer Parıltısı
+            const atmosGeo = new THREE.SphereGeometry(1.46, 32, 32);
+            const atmosMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.25,
+                side: THREE.BackSide
+            });
+            const atmosMesh = new THREE.Mesh(atmosGeo, atmosMat);
+            earthGroup.add(atmosMesh);
+
+            // Güneş Işığı Lambası (Güneş'ten Dünya'ya vuran ışık)
+            const sunLight = new THREE.DirectionalLight(0xfffbeb, 1.8);
+            sunLight.position.set(-1, 0, 0); // Soldan sağa
+            earthGroup.add(sunLight);
+        }
+
+        // Işık Yolculuğu Çizgisi ve Foton Dalgası
+        function buildLightJourneyVisuals() {
+            // İnce altın sarısı ışık hattı
+            const lineGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(5.6, 0, 0),
+                new THREE.Vector3(22.6, 0, 0)
+            ]);
+            const lineMat = new THREE.LineDashedMaterial({
+                color: 0xfde047,
+                dashSize: 0.6,
+                gapSize: 0.4,
+                linewidth: 2
+            });
+            lightLineMesh = new THREE.Line(lineGeo, lineMat);
+            lightLineMesh.computeLineDistances();
+            lightLineMesh.visible = false;
+            scene.add(lightLineMesh);
+
+            // İlerleyen Parlak Foton Parçacığı
+            const photonGeo = new THREE.SphereGeometry(0.35, 16, 16);
+            const photonMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            photonBeamMesh = new THREE.Mesh(photonGeo, photonMat);
+            photonBeamMesh.visible = false;
+            scene.add(photonBeamMesh);
+        }
+
+        // Yıldız Alanı
+        function buildStarfield() {
+            const starGeo = new THREE.BufferGeometry();
+            const count = 1200;
+            const positions = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 350;
+                positions[i + 1] = (Math.random() - 0.5) * 350;
+                positions[i + 2] = (Math.random() - 0.5) * 350;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.7 });
+            starfield = new THREE.Points(starGeo, starMat);
+            scene.add(starfield);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            if (!container || !renderer || !camera) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+
+        // 3D Katman Tıklama & Raycasting Etkileşimi
+        function setupRaycasterInteractions(canvas) {
+            const raycaster = new THREE.Raycaster();
+            const mouse = new THREE.Vector2();
+
+            canvas.addEventListener('click', (e) => {
+                if (appState.currentModule !== "layers" || !appState.isCutawayOpen) return;
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(layerMeshes);
+
+                if (intersects.length > 0) {
+                    const hit = intersects[0].object;
+                    if (hit.userData && hit.userData.layerId) {
+                        selectLayer(hit.userData.layerId);
+                        playTone(600, 'triangle', 0.1);
+                    }
+                }
+            });
+        }
+
+        // -----------------------------------------------------------------
+        // 5. MODÜL GEÇİŞLERİ & SAHNE SENKRONİZASYONU
+        // -----------------------------------------------------------------
+        function switchModule(modId) {
+            appState.currentModule = modId;
+            playTone(480, 'sine', 0.08);
+
+            // Tab Butonlarını Güncelle
+            document.querySelectorAll('.mod-tab-btn').forEach(btn => {
+                btn.className = 'mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-slate-600 hover:text-slate-900 text-[11px] font-extrabold whitespace-nowrap';
+            });
+            const activeTab = document.getElementById(`tab-btn-${modId}`);
+            if (activeTab) {
+                activeTab.className = 'mod-tab-btn px-2 py-0.5 rounded-md transition-all flex items-center gap-1 bg-white text-amber-600 shadow-xs text-[11px] font-extrabold whitespace-nowrap';
+            }
+
+            // Arayüz Rozetlerini Güncelle
+            const titles = {
+                intro: { title: "1. MODÜL: GÜNEŞ'İ TANIYALIM", sub: "NASA SDO Fotogerçekçi 3D Model" },
+                layers: { title: "2. MODÜL: GÜNEŞ'İN KATMANLARI", sub: "3D Hacimsel Kesit & Katman İncelemesi" },
+                rotation: { title: "3. MODÜL: GÜNEŞ'İN DÖNME HAREKETİ", sub: "25 Günlük Eksen Hareketi & Leke Takibi" },
+                light: { title: "4. MODÜL: IŞIK YOLCULUĞU", sub: "150 Milyon KM • 8 Dakika 20 Saniye" },
+                scale: { title: "5. MODÜL: GÜNEŞ VE DÜNYA BÜYÜKLÜKLERİ", sub: "109 Kat Çap • 1.3 Milyon Hacim" },
+                quiz: { title: "6. MODÜL: BİLGİ YARIŞMASI VE OYUNLAR", sub: "4 Eğitsel Oyun & Akıllı Değerlendirme" }
+            };
+            document.getElementById('scene-badge-text').innerText = titles[modId].title;
+            document.getElementById('scene-sub-text').innerText = titles[modId].sub;
+
+            // Hızlı Araçlar Görünürlüğü
+            document.getElementById('spectrum-controls').classList.toggle('hidden', modId !== 'intro');
+            document.getElementById('btn-toggle-cutaway').classList.toggle('hidden', modId !== 'layers');
+            document.getElementById('scale-controls').classList.toggle('hidden', modId !== 'light' && modId !== 'scale');
+            document.getElementById('rotation-metric-bar').classList.toggle('hidden', modId !== 'rotation');
+            document.getElementById('light-metric-bar').classList.toggle('hidden', modId !== 'light');
+
+            // 3D Sahne Durumlarını Sıfırla ve Ayarla
+            reset3DSceneForModule(modId);
+
+            // Sağ Paneli Doldur
+            renderSidePanelForModule(modId);
+        }
+
+        // Sahneyi Modüle Göre Yeniden Düzenle
+        function reset3DSceneForModule(modId) {
+            // Varsayılan Görünürlükler
+            sunMesh.visible = true;
+            sunCoronaSprite.visible = true;
+            sunGroup.position.set(0, 0, 0);
+            sunGroup.scale.set(1, 1, 1);
+            earthGroup.visible = false;
+            lightLineMesh.visible = false;
+            photonBeamMesh.visible = false;
+            layerMeshes.forEach(m => m.visible = false);
+            appState.isCutawayOpen = false;
+
+            if (modId === "intro") {
+                camera.position.set(0, 0, 22);
+                controls.target.set(0, 0, 0);
+                speakTurkish("Güneş'i tanıyalım modülü. Güneş bir yıldızdır ve Dünya'mızın temel yaşam kaynağıdır.");
+            } else if (modId === "layers") {
+                camera.position.set(0, 4, 20);
+                controls.target.set(0, 0, 0);
+                document.getElementById('cutaway-btn-text').innerText = "Katmanları Aç";
+                speakTurkish("Güneş'in katmanları. Güneş çekirdekten dış atmosfere kadar farklı fiziksel katmanlara sahiptir.");
+            } else if (modId === "rotation") {
+                camera.position.set(0, 0, 22);
+                controls.target.set(0, 0, 0);
+                speakTurkish("Güneş'in dönme hareketi. Güneş kendi ekseni etrafında döner. Bu hareketi Güneş lekelerini izleyerek anlayabiliriz.");
+            } else if (modId === "light") {
+                sunGroup.position.set(-14, 0, 0);
+                sunGroup.scale.set(0.65, 0.65, 0.65);
+                earthGroup.position.set(14, 0, 0);
+                earthGroup.scale.set(1, 1, 1);
+                earthGroup.visible = true;
+                lightLineMesh.visible = true;
+                camera.position.set(0, 0, 36);
+                controls.target.set(0, 0, 0);
+                speakTurkish("Güneş ışığı yaklaşık 150 milyon kilometrelik mesafeyi 8 dakika 20 saniyede kat ederek Dünya'mıza ulaşır.");
+            } else if (modId === "scale") {
+                sunGroup.position.set(-8, 0, 0);
+                sunGroup.scale.set(1, 1, 1);
+                earthGroup.position.set(6, 0, 0);
+                earthGroup.scale.set(0.18, 0.18, 0.18); // Başlangıçta görünür kıl, butonla tam 109 kat küçült
+                earthGroup.visible = true;
+                camera.position.set(0, 0, 26);
+                controls.target.set(0, 0, 0);
+                speakTurkish("Güneş ile Dünya'nın büyüklükleri. Güneş'in çapı Dünya'nın yaklaşık 109 katıdır.");
+            } else if (modId === "quiz") {
+                camera.position.set(0, 0, 22);
+                controls.target.set(0, 0, 0);
+            }
+            controls.update();
+        }
+
+        // -----------------------------------------------------------------
+        // 6. SAĞ BİLGİ PANELİ OLUŞTURUCULARI
+        // -----------------------------------------------------------------
+        function renderSidePanelForModule(modId) {
+            const panel = document.getElementById('panel-dynamic-content');
+            const titleEl = document.getElementById('panel-module-title');
+            const iconEl = document.getElementById('panel-header-icon');
+
+            if (modId === "intro") {
+                titleEl.innerText = "Güneş'in Temel Özellikleri";
+                iconEl.innerHTML = '<i class="fa-solid fa-sun"></i>';
+                panel.innerHTML = `
+                    <div class="space-y-1.5 text-xs text-slate-700">
+                        <!-- Özellik 1: Yıldız -->
+                        <div class="p-2.5 bg-amber-50/80 border border-amber-200/80 rounded-xl">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-black text-amber-900 uppercase text-[10px]">Gök Cismi Türü</span>
+                                <span class="px-1.5 py-0.2 rounded bg-amber-200 text-amber-950 font-black text-[9px]">YILDIZ</span>
+                            </div>
+                            <p class="text-slate-600 leading-tight">Güneş bir gezegen değil, Dünya'mıza en yakın orta büyüklükte bir <strong>yıldızdır</strong>.</p>
+                        </div>
+
+                        <!-- Özellik 2: Şekil & Yaş -->
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div class="p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                <span class="text-[9px] font-bold text-slate-400 block uppercase">Geometrik Şekli</span>
+                                <span class="font-black text-slate-900 text-xs">Küre Şeklinde</span>
+                            </div>
+                            <div class="p-2 bg-slate-50 border border-slate-200 rounded-xl">
+                                <span class="text-[9px] font-bold text-slate-400 block uppercase">Tahmini Yaşı</span>
+                                <span class="font-black text-slate-900 text-xs">~4,6 Milyar Yıl</span>
+                            </div>
+                        </div>
+
+                        <!-- Özellik 3: Sıcaklıklar -->
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div class="p-2 bg-orange-50 border border-orange-200 rounded-xl">
+                                <span class="text-[9px] font-bold text-orange-700 block uppercase">Yüzey Sıcaklığı</span>
+                                <span class="font-black text-orange-950 text-xs font-mono">~5.500 °C</span>
+                            </div>
+                            <div class="p-2 bg-red-50 border border-red-200 rounded-xl">
+                                <span class="text-[9px] font-bold text-red-700 block uppercase">Çekirdek Sıcaklığı</span>
+                                <span class="font-black text-red-950 text-xs font-mono">~15 Milyon °C</span>
+                            </div>
+                        </div>
+
+                        <!-- Özellik 4: Fiziksel Yapı & Enerji -->
+                        <div class="p-2.5 bg-blue-50/80 border border-blue-200/80 rounded-xl">
+                            <span class="font-black text-blue-900 uppercase text-[10px] block mb-0.5">Maddesel Yapısı</span>
+                            <p class="text-slate-600 leading-tight">Katı veya sıvı bir kabuğu yoktur. Büyük oranda <strong>hidrojen ve helyum gazlarından oluşan aşırı sıcak plazma</strong> halindedir.</p>
+                        </div>
+
+                        <!-- Alt Bilgi Kutusu: Güneş Olmasaydı Ne Olurdu? -->
+                        <div class="p-2.5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-xl shadow-sm">
+                            <div class="flex items-center gap-1.5 text-amber-400 text-[10px] font-black uppercase mb-1">
+                                <i class="fa-solid fa-lightbulb"></i> BİLİYOR MUSUNUZ?
+                            </div>
+                            <p class="text-[11px] text-slate-300 leading-tight font-medium">Güneş, Dünya'daki tüm canlılar için temel <strong>ışık ve ısı kaynağıdır</strong>. Fotosentez ve su döngüsü Güneş enerjisiyle çalışır.</p>
+                        </div>
+                    </div>
+                `;
+            } else if (modId === "layers") {
+                titleEl.innerText = "Güneş'in Katmanlı Yapısı";
+                iconEl.innerHTML = '<i class="fa-solid fa-layer-group"></i>';
+                renderLayersSideList();
+            } else if (modId === "rotation") {
+                titleEl.innerText = "Güneş'in Eksen Hareketi";
+                iconEl.innerHTML = '<i class="fa-solid fa-arrows-rotate"></i>';
+                panel.innerHTML = `
+                    <div class="space-y-2 text-xs text-slate-700">
+                        <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-xl">
+                            <span class="font-black text-blue-900 uppercase text-[10px] block mb-0.5">Dönme Yönü</span>
+                            <p class="text-slate-700 leading-tight font-medium">Güneş kendi ekseni etrafında <strong>batıdan doğuya doğru (saat yönünün tersine)</strong> döner.</p>
+                        </div>
+
+                        <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl">
+                            <span class="font-black text-amber-900 uppercase text-[10px] block mb-0.5">Diferansiyel (Farklı) Dönüş</span>
+                            <p class="text-slate-700 leading-tight font-medium">Güneş katı bir taş veya top değildir. Bu yüzden <strong>ekvator bölgesi 25 günde</strong> bir tam tur atarken, <strong>kutuplara yakın bölgeleri yaklaşık 35 günde</strong> döner.</p>
+                        </div>
+
+                        <!-- Güneş Lekeleri İnceleme Kartı -->
+                        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl space-y-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="font-black text-slate-900 uppercase text-[10px]">Güneş Lekeleri Ne Gösterir?</span>
+                                <span class="px-1.5 py-0.5 bg-slate-200 text-slate-800 rounded text-[9px] font-black">Galileo 1610</span>
+                            </div>
+                            <p class="text-slate-600 leading-tight">İlk kez Galileo Galilei teleskopla lekelerin yer değiştirdiğini fark etmiş ve <strong>Güneş'in kendi etrafında döndüğünü</strong> bu sayede kanıtlamıştır.</p>
+                        </div>
+
+                        <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900">
+                            <div class="font-black text-[10px] uppercase mb-0.5">Lekeler Neden Koyu Görünür?</div>
+                            <p class="text-[11px] leading-tight">Güneş lekeleri delik değildir! Çevrelerindeki yüzeyden yaklaşık <strong>1.500 °C daha serin</strong> oldukları için koyu renkte görünürler.</p>
+                        </div>
+                    </div>
+                `;
+            } else if (modId === "light") {
+                titleEl.innerText = "Işığın Dünya'ya Yolculuğu";
+                iconEl.innerHTML = '<i class="fa-solid fa-bolt-lightning"></i>';
+                panel.innerHTML = `
+                    <div class="space-y-2 text-xs text-slate-700">
+                        <div class="p-2.5 bg-blue-50 border border-blue-200 rounded-xl">
+                            <span class="font-black text-blue-900 uppercase text-[10px] block mb-0.5">Güneş - Dünya Mesafesi</span>
+                            <span class="text-base font-black text-blue-950 font-mono block">149.600.000 KM</span>
+                            <span class="text-[10px] text-slate-500 font-medium">Yaklaşık 150 Milyon Kilometre (1 Astronomik Birim)</span>
+                        </div>
+
+                        <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-xl">
+                            <span class="font-black text-amber-900 uppercase text-[10px] block mb-0.5">Evrendeki En Yüksek Hız: Işık Hızı</span>
+                            <span class="text-sm font-black text-amber-950 font-mono block">~300.000 km / saniye</span>
+                            <span class="text-[10px] text-slate-500 font-medium">1 saniyede Dünya'nın etrafını 7,5 kez dolaşabilir!</span>
+                        </div>
+
+                        <div class="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl">
+                            <span class="font-black text-emerald-900 uppercase text-[10px] block mb-0.5">Ulaşma Süresi Hesabı</span>
+                            <div class="font-mono text-xs font-black text-emerald-950">149.600.000 / 300.000 = 499 Saniye</div>
+                            <div class="text-sm font-black text-emerald-700 mt-0.5">Yaklaşık 8 Dakika 20 Saniye</div>
+                        </div>
+
+                        <button onclick="startLightJourneyAnimation()" class="w-full py-2.5 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>Işığın Yolculuğunu Başlat</span>
+                        </button>
+                    </div>
+                `;
+            } else if (modId === "scale") {
+                titleEl.innerText = "Güneş ve Dünya Büyüklükleri";
+                iconEl.innerHTML = '<i class="fa-solid fa-scale-balanced"></i>';
+                panel.innerHTML = `
+                    <div class="space-y-2 text-xs text-slate-700">
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div class="p-2 bg-amber-50 border border-amber-200 rounded-xl text-center">
+                                <span class="text-[9px] font-bold text-amber-700 block uppercase">Güneş Çapı</span>
+                                <span class="font-black text-amber-950 text-xs font-mono">1.390.000 km</span>
+                            </div>
+                            <div class="p-2 bg-blue-50 border border-blue-200 rounded-xl text-center">
+                                <span class="text-[9px] font-bold text-blue-700 block uppercase">Dünya Çapı</span>
+                                <span class="font-black text-blue-950 text-xs font-mono">12.742 km</span>
+                            </div>
+                        </div>
+
+                        <div class="p-2.5 bg-purple-50 border border-purple-200 rounded-xl">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-black text-purple-900 uppercase text-[10px]">Çap Oranı</span>
+                                <span class="px-1.5 py-0.2 rounded bg-purple-200 text-purple-950 font-black text-[9px]">109 KAT</span>
+                            </div>
+                            <p class="text-slate-600 leading-tight">Güneş'in çapı Dünya'nın çapının <strong>109 katıdır</strong>. Güneş'in yan yana 109 tane Dünya dizilebilir.</p>
+                        </div>
+
+                        <div class="p-2.5 bg-rose-50 border border-rose-200 rounded-xl">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-black text-rose-900 uppercase text-[10px]">Hacim Oranı</span>
+                                <span class="px-1.5 py-0.2 rounded bg-rose-200 text-rose-950 font-black text-[9px]">1.300.000 KAT</span>
+                            </div>
+                            <p class="text-slate-600 leading-tight">Güneş'in içine yaklaşık <strong>1 milyon 300 bin adet Dünya</strong> sığabilir!</p>
+                        </div>
+
+                        <!-- Neden Küçük Görünür? -->
+                        <div class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl">
+                            <div class="font-black text-slate-900 text-[10px] uppercase mb-0.5">Neden Gökyüzünde Küçük Görünür?</div>
+                            <p class="text-slate-600 leading-tight">Güneş devasa bir yıldız olmasına rağmen bizden <strong>150 milyon kilometre uzakta</strong> olduğu için gökyüzünde madeni para kadar görünür.</p>
+                        </div>
+
+                        <button onclick="toggleTrueScaleAnimation()" class="w-full py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95">
+                            <i class="fa-solid fa-expand"></i>
+                            <span id="btn-scale-toggle-text">Gerçek Boyut Oranını Göster</span>
+                        </button>
+                    </div>
+                `;
+            } else if (modId === "quiz") {
+                titleEl.innerText = "Bilgi Yarışması & Oyunlar";
+                iconEl.innerHTML = '<i class="fa-solid fa-gamepad"></i>';
+                renderQuizSubGameUI();
+            }
+        }
+
+        // Katmanlar Listesini Panelde Göster
+        function renderLayersSideList() {
+            const panel = document.getElementById('panel-dynamic-content');
+            panel.innerHTML = `
+                <div class="flex items-center justify-between bg-slate-100 p-1 rounded-xl text-[10px] font-bold mb-2">
+                    <span class="text-slate-500 uppercase px-1">Görünüm Seviyesi:</span>
+                    <div class="flex items-center gap-1">
+                        <button onclick="setLayerDetailLevel('basic')" id="btn-lvl-basic" class="px-2 py-0.5 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold">5. Sınıf Temel</button>
+                        <button onclick="setLayerDetailLevel('detailed')" id="btn-lvl-detailed" class="px-2 py-0.5 rounded-lg text-slate-500 hover:text-slate-900 font-extrabold">Ayrıntılı</button>
+                    </div>
+                </div>
+
+                <div class="space-y-1.5">
+                    ${SUN_LAYERS.map((layer, idx) => `
+                        <div onclick="selectLayer('${layer.id}')" id="layer-card-${layer.id}" class="layer-item-card p-2 rounded-xl border border-slate-200 hover:border-amber-400 bg-slate-50/60 hover:bg-amber-50/50 transition-all cursor-pointer">
+                            <div class="flex items-center justify-between mb-0.5">
+                                <span class="font-black text-slate-800 text-xs flex items-center gap-1.5">
+                                    <span class="w-2.5 h-2.5 rounded-full" style="background: #${layer.color.toString(16)};"></span>
+                                    <span>${idx + 1}. ${layer.name}</span>
+                                </span>
+                                <span class="font-mono font-bold text-[10px] text-amber-700">${layer.temp}</span>
+                            </div>
+                            <p class="text-[11px] text-slate-600 leading-tight line-clamp-2">${layer.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Katman Seçimi ve Vurgulanması
+        function selectLayer(layerId) {
+            appState.selectedLayerId = layerId;
+            const layer = SUN_LAYERS.find(l => l.id === layerId);
+            if (!layer) return;
+
+            // Kart vurguları
+            document.querySelectorAll('.layer-item-card').forEach(c => {
+                c.classList.remove('border-amber-500', 'bg-amber-50', 'shadow-sm');
+            });
+            const activeCard = document.getElementById(`layer-card-${layerId}`);
+            if (activeCard) {
+                activeCard.classList.add('border-amber-500', 'bg-amber-50', 'shadow-sm');
+            }
+
+            // 3D Kesitte Katmanı Vurgula
+            layerMeshes.forEach(m => {
+                if (m.userData.layerId === layerId) {
+                    m.material.emissiveIntensity = 0.8;
+                } else {
+                    m.material.emissiveIntensity = 0.2;
+                }
+            });
+
+            // Bildirim ve Ses
+            showSceneAlert(layer.name, `${layer.temp} • ${layer.desc}`);
+            speakTurkish(layer.voice);
+        }
+
+        // Katman Kesitini Aç/Kapat
+        function toggleCutaway() {
+            appState.isCutawayOpen = !appState.isCutawayOpen;
+            const btnText = document.getElementById('cutaway-btn-text');
+
+            if (appState.isCutawayOpen) {
+                btnText.innerText = "Güneş'i Kapat";
+                sunMesh.visible = false; // Dış tam küreyi gizle
+                layerMeshes.forEach(m => m.visible = true); // 3D çeyrek kesit kürelerini göster
+                showSceneAlert("3D Güneş Kesiti Açıldı", "İç katmanlara dokunarak derinlik ve sıcaklıklarını inceleyebilirsiniz.");
+                speakTurkish("Güneş'in içi açıldı. Çekirdek, ışınım, taşınım ve atmosfer katmanları görünüyor.");
+            } else {
+                btnText.innerText = "Katmanları Aç";
+                sunMesh.visible = true;
+                layerMeshes.forEach(m => m.visible = false);
+            }
+            playTone(520, 'triangle', 0.1);
+        }
+
+        function setLayerDetailLevel(lvl) {
+            appState.layerDetailLevel = lvl;
+            document.getElementById('btn-lvl-basic').className = lvl === 'basic' ? 'px-2 py-0.5 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold' : 'px-2 py-0.5 rounded-lg text-slate-500 hover:text-slate-900 font-extrabold';
+            document.getElementById('btn-lvl-detailed').className = lvl === 'detailed' ? 'px-2 py-0.5 rounded-lg bg-white text-slate-900 shadow-2xs font-extrabold' : 'px-2 py-0.5 rounded-lg text-slate-500 hover:text-slate-900 font-extrabold';
+        }
+
+        // Spektrum Değişimi (Modül 1)
+        function setSpectrumView(type) {
+            appState.spectrumView = type;
+            ['visible', 'uv', 'details'].forEach(t => {
+                const b = document.getElementById(`btn-spec-${t}`);
+                if (b) {
+                    b.className = t === type ? 'px-2 py-0.5 rounded-lg bg-amber-500 text-slate-950 font-black transition-all' : 'px-2 py-0.5 rounded-lg text-slate-300 hover:text-white transition-all';
+                }
+            });
+            sunMesh.material.map = generateSunTexture(type);
+            sunMesh.material.needsUpdate = true;
+            playTone(450, 'sine', 0.08);
+
+            if (type === "uv") {
+                showSceneAlert("Ultraviyole (UV) Gözlem Modu", "NASA Solar Dynamics Observatory verisi. Renkler insan gözünün göremediği UV ışınlarını temsilî renklendirmektedir.");
+            }
+        }
+
+        // Işık Yolculuğu Animasyonunu Başlat
+        function startLightJourneyAnimation() {
+            appState.lightRunning = true;
+            appState.lightProgress = 0;
+            photonBeamMesh.visible = true;
+            playTone(600, 'sine', 0.15);
+            speakTurkish("Işığın yolculuğu başladı. 300 bin kilometre saniye hızla ilerliyor.");
+        }
+
+        // Büyüklük Karşılaştırması Boyut Geçişi
+        let trueScaleActive = false;
+        function toggleTrueScaleAnimation() {
+            trueScaleActive = !trueScaleActive;
+            const btnText = document.getElementById('btn-scale-toggle-text');
+            if (trueScaleActive) {
+                // Tam 109 kat oranına getir
+                btnText.innerText = "Şematik Görünüme Dön";
+                earthGroup.scale.set(0.016, 0.016, 0.016); // Tam 109 kat küçüldü!
+                showSceneAlert("Gerçek Boyut Oranı (109 Kat)", "Güneş o kadar büyüktür ki, Dünya onun yanında ancak minik bir kum tanesi kadar kalır!");
+                speakTurkish("Gerçek boyut oranı. Güneş Dünya'dan 109 kat daha geniştir.");
+            } else {
+                btnText.innerText = "Gerçek Boyut Oranını Göster";
+                earthGroup.scale.set(0.18, 0.18, 0.18);
+            }
+            playTone(550, 'triangle', 0.1);
+        }
+
+        // -----------------------------------------------------------------
+        // 7. BİLGİ YARIŞMASI VE 4 EĞİTSEL OYUN MOTORU
+        // -----------------------------------------------------------------
+        let quizState = {
+            activeGame: 1, // 1: 10 Soru, 2: Katman Eşleştirme, 3: Zaman Tahmini, 4: Doğru/Yanlış
+            score: 0,
+            currentQIdx: 0,
+            answered: false
+        };
+
+        const QUIZ_10_QUESTIONS = [
+            { q: "Güneş hangi gök cismi türüdür?", opts: ["Gezegen", "Yıldız", "Uydu", "Asteroit"], a: 1, hint: "Kendiliğinden ısı ve ışık saçan doğal gök cismidir." },
+            { q: "Güneş'in geometrik şekli hangisine çok yakındır?", opts: ["Küre", "Düz Disk", "Piramit", "Küp"], a: 0, hint: "Tıpkı bir basketbol topu gibi yuvarlaktır." },
+            { q: "Güneş'in yapısında en çok bulunan gazlar hangileridir?", opts: ["Oksijen ve Azot", "Hidrojen ve Helyum", "Karbondioksit ve Su", "Demir ve Nikel"], a: 1, hint: "Evrenin en hafif iki elementidir." },
+            { q: "Güneş kendi ekseni etrafında hangi yönde döner?", opts: ["Doğudan Batıya", "Batıdan Doğuya (Saat tersi)", "Yukarıdan Aşağıya", "Dönmez, sabittir"], a: 1, hint: "Dünya gibi saat yönünün tersine döner." },
+            { q: "Güneş lekelerinin diski üzerinde yer değiştirmesi bize neyi kanıtlar?", opts: ["Güneş'in söndüğünü", "Güneş'in kendi ekseninde döndüğünü", "Dünya'nın durduğunu", "Güneş'in katı olduğunu"], a: 1, hint: "Galileo 1610 yılında bunu keşfetmiştir." },
+            { q: "Güneş'in yüzey sıcaklığı yaklaşık kaç derecedir?", opts: ["100 °C", "1.500 °C", "5.500 °C", "15 Milyon °C"], a: 2, hint: "Çekirdeği 15 milyon, görünen yüzeyi 5500 derecedir." },
+            { q: "Güneş ışığı Dünya'mıza yaklaşık ne kadar sürede ulaşır?", opts: ["8 saniye", "8 dakika 20 saniye", "8 saat", "8 gün"], a: 1, hint: "150 milyon kilometreyi ışık hızıyla aşar." },
+            { q: "Güneş'in çapı Dünya'mızın çapının yaklaşık kaç katıdır?", opts: ["2 katı", "10 katı", "50 katı", "109 katı"], a: 3, hint: "Yan yana 109 Dünya dizilebilir." },
+            { q: "Güneş çok devasa olduğu halde gökyüzünde neden küçük görünür?", opts: ["Dünya'dan çok uzakta olduğu için", "Güneş gündüz küçüldüğü için", "Bulutlar arkasında kaldığı için", "Işığı azaldığı için"], a: 0, hint: "Uzaklaşan cisimler gözümüze daha küçük görünür." },
+            { q: "Güneş enerjisi nereden kaynaklanır?", opts: ["Kömür yanmasından", "Nükleer füzyondan", "Sürtünmeden", "Yerçekiminden"], a: 1, hint: "Çekirdekte hidrojenin helyuma dönüşmesiyle doğar." }
+        ];
+
+        const TF_QUESTIONS = [
+            { text: "Güneş kendi ekseni etrafında döner.", correct: true, exp: "Doğru! Güneş ekvatorunda 25 günde bir tam tur atar." },
+            { text: "Güneş, Dünya'mızdan daha küçüktür.", correct: false, exp: "Yanlış! Güneş'in çapı Dünya'nın 109 katıdır." },
+            { text: "Güneş ışığı Dünya'ya anında (0 saniyede) ulaşır.", correct: false, exp: "Yanlış! 150 milyon km yolu yaklaşık 8 dakika 20 saniyede alır." },
+            { text: "Güneş lekeleri çevrelerine göre daha serin bölgelerdir.", correct: true, exp: "Doğru! Çevrelerine göre yaklaşık 1500 °C daha serindirler." },
+            { text: "Güneş katı bir taş küresidir.", correct: false, exp: "Yanlış! Güneş çok sıcak hidrojen ve helyum plazmasıdır." },
+            { text: "Güneş Dünya'daki yaşam ve fotosentez için temel kaynaktır.", correct: true, exp: "Doğru! Tüm besin zincirinin enerji kaynağı Güneş'tir." }
+        ];
+
+        function renderQuizSubGameUI() {
+            const panel = document.getElementById('panel-dynamic-content');
+            panel.innerHTML = `
+                <!-- 4 Oyun Seçici Buton -->
+                <div class="grid grid-cols-2 gap-1 bg-slate-100 p-1 rounded-xl text-[10px] font-black mb-2">
+                    <button onclick="setQuizGame(1)" id="btn-subgame-1" class="py-1 px-1.5 rounded-lg bg-white text-purple-700 shadow-2xs truncate">1. Güneş Quiz (10 Soru)</button>
+                    <button onclick="setQuizGame(2)" id="btn-subgame-2" class="py-1 px-1.5 rounded-lg text-slate-600 hover:text-slate-900 truncate">2. Katman Eşleştirme</button>
+                    <button onclick="setQuizGame(3)" id="btn-subgame-3" class="py-1 px-1.5 rounded-lg text-slate-600 hover:text-slate-900 truncate">3. Işık Zaman Tahmini</button>
+                    <button onclick="setQuizGame(4)" id="btn-subgame-4" class="py-1 px-1.5 rounded-lg text-slate-600 hover:text-slate-900 truncate">4. Doğru mu, Yanlış mı?</button>
+                </div>
+
+                <div id="quiz-arena-container" class="space-y-2">
+                    <!-- Dinamik Oyun Sahnesi -->
+                </div>
+            `;
+            loadActiveSubGame();
+        }
+
+        function setQuizGame(gameNum) {
+            quizState.activeGame = gameNum;
+            quizState.score = 0;
+            quizState.currentQIdx = 0;
+            quizState.answered = false;
+            [1, 2, 3, 4].forEach(n => {
+                const b = document.getElementById(`btn-subgame-${n}`);
+                if (b) {
+                    b.className = n === gameNum ? 'py-1 px-1.5 rounded-lg bg-white text-purple-700 shadow-2xs truncate' : 'py-1 px-1.5 rounded-lg text-slate-600 hover:text-slate-900 truncate';
+                }
+            });
+            loadActiveSubGame();
+        }
+
+        function loadActiveSubGame() {
+            const arena = document.getElementById('quiz-arena-container');
+            if (!arena) return;
+
+            if (quizState.activeGame === 1) {
+                // 10 Soruluk Quiz
+                const qData = QUIZ_10_QUESTIONS[quizState.currentQIdx];
+                arena.innerHTML = `
+                    <div class="p-3 bg-purple-50/80 border border-purple-200 rounded-2xl">
+                        <div class="flex items-center justify-between text-xs font-black mb-1.5">
+                            <span class="text-purple-900">Soru ${quizState.currentQIdx + 1} / 10</span>
+                            <span class="text-emerald-700"><i class="fa-solid fa-trophy"></i> Skor: ${quizState.score}</span>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-black text-slate-900 mb-2 leading-snug">${qData.q}</h4>
+                        <div class="grid grid-cols-1 gap-1.5" id="quiz-opts-list">
+                            ${qData.opts.map((opt, i) => `
+                                <button onclick="answer10Question(${i})" class="quiz-btn p-2 rounded-xl border border-slate-200 bg-white hover:bg-purple-100 text-slate-800 text-xs font-extrabold text-left transition-all">
+                                    ${String.fromCharCode(65 + i)}) ${opt}
+                                </button>
+                            `).join('')}
+                        </div>
+                        <div id="quiz-feedback" class="hidden mt-2 p-2 rounded-xl text-xs font-bold leading-tight"></div>
+                    </div>
+                `;
+            } else if (quizState.activeGame === 3) {
+                // Işık Zaman Tahmini
+                arena.innerHTML = `
+                    <div class="p-3.5 bg-blue-50/80 border border-blue-200 rounded-2xl text-center space-y-2">
+                        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center text-lg mx-auto shadow-sm">
+                            <i class="fa-solid fa-stopwatch"></i>
+                        </div>
+                        <h4 class="text-xs sm:text-sm font-black text-slate-900">Güneş ışığı Dünya'ya kaç dakikada ulaşır?</h4>
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <button onclick="testLightPrediction('8 saniye')" class="p-2.5 bg-white hover:bg-blue-100 rounded-xl border font-black text-xs">8 saniye</button>
+                            <button onclick="testLightPrediction('8 dakika 20 saniye')" class="p-2.5 bg-white hover:bg-blue-100 rounded-xl border font-black text-xs">8 dakika 20 saniye</button>
+                            <button onclick="testLightPrediction('8 saat')" class="p-2.5 bg-white hover:bg-blue-100 rounded-xl border font-black text-xs">8 saat</button>
+                            <button onclick="testLightPrediction('8 gün')" class="p-2.5 bg-white hover:bg-blue-100 rounded-xl border font-black text-xs">8 gün</button>
+                        </div>
+                        <div id="predict-feedback" class="hidden p-2 rounded-xl text-xs font-bold"></div>
+                    </div>
+                `;
+            } else if (quizState.activeGame === 4) {
+                // Doğru mu Yanlış mı
+                const tf = TF_QUESTIONS[quizState.currentQIdx % TF_QUESTIONS.length];
+                arena.innerHTML = `
+                    <div class="p-3 bg-emerald-50/80 border border-emerald-200 rounded-2xl text-center space-y-2">
+                        <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black uppercase">DOĞRU MU, YANLIŞ MI?</span>
+                        <h4 class="text-sm font-black text-slate-900 leading-snug">"${tf.text}"</h4>
+                        <div class="flex gap-2">
+                            <button onclick="answerTF(true)" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-sm">
+                                <i class="fa-solid fa-circle-check"></i> DOĞRU
+                            </button>
+                            <button onclick="answerTF(false)" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-black text-xs uppercase rounded-xl transition-all shadow-sm">
+                                <i class="fa-solid fa-circle-xmark"></i> YANLIŞ
+                            </button>
+                        </div>
+                        <div id="tf-feedback" class="hidden p-2 rounded-xl text-xs font-bold leading-tight"></div>
+                    </div>
+                `;
+            } else {
+                // Katman Eşleştirme (Game 2)
+                arena.innerHTML = `
+                    <div class="p-3 bg-orange-50/80 border border-orange-200 rounded-2xl space-y-2">
+                        <div class="text-center">
+                            <h4 class="text-xs sm:text-sm font-black text-slate-900">Katman Özelliğini Eşleştir</h4>
+                            <p class="text-[10px] text-slate-500 font-semibold">"15 Milyon °C nükleer füzyon enerjisinin üretildiği Güneş merkezidir."</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-1.5 text-xs font-black">
+                            <button onclick="answerLayerMatch('core')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Çekirdek</button>
+                            <button onclick="answerLayerMatch('photosphere')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Işık Küre</button>
+                            <button onclick="answerLayerMatch('corona')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Taç Küre</button>
+                            <button onclick="answerLayerMatch('convective')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Taşınım Bölgesi</button>
+                        </div>
+                        <div id="match-feedback" class="hidden p-2 rounded-xl text-xs font-bold text-center"></div>
+                    </div>
+                `;
+            }
+        }
+
+        function answer10Question(idx) {
+            if (quizState.answered) return;
+            quizState.answered = true;
+            const q = QUIZ_10_QUESTIONS[quizState.currentQIdx];
+            const fb = document.getElementById('quiz-feedback');
+            fb.classList.remove('hidden');
+
+            if (idx === q.a) {
+                quizState.score += 10;
+                fb.className = 'mt-2 p-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900';
+                fb.innerHTML = `🎉 <strong>Harika Doğru!</strong> ${q.hint}`;
+                playSuccessChime();
+            } else {
+                fb.className = 'mt-2 p-2 rounded-xl text-xs font-bold bg-rose-100 text-rose-900';
+                fb.innerHTML = `❌ <strong>Yanlış.</strong> Doğru cevap: <em>${q.opts[q.a]}</em> (${q.hint})`;
+                playErrorBuzz();
+            }
+
+            setTimeout(() => {
+                quizState.answered = false;
+                if (quizState.currentQIdx + 1 < QUIZ_10_QUESTIONS.length) {
+                    quizState.currentQIdx++;
+                    loadActiveSubGame();
+                } else {
+                    confetti({ particleCount: 100, spread: 70 });
+                    const arena = document.getElementById('quiz-arena-container');
+                    arena.innerHTML = `
+                        <div class="p-4 bg-purple-100 border border-purple-300 rounded-2xl text-center space-y-2">
+                            <div class="text-3xl">🏆</div>
+                            <h4 class="font-black text-sm text-purple-950">Quiz Tamamlandı!</h4>
+                            <p class="font-bold text-xs text-purple-800">Toplam Puanın: ${quizState.score} / 100</p>
+                            <button onclick="setQuizGame(1)" class="px-4 py-1.5 bg-purple-700 text-white font-black rounded-xl text-xs uppercase">Tekrar Çöz</button>
+                        </div>
+                    `;
+                }
+            }, 2000);
+        }
+
+        function testLightPrediction(answer) {
+            const fb = document.getElementById('predict-feedback');
+            fb.classList.remove('hidden');
+            if (answer === '8 dakika 20 saniye') {
+                fb.className = 'p-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900';
+                fb.innerHTML = `🎉 <strong>Mükemmel Bildiniz!</strong> 150 milyon kilometrelik yolculuk 8 dakika 20 saniye sürer.`;
+                playSuccessChime();
+                confetti({ particleCount: 60 });
+                switchModule('light');
+                startLightJourneyAnimation();
+            } else {
+                fb.className = 'p-2 rounded-xl text-xs font-bold bg-rose-100 text-rose-900';
+                fb.innerHTML = `❌ Işık çok hızlıdır fakat mesafe 150 milyon km olduğundan yaklaşık <strong>8 dakika 20 saniye</strong> sürer!`;
+                playErrorBuzz();
+            }
+        }
+
+        function answerTF(choice) {
+            const tf = TF_QUESTIONS[quizState.currentQIdx % TF_QUESTIONS.length];
+            const fb = document.getElementById('tf-feedback');
+            fb.classList.remove('hidden');
+            if (choice === tf.correct) {
+                fb.className = 'p-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900';
+                fb.innerHTML = `🎉 <strong>Tebrikler!</strong> ${tf.exp}`;
+                playSuccessChime();
+            } else {
+                fb.className = 'p-2 rounded-xl text-xs font-bold bg-rose-100 text-rose-900';
+                fb.innerHTML = `❌ <strong>Cevap Farklıydı!</strong> ${tf.exp}`;
+                playErrorBuzz();
+            }
+            setTimeout(() => {
+                quizState.currentQIdx++;
+                loadActiveSubGame();
+            }, 2200);
+        }
+
+        function answerLayerMatch(layerId) {
+            const fb = document.getElementById('match-feedback');
+            fb.classList.remove('hidden');
+            if (layerId === 'core') {
+                fb.className = 'p-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900 text-center';
+                fb.innerHTML = `🎉 <strong>Tebrikler!</strong> Çekirdek doğru cevaptı!`;
+                playSuccessChime();
+                selectLayer('core');
+            } else {
+                fb.className = 'p-2 rounded-xl text-xs font-bold bg-rose-100 text-rose-900 text-center';
+                fb.innerHTML = `❌ Bu özellik <strong>Çekirdek</strong> katmanına aittir.`;
+                playErrorBuzz();
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 8. KULLANICI ETKİLEŞİMİ & ZAMAN KONTROLLERİ
+        // -----------------------------------------------------------------
+        function togglePlayAnimation() {
+            appState.isPlaying = !appState.isPlaying;
+            const icon = document.getElementById('play-pause-icon');
+            const text = document.getElementById('play-pause-text');
+            const btn = document.getElementById('btn-play-pause');
+
+            if (appState.isPlaying) {
+                icon.className = 'fa-solid fa-pause text-xs';
+                text.innerText = 'Durdur';
+                btn.className = 'px-3 py-1 rounded-lg bg-orange-500 hover:bg-orange-600 text-white font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95';
+            } else {
+                icon.className = 'fa-solid fa-play text-xs';
+                text.innerText = 'Döndür';
+                btn.className = 'px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm active:scale-95';
+            }
+            playTone(440, 'sine', 0.08);
+        }
+
+        function setSimulationSpeed(mult, btnEl) {
+            appState.speedMultiplier = mult;
+            document.querySelectorAll('.speed-btn').forEach(b => {
+                b.className = 'speed-btn px-1.5 py-0.5 rounded-md transition-all text-slate-600 hover:text-slate-900 text-[10px] font-black';
+            });
+            btnEl.className = 'speed-btn px-1.5 py-0.5 rounded-md transition-all bg-white text-amber-600 shadow-2xs text-[10px] font-black';
+        }
+
+        function resetSimulationScene() {
+            appState.rotationAngleRad = 0;
+            appState.rotationDay = 0;
+            appState.lightRunning = false;
+            appState.lightProgress = 0;
+            photonBeamMesh.visible = false;
+            document.getElementById('rotation-slider').value = 0;
+            document.getElementById('rotation-day-label').innerText = '0.0';
+            reset3DSceneForModule(appState.currentModule);
+            playTone(380, 'sine', 0.12);
+        }
+
+        function onRotationSliderInput(val) {
+            appState.isPlaying = false;
+            const days = parseFloat(val);
+            appState.rotationDay = days;
+            appState.rotationAngleRad = (days / 25.0) * Math.PI * 2;
+            document.getElementById('rotation-day-label').innerText = days.toFixed(1);
+            if (sunMesh) sunMesh.rotation.y = appState.rotationAngleRad;
+        }
+
+        function showSceneAlert(title, desc) {
+            const banner = document.getElementById('scene-alert-banner');
+            document.getElementById('alert-title').innerText = title;
+            document.getElementById('alert-desc').innerText = desc;
+            banner.classList.remove('hidden');
+        }
+
+        function dismissSceneAlert() {
+            document.getElementById('scene-alert-banner').classList.add('hidden');
+        }
+
+        // Modallar
+        function openSafetyModal() {
+            document.getElementById('safety-modal').classList.remove('hidden');
+            playTone(500, 'sine', 0.1);
+        }
+        function closeSafetyModal() {
+            document.getElementById('safety-modal').classList.add('hidden');
+        }
+
+        function openEnergyFusionModal() {
+            document.getElementById('fusion-modal').classList.remove('hidden');
+            playTone(550, 'sine', 0.1);
+        }
+        function closeEnergyFusionModal() {
+            document.getElementById('fusion-modal').classList.add('hidden');
+        }
+
+        // Öğretmen Modu
+        function toggleTeacherMode() {
+            appState.teacherMode = !appState.teacherMode;
+            const btn = document.getElementById('btn-teacher-mode');
+            if (appState.teacherMode) {
+                btn.className = 'px-2 py-1 rounded-lg bg-indigo-600 text-white text-[11px] font-bold transition-all flex items-center gap-1 shadow-sm';
+                showSceneAlert("Öğretmen Sunum Modu Aktif", "Akıllı tahtada ders anlatımı için paneller optimize edildi. İpuçları gizlenebilir.");
+                speakTurkish("Öğretmen modu aktif.");
+            } else {
+                btn.className = 'px-2 py-1 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 text-[11px] font-bold transition-all flex items-center gap-1 shadow-2xs';
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 9. ANA ANİMASYON DÖNGÜSÜ (RENDER LOOP - 60 FPS)
+        // -----------------------------------------------------------------
+        let lastTimestamp = performance.now();
+
+        function animate(now) {
+            requestAnimationFrame(animate);
+
+            const dt = (now - lastTimestamp) / 1000;
+            lastTimestamp = now;
+
+            // Güneş'in Kendi Ekseni Dönüşü
+            if (appState.isPlaying && sunMesh) {
+                const rotationSpeed = (Math.PI * 2 / 20) * appState.speedMultiplier;
+                appState.rotationAngleRad += rotationSpeed * dt;
+                sunMesh.rotation.y = appState.rotationAngleRad;
+
+                // Ekvator 25 günlük döngü sayacı senkronizasyonu
+                const dayProgress = ((appState.rotationAngleRad % (Math.PI * 2)) / (Math.PI * 2)) * 25.0;
+                appState.rotationDay = dayProgress;
+                if (appState.currentModule === "rotation") {
+                    document.getElementById('rotation-slider').value = dayProgress.toFixed(1);
+                    document.getElementById('rotation-day-label').innerText = dayProgress.toFixed(1);
+                }
+            }
+
+            // Dünya Kendi Ekseni Dönüşü
+            if (earthMesh && earthGroup.visible) {
+                earthMesh.rotation.y += 0.01;
+            }
+
+            // Işık Yolculuğu Foton İlerlemesi (Modül 4)
+            if (appState.lightRunning && photonBeamMesh) {
+                appState.lightProgress += (dt / appState.lightDurationSeconds) * appState.speedMultiplier;
+                
+                // Güneş kenarından (x = -10.5) Dünya kenarına (x = 12.6)
+                const startX = -10.5;
+                const endX = 12.6;
+                const curX = startX + (endX - startX) * Math.min(appState.lightProgress, 1.0);
+                photonBeamMesh.position.set(curX, 0, 0);
+
+                // Odometer & Stopwatch Güncellemesi
+                const currentKm = Math.round(appState.lightProgress * 149600000);
+                const currentSec = Math.round(appState.lightProgress * 499);
+                const mins = Math.floor(currentSec / 60);
+                const secs = currentSec % 60;
+                document.getElementById('light-odometer').innerText = currentKm.toLocaleString('tr-TR');
+                document.getElementById('light-stopwatch').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+                if (appState.lightProgress >= 1.0) {
+                    appState.lightRunning = false;
+                    showSceneAlert("Güneş Işığı Dünya'ya Ulaştı!", "149.600.000 kilometrelik devasa uzay mesafesi ışık hızıyla 8 dakika 20 saniyede tamamlandı!");
+                    playSuccessChime();
+                    confetti({ particleCount: 75, spread: 60 });
+                    speakTurkish("Tebrikler! Güneş ışığı 8 dakika 20 saniyede Dünya'mıza ulaştı.");
+                }
+            }
+
+            // Korona Işık Titreşimi
+            if (sunCoronaSprite) {
+                sunCoronaSprite.scale.x = 16 + Math.sin(now * 0.003) * 0.6;
+                sunCoronaSprite.scale.y = 16 + Math.cos(now * 0.003) * 0.6;
+            }
+
+            // OrbitControls
+            if (controls) controls.update();
+
+            // Render
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Başlatma
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeScene();
+            switchModule('intro');
+            requestAnimationFrame(animate);
+        });
+    </script>
+</body>
+</html>

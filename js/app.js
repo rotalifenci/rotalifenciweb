@@ -1794,6 +1794,12 @@ function getMaterialActionUI(item, fallbackCat = "") {
         format.includes("VİDEO") || format.includes("VIDEO") || format === "MP4" || file.endsWith(".mp4") || file.endsWith(".webm") || url.includes("youtube.com") || url.includes("youtu.be") || cat === "videolar"
     );
 
+    // 0. Güneş'i Keşfediyorum & Ay'ın Evreleri 3D Uzay Laboratuvarı ve Simülatörleri
+    const isGunesSim = title.includes("güneş'i keşfediyorum") || title.includes("gunesi kesfediyorum") || (title.includes("güneş") && title.includes("3d")) || file.includes("gunesi-kesfediyorum") || url.includes("gunesi-kesfediyorum") || (item && (item.id === "oyun-gunesi-kesfediyorum-3d" || item.id === "mat-5-1-oyun-gunesi-kesfediyorum-3d"));
+    if (isGunesSim) {
+        return { text: "Animasyonu Görüntüle", icon: "fa-solid fa-play", bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30" };
+    }
+
     // 0. Ay'ın Evreleri 3D Simülatör ve Astronomi Animasyonu Özel Butonu
     const isAyinEvreleri = title.includes("ay'ın evreleri") || title.includes("ayin evreleri") || file.includes("ayin-evreleri") || url.includes("ayin-evreleri") || (item && (item.id === "oyun-5-gunes" || item.id === "mat-5-1-oyun-ayin-evreleri-3d" || item.id === "oyun-ayin-evreleri-3d"));
     if (isAyinEvreleri) {
@@ -4773,6 +4779,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "5": {
             "1": [
                 {
+                    id: "oyun-gunesi-kesfediyorum-3d",
+                    title: "5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı",
+                    icon: "fa-solid fa-sun",
+                    desc: "Fotogerçekçi 3D Güneş modeli, 6 katmanlı kesit incelemesi, diferansiyel dönme hareketi, Güneş'ten Dünya'ya foton yolculuğu, 109 kat büyüklük karşılaştırması ve etkileşimli oyunlar.",
+                    type: "3D Uzay Laboratuvarı",
+                    format: "3D SİMÜLATÖR",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/gunesi-kesfediyorum-3d.html",
+                    kapakResmi: "assets/gunesi-kesfediyorum-3d-kapak.svg"
+                },
+                {
                     id: "oyun-5-gunes",
                     title: "5. Sınıf Ay'ın Evreleri 3D Etkileşimli Uzay Simülatörü",
                     icon: "fa-solid fa-moon",
@@ -4958,70 +4975,94 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             <!-- Özel materyaller doğrudan kendi ünite akordeonlarına yerleştirildi -->
 
             ${(normSubTab === "egitsel-oyunlar" && gNum === "5") ? `
-            <!-- 🌟 5. SINIF ÖNE ÇIKAN BAŞYAPIT SİMÜLASYONU (AY'IN EVRELERİ) -->
-            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/60 border-2 border-cyan-400/90 rounded-3xl p-6 sm:p-8 lg:p-10 mb-6 shadow-2xl overflow-hidden text-white group hover:border-cyan-300 transition-all">
-                <!-- Arka Plan Dekoratif Parıltılar -->
-                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-16 -top-16 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
-                
-                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
-                    <!-- Sol: Simülasyon Logosu & Başlık Bilgisi -->
-                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
-                        <div class="relative shrink-0">
-                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-600 shadow-[0_0_35px_rgba(6,182,212,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
-                                <div class="w-full h-full rounded-[22px] bg-slate-950 flex flex-col items-center justify-center text-cyan-300">
-                                    <i class="fa-solid fa-moon text-4xl mb-1"></i>
-                                    <span class="text-[9px] font-black tracking-widest uppercase text-cyan-400">3D UZAY</span>
+            <!-- 🌟 5. SINIF ÖNE ÇIKAN BAŞYAPIT SİMÜLASYONLARI (GÜNEŞ & AY) -->
+            <div class="grid grid-cols-1 xl:grid-cols-2 gap-5 mb-8">
+                <!-- 1. GÜNEŞ'İ KEŞFEDİYORUM 3D UZAY LABORATUVARI -->
+                <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/70 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 shadow-2xl overflow-hidden text-white group hover:border-amber-300 transition-all flex flex-col justify-between">
+                    <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-start gap-4 mb-3">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-red-600 shadow-[0_0_25px_rgba(245,158,11,0.5)] flex items-center justify-center shrink-0 overflow-hidden">
+                                <div class="w-full h-full rounded-xl bg-slate-950 flex flex-col items-center justify-center text-amber-400">
+                                    <i class="fa-solid fa-sun text-2xl sm:text-3xl mb-0.5"></i>
+                                    <span class="text-[8px] font-black tracking-widest uppercase text-amber-300">3D GÜNEŞ</span>
                                 </div>
                             </div>
-                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-cyan-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
-                                🌕 3D MODEL
-                            </span>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                                    <span class="px-2.5 py-0.5 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[10px] font-black tracking-wider uppercase">
+                                        <i class="fa-solid fa-trophy text-amber-400"></i> 1. Ünite Başyapıtı
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold border border-emerald-400/30">
+                                        ✓ Maarif Modeli Uyumlu
+                                    </span>
+                                </div>
+                                <h4 class="text-lg sm:text-xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-orange-200 to-amber-400 leading-snug">
+                                    Güneş'i Keşfediyorum: 3D Uzay Laboratuvarı
+                                </h4>
+                            </div>
                         </div>
-
-                        <div class="max-w-xl">
-                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
-                                <span class="px-3 py-1 rounded-full bg-cyan-400/20 border border-cyan-300/40 text-cyan-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
-                                    <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT SİMÜLASYONU
-                                </span>
-                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
-                                    ✓ Fotogerçekçi Planetaryum & Akıllı Tahta Uyumlu
-                                </span>
-                            </div>
-                            <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-400 mb-2">
-                                Ay'ın Evreleri: 3D Etkileşimli Uzay Simülatörü
-                            </h4>
-                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
-                                Güneş, Dünya ve Ay'ın hareketlerini NASA kalitesinde fotogerçekçi 3D uzay ortamında keşfet! Ay'ı yörüngesinde parmağınla sürükle, Dünya'dan görünen 8 evreyi canlı teleskopla izle, 10 soruluk interaktif yarışma ve yörünge görevleriyle öğrenmeni pekiştir!
-                            </p>
-                            <!-- Özellik Rozetleri -->
-                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
-                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🌒 8 Ana & Ara Evre
-                                </span>
-                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🔄 Canlı Yörünge Sürükleme
-                                </span>
-                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🔭 Dünya'dan Canlı Teleskop
-                                </span>
-                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🔊 Türkçe Sesli Rehber
-                                </span>
-                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
-                                    🎯 10 Soruluk Quiz
-                                </span>
-                            </div>
+                        <p class="text-xs text-slate-200 leading-relaxed font-medium mb-3 line-clamp-3">
+                            NASA SDO kalitesinde 3D Güneş modeli, 6 katmanlı kesit incelemesi, diferansiyel dönme hareketi, Güneş'ten Dünya'ya ışık yolculuğu (8 dk 20 sn) ve 109 kat büyüklük karşılaştırması!
+                        </p>
+                        <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-slate-300 mb-4">
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">☀️ 6 Katmanlı Kesit</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🔄 Diferansiyel Dönüş</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🚀 Işık Yolculuğu</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🎮 4 Eğitsel Oyun</span>
                         </div>
                     </div>
-
-                    <!-- Sağ: Hızlı Başlatma Butonları -->
-                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
-                        <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(6,182,212,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-cyan-300">
-                            <i class="fa-solid fa-play text-base"></i> SİMÜLATÖRÜ AÇ (TAM EKRAN)
+                    <div class="relative z-10 flex flex-col sm:flex-row gap-2 pt-2 border-t border-white/10">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-gunesi-kesfediyorum-3d')" class="flex-1 py-3 px-4 bg-gradient-to-r from-amber-400 via-orange-500 to-red-600 hover:from-amber-300 hover:to-orange-500 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.5)] transition-all flex items-center justify-center gap-2 cursor-pointer border border-amber-300">
+                            <i class="fa-solid fa-play"></i> SİMÜLATÖRÜ AÇ (TAM EKRAN)
                         </button>
-                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
-                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        <a href="oyunlar/gunesi-kesfediyorum-3d.html" target="_blank" rel="noopener noreferrer" class="py-3 px-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-1.5 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Yeni Sekme
+                        </a>
+                    </div>
+                </div>
+
+                <!-- 2. AY'IN EVRELERİ 3D UZAY SİMÜLATÖRÜ -->
+                <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-blue-950/70 border-2 border-cyan-400/90 rounded-3xl p-5 sm:p-7 shadow-2xl overflow-hidden text-white group hover:border-cyan-300 transition-all flex flex-col justify-between">
+                    <div class="absolute -right-12 -bottom-12 w-64 h-64 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="relative z-10">
+                        <div class="flex items-start gap-4 mb-3">
+                            <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl p-1 bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-600 shadow-[0_0_25px_rgba(6,182,212,0.5)] flex items-center justify-center shrink-0 overflow-hidden">
+                                <div class="w-full h-full rounded-xl bg-slate-950 flex flex-col items-center justify-center text-cyan-300">
+                                    <i class="fa-solid fa-moon text-2xl sm:text-3xl mb-0.5"></i>
+                                    <span class="text-[8px] font-black tracking-widest uppercase text-cyan-400">3D UZAY</span>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                                    <span class="px-2.5 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-300/40 text-cyan-300 text-[10px] font-black tracking-wider uppercase">
+                                        <i class="fa-solid fa-trophy text-amber-400"></i> 1. Ünite Başyapıtı
+                                    </span>
+                                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[9px] font-bold border border-emerald-400/30">
+                                        ✓ Akıllı Tahta Uyumlu
+                                    </span>
+                                </div>
+                                <h4 class="text-lg sm:text-xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-400 leading-snug">
+                                    Ay'ın Evreleri: 3D Uzay Simülatörü
+                                </h4>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-200 leading-relaxed font-medium mb-3 line-clamp-3">
+                            Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfet! Ay'ı yörüngesinde parmağınla sürükle, Dünya'dan görünen 8 evreyi canlı teleskopla izle ve sesli rehberle öğren!
+                        </p>
+                        <div class="flex flex-wrap items-center gap-1.5 text-[10px] font-bold text-slate-300 mb-4">
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🌒 8 Ana & Ara Evre</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🔄 Canlı Yörünge Sürükleme</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🔭 Canlı Teleskop</span>
+                            <span class="px-2 py-0.5 rounded-lg bg-white/10 border border-white/10">🔊 Sesli Rehber</span>
+                        </div>
+                    </div>
+                    <div class="relative z-10 flex flex-col sm:flex-row gap-2 pt-2 border-t border-white/10">
+                        <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d')" class="flex-1 py-3 px-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider shadow-[0_0_20px_rgba(6,182,212,0.5)] transition-all flex items-center justify-center gap-2 cursor-pointer border border-cyan-300">
+                            <i class="fa-solid fa-play"></i> SİMÜLATÖRÜ AÇ (TAM EKRAN)
+                        </button>
+                        <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="py-3 px-4 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-1.5 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Yeni Sekme
                         </a>
                     </div>
                 </div>
@@ -5078,9 +5119,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             if (deletedIds.has(g.id)) return false;
                             // unitCustoms içinde aynı simülatör veya oyun varsa tekilleştir
                             const alreadyExists = unitCustoms.some(c => 
-                                (c.fileUrl && g.fileUrl && (c.fileUrl.includes("ayin-evreleri") && g.fileUrl.includes("ayin-evreleri") || c.fileUrl === g.fileUrl)) ||
+                                (c.fileUrl && g.fileUrl && (
+                                    (c.fileUrl.includes("ayin-evreleri") && g.fileUrl.includes("ayin-evreleri")) ||
+                                    (c.fileUrl.includes("gunesi-kesfediyorum") && g.fileUrl.includes("gunesi-kesfediyorum")) ||
+                                    c.fileUrl === g.fileUrl
+                                )) ||
                                 (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim()) ||
-                                (c.id && (c.id === g.id || c.id.includes("ayin-evreleri") && g.id.includes("ayin-evreleri")))
+                                (c.id && (
+                                    c.id === g.id ||
+                                    (c.id.includes("ayin-evreleri") && g.id.includes("ayin-evreleri")) ||
+                                    (c.id.includes("gunesi-kesfediyorum") && g.id.includes("gunesi-kesfediyorum"))
+                                ))
                             );
                             return !alreadyExists;
                         });
@@ -5121,20 +5170,27 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             const isAyinEvreleriItem = (item.fileUrl && item.fileUrl.includes("ayin-evreleri")) ||
                                                 (item.title && (item.title.toLowerCase().includes("ay'ın evreleri") || item.title.toLowerCase().includes("ayin evreleri"))) ||
                                                 (item.id && String(item.id).includes("ayin-evreleri"));
+                                            const isGunesItem = (item.fileUrl && item.fileUrl.includes("gunesi-kesfediyorum")) ||
+                                                (item.title && (item.title.toLowerCase().includes("güneş'i keşfediyorum") || item.title.toLowerCase().includes("gunesi kesfediyorum") || (item.title.toLowerCase().includes("güneş") && item.title.toLowerCase().includes("3d")))) ||
+                                                (item.id && String(item.id).includes("gunesi-kesfediyorum"));
 
                                             const actionCall = isAyinEvreleriItem
-                                                ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay\\'ın Evreleri 3D Simülatörü')`
-                                                : (isBuiltinGame
-                                                    ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
-                                                    : (isCustom
-                                                        ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
-                                                        : cfg.btnAction(item)));
+                                                ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`
+                                                : (isGunesItem
+                                                    ? `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`
+                                                    : (isBuiltinGame
+                                                        ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
+                                                        : (isCustom
+                                                            ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
+                                                            : cfg.btnAction(item))));
 
                                             const itemActionUI = isAyinEvreleriItem
                                                 ? { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
-                                                : (isBuiltinGame
-                                                    ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Oyunu Oyna", icon: "fa-solid fa-play" }
-                                                    : getMaterialActionUI(item, normSubTab));
+                                                : (isGunesItem
+                                                    ? { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
+                                                    : (isBuiltinGame
+                                                        ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
+                                                        : getMaterialActionUI(item, normSubTab)));
 
                                             const itemCover = resolveMaterialCover(item);
 
@@ -13622,6 +13678,22 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
+    // ☀️ GÜNEŞ'İ KEŞFEDİYORUM 3D ETKİLEŞİMLİ UZAY LABORATUVARI
+    if (checkTitle.includes("güneş'i keşfediyorum") || checkTitle.includes("gunesi kesfediyorum") || (checkTitle.includes("güneş") && checkTitle.includes("3d")) ||
+        id === "mat-5-1-oyun-gunesi-kesfediyorum-3d" || id === "oyun-gunesi-kesfediyorum-3d" ||
+        targetUrl.includes("gunesi-kesfediyorum")) {
+        openInteractiveGameModal("oyunlar/gunesi-kesfediyorum-3d.html", "Güneş 3D Uzay Laboratuvarı");
+        return;
+    }
+
+    // 🌕 AY'IN EVRELERİ 3D PLANETARYUM VE UZAY SİMÜLATÖRÜ
+    if (checkTitle.includes("ay'ın evreleri") || checkTitle.includes("ayin evreleri") ||
+        id === "mat-5-1-oyun-ayin-evreleri-3d" || id === "oyun-5-gunes" || id === "oyun-ayin-evreleri-3d" ||
+        targetUrl.includes("ayin-evreleri")) {
+        openInteractiveGameModal("oyunlar/ayin-evreleri-3d.html", "Ay Evreleri 3D Simülatörü");
+        return;
+    }
+
     // 🚀 GEZEGEN KOŞUSU: ANTGRAVITY GALAKSİSİ (3D SUBWAY SURFERS RUNNER)
     if (checkTitle.includes("gezegen koşusu") || checkTitle.includes("gezegen kosusu") || checkTitle.includes("antgravity galaksi") ||
         id === "mat-game-gezegen-kosusu" || id === "oyun-gezegen-kosusu" || targetUrl === "oyun-gezegen-kosusu" || targetUrl.includes("gezegen-kosusu")) {
@@ -14949,13 +15021,13 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "interactive-game-modal";
-        modal.className = "fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-1 sm:p-3 transition-all duration-300";
+        modal.className = "fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-0 transition-all duration-300";
         modal.onclick = function(e) {
             if (e.target === this) closeInteractiveGameModal();
         };
         document.body.appendChild(modal);
     } else {
-        modal.className = "fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-1 sm:p-3 transition-all duration-300";
+        modal.className = "fixed inset-0 z-[99999] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-0 transition-all duration-300";
     }
     modal.style.display = "flex";
     modal.classList.remove("hidden");
@@ -14963,6 +15035,39 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     let resolvedKey = gameKeyOrUrl;
     const str = String(gameKeyOrUrl || "").toLowerCase();
     const titleStr = String(gameTitle || "").toLowerCase();
+
+    // ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
+    if (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunes-3d") || str.includes("oyun-gunesi-kesfediyorum-3d") || (str.includes("gunes") && str.includes("3d")) || (titleStr.includes("güneş'i keşfediyorum") || (titleStr.includes("güneş") && titleStr.includes("3d"))) || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" onclick="event.stopPropagation()">
+                <div class="px-3 py-1 sm:py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[36px] max-h-[40px]">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 via-orange-500 to-red-600 text-slate-950 flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-sun"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-amber-300">☀️ Güneş'i Keşfediyorum: 3D Etkileşimli Uzay Laboratuvarı</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri Simülasyonu</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/gunesi-kesfediyorum-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-7 h-7 rounded-lg bg-rose-600 hover:bg-rose-700 text-white flex items-center justify-center font-black transition-all cursor-pointer shadow-sm" title="Kapat">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/gunesi-kesfediyorum-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
 
     // 🌕 5. Sınıf Ay'ın Evreleri 3D Etkileşimli Planetaryum Uzay Simülatörü
     if (str.includes("ayin-evreleri") || str.includes("ay'ın evreleri") || str.includes("ayin_evreleri") || str.includes("ay-evreleri") || str.includes("oyun-5-gunes") || str.includes("oyun-ayin-evreleri-3d") || titleStr.includes("ay'ın evreleri") || titleStr.includes("yörünge") || titleStr.includes("yorunge") || resolvedKey === "oyun-5-gunes" || resolvedKey === "oyun-ayin-evreleri-3d") {
