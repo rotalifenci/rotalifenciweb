@@ -12209,8 +12209,19 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
+    // 🚀 1.8 🌟 İNTERAKTİF HTML5 AKILLI TAHTA SUNUMLARI (3D Sinematik Sunum)
+    const isHtmlPresentation = (checkFile.endsWith(".html") || (targetUrl && targetUrl.includes(".html")) || checkFormat.includes("İNTERAKTİF SUNUM") || checkFormat.includes("HTML SUNUM"));
+    if (isHtmlPresentation && targetUrl && targetUrl !== "#") {
+        const fullUrl = targetUrl.startsWith("http") ? targetUrl : new URL(targetUrl, window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/")).href;
+        const win = window.open(fullUrl, '_blank');
+        if (!win || win.closed || typeof win.closed === 'undefined') {
+            window.location.href = fullUrl;
+        }
+        return;
+    }
+
     // 🖥️ 2. GERÇEK OFİS SUNUMLARI (PowerPoint PPTX/PPT veya Dahili Akıllı Tahta Sunum Şablonu)
-    const isPresentation = !isPdfFile && (
+    const isPresentation = !isPdfFile && !isHtmlPresentation && (
         checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
         checkFormat.includes("PPT") || checkFormat.includes("SLAYT") ||
         checkFormat === "SUNUM" ||

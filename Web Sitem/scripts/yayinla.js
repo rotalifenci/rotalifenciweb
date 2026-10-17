@@ -26,7 +26,7 @@ const { execFileSync } = require("child_process");
 
 const SITE = path.resolve(__dirname, "..");
 const ROOT = path.resolve(SITE, "..");
-const SYNC = ["index.html", "version.json", "vercel.json", "manifest.json", "js", "css", "oyunlar", "assets", "data", "api"];
+const SYNC = ["index.html", "version.json", "vercel.json", "manifest.json", "js", "css", "sunumlar", "oyunlar", "assets", "data", "api"];
 
 const pad = (n) => String(n).padStart(2, "0");
 const d = new Date();
