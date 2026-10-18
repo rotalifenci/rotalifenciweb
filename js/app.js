@@ -5174,6 +5174,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             // unitCustoms içinde aynı simülatör veya oyun varsa tekilleştir
                             const alreadyExists = unitCustoms.some(c => 
                                 (c.fileUrl && g.fileUrl && (
+                                    (c.fileUrl.includes("kozmik-kasif") && g.fileUrl.includes("kozmik-kasif")) ||
+                                    (c.fileUrl.includes("kozmik-kosu") && g.fileUrl.includes("kozmik-kosu")) ||
                                     (c.fileUrl.includes("ayin-evreleri") && g.fileUrl.includes("ayin-evreleri")) ||
                                     (c.fileUrl.includes("gunesi-kesfediyorum") && g.fileUrl.includes("gunesi-kesfediyorum")) ||
                                     c.fileUrl === g.fileUrl
@@ -5181,6 +5183,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim()) ||
                                 (c.id && (
                                     c.id === g.id ||
+                                    (c.id.includes("kozmik-kasif") && g.id.includes("kozmik-kasif")) ||
+                                    (c.id.includes("kozmik-kosu") && g.id.includes("kozmik-kosu")) ||
                                     (c.id.includes("ayin-evreleri") && g.id.includes("ayin-evreleri")) ||
                                     (c.id.includes("gunesi-kesfediyorum") && g.id.includes("gunesi-kesfediyorum"))
                                 ))
@@ -5221,22 +5225,36 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         ${totalItems.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("oyun-");
                                             const isBuiltinGame = String(item.id).startsWith("oyun-");
-                                            const isAyinEvreleriItem = (item.fileUrl && item.fileUrl.includes("ayin-evreleri")) ||
+                                            const isKozmikKasifItem = (item.fileUrl && item.fileUrl.includes("kozmik-kasif")) ||
+                                                (item.title && (item.title.toLowerCase().includes("kozmik kâşif") || item.title.toLowerCase().includes("kozmik kasif"))) ||
+                                                (item.id && String(item.id).includes("kozmik-kasif"));
+                                            const isKozmikKosuItem = (item.fileUrl && item.fileUrl.includes("kozmik-kosu")) ||
+                                                (item.title && (item.title.toLowerCase().includes("kozmik koşu") || item.title.toLowerCase().includes("kozmik kosu") || item.title.toLowerCase().includes("ay evresi avı"))) ||
+                                                (item.id && String(item.id).includes("kozmik-kosu"));
+                                            const isAyinEvreleriItem = !isKozmikKasifItem && !isKozmikKosuItem && (
+                                                (item.fileUrl && item.fileUrl.includes("ayin-evreleri")) ||
                                                 (item.title && (item.title.toLowerCase().includes("ay'ın evreleri") || item.title.toLowerCase().includes("ayin evreleri"))) ||
-                                                (item.id && String(item.id).includes("ayin-evreleri"));
-                                            const isGunesItem = (item.fileUrl && item.fileUrl.includes("gunesi-kesfediyorum")) ||
-                                                (item.title && (item.title.toLowerCase().includes("güneş'i keşfediyorum") || item.title.toLowerCase().includes("gunesi kesfediyorum") || (item.title.toLowerCase().includes("güneş") && item.title.toLowerCase().includes("3d")))) ||
-                                                (item.id && String(item.id).includes("gunesi-kesfediyorum"));
+                                                (item.id && String(item.id).includes("ayin-evreleri"))
+                                            );
+                                            const isGunesItem = !isKozmikKasifItem && !isKozmikKosuItem && !isAyinEvreleriItem && (
+                                                (item.fileUrl && item.fileUrl.includes("gunesi-kesfediyorum")) ||
+                                                (item.title && (item.title.toLowerCase().includes("güneş'i keşfediyorum") || item.title.toLowerCase().includes("gunesi kesfediyorum"))) ||
+                                                (item.id && String(item.id).includes("gunesi-kesfediyorum"))
+                                            );
 
-                                            const actionCall = isAyinEvreleriItem
-                                                ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`
-                                                : (isGunesItem
-                                                    ? `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`
-                                                    : (isBuiltinGame
-                                                        ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
-                                                        : (isCustom
-                                                            ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
-                                                            : cfg.btnAction(item))));
+                                            const actionCall = isKozmikKasifItem
+                                                ? `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`
+                                                : (isKozmikKosuItem
+                                                    ? `openInteractiveGameModal('oyunlar/kozmik-kosu-3d.html', 'Kozmik Koşu: Ay Evresi Avı (3D)')`
+                                                    : (isAyinEvreleriItem
+                                                        ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`
+                                                        : (isGunesItem
+                                                            ? `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`
+                                                            : (isBuiltinGame
+                                                                ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
+                                                                : (isCustom
+                                                                    ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
+                                                                    : cfg.btnAction(item))))));
 
                                             const itemActionUI = isAyinEvreleriItem
                                                 ? { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
@@ -13855,22 +13873,6 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // ☀️ GÜNEŞ'İ KEŞFEDİYORUM 3D ETKİLEŞİMLİ UZAY LABORATUVARI
-    if (checkTitle.includes("güneş'i keşfediyorum") || checkTitle.includes("gunesi kesfediyorum") || (checkTitle.includes("güneş") && checkTitle.includes("3d")) ||
-        id === "mat-5-1-oyun-gunesi-kesfediyorum-3d" || id === "oyun-gunesi-kesfediyorum-3d" ||
-        targetUrl.includes("gunesi-kesfediyorum")) {
-        openInteractiveGameModal("oyunlar/gunesi-kesfediyorum-3d.html", "Güneş 3D Uzay Laboratuvarı");
-        return;
-    }
-
-    // 🌕 AY'IN EVRELERİ 3D PLANETARYUM VE UZAY SİMÜLATÖRÜ
-    if (checkTitle.includes("ay'ın evreleri") || checkTitle.includes("ayin evreleri") ||
-        id === "mat-5-1-oyun-ayin-evreleri-3d" || id === "oyun-5-gunes" || id === "oyun-ayin-evreleri-3d" ||
-        targetUrl.includes("ayin-evreleri")) {
-        openInteractiveGameModal("oyunlar/ayin-evreleri-3d.html", "Ay Evreleri 3D Simülatörü");
-        return;
-    }
-
     // 🛰️ 5. SINIF KOZMİK KÂŞİF 3D: AY VE GÜNEŞ ÜSSÜ (3D SPACE & ROVER SIMULATOR)
     if (checkTitle.includes("kozmik kâşif") || checkTitle.includes("kozmik kasif") || checkTitle.includes("ay ve güneş üssü") || checkTitle.includes("ay ve gunes ussu") ||
         id === "mat-5-1-oyun-kozmik-kasif-3d" || id === "builtin-oyun-5-kozmik-kasif" || id === "kozmik-kasif-3d" ||
@@ -13884,6 +13886,22 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         id === "mat-5-1-oyun-kozmik-kosu-3d" || id === "builtin-oyun-5-kozmik-kosu" || id === "kozmik-kosu-3d" ||
         targetUrl.includes("kozmik-kosu") || targetUrl.includes("kozmik_kosu")) {
         openInteractiveGameModal("oyunlar/kozmik-kosu-3d.html", "Kozmik Koşu: Ay Evresi Avı (3D)");
+        return;
+    }
+
+    // 🌕 AY'IN EVRELERİ 3D PLANETARYUM VE UZAY SİMÜLATÖRÜ
+    if (checkTitle.includes("ay'ın evreleri") || checkTitle.includes("ayin evreleri") ||
+        id === "mat-5-1-oyun-ayin-evreleri-3d" || id === "oyun-5-gunes" || id === "oyun-ayin-evreleri-3d" ||
+        targetUrl.includes("ayin-evreleri")) {
+        openInteractiveGameModal("oyunlar/ayin-evreleri-3d.html", "Ay Evreleri 3D Simülatörü");
+        return;
+    }
+
+    // ☀️ GÜNEŞ'İ KEŞFEDİYORUM 3D ETKİLEŞİMLİ UZAY LABORATUVARI
+    if (checkTitle.includes("güneş'i keşfediyorum") || checkTitle.includes("gunesi kesfediyorum") ||
+        id === "mat-5-1-oyun-gunesi-kesfediyorum-3d" || id === "oyun-gunesi-kesfediyorum-3d" ||
+        targetUrl.includes("gunesi-kesfediyorum")) {
+        openInteractiveGameModal("oyunlar/gunesi-kesfediyorum-3d.html", "Güneş 3D Uzay Laboratuvarı");
         return;
     }
 
@@ -15239,7 +15257,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     const titleStr = String(gameTitle || "").toLowerCase();
 
     // ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
-    if (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunes-3d") || str.includes("oyun-gunesi-kesfediyorum-3d") || (str.includes("gunes") && str.includes("3d")) || (titleStr.includes("güneş'i keşfediyorum") || (titleStr.includes("güneş") && titleStr.includes("3d"))) || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d") {
+    if (!str.includes("kasif") && !titleStr.includes("kâşif") && !titleStr.includes("kasif") && !str.includes("kosu") && !titleStr.includes("koşu") && (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunesi kesfediyorum") || titleStr.includes("güneş'i keşfediyorum") || titleStr.includes("gunesi kesfediyorum") || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d")) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
                 <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
@@ -15273,7 +15291,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
     // 🌕 5. Sınıf Ay'ın Evreleri 3D Etkileşimli Planetaryum Uzay Simülatörü
-    if (str.includes("ayin-evreleri") || str.includes("ay'ın evreleri") || str.includes("ayin_evreleri") || str.includes("ay-evreleri") || str.includes("oyun-5-gunes") || str.includes("oyun-ayin-evreleri-3d") || titleStr.includes("ay'ın evreleri") || titleStr.includes("yörünge") || titleStr.includes("yorunge") || resolvedKey === "oyun-5-gunes" || resolvedKey === "oyun-ayin-evreleri-3d") {
+    if (!str.includes("kasif") && !titleStr.includes("kâşif") && !titleStr.includes("kasif") && !str.includes("kosu") && !titleStr.includes("koşu") && (str.includes("ayin-evreleri") || str.includes("ay'ın evreleri") || str.includes("ayin_evreleri") || str.includes("ay-evreleri") || str.includes("oyun-5-gunes") || str.includes("oyun-ayin-evreleri-3d") || titleStr.includes("ay'ın evreleri") || titleStr.includes("yörünge") || titleStr.includes("yorunge") || resolvedKey === "oyun-5-gunes" || resolvedKey === "oyun-ayin-evreleri-3d")) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
                 <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
