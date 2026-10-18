@@ -13831,11 +13831,20 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME
-    if (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
+    // 🚀 7. SINIF UZAYDAN KAÇIŞ: GİZEMLİ İSTASYON 3D BİLİMSEL KAÇIŞ ODASI
+    if (checkTitle.includes("uzaydan") || checkTitle.includes("gizemli istasyon") || checkTitle.includes("gizemli-istasyon") ||
+        id === "mat-7-1-oyun-uzaydan-kacis-3d" || id === "builtin-oyun-7-uzaydan-kacis" || id === "uzaydan-kacis-3d" ||
+        targetUrl.includes("uzaydan-kacis") || targetUrl.includes("uzaydan_kacis")) {
+        openInteractiveGameModal("oyunlar/uzaydan-kacis-3d.html", "Uzaydan Kaçış: Gizemli İstasyon (3D)");
+        return;
+    }
+
+    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME (Laboratuvar Kaçış Odası)
+    if (!checkTitle.includes("uzay") && !targetUrl.includes("uzay") &&
+        (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
         id === "mat-5-lab-kacis-gemini" || id === "oyun-lab-kacis" ||
         targetUrl === "oyun-lab-kacis" || (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) ||
-        (fallbackUrl && (fallbackUrl.includes("gemini.google") || fallbackUrl.includes("share.gemini.google")))) {
+        (fallbackUrl && (fallbackUrl.includes("gemini.google") || fallbackUrl.includes("share.gemini.google"))))) {
         openInteractiveGameModal("oyun-lab-kacis", title || (found && found.title) || "Laboratuvar Kaçış Odası");
         return;
     }
@@ -15235,7 +15244,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
     // 🚀 7. Sınıf Uzaydan Kaçış: Gizemli İstasyon 3D Bilimsel Kaçış Odası
-    if (str.includes("uzaydan-kacis") || str.includes("uzaydan_kacis") || str.includes("uzaydan kaçış") || str.includes("gizemli-istasyon") || str.includes("gizemli istasyon") || str.includes("yorunge-7") || str.includes("yörünge-7") || resolvedKey === "uzaydan-kacis-3d" || resolvedKey === "oyun-uzaydan-kacis-3d" || resolvedKey === "oyun-7-uzay") {
+    if (str.includes("uzaydan-kacis") || str.includes("uzaydan_kacis") || str.includes("uzaydan kaçış") || str.includes("uzaydan kacis") || str.includes("gizemli-istasyon") || str.includes("gizemli istasyon") || str.includes("yorunge-7") || str.includes("yörünge-7") || str.includes("uzaydan") || titleStr.includes("uzaydan") || titleStr.includes("gizemli istasyon") || resolvedKey === "uzaydan-kacis-3d" || resolvedKey === "oyun-uzaydan-kacis-3d" || resolvedKey === "oyun-7-uzay") {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
                 <div class="px-3 py-1.5 bg-slate-900 border-b border-cyan-900/60 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
@@ -15269,7 +15278,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
     // Kaçış Odası veya Gemini ise kesinlikle yerel Kaçış Odası oyunumuzu hedefle
-    if (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis") {
+    if (!str.includes("uzay") && !titleStr.includes("uzay") && (str.includes("kaçış") || str.includes("kacis") || str.includes("escape") || str.includes("gemini") || titleStr.includes("kaçış") || titleStr.includes("kacis") || titleStr.includes("gemini") || resolvedKey === "oyun-lab-kacis")) {
         modal.innerHTML = `
             <div class="bg-slate-950 rounded-2xl w-full max-w-[98vw] h-[97vh] border border-slate-700 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
                 <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
@@ -15412,7 +15421,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     } else {
         // Fallback or Iframe web game player (in-page iframe)
         const embedUrl = (gameKeyOrUrl && gameKeyOrUrl.startsWith("http")) ? gameKeyOrUrl : "#";
-        const isGeminiAI = embedUrl.includes("gemini") || str.includes("gemini") || titleStr.includes("gemini") || str.includes("kaçış") || str.includes("kacis") || titleStr.includes("kaçış") || titleStr.includes("kacis") || str.includes("escape") || titleStr.includes("escape");
+        const isGeminiAI = !str.includes("uzay") && !titleStr.includes("uzay") && (embedUrl.includes("gemini") || str.includes("gemini") || titleStr.includes("gemini") || str.includes("kaçış") || str.includes("kacis") || titleStr.includes("kaçış") || titleStr.includes("kacis") || str.includes("escape") || titleStr.includes("escape"));
 
         if (isGeminiAI) {
             // Google Gemini iframe'de ASLA açılamaz (SAMEORIGIN kuralı). Yerel motorumuz anında devreye girer!
