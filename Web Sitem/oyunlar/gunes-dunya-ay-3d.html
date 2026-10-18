@@ -114,6 +114,38 @@
         .animate-pulse-slow {
             animation: pulse-slow 3s infinite ease-in-out;
         }
+    
+        /* 📱 Mobil Uyumlu Bottom Sheet ve UI Kuralları */
+        @media (max-width: 767px) {
+            .mobile-hidden-on-phone {
+                display: none !important;
+            }
+            .mobile-sheet-active {
+                position: fixed !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                top: auto !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                max-height: 78vh !important;
+                border-radius: 1.75rem 1.75rem 0 0 !important;
+                z-index: 50 !important;
+                display: block !important;
+                padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important;
+                background: rgba(7, 12, 25, 0.98) !important;
+                border-top: 2px solid rgba(245, 158, 11, 0.5) !important;
+                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.85) !important;
+            }
+            .mobile-pip-active {
+                position: fixed !important;
+                bottom: 5rem !important;
+                right: 0.75rem !important;
+                z-index: 30 !important;
+                display: block !important;
+                width: 130px !important;
+            }
+        }
     </style>
 </head>
 <body class="relative w-full h-full overflow-hidden bg-slate-950 text-slate-100 flex flex-col">
@@ -211,7 +243,7 @@
     <div class="relative flex-1 w-full h-full pointer-events-none overflow-hidden">
 
         <!-- 🧭 SOL YÜZEN PANEL: HAREKET KONTROLLERİ & BAĞIMSIZ ANAHTARLAR -->
-        <div id="left-controls-panel" class="pointer-events-auto absolute top-3 left-3 sm:left-4 z-10 w-72 sm:w-80 max-h-[calc(100%-24px)] overflow-y-auto no-scrollbar glass-panel rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all duration-300">
+        <div id="left-controls-panel" class="pointer-events-auto hidden md:block md:absolute md:top-3 md:left-3 md:z-10 md:w-80 md:max-h-[calc(100%-24px)] overflow-y-auto no-scrollbar glass-panel md:rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all duration-300">
             
             <!-- Panel Başlığı & Kapat/Aç Toggle -->
             <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
@@ -327,7 +359,7 @@
         </div>
 
         <!-- 🧭 SAĞ ÜST YÜZEN PANEL: HAREKET YÖNÜ REHBERİ (SAAT YÖNÜNÜN TERSİ) -->
-        <div id="right-clock-panel" class="pointer-events-auto absolute top-3 right-3 sm:right-4 z-10 w-76 sm:w-84 glass-panel rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all">
+        <div id="right-clock-panel" class="pointer-events-auto hidden md:block md:absolute md:top-3 md:right-3 md:z-10 md:w-84 glass-panel md:rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all">
             <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
                 <div class="flex items-center gap-2">
                     <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
@@ -335,9 +367,14 @@
                     </span>
                     <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Yönü Rehberi</h3>
                 </div>
-                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                    KUZEYDEN BAKIŞ
-                </span>
+                <div class="flex items-center gap-1.5">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        KUZEYDEN BAKIŞ
+                    </span>
+                    <button type="button" onclick="closeAllMobileSheets()" class="md:hidden px-2 py-0.5 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-xmark"></i> Kapat
+                    </button>
+                </div>
             </div>
 
             <!-- Yan Yana Yön Karşılaştırması (Normal Duvar Saati vs Gök Cisimleri) -->
@@ -442,6 +479,25 @@
                 </div>
             </div>
         </div>
+
+        
+        <!-- 📱 MOBİL PANEL AÇMA ÇUBUĞU (Yalnızca Telefonlarda Görünür) -->
+        <div class="pointer-events-auto md:hidden absolute bottom-14 inset-x-0 z-30 flex items-center justify-center gap-2 px-3">
+            <button type="button" onclick="openMobileSheet('left-controls-panel')" class="flex-1 max-w-[145px] py-2 px-2.5 rounded-2xl bg-slate-900/95 hover:bg-amber-600 text-white border border-amber-500/40 shadow-2xl backdrop-blur-xl flex items-center justify-center gap-1.5 text-xs font-black active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-sliders text-amber-400"></i>
+                <span>Kontroller</span>
+            </button>
+            <button type="button" onclick="openMobileSheet('right-clock-panel')" class="flex-1 max-w-[145px] py-2 px-2.5 rounded-2xl bg-slate-900/95 hover:bg-emerald-600 text-white border border-emerald-500/40 shadow-2xl backdrop-blur-xl flex items-center justify-center gap-1.5 text-xs font-black active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-compass text-emerald-400"></i>
+                <span>Yön Rehberi</span>
+            </button>
+            <button type="button" onclick="toggleMobilePip()" class="w-10 h-10 rounded-2xl bg-slate-900/95 hover:bg-cyan-600 text-white border border-cyan-500/40 shadow-2xl backdrop-blur-xl flex items-center justify-center text-sm font-black active:scale-95 cursor-pointer" title="Ay Evresi Görünümü">
+                <i class="fa-solid fa-moon text-cyan-400"></i>
+            </button>
+        </div>
+
+        <!-- 📱 Mobil Karartma Perdesi -->
+        <div id="mobile-sheet-backdrop" onclick="closeAllMobileSheets()" class="hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm pointer-events-auto transition-opacity"></div>
 
         <!-- 📢 ORTA EĞİTİCİ BİLGİ KARTLARI & ÖĞRETMEN SORU KARTI -->
         <div id="teacher-quiz-overlay" class="pointer-events-auto absolute top-16 left-1/2 -translate-x-1/2 z-30 max-w-lg w-[92%] glass-panel rounded-3xl p-5 border-2 border-amber-500/50 shadow-2xl transition-all duration-300 hidden">
