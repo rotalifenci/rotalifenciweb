@@ -1175,7 +1175,7 @@
         function createCurvedArrow(radius, arcAngle, colorHex) {
             const group = new THREE.Group();
             const curvePoints = [];
-            const segments = 24;
+            const segments = 36;
             
             // Kuzeyden bakışta saat yönünün tersi (CCW: 0'dan arcAngle'a)
             for (let i = 0; i <= segments; i++) {
@@ -1187,9 +1187,17 @@
             const line = new THREE.Line(curveGeo, curveMat);
             group.add(line);
 
-            // Ok Ucu (Koni)
-            const headGeo = new THREE.ConeGeometry(radius * 0.05 + 0.35, radius * 0.12 + 0.8, 8);
-            const headMat = new THREE.MeshBasicMaterial({ color: colorHex });
+            // Ok Ucu (Zarif, pürüzsüz 32-segmentli ve orantılı koni)
+            const headRadius = Math.min(Math.max(radius * 0.012, 0.35), 0.95);
+            const headHeight = headRadius * 2.8;
+            const headGeo = new THREE.ConeGeometry(headRadius, headHeight, 32);
+            const headMat = new THREE.MeshStandardMaterial({ 
+                color: colorHex, 
+                roughness: 0.3,
+                metalness: 0.2,
+                emissive: colorHex,
+                emissiveIntensity: 0.4
+            });
             const head = new THREE.Mesh(headGeo, headMat);
 
             const lastPoint = curvePoints[segments];
