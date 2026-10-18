@@ -13383,6 +13383,14 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
+    // 🪐 5. SINIF GÜNEŞ, DÜNYA VE AY: 3D HAREKET LABORATUVARI
+    if (checkTitle.includes("hareket laboratuvarı") || checkTitle.includes("hareket laboratuvari") || (checkTitle.includes("güneş") && checkTitle.includes("dünya") && checkTitle.includes("ay")) ||
+        id === "mat-5-1-oyun-gunes-dunya-ay-3d" || id === "builtin-oyun-5-gunes-dunya-ay" || id === "gunes-dunya-ay-3d" ||
+        targetUrl.includes("gunes-dunya-ay") || targetUrl.includes("gunes_dunya_ay")) {
+        openInteractiveGameModal("oyunlar/gunes-dunya-ay-3d.html", "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı");
+        return;
+    }
+
     // 🌕 APOLLO 11 AY'A İNİŞ VE DÜNYA GÖZLEMİ 3D VR SİMÜLASYONU
     if (checkTitle.includes("ay'a iniş") || checkTitle.includes("aya inis") || checkTitle.includes("aya iniş") || checkTitle.includes("apollo 11") || checkTitle.includes("apollo11") ||
         id === "mat-apollo11-aya-inis-3d" || id === "builtin-oyun-apollo11-aya-inis" || id === "builtin-oyun-6-aya-inis" || id === "aya-inis-3d" ||
