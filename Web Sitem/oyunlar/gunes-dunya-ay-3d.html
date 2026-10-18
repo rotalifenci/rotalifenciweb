@@ -71,7 +71,7 @@
             touch-action: none;
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.82);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.12);
@@ -80,12 +80,6 @@
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .glow-gold {
-            box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
-        }
-        .glow-blue {
-            box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar {
@@ -106,489 +100,418 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* Pulse animations */
-        @keyframes pulse-slow {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.85; transform: scale(1.03); }
-        }
-        .animate-pulse-slow {
-            animation: pulse-slow 3s infinite ease-in-out;
-        }
-    
-        /* 📱 Mobil Uyumlu Bottom Sheet ve UI Kuralları */
-        @media (max-width: 767px) {
-            .mobile-hidden-on-phone {
-                display: none !important;
-            }
-            .mobile-sheet-active {
-                position: fixed !important;
-                left: 0 !important;
-                right: 0 !important;
-                bottom: 0 !important;
-                top: auto !important;
-                width: 100% !important;
-                max-width: 100% !important;
-                max-height: 78vh !important;
-                border-radius: 1.75rem 1.75rem 0 0 !important;
-                z-index: 50 !important;
-                display: block !important;
-                padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important;
-                background: rgba(7, 12, 25, 0.98) !important;
-                border-top: 2px solid rgba(245, 158, 11, 0.5) !important;
-                box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.85) !important;
-            }
-            .mobile-pip-active {
-                position: fixed !important;
-                bottom: 5rem !important;
-                right: 0.75rem !important;
-                z-index: 30 !important;
-                display: block !important;
-                width: 130px !important;
-            }
-        }
     </style>
 </head>
-<body class="relative w-full h-full overflow-hidden bg-slate-950 text-slate-100 flex flex-col">
+<body class="relative w-full h-full overflow-hidden bg-slate-950 text-slate-100 flex flex-col select-none">
 
-    <!-- 🌌 3D WEBGL SAHNESİ -->
+    <!-- 🌌 3D WEBGL SAHNESİ (Tam Ekran Arka Plan) -->
     <div class="absolute inset-0 w-full h-full z-0 overflow-hidden">
         <canvas id="webgl-canvas"></canvas>
     </div>
 
-    <!-- 🌟 ÜST BAŞLIK BARI (HEADER) -->
-    <header class="relative z-20 w-full px-3 sm:px-5 py-2.5 glass-panel border-b border-white/10 flex items-center justify-between gap-3 shrink-0">
+    <!-- 🌟 ÜST BAŞLIK BARI (HEADER) - Tek Satır, Sade ve Ferah -->
+    <header class="relative z-20 w-full px-3 sm:px-5 py-2 glass-panel border-b border-white/10 flex items-center justify-between gap-2 shrink-0">
         <!-- Sol: Logo & Başlık -->
-        <div class="flex items-center gap-3 min-w-0">
-            <a href="../#home" class="flex items-center gap-2.5 shrink-0 group hover:opacity-95 transition-opacity" title="Rotalı Fenci Ana Sayfa">
-                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-cover border border-amber-400/40 shadow-sm" onerror="this.src='../assets/rotali-fenci-logo.png'">
+        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <a href="../#home" class="flex items-center gap-2 shrink-0 group hover:opacity-95 transition-opacity" title="Rotalı Fenci Ana Sayfa">
+                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-8 h-8 rounded-xl object-cover border border-amber-400/40 shadow-sm" onerror="this.src='../assets/rotali-fenci-logo.png'">
                 <div class="hidden sm:block">
                     <div class="font-black text-xs sm:text-sm tracking-wider text-amber-400 uppercase leading-none font-orbitron">ROTALI FENCİ</div>
                     <div class="text-[9px] font-bold text-slate-300 tracking-widest uppercase mt-0.5">3D HAREKET LABORATUVARI</div>
                 </div>
             </a>
-
-            <div class="h-6 w-px bg-white/15 hidden md:block"></div>
-
+            <div class="h-6 w-px bg-white/15 hidden sm:block"></div>
             <div class="min-w-0">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                    <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                        5. SINIF FEN BİLİMLERİ
-                    </span>
-                    <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 hidden lg:inline">
-                        1. ÜNİTE: GÜNEŞ, DÜNYA VE AY
-                    </span>
-                </div>
-                <h1 class="text-xs sm:text-base font-black text-white truncate flex items-center gap-1.5 mt-0.5">
-                    <span>Güneş, Dünya ve Ay: 3D Hareket Simülasyonu</span>
-                </h1>
+                <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    5. SINIF FEN
+                </span>
+                <span class="text-xs sm:text-sm font-black text-white ml-1.5 truncate hidden md:inline">Güneş, Dünya ve Ay</span>
             </div>
         </div>
 
-        <!-- Sağ: Aksiyon Butonları -->
-        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <!-- Öğretmen Modu Butonu -->
-            <button id="btn-teacher-mode" onclick="toggleTeacherMode()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-amber-600 text-slate-200 hover:text-white font-black text-[11px] sm:text-xs border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95" title="Akıllı Tahta Öğretmen Soru-Cevap Modu">
-                <i class="fa-solid fa-chalkboard-user text-amber-400"></i>
-                <span class="hidden md:inline">Öğretmen Modu</span>
-            </button>
+        <!-- Orta: Aktif Mod Rozeti (Tıklanınca Menüyü Açar) -->
+        <button onclick="toggleSideMenu()" id="header-active-mode-btn" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800/90 hover:bg-slate-700 text-amber-300 border border-amber-500/30 text-xs sm:text-sm font-black flex items-center gap-1.5 cursor-pointer shadow-md active:scale-95 transition-all truncate max-w-[190px] sm:max-w-none" title="Simülasyon Modunu Değiştirmek İçin Menüyü Aç">
+            <i class="fa-solid fa-shapes text-amber-400 text-xs"></i>
+            <span id="header-mode-title" class="truncate">7. Güneş + Dünya + Ay</span>
+            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+        </button>
 
-            <!-- Deneyler / Quiz Butonu -->
-            <button onclick="toggleExperimentModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-black text-[11px] sm:text-xs border border-indigo-400/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95" title="Etkileşimli Deneyler & Görevler">
-                <i class="fa-solid fa-flask-vial text-cyan-300"></i>
-                <span class="hidden sm:inline">Deneyler (4)</span>
+        <!-- Sağ: Menü Açma Butonu & Tam Ekran & Yardım -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <!-- ☰ YAN MENÜ BUTONU (Çok Belirgin, Tıklanınca Yan Menüyü Açar) -->
+            <button onclick="toggleSideMenu()" id="btn-open-menu" class="px-3 sm:px-4 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-1.5 cursor-pointer shadow-lg shadow-amber-500/20 active:scale-95 transition-all" title="Kontroller ve Modlar Menüsü">
+                <i class="fa-solid fa-bars text-sm"></i>
+                <span>Menü</span>
             </button>
 
             <!-- Tam Ekran -->
-            <button onclick="toggleFullScreen()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/10 text-xs sm:text-sm active:scale-95" title="Tam Ekran">
+            <button onclick="toggleFullScreen()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/10 text-xs active:scale-95" title="Tam Ekran">
                 <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
             </button>
 
-            <!-- Yardım / Bilgi Rehberi -->
-            <button onclick="toggleHelpModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/10 text-xs sm:text-sm active:scale-95" title="Simülasyon Bilimsel Rehberi">
+            <!-- Yardım / Bilimsel Rehber -->
+            <button onclick="toggleHelpModal()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/10 text-xs active:scale-95" title="Bilimsel Rehber">
                 <i class="fa-solid fa-circle-question text-amber-300"></i>
             </button>
         </div>
     </header>
 
-    <!-- 🎛️ 7 SİMÜLASYON MODU HIZLI SEÇİM ŞERİDİ (ÜST MOD SEÇİCİ) -->
-    <div class="relative z-10 w-full px-3 sm:px-5 py-2 glass-panel-light border-b border-white/10 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-xs">
-        <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 shrink-0 hidden lg:inline flex items-center gap-1 mr-1">
-            <i class="fa-solid fa-shapes text-amber-400"></i> MOD:
-        </span>
-        
-        <button onclick="setSimMode(1)" id="mode-btn-1" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
-            <span>☀️ 1. Yalnız Güneş</span>
-        </button>
-        <button onclick="setSimMode(2)" id="mode-btn-2" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
-            <span>🌍 2. Yalnız Dünya</span>
-        </button>
-        <button onclick="setSimMode(3)" id="mode-btn-3" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
-            <span>🌕 3. Yalnız Ay</span>
-        </button>
-        <button onclick="setSimMode(4)" id="mode-btn-4" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
-            <span>☀️🌍 4. Güneş + Dünya</span>
-        </button>
-        <button onclick="setSimMode(5)" id="mode-btn-5" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
-            <span>🌍🌕 5. Dünya + Ay</span>
-        </button>
-        <button onclick="setSimMode(6)" id="mode-btn-6" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
-            <span>☀️🌕 6. Güneş + Ay</span>
-        </button>
-        <button onclick="setSimMode(7)" id="mode-btn-7" class="mode-btn px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black border-amber-400 shadow-md scale-[1.02]">
-            <span>🌌 7. Güneş + Dünya + Ay</span>
-        </button>
+    <!-- 🚀 ORTA ALAN (Tamamen Temiz 3D Görünüm, Ekranı Kapatan Hiçbir Kutu Yok) -->
+    <div class="relative flex-1 w-full h-full pointer-events-none overflow-hidden">
+        <!-- Öğretmen Tahmin Kartı (Yalnızca Öğretmen Modunda Açılır) -->
+        <div id="teacher-quiz-overlay" class="pointer-events-auto absolute top-4 left-1/2 -translate-x-1/2 z-30 max-w-lg w-[92%] glass-panel rounded-3xl p-4 sm:p-5 border-2 border-amber-500/50 shadow-2xl transition-all duration-300 hidden">
+            <div class="flex items-center justify-between mb-2.5">
+                <span class="px-2.5 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                    <i class="fa-solid fa-graduation-cap"></i> ÖĞRETMEN MODU: ÖNCE TAHMİN ET
+                </span>
+                <button onclick="toggleTeacherMode()" class="text-slate-400 hover:text-white p-1 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <h3 id="quiz-question-title" class="text-xs sm:text-sm font-black text-white mb-2 leading-snug">
+                Dünya kendi ekseni etrafında hangi yönde döner?
+            </h3>
+            <p id="quiz-question-sub" class="text-[11px] text-slate-300 mb-3">
+                Öğrencilerden tahminleri aldıktan sonra doğru hareketi ve yön ibresini başlatmak için seçeneğe dokunun.
+            </p>
+            <div class="grid grid-cols-2 gap-2.5 mb-2.5">
+                <button onclick="checkTeacherAnswer('cw')" class="py-2 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 border border-white/20 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Saat Yönünde
+                </button>
+                <button onclick="checkTeacherAnswer('ccw')" class="py-2 px-3 rounded-xl bg-cyan-700/80 hover:bg-cyan-600 border border-cyan-400/40 text-xs font-black text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-rotate-left text-cyan-200"></i> Saat Yönünün Tersi
+                </button>
+            </div>
+            <div id="quiz-feedback-box" class="hidden p-2.5 rounded-xl bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-200 font-medium"></div>
+        </div>
     </div>
 
-    <!-- 🚀 ORTA ANA ALAN (3D Sahne Üzerindeki Yüzen Paneller) -->
-    <div class="relative flex-1 w-full h-full pointer-events-none overflow-hidden">
-
-        <!-- 🧭 SOL YÜZEN PANEL: HAREKET KONTROLLERİ & BAĞIMSIZ ANAHTARLAR -->
-        <div id="left-controls-panel" class="pointer-events-auto hidden md:block md:absolute md:top-3 md:left-3 md:z-10 md:w-80 md:max-h-[calc(100%-24px)] overflow-y-auto no-scrollbar glass-panel md:rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all duration-300">
+    <!-- 🎮 ALT TEK EKRAN OYNATMA BARI (FOOTER) - Sabit, Kaydırma Yok, Her Zaman Görünür -->
+    <footer class="relative z-20 w-full px-3 sm:px-5 py-2 glass-panel border-t border-white/10 shrink-0 select-none">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
             
-            <!-- Panel Başlığı & Kapat/Aç Toggle -->
-            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs">
-                        <i class="fa-solid fa-sliders"></i>
-                    </span>
-                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Kontrolleri</h3>
+            <!-- Sol: Oynat/Durdur Butonu (Büyük, Belirgin, Tek Dokunuşla Çalışır) -->
+            <div class="flex items-center gap-1.5 sm:gap-2">
+                <button id="btn-master-play" onclick="toggleMasterPlay()" class="h-10 sm:h-11 px-4 sm:px-5 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer shrink-0">
+                    <i class="fa-solid fa-play text-sm" id="master-play-icon"></i>
+                    <span id="master-play-text">Başlat</span>
+                </button>
+
+                <!-- Hız Butonları -->
+                <div class="flex items-center gap-0.5 bg-black/50 p-1 rounded-2xl border border-white/10">
+                    <button onclick="setSpeed(0.5)" class="speed-btn h-8 px-2 sm:px-2.5 rounded-xl text-[11px] sm:text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="0.5">0.5x</button>
+                    <button onclick="setSpeed(1)" class="speed-btn h-8 px-2 sm:px-2.5 rounded-xl text-[11px] sm:text-xs font-black bg-amber-500 text-slate-950 transition-all cursor-pointer" data-speed="1">1x</button>
+                    <button onclick="setSpeed(5)" class="speed-btn h-8 px-2 sm:px-2.5 rounded-xl text-[11px] sm:text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="5">5x</button>
+                    <button onclick="setSpeed(20)" class="speed-btn h-8 px-2 sm:px-2.5 rounded-xl text-[11px] sm:text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer hidden xs:inline" data-speed="20">20x</button>
                 </div>
-                <button onclick="togglePanelCollapse('left-controls-content')" class="text-slate-400 hover:text-white p-1 text-xs cursor-pointer">
-                    <i class="fa-solid fa-chevron-up transition-transform" id="left-panel-chevron"></i>
+
+                <!-- Sıfırla Butonu -->
+                <button onclick="resetAllPositions()" class="h-8 sm:h-9 px-2.5 sm:px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-[11px] sm:text-xs font-bold border border-white/10 transition-all flex items-center gap-1 active:scale-95 cursor-pointer" title="Konumları ve Açıları Başa Sar">
+                    <i class="fa-solid fa-rotate-left"></i>
+                    <span class="hidden sm:inline">Sıfırla</span>
                 </button>
             </div>
 
-            <div id="left-controls-content" class="space-y-3">
-                <!-- ☀️ GÜNEŞ KONTROLLERİ -->
-                <div class="p-2.5 rounded-2xl bg-amber-950/40 border border-amber-500/20" id="ctrl-group-sun">
+            <!-- Sağ: Kamera Açısı Seçici -->
+            <div class="flex items-center gap-1 bg-black/50 p-1 rounded-2xl border border-white/10 text-xs shrink-0">
+                <button onclick="setCameraView('perspective')" class="h-8 px-2 sm:px-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1" title="Serbest 3D Kamera">
+                    <i class="fa-solid fa-video text-[10px]"></i>
+                    <span class="text-[11px]">Serbest</span>
+                </button>
+                <button onclick="setCameraView('top')" class="h-8 px-2 sm:px-2.5 rounded-xl font-bold text-emerald-300 hover:text-emerald-200 hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1" title="Kuzey Kutbu Kuşbakışı">
+                    <i class="fa-solid fa-arrows-up-to-line text-[10px]"></i>
+                    <span class="text-[11px]">Kuzeyden</span>
+                </button>
+                <button onclick="setCameraView('earth')" class="h-8 px-2 sm:px-2.5 rounded-xl font-bold text-cyan-300 hover:text-cyan-200 hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1" title="Dünya'ya Odaklan">
+                    <i class="fa-solid fa-earth-americas text-[10px]"></i>
+                    <span class="text-[11px]">Dünya</span>
+                </button>
+                <button onclick="setCameraView('moon')" class="h-8 px-2 sm:px-2.5 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer flex items-center gap-1" title="Ay'a Odaklan">
+                    <i class="fa-solid fa-moon text-[10px]"></i>
+                    <span class="text-[11px]">Ay</span>
+                </button>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- ============================================================== -->
+    <!-- 🧭 YAN MENÜ ÇEKMECESİ (SIDE DRAWER - HEM MOBİL HEM PC İÇİN)   -->
+    <!-- ============================================================== -->
+    <!-- Karartma Perdesi -->
+    <div id="side-menu-backdrop" onclick="closeSideMenu()" class="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300"></div>
+
+    <!-- Yan Menü Paneli -->
+    <aside id="side-drawer" class="fixed inset-y-0 left-0 z-50 w-80 sm:w-96 max-w-[88vw] bg-slate-950/95 backdrop-blur-2xl border-r border-white/15 shadow-2xl flex flex-col -translate-x-full transition-transform duration-300 ease-in-out">
+        <!-- Menü Üst Başlık & Kapat Butonu -->
+        <div class="p-3.5 sm:p-4 border-b border-white/10 flex items-center justify-between bg-slate-900/80 shrink-0">
+            <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-sm border border-amber-500/30">
+                    <i class="fa-solid fa-sliders"></i>
+                </span>
+                <div>
+                    <h2 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Simülasyon Menüsü</h2>
+                    <p class="text-[10px] text-slate-400 font-medium">Hareketler, modlar ve rehberler</p>
+                </div>
+            </div>
+            <button onclick="closeSideMenu()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-rose-600 text-slate-300 hover:text-white transition-colors flex items-center justify-center cursor-pointer text-xs" title="Menüyü Kapat">
+                <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+        </div>
+
+        <!-- Menü İçeriği (Kaydırılabilir) -->
+        <div class="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-4 no-scrollbar">
+
+            <!-- 1. SİMÜLASYON MODU (7 MOD) -->
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-shapes"></i> 7 Simülasyon Modu
+                    </span>
+                    <span class="text-[9px] text-slate-400">Seçmek için tıkla</span>
+                </div>
+                <div class="grid grid-cols-1 gap-1.5 text-xs">
+                    <button onclick="selectSimModeFromMenu(1)" id="menu-mode-1" class="menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer">
+                        <span>☀️ 1. Yalnız Güneş</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                    <button onclick="selectSimModeFromMenu(2)" id="menu-mode-2" class="menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer">
+                        <span>🌍 2. Yalnız Dünya</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                    <button onclick="selectSimModeFromMenu(3)" id="menu-mode-3" class="menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer">
+                        <span>🌕 3. Yalnız Ay</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                    <button onclick="selectSimModeFromMenu(4)" id="menu-mode-4" class="menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer">
+                        <span>☀️🌍 4. Güneş + Dünya</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                    <button onclick="selectSimModeFromMenu(5)" id="menu-mode-5" class="menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer">
+                        <span>🌍🌕 5. Dünya + Ay</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                    <button onclick="selectSimModeFromMenu(6)" id="menu-mode-6" class="menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer">
+                        <span>☀️🌕 6. Güneş + Ay</span>
+                        <i class="fa-solid fa-chevron-right text-[10px] text-slate-500"></i>
+                    </button>
+                    <button onclick="selectSimModeFromMenu(7)" id="menu-mode-7" class="menu-mode-btn p-2.5 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black flex items-center justify-between text-left shadow-md transition-all cursor-pointer">
+                        <span>🌌 7. Güneş + Dünya + Ay (Ana Mod)</span>
+                        <i class="fa-solid fa-check text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2. BAĞIMSIZ HAREKET ANAHTARLARI -->
+            <div class="space-y-2 pt-2 border-t border-white/10">
+                <span class="text-[11px] font-black uppercase text-cyan-400 tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-toggle-on"></i> Bağımsız Hareket Anahtarları
+                </span>
+
+                <!-- Güneş Kontrolleri -->
+                <div class="p-2.5 rounded-xl bg-amber-950/30 border border-amber-500/20">
                     <div class="flex items-center justify-between mb-1.5">
                         <span class="text-xs font-black text-amber-300 flex items-center gap-1.5">
                             <i class="fa-solid fa-sun"></i> GÜNEŞ
                         </span>
-                        <span class="text-[10px] text-amber-200/70 font-mono">~25 Gün</span>
+                        <span class="text-[10px] text-amber-300/70 font-mono">~25 Gün</span>
                     </div>
-                    <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                    <label class="flex items-center justify-between p-2 rounded-lg bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
                         <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme</span>
                         <input type="checkbox" id="chk-sun-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-amber-500 accent-amber-500 cursor-pointer">
                     </label>
                 </div>
 
-                <!-- 🌍 DÜNYA KONTROLLERİ -->
-                <div class="p-2.5 rounded-2xl bg-blue-950/40 border border-blue-500/20" id="ctrl-group-earth">
-                    <div class="flex items-center justify-between mb-1.5">
+                <!-- Dünya Kontrolleri -->
+                <div class="p-2.5 rounded-xl bg-blue-950/30 border border-blue-500/20 space-y-1.5">
+                    <div class="flex items-center justify-between mb-1">
                         <span class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
                             <i class="fa-solid fa-earth-americas"></i> DÜNYA
                         </span>
-                        <span class="text-[10px] text-cyan-200/70 font-mono">24 Sa / 365 Gün</span>
+                        <span class="text-[10px] text-cyan-300/70 font-mono">24 Sa / 365 Gün</span>
                     </div>
-                    <div class="space-y-1.5">
-                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
-                            <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme (Gece-Gündüz)</span>
-                            <input type="checkbox" id="chk-earth-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer">
-                        </label>
-                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
-                            <span class="font-bold text-slate-200 text-[11px]">Güneş Çevresinde Dolanma (1 Yıl)</span>
-                            <input type="checkbox" id="chk-earth-rev" onchange="updateMovementStates()" class="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer">
-                        </label>
-                    </div>
+                    <label class="flex items-center justify-between p-2 rounded-lg bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                        <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme (Gece-Gündüz)</span>
+                        <input type="checkbox" id="chk-earth-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer">
+                    </label>
+                    <label class="flex items-center justify-between p-2 rounded-lg bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                        <span class="font-bold text-slate-200 text-[11px]">Güneş Çevresinde Dolanma (1 Yıl)</span>
+                        <input type="checkbox" id="chk-earth-rev" onchange="updateMovementStates()" class="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer">
+                    </label>
                 </div>
 
-                <!-- 🌕 AY KONTROLLERİ -->
-                <div class="p-2.5 rounded-2xl bg-slate-900/60 border border-slate-400/20" id="ctrl-group-moon">
-                    <div class="flex items-center justify-between mb-1.5">
+                <!-- Ay Kontrolleri -->
+                <div class="p-2.5 rounded-xl bg-slate-900/60 border border-slate-400/20 space-y-1.5">
+                    <div class="flex items-center justify-between mb-1">
                         <span class="text-xs font-black text-slate-200 flex items-center gap-1.5">
                             <i class="fa-solid fa-moon"></i> AY
                         </span>
-                        <span class="text-[10px] text-slate-400 font-mono">~27,3 Gün</span>
+                        <span class="text-[10px] text-slate-400 font-mono">~27,3 Gün (Eşzamanlı)</span>
                     </div>
-                    <div class="space-y-1.5">
-                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
-                            <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme</span>
-                            <input type="checkbox" id="chk-moon-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-slate-300 accent-slate-300 cursor-pointer">
-                        </label>
-                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
-                            <span class="font-bold text-slate-200 text-[11px]">Dünya Çevresinde Dolanma</span>
-                            <input type="checkbox" id="chk-moon-rev" onchange="updateMovementStates()" class="w-4 h-4 rounded text-slate-300 accent-slate-300 cursor-pointer">
-                        </label>
-                        <label class="flex items-center justify-between p-2 rounded-xl bg-purple-950/40 border border-purple-500/30 hover:bg-purple-950/60 transition-colors cursor-pointer text-xs">
-                            <span class="font-bold text-purple-200 text-[11px] flex items-center gap-1">
-                                <i class="fa-solid fa-thumbtack text-rose-400"></i> "Aynı Yüz" İşaretini Göster
-                            </span>
-                            <input type="checkbox" id="chk-same-face" onchange="toggleSameFaceMarker()" checked class="w-4 h-4 rounded text-purple-400 accent-purple-400 cursor-pointer">
-                        </label>
-                    </div>
-                </div>
+                    <label class="flex items-center justify-between p-2 rounded-lg bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                        <div>
+                            <span class="font-bold text-slate-200 text-[11px] block">Dönme ve Dolanma Hareketi</span>
+                            <span class="text-[9px] text-slate-400">1 dönme süresi = 1 dolanma süresi</span>
+                        </div>
+                        <input type="checkbox" id="chk-moon-motion" onchange="updateMovementStates()" class="w-4 h-4 rounded text-slate-300 accent-slate-300 cursor-pointer">
+                    </label>
+                    <label class="flex items-center justify-between p-2 rounded-lg bg-purple-950/40 border border-purple-500/30 hover:bg-purple-950/60 transition-colors cursor-pointer text-xs">
+                        <span class="font-bold text-purple-200 text-[11px] flex items-center gap-1">
+                            <i class="fa-solid fa-thumbtack text-rose-400"></i> "Aynı Yüz" Türk Bayrağı & Çizgi
+                        </span>
+                        <input type="checkbox" id="chk-same-face" onchange="toggleSameFaceMarker()" checked class="w-4 h-4 rounded text-purple-400 accent-purple-400 cursor-pointer">
+                    </label>
 
-                <!-- 🎛️ TOPLU HAREKET YÖNETİM BUTONLARI -->
-                <div class="pt-2 border-t border-white/10 grid grid-cols-2 gap-2">
-                    <button type="button" onclick="startAllMovements()" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
-                        <i class="fa-solid fa-play"></i> Hepsini Başlat
-                    </button>
-                    <button type="button" onclick="pauseAllMovements()" class="py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
-                        <i class="fa-solid fa-pause"></i> Hepsini Durdur
-                    </button>
-                    <button type="button" onclick="resetAllPositions()" class="col-span-2 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs transition-all border border-white/10 flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
-                        <i class="fa-solid fa-rotate-left"></i> Konumları Sıfırla
-                    </button>
-                </div>
-
-                <!-- ⚙️ YARDIMCI GÖRSEL KATMANLAR -->
-                <div class="pt-2 border-t border-white/10 space-y-1.5">
-                    <span class="text-[10px] font-black uppercase text-slate-400 block tracking-wider">Görsel Katmanlar & Oklar</span>
-                    <div class="grid grid-cols-2 gap-1.5 text-[11px]">
-                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
-                            <input type="checkbox" id="chk-show-orbits" checked onchange="toggleOrbits()" class="rounded text-amber-500 accent-amber-500">
-                            <span class="text-slate-300">Yörüngeler</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
-                            <input type="checkbox" id="chk-show-arrows" checked onchange="toggleArrows()" class="rounded text-cyan-500 accent-cyan-500">
-                            <span class="text-slate-300">3D Yön Okları</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
-                            <input type="checkbox" id="chk-show-axes" checked onchange="toggleAxes()" class="rounded text-yellow-500 accent-yellow-500">
-                            <span class="text-slate-300">Dönüş Ekseni</span>
-                        </label>
-                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
-                            <input type="checkbox" id="chk-show-orrery" onchange="toggleOrreryArms()" class="rounded text-amber-500 accent-amber-500">
-                            <span class="text-slate-300 font-bold text-amber-300">Mekanik Kol</span>
-                        </label>
+                    <!-- Kütleçekim Kilidi Seçici -->
+                    <div class="mt-1 pt-1.5 border-t border-slate-700/50 flex items-center justify-between text-xs">
+                        <span class="text-[10px] text-slate-300 font-bold">Ay Kilit Durumu:</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" id="btn-lock-real" onclick="setTidalLockMode('locked')" class="py-1 px-2 rounded-lg text-[10px] font-black bg-emerald-600 text-white border border-emerald-400 shadow-sm cursor-pointer transition-all">1 Tur (Gerçek)</button>
+                            <button type="button" id="btn-lock-unlocked" onclick="setTidalLockMode('unlocked')" class="py-1 px-2 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 hover:text-white border border-white/15 cursor-pointer transition-all">Dönmesiz</button>
+                        </div>
                     </div>
                 </div>
 
-            </div>
-        </div>
-
-        <!-- 🧭 SAĞ ÜST YÜZEN PANEL: HAREKET YÖNÜ REHBERİ (SAAT YÖNÜNÜN TERSİ) -->
-        <div id="right-clock-panel" class="pointer-events-auto hidden md:block md:absolute md:top-3 md:right-3 md:z-10 md:w-84 glass-panel md:rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all">
-            <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
-                <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
-                        <i class="fa-solid fa-compass"></i>
-                    </span>
-                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Yönü Rehberi</h3>
-                </div>
-                <div class="flex items-center gap-1.5">
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                        KUZEYDEN BAKIŞ
-                    </span>
-                    <button type="button" onclick="closeAllMobileSheets()" class="md:hidden px-2 py-0.5 rounded-lg bg-rose-600/80 hover:bg-rose-600 text-white font-bold text-[10px] flex items-center gap-1 cursor-pointer">
-                        <i class="fa-solid fa-xmark"></i> Kapat
+                <!-- Toplu Başlat/Durdur -->
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button type="button" onclick="startAllMovements()" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition-all shadow flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-play"></i> Tümünü Başlat
+                    </button>
+                    <button type="button" onclick="pauseAllMovements()" class="py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs transition-all shadow flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-pause"></i> Tümünü Durdur
                     </button>
                 </div>
             </div>
 
-            <!-- Yan Yana Yön Karşılaştırması (Normal Duvar Saati vs Gök Cisimleri) -->
-            <div class="grid grid-cols-2 gap-2 mb-2">
-                <!-- 1. Normal Duvar Saati (Saat Yönü) -->
-                <div class="p-2 rounded-2xl bg-slate-900/80 border border-rose-500/30 flex flex-col items-center text-center">
-                    <span class="text-[9px] font-bold text-rose-400 mb-1 flex items-center gap-1">
-                        <i class="fa-solid fa-clock"></i> NORMAL SAAT
-                    </span>
-                    <div class="relative w-14 h-14 my-0.5">
-                        <svg viewBox="0 0 60 60" class="w-full h-full">
-                            <circle cx="30" cy="30" r="26" fill="#0f172a" stroke="#ef4444" stroke-width="1.5" />
-                            <text x="30" y="11" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">12</text>
-                            <text x="51" y="32" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">3</text>
-                            <text x="30" y="53" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">6</text>
-                            <text x="9" y="32" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">9</text>
-                            <!-- Saat Yönü Oku (CW 12 -> 3) -->
-                            <path d="M 32 8 A 20 20 0 0 1 50 28" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="2 1.5" />
-                            <polygon points="50,28 47,23 52,24" fill="#ef4444" />
-                            <line x1="30" y1="30" x2="43" y2="21" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" />
-                            <circle cx="30" cy="30" r="2.5" fill="#f87171" />
-                        </svg>
-                    </div>
-                    <span class="text-[9px] font-black text-rose-300">Saat Yönü ↻</span>
-                    <span class="text-[8px] text-slate-400">12 → 3 → 6 → 9</span>
-                </div>
-
-                <!-- 2. Gök Cisimleri Yönü (Saat Yönünün Tersi) -->
-                <div class="p-2 rounded-2xl bg-emerald-950/50 border-2 border-emerald-500/60 flex flex-col items-center text-center shadow-lg shadow-emerald-500/10">
-                    <span class="text-[9px] font-black text-emerald-300 mb-1 flex items-center gap-1">
-                        <i class="fa-solid fa-circle-check text-emerald-400"></i> GÖK CİSİMLERİ
-                    </span>
-                    <div class="relative w-14 h-14 my-0.5">
-                        <svg viewBox="0 0 60 60" class="w-full h-full">
-                            <circle cx="30" cy="30" r="26" fill="#022c22" stroke="#10b981" stroke-width="2" />
-                            <text x="30" y="11" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">12</text>
-                            <text x="9" y="32" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">9</text>
-                            <text x="30" y="53" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">6</text>
-                            <text x="51" y="32" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">3</text>
-                            <!-- Saat Yönünün Tersi Oku (CCW 12 -> 9) -->
-                            <path d="M 28 8 A 20 20 0 0 0 10 28" fill="none" stroke="#34d399" stroke-width="2.5" />
-                            <polygon points="10,28 14,24 8,24" fill="#34d399" />
-                            <!-- Animasyonlu Dönen İbre -->
-                            <line id="clock-hand" x1="30" y1="30" x2="30" y2="12" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
-                            <circle cx="30" cy="30" r="3" fill="#10b981" />
-                            <circle cx="30" cy="30" r="1.5" fill="#ffffff" />
-                        </svg>
-                    </div>
-                    <span class="text-[9px] font-black text-emerald-300">Saat Yönünün Tersi ↺</span>
-                    <span class="text-[8px] text-emerald-400 font-bold">12 → 9 → 6 → 3 (Batı → Doğu)</span>
-                </div>
-            </div>
-
-            <!-- 3 Cisim Durum Kartı (Canlı Özet) -->
-            <div class="p-2 rounded-2xl bg-black/50 border border-white/10 space-y-1 mb-2 text-[10px]">
-                <div class="flex items-center justify-between text-amber-300">
-                    <span class="font-bold flex items-center gap-1"><i class="fa-solid fa-sun"></i> Güneş:</span>
-                    <span class="font-bold bg-amber-500/20 px-1.5 py-0.5 rounded text-[9px]">Saat Yönünün Tersi ↺</span>
-                </div>
-                <div class="flex items-center justify-between text-cyan-300">
-                    <span class="font-bold flex items-center gap-1"><i class="fa-solid fa-earth-americas"></i> Dünya (Dönme & Dolanma):</span>
-                    <span class="font-bold bg-cyan-500/20 px-1.5 py-0.5 rounded text-[9px]">Saat Yönünün Tersi ↺</span>
-                </div>
-                <div class="flex items-center justify-between text-slate-200">
-                    <span class="font-bold flex items-center gap-1"><i class="fa-solid fa-moon"></i> Ay (Dönme & Dolanma):</span>
-                    <span class="font-bold bg-slate-500/20 px-1.5 py-0.5 rounded text-[9px]">Saat Yönünün Tersi ↺</span>
-                </div>
-            </div>
-
-            <!-- Kuşbakışı Kuzey Kutbu Görünüm Butonu -->
-            <button type="button" onclick="focusTopViewAndDemonstrate()" class="w-full py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-[10px] font-black transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
-                <i class="fa-solid fa-satellite"></i>
-                <span>🔭 Kuşbakışı Kuzey Kutbundan Yönü Canlı Gör</span>
-            </button>
-
-            <!-- Canlı Astronomik Zaman Sayacı -->
-            <div class="mt-2 pt-2 border-t border-white/10 bg-black/40 p-2 rounded-2xl flex items-center justify-between text-xs font-mono">
-                <div>
-                    <span class="text-[9px] text-slate-400 block font-sans uppercase">Geçen Süre</span>
-                    <span id="elapsed-time-counter" class="text-amber-400 font-bold">0 Gün 00 Saat</span>
-                </div>
-                <div class="text-right">
-                    <span class="text-[9px] text-slate-400 block font-sans uppercase">Dünya Turu</span>
-                    <span id="earth-orbit-counter" class="text-cyan-400 font-bold">0.00 Yıl</span>
-                </div>
-            </div>
-        </div>
-        </div>
-
-        <!-- 🔭 SAĞ ALT YÜZEN PANEL: DÜNYA'DAN AY'A BAKIŞ (EVRE PENCERESİ) -->
-        <div id="moon-phase-pip-panel" class="pointer-events-auto absolute bottom-24 right-3 sm:right-4 z-10 w-44 sm:w-52 glass-panel rounded-2xl p-2.5 border border-white/15 shadow-xl transition-all hidden md:block">
-            <div class="flex items-center justify-between pb-1 mb-1.5 border-b border-white/10">
-                <span class="text-[10px] font-black uppercase tracking-wider text-slate-300 flex items-center gap-1">
-                    <i class="fa-solid fa-telescope text-cyan-400"></i> Dünya'dan Görünüm
+            <!-- 3. GÖRSEL KATMANLAR -->
+            <div class="space-y-2 pt-2 border-t border-white/10">
+                <span class="text-[11px] font-black uppercase text-amber-300 tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-layer-group"></i> Görsel Katmanlar & Oklar
                 </span>
-                <span id="phase-name-badge" class="text-[9px] font-bold text-amber-400">Yeni Ay</span>
-            </div>
-            <div class="relative w-full aspect-square bg-slate-950 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center">
-                <canvas id="moon-phase-canvas" width="160" height="160" class="w-full h-full object-contain"></canvas>
-                <div class="absolute bottom-1 left-0 right-0 text-center">
-                    <span id="phase-label" class="text-[9px] font-black bg-black/70 px-2 py-0.5 rounded-full text-slate-200">Karanlık Yüzey</span>
+                <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                    <label class="flex items-center gap-1.5 p-2 rounded-lg bg-black/40 hover:bg-black/60 cursor-pointer">
+                        <input type="checkbox" id="chk-show-orbits" checked onchange="toggleOrbits()" class="rounded text-amber-500 accent-amber-500">
+                        <span class="text-slate-300">Yörüngeler</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 p-2 rounded-lg bg-black/40 hover:bg-black/60 cursor-pointer">
+                        <input type="checkbox" id="chk-show-arrows" checked onchange="toggleArrows()" class="rounded text-cyan-500 accent-cyan-500">
+                        <span class="text-slate-300">3D Yön Okları</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 p-2 rounded-lg bg-black/40 hover:bg-black/60 cursor-pointer">
+                        <input type="checkbox" id="chk-show-axes" checked onchange="toggleAxes()" class="rounded text-yellow-500 accent-yellow-500">
+                        <span class="text-slate-300">Dönüş Eksenleri</span>
+                    </label>
+                    <label class="flex items-center gap-1.5 p-2 rounded-lg bg-black/40 hover:bg-black/60 cursor-pointer">
+                        <input type="checkbox" id="chk-show-orrery" onchange="toggleOrreryArms()" class="rounded text-amber-500 accent-amber-500">
+                        <span class="text-slate-300 font-bold text-amber-300">Mekanik Kol</span>
+                    </label>
                 </div>
             </div>
-        </div>
 
-        
-        <!-- 📱 MOBİL PANEL AÇMA ÇUBUĞU (Yalnızca Telefonlarda Görünür) -->
-        <div class="pointer-events-auto md:hidden absolute bottom-14 inset-x-0 z-30 flex items-center justify-center gap-2 px-3">
-            <button type="button" onclick="openMobileSheet('left-controls-panel')" class="flex-1 max-w-[145px] py-2 px-2.5 rounded-2xl bg-slate-900/95 hover:bg-amber-600 text-white border border-amber-500/40 shadow-2xl backdrop-blur-xl flex items-center justify-center gap-1.5 text-xs font-black active:scale-95 cursor-pointer">
-                <i class="fa-solid fa-sliders text-amber-400"></i>
-                <span>Kontroller</span>
-            </button>
-            <button type="button" onclick="openMobileSheet('right-clock-panel')" class="flex-1 max-w-[145px] py-2 px-2.5 rounded-2xl bg-slate-900/95 hover:bg-emerald-600 text-white border border-emerald-500/40 shadow-2xl backdrop-blur-xl flex items-center justify-center gap-1.5 text-xs font-black active:scale-95 cursor-pointer">
-                <i class="fa-solid fa-compass text-emerald-400"></i>
-                <span>Yön Rehberi</span>
-            </button>
-            <button type="button" onclick="toggleMobilePip()" class="w-10 h-10 rounded-2xl bg-slate-900/95 hover:bg-cyan-600 text-white border border-cyan-500/40 shadow-2xl backdrop-blur-xl flex items-center justify-center text-sm font-black active:scale-95 cursor-pointer" title="Ay Evresi Görünümü">
-                <i class="fa-solid fa-moon text-cyan-400"></i>
-            </button>
-        </div>
+            <!-- 4. HAREKET YÖNÜ REHBERİ (ANALOG SAAT) -->
+            <div class="space-y-2 pt-2 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase text-emerald-400 tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-compass"></i> Hareket Yönü Rehberi
+                    </span>
+                    <span class="text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">KUZEYDEN</span>
+                </div>
+                
+                <!-- Saat vs Gök Cismi -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="p-2 rounded-xl bg-slate-900/80 border border-rose-500/30 flex flex-col items-center text-center">
+                        <span class="text-[9px] font-bold text-rose-400">NORMAL SAAT</span>
+                        <div class="relative w-12 h-12 my-1">
+                            <svg viewBox="0 0 60 60" class="w-full h-full">
+                                <circle cx="30" cy="30" r="26" fill="#0f172a" stroke="#ef4444" stroke-width="1.5" />
+                                <text x="30" y="11" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">12</text>
+                                <text x="51" y="32" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">3</text>
+                                <text x="30" y="53" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">6</text>
+                                <text x="9" y="32" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">9</text>
+                                <path d="M 32 8 A 20 20 0 0 1 50 28" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="2 1.5" />
+                                <polygon points="50,28 47,23 52,24" fill="#ef4444" />
+                                <line x1="30" y1="30" x2="43" y2="21" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" />
+                                <circle cx="30" cy="30" r="2.5" fill="#f87171" />
+                            </svg>
+                        </div>
+                        <span class="text-[9px] font-black text-rose-300">Saat Yönü ↻</span>
+                    </div>
+                    <div class="p-2 rounded-xl bg-emerald-950/50 border-2 border-emerald-500/60 flex flex-col items-center text-center">
+                        <span class="text-[9px] font-black text-emerald-300">GÖK CİSİMLERİ</span>
+                        <div class="relative w-12 h-12 my-1">
+                            <svg viewBox="0 0 60 60" class="w-full h-full">
+                                <circle cx="30" cy="30" r="26" fill="#022c22" stroke="#10b981" stroke-width="2" />
+                                <text x="30" y="11" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">12</text>
+                                <text x="9" y="32" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">9</text>
+                                <text x="30" y="53" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">6</text>
+                                <text x="51" y="32" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">3</text>
+                                <path d="M 28 8 A 20 20 0 0 0 10 28" fill="none" stroke="#34d399" stroke-width="2.5" />
+                                <polygon points="10,28 14,24 8,24" fill="#34d399" />
+                                <line id="clock-hand" x1="30" y1="30" x2="30" y2="12" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+                                <circle cx="30" cy="30" r="3" fill="#10b981" />
+                                <circle cx="30" cy="30" r="1.5" fill="#ffffff" />
+                            </svg>
+                        </div>
+                        <span class="text-[9px] font-black text-emerald-300">Saat Yönünün Tersi ↺</span>
+                    </div>
+                </div>
 
-        <!-- 📱 Mobil Karartma Perdesi -->
-        <div id="mobile-sheet-backdrop" onclick="closeAllMobileSheets()" class="hidden fixed inset-0 z-40 bg-black/75 backdrop-blur-sm pointer-events-auto transition-opacity"></div>
+                <!-- Kuşbakışı Butonu -->
+                <button type="button" onclick="focusTopViewAndDemonstrate(); closeSideMenu();" class="w-full py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-xs font-black transition-all shadow flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-satellite"></i>
+                    <span>🔭 Kuşbakışı Kuzeyden Canlı Gör</span>
+                </button>
 
-        <!-- 📢 ORTA EĞİTİCİ BİLGİ KARTLARI & ÖĞRETMEN SORU KARTI -->
-        <div id="teacher-quiz-overlay" class="pointer-events-auto absolute top-16 left-1/2 -translate-x-1/2 z-30 max-w-lg w-[92%] glass-panel rounded-3xl p-5 border-2 border-amber-500/50 shadow-2xl transition-all duration-300 hidden">
-            <div class="flex items-center justify-between mb-3">
-                <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
-                    <i class="fa-solid fa-graduation-cap"></i> ÖĞRETMEN DERS MODU: ÖNCE TAHMİN ET
+                <!-- Sayaç -->
+                <div class="bg-black/50 p-2 rounded-xl flex items-center justify-between text-xs font-mono border border-white/10">
+                    <div>
+                        <span class="text-[9px] text-slate-400 block font-sans uppercase">Geçen Süre</span>
+                        <span id="elapsed-time-counter" class="text-amber-400 font-bold">0 Gün 00 Sa</span>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-[9px] text-slate-400 block font-sans uppercase">Dünya Turu</span>
+                        <span id="earth-orbit-counter" class="text-cyan-400 font-bold">0.00 Yıl</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. DÜNYA'DAN AY GÖRÜNÜMÜ (EVRE PENCERESİ - ARTIK MENÜDE!) -->
+            <div id="moon-phase-pip-panel" class="space-y-2 pt-2 border-t border-white/10">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase text-indigo-300 tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-moon"></i> Dünya'dan Ay Görünümü
+                    </span>
+                    <span id="phase-name-badge" class="text-[10px] font-bold text-amber-400">Yeni Ay</span>
+                </div>
+                <div class="relative w-36 h-36 mx-auto bg-slate-950 rounded-2xl overflow-hidden border border-white/15 flex items-center justify-center shadow-lg">
+                    <canvas id="moon-phase-canvas" width="160" height="160" class="w-full h-full object-contain"></canvas>
+                    <div class="absolute bottom-1.5 left-0 right-0 text-center">
+                        <span id="phase-label" class="text-[9px] font-black bg-black/80 px-2 py-0.5 rounded-full text-slate-200">Karanlık Yüzey</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 6. ÖĞRETMEN MODU & ETKİLEŞİMLİ DENEYLER -->
+            <div class="space-y-2 pt-2 border-t border-white/10 pb-4">
+                <span class="text-[11px] font-black uppercase text-purple-300 tracking-wider flex items-center gap-1.5">
+                    <i class="fa-solid fa-graduation-cap"></i> Eğitim Modülleri
                 </span>
-                <button onclick="toggleTeacherMode()" class="text-slate-400 hover:text-white p-1 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="btn-teacher-mode" onclick="toggleTeacherMode(); closeSideMenu();" class="p-2.5 rounded-xl bg-slate-900 border border-amber-500/30 hover:bg-amber-600 text-slate-200 hover:text-white font-black text-[11px] flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                        <i class="fa-solid fa-chalkboard-user text-amber-400"></i>
+                        <span>Öğretmen Modu</span>
+                    </button>
+                    <button onclick="toggleExperimentModal(); closeSideMenu();" class="p-2.5 rounded-xl bg-indigo-900/60 border border-indigo-400/30 hover:bg-indigo-600 text-white font-black text-[11px] flex items-center justify-center gap-1.5 transition-all cursor-pointer">
+                        <i class="fa-solid fa-flask-vial text-cyan-300"></i>
+                        <span>4 Deney</span>
+                    </button>
+                </div>
             </div>
-            <h3 id="quiz-question-title" class="text-sm sm:text-base font-black text-white mb-2 leading-snug">
-                Dünya kendi ekseni etrafında hangi yönde döner?
-            </h3>
-            <p id="quiz-question-sub" class="text-xs text-slate-300 mb-4">
-                Öğrencilerinizden tahminleri aldıktan sonra doğru hareketi ve yön ibresini başlatmak için seçeneğe dokunun.
-            </p>
-            <div class="grid grid-cols-2 gap-3 mb-3">
-                <button onclick="checkTeacherAnswer('cw')" class="py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-white/20 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Saat Yönünde
-                </button>
-                <button onclick="checkTeacherAnswer('ccw')" class="py-2.5 px-3 rounded-2xl bg-cyan-700/80 hover:bg-cyan-600 border border-cyan-400/40 text-xs font-black text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg">
-                    <i class="fa-solid fa-rotate-left text-cyan-200"></i> Saat Yönünün Tersi
-                </button>
-            </div>
-            <div id="quiz-feedback-box" class="hidden p-3 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-200 font-medium"></div>
+
         </div>
-
-    </div>
-
-    <!-- 🎮 ALT ZAMAN & KAMERA KONTROL MERKEZİ (FOOTER BAR) -->
-    <footer class="relative z-20 w-full px-3 sm:px-5 py-2.5 glass-panel border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 shrink-0">
-        <!-- Sol: Oynatma & Hız Kontrolleri -->
-        <div class="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
-            <!-- Başlat / Duraklat -->
-            <button id="btn-master-play" onclick="toggleMasterPlay()" class="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer">
-                <i class="fa-solid fa-play" id="master-play-icon"></i>
-                <span id="master-play-text">Başlat</span>
-            </button>
-
-            <!-- Hız Seçici Butonları -->
-            <div class="flex items-center gap-1 bg-black/40 p-1 rounded-2xl border border-white/10">
-                <button onclick="setSpeed(0.5)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="0.5">0.5x</button>
-                <button onclick="setSpeed(1)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-black bg-amber-500 text-slate-950 transition-all cursor-pointer" data-speed="1">1x</button>
-                <button onclick="setSpeed(5)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="5">5x</button>
-                <button onclick="setSpeed(20)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer hidden sm:inline" data-speed="20">20x</button>
-                <button onclick="setSpeed(50)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="50">50x</button>
-            </div>
-
-            <!-- Hızlı Tur Butonları -->
-            <div class="hidden lg:flex items-center gap-1.5 ml-2">
-                <button onclick="demonstrateFullCycle('day')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] border border-white/10 transition-all cursor-pointer" title="Dünya'nın 1 Günlük Dönüşünü Göster">
-                    <i class="fa-solid fa-sun mr-1"></i> 1 Gün (24s)
-                </button>
-                <button onclick="demonstrateFullCycle('month')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] border border-white/10 transition-all cursor-pointer" title="Ay'ın 1 Aylık Dolanmasını Göster">
-                    <i class="fa-solid fa-moon mr-1"></i> 1 Ay (27.3g)
-                </button>
-                <button onclick="demonstrateFullCycle('year')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-[11px] border border-white/10 transition-all cursor-pointer" title="Dünya'nın 1 Yıllık Dolanmasını Göster">
-                    <i class="fa-solid fa-earth-americas mr-1"></i> 1 Yıl (365g)
-                </button>
-            </div>
-        </div>
-
-        <!-- Sağ: Kamera Önayarları & Instagram Bağlantısı -->
-        <div class="flex items-center gap-2 justify-center sm:justify-end">
-            <!-- Kamera Presetleri -->
-            <div class="flex items-center gap-1 bg-black/40 p-1 rounded-2xl border border-white/10 text-xs">
-                <button onclick="setCameraView('perspective')" class="px-2.5 py-1 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer" title="Serbest 3D Kamera">
-                    <i class="fa-solid fa-video mr-1"></i> Serbest
-                </button>
-                <button onclick="setCameraView('top')" class="px-2.5 py-1 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer" title="Kuzey Kutbu Kuşbakışı">
-                    <i class="fa-solid fa-arrows-up-to-line mr-1"></i> Kuzeyden
-                </button>
-                <button onclick="setCameraView('earth')" class="px-2.5 py-1 rounded-xl font-bold text-cyan-300 hover:text-cyan-200 hover:bg-white/10 transition-all cursor-pointer" title="Dünya'ya Odaklan">
-                    <i class="fa-solid fa-crosshairs mr-1"></i> Dünya
-                </button>
-                <button onclick="setCameraView('moon')" class="px-2.5 py-1 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer" title="Ay'a Odaklan">
-                    <i class="fa-solid fa-moon mr-1"></i> Ay
-                </button>
-            </div>
-
-            <!-- Instagram Linki (@rotalifenci) -->
-            <a href="https://www.instagram.com/rotalifenci/" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-600 text-white font-bold text-xs flex items-center gap-1.5 hover:opacity-90 transition-opacity shadow-sm shrink-0" title="Rotalı Fenci Instagram">
-                <i class="fa-brands fa-instagram text-sm"></i>
-                <span class="hidden sm:inline">@rotalifenci</span>
-            </a>
-        </div>
-    </footer>
+    </aside>
 
     <!-- 🧪 4 ETKİLEŞİMLİ DENEY MODALI -->
     <div id="modal-experiments" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300 hidden">
         <div class="bg-slate-900 border border-indigo-500/30 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
-            <!-- Üst Bar -->
             <div class="p-4 sm:p-5 bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-500/20 flex items-center justify-between text-white">
                 <div class="flex items-center gap-2.5">
                     <span class="w-8 h-8 rounded-xl bg-indigo-500/20 text-cyan-300 flex items-center justify-center text-sm border border-indigo-500/30">
@@ -603,10 +526,7 @@
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
-
-            <!-- Deney Kartları Listesi -->
             <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
-                <!-- Deney 1 -->
                 <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-amber-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <span class="text-[10px] font-black uppercase text-amber-400">Deney 1</span>
@@ -617,8 +537,6 @@
                         Deneyi Başlat
                     </button>
                 </div>
-
-                <!-- Deney 2 -->
                 <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-cyan-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <span class="text-[10px] font-black uppercase text-cyan-400">Deney 2</span>
@@ -629,8 +547,6 @@
                         Deneyi Başlat
                     </button>
                 </div>
-
-                <!-- Deney 3 -->
                 <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-purple-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <span class="text-[10px] font-black uppercase text-purple-400">Deney 3</span>
@@ -641,8 +557,6 @@
                         Deneyi Başlat
                     </button>
                 </div>
-
-                <!-- Deney 4 -->
                 <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-emerald-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <span class="text-[10px] font-black uppercase text-emerald-400">Deney 4</span>
@@ -674,15 +588,15 @@
             <div class="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
                 <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/20">
                     <h4 class="font-black text-amber-300 text-sm mb-1">☀️ Güneş'in Hareketleri</h4>
-                    <p>Güneş kendi ekseni etrafında döner (Ekvator bölgesinde yaklaşık 25 Dünya günü). Güneş katı bir küre olmadığı için (plazma/gaz) farklı enlemleri farklı hızlarda döner. Ayrıca Güneş Sistemi ile birlikte Samanyolu Galaksisi merkezi etrafında dolanır (Dünya çevresinde dolanmaz!).</p>
+                    <p>Güneş kendi ekseni etrafında döner (Ekvator bölgesinde yaklaşık 25 Dünya günü). Dönme yönü kuzey kutbundan bakıldığında saat yönünün tersinedir (batıdan doğuya). Güneş katı bir küre olmadığı için (plazma/gaz) farklı enlemleri farklı hızlarda döner. Güneş Sistemi ile birlikte Samanyolu Galaksisi merkezi etrafında dolanır (Dünya çevresinde dolanmaz!).</p>
                 </div>
                 <div class="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/20">
                     <h4 class="font-black text-cyan-300 text-sm mb-1">🌍 Dünya'nın Hareketleri</h4>
-                    <p>Dünya kendi ekseni etrafında saat yönünün tersine (batıdan doğuya) 24 saatte döner; böylece gece ve gündüz ardalanır. Güneş çevresinde ise elips bir yörüngede yaklaşık 365 gün 6 saatte (1 yılda) dolanır. 23.5° eksen eğikliği mevsimlerin oluşmasını sağlar.</p>
+                    <p>Dünya kendi ekseni etrafında saat yönünün tersine (batıdan doğuya) 24 saatte döner; böylece gece ve gündüz ardalanır. Güneş çevresinde ise elips bir yörüngede yaklaşık 365 gün 6 saatte (1 yılda) dolanır. Dolanma yönü de saat yönünün tersinedir. 23.5° eksen eğikliği mevsimlerin oluşmasını sağlar.</p>
                 </div>
                 <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-white/10">
                     <h4 class="font-black text-slate-200 text-sm mb-1">🌕 Ay'ın Hareketleri ve "Aynı Yüz"</h4>
-                    <p>Ay kendi ekseni etrafındaki dönmesini yaklaşık 27,3 günde tamamlar. Dünya çevresindeki dolanmasını da yaklaşık 27,3 günde tamamlar. <strong>Dönme ve dolanma süreleri birbirine eşit olduğu için Dünya'dan bakıldığında Ay'ın hep aynı yüzü görülür (Kütleçekim Kilidi / Synchronous Rotation).</strong></p>
+                    <p>Ay kendi ekseni etrafındaki dönmesini yaklaşık 27,3 günde tamamlar. Dünya çevresindeki dolanmasını da yaklaşık 27,3 günde tamamlar. <strong>Dönme ve dolanma süreleri birbirine eşit olduğu için Dünya'dan bakıldığında Ay'ın hep aynı yüzü görülür (Kütleçekim Kilidi / Synchronous Rotation).</strong> Her iki hareketin yönü de saat yönünün tersinedir.</p>
                 </div>
             </div>
         </div>
@@ -1604,19 +1518,85 @@
         }
 
         // -------------------------------------------------------------
+        
+        // -------------------------------------------------------------
+        // 🧭 YAN MENÜ (SIDE DRAWER) YÖNETİMİ (MOBİL VE PC UYUMLU)
+        // -------------------------------------------------------------
+        function toggleSideMenu() {
+            const drawer = document.getElementById('side-drawer');
+            const backdrop = document.getElementById('side-menu-backdrop');
+            if (!drawer || !backdrop) return;
+            const isOpen = !drawer.classList.contains('-translate-x-full');
+            if (isOpen) {
+                closeSideMenu();
+            } else {
+                openSideMenu();
+            }
+        }
+
+        function openSideMenu() {
+            const drawer = document.getElementById('side-drawer');
+            const backdrop = document.getElementById('side-menu-backdrop');
+            if (!drawer || !backdrop) return;
+            drawer.classList.remove('-translate-x-full');
+            backdrop.classList.remove('opacity-0', 'pointer-events-none');
+            backdrop.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function closeSideMenu() {
+            const drawer = document.getElementById('side-drawer');
+            const backdrop = document.getElementById('side-menu-backdrop');
+            if (!drawer || !backdrop) return;
+            drawer.classList.add('-translate-x-full');
+            backdrop.classList.add('opacity-0', 'pointer-events-none');
+            backdrop.classList.remove('opacity-100', 'pointer-events-auto');
+        }
+
+        function selectSimModeFromMenu(modeNum) {
+            setSimMode(modeNum);
+            closeSideMenu();
+        }
+
+        function updateMenuModeHighlight(modeNum) {
+            const modeNames = [
+                '1. Yalnız Güneş',
+                '2. Yalnız Dünya',
+                '3. Yalnız Ay',
+                '4. Güneş + Dünya',
+                '5. Dünya + Ay',
+                '6. Güneş + Ay',
+                '7. Güneş + Dünya + Ay'
+            ];
+
+            // Üst başlık rozetini güncelle
+            const headerTitle = document.getElementById('header-mode-title');
+            if (headerTitle && modeNames[modeNum - 1]) {
+                headerTitle.innerText = modeNames[modeNum - 1];
+            }
+
+            // Yan menüdeki butonları güncelle
+            for (let i = 1; i <= 7; i++) {
+                const btn = document.getElementById('menu-mode-' + i);
+                if (!btn) continue;
+                if (i === modeNum) {
+                    btn.className = 'menu-mode-btn p-2.5 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black flex items-center justify-between text-left shadow-md transition-all cursor-pointer';
+                    const icon = btn.querySelector('i');
+                    if (icon) icon.className = 'fa-solid fa-check text-xs';
+                } else {
+                    btn.className = 'menu-mode-btn p-2.5 rounded-xl border border-white/10 bg-slate-900/60 hover:bg-slate-800 text-slate-300 font-bold flex items-center justify-between text-left transition-all cursor-pointer';
+                    const icon = btn.querySelector('i');
+                    if (icon) icon.className = 'fa-solid fa-chevron-right text-[10px] text-slate-500';
+                }
+            }
+        }
+
         // 🎛️ 7 SİMÜLASYON MODU YÖNETİMİ
         // -------------------------------------------------------------
         function setSimMode(modeNum) {
             state.currentMode = modeNum;
 
-            // UI Buton Aktifliği
-            document.querySelectorAll('.mode-btn').forEach((btn, idx) => {
-                if (idx + 1 === modeNum) {
-                    btn.className = 'mode-btn px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black border-amber-400 shadow-md scale-[1.02]';
-                } else {
-                    btn.className = 'mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20';
-                }
-            });
+            // Yan menü ve üst bar rozetini güncelle
+            updateMenuModeHighlight(modeNum);
 
             // Gök cisimlerinin görünürlükleri
             switch(modeNum) {
