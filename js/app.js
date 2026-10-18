@@ -4119,17 +4119,20 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                             </span>
                             <div>
                                 <div class="flex items-center gap-2 flex-wrap">
-                                    <span class="text-xs sm:text-sm font-black text-cyan-300">🌕 3D UZAY SİMÜLATÖRLERİ</span>
-                                    <span class="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-[10px] font-bold">1. ÜNİTE</span>
+                                    <span class="text-xs sm:text-sm font-black text-amber-300 font-orbitron">🚀 5. SINIF 3D EĞİTSEL UZAY OYUNLARI</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-500/40 text-[10px] font-bold">1. ÜNİTE</span>
                                 </div>
-                                <p class="text-[11px] text-slate-300">Ay'ın Evreleri & Güneş'i Keşfediyorum 3D etkileşimli uzay simülasyonları.</p>
+                                <p class="text-[11px] text-slate-300">Kozmik Koşu: Ay Evresi Avı, Ay'ın Evreleri Planetaryumu ve 3D Güneş Laboratuvarı.</p>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
-                            <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="flex-1 sm:flex-none px-3 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
-                                <i class="fa-solid fa-play"></i> Ay'ın Evreleri
+                        <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                            <button type="button" onclick="openInteractiveGameModal('kozmik-kosu-3d', 'Kozmik Koşu: Ay Evresi Avı (3D)')" class="flex-1 sm:flex-none px-3 py-1.5 bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-person-running"></i> Kozmik Koşu (3D)
                             </button>
-                            <button type="button" onclick="openInteractiveGameModal('gunesi-kesfediyorum-3d', 'Güneş\'i Keşfediyorum 3D')" class="flex-1 sm:flex-none px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                            <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="flex-1 sm:flex-none px-2.5 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-moon"></i> Ay'ın Evreleri
+                            </button>
+                            <button type="button" onclick="openInteractiveGameModal('gunesi-kesfediyorum-3d', 'Güneş\'i Keşfediyorum 3D')" class="flex-1 sm:flex-none px-2.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
                                 <i class="fa-solid fa-sun"></i> Güneş 3D
                             </button>
                         </div>
@@ -5768,7 +5771,38 @@ function renderGradeEducationalGames(grade, subData) {
 
     // 2. Müfredat & Dahili İnteraktif Oyunlar
     const builtinCurriculumGames = {
-        "5": [],
+        "5": [
+            {
+                id: "builtin-oyun-5-kozmik-kosu",
+                title: "Kozmik Koşu: Ay Evresi Avı (3D)",
+                badge: "3D Sonsuz Koşu",
+                type: "3D Koşu Oyunu",
+                desc: "Subway Surfers tarzı 3D uzay koşusu! Astronot ile engellerden kaç, jetpack bonuslarını topla, 3 şeritli kapılardan Ay evrelerini avla!",
+                icon: "fa-solid fa-person-running",
+                iconColor: "from-amber-400 via-pink-500 to-purple-600",
+                fileUrl: "kozmik-kosu-3d"
+            },
+            {
+                id: "builtin-oyun-5-ayin-evreleri",
+                title: "Ay'ın Evreleri: 3D Uzay Simülatörü",
+                badge: "3D Planetaryum",
+                type: "3D Simülasyon",
+                desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfet! Ay'ı yörüngesinde sürükle, 8 evreyi canlı izle!",
+                icon: "fa-solid fa-moon",
+                iconColor: "from-cyan-400 via-blue-600 to-indigo-600",
+                fileUrl: "ayin-evreleri-3d"
+            },
+            {
+                id: "builtin-oyun-5-gunesi-kesfediyorum",
+                title: "Güneş'i Keşfediyorum: 3D Uzay Laboratuvarı",
+                badge: "3D Laboratuvar",
+                type: "3D Simülasyon",
+                desc: "Güneş'in 6 katmanını kesit halinde incele, Güneş lekelerini keşfet, foton yolculuğuna katıl!",
+                icon: "fa-solid fa-sun",
+                iconColor: "from-amber-400 via-orange-500 to-red-600",
+                fileUrl: "gunesi-kesfediyorum-3d"
+            }
+        ],
         "6": [],
         "7": [
             {
@@ -13824,6 +13858,14 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
+    // 🏃 5. SINIF KOZMİK KOŞU: AY EVRESİ AVI (3D SUBWAY SURFERS ENDLESS RUNNER)
+    if (checkTitle.includes("kozmik koşu") || checkTitle.includes("kozmik kosu") || checkTitle.includes("ay evresi avı") || checkTitle.includes("ay evresi avi") ||
+        id === "mat-5-1-oyun-kozmik-kosu-3d" || id === "builtin-oyun-5-kozmik-kosu" || id === "kozmik-kosu-3d" ||
+        targetUrl.includes("kozmik-kosu") || targetUrl.includes("kozmik_kosu")) {
+        openInteractiveGameModal("oyunlar/kozmik-kosu-3d.html", "Kozmik Koşu: Ay Evresi Avı (3D)");
+        return;
+    }
+
     // 🚀 GEZEGEN KOŞUSU: ANTGRAVITY GALAKSİSİ (3D SUBWAY SURFERS RUNNER)
     if (checkTitle.includes("gezegen koşusu") || checkTitle.includes("gezegen kosusu") || checkTitle.includes("antgravity galaksi") ||
         id === "mat-game-gezegen-kosusu" || id === "oyun-gezegen-kosusu" || targetUrl === "oyun-gezegen-kosusu" || targetUrl.includes("gezegen-kosusu")) {
@@ -15235,6 +15277,40 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
                     <iframe src="oyunlar/ayin-evreleri-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
+    // 🏃 5. Sınıf Kozmik Koşu: Ay Evresi Avı 3D Sonsuz Koşu Oyunu
+    if (str.includes("kozmik-kosu") || str.includes("kozmik_kosu") || str.includes("kozmik koşu") || str.includes("kozmik kosu") || str.includes("ay-evresi-avi") || str.includes("ay evresi avı") || titleStr.includes("kozmik koşu") || titleStr.includes("ay evresi avı") || resolvedKey === "kozmik-kosu-3d" || resolvedKey === "oyun-kozmik-kosu-3d") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-purple-900/60 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 via-pink-500 to-purple-600 text-slate-950 flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-person-running"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-amber-300 font-orbitron">🏃 Kozmik Koşu: Ay Evresi Avı (3D)</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri 1. Ünite</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/kozmik-kosu-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/kozmik-kosu-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
