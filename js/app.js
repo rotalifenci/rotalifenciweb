@@ -4088,6 +4088,54 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                     <h2 class="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight mb-1 drop-shadow-sm">${currentTabMeta.title}</h2>
                     <p class="text-xs sm:text-sm text-white/90 leading-snug max-w-4xl font-medium drop-shadow-sm mb-3">${currentTabMeta.desc}</p>
                     
+                    ${grade.number === 7 ? `
+                    <div class="mb-3 p-3 bg-slate-950/90 border border-cyan-400/80 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-3 text-white backdrop-blur-md">
+                        <div class="flex items-center gap-3">
+                            <span class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 text-white flex items-center justify-center text-lg shadow-md shrink-0">
+                                <i class="fa-solid fa-satellite"></i>
+                            </span>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs sm:text-sm font-black text-cyan-300 font-orbitron">🚀 UZAYDAN KAÇIŞ: GİZEMLİ İSTASYON (3D)</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-[10px] font-bold">1. ÜNİTE BAŞYAPIT OYUNU</span>
+                                </div>
+                                <p class="text-[11px] text-slate-300">Yörünge-7 İstasyonu'ndaki 6 bilimsel güvenlik kilidini uzay bilginle çöz, Dünya'ya dön!</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                            <button type="button" onclick="openInteractiveGameModal('uzaydan-kacis-3d', 'Uzaydan Kaçış: Gizemli İstasyon (3D)')" class="flex-1 sm:flex-none px-4 py-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-play"></i> OYUNU BAŞLAT (3D)
+                            </button>
+                            <a href="oyunlar/uzaydan-kacis-3d.html" target="_blank" rel="noopener noreferrer" class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl border border-white/20 transition-all flex items-center justify-center gap-1" title="Tam Ekran Aç">
+                                <i class="fa-solid fa-up-right-from-square"></i>
+                            </a>
+                        </div>
+                    </div>
+                    ` : grade.number === 5 ? `
+                    <div class="mb-3 p-2.5 bg-slate-950/90 border border-cyan-400/80 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-2.5 text-white backdrop-blur-md">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 text-white flex items-center justify-center text-base shadow-md shrink-0">
+                                <i class="fa-solid fa-moon"></i>
+                            </span>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs sm:text-sm font-black text-cyan-300">🌕 3D UZAY SİMÜLATÖRLERİ</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-[10px] font-bold">1. ÜNİTE</span>
+                                </div>
+                                <p class="text-[11px] text-slate-300">Ay'ın Evreleri & Güneş'i Keşfediyorum 3D etkileşimli uzay simülasyonları.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+                            <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="flex-1 sm:flex-none px-3 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-play"></i> Ay'ın Evreleri
+                            </button>
+                            <button type="button" onclick="openInteractiveGameModal('gunesi-kesfediyorum-3d', 'Güneş\'i Keşfediyorum 3D')" class="flex-1 sm:flex-none px-3 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-sun"></i> Güneş 3D
+                            </button>
+                        </div>
+                    </div>
+                    ` : ''}
+
                     <!-- ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
                     <div class="pt-3 border-t border-white/20">
                         <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-8" : "lg:grid-cols-7"} gap-1.5 sm:gap-2">

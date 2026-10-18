@@ -1,0 +1,164 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <!-- Uzay Arka Plan Gradyanı -->
+    <radialGradient id="deepSpace" cx="50%" cy="40%" r="80%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="50%" stop-color="#030712" />
+      <stop offset="100%" stop-color="#02040a" />
+    </radialGradient>
+    
+    <!-- Dünya Işıltısı -->
+    <radialGradient id="earthGlow" cx="65%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#38bdf8" />
+      <stop offset="45%" stop-color="#0284c7" />
+      <stop offset="80%" stop-color="#0c4a6e" />
+      <stop offset="100%" stop-color="#082f49" />
+    </radialGradient>
+
+    <!-- İstasyon Metal & Neon Gradyanları -->
+    <linearGradient id="stationHull" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155" />
+      <stop offset="50%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+
+    <linearGradient id="cyanNeon" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+
+    <linearGradient id="goldAccent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="50%" stop-color="#fbbf24" />
+      <stop offset="100%" stop-color="#d97706" />
+    </linearGradient>
+
+    <!-- Parlama Filtresi -->
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="strongGlow" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Arka Plan -->
+  <rect width="800" height="500" fill="url(#deepSpace)" />
+
+  <!-- Yıldızlar -->
+  <g fill="#ffffff" opacity="0.8">
+    <circle cx="50" cy="60" r="1.5" />
+    <circle cx="120" cy="110" r="1.2" />
+    <circle cx="210" cy="45" r="1.8" />
+    <circle cx="340" cy="90" r="1" />
+    <circle cx="430" cy="40" r="2" fill="#bae6fd" />
+    <circle cx="520" cy="85" r="1.2" />
+    <circle cx="650" cy="50" r="1.6" />
+    <circle cx="740" cy="110" r="1" />
+    <circle cx="780" cy="40" r="1.5" />
+    <circle cx="70" cy="380" r="1.4" />
+    <circle cx="180" cy="420" r="1" />
+    <circle cx="670" cy="410" r="1.5" />
+    <circle cx="740" cy="360" r="1.8" fill="#38bdf8" />
+  </g>
+
+  <!-- Nebula Tozu -->
+  <ellipse cx="680" cy="140" rx="140" ry="80" fill="#3b82f6" opacity="0.12" filter="url(#strongGlow)" />
+  <ellipse cx="140" cy="120" rx="120" ry="70" fill="#06b6d4" opacity="0.1" filter="url(#strongGlow)" />
+
+  <!-- Arka Plandaki Mavi Gezegen: Dünya -->
+  <g transform="translate(620, 160)">
+    <circle cx="0" cy="0" r="85" fill="url(#earthGlow)" filter="url(#neonGlow)" />
+    <!-- Atmosferik Çeper Glow -->
+    <circle cx="0" cy="0" r="88" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.6" />
+    <!-- Kıtalar -->
+    <path d="M -30 -40 Q 0 -60 20 -30 Q 40 0 10 30 Q -20 50 -40 20 Z" fill="#22c55e" opacity="0.65" />
+    <path d="M 10 -20 Q 30 -30 45 -10 Q 35 15 20 20 Z" fill="#16a34a" opacity="0.7" />
+  </g>
+
+  <!-- Yörünge-7 Uzay İstasyonu Modülü (Merkez / Sol) -->
+  <!-- Ana Silindirik Gövde -->
+  <g transform="translate(280, 230)">
+    <!-- Arka Güneş Panelleri Destek Kolları -->
+    <line x1="-160" y1="0" x2="160" y2="0" stroke="#64748b" stroke-width="8" stroke-linecap="round" />
+    
+    <!-- Sol Güneş Paneli (Fotovoltaik Kanat) -->
+    <rect x="-260" y="-45" width="95" height="90" rx="4" fill="#0284c7" stroke="#38bdf8" stroke-width="2" />
+    <line x1="-212" y1="-45" x2="-212" y2="45" stroke="#38bdf8" stroke-width="1.5" />
+    <line x1="-260" y1="-15" x2="-165" y2="-15" stroke="#38bdf8" stroke-width="1" />
+    <line x1="-260" y1="15" x2="-165" y2="15" stroke="#38bdf8" stroke-width="1" />
+
+    <!-- Sağ Güneş Paneli -->
+    <rect x="165" y="-45" width="95" height="90" rx="4" fill="#0284c7" stroke="#38bdf8" stroke-width="2" />
+    <line x1="212" y1="-45" x2="212" y2="45" stroke="#38bdf8" stroke-width="1.5" />
+    <line x1="165" y1="-15" x2="260" y2="-15" stroke="#38bdf8" stroke-width="1" />
+    <line x1="165" y1="15" x2="260" y2="15" stroke="#38bdf8" stroke-width="1" />
+
+    <!-- İstasyon Merkezi Araştırma Modülü Gövdesi -->
+    <rect x="-80" y="-55" width="160" height="110" rx="16" fill="url(#stationHull)" stroke="#64748b" stroke-width="3" />
+    
+    <!-- Neon Gösterge Şeritleri -->
+    <line x1="-70" y1="-30" x2="70" y2="-30" stroke="#06b6d4" stroke-width="3" filter="url(#neonGlow)" />
+    <line x1="-70" y1="30" x2="70" y2="30" stroke="#06b6d4" stroke-width="3" filter="url(#neonGlow)" />
+
+    <!-- Gözlem Kubbesi (Cupola Penceresi) -->
+    <ellipse cx="0" cy="0" rx="35" ry="35" fill="#0284c7" fill-opacity="0.5" stroke="#38bdf8" stroke-width="3" />
+    <circle cx="0" cy="0" r="18" fill="#38bdf8" fill-opacity="0.6" filter="url(#neonGlow)" />
+
+    <!-- Docking Port & Dönüş Kapsülü (Sağ Altta Kenetlenmiş) -->
+    <polygon points="50,45 80,75 55,95 25,65" fill="#f8fafc" stroke="#f59e0b" stroke-width="2" />
+    <circle cx="55" cy="70" r="4" fill="#ef4444" filter="url(#neonGlow)" />
+
+    <!-- İletişim Çanak Anteni (Tepede) -->
+    <path d="M -20 -60 Q 0 -85 20 -60" fill="none" stroke="#e2e8f0" stroke-width="3.5" stroke-linecap="round" />
+    <line x1="0" y1="-73" x2="0" y2="-55" stroke="#f59e0b" stroke-width="2" />
+    <circle cx="0" cy="-85" r="3" fill="#06b6d4" filter="url(#neonGlow)" />
+  </g>
+
+  <!-- Lazer Sinyal İletimi Çizgisi -->
+  <line x1="280" y1="145" x2="560" y2="130" stroke="#06b6d4" stroke-width="2" stroke-dasharray="8 4" filter="url(#neonGlow)" opacity="0.8" />
+
+  <!-- 3D Rozet / Holografik Kaçış Odası İkonu (Sol Üst) -->
+  <g transform="translate(60, 40)">
+    <rect width="130" height="34" rx="10" fill="#090d16" stroke="#06b6d4" stroke-width="1.5" />
+    <text x="65" y="22" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="11" fill="#38bdf8" text-anchor="middle" letter-spacing="1">🚀 3D KAÇIŞ ODASI</text>
+  </g>
+
+  <!-- Maarif Modeli Rozeti (Sağ Üst) -->
+  <g transform="translate(600, 40)">
+    <rect width="140" height="34" rx="10" fill="#090d16" stroke="#f59e0b" stroke-width="1.5" />
+    <text x="70" y="22" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="11" fill="#fbbf24" text-anchor="middle" letter-spacing="0.5">⭐ MAARİF MODELİ</text>
+  </g>
+
+  <!-- Alt Bilgi Başlık Bandı (Sci-Fi Glass HUD) -->
+  <g transform="translate(40, 395)">
+    <!-- Arka HUD Kartı -->
+    <rect width="720" height="75" rx="18" fill="#090d16" fill-opacity="0.92" stroke="#06b6d4" stroke-width="2" filter="url(#neonGlow)" />
+    
+    <!-- Başlık -->
+    <text x="30" y="36" font-family="'Orbitron', 'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="21" fill="#38bdf8" letter-spacing="1.5">
+      UZAYDAN KAÇIŞ: GİZEMLİ İSTASYON (3D)
+    </text>
+    
+    <!-- Alt Açıklama -->
+    <text x="30" y="58" font-family="'Plus Jakarta Sans', sans-serif" font-weight="700" font-size="12" fill="#cbd5e1">
+      7. Sınıf Fen Bilimleri 1. Ünite • 6 Bilimsel Kaçış Odası • Yörünge-7 İstasyonu
+    </text>
+
+    <!-- Oyna Butonu Simgesi -->
+    <g transform="translate(620, 20)">
+      <rect width="75" height="36" rx="10" fill="url(#cyanNeon)" />
+      <text x="37" y="23" font-family="'Plus Jakarta Sans', sans-serif" font-weight="900" font-size="12" fill="#030712" text-anchor="middle">OYNA ▶</text>
+    </g>
+  </g>
+</svg>
