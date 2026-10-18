@@ -28,6 +28,15 @@ function readFileAsDataURL(file) {
 
 let ROTALI_MATERIALS_CACHE = null;
 
+// 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
+const PROTECTED_MATERIAL_IDS = new Set([
+    "mat-game-gezegen-kosusu", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
+    "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-3d", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
+    "builtin-oyun-6-gunes-sistemi", "builtin-oyun-6-gunes-sistemi-yolculuk", 
+    "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi",
+    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
+]);
+
 const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-5-unite-bilgi", "mat-1789331179066", "mat-1789331137891", "mat-1789233332632",
     "mat-5-semboller-video", "mat-1789234385646", "mat-1789331480440", "mat-1789233406841",
@@ -79,7 +88,7 @@ function getDeletedMaterialIds() {
 }
 
 function addDeletedMaterialId(id) {
-    if (!id || typeof id !== "string" || !id.trim()) return;
+    if (!id || typeof id !== "string" || !id.trim() || (typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id))) return;
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -840,7 +849,7 @@ async function verifySmartboardSync(forceReload = false) {
             ...apiDeletedIds,
             "mat-5-unite-bilgi",
             "mat-5-lab-guvenlik-gorsel"
-        ]);
+        ].filter(id => !(typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id))));
 
         const serverMap = new Map();
         staticMaterials.forEach(item => {
@@ -15590,7 +15599,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                     </div>
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
-                    <iframe src="oyunlar/laboratuvar-kacis-odasi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                    <iframe src="oyunlar/laboratuvar-kacis-odasi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
@@ -15622,7 +15631,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                     </div>
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
-                    <iframe src="oyunlar/gezegen-kosusu.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope" allowfullscreen></iframe>
+                    <iframe src="oyunlar/gezegen-kosusu.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;

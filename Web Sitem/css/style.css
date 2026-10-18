@@ -395,3 +395,13 @@ button, a, input, select {
         height: 180px !important;
     }
 }
+
+/* =========================================================
+   PARDUS AKILLI TAHTA & DOKUNMATİK EKRAN DESTEĞİ
+   ========================================================= */
+canvas {
+    touch-action: none !important;
+}
+.unit-accordion-card, .mat-preview-box, .glass-panel {
+    touch-action: manipulation;
+}

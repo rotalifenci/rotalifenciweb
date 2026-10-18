@@ -35,8 +35,17 @@ const PERMANENTLY_REMOVED_IDS = new Set([
     "mat-b0bf2fd9-7101-4962-b4ff-3c70f0257009", "mat-b30e5f27-431d-408f-8027-509e26e77e1a",
     "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
     "mat-e072f771-967e-44c8-ad81-3e67f0934514", "mat-23f656d5-1306-4b7f-bb24-d12ccbe1f4bd",
-    "oyun-6-uzay-ekspresi", "mat-game-gezegen-kosusu", "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
+    "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
     "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717"
+]);
+
+// KESİNLİKLE SİLİNEMEZ KORUMALI MATERYAL KİMLİKLERİ (Öğretmen / Kullanıcı materyalleri)
+const PROTECTED_IDS = new Set([
+    "mat-game-gezegen-kosusu", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
+    "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-3d", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
+    "builtin-oyun-6-gunes-sistemi", "builtin-oyun-6-gunes-sistemi-yolculuk", 
+    "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi",
+    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
 ]);
 
 function getGitHubHeaders(isJson = false) {
@@ -109,7 +118,7 @@ module.exports = async function handler(req, res) {
                         return res.status(200).json({
                             success: true,
                             updatedAt: rawData.updatedAt || new Date().toISOString(),
-                            deletedIds: deletedIds,
+                            deletedIds: deletedIds.filter(id => !PROTECTED_IDS.has(id)),
                             materials: cleanMats
                         });
                     }
@@ -236,7 +245,7 @@ module.exports = async function handler(req, res) {
                     }
                 } catch(readErr) {}
 
-                const allDelSet = new Set([...currentDels, ...toDelete].filter(id => typeof id === "string" && id.trim().length > 0));
+                const allDelSet = new Set([...currentDels, ...toDelete].filter(id => typeof id === "string" && id.trim().length > 0 && !PROTECTED_IDS.has(id)));
                 PERMANENTLY_REMOVED_IDS.forEach(pid => allDelSet.add(pid));
                 const updatedDels = Array.from(allDelSet);
                 const updatedMats = currentMats.filter(m => m && m.id && !allDelSet.has(m.id));
@@ -306,7 +315,7 @@ module.exports = async function handler(req, res) {
                 }
             } catch(apiReadErr) {}
 
-            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.trim().length > 0));
+            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.trim().length > 0 && !PROTECTED_IDS.has(id)));
             PERMANENTLY_REMOVED_IDS.forEach(pid => allDeletedSet.add(pid));
             const allDeletedIds = Array.from(allDeletedSet);
 
