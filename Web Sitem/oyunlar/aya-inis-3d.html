@@ -859,13 +859,22 @@
             renderer.xr.enabled = true;
             container.appendChild(renderer.domElement);
 
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
-            controls.enableDamping = true;
-            controls.dampingFactor = 0.05;
-            controls.maxPolarAngle = Math.PI / 2 - 0.02; // Keep camera above surface
-            controls.minDistance = 1.5;
-            controls.maxDistance = 1500;
-            controls.target.set(0, 2, 0);
+            if (typeof THREE.OrbitControls === 'function') {
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+                controls.maxPolarAngle = Math.PI / 2 - 0.02; // Keep camera above surface
+                controls.minDistance = 1.5;
+                controls.maxDistance = 1500;
+                controls.target.set(0, 2, 0);
+            } else {
+                controls = {
+                    enabled: true,
+                    target: new THREE.Vector3(0, 2, 0),
+                    update: function() {},
+                    dispose: function() {}
+                };
+            }
 
             // Build Environment & Objects
             setupLighting();
@@ -1846,7 +1855,7 @@
                 step: 7,
                 title: "7. Aşama: Ay'dan Dünya'ya Bakış",
                 desc: "Astronotlar gökyüzündeki kırılgan mavi vatanı izledi. Masmavi Dünya, uzayın siyahlığında yaşam barındıran tek yuvamızdır.",
-                camPos: [0, 3, 10], target: [earthMesh.position.x, earthMesh.position.y, earthMesh.position.z]
+                camPos: [0, 3, 10], target: 'earth'
             }
         ];
 
@@ -1863,9 +1872,19 @@
             document.getElementById('hist-step-title').innerText = data.title;
             document.getElementById('hist-step-desc').innerText = data.desc;
 
-            controls.target.set(data.target[0], data.target[1], data.target[2]);
-            camera.position.set(data.camPos[0], data.camPos[1], data.camPos[2]);
-            controls.update();
+            if (controls) {
+                if (data.target === 'earth') {
+                    if (earthMesh) {
+                        controls.target.copy(earthMesh.position);
+                    }
+                } else if (Array.isArray(data.target)) {
+                    controls.target.set(data.target[0], data.target[1], data.target[2]);
+                }
+                camera.position.set(data.camPos[0], data.camPos[1], data.camPos[2]);
+                if (typeof controls.update === 'function') {
+                    controls.update();
+                }
+            }
         }
 
         function nextHistoricalStep() {
@@ -2384,7 +2403,7 @@
             updateAstronautFPSMovement(delta);
 
             // Orbitcontrols update
-            if (controls.enabled) {
+            if (controls && controls.enabled && typeof controls.update === 'function') {
                 controls.update();
             }
 
@@ -2398,7 +2417,11 @@
         }
 
         // Initialize when window is ready
-        window.addEventListener('DOMContentLoaded', initThreeScene);
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initThreeScene);
+        } else {
+            initThreeScene();
+        }
     </script>
 </body>
 </html>
