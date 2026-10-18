@@ -2017,18 +2017,21 @@
             if (id === 5) setupMission5();
         }
 
-        // Mission 1: Find on 3D scene
+        // Mission 1: Find on 3D scene (Zengin Karışık Soru Havuzu)
         function setupMission1() {
-            const randomPlanet = PLANETS_DATA[Math.floor(Math.random() * PLANETS_DATA.length)];
-            currentTargetPlanetId = randomPlanet.id;
-
             const questions = [
-                { q: `Güneş Sistemi'nin en büyük gaz devi olan gezegeni sahneden bulun.`, target: "jupiter" },
-                { q: `Güneş'e en yakın olan ilk kayaç gezegeni sahneden seçin.`, target: "mercury" },
-                { q: `Toprağındaki pas nedeniyle 'Kızıl Gezegen' olarak bilinen gezegeni bulun.`, target: "mars" },
-                { q: `Muazzam halka sistemiyle bilinen gaz devini bulun.`, target: "saturn" },
-                { q: `Güneş Sistemi'nin en sıcak ve ters dönen gezegenini bulun.`, target: "venus" },
-                { q: `Güneş'e en uzak olan 8. gezegeni bulun.`, target: "neptune" }
+                { q: "Güneş Sistemi'nin en büyük gaz devi olan ve Büyük Kırmızı Lekesi bulunan gezegeni sahneden bulun.", target: "jupiter" },
+                { q: "Güneş'e en yakın olan ve atmosferi olmadığı için yüzeyi kraterlerle dolu ilk gezegeni seçin.", target: "mercury" },
+                { q: "Toprağındaki pas (demir oksit) nedeniyle 'Kızıl Gezegen' olarak bilinen gezegeni bulun.", target: "mars" },
+                { q: "Muazzam ve göz alıcı halka sistemiyle bilinen gaz devini bulun.", target: "saturn" },
+                { q: "Güneş Sistemi'nin en sıcak, yoğun sera gazlı ve saat yönünde ters dönen gezegenini bulun.", target: "venus" },
+                { q: "Güneş'e en uzak olan 8. gezegeni ve dondurucu mavi buz devini bulun.", target: "neptune" },
+                { q: "Yörüngesinde yuvarlanan bir varil gibi 98° yan yatmış olarak dolanan buz devini bulun.", target: "uranus" },
+                { q: "Üzerinde sıvı su ve yaşam barındıran, tek doğal uydusu Ay olan Mavi Gezegeni bulun.", target: "earth" },
+                { q: "Halk arasında 'Çoban Yıldızı' veya 'Sabah Yıldızı' olarak adlandırılan parlak gezegeni bulun.", target: "venus" },
+                { q: "Güneş Sistemi'nin hacim ve kütlece ikinci en büyük gezegenini bulun.", target: "saturn" },
+                { q: "İç (Karasal) gezegenlerin Güneş'e en uzak olan son üyesini bulun.", target: "mars" },
+                { q: "Dış (Gazsal) gezegenler sınıfının Güneş'e en yakın olan dev temsilcisini bulun.", target: "jupiter" }
             ];
             const chosen = questions[Math.floor(Math.random() * questions.length)];
             currentTargetPlanetId = chosen.target;
@@ -2256,41 +2259,116 @@
             updateMissionStats();
         }
 
-        // Mission 5: Revolution vs Rotation
+        // Mission 5: Revolution vs Rotation (Genişletilmiş Karışık Soru Havuzu)
+        const MISSION_5_QUESTION_POOL = [
+            {
+                q: "Dünya'nın kendi ekseni etrafında 1 tam tur dönmesi ne kadar sürer ve neyi oluşturur?",
+                options: [
+                    { t: "24 saat sürer ve gece-gündüzü oluşturur.", correct: true },
+                    { t: "365 gün sürer ve mevsimleri oluşturur.", correct: false },
+                    { t: "27 gün sürer ve Ay evrelerini oluşturur.", correct: false },
+                    { t: "12 saat sürer ve tutulmaları oluşturur.", correct: false }
+                ]
+            },
+            {
+                q: "Bir gezegenin Güneş çevresindeki bir tam dolanım turuna ne ad verilir?",
+                options: [
+                    { t: "Dolanma hareketi (Gezegen Yılı)", correct: true },
+                    { t: "Dönme hareketi (Gezegen Günü)", correct: false },
+                    { t: "Eksen eğikliği", correct: false },
+                    { t: "Gelgit olayı", correct: false }
+                ]
+            },
+            {
+                q: "Güneş Sistemi'ndeki gezegenlerden hangisi diğerlerinin aksine saat yönünde (doğudan batıya) ters döner?",
+                options: [
+                    { t: "Venüs", correct: true },
+                    { t: "Mars", correct: false },
+                    { t: "Jüpiter", correct: false },
+                    { t: "Neptün", correct: false }
+                ]
+            },
+            {
+                q: "Güneş'e olan uzaklık arttıkça bir gezegenin Güneş çevresinde dolanma süresi nasıl değişir?",
+                options: [
+                    { t: "Yörünge genişlediği için dolanma süresi uzar.", correct: true },
+                    { t: "Dolanma süresi kısalır ve hızlanır.", correct: false },
+                    { t: "Bütün gezegenlerin dolanma süresi eşittir.", correct: false },
+                    { t: "Sadece gaz devlerinin süresi kısalır.", correct: false }
+                ]
+            },
+            {
+                q: "Güneş Sistemi'nde iç (karasal) gezegenler ile dış (gazsal) gezegenler arasında hangi gök cisimleri kuşağı bulunur?",
+                options: [
+                    { t: "Asteroit Kuşağı (Mars ile Jüpiter arası)", correct: true },
+                    { t: "Kuiper Kuşağı", correct: false },
+                    { t: "Oort Bulutu", correct: false },
+                    { t: "Halkalar Kuşağı", correct: false }
+                ]
+            },
+            {
+                q: "Yörüngesinde adeta yuvarlanan bir varil gibi yaklaşık 98 derece yan yatmış olarak dönen gezegen hangisidir?",
+                options: [
+                    { t: "Uranüs", correct: true },
+                    { t: "Satürn", correct: false },
+                    { t: "Merkür", correct: false },
+                    { t: "Mars", correct: false }
+                ]
+            },
+            {
+                q: "Aşağıdaki gezegen gruplarından hangisi tamamen 'Karasal (İç) Gezegenler'den oluşur?",
+                options: [
+                    { t: "Merkür, Venüs, Dünya, Mars", correct: true },
+                    { t: "Jüpiter, Satürn, Uranüs, Neptün", correct: false },
+                    { t: "Dünya, Mars, Jüpiter, Satürn", correct: false },
+                    { t: "Venüs, Dünya, Satürn, Uranüs", correct: false }
+                ]
+            },
+            {
+                q: "Güneş tutulması sırasında gök cisimlerinin doğru sıralanışı nasıldır?",
+                options: [
+                    { t: "Güneş — Ay — Dünya (Ay ortadadır)", correct: true },
+                    { t: "Güneş — Dünya — Ay (Dünya ortadadır)", correct: false },
+                    { t: "Dünya — Güneş — Ay (Güneş ortadadır)", correct: false },
+                    { t: "Ay — Güneş — Dünya", correct: false }
+                ]
+            },
+            {
+                q: "Ay tutulması Ay'ın hangi evresinde gerçekleşir?",
+                options: [
+                    { t: "Dolunay evresinde", correct: true },
+                    { t: "Yeni Ay evresinde", correct: false },
+                    { t: "İlk Dördün evresinde", correct: false },
+                    { t: "Son Dördün evresinde", correct: false }
+                ]
+            },
+            {
+                q: "Satürn'ün muazzam halkaları temel olarak nelerden meydana gelir?",
+                options: [
+                    { t: "Buz parçaları, kaya ve toz tanecikleri", correct: true },
+                    { t: "Katı çelik ve metal levhalar", correct: false },
+                    { t: "Sıvı lav ve alevler", correct: false },
+                    { t: "Yalnızca gaz bulutları", correct: false }
+                ]
+            }
+        ];
+
         function setupMission5() {
-            const questions = [
-                {
-                    q: "Dünya'nın kendi ekseni etrafında 1 tam tur dönmesi ne kadar sürer ve neyi oluşturur?",
-                    options: [
-                        { t: "24 saat sürer ve gece-gündüzü oluşturur.", correct: true },
-                        { t: "365 gün sürer ve mevsimleri oluşturur.", correct: false },
-                        { t: "27 gün sürer ve Ay evrelerini oluşturur.", correct: false },
-                        { t: "12 saat sürer ve tutulmaları oluşturur.", correct: false }
-                    ]
-                },
-                {
-                    q: "Bir gezegenin Güneş çevresindeki bir tam turuna ne ad verilir?",
-                    options: [
-                        { t: "Dolanma hareketi (Yıl)", correct: true },
-                        { t: "Dönme hareketi (Gün)", correct: false },
-                        { t: "Eksen eğikliği", correct: false },
-                        { t: "Gelgit olayı", correct: false }
-                    ]
-                }
-            ];
-            const ch = questions[Math.floor(Math.random() * questions.length)];
+            const ch = MISSION_5_QUESTION_POOL[Math.floor(Math.random() * MISSION_5_QUESTION_POOL.length)];
+            // Seçenekleri Fisher-Yates ile karıştır
+            const shuffledOptions = [...ch.options].sort(() => Math.random() - 0.5);
 
             const container = document.getElementById('mission-content-area');
             container.innerHTML = `
                 <div class="space-y-4">
                     <span class="px-3 py-1 rounded-full bg-sky-950 border border-sky-500/40 text-sky-300 font-bold text-xs">
-                        GÖREV 5: DÖNME VE DOLANMA
+                        GÖREV 5: DÖNME, DOLANMA VE ASTRONOMİ BİLGİSİ
                     </span>
                     <h3 class="text-sm font-bold text-white leading-relaxed">
                         ${ch.q}
                     </h3>
                     <div class="space-y-2">
-                        ${ch.options.map(opt => `
+                        ${shuffledOptions.map(opt => `
                             <button onclick="answerMission5(${opt.correct})" class="w-full text-left p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition-all cursor-pointer">
                                 ${opt.t}
                             </button>

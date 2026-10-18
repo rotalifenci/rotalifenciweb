@@ -1778,8 +1778,8 @@
             playTone(500, 'triangle', 0.1);
         }
 
-        // --- QUIZ (EVREYİ TAHMİN ET) MOTORU ---
-        const QUIZ_QUESTIONS = [
+        // --- QUIZ (EVREYİ TAHMİN ET) MOTORU (ZENGİN SORU HAVUZU VE RASTGELE KARIŞTIRMA) ---
+        const QUIZ_QUESTIONS_POOL = [
             { targetPhaseIdx: 0, q: "Teleskopta Ay tamamen karanlık ve görünmüyor. Ay Güneş ile Dünya arasındadır. Bu evre hangisidir?", hint: "Güneş gören aydınlık yüzü arkada kalmıştır." },
             { targetPhaseIdx: 2, q: "Dünya'dan bakıldığında Ay'ın sağ yarısı aydınlık ve düz 'D' harfi şeklindedir. Bu evre hangisidir?", hint: "Yeni Ay'dan 1 hafta sonra oluşur." },
             { targetPhaseIdx: 4, q: "Ay gökyüzünde pırıl pırıl parlayan tam bir daire şeklinde görünmektedir. Bu evre hangisidir?", hint: "Dünya'ya bakan yüzünün tamamı Güneş ışığı alır." },
@@ -1789,8 +1789,14 @@
             { targetPhaseIdx: 3, q: "Ay'ın sağ tarafı yarım daireden daha fazlasıyla aydınlıktır ve Dolunaya yaklaşmaktadır. Bu evre nedir?", hint: "Şişkin Ay evresidir." },
             { targetPhaseIdx: 5, q: "Dolunaydan sonra Ay'ın aydınlık alanı küçülmeye başlamış ama sol tarafı hâlâ yarımdan büyüktür. Bu evre nedir?", hint: "Küçülen Şişkin Ay evresidir." },
             { targetPhaseIdx: 2, q: "Ana evrelerden biri olan İlk Dördün evresinde Ay'ın hangi tarafı aydınlık görünür?", hint: "Düz D harfini hatırla." },
-            { targetPhaseIdx: 4, q: "Ay'ın Dünya etrafındaki dolanması sırasında Güneş-Dünya-Ay sıralaması olduğunda hangi evre gözlenir?", hint: "Dünya ortadayken Ay tam ışık alır." }
+            { targetPhaseIdx: 4, q: "Ay'ın Dünya etrafındaki dolanması sırasında Güneş-Dünya-Ay sıralaması olduğunda hangi evre gözlenir?", hint: "Dünya ortadayken Ay tam ışık alır." },
+            { targetPhaseIdx: 0, q: "Güneş tutulması gerçekleştiğinde Ay Dünya ile Güneş arasındadır. Ay bu sırada hangi evrededir?", hint: "Tutulma sadece Yeni Ay evresinde gerçekleşir." },
+            { targetPhaseIdx: 4, q: "Ay tutulması sırasında Dünya, Güneş ile Ay'ın tam ortasındadır. Ay bu sırada hangi evrededir?", hint: "Ay tutulması yalnızca Dolunay evresinde yaşanabilir." },
+            { targetPhaseIdx: 6, q: "İlk Dördün evresinden tam 2 hafta (14 gün) sonra hangi ana evre gözlenir?", hint: "İlk Dördün'den 1 hafta sonra Dolunay, 2 hafta sonra Son Dördün gelir." },
+            { targetPhaseIdx: 2, q: "Yeni Ay evresinden yaklaşık 7 gün (1 hafta) sonra gözlenen ana evre hangisidir?", hint: "Düz D şeklindeki İlk Dördün evresidir." }
         ];
+
+        let ACTIVE_PHASE_QUESTIONS = [];
 
         let quizState = {
             currentIdx: 0,
@@ -1799,6 +1805,8 @@
         };
 
         function startQuizMode() {
+            // Soruları her açılışta rastgele karıştır ve 10 soru seç
+            ACTIVE_PHASE_QUESTIONS = [...QUIZ_QUESTIONS_POOL].sort(() => Math.random() - 0.5).slice(0, 10);
             quizState.currentIdx = 0;
             quizState.score = 0;
             quizState.answered = false;
@@ -1809,7 +1817,8 @@
             quizState.currentIdx = idx;
             quizState.answered = false;
 
-            const qData = QUIZ_QUESTIONS[idx];
+            const qList = (ACTIVE_PHASE_QUESTIONS && ACTIVE_PHASE_QUESTIONS.length > 0) ? ACTIVE_PHASE_QUESTIONS : QUIZ_QUESTIONS_POOL;
+            const qData = qList[idx] || qList[0];
             const targetPhase = PHASES[qData.targetPhaseIdx];
 
             // Teleskobu otomatik olarak bu evreye ayarla
@@ -1829,7 +1838,7 @@
                 const randName = allNames[Math.floor(Math.random() * allNames.length)];
                 if (!options.includes(randName)) options.push(randName);
             }
-            // Karıştır
+            // Seçenekleri de karıştır
             options.sort(() => Math.random() - 0.5);
 
             const optContainer = document.getElementById('quiz-options-container');
@@ -1847,14 +1856,13 @@
             const fbBox = document.getElementById('quiz-feedback-box');
             fbBox.classList.remove('hidden');
 
-            const isCorrect = selected === correct;
-            if (isCorrect) {
+            if (selected === correct) {
                 quizState.score += 10;
                 document.getElementById('quiz-score').innerText = quizState.score;
                 btnEl.classList.remove('border-slate-200', 'bg-slate-50');
                 btnEl.classList.add('border-emerald-500', 'bg-emerald-50', 'text-emerald-800');
                 fbBox.className = 'p-3 rounded-xl text-xs font-bold my-2 leading-relaxed bg-emerald-50 border border-emerald-200 text-emerald-800';
-                fbBox.innerHTML = `🎉 <strong>Harika Doğru!</strong> Tebrikler, doğru evreyi bildin.`;
+                fbBox.innerHTML = `🎉 <strong>Tebrikler, Doğru!</strong> Bu evre tam olarak <strong>${correct}</strong> evresidir.`;
                 playSuccessChime();
             } else {
                 btnEl.classList.remove('border-slate-200', 'bg-slate-50');
@@ -1868,7 +1876,8 @@
         }
 
         function nextQuizQuestion() {
-            if (quizState.currentIdx + 1 < QUIZ_QUESTIONS.length) {
+            const totalQ = (ACTIVE_PHASE_QUESTIONS && ACTIVE_PHASE_QUESTIONS.length > 0) ? ACTIVE_PHASE_QUESTIONS.length : 10;
+            if (quizState.currentIdx + 1 < totalQ) {
                 loadQuizQuestion(quizState.currentIdx + 1);
             } else {
                 // Quiz Bitti
@@ -1880,9 +1889,9 @@
                             <i class="fa-solid fa-trophy"></i>
                         </div>
                         <h4 class="text-lg font-black text-slate-900 mb-1">Tebrikler! Testi Tamamladın!</h4>
-                        <p class="text-sm font-bold text-blue-700 mb-4">Toplam Puanın: ${quizState.score} / 100</p>
+                        <p class="text-sm font-bold text-blue-700 mb-4">Toplam Puanın: ${quizState.score} / ${totalQ * 10}</p>
                         <button onclick="startQuizMode()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-black rounded-xl text-xs uppercase tracking-wider transition-all shadow-md">
-                            Yeniden Başla
+                            Yeniden Başla (Yeni Sorular)
                         </button>
                     </div>
                 `;
@@ -1891,7 +1900,7 @@
                 document.getElementById('quiz-feedback-box').classList.add('hidden');
             }
         }
-
+        
         // --- CHALLENGE (YÖRÜNGEYE YERLEŞTİR) MOTORU ---
         const CHALLENGE_TASKS = [
             { phaseIdx: 4, name: "DOLUNAY", hint: "Güneş sol tarafta olduğuna göre, Ay'ın tamamen ışık alması için Dünya'nın sağ tarafında (180°) olması gerekir." },

@@ -59,7 +59,10 @@ const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
     "mat-e072f771-967e-44c8-ad81-3e67f0934514", "mat-23f656d5-1306-4b7f-bb24-d12ccbe1f4bd",
     "oyun-6-uzay-ekspresi", "mat-game-gezegen-kosusu", "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
-    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717"
+    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
+    "mat-6-oyun-uzay-ekspresi", "oyun-uzay-ekspresi", "mat-4e34f261-c437-4ec5-98d2-776e49ffac4c",
+    "mat-66ecb5d9-e086-4b48-823b-911f27cdbcc1", "mat-04e87bdc-a9ca-49fc-810e-08c53fc4eb81",
+    "mat-9717d459-d55c-46aa-8098-ed67611c90f8", "mat-1789665265173-g8"
 ];
 
 function getDeletedMaterialIds() {
@@ -4856,10 +4859,32 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "5": {
             "1": [
                 {
+                    id: "builtin-oyun-5-kozmik-kasif",
+                    title: "Kozmik Kâşif 3D: Ay ve Güneş Üssü",
+                    icon: "fa-solid fa-satellite-dish",
+                    desc: "Ay Roverı sürüşü, Güneş Gözlemevi teleskobu, interaktif Ay Evreleri hologram radarı ve kozmik ölçek simülatörü!",
+                    type: "3D Uzay Simülatörü",
+                    format: "3D SİMÜLATÖR",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/kozmik-kasif-3d.html",
+                    kapakResmi: "assets/kozmik-kasif-3d-kapak.svg"
+                },
+                {
+                    id: "builtin-oyun-5-kozmik-kosu",
+                    title: "Kozmik Koşu: Ay Evresi Avı (3D)",
+                    icon: "fa-solid fa-person-running",
+                    desc: "Subway Surfers tarzı 3D uzay koşusu! Astronot ile engellerden kaç, jetpack topla, 3 şeritli kapılardan Ay evrelerini avla!",
+                    type: "3D Koşu Oyunu",
+                    format: "3D OYUN",
+                    badge: "🌟 1. Ünite Başyapıt Oyunu",
+                    fileUrl: "oyunlar/kozmik-kosu-3d.html",
+                    kapakResmi: "assets/kozmik-kosu-3d-kapak.svg"
+                },
+                {
                     id: "oyun-gunesi-kesfediyorum-3d",
                     title: "5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı",
                     icon: "fa-solid fa-sun",
-                    desc: "Fotogerçekçi 3D Güneş modeli, 6 katmanlı kesit incelemesi, diferansiyel dönme hareketi, Güneş'ten Dünya'ya foton yolculuğu, 109 kat büyüklük karşılaştırması ve etkileşimli oyunlar.",
+                    desc: "Fotogerçekçi 3D Güneş modeli, 6 katmanlı kesit incelemesi, diferansiyel dönme hareketi, Güneş'ten Dünya'ya foton yolculuğu ve oyunlar.",
                     type: "3D Uzay Laboratuvarı",
                     format: "3D SİMÜLATÖR",
                     badge: "🌟 1. Ünite Başyapıtı",
@@ -4870,7 +4895,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     id: "oyun-5-gunes",
                     title: "5. Sınıf Ay'ın Evreleri 3D Etkileşimli Uzay Simülatörü",
                     icon: "fa-solid fa-moon",
-                    desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfedin. Ay'ı yörüngesinde parmağınızla sürükleyin, Dünya'dan görünen 8 evreyi canlı teleskopla izleyin.",
+                    desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfedin. Ay'ı yörüngesinde sürükleyin, 8 evreyi canlı teleskopla izleyin.",
                     type: "3D Planetaryum Simülatörü",
                     format: "3D SİMÜLATÖR",
                     badge: "🌟 1. Ünite Başyapıtı",
@@ -4891,32 +4916,24 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     badge: "🌟 1. Ünite Başyapıtı",
                     fileUrl: "oyunlar/gunes-sistemi-3d.html",
                     kapakResmi: "assets/gunes-sistemi-3d-kapak.svg"
-                },
-                {
-                    id: "oyun-uzay-ekspresi",
-                    title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi",
-                    icon: "fa-solid fa-train-subway",
-                    desc: "3D sonsuz uzay treninde gezegenleri keşfet, meteorlardan kaç, bilgi kapılarından doğru geç!",
-                    type: "3D Tren Oyunu",
-                    format: "3D OYUN",
-                    badge: "🌟 1. Ünite Başyapıtı",
-                    fileUrl: "oyunlar/uzay-ekspresi.html",
-                    kapakResmi: "assets/rotali-uzay-ekspresi.jpg"
-                },
-                {
-                    id: "oyun-gezegen-kosusu",
-                    title: "Gezegen Koşusu: Antgravity Galaksisi",
-                    icon: "fa-solid fa-rocket",
-                    desc: "3D Sonsuz Uzay Koşusu & Astronomi Bilgi Kapıları.",
-                    type: "3D Koşu Oyunu",
-                    format: "3D OYUN",
-                    badge: "Popüler Oyun",
-                    fileUrl: "oyunlar/gezegen-kosusu.html",
-                    kapakResmi: "assets/logo.jpg"
                 }
             ]
         },
-        "7": {},
+        "7": {
+            "1": [
+                {
+                    id: "builtin-oyun-7-uzaydan-kacis",
+                    title: "7. Sınıf Uzaydan Kaçış: Gizemli İstasyon (3D)",
+                    icon: "fa-solid fa-satellite",
+                    desc: "Yörünge-7 İstasyonu'ndaki 6 bilimsel güvenlik kilidini uzay araştırmaları bilginle çöz, Dünya'ya dönüş kapsülüyle eve dön!",
+                    type: "3D Kaçış Odası",
+                    format: "3D KAÇIŞ ODASI",
+                    badge: "🌟 1. Ünite Başyapıt Oyunu",
+                    fileUrl: "oyunlar/uzaydan-kacis-3d.html",
+                    kapakResmi: "assets/uzaydan-kacis-3d-kapak.svg"
+                }
+            ]
+        },
         "8": {}
     };
 
@@ -5281,31 +5298,33 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 (item.id && String(item.id).includes("gunesi-kesfediyorum"))
                                             );
 
-                                            const actionCall = isGunesSistemiItem
-                                                ? `openInteractiveGameModal('oyunlar/gunes-sistemi-3d.html', 'Güneş Sistemi – 3D Keşif Laboratuvarı')`
-                                                : (isKozmikKasifItem
-                                                    ? `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`
-                                                    : (isKozmikKosuItem
-                                                        ? `openInteractiveGameModal('oyunlar/kozmik-kosu-3d.html', 'Kozmik Koşu: Ay Evresi Avı (3D)')`
-                                                        : (isAyinEvreleriItem
-                                                            ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`
-                                                            : (isGunesItem
-                                                                ? `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`
-                                                                : (isBuiltinGame
-                                                                    ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
-                                                                    : (isCustom
-                                                                        ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
-                                                                        : cfg.btnAction(item)))))));
+                                            let actionCall = cfg.btnAction(item);
+                                            if (isGunesSistemiItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/gunes-sistemi-3d.html', 'Güneş Sistemi – 3D Keşif Laboratuvarı')`;
+                                            } else if (isKozmikKasifItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`;
+                                            } else if (isKozmikKosuItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/kozmik-kosu-3d.html', 'Kozmik Koşu: Ay Evresi Avı (3D)')`;
+                                            } else if (isAyinEvreleriItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`;
+                                            } else if (isGunesItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`;
+                                            } else if (isBuiltinGame) {
+                                                actionCall = `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`;
+                                            } else if (isCustom) {
+                                                actionCall = `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`;
+                                            }
 
-                                            const itemActionUI = isGunesSistemiItem
-                                                ? { bg: "bg-gradient-to-r from-sky-500 via-indigo-600 to-amber-500 hover:from-sky-600 hover:to-indigo-700 shadow-sky-500/30", text: "Laboratuvara Gir", icon: "fa-solid fa-solar-panel" }
-                                                : (isAyinEvreleriItem
-                                                    ? { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
-                                                    : (isGunesItem
-                                                        ? { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
-                                                    : (isBuiltinGame
-                                                        ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
-                                                        : getMaterialActionUI(item, normSubTab)));
+                                            let itemActionUI = getMaterialActionUI(item, normSubTab);
+                                            if (isGunesSistemiItem) {
+                                                itemActionUI = { bg: "bg-gradient-to-r from-sky-500 via-indigo-600 to-amber-500 hover:from-sky-600 hover:to-indigo-700 shadow-sky-500/30", text: "Laboratuvara Gir", icon: "fa-solid fa-solar-panel" };
+                                            } else if (isAyinEvreleriItem) {
+                                                itemActionUI = { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" };
+                                            } else if (isGunesItem) {
+                                                itemActionUI = { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" };
+                                            } else if (isBuiltinGame) {
+                                                itemActionUI = { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" };
+                                            }
 
                                             const itemCover = resolveMaterialCover(item);
 

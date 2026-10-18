@@ -1314,13 +1314,25 @@
             // Seviyenin soru listesinden rastgele soru seç
             const questions = QUESTION_BANK[GAME.level] || QUESTION_BANK[1];
             const qObj = questions[Math.floor(Math.random() * questions.length)];
-            GAME.currentQuestion = qObj;
 
-            // HUD Soru Paneli
+            // 3 Şerit Seçeneklerini Fisher-Yates ile rastgele karıştır
+            const rawOpts = qObj.options.map((text, idx) => ({
+                text,
+                isCorrect: (idx === qObj.correct)
+            }));
+            for (let i = rawOpts.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [rawOpts[i], rawOpts[j]] = [rawOpts[j], rawOpts[i]];
+            }
+
+            GAME.currentQuestion = qObj;
+            GAME.activeGateOptions = rawOpts;
+
+            // HUD Soru Paneli (Rastgele dağıtılmış şeritler)
             document.getElementById('question-text').textContent = qObj.q;
-            document.getElementById('option-left-text').textContent = qObj.options[0];
-            document.getElementById('option-mid-text').textContent = qObj.options[1];
-            document.getElementById('option-right-text').textContent = qObj.options[2];
+            document.getElementById('option-left-text').textContent = rawOpts[0].text;
+            document.getElementById('option-mid-text').textContent = rawOpts[1].text;
+            document.getElementById('option-right-text').textContent = rawOpts[2].text;
 
             const qHud = document.getElementById('question-hud');
             qHud.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
@@ -1368,7 +1380,9 @@
         function evaluateGateAnswer(playerLane) {
             GAME.isQuestionActive = false;
             const chosenIndex = playerLane + 1; // -1 -> 0, 0 -> 1, 1 -> 2
-            const isCorrect = (chosenIndex === GAME.currentQuestion.correct);
+            const isCorrect = GAME.activeGateOptions 
+                ? (GAME.activeGateOptions[chosenIndex] && GAME.activeGateOptions[chosenIndex].isCorrect)
+                : (chosenIndex === GAME.currentQuestion.correct);
 
             // Soru HUD'ını Kapat
             const qHud = document.getElementById('question-hud');

@@ -2742,6 +2742,27 @@
             }
         }
 
+        // Akıllı Tahta Mini Sınav Şıklarını Otomatik Karıştır
+        function randomizeSlideQuizOptions() {
+            try {
+                const quizGrid = document.querySelector('#slide-39 .interactive-quiz-card')?.parentElement;
+                if (!quizGrid) return;
+                const cards = Array.from(quizGrid.children);
+                cards.sort(() => Math.random() - 0.5);
+                const letters = ['A)', 'B)', 'C)', 'D)'];
+                cards.forEach((card, idx) => {
+                    const strong = card.querySelector('strong');
+                    if (strong) {
+                        const rawText = strong.textContent.replace(/^[A-D]\)\s*/, '');
+                        strong.textContent = `${letters[idx]} ${rawText}`;
+                    }
+                    quizGrid.appendChild(card);
+                });
+            } catch (err) {}
+        }
+        document.addEventListener('DOMContentLoaded', randomizeSlideQuizOptions);
+        window.addEventListener('load', randomizeSlideQuizOptions);
+
         // Dış Pencere (Parent Frame) İletişimi
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'ROTALI_SLIDE_CMD') {

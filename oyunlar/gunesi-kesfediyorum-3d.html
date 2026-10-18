@@ -1664,18 +1664,40 @@
             answered: false
         };
 
-        const QUIZ_10_QUESTIONS = [
-            { q: "Güneş hangi gök cismi türüdür?", opts: ["Gezegen", "Yıldız", "Uydu", "Asteroit"], a: 1, hint: "Kendiliğinden ısı ve ışık saçan doğal gök cismidir." },
-            { q: "Güneş'in geometrik şekli hangisine çok yakındır?", opts: ["Küre", "Düz Disk", "Piramit", "Küp"], a: 0, hint: "Tıpkı bir basketbol topu gibi yuvarlaktır." },
-            { q: "Güneş'in yapısında en çok bulunan gazlar hangileridir?", opts: ["Oksijen ve Azot", "Hidrojen ve Helyum", "Karbondioksit ve Su", "Demir ve Nikel"], a: 1, hint: "Evrenin en hafif iki elementidir." },
-            { q: "Güneş kendi ekseni etrafında hangi yönde döner?", opts: ["Doğudan Batıya", "Batıdan Doğuya (Saat tersi)", "Yukarıdan Aşağıya", "Dönmez, sabittir"], a: 1, hint: "Dünya gibi saat yönünün tersine döner." },
-            { q: "Güneş lekelerinin diski üzerinde yer değiştirmesi bize neyi kanıtlar?", opts: ["Güneş'in söndüğünü", "Güneş'in kendi ekseninde döndüğünü", "Dünya'nın durduğunu", "Güneş'in katı olduğunu"], a: 1, hint: "Galileo 1610 yılında bunu keşfetmiştir." },
-            { q: "Güneş'in yüzey sıcaklığı yaklaşık kaç derecedir?", opts: ["100 °C", "1.500 °C", "5.500 °C", "15 Milyon °C"], a: 2, hint: "Çekirdeği 15 milyon, görünen yüzeyi 5500 derecedir." },
-            { q: "Güneş ışığı Dünya'mıza yaklaşık ne kadar sürede ulaşır?", opts: ["8 saniye", "8 dakika 20 saniye", "8 saat", "8 gün"], a: 1, hint: "150 milyon kilometreyi ışık hızıyla aşar." },
-            { q: "Güneş'in çapı Dünya'mızın çapının yaklaşık kaç katıdır?", opts: ["2 katı", "10 katı", "50 katı", "109 katı"], a: 3, hint: "Yan yana 109 Dünya dizilebilir." },
-            { q: "Güneş çok devasa olduğu halde gökyüzünde neden küçük görünür?", opts: ["Dünya'dan çok uzakta olduğu için", "Güneş gündüz küçüldüğü için", "Bulutlar arkasında kaldığı için", "Işığı azaldığı için"], a: 0, hint: "Uzaklaşan cisimler gözümüze daha küçük görünür." },
-            { q: "Güneş enerjisi nereden kaynaklanır?", opts: ["Kömür yanmasından", "Nükleer füzyondan", "Sürtünmeden", "Yerçekiminden"], a: 1, hint: "Çekirdekte hidrojenin helyuma dönüşmesiyle doğar." }
+        const QUIZ_MASTER_POOL = [
+            { q: "Güneş hangi gök cismi türüdür?", opts: ["Gezegen", "Yıldız", "Uydu", "Asteroit"], correctOpt: "Yıldız", hint: "Kendiliğinden ısı ve ışık saçan doğal gök cismidir." },
+            { q: "Güneş'in geometrik şekli hangisine çok yakındır?", opts: ["Küre", "Düz Disk", "Piramit", "Küp"], correctOpt: "Küre", hint: "Tıpkı bir basketbol topu gibi yuvarlaktır." },
+            { q: "Güneş'in yapısında en çok bulunan gazlar hangileridir?", opts: ["Oksijen ve Azot", "Hidrojen ve Helyum", "Karbondioksit ve Su", "Demir ve Nikel"], correctOpt: "Hidrojen ve Helyum", hint: "Evrenin en hafif iki elementidir." },
+            { q: "Güneş kendi ekseni etrafında hangi yönde döner?", opts: ["Doğudan Batıya", "Batıdan Doğuya (Saat tersi)", "Yukarıdan Aşağıya", "Dönmez, sabittir"], correctOpt: "Batıdan Doğuya (Saat tersi)", hint: "Dünya gibi saat yönünün tersine döner." },
+            { q: "Güneş lekelerinin diski üzerinde yer değiştirmesi bize neyi kanıtlar?", opts: ["Güneş'in söndüğünü", "Güneş'in kendi ekseninde döndüğünü", "Dünya'nın durduğunu", "Güneş'in katı olduğunu"], correctOpt: "Güneş'in kendi ekseninde döndüğünü", hint: "Galileo 1610 yılında bunu keşfetmiştir." },
+            { q: "Güneş'in yüzey sıcaklığı yaklaşık kaç derecedir?", opts: ["100 °C", "1.500 °C", "5.500 °C", "15 Milyon °C"], correctOpt: "5.500 °C", hint: "Çekirdeği 15 milyon, görünen yüzeyi 5500 derecedir." },
+            { q: "Güneş ışığı Dünya'mıza yaklaşık ne kadar sürede ulaşır?", opts: ["8 saniye", "8 dakika 20 saniye", "8 saat", "8 gün"], correctOpt: "8 dakika 20 saniye", hint: "150 milyon kilometreyi ışık hızıyla aşar." },
+            { q: "Güneş'in çapı Dünya'mızın çapının yaklaşık kaç katıdır?", opts: ["2 katı", "10 katı", "50 katı", "109 katı"], correctOpt: "109 katı", hint: "Yan yana 109 Dünya dizilebilir." },
+            { q: "Güneş çok devasa olduğu halde gökyüzünde neden küçük görünür?", opts: ["Dünya'dan çok uzakta olduğu için", "Güneş gündüz küçüldüğü için", "Bulutlar arkasında kaldığı için", "Işığı azaldığı için"], correctOpt: "Dünya'dan çok uzakta olduğu için", hint: "Uzaklaşan cisimler gözümüze daha küçük görünür." },
+            { q: "Güneş enerjisi nereden kaynaklanır?", opts: ["Kömür yanmasından", "Nükleer füzyondan", "Sürtünmeden", "Yerçekiminden"], correctOpt: "Nükleer füzyondan", hint: "Çekirdekte hidrojenin helyuma dönüşmesiyle doğar." },
+            { q: "Güneş'in içine yaklaşık kaç tane Dünya sığabilir?", opts: ["100 tane", "10.000 tane", "1.3 Milyon tane", "1 Milyar tane"], correctOpt: "1.3 Milyon tane", hint: "Hacimce Güneş devasa bir orana sahiptir." },
+            { q: "Güneş gözlemi yaparken hangi kurala kesinlikle uyulmalıdır?", opts: ["Çıplak gözle doğrudan bakılmalıdır", "Özel filtreli teleskop veya solar gözlük kullanılmalıdır", "Büyüteç ile bakılmalıdır", "Normal güneş gözlüğü yeterlidir"], correctOpt: "Özel filtreli teleskop veya solar gözlük kullanılmalıdır", hint: "Filtresiz Güneş'e bakmak gözlere kalıcı hasar verir." },
+            { q: "Güneş'in en iç kısmında yer alan ve en sıcak olan katman hangisidir?", opts: ["Çekirdek", "Işık Küre", "Renk Küre", "Taç Küre"], correctOpt: "Çekirdek", hint: "Sıcaklığı yaklaşık 15 milyon °C olan merkezdir." },
+            { q: "Dünya'daki rüzgar, yağmur ve su döngüsünün temel enerji kaynağı nedir?", opts: ["Ay", "Güneş", "Kutup Yıldızı", "Dünya'nın çekirdeği"], correctOpt: "Güneş", hint: "Dünya'daki tüm iklim olaylarını Güneş enerjisi başlatır." }
         ];
+
+        let ACTIVE_QUIZ_QUESTIONS = [];
+
+        function prepareRandomizedQuizPool() {
+            // Soruları karıştır ve 10 tanesini seç
+            const shuffled = [...QUIZ_MASTER_POOL].sort(() => Math.random() - 0.5).slice(0, 10);
+            ACTIVE_QUIZ_QUESTIONS = shuffled.map(item => {
+                // Seçenekleri karıştır
+                const opts = [...item.opts].sort(() => Math.random() - 0.5);
+                const correctIdx = opts.indexOf(item.correctOpt);
+                return {
+                    q: item.q,
+                    opts: opts,
+                    a: correctIdx >= 0 ? correctIdx : 0,
+                    hint: item.hint
+                };
+            });
+        }
 
         const TF_QUESTIONS = [
             { text: "Güneş kendi ekseni etrafında döner.", correct: true, exp: "Doğru! Güneş ekvatorunda 25 günde bir tam tur atar." },
@@ -1709,6 +1731,13 @@
             quizState.score = 0;
             quizState.currentQIdx = 0;
             quizState.answered = false;
+
+            if (gameNum === 1) {
+                prepareRandomizedQuizPool();
+            } else if (gameNum === 4) {
+                TF_QUESTIONS.sort(() => Math.random() - 0.5);
+            }
+
             [1, 2, 3, 4].forEach(n => {
                 const b = document.getElementById(`btn-subgame-${n}`);
                 if (b) {
@@ -1723,12 +1752,15 @@
             if (!arena) return;
 
             if (quizState.activeGame === 1) {
+                if (!ACTIVE_QUIZ_QUESTIONS || ACTIVE_QUIZ_QUESTIONS.length === 0) {
+                    prepareRandomizedQuizPool();
+                }
                 // 10 Soruluk Quiz
-                const qData = QUIZ_10_QUESTIONS[quizState.currentQIdx];
+                const qData = ACTIVE_QUIZ_QUESTIONS[quizState.currentQIdx] || ACTIVE_QUIZ_QUESTIONS[0];
                 arena.innerHTML = `
                     <div class="p-3 bg-purple-50/80 border border-purple-200 rounded-2xl">
                         <div class="flex items-center justify-between text-xs font-black mb-1.5">
-                            <span class="text-purple-900">Soru ${quizState.currentQIdx + 1} / 10</span>
+                            <span class="text-purple-900">Soru ${quizState.currentQIdx + 1} / ${ACTIVE_QUIZ_QUESTIONS.length}</span>
                             <span class="text-emerald-700"><i class="fa-solid fa-trophy"></i> Skor: ${quizState.score}</span>
                         </div>
                         <h4 class="text-xs sm:text-sm font-black text-slate-900 mb-2 leading-snug">${qData.q}</h4>
@@ -1800,7 +1832,7 @@
         function answer10Question(idx) {
             if (quizState.answered) return;
             quizState.answered = true;
-            const q = QUIZ_10_QUESTIONS[quizState.currentQIdx];
+            const q = (ACTIVE_QUIZ_QUESTIONS && ACTIVE_QUIZ_QUESTIONS[quizState.currentQIdx]) || QUIZ_MASTER_POOL[0];
             const fb = document.getElementById('quiz-feedback');
             fb.classList.remove('hidden');
 
@@ -1817,7 +1849,8 @@
 
             setTimeout(() => {
                 quizState.answered = false;
-                if (quizState.currentQIdx + 1 < QUIZ_10_QUESTIONS.length) {
+                const totalQ = (ACTIVE_QUIZ_QUESTIONS && ACTIVE_QUIZ_QUESTIONS.length) || 10;
+                if (quizState.currentQIdx + 1 < totalQ) {
                     quizState.currentQIdx++;
                     loadActiveSubGame();
                 } else {
@@ -1827,7 +1860,7 @@
                         <div class="p-4 bg-purple-100 border border-purple-300 rounded-2xl text-center space-y-2">
                             <div class="text-3xl">🏆</div>
                             <h4 class="font-black text-sm text-purple-950">Quiz Tamamlandı!</h4>
-                            <p class="font-bold text-xs text-purple-800">Toplam Puanın: ${quizState.score} / 100</p>
+                            <p class="font-bold text-xs text-purple-800">Toplam Puanın: ${quizState.score} / ${totalQ * 10}</p>
                             <button onclick="setQuizGame(1)" class="px-4 py-1.5 bg-purple-700 text-white font-black rounded-xl text-xs uppercase">Tekrar Çöz</button>
                         </div>
                     `;
