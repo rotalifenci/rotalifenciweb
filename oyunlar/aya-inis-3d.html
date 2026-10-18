@@ -200,14 +200,14 @@
 
                 <!-- 8 Core Modules Navigation Pills -->
                 <div class="space-y-1.5 text-xs font-semibold">
-                    <!-- 0. Saturn V Fırlatılış (Dünya'dan Ay'a) -->
+                    <!-- 0. Dünya'dan Fırlatma (2026 Millî Roket & Ay İniş Aracı) -->
                     <button onclick="switchAppMode('saturn_launch')" id="nav-btn-launch" class="w-full text-left p-2 rounded-xl bg-orange-950/60 hover:bg-orange-900/80 border border-orange-500/40 text-orange-200 flex items-center gap-2.5 transition-all cursor-pointer">
                         <div class="w-7 h-7 rounded-lg bg-orange-600/30 flex items-center justify-center text-orange-400 shrink-0">
                             <i class="fa-solid fa-rocket"></i>
                         </div>
                         <div class="flex-1 truncate">
-                            <div class="font-bold text-[11px] text-orange-200">Dünya'dan Fırlatma (Saturn V)</div>
-                            <div class="text-[9px] text-orange-400/80 font-normal">Kennedy Uzay Merkezi'nden kalkış</div>
+                            <div class="font-bold text-[11px] text-orange-200">Dünya'dan Fırlatma (2026)</div>
+                            <div class="text-[9px] text-orange-400/80 font-normal">Sesli geri sayım ve roket fırlatılışı</div>
                         </div>
                     </button>
 
@@ -217,7 +217,7 @@
                             <i class="fa-solid fa-person-walking"></i>
                         </div>
                         <div class="flex-1 truncate">
-                            <div class="font-bold text-[11px] text-sky-200">Ay'da Yürü (1. Şahıs)</div>
+                            <div class="font-bold text-[11px] text-sky-200">Ay'da Yürü (Türk Astronot)</div>
                             <div class="text-[9px] text-slate-400 font-normal">1.62 m/s² Ay çekimiyle keşfet</div>
                         </div>
                     </button>
@@ -239,8 +239,8 @@
                             <i class="fa-solid fa-circle-half-stroke"></i>
                         </div>
                         <div class="flex-1 truncate">
-                            <div class="font-bold text-[11px] text-indigo-200">Dünya'nın Evreleri (8 Evre)</div>
-                            <div class="text-[9px] text-slate-400 font-normal">Ay evreleriyle ters geometri</div>
+                            <div class="font-bold text-[11px] text-indigo-200">Dünya'nın Aydınlanma Evreleri</div>
+                            <div class="text-[9px] text-slate-400 font-normal">Ay evreleriyle zıt geometri</div>
                         </div>
                     </button>
 
@@ -255,25 +255,25 @@
                         </div>
                     </button>
 
-                    <!-- 5. Uzaydan Gözlem (Heliocentric) -->
+                    <!-- 5. Uzaydan Gözlem (Gerçekçi Dolanma Hareketi) -->
                     <button onclick="switchAppMode('orbit_macro')" id="nav-btn-orbit" class="w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer">
                         <div class="w-7 h-7 rounded-lg bg-purple-600/30 flex items-center justify-center text-purple-300 shrink-0">
                             <i class="fa-solid fa-satellite"></i>
                         </div>
                         <div class="flex-1 truncate">
-                            <div class="font-bold text-[11px] text-purple-200">Uzaydan Gözlem</div>
-                            <div class="text-[9px] text-slate-400 font-normal">Güneş, Dünya ve Ay hareketleri</div>
+                            <div class="font-bold text-[11px] text-purple-200">Uzaydan Gözlem (Dolanma)</div>
+                            <div class="text-[9px] text-slate-400 font-normal">Dünya ve Ay'ın yörünge dolanması</div>
                         </div>
                     </button>
 
-                    <!-- 6. Tarihsel Apollo 11 Görevi -->
+                    <!-- 6. 2026 Millî Ay Misyonu -->
                     <button onclick="switchAppMode('historical_mission')" id="nav-btn-history" class="w-full text-left p-2 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/30 text-amber-200 flex items-center gap-2.5 transition-all cursor-pointer">
                         <div class="w-7 h-7 rounded-lg bg-amber-500/30 flex items-center justify-center text-amber-300 shrink-0">
                             <i class="fa-solid fa-flag"></i>
                         </div>
                         <div class="flex-1 truncate">
-                            <div class="font-bold text-[11px] text-amber-100">Apollo 11'i Yaşa (1969)</div>
-                            <div class="text-[9px] text-amber-400/80 font-normal">7 aşamalı tarihsel görev</div>
+                            <div class="font-bold text-[11px] text-amber-100">2026 Millî Ay Misyonu</div>
+                            <div class="text-[9px] text-amber-400/80 font-normal">7 aşamalı Türk uzay görevi</div>
                         </div>
                     </button>
 
@@ -294,19 +294,19 @@
                     <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Hızlı Odaklanma:</span>
                     <div class="grid grid-cols-2 gap-1 text-[10px]">
                         <button onclick="focusCameraOn('eagle')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-sky-700 text-slate-200 font-bold transition-all truncate">
-                            🚀 Eagle Modülü
+                            🚀 Uzay Aracı
                         </button>
                         <button onclick="focusCameraOn('earth')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-blue-700 text-slate-200 font-bold transition-all truncate">
                             🌍 Dünya'ya Bak
                         </button>
                         <button onclick="focusCameraOn('flag')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-amber-700 text-slate-200 font-bold transition-all truncate">
-                            🇺🇸 Amerikan Bayrağı
+                            🇹🇷 Türk Bayrağı
                         </button>
                         <button onclick="focusCameraOn('sun')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-orange-700 text-slate-200 font-bold transition-all truncate">
                             ☀️ Güneş'e Bak
                         </button>
                         <button onclick="focusCameraOn('experiments')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-emerald-700 text-slate-200 font-bold transition-all truncate">
-                            🔬 Sismometre & Lazer
+                            🔬 Bilim Cihazları
                         </button>
                         <button onclick="resetToInitialView()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-indigo-700 text-slate-200 font-bold transition-all truncate">
                             🔄 Başlangıç Açısı
@@ -340,22 +340,22 @@
                         <i class="fa-solid fa-shuttle-space"></i>
                     </div>
                     <div>
-                        <h3 id="info-title" class="font-bold text-sm text-white leading-tight">Eagle Ay Modülü (LM-5)</h3>
-                        <p id="info-subtitle" class="text-[10px] text-slate-400">Apollo 11 İniş Aracı</p>
+                        <h3 id="info-title" class="font-bold text-sm text-white leading-tight">Millî Ay İniş Modülü (Uzay Aracı)</h3>
+                        <p id="info-subtitle" class="text-[10px] text-slate-400">2026 Türk Ay Keşif Aracı</p>
                     </div>
                 </div>
 
                 <!-- Description -->
                 <p id="info-desc" class="text-slate-300 text-[11px] leading-relaxed">
-                    Neil Armstrong ve Buzz Aldrin'i 20 Temmuz 1969'da Sessizlik Denizi'ne başarıyla indiren iki aşamalı uzay aracıdır.
+                    Türk astronotları 2026 yılında Sessizlik Denizi'ne başarıyla indiren uzay aracıdır. Fırlatma roketi Dünya yörüngesinde kalmış, Ay'a yalnızca uzay aracı inmiştir.
                 </p>
 
                 <!-- 3 Key Scientific Facts -->
                 <div id="info-facts-container" class="space-y-1 bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-[10px]">
                     <div class="text-sky-300 font-bold mb-0.5">🔍 Bilimsel Gerçekler:</div>
-                    <div id="info-fact-1" class="text-slate-300">• Altın renkli yüzey, aşırı Güneş sıcağını yansıtan Mylar termal folyodur.</div>
-                    <div id="info-fact-2" class="text-slate-300">• Alt kademe Ay'da kalırken, üst kabin astronotları yörüngeye taşımıştır.</div>
-                    <div id="info-fact-3" class="text-slate-300">• Merdiven ayağında barış mesajı taşıyan pirinç plaka yer alır.</div>
+                    <div id="info-fact-1" class="text-slate-300">• Altın folyo yüzey, Güneş'in yakıcı radyasyonunu yansıtan çok katmanlı Mylar kaplamadır.</div>
+                    <div id="info-fact-2" class="text-slate-300">• Alçalma motoru itki kontrollü olup kraterli zemine yumuşak temas sağlar.</div>
+                    <div id="info-fact-3" class="text-slate-300">• Gövdesinde Türkiye Uzay Ajansı (TUA) arması ve şanlı al bayrağımız yer alır.</div>
                 </div>
 
                 <!-- Action Button inside Info Panel -->
@@ -416,7 +416,7 @@
             <button id="btn-play-pause" onclick="toggleSimPlay()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-600 hover:bg-sky-500 text-slate-950 font-black text-xs flex items-center justify-center transition-all shadow-md active:scale-95 cursor-pointer">
                 <i id="play-pause-icon" class="fa-solid fa-pause"></i>
             </button>
-            <button onclick="resetSimulationTime()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Zamanı Sıfırla (20 Temmuz 1969)">
+            <button onclick="resetSimulationTime()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Zamanı Sıfırla (2026 Millî Ay Misyonu)">
                 <i class="fa-solid fa-rotate-left"></i>
             </button>
 
@@ -434,11 +434,11 @@
             <div class="flex items-center gap-1.5">
                 <i class="fa-regular fa-clock text-amber-400"></i>
                 <span class="text-slate-400 hidden sm:inline">SİMÜLASYON:</span>
-                <strong id="sim-date-display" class="text-white font-orbitron">20 Tem 1969, 20:17 UTC</strong>
+                <strong id="sim-date-display" class="text-white font-orbitron">29 Eki 2026, 19:23 UTC</strong>
             </div>
             <div class="hidden lg:flex items-center gap-1.5 text-sky-300">
                 <i class="fa-solid fa-earth-americas text-blue-400"></i>
-                <span>DÜNYA EVRESİ: <strong id="earth-phase-label" class="text-white">Küçülen Şişkin Dünya</strong></span>
+                <span>DÜNYA EVRESİ: <strong id="earth-phase-label" class="text-white">Tam Aydınlık Evre</strong></span>
             </div>
         </div>
 
@@ -486,10 +486,10 @@
                     </button>
                 </div>
                 <h3 id="teacher-q-title" class="text-sm font-bold text-white leading-relaxed">
-                    "Dünya'dan baktığımızda Dolunay evresi görülürken, Ay'dan bakan bir astronot Dünya'yı hangi evrede görür?"
+                    "Dünya'dan gökyüzüne bakıldığında Ay tamamen aydınlık ve yuvarlak görünürken, Ay'dan Dünya'ya bakan bir astronot Dünya'yı hangi evrede görür?"
                 </h3>
                 <div id="teacher-q-answer" class="hidden p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs leading-relaxed animate-fadeIn">
-                    <strong>Bilimsel Cevap:</strong> <em>Yeni Dünya</em> (Tamamen karanlık veya ince mavi halkalı). Çünkü Dünya'nın evreleri Ay'ın evreleriyle zıt/ters ilişkilidir!
+                    <strong>Bilimsel Cevap:</strong> <em>Karanlık Evre (Yeni Dünya)</em> (Güneş arkada kaldığı için Dünya'nın Ay'a bakan tarafı karanlıktır. Dünya ve Ay'ın aydınlanma evreleri birbirine zıttır!)
                 </div>
                 <div class="flex gap-2">
                     <button id="btn-reveal-teacher-ans" onclick="revealTeacherAnswer()" class="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer">
@@ -513,7 +513,7 @@
                     🛰️ Dönme vs Dolanma
                 </button>
                 <button onclick="teacherFocusMode('eagle_inspect')" class="p-2.5 rounded-xl bg-slate-800 hover:bg-emerald-600 font-bold text-white text-center transition-all">
-                    🚀 Eagle Modülü
+                    🚀 Uzay Aracı
                 </button>
             </div>
         </div>
@@ -528,8 +528,8 @@
                         <i class="fa-solid fa-trophy"></i>
                     </div>
                     <div>
-                        <h2 class="font-bold text-base text-white">APOLLO 11 UZAY GÖREVLERİ &amp; TESTİ</h2>
-                        <p class="text-[10px] text-slate-400">Her açılışta rastgele karışan bilimsel sorular</p>
+                        <h2 class="font-bold text-base text-white">2026 TÜRKİYE AY PROGRAMI &amp; BİLİM TESTİ</h2>
+                        <p class="text-[10px] text-slate-400">Millî uzay misyonu ve gök cisimleri bilim testi</p>
                     </div>
                 </div>
                 <button onclick="closeMissionsModal()" class="text-slate-400 hover:text-white p-1">
@@ -554,9 +554,9 @@
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>
-        <h4 id="hist-step-title" class="font-bold text-xs sm:text-sm text-white">Aşama 1: Ay Yörüngesinde Alçalma</h4>
+        <h4 id="hist-step-title" class="font-bold text-xs sm:text-sm text-white">1. Aşama: Ay Yörüngesinde Ayrılma</h4>
         <p id="hist-step-desc" class="text-[11px] text-slate-300 leading-relaxed">
-            Eagle iniş modülü komuta modülü Columbia'dan ayrıldı ve Sessizlik Denizi'ne doğru iniş motorunu ateşledi.
+            2026 yılı Millî Ay Programı. Uzay Aracı (Ay İniş Modülü) ana araçtan ayrıldı ve Sessizlik Denizi'ne iniş motorunu ateşledi.
         </p>
         <div class="flex justify-between items-center pt-1">
             <button onclick="prevHistoricalStep()" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-bold">
@@ -642,6 +642,48 @@
             }
         }
 
+        function speakVoice(text) {
+            if (!('speechSynthesis' in window)) return;
+            try {
+                window.speechSynthesis.cancel();
+                const u = new SpeechSynthesisUtterance(text);
+                u.lang = 'tr-TR';
+                u.rate = 1.0;
+                u.pitch = 1.02;
+                window.speechSynthesis.speak(u);
+            } catch (e) {
+                console.warn("Speech synthesis err:", e);
+            }
+        }
+
+        function playCountdownTone(num) {
+            if (isAudioMuted) return;
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (num > 0) {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(550 + (3 - num) * 120, now);
+                gain.gain.setValueAtTime(0.18, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else {
+                // Ignition roaring sound
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.linearRampToValueAtTime(70, now + 1.2);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 1.2);
+                osc.start(now);
+                osc.stop(now + 1.2);
+            }
+        }
+
         function toggleAudio() {
             isAudioMuted = !isAudioMuted;
             const icon = document.getElementById('audio-icon');
@@ -674,23 +716,34 @@
         let starsFieldMesh;
         let showDayStars = false;
 
-        // Apollo 11 Models & Interactive Elements
+        // 2026 Millî Ay Misyonu Models & Interactive Elements
         let eagleModuleGroup, flagGroup, lrrrGroup, psepGroup, swcGroup, cameraTripodGroup;
         let astronautArmstrongGroup, astronautAldrinGroup;
         let interactiveObjects = [];
 
-        // Saturn V Launch Scene Globals
+        // Launch & Landing Sequences Globals
         let saturnLaunchGroup = null;
         let isLaunchingSaturn = false;
         let saturnLaunchTime = 0;
         let saturnParticles = [];
+        let launchVoiceFlags = { s3: false, s2: false, s1: false, s0: false };
+
+        // Spacecraft Lunar Landing Sequence
+        let isLandingSpacecraft = false;
+        let spacecraftLandingTime = 0;
+        let landingVoiceFlags = { start: false, near: false, touch: false };
+
+        // Macro Orbit System Globals (Realistic Earth & Moon Motion)
+        let macroOrbitGroup = null;
+        let macroSun, macroEarth, macroMoon, macroEarthPivot, macroMoonPivot;
+        let isMacroOrbitActive = false;
 
         // Modes: 'fps_walk' | 'earth_observe' | 'earth_phases' | 'lunar_day' | 'orbit_macro' | 'historical_mission' | 'quiz_missions' | 'saturn_launch'
         let currentMode = 'earth_observe';
 
         // Simulation Clock & Rates
-        // Epoch: 20 July 1969 20:17:40 UTC
-        let simEpoch = new Date('1969-07-20T20:17:40Z').getTime();
+        // Epoch: 29 Ekim 2026 19:23:00 UTC (Millî Ay Programı)
+        let simEpoch = new Date('2026-10-29T19:23:00Z').getTime();
         let simCurrentTime = simEpoch;
         let isSimPlaying = true;
         let simSpeedMultiplier = 1; // 1x, 5x, 24x (1day/s), 168x (7days/s)
@@ -1241,16 +1294,30 @@
                 eagleModuleGroup.add(rcs);
             });
 
+            // Descent Engine Exhaust Plume (for Lunar Landing Sequence)
+            const landerPlumeGeo = new THREE.ConeGeometry(1.2, 4.5, 16);
+            landerPlumeGeo.rotateX(Math.PI);
+            const landerPlumeMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.85
+            });
+            const landerPlume = new THREE.Mesh(landerPlumeGeo, landerPlumeMat);
+            landerPlume.position.y = -1.2;
+            landerPlume.name = "landerPlume";
+            landerPlume.visible = false;
+            eagleModuleGroup.add(landerPlume);
+
             // Register clickable
             eagleModuleGroup.userData = {
                 type: 'eagle',
-                title: "Eagle Ay Modülü (LM-5)",
-                category: "UZAY ARACI",
-                desc: "Apollo 11 iniş aracı 'Kartal'. 20 Temmuz 1969'da Neil Armstrong ve Buzz Aldrin ile Sessizlik Denizi'ne indi. İniş aşaması sonsuza dek Ay'da kalacaktır.",
+                title: "Millî Ay İniş Modülü (Uzay Aracı)",
+                category: "2026 MİLLÎ UZAY ARACI",
+                desc: "Türk astronotları 2026 yılında Sessizlik Denizi'ne ulaştıran iki kademeli iniş aracıdır. Fırlatma roketi Dünya yörüngesinde kalmış, Ay yüzeyine yalnızca bu uzay aracı inmiştir.",
                 facts: [
-                    "Altın folyo, Güneş radyasyonunu yansıtan 25 katmanlı kaplamadır.",
-                    "İnişte 25 saniyelik yakıt kalmışken Armstrong manuel kontrolle güvenle indirmiştir.",
-                    "Ayağındaki plakada: 'Dünya gezegeninden insanlar ilk kez burada Ay'a ayak bastı' yazar."
+                    "Altın folyo kaplama, Güneş'in yakıcı radyasyonunu yansıtan 25 katmanlı Mylar termal yalıtımdır.",
+                    "Alçalma motoru itiş kontrollü olup kraterli zemine yumuşak ve emniyetli iniş sağlar.",
+                    "Ayağındaki plakada: 'Türkiye Yüzyılı Uzay Misyonu – İstikbal Göklerdedir' yazısı yer alır."
                 ]
             };
             interactiveObjects.push(eagleModuleGroup);
@@ -1259,24 +1326,65 @@
         }
 
         /* -------------------------------------------------------------
-           6. ASTRONAUTS (NEIL ARMSTRONG & BUZZ ALDRIN)
+           6. ASTRONAUTS (TÜRK ASTRONOTLAR - 2026 MİLLÎ AY MİSYONU)
         ------------------------------------------------------------- */
+        function createTurkishFlagTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 600; canvas.height = 400; // 3:2 standard ratio
+            const ctx = canvas.getContext('2d');
+
+            // Vibrant Turkish Red Field
+            ctx.fillStyle = '#e30a17';
+            ctx.fillRect(0, 0, 600, 400);
+
+            // Outer Crescent Circle (White)
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(200, 200, 100, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Inner Crescent Circle (Red cutout)
+            ctx.fillStyle = '#e30a17';
+            ctx.beginPath();
+            ctx.arc(225, 200, 80, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 5-Pointed Star (Tilted pointing left directly toward crescent center)
+            const cx = 315, cy = 200, outerR = 40, innerR = 16, spikes = 5;
+            let rot = Math.PI; // Tip points to (-x)
+            const step = Math.PI / spikes;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+            for (let i = 0; i < spikes; i++) {
+                rot += step;
+                ctx.lineTo(cx + Math.cos(rot) * innerR, cy + Math.sin(rot) * innerR);
+                rot += step;
+                ctx.lineTo(cx + Math.cos(rot) * outerR, cy + Math.sin(rot) * outerR);
+            }
+            ctx.closePath();
+            ctx.fill();
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
         function createAstronauts() {
-            // Neil Armstrong (Near the flag, taking photo)
-            astronautArmstrongGroup = buildAstronautFigure("Neil Armstrong", "APOLLO 11 KOMUTANI", [
-                "20 Temmuz 1969'da Ay'a ilk ayak basan insandır.",
-                "'İnsan için küçük, insanlık için dev bir adım' sözünü söylemiştir.",
-                "Ay yüzeyinde 2 saat 31 dakika kalarak örnekler toplamıştır."
+            // Türk Astronot (Alper Gezeravcı - Ay Komutanı)
+            astronautArmstrongGroup = buildAstronautFigure("Türk Astronot (Alper Gezeravcı)", "MİLLÎ AY PROGRAMI KOMUTANI", [
+                "2026 yılında Türkiye Millî Uzay Programı kapsamında Ay yüzeyine ilk kez ayak basan Türk astronottur.",
+                "'İstikbal göklerdedir!' diyerek Sessizlik Denizi'ne Şanlı Türk Bayrağı'nı dikmiştir.",
+                "Ay yüzeyinde örnekler toplayarak Türkiye Uzay Ajansı (TUA) adına ilk bilimsel üssü kurmuştur."
             ]);
             astronautArmstrongGroup.position.set(-5, 0, 8);
             astronautArmstrongGroup.rotation.y = Math.PI * 0.6;
             scene.add(astronautArmstrongGroup);
 
-            // Buzz Aldrin (Inspecting scientific equipment)
-            astronautAldrinGroup = buildAstronautFigure("Buzz Aldrin", "AY MODÜLÜ PİLOTU", [
-                "Ay'a ayak basan ikinci astronottur.",
-                "Ay yüzeyini 'Muazzam bir ıssızlık' (Magnificent Desolation) olarak tarif etmiştir.",
-                "Sismik deney ve güneş rüzgârı folyosunu kurmuştur."
+            // Bilim Misyonu Astronotu (Tuva Cihangir Atasever)
+            astronautAldrinGroup = buildAstronautFigure("Bilim Misyonu Astronotu (Tuva Cihangir Atasever)", "BİLİM VE KEŞİF UZMANI", [
+                "Ay yüzeyindeki lazer retroreflektör (LRRR) ve sismik analiz cihazlarını kurmuştur.",
+                "Ay'da atmosfer ve hava olayları bulunmadığını, yerçekiminin 1/6 olduğunu deneysel olarak incelemiştir.",
+                "Ay gökyüzünden Dünya'nın aydınlanma evrelerini ve 24 saatlik eksen dönüşünü kaydetmiştir."
             ]);
             astronautAldrinGroup.position.set(8, 0, 9);
             astronautAldrinGroup.rotation.y = -Math.PI * 0.3;
@@ -1306,6 +1414,17 @@
             torso.position.y = 1.35;
             torso.castShadow = true;
             group.add(torso);
+
+            // Turkish Flag Badge on Chest & Arm
+            const flagTex = createTurkishFlagTexture();
+            const chestBadge = new THREE.Mesh(new THREE.PlaneGeometry(0.20, 0.13), new THREE.MeshBasicMaterial({ map: flagTex }));
+            chestBadge.position.set(0.18, 1.55, 0.26);
+            group.add(chestBadge);
+
+            const armBadge = new THREE.Mesh(new THREE.PlaneGeometry(0.18, 0.12), new THREE.MeshBasicMaterial({ map: flagTex, side: THREE.DoubleSide }));
+            armBadge.position.set(0.41, 1.55, 0);
+            armBadge.rotation.y = Math.PI * 0.5;
+            group.add(armBadge);
 
             // Life Support Backpack (PLSS)
             const plss = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.9, 0.38), packMat);
@@ -1347,7 +1466,7 @@
                 type: 'astronaut',
                 title: name,
                 category: subtitle,
-                desc: `Apollo 11 astronotu. 1969 Apollo A7L basınçlı uzay kıyafeti ve sırt yaşam ünitesi (PLSS) ile Ay'ın vakum ve -170°C/+120°C ortamında güvenle çalışmıştır.`,
+                desc: `2026 Millî Ay Misyonu Türk astronotu. Ay yüzeyinde basınçlı uzay kıyafeti ve sırt yaşam ünitesi (PLSS) ile Ay'ın havasız ve zorlu ortamında bilimsel keşifler yürütmektedir.`,
                 facts: facts
             };
             interactiveObjects.push(group);
@@ -1359,42 +1478,29 @@
            7. SURFACE SCIENTIFIC EXPERIMENTS (LRRR, PSEP, FLAG, SWC)
         ------------------------------------------------------------- */
         function createSurfaceExperiments() {
-            // --- A. AMERICAN FLAG (With Wire Rod, Non-Fluttering) ---
+            // --- A. ŞANLI TÜRK BAYRAĞI (2026 Millî Ay Programı) ---
             flagGroup = new THREE.Group();
             flagGroup.position.set(-6, 0, 8);
 
             // Flagpole
-            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6, 8), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6, 8), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8, roughness: 0.2 }));
             pole.position.y = 1.3;
             pole.castShadow = true;
             flagGroup.add(pole);
 
-            // Horizontal Top Crossbar
-            const topBar = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.5, 8), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+            // Horizontal Top Crossbar (Gergi Teli)
+            const topBar = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.5, 8), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.8, roughness: 0.2 }));
             topBar.position.set(0.75, 2.55, 0);
             topBar.rotation.z = Math.PI * 0.5;
             flagGroup.add(topBar);
 
-            // Canvas Fabric Texture for Flag
-            const flagCanvas = document.createElement('canvas');
-            flagCanvas.width = 300; flagCanvas.height = 180;
-            const fctx = flagCanvas.getContext('2d');
-            fctx.fillStyle = '#ef4444'; fctx.fillRect(0, 0, 300, 180);
-            fctx.fillStyle = '#ffffff';
-            for (let i = 1; i < 13; i += 2) fctx.fillRect(0, i * 13.8, 300, 13.8);
-            fctx.fillStyle = '#1e3a8a'; fctx.fillRect(0, 0, 120, 96);
-            fctx.fillStyle = '#ffffff';
-            for (let s = 0; s < 30; s++) {
-                fctx.fillRect(10 + (s % 6) * 18, 10 + Math.floor(s / 6) * 16, 4, 4);
-            }
-
-            const flagTex = new THREE.CanvasTexture(flagCanvas);
+            // Turkish Flag Fabric Texture
+            const flagTex = createTurkishFlagTexture();
             const flagGeo = new THREE.PlaneGeometry(1.5, 0.9, 10, 6);
-            // Add natural wrinkles to fabric since horizontal rod didn't deploy completely
             const fPos = flagGeo.attributes.position;
             for (let i = 0; i < fPos.count; i++) {
                 const fx = fPos.getX(i);
-                fPos.setZ(i, Math.sin(fx * 4.5) * 0.06);
+                fPos.setZ(i, Math.sin(fx * 4.5) * 0.04);
             }
             flagGeo.computeVertexNormals();
 
@@ -1405,13 +1511,13 @@
 
             flagGroup.userData = {
                 type: 'flag',
-                title: "Amerikan Bayrağı",
-                category: "TARİHSEL NESNE",
-                desc: "Ay'da rüzgâr ve atmosfer bulunmadığı için bayrağın açık durması amacıyla üst kısmına yatay bir tel çubuk yerleştirilmiştir.",
+                title: "Şanlı Türk Bayrağı",
+                category: "2026 MİLLÎ AY MİSYONU",
+                desc: "Ay'da rüzgâr ve atmosfer bulunmadığı için bayrağın açık durması amacıyla üst kısmına yatay gergi çubuğu yerleştirilmiştir. Türk astronotlarımız tarafından dikilmiştir.",
                 facts: [
-                    "Kumaştaki kıvrımlar rüzgârdan değil, astronotların çubuğu tam açamamasından kalmıştır.",
-                    "Ay'da hava akımı olmadığı için bayrak rüzgârla dalgalanmaz, sabit durur.",
-                    "Güneş'in sert morötesi ışınları nedeniyle kumaşın günümüzde beyazladığı tahmin edilir."
+                    "Kumaştaki hafif kıvrımlar rüzgârdan değil, montaj esnasında oluşan mekanik gerilimden kaynaklanır.",
+                    "Ay'da hava akımı ve rüzgâr olmadığı için bayrak rüzgârla dalgalanmaz, sabit ve dik durur.",
+                    "Güneş'in sert morötesi ışınlarına ve -170°C / +120°C sıcaklık dalgalanmalarına dayanıklı özel kumaştan yapılmıştır."
                 ]
             };
             interactiveObjects.push(flagGroup);
@@ -1635,6 +1741,29 @@
                 sunVisualGroup.position.copy(sunLight.position);
             }
 
+            // 3. Realistic Macro Orbit System Movement (Earth around Sun, Moon around Earth)
+            if (macroOrbitGroup && macroOrbitGroup.visible) {
+                const yearSec = 365.25 * 24 * 3600;
+                const yearProg = ((simCurrentTime / 1000) % yearSec) / yearSec;
+                const eAngle = yearProg * Math.PI * 2;
+                if (macroEarthPivot) {
+                    macroEarthPivot.position.set(Math.cos(eAngle) * 140, 0, Math.sin(eAngle) * 135);
+                }
+                if (macroEarth) {
+                    macroEarth.rotation.y = dayProgress * Math.PI * 2;
+                }
+                if (macroMoonPivot && macroMoon) {
+                    const siderealMonthSec = 27.321661 * 24 * 3600;
+                    const moonProg = ((simCurrentTime / 1000) % siderealMonthSec) / siderealMonthSec;
+                    const mAngle = moonProg * Math.PI * 2;
+                    macroMoonPivot.rotation.y = mAngle;
+                    macroMoon.rotation.y = mAngle; // Synchronous rotation (same face to Earth)
+                }
+                if (macroSun) {
+                    macroSun.rotation.y += deltaTime * 0.1;
+                }
+            }
+
             // Update UI Date & Phase Label
             updateHUDTimeDisplay();
         }
@@ -1651,12 +1780,12 @@
             const angleBetween = sunDir.angleTo(earthDir); // 0 = Full Earth, PI = New Earth
             const phaseDeg = (angleBetween * 180) / Math.PI;
 
-            let phaseName = "Dolunay Dünya";
-            if (phaseDeg < 25) phaseName = "Dolunay Dünya (Tam Aydınlık)";
-            else if (phaseDeg < 70) phaseName = "Küçülen Şişkin Dünya";
-            else if (phaseDeg < 110) phaseName = "Son Dördün Dünya (Yarım)";
-            else if (phaseDeg < 155) phaseName = "Küçülen Hilal Dünya";
-            else if (phaseDeg >= 155) phaseName = "Yeni Dünya (Karanlık Disk)";
+            let phaseName = "Tam Aydınlık Evre";
+            if (phaseDeg < 25) phaseName = "Tam Aydınlık Evre (Güneş Karşısında)";
+            else if (phaseDeg < 70) phaseName = "Küçülen Şişkin Evre";
+            else if (phaseDeg < 110) phaseName = "Son Dördün Evresi (Yarı Aydınlık)";
+            else if (phaseDeg < 155) phaseName = "Küçülen Hilal Evresi";
+            else if (phaseDeg >= 155) phaseName = "Karanlık Evre (Yeni Dünya / Karanlık Disk)";
 
             const phaseEl = document.getElementById('earth-phase-label');
             if (phaseEl) phaseEl.innerText = phaseName;
@@ -1666,6 +1795,18 @@
            10. CAMERA CONTROLLER & PRESET MODES
         ------------------------------------------------------------- */
         function switchAppMode(mode) {
+            // Clean up previous mode states
+            if (isMacroOrbitActive && mode !== 'orbit_macro') {
+                exitMacroOrbitMode();
+            }
+            if (isLaunchingSaturn && mode !== 'saturn_launch') {
+                isLaunchingSaturn = false;
+                if (saturnLaunchGroup) saturnLaunchGroup.visible = false;
+            }
+            if (isLandingSpacecraft && mode !== 'saturn_launch') {
+                finishLunarLandingImmediately();
+            }
+
             currentMode = mode;
             playSciFiBeep('beep');
 
@@ -1707,7 +1848,7 @@
                 renderLunarDayHUD();
             } else if (mode === 'orbit_macro') {
                 document.getElementById('nav-btn-orbit').className = "w-full text-left p-2 rounded-xl bg-purple-950/80 border border-purple-400 text-white flex items-center gap-2.5 transition-all shadow-md";
-                renderMacroOrbitHUD();
+                enterMacroOrbitMode();
             } else if (mode === 'historical_mission') {
                 document.getElementById('nav-btn-history').className = "w-full text-left p-2 rounded-xl bg-amber-950 border border-amber-400 text-white flex items-center gap-2.5 transition-all shadow-md";
                 startHistoricalMissionMode();
@@ -1803,12 +1944,12 @@
                     <div class="flex justify-between text-[9px] font-bold text-slate-400 font-mono">
                         <span>Yeni Dünya</span>
                         <span>İlk Dördün</span>
-                        <span class="text-white font-bold">Dolunay Dünya</span>
+                        <span class="text-white font-bold">Tam Aydınlık Evre</span>
                         <span>Son Dördün</span>
                         <span>Yeni Dünya</span>
                     </div>
                     <p class="text-[10px] text-slate-300 bg-slate-950/50 p-1.5 rounded-lg border border-slate-800 leading-tight">
-                        💡 <strong>Önemli Kural:</strong> Dünya'dan Yeni Ay görülürken, Ay'dan Dolunay Dünya görülür! Güneş daima Dünya'nın bir yüzünü aydınlatır.
+                        💡 <strong>Önemli Kural:</strong> Dünya'dan Yeni Ay görülürken, Ay'dan bakan gözlemci Dünya'yı <strong>Tam Aydınlık Evre</strong>de görür! Güneş daima Dünya'nın bir yüzünü aydınlatır; ters bakış açısından dolayı aydınlanan evreler birbirine zıttır.
                     </p>
                 </div>
             `;
@@ -1845,20 +1986,183 @@
             `;
         }
 
+        /* -------------------------------------------------------------
+           11A. REALISTIC MACRO ORBIT SYSTEM (SUN-EARTH-MOON 3D RIG)
+        ------------------------------------------------------------- */
+        function buildMacroOrbitSystem() {
+            if (macroOrbitGroup) return;
+
+            macroOrbitGroup = new THREE.Group();
+            macroOrbitGroup.position.set(0, 0, 0);
+            macroOrbitGroup.visible = false;
+
+            // 1. Central Sun
+            const sunGeo = new THREE.SphereGeometry(18, 32, 32);
+            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffd000 });
+            macroSun = new THREE.Mesh(sunGeo, sunMat);
+            macroOrbitGroup.add(macroSun);
+
+            // Sun Corona Glow
+            const coronaGeo = new THREE.SphereGeometry(26, 32, 32);
+            const coronaMat = new THREE.MeshBasicMaterial({
+                color: 0xf97316,
+                transparent: true,
+                opacity: 0.35,
+                side: THREE.BackSide
+            });
+            const corona = new THREE.Mesh(coronaGeo, coronaMat);
+            macroSun.add(corona);
+
+            // 2. Earth Orbit Path (Elliptical glowing loop around Sun)
+            const rx = 140, rz = 135;
+            const earthOrbitPoints = [];
+            for (let i = 0; i <= 128; i++) {
+                const theta = (i / 128) * Math.PI * 2;
+                earthOrbitPoints.push(new THREE.Vector3(Math.cos(theta) * rx, 0, Math.sin(theta) * rz));
+            }
+            const earthOrbitGeo = new THREE.BufferGeometry().setFromPoints(earthOrbitPoints);
+            const earthOrbitLine = new THREE.LineLoop(earthOrbitGeo, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.65 }));
+            macroOrbitGroup.add(earthOrbitLine);
+
+            // 3. Earth Pivot
+            macroEarthPivot = new THREE.Group();
+            macroOrbitGroup.add(macroEarthPivot);
+
+            // Earth Mesh with 23.5 degree axial tilt
+            const earthGeo = new THREE.SphereGeometry(7, 32, 32);
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: generateProceduralEarthTexture(),
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            macroEarth = new THREE.Mesh(earthGeo, earthMat);
+            macroEarth.rotation.z = (23.5 * Math.PI) / 180;
+            macroEarthPivot.add(macroEarth);
+
+            // 4. Moon Orbit Path around Earth
+            const moonR = 24;
+            const moonOrbitPoints = [];
+            for (let i = 0; i <= 64; i++) {
+                const theta = (i / 64) * Math.PI * 2;
+                moonOrbitPoints.push(new THREE.Vector3(Math.cos(theta) * moonR, 0, Math.sin(theta) * moonR));
+            }
+            const moonOrbitGeo = new THREE.BufferGeometry().setFromPoints(moonOrbitPoints);
+            const moonOrbitLine = new THREE.LineLoop(moonOrbitGeo, new THREE.LineBasicMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.55 }));
+            macroEarthPivot.add(moonOrbitLine);
+
+            // 5. Moon Pivot & Mesh
+            macroMoonPivot = new THREE.Group();
+            macroEarthPivot.add(macroMoonPivot);
+
+            const moonGeo = new THREE.SphereGeometry(2.4, 24, 24);
+            const moonMat = new THREE.MeshStandardMaterial({
+                map: generateRegolithCanvasTexture(),
+                roughness: 0.9,
+                metalness: 0.05,
+                color: 0xc8cbcf
+            });
+            macroMoon = new THREE.Mesh(moonGeo, moonMat);
+            macroMoon.position.set(moonR, 0, 0);
+            macroMoonPivot.add(macroMoon);
+
+            scene.add(macroOrbitGroup);
+        }
+
+        function enterMacroOrbitMode() {
+            buildMacroOrbitSystem();
+            isMacroOrbitActive = true;
+            macroOrbitGroup.visible = true;
+
+            // Hide lunar surface elements
+            if (moonSurfaceMesh) moonSurfaceMesh.visible = false;
+            if (eagleModuleGroup) eagleModuleGroup.visible = false;
+            if (flagGroup) flagGroup.visible = false;
+            if (lrrrGroup) lrrrGroup.visible = false;
+            if (psepGroup) psepGroup.visible = false;
+            if (swcGroup) swcGroup.visible = false;
+            if (cameraTripodGroup) cameraTripodGroup.visible = false;
+            if (astronautArmstrongGroup) astronautArmstrongGroup.visible = false;
+            if (astronautAldrinGroup) astronautAldrinGroup.visible = false;
+            if (saturnLaunchGroup) saturnLaunchGroup.visible = false;
+
+            controls.enabled = true;
+            controls.target.set(0, 0, 0);
+            camera.position.set(0, 210, 260);
+            controls.update();
+
+            renderMacroOrbitHUD();
+        }
+
+        function exitMacroOrbitMode() {
+            isMacroOrbitActive = false;
+            if (macroOrbitGroup) macroOrbitGroup.visible = false;
+
+            // Restore lunar surface elements
+            if (moonSurfaceMesh) moonSurfaceMesh.visible = true;
+            if (eagleModuleGroup) eagleModuleGroup.visible = true;
+            if (flagGroup) flagGroup.visible = true;
+            if (lrrrGroup) lrrrGroup.visible = true;
+            if (psepGroup) psepGroup.visible = true;
+            if (swcGroup) swcGroup.visible = true;
+            if (cameraTripodGroup) cameraTripodGroup.visible = true;
+            if (astronautArmstrongGroup) astronautArmstrongGroup.visible = true;
+            if (astronautAldrinGroup) astronautAldrinGroup.visible = true;
+        }
+
+        function focusMacroCamera(target) {
+            controls.enabled = true;
+            if (target === 'earth') {
+                if (macroEarthPivot) {
+                    controls.target.copy(macroEarthPivot.position);
+                    camera.position.set(macroEarthPivot.position.x + 35, 25, macroEarthPivot.position.z + 55);
+                }
+            } else {
+                controls.target.set(0, 0, 0);
+                camera.position.set(0, 210, 260);
+            }
+            controls.update();
+            playSciFiBeep('beep');
+        }
+
         function renderMacroOrbitHUD() {
             const box = document.getElementById('dynamic-overlay-box');
             box.classList.remove('hidden');
             box.innerHTML = `
-                <div class="hud-glass p-3.5 rounded-2xl border border-purple-500/40 text-xs space-y-2 max-w-md shadow-2xl">
-                    <div class="flex items-center gap-2 text-purple-300 font-bold">
-                        <i class="fa-solid fa-satellite text-lg"></i>
-                        <span>UZAYDAN GÖZLEM (GÜNEŞ-DÜNYA-AY SİSTEMİ)</span>
+                <div class="hud-glass p-3.5 rounded-2xl border border-purple-500/40 text-xs space-y-2.5 max-w-lg shadow-2xl">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-purple-300 text-xs flex items-center gap-1.5 font-orbitron">
+                            <i class="fa-solid fa-satellite text-purple-400"></i> GERÇEKÇİ DOLANMA SİMÜLASYONU
+                        </span>
+                        <span class="px-2 py-0.5 rounded-lg bg-purple-950 border border-purple-500/40 text-[10px] text-purple-200 font-mono">
+                            GÜNEŞ-DÜNYA-AY
+                        </span>
                     </div>
-                    <p class="text-[10px] text-slate-300 leading-relaxed">
-                        1. Dünya Güneş çevresinde 365.25 günde dolanır.<br>
-                        2. Ay Dünya çevresinde 27.32 günde dolanır ve kendi ekseninde de 27.32 günde döner (Eşzamanlı dönüş). Bu yüzden Dünya'dan hep aynı yüzü görülür!
-                    </p>
-                    <button onclick="resetToInitialView()" class="w-full py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] uppercase">
+                    <div class="grid grid-cols-2 gap-2 text-[10px] bg-slate-950/60 p-2 rounded-xl border border-slate-800">
+                        <div>
+                            <strong class="text-sky-300 block mb-0.5">🌍 DÜNYA'NIN DOLANMASI:</strong>
+                            <span class="text-slate-300">Güneş etrafında 365 gün 6 saatte dolanır. 23.5° eksen eğikliği ile mevsimler ve yıl döngüsü oluşur.</span>
+                        </div>
+                        <div>
+                            <strong class="text-amber-300 block mb-0.5">🌙 AY'IN DOLANMASI:</strong>
+                            <span class="text-slate-300">Dünya etrafında 27.3 günde dolanır ve kendi ekseninde de aynı sürede döner. Bu sebeple hep aynı yüzü görünür!</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between gap-2 pt-1">
+                        <div class="flex items-center gap-1 text-[10px]">
+                            <span class="text-slate-400 font-bold">HIZ:</span>
+                            <button onclick="setSimSpeed(24)" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 font-bold">1G/s</button>
+                            <button onclick="setSimSpeed(168)" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-purple-300 font-bold">7G/s</button>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="focusMacroCamera('earth')" class="px-2.5 py-1 rounded-lg bg-sky-950 border border-sky-500/40 hover:bg-sky-900 text-sky-200 font-bold text-[10px]">
+                                Dünya-Ay'a Yaklaş
+                            </button>
+                            <button onclick="focusMacroCamera('sun')" class="px-2.5 py-1 rounded-lg bg-amber-950 border border-amber-500/40 hover:bg-amber-900 text-amber-200 font-bold text-[10px]">
+                                Güneş Sistemi
+                            </button>
+                        </div>
+                    </div>
+                    <button onclick="switchAppMode('earth_observe')" class="w-full py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs uppercase transition-all shadow-md">
                         Ay Yüzeyine Geri Dön
                     </button>
                 </div>
@@ -1866,7 +2170,7 @@
         }
 
         /* -------------------------------------------------------------
-           11B. SATURN V ROCKET EARTH LAUNCH SEQUENCE (CAPE CANAVERAL 1969)
+           11B. 2026 MİLLÎ FIRLATMA ROKETİ VE UZAY ARACI İNİŞ SEKANSI
         ------------------------------------------------------------- */
         let saturnStages = { s1c: null, s2: null, s4b: null, plume: null };
 
@@ -1878,7 +2182,6 @@
 
             // Materials
             const whiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
-            const blackMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 });
             const engineMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8, roughness: 0.2 });
 
             // Launch Pad Platform
@@ -1901,13 +2204,13 @@
             s1.position.y = 12;
             rocketBody.add(s1);
 
-            // S-IC Black Roll Pattern Strips
-            const stripeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
-            const stripe = new THREE.Mesh(new THREE.CylinderGeometry(2.22, 2.22, 6, 16), stripeMat);
-            stripe.position.y = 14;
-            rocketBody.add(stripe);
+            // Turkish Flag Badge on Rocket Body
+            const flagTex = createTurkishFlagTexture();
+            const rocketFlag = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.0), new THREE.MeshBasicMaterial({ map: flagTex }));
+            rocketFlag.position.set(0, 14, 2.22);
+            rocketBody.add(rocketFlag);
 
-            // 5x F-1 Rocket Engines
+            // 5x Heavy Rocket Engines
             for (let i = 0; i < 4; i++) {
                 const angle = (i * Math.PI) / 2;
                 const engine = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2.2, 16), engineMat);
@@ -1920,17 +2223,17 @@
             centerEngine.position.set(0, 1, 0);
             rocketBody.add(centerEngine);
 
-            // Stage 2 (S-II): H: 12, R: 2.0
+            // Stage 2: H: 12, R: 2.0
             const s2 = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.2, 12, 32), whiteMat);
             s2.position.y = 28;
             rocketBody.add(s2);
 
-            // Stage 3 (S-IVB) + Instrument Unit: H: 8, R: 1.6
+            // Stage 3 + Instrument Unit: H: 8, R: 1.6
             const s3 = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.0, 8, 32), whiteMat);
             s3.position.y = 38;
             rocketBody.add(s3);
 
-            // Apollo Command / Service Module (CSM) + Launch Escape Tower (LES)
+            // Spacecraft Module & Fairing
             const sm = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 4.5, 32), engineMat);
             sm.position.y = 44;
             rocketBody.add(sm);
@@ -1972,10 +2275,13 @@
 
         function startSaturnVLaunchSequence() {
             buildSaturnVRocket();
+            if (saturnLaunchGroup) saturnLaunchGroup.visible = true;
+
             isLaunchingSaturn = true;
             saturnLaunchTime = 0;
+            launchVoiceFlags = { s3: false, s2: false, s1: false, s0: false };
 
-            // Camera focuses on Saturn V launch pad
+            // Camera focuses on launch pad
             controls.enabled = false;
             camera.position.set(22, 16, -150);
             camera.lookAt(new THREE.Vector3(0, 25, -180));
@@ -1986,21 +2292,21 @@
                 <div class="hud-glass p-3.5 rounded-2xl border border-orange-500/50 text-xs space-y-2.5 max-w-md shadow-2xl animate-fadeIn">
                     <div class="flex items-center justify-between">
                         <span class="font-bold text-orange-400 text-xs flex items-center gap-1.5 font-orbitron">
-                            <i class="fa-solid fa-rocket animate-bounce"></i> SATURN V FIRLATILIŞI (16 TEMMUZ 1969)
+                            <i class="fa-solid fa-rocket animate-bounce"></i> DÜNYA'DAN FIRLATMA (2026 MİLLÎ ROKET)
                         </span>
-                        <span id="launch-countdown-badge" class="px-2 py-0.5 rounded-lg bg-orange-600 text-white font-mono font-bold text-[10px]">T-00:05</span>
+                        <span id="launch-countdown-badge" class="px-2 py-0.5 rounded-lg bg-orange-600 text-white font-mono font-bold text-[10px]">T-00:03</span>
                     </div>
                     <p id="launch-status-text" class="text-[11px] text-slate-200 leading-snug">
-                        Kennedy Uzay Merkezi Pad 39A. 110 metre boyunda, 3.000 tonluk Saturn V roketi Ay yolculuğu için hazır!
+                        Fırlatma rampası hazır! Sesli geri sayım başladı. 3'ten geri sayılarak ateşleme yapılacak.
                     </p>
                     <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
                         <div id="launch-progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-full w-0 transition-all duration-200"></div>
                     </div>
                     <div class="flex justify-between items-center pt-1 text-[10px]">
-                        <button onclick="skipToMoonLanding()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-all">
-                            Ay İnişine Geç <i class="fa-solid fa-forward-step ml-1"></i>
+                        <button onclick="startSpacecraftLunarLandingSequence()" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold transition-all shadow-md">
+                            Ay'a İnişi Başlat <i class="fa-solid fa-shuttle-space ml-1"></i>
                         </button>
-                        <button onclick="restartSaturnLaunch()" class="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-all">
+                        <button onclick="restartSaturnLaunch()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-all">
                             Yeniden Fırlat <i class="fa-solid fa-rotate-right ml-1"></i>
                         </button>
                     </div>
@@ -2019,17 +2325,6 @@
             startSaturnVLaunchSequence();
         }
 
-        function skipToMoonLanding() {
-            isLaunchingSaturn = false;
-            if (saturnLaunchGroup) {
-                const rocket = saturnLaunchGroup.getObjectByName("rocketBody");
-                if (rocket) rocket.position.y = 0;
-                if (saturnStages.plume) saturnStages.plume.visible = false;
-            }
-            switchAppMode('earth_observe');
-            showToast("🚀 Apollo 11 Ay yörüngesine girdi ve Sessizlik Denizi'ne başarıyla indi!", "info");
-        }
-
         function updateSaturnVPhysics(delta) {
             if (!isLaunchingSaturn || !saturnLaunchGroup) return;
 
@@ -2039,28 +2334,55 @@
             const statusEl = document.getElementById('launch-status-text');
             const progressEl = document.getElementById('launch-progress-bar');
 
-            if (saturnLaunchTime < 3.5) {
-                // Countdown T-3, 2, 1
-                const cd = Math.max(0, Math.ceil(3.5 - saturnLaunchTime));
-                if (badge) badge.innerText = `T-00:0${cd}`;
-                if (statusEl) statusEl.innerText = `Son hazırlıklar... Kule kolları geri çekiliyor. Motor ateşleme sekansı başladı! (T-${cd})`;
-                if (progressEl) progressEl.style.width = `${(saturnLaunchTime / 3.5) * 25}%`;
+            // 1. Audible Countdown 3... 2... 1...
+            if (saturnLaunchTime < 1.0) {
+                if (!launchVoiceFlags.s3) {
+                    speakVoice("3");
+                    playCountdownTone(3);
+                    launchVoiceFlags.s3 = true;
+                }
+                if (badge) badge.innerText = "T-00:03";
+                if (statusEl) statusEl.innerText = "Geri sayım: 3... Kule kolları geri çekiliyor!";
+                if (progressEl) progressEl.style.width = "10%";
+            } else if (saturnLaunchTime < 2.0) {
+                if (!launchVoiceFlags.s2) {
+                    speakVoice("2");
+                    playCountdownTone(2);
+                    launchVoiceFlags.s2 = true;
+                }
+                if (badge) badge.innerText = "T-00:02";
+                if (statusEl) statusEl.innerText = "Geri sayım: 2... Dahili roket gücüne geçildi!";
+                if (progressEl) progressEl.style.width = "20%";
+            } else if (saturnLaunchTime < 3.0) {
+                if (!launchVoiceFlags.s1) {
+                    speakVoice("1");
+                    playCountdownTone(1);
+                    launchVoiceFlags.s1 = true;
+                }
+                if (badge) badge.innerText = "T-00:01";
+                if (statusEl) statusEl.innerText = "Geri sayım: 1... Motor ateşleme emri verildi!";
+                if (progressEl) progressEl.style.width = "30%";
             } else if (saturnLaunchTime < 4.5) {
-                // Ignition!
+                // Liftoff Ignition!
+                if (!launchVoiceFlags.s0) {
+                    speakVoice("Ateşle! Fırlatma başladı!");
+                    playCountdownTone(0);
+                    launchVoiceFlags.s0 = true;
+                }
                 if (badge) {
-                    badge.innerText = "LIFTOFF!";
+                    badge.innerText = "ATEŞLEME!";
                     badge.className = "px-2 py-0.5 rounded-lg bg-red-600 text-white font-mono font-bold text-[10px] animate-pulse";
                 }
-                if (statusEl) statusEl.innerText = "🔥 ATEŞLEME! 5 adet devasa F-1 motoru 34.5 Milyon Newton itiş gücü üretiyor!";
+                if (statusEl) statusEl.innerText = "🔥 ATEŞLEME! 5 dev ana motor 34 Milyon Newton itiş gücü üretiyor! Fırlatma roketi rampadan yükseliyor!";
                 if (saturnStages.plume) {
                     saturnStages.plume.visible = true;
-                    saturnStages.plume.scale.set(1 + Math.random() * 0.2, 1 + Math.random() * 0.2, 1 + Math.random() * 0.2);
+                    saturnStages.plume.scale.set(1 + Math.random() * 0.25, 1 + Math.random() * 0.3, 1 + Math.random() * 0.25);
                 }
-                playSciFiBeep('beep');
-            } else if (saturnLaunchTime < 18.0) {
-                // Liftoff and Ascending into Sky
+                if (progressEl) progressEl.style.width = "35%";
+            } else if (saturnLaunchTime < 14.5) {
+                // Rocket Ascends into Sky
                 const flightTime = saturnLaunchTime - 4.5;
-                const altitude = 0.5 * 3.8 * flightTime * flightTime; // s = 1/2 a t^2
+                const altitude = 0.5 * 3.8 * flightTime * flightTime;
                 if (rocket) rocket.position.y = altitude;
 
                 if (saturnStages.plume) {
@@ -2069,67 +2391,211 @@
                 }
 
                 // Camera smoothly tracks rising rocket
-                const targetY = Math.min(altitude + 25, 120);
+                const targetY = Math.min(altitude + 25, 130);
                 camera.position.set(22 + flightTime * 1.5, 16 + flightTime * 3.5, -150 + flightTime * 2);
                 camera.lookAt(new THREE.Vector3(0, targetY, -180));
 
                 if (badge) badge.innerText = `T+00:${Math.floor(flightTime).toString().padStart(2, '0')}`;
-                if (progressEl) progressEl.style.width = `${25 + (flightTime / 13.5) * 75}%`;
+                if (progressEl) progressEl.style.width = `${35 + (flightTime / 10.0) * 65}%`;
 
-                if (flightTime < 4) {
-                    if (statusEl) statusEl.innerText = "🚀 Roket fırlatma kulesini terk etti! 'Tower cleared!' Saatte binlerce km hıza ulaşıyor.";
-                } else if (flightTime < 9) {
-                    if (statusEl) statusEl.innerText = "☁️ 1. Aşama (S-IC) atmosferi yırtarak yükseliyor. Maksimum dinamik basınç (Max-Q) aşıldı!";
+                if (flightTime < 3.5) {
+                    if (statusEl) statusEl.innerText = "🚀 Roket fırlatma kulesini terk etti! Atmosferde ses hızı aşıldı.";
+                } else if (flightTime < 6.5) {
+                    if (statusEl) statusEl.innerText = "☁️ 1. Aşama ayrıldı! 2. Aşama ateşlendi. Atmosferin sınırına ulaşıldı.";
                 } else {
-                    if (statusEl) statusEl.innerText = "🌌 Dünya atmosferinden çıkıldı! 2. ve 3. aşamalar (S-IVB) Ay transfer rotasına (TLI) yöneliyor.";
+                    if (statusEl) statusEl.innerText = "🌌 Fırlatma roketi görevini tamamladı ve Dünya yörüngesinde kaldı! Uzay Aracı (Ay İniş Modülü) Ay iniş rotasına yöneliyor...";
                 }
             } else {
-                // Transition to Moon landing
-                skipToMoonLanding();
+                // Rocket does NOT land on Moon; transition to spacecraft lunar landing!
+                startSpacecraftLunarLandingSequence();
             }
         }
+
+        /* -------------------------------------------------------------
+           11C. SPACECRAFT LUNAR LANDING SEQUENCE (UZAY ARACI AY'A İNİŞİ)
+           Roket Dünya yörüngesinde kalır; yalnızca Uzay Aracı Ay'a iner!
+        ------------------------------------------------------------- */
+        function startSpacecraftLunarLandingSequence() {
+            // Terminate Earth launch view
+            isLaunchingSaturn = false;
+            if (saturnLaunchGroup) {
+                const rocket = saturnLaunchGroup.getObjectByName("rocketBody");
+                if (rocket) rocket.position.y = 0;
+                if (saturnStages.plume) saturnStages.plume.visible = false;
+                saturnLaunchGroup.visible = false;
+            }
+
+            // Ensure lunar surface is visible
+            if (moonSurfaceMesh) moonSurfaceMesh.visible = true;
+            if (flagGroup) flagGroup.visible = true;
+
+            isLandingSpacecraft = true;
+            spacecraftLandingTime = 0;
+            landingVoiceFlags = { start: false, near: false, touch: false };
+
+            // Spacecraft starts high above the lunar surface
+            if (eagleModuleGroup) {
+                eagleModuleGroup.visible = true;
+                eagleModuleGroup.position.set(0, 42, 0);
+                eagleModuleGroup.rotation.set(0.06, 0, 0.04);
+                const plume = eagleModuleGroup.getObjectByName("landerPlume");
+                if (plume) plume.visible = true;
+            }
+
+            // Cinematic landing camera
+            controls.enabled = false;
+            camera.position.set(16, 26, 26);
+            camera.lookAt(new THREE.Vector3(0, 20, 0));
+
+            const box = document.getElementById('dynamic-overlay-box');
+            box.classList.remove('hidden');
+            box.innerHTML = `
+                <div class="hud-glass p-3.5 rounded-2xl border border-sky-400/50 text-xs space-y-2 max-w-md shadow-2xl animate-fadeIn">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-sky-400 text-xs flex items-center gap-1.5 font-orbitron">
+                            <i class="fa-solid fa-shuttle-space animate-pulse"></i> UZAY ARACI AY'A İNİYOR (2026)
+                        </span>
+                        <span id="landing-alt-badge" class="px-2 py-0.5 rounded-lg bg-sky-600 text-white font-mono font-bold text-[10px]">İRTİFA: 42m</span>
+                    </div>
+                    <p id="landing-status-text" class="text-[11px] text-slate-200 leading-snug">
+                        Ay alçalma motoru devrede! Fırlatma roketi Dünya yörüngesinde kalmıştır, Ay'a yalnızca uzay aracı inmektedir.
+                    </p>
+                    <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                        <div id="landing-progress-bar" class="bg-gradient-to-r from-sky-500 to-emerald-400 h-full w-0 transition-all duration-200"></div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 text-[10px]">
+                        <span class="text-emerald-400 font-bold font-mono">İTİŞ: %100</span>
+                        <button onclick="finishLunarLandingImmediately()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-all">
+                            Hızlı İniş Yap <i class="fa-solid fa-forward-step ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateSpacecraftLandingPhysics(delta) {
+            if (!isLandingSpacecraft || !eagleModuleGroup) return;
+
+            spacecraftLandingTime += delta;
+            const duration = 7.5; // total landing seconds
+            const progress = Math.min(1.0, spacecraftLandingTime / duration);
+
+            // Deceleration easing curve
+            const ease = 1 - Math.pow(1 - progress, 2.4);
+            const altitude = 42 * (1 - ease);
+
+            eagleModuleGroup.position.y = altitude;
+            eagleModuleGroup.rotation.x = 0.06 * (1 - progress);
+            eagleModuleGroup.rotation.z = 0.04 * (1 - progress);
+
+            const plume = eagleModuleGroup.getObjectByName("landerPlume");
+            if (plume) {
+                plume.visible = true;
+                plume.scale.set(1 + Math.random() * 0.2, 1 + Math.random() * 0.25, 1 + Math.random() * 0.2);
+            }
+
+            // Smooth camera tracking
+            const camY = Math.max(4.5, altitude * 0.6 + 5);
+            const camDist = Math.max(16, 26 - progress * 8);
+            camera.position.set(camDist * 0.6, camY, camDist * 0.8);
+            camera.lookAt(new THREE.Vector3(0, Math.max(1.5, altitude * 0.5), 0));
+
+            const altBadge = document.getElementById('landing-alt-badge');
+            const statusEl = document.getElementById('landing-status-text');
+            const progEl = document.getElementById('landing-progress-bar');
+            if (altBadge) altBadge.innerText = `İRTİFA: ${Math.round(altitude)}m`;
+            if (progEl) progEl.style.width = `${progress * 100}%`;
+
+            if (progress < 0.2) {
+                if (!landingVoiceFlags.start) {
+                    speakVoice("Uzay aracı Sessizlik Denizi'ne alçalıyor. Alçalma motoru devrede.");
+                    playSciFiBeep('beep');
+                    landingVoiceFlags.start = true;
+                }
+                if (statusEl) statusEl.innerText = "İniş motoru ateşlendi. Radar yüzeyi tarıyor... Düşey hız dengeleniyor.";
+            } else if (progress < 0.75) {
+                if (statusEl) statusEl.innerText = "Sessizlik Denizi düzlüğüne yaklaşılıyor. Kraterler manuel izleniyor.";
+            } else if (progress < 0.98) {
+                if (!landingVoiceFlags.near) {
+                    speakVoice("İrtifa beş metre... Üç metre... Ay tozu havalanıyor.");
+                    landingVoiceFlags.near = true;
+                }
+                if (statusEl) statusEl.innerText = "Son metreler... Ay tozu itkiyle havalanıyor. İniş ayakları zemine temas etmek üzere!";
+            } else {
+                finishLunarLandingImmediately();
+            }
+        }
+
+        function finishLunarLandingImmediately() {
+            isLandingSpacecraft = false;
+            if (eagleModuleGroup) {
+                eagleModuleGroup.position.set(0, 0, 0);
+                eagleModuleGroup.rotation.set(0, 0, 0);
+                const plume = eagleModuleGroup.getObjectByName("landerPlume");
+                if (plume) plume.visible = false;
+            }
+
+            if (!landingVoiceFlags.touch) {
+                speakVoice("Temas sağlandı! Uzay aracı Ay yüzeyine başarıyla indi! Şanlı Türk bayrağımız Ay'da!");
+                playSciFiBeep('correct');
+                confetti({ particleCount: 90, spread: 80 });
+                landingVoiceFlags.touch = true;
+            }
+
+            controls.enabled = true;
+            controls.target.set(0, 2, 0);
+            camera.position.set(0, 4, 18);
+            controls.update();
+
+            switchAppMode('earth_observe');
+            showToast("🇹🇷 2026 Millî Uzay Aracı Ay yüzeyine başarıyla indi! Roket Dünya yörüngesinde kalmış, Ay'a yalnızca uzay aracı inmiştir.", "success");
+        }
+
+        /* -------------------------------------------------------------
+           12. HISTORICAL MISSION MODE (2026 MİLLÎ AY MİSYONU - 7 AŞAMA)
+        ------------------------------------------------------------- */
         let currentHistoricalStep = 1;
         const HISTORICAL_STEPS = [
             {
                 step: 1,
                 title: "1. Aşama: Ay Yörüngesinde Ayrılma",
-                desc: "20 Temmuz 1969. Eagle iniş modülü komuta modülü Columbia'dan ayrıldı. Armstrong ve Aldrin alçalma motorunu ateşledi.",
+                desc: "2026 yılı. Millî Uzay Aracı ana taşıyıcıdan ayrıldı. Türk astronotlar alçalma motorunu ateşleyerek Sessizlik Denizi iniş rotasına girdi.",
                 camPos: [0, 10, 45], target: [0, 4, 0]
             },
             {
                 step: 2,
                 title: "2. Aşama: Sessizlik Denizi'ne Alçalma",
-                desc: "Bilgisayar aşırı yük alarmı verdi (1202 alarmı). Armstrong manuel kontrole geçerek kayalık kraterden kaçındı.",
+                desc: "Otomatik iniş radarı ve irtifa sensörleri yüzeyi taradı. Krater kenarındaki güvenli düzlüğe doğru hassas iniş manevrası yapıldı.",
                 camPos: [15, 6, 20], target: [0, 2, 0]
             },
             {
                 step: 3,
-                title: "3. Aşama: Ay'a Temas ('Eagle Has Landed')",
-                desc: "20:17:40 UTC. İniş ayakları Ay tozuna değdi. 'Houston, Sessizlik Üssü burada. Kartal indi!'",
+                title: "3. Aşama: Ay'a Temas ('Uzay Aracı İndi')",
+                desc: "2026 yılı. Dört iniş ayağı Ay tozuna değdi. 'Ankara, Sessizlik Üssü burada. Millî Uzay Aracı Ay yüzeyine başarıyla indi!'",
                 camPos: [0, 2, 8], target: [0, 2, 0]
             },
             {
                 step: 4,
-                title: "4. Aşama: Ay'a İlk Adım",
-                desc: "Neil Armstrong merdivenden indi ve sol ayağını bastı: 'İnsan için küçük, insanlık için dev bir adım.'",
+                title: "4. Aşama: Ay'a İlk Türk Ay Adımı",
+                desc: "Türk astronot iniş merdiveninden indi ve Ay tozuna ilk adımı attı: 'İstikbal göklerdedir! Bu adım tüm milletimizin ve insanlığın barış adımıdır.'",
                 camPos: [-1, 2, 6], target: [0, 2, 4]
             },
             {
                 step: 5,
-                title: "5. Aşama: Amerikan Bayrağının Dikilmesi",
-                desc: "Aldrin yüzeye indi. İki astronot bayrağı kurdu. Bayrak rüzgârdan değil, yatay gergi telinden dolayı açık durmaktadır.",
+                title: "5. Aşama: Şanlı Türk Bayrağının Dikilmesi",
+                desc: "Astronotlarımız al bayrağımızı Ay yüzeyine dikti. Ay'da hava ve rüzgâr olmadığı için bayrak, üstteki gergi teli sayesinde daima gururla açık durur.",
                 camPos: [-5, 2, 11], target: [-6, 1.5, 8]
             },
             {
                 step: 6,
                 title: "6. Aşama: Bilimsel Deneylerin Kurulumu",
-                desc: "Lazer retroreflektör (LRRR) ve sismometre kuruldu. Ay toprağı ve kayaç örnekleri toplandı.",
+                desc: "Lazer retroreflektör (LRRR) ve sismometre kuruldu. Ay regolitinden örnekler toplanarak analiz laboratuvarına aktarıldı.",
                 camPos: [12, 3, 13], target: [12, 1, 9]
             },
             {
                 step: 7,
-                title: "7. Aşama: Ay'dan Dünya'ya Bakış",
-                desc: "Astronotlar gökyüzündeki kırılgan mavi vatanı izledi. Masmavi Dünya, uzayın siyahlığında yaşam barındıran tek yuvamızdır.",
+                title: "7. Aşama: Ay'dan Mavi Vatan Dünya'ya Bakış",
+                desc: "Astronotlar gökyüzündeki büyüleyici yuvamızı izledi. Masmavi Dünya, uzayın siyahlığında yaşam barındıran eşsiz evimizdir.",
                 camPos: [0, 3, 10], target: 'earth'
             }
         ];
@@ -2339,23 +2805,23 @@
         ------------------------------------------------------------- */
         const TEACHER_QUESTIONS_POOL = [
             {
-                q: "Dünya'dan baktığımızda Dolunay evresi görülürken, Ay'dan bakan bir astronot Dünya'yı hangi evrede görür?",
-                ans: "Yeni Dünya (Tamamen karanlık veya ince mavi halkalı). Çünkü Dünya'nın evreleri Ay'ın evreleriyle zıttır!",
+                q: "Dünya'dan gökyüzüne bakıldığında Ay tamamen aydınlık ve yuvarlak görünürken, Ay'dan bakan bir astronot Dünya'yı hangi aydınlanma evresinde görür?",
+                ans: "Karanlık Evre (Yeni Dünya - Güneş arkada kaldığı için Dünya'nın Ay'a bakan yüzü karanlıktır. Dünya ve Ay evreleri birbirine zıttır!)",
                 targetAngle: 0
             },
             {
                 q: "Ay'dan gökyüzüne bakan bir astronot Dünya'nın her 24 saatte bir doğup battığını görür mü?",
-                ans: "HAYIR! Ay'ın eşzamanlı dönüşü nedeniyle Dünya gökyüzünde hep aynı konumda sabit asılı kalır; yalnızca kendi ekseninde döner.",
+                ans: "HAYIR! Ay'ın eşzamanlı dönüşü nedeniyle Dünya gökyüzünde hep aynı konumda asılı kalır; yalnızca kendi ekseninde döner.",
                 targetAngle: 90
             },
             {
-                q: "Ay yüzeyindeki Amerikan bayrağı neden rüzgârla dalgalanmaz?",
-                ans: "Çünkü Ay'da atmosfer ve hava akımı (rüzgâr) yoktur! Bayrağın açık durmasını üstteki yatay tel çubuk sağlar.",
+                q: "Ay yüzeyine dikilen şanlı Türk bayrağı neden rüzgârla dalgalanmaz?",
+                ans: "Çünkü Ay'da atmosfer ve rüzgâr (hava akımı) yoktur! Bayrağın dik ve açık durmasını üst kısımdaki yatay gergi çubuğu sağlar.",
                 targetAngle: 180
             },
             {
-                q: "Güneş tepedeyken bir nesnenin gölgesi mi uzundur, yoksa Güneş ufka yakınken mi?",
-                ans: "Güneş ufka yakınken gölgeler upuzundur; tepedeyken en kısa halini alır.",
+                q: "Güneş ufka yakınken mi bir nesnenin gölgesi daha uzundur, yoksa tepedeyken mi?",
+                ans: "Güneş ufka yakınken (doğuş ve batışta) gölgeler upuzundur; tepedeyken en kısa halini alır.",
                 targetAngle: 270
             }
         ];
@@ -2408,9 +2874,9 @@
         ------------------------------------------------------------- */
         const QUIZ_MASTER_POOL = [
             {
-                q: "Apollo 11 astronotlarının Ay yüzeyine bıraktığı ayak izlerinin milyonlarca yıl silinmeden kalabilmesinin temel nedeni nedir?",
+                q: "Astronotların Ay yüzeyine bıraktığı ayak izlerinin milyonlarca yıl silinmeden kalabilmesinin temel nedeni nedir?",
                 options: [
-                    { t: "Ay'da rüzgâr ve yağış gibi hava olaylarını oluşturan bir atmosferin olmaması", correct: true },
+                    { t: "Ay'da rüzgâr ve yağış gibi hava olaylarını oluşturan bir atmosferin bulunmaması", correct: true },
                     { t: "Ay toprağının aşırı sert ve yapışkan çimento gibi olması", correct: false },
                     { t: "Ay'ın Dünya'dan çok uzakta bulunması", correct: false },
                     { t: "Ay'ın kendi ekseni etrafında hiç dönmemesi", correct: false }
@@ -2419,10 +2885,10 @@
             {
                 q: "Dünya'dan gökyüzüne bakıldığında Yeni Ay evresi gözlenirken, Ay'dan Dünya'ya bakan bir astronot Dünya'yı hangi evrede görür?",
                 options: [
-                    { t: "Dolunay Dünya (Tam Aydınlık)", correct: true },
-                    { t: "Yeni Dünya (Karanlık)", correct: false },
-                    { t: "İlk Dördün Dünya", correct: false },
-                    { t: "Hilal Dünya", correct: false }
+                    { t: "Tam Aydınlık Evre (Bütün yüzeyi Güneş ışığıyla parlar)", correct: true },
+                    { t: "Karanlık Evre (Yeni Dünya)", correct: false },
+                    { t: "İlk Dördün Evresi", correct: false },
+                    { t: "Hilal Evresi", correct: false }
                 ]
             },
             {
@@ -2435,7 +2901,7 @@
                 ]
             },
             {
-                q: "Ay'dan gökyüzüne bakıldığında Güneş varken bile gökyüzünün kapkara görünmesinin sebebi nedir?",
+                q: "Ay'dan gökyüzüne bakıldığında Güneş gökyüzündeyken bile etrafın kapkara görünmesinin sebebi nedir?",
                 options: [
                     { t: "Işığı saçacak bir hava tabakasının (atmosfer) bulunmaması", correct: true },
                     { t: "Güneş'in Ay'da sönük ışık vermesi", correct: false },
@@ -2444,7 +2910,7 @@
                 ]
             },
             {
-                q: "Apollo 11'in iniş yaptığı tarihsel Ay bölgesi aşağıdakilerden hangisidir?",
+                q: "2026 Millî Ay İniş Modülü'nün iniş yaptığı tarihsel Ay bölgesi aşağıdakilerden hangisidir?",
                 options: [
                     { t: "Mare Tranquillitatis (Sessizlik Denizi)", correct: true },
                     { t: "Fırtınalar Okyanusu", correct: false },
@@ -2507,7 +2973,7 @@
                         </div>
                         <h3 class="font-orbitron font-black text-lg text-white">AY KÂŞİFİ – GÖREV TAMAMLANDI!</h3>
                         <p class="text-sm font-bold text-emerald-300">Tebrikler! Toplam Skor: ${quizScore} / ${activeQuizQuestions.length * 100}</p>
-                        <p class="text-xs text-slate-300">Apollo 11, Ay'ın yapısı ve Dünya evreleri hakkındaki bilgileri başarıyla kavradınız!</p>
+                        <p class="text-xs text-slate-300">2026 Millî Ay Misyonu, Ay'ın yapısı ve Dünya'nın hareketleri hakkındaki kazanımları başarıyla kavradınız!</p>
                         <button onclick="openMissionsModal()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider">
                             Yeniden Başla (Yeni Karışık Sorular)
                         </button>
@@ -2551,7 +3017,7 @@
                 quizScore += 100;
                 playSciFiBeep('correct');
                 fb.className = "p-3 rounded-xl text-xs font-bold bg-emerald-950 border border-emerald-500 text-emerald-300 animate-fadeIn";
-                fb.innerHTML = "✅ <strong>Harika Doğru!</strong> Tebrikler, Apollo bilimsel kazanımını kavradınız! (+100 Puan)";
+                fb.innerHTML = "✅ <strong>Harika Doğru!</strong> Tebrikler, Millî Ay Misyonu bilimsel kazanımını kavradınız! (+100 Puan)";
             } else {
                 playSciFiBeep('wrong');
                 fb.className = "p-3 rounded-xl text-xs font-bold bg-rose-950 border border-rose-500 text-rose-300 animate-fadeIn";
@@ -2625,7 +3091,7 @@
             isSimPlaying = true;
             document.getElementById('play-pause-icon').className = 'fa-solid fa-pause';
             playSciFiBeep('quindar_intro');
-            showToast("🔄 Zaman 20 Temmuz 1969 20:17 UTC'ye sıfırlandı.", "info");
+            showToast("🔄 Zaman 29 Ekim 2026 19:23 UTC'ye sıfırlandı.", "info");
         }
 
         function setSimSpeed(spd) {
@@ -2676,6 +3142,9 @@
 
             // Update Saturn V Earth Launch if active
             updateSaturnVPhysics(delta);
+
+            // Update Spacecraft Lunar Landing if active
+            updateSpacecraftLandingPhysics(delta);
 
             // Update FPS walking if active
             updateAstronautFPSMovement(delta);
