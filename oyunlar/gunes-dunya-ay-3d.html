@@ -326,72 +326,95 @@
             </div>
         </div>
 
-        <!-- ⏱️ SAĞ ÜST YÜZEN PANEL: ANALOG SAAT & DÖNME YÖNÜ GÖSTERGESİ -->
-        <div id="right-clock-panel" class="pointer-events-auto absolute top-3 right-3 sm:right-4 z-10 w-72 sm:w-80 glass-panel rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all">
+        <!-- 🧭 SAĞ ÜST YÜZEN PANEL: HAREKET YÖNÜ REHBERİ (SAAT YÖNÜNÜN TERSİ) -->
+        <div id="right-clock-panel" class="pointer-events-auto absolute top-3 right-3 sm:right-4 z-10 w-76 sm:w-84 glass-panel rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all">
             <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
                 <div class="flex items-center gap-2">
-                    <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs">
-                        <i class="fa-regular fa-clock"></i>
+                    <span class="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-compass"></i>
                     </span>
-                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Yönü & Saat</h3>
+                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Yönü Rehberi</h3>
                 </div>
                 <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                     KUZEYDEN BAKIŞ
                 </span>
             </div>
 
-            <!-- Analog Saat Göstergesi -->
-            <div class="flex items-center gap-4 py-1">
-                <!-- SVG Analog Saat -->
-                <div class="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0">
-                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
-                        <!-- Saat Kadranı -->
-                        <circle cx="50" cy="50" r="46" fill="#0f172a" stroke="#f59e0b" stroke-width="2.5" />
-                        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
-                        
-                        <!-- Kadran Çizgileri & Sayılar -->
-                        <g font-family="'JetBrains Mono', monospace" font-size="7" font-weight="900" fill="#f8fafc" text-anchor="middle" dominant-baseline="central">
-                            <text x="50" y="14">12</text>
-                            <text x="86" y="50">3</text>
-                            <text x="50" y="86">6</text>
-                            <text x="14" y="50">9</text>
-                            <text x="68" y="19" fill="#94a3b8" font-size="5.5">1</text>
-                            <text x="81" y="32" fill="#94a3b8" font-size="5.5">2</text>
-                            <text x="81" y="68" fill="#94a3b8" font-size="5.5">4</text>
-                            <text x="68" y="81" fill="#94a3b8" font-size="5.5">5</text>
-                            <text x="32" y="81" fill="#94a3b8" font-size="5.5">7</text>
-                            <text x="19" y="68" fill="#94a3b8" font-size="5.5">8</text>
-                            <text x="19" y="32" fill="#94a3b8" font-size="5.5">10</text>
-                            <text x="32" y="19" fill="#94a3b8" font-size="5.5">11</text>
-                        </g>
-
-                        <!-- Saat Yönü Okları (Dairesel) -->
-                        <path id="clock-arrow-path" d="M 50 18 A 32 32 0 1 0 82 50" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
-
-                        <!-- İbre (Animasyonlu Dönen Kol) -->
-                        <line id="clock-hand" x1="50" y1="50" x2="50" y2="18" stroke="#ef4444" stroke-width="3" stroke-linecap="round" />
-                        <circle cx="50" cy="50" r="4.5" fill="#f59e0b" />
-                        <circle cx="50" cy="50" r="2" fill="#ffffff" />
-                    </svg>
+            <!-- Yan Yana Yön Karşılaştırması (Normal Duvar Saati vs Gök Cisimleri) -->
+            <div class="grid grid-cols-2 gap-2 mb-2">
+                <!-- 1. Normal Duvar Saati (Saat Yönü) -->
+                <div class="p-2 rounded-2xl bg-slate-900/80 border border-rose-500/30 flex flex-col items-center text-center">
+                    <span class="text-[9px] font-bold text-rose-400 mb-1 flex items-center gap-1">
+                        <i class="fa-solid fa-clock"></i> NORMAL SAAT
+                    </span>
+                    <div class="relative w-14 h-14 my-0.5">
+                        <svg viewBox="0 0 60 60" class="w-full h-full">
+                            <circle cx="30" cy="30" r="26" fill="#0f172a" stroke="#ef4444" stroke-width="1.5" />
+                            <text x="30" y="11" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">12</text>
+                            <text x="51" y="32" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">3</text>
+                            <text x="30" y="53" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">6</text>
+                            <text x="9" y="32" font-size="6.5" fill="#94a3b8" text-anchor="middle" font-weight="900">9</text>
+                            <!-- Saat Yönü Oku (CW 12 -> 3) -->
+                            <path d="M 32 8 A 20 20 0 0 1 50 28" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="2 1.5" />
+                            <polygon points="50,28 47,23 52,24" fill="#ef4444" />
+                            <line x1="30" y1="30" x2="43" y2="21" stroke="#ef4444" stroke-width="2.2" stroke-linecap="round" />
+                            <circle cx="30" cy="30" r="2.5" fill="#f87171" />
+                        </svg>
+                    </div>
+                    <span class="text-[9px] font-black text-rose-300">Saat Yönü ↻</span>
+                    <span class="text-[8px] text-slate-400">12 → 3 → 6 → 9</span>
                 </div>
 
-                <!-- Saat Bilgisi & Yön Açıklaması -->
-                <div class="space-y-1.5 min-w-0">
-                    <div id="direction-title-badge" class="px-2.5 py-1 rounded-xl text-center bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-black text-xs leading-tight">
-                        SAAT YÖNÜNÜN TERSİ
+                <!-- 2. Gök Cisimleri Yönü (Saat Yönünün Tersi) -->
+                <div class="p-2 rounded-2xl bg-emerald-950/50 border-2 border-emerald-500/60 flex flex-col items-center text-center shadow-lg shadow-emerald-500/10">
+                    <span class="text-[9px] font-black text-emerald-300 mb-1 flex items-center gap-1">
+                        <i class="fa-solid fa-circle-check text-emerald-400"></i> GÖK CİSİMLERİ
+                    </span>
+                    <div class="relative w-14 h-14 my-0.5">
+                        <svg viewBox="0 0 60 60" class="w-full h-full">
+                            <circle cx="30" cy="30" r="26" fill="#022c22" stroke="#10b981" stroke-width="2" />
+                            <text x="30" y="11" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">12</text>
+                            <text x="9" y="32" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">9</text>
+                            <text x="30" y="53" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">6</text>
+                            <text x="51" y="32" font-size="6.5" fill="#6ee7b7" text-anchor="middle" font-weight="900">3</text>
+                            <!-- Saat Yönünün Tersi Oku (CCW 12 -> 9) -->
+                            <path d="M 28 8 A 20 20 0 0 0 10 28" fill="none" stroke="#34d399" stroke-width="2.5" />
+                            <polygon points="10,28 14,24 8,24" fill="#34d399" />
+                            <!-- Animasyonlu Dönen İbre -->
+                            <line id="clock-hand" x1="30" y1="30" x2="30" y2="12" stroke="#34d399" stroke-width="2.5" stroke-linecap="round" />
+                            <circle cx="30" cy="30" r="3" fill="#10b981" />
+                            <circle cx="30" cy="30" r="1.5" fill="#ffffff" />
+                        </svg>
                     </div>
-                    <p id="direction-desc" class="text-[11px] text-slate-300 leading-snug font-medium">
-                        Kuzey kutbundan bakıldığında Dünya, Güneş ve Ay <strong>saat yönünün tersine</strong> döner.
-                    </p>
-                    <button type="button" onclick="focusTopViewAndDemonstrate()" class="w-full py-1.5 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[10px] font-black transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer">
-                        <i class="fa-solid fa-arrows-spin"></i>
-                        <span>Kuzeyden Yönü İncele</span>
-                    </button>
+                    <span class="text-[9px] font-black text-emerald-300">Saat Yönünün Tersi ↺</span>
+                    <span class="text-[8px] text-emerald-400 font-bold">12 → 9 → 6 → 3 (Batı → Doğu)</span>
                 </div>
             </div>
 
+            <!-- 3 Cisim Durum Kartı (Canlı Özet) -->
+            <div class="p-2 rounded-2xl bg-black/50 border border-white/10 space-y-1 mb-2 text-[10px]">
+                <div class="flex items-center justify-between text-amber-300">
+                    <span class="font-bold flex items-center gap-1"><i class="fa-solid fa-sun"></i> Güneş:</span>
+                    <span class="font-bold bg-amber-500/20 px-1.5 py-0.5 rounded text-[9px]">Saat Yönünün Tersi ↺</span>
+                </div>
+                <div class="flex items-center justify-between text-cyan-300">
+                    <span class="font-bold flex items-center gap-1"><i class="fa-solid fa-earth-americas"></i> Dünya (Dönme & Dolanma):</span>
+                    <span class="font-bold bg-cyan-500/20 px-1.5 py-0.5 rounded text-[9px]">Saat Yönünün Tersi ↺</span>
+                </div>
+                <div class="flex items-center justify-between text-slate-200">
+                    <span class="font-bold flex items-center gap-1"><i class="fa-solid fa-moon"></i> Ay (Dönme & Dolanma):</span>
+                    <span class="font-bold bg-slate-500/20 px-1.5 py-0.5 rounded text-[9px]">Saat Yönünün Tersi ↺</span>
+                </div>
+            </div>
+
+            <!-- Kuşbakışı Kuzey Kutbu Görünüm Butonu -->
+            <button type="button" onclick="focusTopViewAndDemonstrate()" class="w-full py-1.5 px-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-[10px] font-black transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-satellite"></i>
+                <span>🔭 Kuşbakışı Kuzey Kutbundan Yönü Canlı Gör</span>
+            </button>
+
             <!-- Canlı Astronomik Zaman Sayacı -->
-            <div class="mt-2.5 pt-2 border-t border-white/10 bg-black/40 p-2 rounded-2xl flex items-center justify-between text-xs font-mono">
+            <div class="mt-2 pt-2 border-t border-white/10 bg-black/40 p-2 rounded-2xl flex items-center justify-between text-xs font-mono">
                 <div>
                     <span class="text-[9px] text-slate-400 block font-sans uppercase">Geçen Süre</span>
                     <span id="elapsed-time-counter" class="text-amber-400 font-bold">0 Gün 00 Saat</span>
@@ -401,6 +424,7 @@
                     <span id="earth-orbit-counter" class="text-cyan-400 font-bold">0.00 Yıl</span>
                 </div>
             </div>
+        </div>
         </div>
 
         <!-- 🔭 SAĞ ALT YÜZEN PANEL: DÜNYA'DAN AY'A BAKIŞ (EVRE PENCERESİ) -->
@@ -1079,7 +1103,6 @@
             earthAxisGroup.add(earthAxisLine);
 
             // 🌕 AY SİSTEMİ
-            // Ay Dünya çevresinde dolanacağı için pivot
             moonPivot = new THREE.Group();
             earthGroup.add(moonPivot);
 
@@ -1096,13 +1119,81 @@
             moonMesh = new THREE.Mesh(moonGeo, moonMat);
             moonGroup.add(moonMesh);
 
-            // 🔴 "Aynı Yüz" İşareti (Tidal Locking Kanıt Pini)
-            // Ay'ın tam Dünya'ya bakan tarafına (+X yönünde değil, Dünya'ya bakan -X yönünde) bir işaret
-            const pinGeo = new THREE.SphereGeometry(0.3, 16, 16);
-            const pinMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
-            moonSameFacePin = new THREE.Mesh(pinGeo, pinMat);
-            moonSameFacePin.position.set(-1.4, 0, 0); // Dünya'ya bakan yüz
+            // 🚩 "AYNI YÜZ" TÜRK BAYRAĞI & İBRE GÖSTERİMİ
+            // Ay'ın tam Dünya'ya bakan tarafına (-X yönü) dikilmiş 3D Keşif Bayrağı
+            const flagGroup = new THREE.Group();
+            flagGroup.position.set(-1.4, 0, 0); // Dünya'ya bakan yüzey
+
+            // Bayrak Direği (Gümüşi Silindir)
+            const poleGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.2, 8);
+            const poleMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, metalness: 0.9, roughness: 0.2 });
+            const poleMesh = new THREE.Mesh(poleGeo, poleMat);
+            poleMesh.rotation.z = Math.PI / 2;
+            poleMesh.position.set(-0.6, 0, 0);
+            flagGroup.add(poleMesh);
+
+            // Dalgalanan Türk Bayrağı (Kırmızı + Hilal ve Yıldız)
+            const flagCanvas = document.createElement('canvas');
+            flagCanvas.width = 256;
+            flagCanvas.height = 160;
+            const fctx = flagCanvas.getContext('2d');
+            fctx.fillStyle = '#e11d48'; // Canlı kırmızı
+            fctx.fillRect(0, 0, 256, 160);
+            
+            // Beyaz Hilal
+            fctx.fillStyle = '#ffffff';
+            fctx.beginPath();
+            fctx.arc(95, 80, 42, 0, Math.PI * 2);
+            fctx.fill();
+            fctx.fillStyle = '#e11d48';
+            fctx.beginPath();
+            fctx.arc(106, 80, 33, 0, Math.PI * 2);
+            fctx.fill();
+            
+            // Beyaz Yıldız
+            fctx.fillStyle = '#ffffff';
+            fctx.beginPath();
+            const sx = 142, sy = 80, srad = 16;
+            for (let i = 0; i < 5; i++) {
+                fctx.lineTo(sx + srad * Math.cos((18 + i * 72) * Math.PI / 180), sy - srad * Math.sin((18 + i * 72) * Math.PI / 180));
+                fctx.lineTo(sx + (srad / 2) * Math.cos((54 + i * 72) * Math.PI / 180), sy - (srad / 2) * Math.sin((54 + i * 72) * Math.PI / 180));
+            }
+            fctx.closePath();
+            fctx.fill();
+
+            const flagTexture = new THREE.CanvasTexture(flagCanvas);
+            const flagGeo = new THREE.PlaneGeometry(1.0, 0.65);
+            const flagMat = new THREE.MeshBasicMaterial({ map: flagTexture, side: THREE.DoubleSide });
+            const flagMesh = new THREE.Mesh(flagGeo, flagMat);
+            flagMesh.position.set(-1.1, 0.35, 0);
+            flagMesh.rotation.y = Math.PI / 2;
+            flagGroup.add(flagMesh);
+
+            // Taban Aydınlatma Halkası (Görünen Yüz Gösterge Çemberi)
+            const beaconGeo = new THREE.RingGeometry(0.35, 0.48, 24);
+            const beaconMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide });
+            const beaconMesh = new THREE.Mesh(beaconGeo, beaconMat);
+            beaconMesh.rotation.y = Math.PI / 2;
+            beaconMesh.position.set(-0.02, 0, 0);
+            flagGroup.add(beaconMesh);
+
+            moonSameFacePin = flagGroup;
             moonMesh.add(moonSameFacePin);
+
+            // ⚡ DÜNYA-AY GÖRÜŞ HATTI (Canlı Görüş Işını)
+            // Dünya merkezinden Ay'ın bayrağına uzanan parlayan kesikli hat
+            const beamPoints = [new THREE.Vector3(0, 0, 0), new THREE.Vector3(12.6, 0, 0)];
+            const beamGeo = new THREE.BufferGeometry().setFromPoints(beamPoints);
+            const beamMat = new THREE.LineDashedMaterial({
+                color: 0x38bdf8,
+                dashSize: 0.6,
+                gapSize: 0.4,
+                transparent: true,
+                opacity: 0.75
+            });
+            window.earthMoonBeam = new THREE.Line(beamGeo, beamMat);
+            window.earthMoonBeam.computeLineDistances();
+            moonPivot.add(window.earthMoonBeam);
 
             // Ay Eksen Çizgisi
             const moonAxisGeo = new THREE.BufferGeometry().setFromPoints([
@@ -1120,7 +1211,7 @@
             const earthOrbitPoints = [];
             for (let i = 0; i <= 128; i++) {
                 const a = (i / 128) * Math.PI * 2;
-                earthOrbitPoints.push(new THREE.Vector3(Math.cos(a) * 75, 0, Math.sin(a) * 75));
+                earthOrbitPoints.push(new THREE.Vector3(Math.cos(a) * 75, 0, -Math.sin(a) * 75));
             }
             const earthOrbitGeo = new THREE.BufferGeometry().setFromPoints(earthOrbitPoints);
             const earthOrbitMat = new THREE.LineDashedMaterial({
@@ -1138,7 +1229,7 @@
             const moonOrbitPoints = [];
             for (let i = 0; i <= 64; i++) {
                 const a = (i / 64) * Math.PI * 2;
-                moonOrbitPoints.push(new THREE.Vector3(Math.cos(a) * 14, 0, Math.sin(a) * 14));
+                moonOrbitPoints.push(new THREE.Vector3(Math.cos(a) * 14, 0, -Math.sin(a) * 14));
             }
             const moonOrbitGeo = new THREE.BufferGeometry().setFromPoints(moonOrbitPoints);
             const moonOrbitMat = new THREE.LineDashedMaterial({
@@ -1152,59 +1243,49 @@
             moonOrbitLine.computeLineDistances();
             earthGroup.add(moonOrbitLine);
 
-            // 3D Kavisli Hareket Okları Üretici Yardımcısı
-            // Mavi = Dönme, Turuncu/Altın = Dolanma
-            arrowSunRot = createCurvedArrow(16, Math.PI * 0.8, 0xfbbf24);
+            // 3D Kavisli Hareket Okları (Zarif, İnce, Saat Yönünün Tersini Gösteren)
+            arrowSunRot = createCurvedArrow(16, Math.PI * 0.7, 0xfbbf24);
             arrowSunRot.position.set(0, 0, 0);
             scene.add(arrowSunRot);
 
-            arrowEarthRot = createCurvedArrow(5.6, Math.PI * 0.9, 0x38bdf8);
+            arrowEarthRot = createCurvedArrow(5.6, Math.PI * 0.8, 0x38bdf8);
             earthAxisGroup.add(arrowEarthRot);
 
-            arrowEarthRev = createCurvedArrow(76, Math.PI * 0.35, 0xf59e0b);
-            scene.add(arrowEarthRev);
+            // Kullanıcının "1.görseli kaldır" talebiyle kaba sarı poligon ok tamamen kaldırıldı.
+            arrowEarthRev = null;
 
-            arrowMoonRot = createCurvedArrow(2.1, Math.PI * 0.8, 0xa855f7);
+            arrowMoonRot = createCurvedArrow(2.1, Math.PI * 0.8, 0x34d399);
             moonMesh.add(arrowMoonRot);
 
-            arrowMoonRev = createCurvedArrow(14.8, Math.PI * 0.5, 0x38bdf8);
+            arrowMoonRev = createCurvedArrow(14.8, Math.PI * 0.45, 0x38bdf8);
             earthGroup.add(arrowMoonRev);
         }
 
-        // Kavisli 3D Yön Oku (Saat yönünün tersini gösteren ok başı ile)
+        // Kavisli 3D Yön Oku (Kuzeyden bakıldığında SAAT YÖNÜNÜN TERSİ: CCW)
         function createCurvedArrow(radius, arcAngle, colorHex) {
             const group = new THREE.Group();
             const curvePoints = [];
-            const segments = 36;
+            const segments = 24;
             
-            // Kuzeyden bakışta saat yönünün tersi (CCW: 0'dan arcAngle'a)
+            // Kuzeyden bakışta Saat Yönünün Tersi (0'dan arcAngle'a, X pozitif, Z negatif)
             for (let i = 0; i <= segments; i++) {
                 const theta = (i / segments) * arcAngle;
-                curvePoints.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+                curvePoints.push(new THREE.Vector3(Math.cos(theta) * radius, 0, -Math.sin(theta) * radius));
             }
             const curveGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
             const curveMat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity: 0.85 });
             const line = new THREE.Line(curveGeo, curveMat);
             group.add(line);
 
-            // Ok Ucu (Zarif, pürüzsüz 32-segmentli ve orantılı koni)
-            const headRadius = Math.min(Math.max(radius * 0.012, 0.35), 0.95);
-            const headHeight = headRadius * 2.8;
-            const headGeo = new THREE.ConeGeometry(headRadius, headHeight, 32);
-            const headMat = new THREE.MeshStandardMaterial({ 
-                color: colorHex, 
-                roughness: 0.3,
-                metalness: 0.2,
-                emissive: colorHex,
-                emissiveIntensity: 0.4
-            });
+            // Küçük, kibar ok ucu (Kaba poligon değil, zarif koni)
+            const headGeo = new THREE.ConeGeometry(0.35, 1.0, 16);
+            const headMat = new THREE.MeshBasicMaterial({ color: colorHex });
             const head = new THREE.Mesh(headGeo, headMat);
 
             const lastPoint = curvePoints[segments];
             const prevPoint = curvePoints[segments - 1];
             head.position.copy(lastPoint);
 
-            // Ok yönünü teğet yönüne çevir
             const dir = new THREE.Vector3().subVectors(lastPoint, prevPoint).normalize();
             head.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
             group.add(head);
@@ -1263,48 +1344,45 @@
                 state.elapsedSeconds += delta;
                 state.elapsedDays += simDaysDelta;
 
-                // 1. Güneş'in Kendi Ekseninde Dönmesi (Saat Yönünün Tersi)
+                // 1. Güneş'in Kendi Ekseninde Dönmesi (Saat Yönünün Tersi / Batıdan Doğuya)
                 if (state.movements.sunRotation) {
                     state.angles.sunRot += SPEEDS.sunRot * simDaysDelta;
                     if (sunMesh) sunMesh.rotation.y = state.angles.sunRot;
                 }
 
-                // 2. Dünya'nın Kendi Ekseninde Dönmesi (Saat Yönünün Tersi)
+                // 2. Dünya'nın Kendi Ekseninde Dönmesi (Saat Yönünün Tersi / 24 Saat)
                 if (state.movements.earthRotation) {
                     state.angles.earthRot += SPEEDS.earthRot * simDaysDelta;
                     if (earthMesh) earthMesh.rotation.y = state.angles.earthRot;
-                    if (earthClouds) earthClouds.rotation.y = state.angles.earthRot * 1.05; // Bulutlar hafif farklı hızda
+                    if (earthClouds) earthClouds.rotation.y = state.angles.earthRot * 1.05;
                 }
 
-                // 3. Dünya'nın Güneş Çevresinde Dolanması (Saat Yönünün Tersi)
+                // 3. Dünya'nın Güneş Çevresinde Dolanması (SAAT YÖNÜNÜN TERSİ: X = cos, Z = -sin)
                 if (state.movements.earthRevolution) {
                     state.angles.earthRev += SPEEDS.earthRev * simDaysDelta;
                     const r = 75;
                     earthGroup.position.x = Math.cos(state.angles.earthRev) * r;
-                    earthGroup.position.z = Math.sin(state.angles.earthRev) * r;
+                    earthGroup.position.z = -Math.sin(state.angles.earthRev) * r; // Kesin Saat Yönünün Tersi!
 
-                    // Mekanik ana kol dönmesi
+                    // Mekanik ana kol
                     if (orreryMainArm) {
-                        orreryMainArm.parent.rotation.y = -state.angles.earthRev;
-                    }
-
-                    // Dolanma yön oku konumu
-                    if (arrowEarthRev) {
-                        arrowEarthRev.rotation.y = state.angles.earthRev;
+                        orreryMainArm.parent.rotation.y = state.angles.earthRev;
                     }
                 }
 
-                // 4. Ay'ın Dünya Çevresinde Dolanması (Saat Yönünün Tersi)
-                if (state.movements.moonRevolution) {
+                // 4. Ay'ın Hareketi (Dolanma + Eşzamanlı Dönme: 1 Tur = 27,3 Gün)
+                if (state.movements.moonMotion) {
                     state.angles.moonRev += SPEEDS.moonRev * simDaysDelta;
                     if (moonPivot) moonPivot.rotation.y = state.angles.moonRev;
-                }
 
-                // 5. Ay'ın Kendi Ekseninde Dönmesi (Tidal Locking / Kütleçekim Kilidi)
-                if (state.movements.moonRotation) {
-                    // Ay dönmesi dolanmasıyla eşit oranda
-                    state.angles.moonRot += SPEEDS.moonRot * simDaysDelta;
-                    if (moonMesh) moonMesh.rotation.y = state.angles.moonRot;
+                    // Bilimsel Kilit Modu:
+                    if (state.tidalLockMode === 'locked') {
+                        // Gerçek Durum: Ay'ın Dünya'ya bakan yüzü (bayrak) daima Dünya'ya bakar (1 dönme = 1 dolanma)
+                        if (moonMesh) moonMesh.rotation.y = 0;
+                    } else {
+                        // "Dönmeseydi Ne Olurdu?" Deney Modu: Ay uzayda sabit yöne bakar, Dünya her yüzünü görür
+                        if (moonMesh) moonMesh.rotation.y = -state.angles.moonRev;
+                    }
                 }
 
                 // Canlı Sayaçları Güncelle
@@ -1338,13 +1416,12 @@
             const clockHand = document.getElementById('clock-hand');
             if (!clockHand) return;
 
-            // Kuzeyden bakışta saat yönünün tersi (CCW: 12 -> 9 -> 6 -> 3 -> 12)
-            // Normal saat açıları saat yönünde 0'dan 360'adır.
-            // Saat yönünün tersi için eksi açı kullanılır.
-            const rotSpeedFactor = 8;
+            // Kuzeyden bakışta Saat Yönünün Tersi (CCW: 12 -> 9 -> 6 -> 3 -> 12)
+            // Saat kolu eksi yönde (tersine) döner
+            const rotSpeedFactor = 6;
             const angleDeg = -(state.angles.earthRot * (180 / Math.PI) * rotSpeedFactor) % 360;
 
-            clockHand.setAttribute('transform', `rotate(${angleDeg} 50 50)`);
+            clockHand.setAttribute('transform', `rotate(${angleDeg} 30 30)`);
         }
 
         function updateTimeCounters() {
@@ -1468,38 +1545,38 @@
             switch(modeNum) {
                 case 1: // YALNIZ GÜNEŞ
                     setVisibilities(true, false, false);
-                    setMovementSwitches(true, false, false, false, false);
+                    setMovementSwitches(true, false, false, false);
                     setCameraTarget(0, 0, 0, 45);
                     break;
                 case 2: // YALNIZ DÜNYA
                     setVisibilities(false, true, false);
-                    setMovementSwitches(false, true, false, false, false);
+                    setMovementSwitches(false, true, false, false);
                     setCameraTarget(earthGroup.position.x, earthGroup.position.y, earthGroup.position.z, 22);
                     break;
                 case 3: // YALNIZ AY
                     setVisibilities(false, false, true);
-                    setMovementSwitches(false, false, false, true, false);
+                    setMovementSwitches(false, false, false, true);
                     setCameraTarget(earthGroup.position.x + 14, 0, 0, 10);
                     break;
                 case 4: // GÜNEŞ + DÜNYA
                     setVisibilities(true, true, false);
-                    setMovementSwitches(true, true, true, false, false);
+                    setMovementSwitches(true, true, true, false);
                     setCameraTarget(35, 0, 0, 140);
                     break;
                 case 5: // DÜNYA + AY
                     setVisibilities(false, true, true);
-                    setMovementSwitches(false, true, false, true, true);
+                    setMovementSwitches(false, true, false, true);
                     setCameraTarget(earthGroup.position.x, 0, 0, 38);
                     break;
                 case 6: // GÜNEŞ + AY
                     setVisibilities(true, false, true);
-                    setMovementSwitches(true, false, false, true, true);
+                    setMovementSwitches(true, false, false, true);
                     setCameraTarget(35, 0, 0, 140);
                     break;
                 case 7: // GÜNEŞ + DÜNYA + AY (Ana Master Mod)
                 default:
                     setVisibilities(true, true, true);
-                    setMovementSwitches(false, false, false, false, false); // Paused by default as requested
+                    setMovementSwitches(false, false, false, false); // Paused by default as requested
                     setCameraTarget(0, 45, 175, 175);
                     break;
             }
@@ -1559,7 +1636,7 @@
                 // If all checkboxes are false, enable realistic set
                 const allFalse = Object.values(state.movements).every(v => !v);
                 if (allFalse) {
-                    setMovementSwitches(true, true, true, true, true);
+                    setMovementSwitches(true, true, true, true);
                 }
                 btn.className = 'px-4 py-2 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-600/25 active:scale-95 cursor-pointer';
                 icon.className = 'fa-solid fa-pause';
@@ -1572,7 +1649,7 @@
         }
 
         function startAllMovements() {
-            setMovementSwitches(true, true, true, true, true);
+            setMovementSwitches(true, true, true, true);
             if (!state.isPlaying) toggleMasterPlay();
         }
 
@@ -1581,7 +1658,7 @@
         }
 
         function resetAllPositions() {
-            state.angles = { sunRot: 0, earthRot: 0, earthRev: 0, moonRot: 0, moonRev: 0 };
+            state.angles = { sunRot: 0, earthRot: 0, earthRev: 0, moonRev: 0 };
             state.elapsedSeconds = 0;
             state.elapsedDays = 0;
             
@@ -1612,10 +1689,10 @@
             if (!state.isPlaying) toggleMasterPlay();
 
             if (type === 'day') {
-                setMovementSwitches(false, true, false, false, false);
+                setMovementSwitches(false, true, false, false);
                 setSpeed(5);
             } else if (type === 'month') {
-                setMovementSwitches(false, true, false, true, true);
+                setMovementSwitches(false, true, false, true);
                 setSpeed(20);
             } else if (type === 'year') {
                 setMovementSwitches(true, true, true, true, true);
