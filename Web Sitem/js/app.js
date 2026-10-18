@@ -58,9 +58,9 @@ const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-b0bf2fd9-7101-4962-b4ff-3c70f0257009", "mat-b30e5f27-431d-408f-8027-509e26e77e1a",
     "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
     "mat-e072f771-967e-44c8-ad81-3e67f0934514", "mat-23f656d5-1306-4b7f-bb24-d12ccbe1f4bd",
-    "oyun-6-uzay-ekspresi", "mat-game-gezegen-kosusu", "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
+    "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
     "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
-    "mat-6-oyun-uzay-ekspresi", "oyun-uzay-ekspresi", "mat-4e34f261-c437-4ec5-98d2-776e49ffac4c",
+    "mat-4e34f261-c437-4ec5-98d2-776e49ffac4c",
     "mat-66ecb5d9-e086-4b48-823b-911f27cdbcc1", "mat-04e87bdc-a9ca-49fc-810e-08c53fc4eb81",
     "mat-9717d459-d55c-46aa-8098-ed67611c90f8", "mat-1789665265173-g8"
 ];
@@ -4966,6 +4966,28 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "6": {
             "1": [
                 {
+                    id: "builtin-oyun-6-uzay-ekspresi",
+                    title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi",
+                    icon: "fa-solid fa-train-subway",
+                    desc: "3D uzay treninde gezegenleri keşfet, meteorlardan kaç, Maarif Modeli bilgi kapılarından geç!",
+                    type: "3D Uzay Treni",
+                    format: "3D OYUN",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/uzay-ekspresi.html",
+                    kapakResmi: "assets/rotali-uzay-ekspresi.jpg"
+                },
+                {
+                    id: "builtin-oyun-6-gezegen-kosusu",
+                    title: "Gezegen Koşusu: Antgravity Galaksisi (3D Subway Surfers)",
+                    icon: "fa-solid fa-person-running",
+                    desc: "3 şeritli sonsuz uzay koşusu! Güneş Sistemi gezegenlerinde engelleri aş, soru kapılarından doğru geç, solucan deliklerinden ışınlan!",
+                    type: "3D Uzay Koşusu",
+                    format: "3D OYUN",
+                    badge: "🌟 1. Ünite Başyapıt Oyunu",
+                    fileUrl: "oyunlar/gezegen-kosusu.html",
+                    kapakResmi: "assets/gezegen-kosusu-kapak.svg"
+                },
+                {
                     id: "builtin-oyun-6-gunes-sistemi",
                     title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
                     icon: "fa-solid fa-solar-panel",
@@ -5292,25 +5314,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         const allBuiltinsForGrade = (builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum][String(unitNum)]) || [];
                         unitBuiltinGames = allBuiltinsForGrade.filter(g => {
                             if (deletedIds.has(g.id)) return false;
-                            // unitCustoms içinde aynı simülatör veya oyun varsa tekilleştir
+                            // unitCustoms içinde aynı ID, tam dosya yolu veya tam başlık varsa tekilleştir
                             const alreadyExists = unitCustoms.some(c => 
-                                (c.fileUrl && g.fileUrl && (
-                                    (c.fileUrl.includes("gunes-sistemi") && g.fileUrl.includes("gunes-sistemi")) ||
-                                    (c.fileUrl.includes("kozmik-kasif") && g.fileUrl.includes("kozmik-kasif")) ||
-                                    (c.fileUrl.includes("kozmik-kosu") && g.fileUrl.includes("kozmik-kosu")) ||
-                                    (c.fileUrl.includes("ayin-evreleri") && g.fileUrl.includes("ayin-evreleri")) ||
-                                    (c.fileUrl.includes("gunesi-kesfediyorum") && g.fileUrl.includes("gunesi-kesfediyorum")) ||
-                                    c.fileUrl === g.fileUrl
-                                )) ||
-                                (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim()) ||
-                                (c.id && (
-                                    c.id === g.id ||
-                                    (c.id.includes("gunes-sistemi") && g.id.includes("gunes-sistemi")) ||
-                                    (c.id.includes("kozmik-kasif") && g.id.includes("kozmik-kasif")) ||
-                                    (c.id.includes("kozmik-kosu") && g.id.includes("kozmik-kosu")) ||
-                                    (c.id.includes("ayin-evreleri") && g.id.includes("ayin-evreleri")) ||
-                                    (c.id.includes("gunesi-kesfediyorum") && g.id.includes("gunesi-kesfediyorum"))
-                                ))
+                                (c.id && c.id === g.id) ||
+                                (c.fileUrl && g.fileUrl && c.fileUrl.trim().toLowerCase() === g.fileUrl.trim().toLowerCase()) ||
+                                (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim())
                             );
                             return !alreadyExists;
                         });

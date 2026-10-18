@@ -1,0 +1,188 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <!-- Deep Cosmic Space Radial -->
+    <radialGradient id="space-bg" cx="50%" cy="40%" r="80%">
+      <stop offset="0%" stop-color="#0f172a" />
+      <stop offset="40%" stop-color="#060919" />
+      <stop offset="100%" stop-color="#02040a" />
+    </radialGradient>
+
+    <!-- Track Glowing Gradients -->
+    <linearGradient id="neon-cyan" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="50%" stop-color="#38bdf8" />
+      <stop offset="100%" stop-color="#818cf8" />
+    </linearGradient>
+
+    <linearGradient id="track-laser" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.1" />
+      <stop offset="70%" stop-color="#06b6d4" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#22d3ee" stop-opacity="0.95" />
+    </linearGradient>
+
+    <!-- Sun Glow -->
+    <radialGradient id="sun-glow" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="25%" stop-color="#fef08a" />
+      <stop offset="60%" stop-color="#f59e0b" />
+      <stop offset="90%" stop-color="#ea580c" />
+      <stop offset="100%" stop-color="#7c2d12" />
+    </radialGradient>
+
+    <!-- Jupiter Planet Gradient -->
+    <radialGradient id="jupiter-grad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#fed7aa" />
+      <stop offset="30%" stop-color="#f97316" />
+      <stop offset="70%" stop-color="#c2410c" />
+      <stop offset="100%" stop-color="#431407" />
+    </radialGradient>
+
+    <!-- Saturn Ring Gradient -->
+    <linearGradient id="ring-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#fde047" stop-opacity="0" />
+      <stop offset="25%" stop-color="#fef08a" stop-opacity="0.8" />
+      <stop offset="50%" stop-color="#eab308" stop-opacity="0.9" />
+      <stop offset="75%" stop-color="#ca8a04" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#a16207" stop-opacity="0" />
+    </linearGradient>
+
+    <!-- Runner Hologram / Energy Glow -->
+    <radialGradient id="runner-aura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#22d3ee" stop-opacity="0.8" />
+      <stop offset="60%" stop-color="#0ea5e9" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0" />
+    </radialGradient>
+
+    <filter id="glow-cyan" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="10" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <filter id="glow-gold" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="12" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="630" fill="url(#space-bg)" />
+
+  <!-- Stars Field -->
+  <g fill="#ffffff" opacity="0.85">
+    <circle cx="80" cy="90" r="1.5" />
+    <circle cx="160" cy="140" r="1.2" />
+    <circle cx="270" cy="70" r="2" fill="#38bdf8" />
+    <circle cx="410" cy="110" r="1.2" />
+    <circle cx="530" cy="80" r="1.8" />
+    <circle cx="690" cy="120" r="1.5" />
+    <circle cx="830" cy="60" r="2" fill="#fde047" />
+    <circle cx="950" cy="130" r="1.2" />
+    <circle cx="1060" cy="80" r="2" />
+    <circle cx="1140" cy="150" r="1.5" />
+    <circle cx="120" cy="240" r="1" />
+    <circle cx="210" cy="300" r="1.8" />
+    <circle cx="1020" cy="240" r="1.5" />
+    <circle cx="1110" cy="310" r="2" fill="#38bdf8" />
+  </g>
+
+  <!-- Distant Glowing Sun -->
+  <circle cx="150" cy="160" r="90" fill="url(#sun-glow)" filter="url(#glow-gold)" opacity="0.9" />
+  <circle cx="150" cy="160" r="130" fill="url(#sun-glow)" opacity="0.15" />
+
+  <!-- Planet Jupiter in Orbit -->
+  <circle cx="1040" cy="170" r="75" fill="url(#jupiter-grad)" filter="url(#glow-gold)" />
+  <!-- Jupiter Cloud Bands -->
+  <path d="M 970 155 Q 1040 165 1110 155" stroke="#7c2d12" stroke-width="6" fill="none" opacity="0.6" />
+  <path d="M 968 175 Q 1040 185 1112 175" stroke="#9a3412" stroke-width="8" fill="none" opacity="0.5" />
+  <ellipse cx="1065" cy="185" rx="14" ry="9" fill="#991b1b" opacity="0.8" />
+
+  <!-- Planet Saturn with Ring -->
+  <g transform="translate(360, 130) rotate(-18)">
+    <circle cx="0" cy="0" r="42" fill="#ca8a04" opacity="0.95" />
+    <ellipse cx="0" cy="0" rx="90" ry="18" fill="none" stroke="url(#ring-grad)" stroke-width="12" />
+  </g>
+
+  <!-- Mars Planet -->
+  <circle cx="780" cy="140" r="24" fill="#dc2626" opacity="0.9" />
+  <circle cx="780" cy="140" r="28" fill="#ef4444" opacity="0.2" />
+
+  <!-- Earth with Atmosphere -->
+  <circle cx="560" cy="175" r="38" fill="#0284c7" />
+  <path d="M 545 160 Q 560 165 575 160 Q 585 180 565 195 Z" fill="#22c55e" opacity="0.8" />
+  <circle cx="560" cy="175" r="42" fill="none" stroke="#38bdf8" stroke-width="2.5" opacity="0.7" />
+
+  <!-- 3D Track Perspective (Subway Surfers Style Space Lanes) -->
+  <!-- Horizon Vanishing Point: (600, 260) -->
+  <polygon points="570,260 630,260 840,630 360,630" fill="url(#track-laser)" opacity="0.6" />
+
+  <!-- Lane Dividers (3 Lanes: Left, Center, Right) -->
+  <!-- Outer Borders -->
+  <line x1="570" y1="260" x2="360" y2="630" stroke="#38bdf8" stroke-width="4" filter="url(#glow-cyan)" />
+  <line x1="630" y1="260" x2="840" y2="630" stroke="#38bdf8" stroke-width="4" filter="url(#glow-cyan)" />
+
+  <!-- Inner Lane Lines -->
+  <line x1="590" y1="260" x2="520" y2="630" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.8" />
+  <line x1="610" y1="260" x2="680" y2="630" stroke="#22d3ee" stroke-width="2.5" stroke-dasharray="14,12" opacity="0.8" />
+
+  <!-- Holographic Floating Question Gate (Astronomi Kapısı) -->
+  <g transform="translate(600, 340)">
+    <ellipse cx="0" cy="0" rx="90" ry="45" fill="none" stroke="#38bdf8" stroke-width="3" filter="url(#glow-cyan)" opacity="0.7" />
+    <polygon points="-75,-40 75,-40 60,35 -60,35" fill="#0369a1" fill-opacity="0.25" stroke="#38bdf8" stroke-width="2" />
+    <text x="0" y="-8" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="14" font-weight="900" text-anchor="middle" letter-spacing="2">GEZEGEN KAPISI</text>
+    <text x="0" y="16" fill="#fde047" font-family="'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="900" text-anchor="middle">DOĞRU CEVAP: B</text>
+  </g>
+
+  <!-- Runner Astronaut (Center Lane) -->
+  <g transform="translate(600, 480)">
+    <!-- Aura -->
+    <ellipse cx="0" cy="15" rx="50" ry="25" fill="url(#runner-aura)" />
+    <!-- Jetpack Glow Trails -->
+    <path d="M -16 25 L -26 70 L -12 40 Z" fill="#38bdf8" filter="url(#glow-cyan)" />
+    <path d="M 16 25 L 26 70 L 12 40 Z" fill="#38bdf8" filter="url(#glow-cyan)" />
+    <path d="M -14 30 L -20 60 L -12 40 Z" fill="#ffffff" />
+    <path d="M 14 30 L 20 60 L 12 40 Z" fill="#ffffff" />
+
+    <!-- Jetpack -->
+    <rect x="-20" y="-8" width="40" height="34" rx="8" fill="#334155" stroke="#0ea5e9" stroke-width="2" />
+
+    <!-- Astronaut Body -->
+    <ellipse cx="0" cy="-6" rx="24" ry="28" fill="#f8fafc" stroke="#94a3b8" stroke-width="2" />
+    <!-- Belt / Controls -->
+    <rect x="-14" y="6" width="28" height="6" rx="3" fill="#0284c7" />
+    <circle cx="-5" cy="9" r="2" fill="#22c55e" />
+    <circle cx="5" cy="9" r="2" fill="#eab308" />
+
+    <!-- Astronaut Helmet -->
+    <ellipse cx="0" cy="-38" rx="20" ry="20" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2.5" />
+    <!-- Golden Visor -->
+    <ellipse cx="0" cy="-38" rx="14" ry="12" fill="url(#sun-glow)" stroke="#f59e0b" stroke-width="2" filter="url(#glow-gold)" />
+
+    <!-- Legs Running Pose -->
+    <path d="M -12 18 L -18 42 L -26 48" stroke="#cbd5e1" stroke-width="8" stroke-linecap="round" fill="none" />
+    <path d="M 12 18 L 20 38 L 14 52" stroke="#e2e8f0" stroke-width="8" stroke-linecap="round" fill="none" />
+  </g>
+
+  <!-- Left / Right Collectible Energy Crystals -->
+  <polygon points="465,470 480,450 495,470 480,490" fill="#facc15" filter="url(#glow-gold)" />
+  <polygon points="735,465 748,445 761,465 748,485" fill="#38bdf8" filter="url(#glow-cyan)" />
+
+  <!-- Top Badge -->
+  <g transform="translate(600, 48)">
+    <rect x="-170" y="-18" width="340" height="36" rx="18" fill="#0f172a" fill-opacity="0.85" stroke="#38bdf8" stroke-width="1.5" />
+    <text x="0" y="6" fill="#38bdf8" font-family="'Orbitron', 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="900" text-anchor="middle" letter-spacing="3">★ 6. SINIF • 1. ÜNİTE 3D OYUNU ★</text>
+  </g>
+
+  <!-- Title Section -->
+  <text x="600" y="555" fill="#ffffff" font-family="'Orbitron', 'Segoe UI', Roboto, sans-serif" font-size="38" font-weight="900" text-anchor="middle" letter-spacing="4" filter="url(#glow-cyan)">
+    GEZEGEN KOŞUSU
+  </text>
+  <text x="600" y="590" fill="#38bdf8" font-family="'Segoe UI', Roboto, sans-serif" font-size="18" font-weight="700" text-anchor="middle" letter-spacing="3">
+    ANTGRAVITY GALAKSİSİ • 3D EĞİTSEL UZAY KOŞUSU
+  </text>
+</svg>
