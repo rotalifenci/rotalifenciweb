@@ -1,0 +1,1736 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Uzaydan Kaçış: Gizemli İstasyon | 7. Sınıf 3D Bilimsel Kaçış Odası</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        scifi: {
+                            cyan: '#06b6d4',
+                            neonBlue: '#38bdf8',
+                            dark: '#030712',
+                            panel: '#090d16',
+                            border: '#1e293b',
+                            amber: '#f59e0b',
+                            red: '#ef4444',
+                            emerald: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        orbitron: ['Orbitron', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js CDN & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            height: 100svh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #030712;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        #station-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* Sci-Fi Grid Overlay */
+        .scifi-grid {
+            background-image: linear-gradient(rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                              linear-gradient(90deg, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Glowing text & borders */
+        .glow-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.7), 0 0 20px rgba(6, 182, 212, 0.4);
+        }
+        .glow-amber {
+            text-shadow: 0 0 10px rgba(245, 158, 11, 0.7), 0 0 20px rgba(245, 158, 11, 0.4);
+        }
+        .border-glow-cyan {
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.35);
+        }
+        .border-glow-amber {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.35);
+        }
+
+        /* Scanline CRT FX */
+        .crt-scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(3, 7, 18, 0.8);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #06b6d4;
+            border-radius: 4px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        @keyframes alertBlink {
+            0%, 100% { opacity: 1; border-color: rgba(239, 68, 68, 0.8); }
+            50% { opacity: 0.4; border-color: rgba(239, 68, 68, 0.2); }
+        }
+        .alarm-blink {
+            animation: alertBlink 1.2s infinite;
+        }
+
+        @keyframes scanLaser {
+            0% { top: 0%; opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { top: 100%; opacity: 0.2; }
+        }
+        .scan-laser-line {
+            animation: scanLaser 2.5s infinite linear;
+        }
+    </style>
+</head>
+<body class="w-full h-full h-[100dvh] h-[100svh] flex flex-col justify-between bg-slate-950 p-1 sm:p-1.5 overflow-hidden fixed inset-0 select-none">
+
+    <!-- 🚀 1. ÜST BİLGİ & KONTROL ÇUBUĞU (Ultra Slim Header - max 42px) -->
+    <header class="bg-slate-900/90 backdrop-blur-md rounded-lg sm:rounded-xl border border-cyan-900/60 px-2 sm:px-3 py-1 flex items-center justify-between gap-1.5 shrink-0 z-20 min-h-[38px] max-h-[44px]">
+        
+        <!-- Sol: Çıkış Butonu & Başlık -->
+        <div class="flex items-center gap-1.5 shrink-0">
+            <button onclick="exitSimulation()" class="px-2 sm:px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-[11px] sm:text-xs flex items-center gap-1 shadow-sm shrink-0 active:scale-95 touch-manipulation cursor-pointer border border-rose-500/50" title="İstasyondan Çıkış Yap">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                <span>Çıkış</span>
+            </button>
+            
+            <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-700 text-white flex items-center justify-center text-xs sm:text-sm shadow-sm shrink-0">
+                <i class="fa-solid fa-satellite"></i>
+            </div>
+            
+            <div class="flex items-center gap-1.5 leading-none">
+                <h1 class="text-xs sm:text-sm font-black font-orbitron text-cyan-300 tracking-wider whitespace-nowrap">
+                    UZAYDAN KAÇIŞ
+                </h1>
+                <span class="px-1.5 py-0.5 rounded-md bg-cyan-950/80 border border-cyan-500/40 text-cyan-400 text-[9px] font-mono uppercase whitespace-nowrap hidden sm:inline">
+                    YÖRÜNGE-7 • 7. SINIF
+                </span>
+            </div>
+        </div>
+
+        <!-- Orta: 6 Oda İlerleme Göstergesi (Odalar 1-6) -->
+        <div class="flex items-center gap-1 sm:gap-1.5 bg-slate-950/80 px-2 py-0.5 rounded-lg border border-slate-800">
+            <span class="text-[9px] font-mono text-slate-400 hidden md:inline">ODALAR:</span>
+            <div id="room-indicators" class="flex items-center gap-1">
+                <button onclick="jumpToRoomIfUnlocked(1)" class="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-cyan-500 text-slate-950 ring-1 ring-cyan-300" id="room-dot-1">1</button>
+                <button onclick="jumpToRoomIfUnlocked(2)" class="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-slate-800 text-slate-400" id="room-dot-2">2</button>
+                <button onclick="jumpToRoomIfUnlocked(3)" class="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-slate-800 text-slate-400" id="room-dot-3">3</button>
+                <button onclick="jumpToRoomIfUnlocked(4)" class="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-slate-800 text-slate-400" id="room-dot-4">4</button>
+                <button onclick="jumpToRoomIfUnlocked(5)" class="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-slate-800 text-slate-400" id="room-dot-5">5</button>
+                <button onclick="jumpToRoomIfUnlocked(6)" class="w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-slate-800 text-slate-400" id="room-dot-6">6</button>
+            </div>
+            <div class="ml-1 text-[10px] font-mono text-amber-400 flex items-center gap-1" id="timer-display">
+                <i class="fa-solid fa-stopwatch text-[9px]"></i> <span id="clock-text">00:00</span>
+            </div>
+        </div>
+
+        <!-- Sağ: İpucu, Ses, Öğretmen Modu & Tam Ekran -->
+        <div class="flex items-center gap-1 shrink-0">
+            <!-- Kademeli İpucu Butonu -->
+            <button id="btn-hint" onclick="openHintModal()" class="px-2 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/50 text-amber-300 text-[11px] font-bold transition-all flex items-center gap-1 shadow-sm active:scale-95" title="Kademeli İpucu Al">
+                <i class="fa-solid fa-lightbulb text-amber-400 text-xs"></i>
+                <span id="hint-level-text" class="hidden xs:inline">İpucu</span>
+                <span class="w-4 h-4 rounded-full bg-amber-400 text-slate-950 font-black text-[9px] flex items-center justify-center" id="hint-count-badge">3</span>
+            </button>
+
+            <!-- Ses Aç/Kapa -->
+            <button id="btn-audio" onclick="toggleAudio()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 flex items-center justify-center transition-all" title="Ses Efektlerini Aç / Kapat">
+                <i id="audio-icon" class="fa-solid fa-volume-high text-xs"></i>
+            </button>
+
+            <!-- Sesli Türkçe AI Anlatımı -->
+            <button id="btn-speech" onclick="toggleSpeech()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-cyan-400 flex items-center justify-center transition-all" title="Türkçe Sesli Rehberi Aç / Kapat">
+                <i id="speech-icon" class="fa-solid fa-headset text-xs"></i>
+            </button>
+
+            <!-- Öğretmen Kontrol Paneli -->
+            <button onclick="openTeacherModal()" class="px-2 py-1 rounded-lg bg-indigo-900/60 hover:bg-indigo-800 border border-indigo-500/50 text-indigo-300 text-[10px] font-extrabold flex items-center gap-1 shadow-sm active:scale-95" title="Öğretmen ve Akıllı Tahta Modu">
+                <i class="fa-solid fa-chalkboard-user text-xs"></i>
+                <span class="hidden sm:inline">Öğretmen</span>
+            </button>
+
+            <!-- Tam Ekran -->
+            <button onclick="toggleFullScreen()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 flex items-center justify-center transition-all" title="Tam Ekran Modu">
+                <i class="fa-solid fa-expand text-xs"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 🌌 2. ANA ORTA BÖLÜM: 3D THREE.JS İSTASYON SAHNESİ + HOLOGRAFİK HUD -->
+    <main class="flex-1 w-full relative min-h-0 overflow-hidden my-1 rounded-xl border border-cyan-950/70 bg-black flex flex-col">
+        <!-- Three.js Canvas -->
+        <canvas id="station-canvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+
+        <!-- CRT Scanline overlay -->
+        <div class="crt-scanlines absolute inset-0 pointer-events-none"></div>
+
+        <!-- Kamera & İpuçları Üst Bilgi Rozeti -->
+        <div class="absolute top-2 left-2 z-10 flex flex-col gap-1.5 pointer-events-none">
+            <div class="bg-slate-900/80 backdrop-blur-sm border border-cyan-500/30 px-2.5 py-1 rounded-lg flex items-center gap-2 text-white shadow-lg">
+                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                <span class="text-[11px] font-orbitron font-bold text-cyan-300" id="room-status-badge">ODA 1: UZAY ARAÇLARI DEPOSU</span>
+                <span class="text-[10px] text-slate-400 font-mono hidden sm:inline" id="camera-hint">• Döndür: Sürükle / Yakınlaş: Parmak</span>
+            </div>
+            <div id="room-alert-msg" class="bg-rose-950/80 border border-rose-500/60 text-rose-300 px-2.5 py-0.5 rounded text-[10px] font-mono flex items-center gap-1.5 alarm-blink max-w-xs sm:max-w-md">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <span id="alert-text">Hidrolik Kilit Devrede! Bilimsel araçları analiz et.</span>
+            </div>
+        </div>
+
+        <!-- 3D Kamera Hızlı Bakış Butonları -->
+        <div class="absolute top-2 right-2 z-10 flex flex-col gap-1">
+            <button onclick="resetCameraView()" class="px-2 py-1 bg-slate-900/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 rounded text-[10px] font-mono flex items-center gap-1 backdrop-blur-sm shadow active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-camera-rotate"></i>
+                <span class="hidden sm:inline">Merkeze Al</span>
+            </button>
+            <button onclick="inspectCurrentObject()" class="px-2 py-1 bg-slate-900/80 hover:bg-cyan-900/80 border border-cyan-500/40 text-cyan-300 rounded text-[10px] font-mono flex items-center gap-1 backdrop-blur-sm shadow active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span class="hidden sm:inline">İncele</span>
+            </button>
+        </div>
+
+        <!-- 3D Nesne Tıklama Bilgilendirme Bannerı (Canlı Hologram) -->
+        <div id="object-hologram-banner" class="absolute bottom-2 left-2 right-2 sm:left-4 sm:right-auto sm:max-w-md bg-slate-900/90 backdrop-blur-md border border-cyan-400/50 p-2 sm:p-3 rounded-xl shadow-2xl z-10 transition-all duration-300 opacity-0 pointer-events-none transform translate-y-3">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-xs" id="holo-icon"><i class="fa-solid fa-rocket"></i></span>
+                    <h4 class="text-xs sm:text-sm font-black font-orbitron text-cyan-300" id="holo-title">ROKET MODELİ</h4>
+                </div>
+                <button onclick="closeHologramBanner()" class="text-slate-400 hover:text-white pointer-events-auto p-1"><i class="fa-solid fa-xmark text-xs"></i></button>
+            </div>
+            <p class="text-[11px] text-slate-300 mt-1 leading-relaxed" id="holo-desc">Uzay araçlarını, uyduları ve kargoları Dünya atmosferinin dışına fırlatmak için kullanılan tek seferlik veya tekrar kullanılabilen güçlü itki aracıdır.</p>
+        </div>
+    </main>
+
+    <!-- 🎛️ 3. ALT BÖLÜM: BİLİMSEL BULMACA & KONTROL TERMİNALİ (HUD Panel) -->
+    <footer class="bg-slate-900/95 backdrop-blur-md rounded-lg sm:rounded-xl border border-cyan-900/80 p-2 shrink-0 z-20 flex flex-col gap-1.5 shadow-xl max-h-[175px] sm:max-h-[190px]">
+        
+        <!-- Üst HUD Bar: Görev Adı & Terminal Butonları -->
+        <div class="flex items-center justify-between gap-2 border-b border-slate-800 pb-1.5 shrink-0">
+            <div class="flex items-center gap-2 min-w-0">
+                <span class="w-5 h-5 rounded bg-cyan-950 border border-cyan-500/40 text-cyan-400 flex items-center justify-center text-[10px] font-mono shrink-0">
+                    <i class="fa-solid fa-terminal"></i>
+                </span>
+                <span class="text-xs font-bold text-white truncate" id="puzzle-header-title">Görev: 6 Uzay Aracını Eşleştir ve Terminal Kodunu Gir</span>
+            </div>
+
+            <div class="flex items-center gap-1.5 shrink-0">
+                <!-- Şifre Giriş / Terminal Açma Butonu -->
+                <button onclick="openKeypadModal()" class="px-2.5 py-1 rounded bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-[11px] sm:text-xs flex items-center gap-1 shadow-sm active:scale-95 cursor-pointer">
+                    <i class="fa-solid fa-key text-[10px]"></i>
+                    <span id="btn-keypad-text">ŞİFRE GİR</span>
+                </button>
+                <!-- Sesli Rehber Dinle -->
+                <button onclick="speakRoomBriefing()" class="px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] flex items-center gap-1 active:scale-95 cursor-pointer" title="Görevi Dinle">
+                    <i class="fa-solid fa-volume-high text-[10px]"></i>
+                    <span class="hidden sm:inline">Dinle</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Dinamik Bulmaca İçerik Alanı (Her oda için özel etkileşim bileşeni) -->
+        <div id="dynamic-puzzle-container" class="flex-1 overflow-y-auto no-scrollbar flex items-center">
+            <!-- Oda 1, 2, 3, 4, 5, 6 için JS tarafından doldurulur -->
+        </div>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- MODALLAR: ŞİFRE PANELİ, İPUCU, ÖĞRETMEN, SERTİFİKA, GİRİŞ HİKAYESİ -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+
+    <!-- 🔢 A. DİJİTAL ŞİFRE GİRİŞ MODALI (Holografik Keypad) -->
+    <div id="modal-keypad" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 hidden" onclick="if(event.target===this) closeKeypadModal()">
+        <div class="bg-slate-900 border-2 border-cyan-400/80 rounded-2xl p-4 sm:p-6 w-full max-w-sm shadow-[0_0_50px_rgba(6,182,212,0.4)] text-white flex flex-col gap-3 relative">
+            <div class="flex items-center justify-between border-b border-cyan-900/60 pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-cyan-500/20 text-cyan-300 flex items-center justify-center"><i class="fa-solid fa-lock"></i></span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-cyan-300" id="keypad-title">GÜVENLİK TERMİNALİ</h3>
+                        <span class="text-[10px] text-slate-400 font-mono" id="keypad-subtitle">Bilimsel 4 Haneli Şifreyi Girin</span>
+                    </div>
+                </div>
+                <button onclick="closeKeypadModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Kod Ekranı -->
+            <div class="bg-slate-950 border border-cyan-500/40 rounded-xl p-3 flex flex-col items-center justify-center relative overflow-hidden">
+                <div class="text-[10px] text-slate-400 font-mono uppercase tracking-widest mb-1">GİRİLEN ŞİFRE:</div>
+                <div class="text-3xl font-black font-mono tracking-[0.35em] text-cyan-300 glow-cyan" id="keypad-screen">----</div>
+                <div class="text-[11px] text-rose-400 font-mono mt-1 hidden" id="keypad-error-msg">HATALI KOD! TEKRAR DENEYİN.</div>
+                <div class="text-[11px] text-emerald-400 font-mono mt-1 hidden" id="keypad-success-msg">ERİŞİM ONAYLANDI! KAPI AÇILIYOR...</div>
+            </div>
+
+            <!-- Tuş Takımı (1-9, C, 0, ENTER) -->
+            <div class="grid grid-cols-3 gap-2">
+                <button onclick="pressKeypad('1')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">1</button>
+                <button onclick="pressKeypad('2')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">2</button>
+                <button onclick="pressKeypad('3')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">3</button>
+                <button onclick="pressKeypad('4')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">4</button>
+                <button onclick="pressKeypad('5')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">5</button>
+                <button onclick="pressKeypad('6')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">6</button>
+                <button onclick="pressKeypad('7')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">7</button>
+                <button onclick="pressKeypad('8')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">8</button>
+                <button onclick="pressKeypad('9')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">9</button>
+                <button onclick="clearKeypad()" class="py-2.5 rounded-xl bg-rose-900/60 hover:bg-rose-800 text-rose-300 font-mono font-black text-sm border border-rose-700 active:scale-95">SİL</button>
+                <button onclick="pressKeypad('0')" class="py-2.5 rounded-xl bg-slate-800 hover:bg-cyan-900 text-white font-mono font-black text-lg border border-slate-700 active:scale-95">0</button>
+                <button onclick="submitKeypad()" class="py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-mono font-black text-sm border border-emerald-500 active:scale-95 shadow">ONAY</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 💡 B. KADEMELİ İPUCU SİSTEMİ MODALI -->
+    <div id="modal-hint" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 hidden" onclick="if(event.target===this) closeHintModal()">
+        <div class="bg-slate-900 border-2 border-amber-500/80 rounded-2xl p-4 sm:p-6 w-full max-w-md shadow-[0_0_40px_rgba(245,158,11,0.3)] text-white flex flex-col gap-3">
+            <div class="flex items-center justify-between border-b border-amber-900/60 pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-lightbulb"></i></span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-amber-300">KADEMELİ BİLİMSEL İPUCU</h3>
+                        <span class="text-[10px] text-slate-400 font-mono">Puan kaybetmeden seviye seviye yardım al</span>
+                    </div>
+                </div>
+                <button onclick="closeHintModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <div class="flex flex-col gap-2.5" id="hint-levels-list">
+                <!-- 1. Seviye -->
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col gap-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-amber-300">
+                        <span>Seviye 1: Genel Yönlendirme</span>
+                        <span class="text-[10px] text-emerald-400">ÜCRETSİZ</span>
+                    </div>
+                    <p class="text-xs text-slate-300" id="hint-text-1">Odadaki nesneleri inceleyerek uzay teknolojileri eşleştirmesini tamamla.</p>
+                </div>
+                <!-- 2. Seviye -->
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col gap-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-amber-400">
+                        <span>Seviye 2: Bilimsel İpucu</span>
+                        <button onclick="revealHintLevel(2)" id="btn-unlock-hint-2" class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-[10px]">AÇ</button>
+                    </div>
+                    <p class="text-xs text-slate-400 italic hidden" id="hint-text-2">Yapay uydular iletişim ve gözlem amaçlı kullanılır, roketler onları fırlatır.</p>
+                </div>
+                <!-- 3. Seviye -->
+                <div class="p-3 rounded-xl bg-slate-950 border border-slate-800 flex flex-col gap-1">
+                    <div class="flex items-center justify-between text-xs font-bold text-amber-500">
+                        <span>Seviye 3: Adım Adım Çözüm</span>
+                        <button onclick="revealHintLevel(3)" id="btn-unlock-hint-3" class="px-2 py-0.5 rounded bg-amber-500 text-slate-950 font-black text-[10px]">AÇ</button>
+                    </div>
+                    <p class="text-xs text-slate-400 italic hidden" id="hint-text-3">Şifre: 1957 (İlk yapay uydu Sputnik 1 fırlatılış yılı veya odadaki formül).</p>
+                </div>
+            </div>
+
+            <button onclick="closeHintModal()" class="w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase transition-all mt-1">Anladım, Göreve Dön</button>
+        </div>
+    </div>
+
+    <!-- 👨‍🏫 C. ÖĞRETMEN KONTROL PANELİ & AKILLI TAHTA MODU -->
+    <div id="modal-teacher" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 hidden" onclick="if(event.target===this) closeTeacherModal()">
+        <div class="bg-slate-900 border-2 border-indigo-500/80 rounded-2xl p-4 sm:p-6 w-full max-w-lg shadow-[0_0_50px_rgba(99,102,241,0.4)] text-white flex flex-col gap-4 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between border-b border-indigo-900/60 pb-2">
+                <div class="flex items-center gap-2">
+                    <span class="w-9 h-9 rounded-xl bg-indigo-600/30 text-indigo-400 flex items-center justify-center text-lg"><i class="fa-solid fa-chalkboard-user"></i></span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-indigo-300">ÖĞRETMEN & SINIF KONTROL PANELİ</h3>
+                        <span class="text-[10px] text-slate-400 font-mono">Ders içi grup yarışmaları ve doğrudan oda geçişleri</span>
+                    </div>
+                </div>
+                <button onclick="closeTeacherModal()" class="w-7 h-7 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center text-xs"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <!-- Doğrudan Oda Atlama Butonları -->
+            <div>
+                <h4 class="text-xs font-bold text-slate-300 mb-2 font-mono uppercase tracking-wider">Doğrudan Odaya Geç (Öğretmen İzni):</h4>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    <button onclick="teacherJumpToRoom(1)" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-left border border-slate-700 transition-all text-xs font-bold">
+                        <div class="text-cyan-400 font-mono">Oda 1</div>
+                        <div class="text-[11px] text-slate-300">Uzay Araçları Deposu</div>
+                    </button>
+                    <button onclick="teacherJumpToRoom(2)" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-left border border-slate-700 transition-all text-xs font-bold">
+                        <div class="text-cyan-400 font-mono">Oda 2</div>
+                        <div class="text-[11px] text-slate-300">Kayıp Uydu Sinyali</div>
+                    </button>
+                    <button onclick="teacherJumpToRoom(3)" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-left border border-slate-700 transition-all text-xs font-bold">
+                        <div class="text-cyan-400 font-mono">Oda 3</div>
+                        <div class="text-[11px] text-slate-300">Gezegen Araştırmaları</div>
+                    </button>
+                    <button onclick="teacherJumpToRoom(4)" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-left border border-slate-700 transition-all text-xs font-bold">
+                        <div class="text-cyan-400 font-mono">Oda 4</div>
+                        <div class="text-[11px] text-slate-300">Karanlık Gözlemevi</div>
+                    </button>
+                    <button onclick="teacherJumpToRoom(5)" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-left border border-slate-700 transition-all text-xs font-bold">
+                        <div class="text-cyan-400 font-mono">Oda 5</div>
+                        <div class="text-[11px] text-slate-300">Uzay Kirliliği Alarmı</div>
+                    </button>
+                    <button onclick="teacherJumpToRoom(6)" class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-left border border-slate-700 transition-all text-xs font-bold">
+                        <div class="text-cyan-400 font-mono">Oda 6</div>
+                        <div class="text-[11px] text-slate-300">Dünya'ya Dönüş Kapsülü</div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cevap Anahtarları -->
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800">
+                <h4 class="text-xs font-bold text-amber-400 mb-1.5 font-mono uppercase flex items-center gap-1.5">
+                    <i class="fa-solid fa-key"></i> Bilimsel Şifre ve Cevap Anahtarı:
+                </h4>
+                <div class="grid grid-cols-2 gap-2 text-[11px] font-mono text-slate-300">
+                    <div>• Oda 1 Kodu: <span class="text-cyan-400 font-bold">2085</span></div>
+                    <div>• Oda 2 Kodu: <span class="text-cyan-400 font-bold">1994</span> (Türksat 1B)</div>
+                    <div>• Oda 3 Kodu: <span class="text-cyan-400 font-bold">3720</span> (Mars Basınç)</div>
+                    <div>• Oda 4 Kodu: <span class="text-cyan-400 font-bold">1609</span> (Galileo Teleskop)</div>
+                    <div>• Oda 5 Kodu: <span class="text-cyan-400 font-bold">7800</span> (Yörünge Hızı)</div>
+                    <div>• Oda 6 Kodu: <span class="text-cyan-400 font-bold">2026</span> (Maarif/Giriş Açısı)</div>
+                </div>
+            </div>
+
+            <!-- Hızlı Aksiyonlar -->
+            <div class="flex gap-2">
+                <button onclick="unlockAllRoomsForClass()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 rounded-xl text-xs font-black uppercase transition-all shadow">
+                    <i class="fa-solid fa-lock-open mr-1"></i> Tüm Odaları Aç
+                </button>
+                <button onclick="resetGameProgress()" class="flex-1 py-2 bg-rose-700 hover:bg-rose-600 rounded-xl text-xs font-black uppercase transition-all shadow">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> İlerlemeyi Sıfırla
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🏆 D. ÜSTÜN BAŞARI SERTİFİKASI & ZAFER MODALI -->
+    <div id="modal-victory" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-lg flex items-center justify-center p-3 hidden">
+        <div class="bg-gradient-to-b from-slate-900 via-indigo-950 to-slate-950 border-2 border-amber-400 rounded-3xl p-5 sm:p-8 w-full max-w-lg shadow-[0_0_60px_rgba(245,158,11,0.6)] text-white flex flex-col items-center text-center gap-4 relative overflow-hidden">
+            
+            <!-- Parlama Efekti -->
+            <div class="absolute -top-24 -left-24 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -bottom-24 -right-24 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 p-1 shadow-[0_0_30px_rgba(245,158,11,0.8)]">
+                <div class="w-full h-full rounded-full bg-slate-950 flex items-center justify-center text-amber-400 text-3xl">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+            </div>
+
+            <div>
+                <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-xs font-black uppercase tracking-wider">
+                    GÖREV BAŞARIYLA TAMAMLANDI!
+                </span>
+                <h2 class="text-2xl sm:text-3xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-100 to-orange-400 mt-2">
+                    DÜNYA'YA GÜVENLE DÖNDÜN!
+                </h2>
+                <p class="text-xs sm:text-sm text-slate-300 mt-1 max-w-md">
+                    Yörünge-7 İstasyonu'ndaki 6 bilimsel güvenlik kilidini uzay araştırmaları bilginle çözdün ve dönüş kapsülüyle Dünya'ya güvenle iniş yaptın!
+                </p>
+            </div>
+
+            <!-- İstatistik Kartları -->
+            <div class="grid grid-cols-3 gap-2 w-full max-w-sm">
+                <div class="bg-slate-900/80 border border-cyan-500/30 p-2.5 rounded-xl">
+                    <div class="text-[10px] text-slate-400 font-mono">TOPLAM SÜRE</div>
+                    <div class="text-base font-black font-mono text-cyan-300" id="victory-final-time">08:45</div>
+                </div>
+                <div class="bg-slate-900/80 border border-amber-500/30 p-2.5 rounded-xl">
+                    <div class="text-[10px] text-slate-400 font-mono">BİLİM PUANI</div>
+                    <div class="text-base font-black font-mono text-amber-300" id="victory-final-score">100 / 100</div>
+                </div>
+                <div class="bg-slate-900/80 border border-emerald-500/30 p-2.5 rounded-xl">
+                    <div class="text-[10px] text-slate-400 font-mono">RÜTBE</div>
+                    <div class="text-xs font-black text-emerald-300 truncate">UZMAN KAŞİF</div>
+                </div>
+            </div>
+
+            <!-- Sertifika İsim Girişi -->
+            <div class="w-full max-w-xs flex flex-col gap-1.5">
+                <input type="text" id="student-name-input" placeholder="Adınızı ve Soyadınızı Yazın" class="w-full px-3 py-2 rounded-xl bg-slate-950 border border-amber-400/60 text-white text-center font-bold text-sm focus:outline-none focus:ring-2 focus:ring-amber-400">
+                <button onclick="downloadCertificate()" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg hover:brightness-110 active:scale-95 transition-all">
+                    <i class="fa-solid fa-certificate mr-1"></i> Başarı Sertifikasını İndir
+                </button>
+            </div>
+
+            <div class="flex gap-2 w-full max-w-xs">
+                <button onclick="location.reload()" class="flex-1 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase">Yeniden Oyna</button>
+                <button onclick="exitSimulation()" class="flex-1 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs uppercase">Çıkış</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📜 E. GÖREV BAŞLANGIÇ HİKÂYESİ & BRİFİNG MODALI -->
+    <div id="modal-intro" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-3">
+        <div class="bg-slate-900 border-2 border-cyan-400/90 rounded-2xl p-5 sm:p-7 w-full max-w-md shadow-[0_0_60px_rgba(6,182,212,0.5)] text-white flex flex-col gap-4 relative">
+            <div class="w-16 h-16 rounded-2xl bg-cyan-500/20 text-cyan-400 flex items-center justify-center text-3xl mx-auto border border-cyan-400/40">
+                <i class="fa-solid fa-user-astronaut"></i>
+            </div>
+            
+            <div class="text-center">
+                <span class="px-2.5 py-0.5 rounded-full bg-cyan-950 border border-cyan-500/40 text-cyan-300 font-mono text-[10px] uppercase">
+                    YIL: 2085 • YÖRÜNGE-7 İSTASYONU
+                </span>
+                <h3 class="text-lg sm:text-xl font-black font-orbitron text-cyan-300 mt-2">
+                    DİKKAT! SİSTEM ARIZASI!
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+                    Merhaba genç araştırmacı! İstasyonun altı güvenlik bölümü kilitlendi ve iletişim kesildi. Dünya'ya dönüş kapsülüne ulaşabilmek için 7. sınıf uzay teknolojileri bilginle güvenlik şifrelerini çözmelisin!
+                </p>
+            </div>
+
+            <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 text-[11px] text-slate-300 font-mono space-y-1">
+                <div>🔒 6 Bilimsel Kaçış Odası</div>
+                <div>📡 Yapay Uydular, Teleskoplar & Uzay Kirliliği</div>
+                <div>💡 Kademeli İpucu ve Sesli Rehber</div>
+                <div>🚀 Dünya'ya Dönüş Kapsülü & Başarı Sertifikası</div>
+            </div>
+
+            <button onclick="startGameMission()" class="w-full py-3.5 rounded-xl bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-400 text-slate-950 font-black font-orbitron text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(6,182,212,0.6)] hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                <i class="fa-solid fa-play mr-1.5"></i> GÖREVE BAŞLA
+            </button>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <!-- JAVASCRIPT: SES SENTEZLEYİCİ, THREE.JS 3D MOTORU, BULMACALAR -->
+    <!-- ═══════════════════════════════════════════════════════════════ -->
+    <script>
+        // -----------------------------------------------------------------
+        // 1. SES SENTEZLEYİCİSİ (Web Audio API - Harici Ses Dosyası Gerektirmez)
+        // -----------------------------------------------------------------
+        let audioCtx = null;
+        let isAudioEnabled = true;
+        let isSpeechEnabled = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                audioCtx = new AudioContext();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSciFiSound(type) {
+            if (!isAudioEnabled) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const t = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'beep') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, t);
+                gain.gain.setValueAtTime(0.15, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.08);
+                osc.start(t);
+                osc.stop(t + 0.08);
+            } else if (type === 'door') {
+                // Hidrolik kapı açılma fısıltısı
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, t);
+                osc.frequency.exponentialRampToValueAtTime(40, t + 0.8);
+                gain.gain.setValueAtTime(0.2, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.8);
+                osc.start(t);
+                osc.stop(t + 0.8);
+            } else if (type === 'grant') {
+                // Erişim onaylandı melodisi
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, t); // C5
+                osc.frequency.setValueAtTime(659.25, t + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, t + 0.2); // G5
+                osc.frequency.setValueAtTime(1046.50, t + 0.3); // C6
+                gain.gain.setValueAtTime(0.2, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+                osc.start(t);
+                osc.stop(t + 0.6);
+            } else if (type === 'error') {
+                // Hatalı şifre sesi
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(160, t);
+                osc.frequency.setValueAtTime(110, t + 0.12);
+                gain.gain.setValueAtTime(0.25, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+                osc.start(t);
+                osc.stop(t + 0.35);
+            } else if (type === 'laser') {
+                // Lazer temizleme sesi
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(1200, t);
+                osc.frequency.exponentialRampToValueAtTime(150, t + 0.25);
+                gain.gain.setValueAtTime(0.2, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+                osc.start(t);
+                osc.stop(t + 0.25);
+            } else if (type === 'victory') {
+                // Zafer Fanfarı
+                const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
+                notes.forEach((freq, i) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.type = 'sine';
+                    o.frequency.setValueAtTime(freq, t + i * 0.12);
+                    g.gain.setValueAtTime(0.25, t + i * 0.12);
+                    g.gain.exponentialRampToValueAtTime(0.001, t + i * 0.12 + 0.4);
+                    o.start(t + i * 0.12);
+                    o.stop(t + i * 0.12 + 0.4);
+                });
+            }
+        }
+
+        function toggleAudio() {
+            isAudioEnabled = !isAudioEnabled;
+            const icon = document.getElementById('audio-icon');
+            if (isAudioEnabled) {
+                icon.className = 'fa-solid fa-volume-high text-xs text-cyan-400';
+                initAudio();
+                playSciFiSound('beep');
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-xs text-slate-500';
+            }
+        }
+
+        // Web Speech API - Türkçe Sesli Rehber
+        function speakText(text) {
+            if (!isSpeechEnabled || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'tr-TR';
+            utterance.rate = 1.0;
+            utterance.pitch = 1.0;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleSpeech() {
+            isSpeechEnabled = !isSpeechEnabled;
+            const icon = document.getElementById('speech-icon');
+            if (isSpeechEnabled) {
+                icon.className = 'fa-solid fa-headset text-xs text-cyan-400';
+                speakText("Sesli rehber devrede.");
+            } else {
+                icon.className = 'fa-solid fa-headset text-xs text-slate-500 line-through';
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 2. OYUN DURUMU & BİLİMSEL VERİ HAVUZU
+        // -----------------------------------------------------------------
+        const GAME_DATA = {
+            currentRoom: 1,
+            unlockedRooms: 1,
+            score: 0,
+            elapsedSeconds: 0,
+            timerInterval: null,
+            roomCodes: {
+                1: '2085', // İstasyon Arıza Yılı
+                2: '1994', // Türksat 1B (Türkiye'nin ilk başarılı uydusu)
+                3: '3720', // Mars Atmosfer Basıncı Katsayısı
+                4: '1609', // Galileo Teleskobu Gökyüzüne Çevirdiği Yıl
+                5: '7800', // Alçak Dünya Yörünge Hızı (7.8 km/s)
+                6: '2026'  // Türkiye Yüzyılı Maarif Modeli
+            },
+            roomBriefings: {
+                1: "Oda 1: Gizli Uzay Araçları Deposu. İstasyonun hangarına ulaştın. Roket, yapay uydu, sonda ve istasyon modellerini doğru tanımlarıyla eşleştirerek ana bilgisayar güvenlik kodunu hesapla!",
+                2: "Oda 2: Kayıp Uydu Sinyali. Türkiye'nin haberleşme ve gözlem uyduları arasındaki sinyal koptu. Parabolik çanak anteni doğru koordinata çevir ve Türksat ile İMECE sinyalini yeniden kur!",
+                3: "Oda 3: Gezegen Araştırmaları Laboratuvarı. Mars yüzeyindeki keşif robotunun sensör verilerini ve atmosfer analizini tamamlayarak kilitli kapıyı aç!",
+                4: "Oda 4: Karanlık Gözlemevi. Şehir ışık kirliliğinden arındırılmış yüksek rakımlı teleskop kubbesini aç. Odak ayarını yaparak derin uzay koordinatını yakala!",
+                5: "Oda 5: Uzay Kirliliği Alarmı. Yörüngedeki tehlikeli uydu enkazı istasyona doğru yaklaşıyor! Lazer koruma kalkanını yönlendir ve çarpışmayı engelle!",
+                6: "Oda 6: Son Kapı - Dünya'ya Dönüş Kapsülü! Tüm bilimsel verileri birleştir, atmosfere giriş açısını ve paraşüt sistemini devreye sokarak eve dön!"
+            },
+            hints: {
+                1: [
+                    "Odadaki araçları incele. Roketler fırlatır, sondalar uzay boşluğunu gezer, mekiğin insanlı dönüş özelliği vardır.",
+                    "Bilimsel ipucu: Uzay mekiği uçak gibi iniş yapabilir. Yapay uydular Dünya çevresinde döner.",
+                    "Çözüm: Terminale 2085 kodunu girerek hidrolik kapıyı aç."
+                ],
+                2: [
+                    "Türksat haberleşme sağlar (42 Doğu vb.), Göktürk ve İMECE ise yer gözlem uydularımızdır.",
+                    "Türkiye'nin ilk yerli ve milli haberleşme uydusu Türksat 6A'dır. İlk başarılı haberleşme uydumuz Türksat 1B 1994 yılında fırlatıldı.",
+                    "Çözüm: Anten açısını 42° frekansına getir veya terminale 1994 yaz."
+                ],
+                3: [
+                    "Rover yüzeyde gezer (Curiosity/Perseverance), Lander yüzeye iner ve sabittir, Orbiter ise yörüngede dolanır.",
+                    "Mars atmosferi ağırlıklı olarak Karbondioksit gazından oluşur ve basıncı Dünya'nın yüzde birinden azdır.",
+                    "Çözüm: Sensör analiz override kodu: 3720."
+                ],
+                4: [
+                    "Rasathaneler neden şehirden uzağa kurulur? Işık kirliliği, hava kirliliği ve bulutluluk oranı az olsun diye.",
+                    "Galileo Galilei 1609 yılında ilk kez teleskobu gökyüzüne çevirerek Jüpiter'in uydularını keşfetti.",
+                    "Çözüm: Teleskop kubbe şifresi: 1609."
+                ],
+                5: [
+                    "Uzay kirliliği: Ömrü tükenen uydular, roket parçaları ve yakıt tanklarıdır. 7.8 km/s hızla dönerler.",
+                    "Kirliliği önlemek için uyduların kontrollü şekilde Dünya atmosferine sokularak yakılması gerekir.",
+                    "Çözüm: Lazer deflektör hızı: 7800."
+                ],
+                6: [
+                    "Dünya atmosferine giriş açısı çok dik olursa kapsül aşırı ısınır, çok yatay olursa uzaya geri seker.",
+                    "Türkiye Yüzyılı Maarif Modeli bilimsel koordinasyon kodu: 2026.",
+                    "Çözüm: Dönüş motorlarını ateşlemek için terminale 2026 yaz."
+                ]
+            }
+        };
+
+        // -----------------------------------------------------------------
+        // 3. THREE.JS 3D GRAFİK MOTORU (İstasyon Odaları, Kapılar ve Nesneler)
+        // -----------------------------------------------------------------
+        let scene, camera, renderer, controls;
+        let stationGroup, currentRoomGroup, doorMeshLeft, doorMeshRight;
+        let animatedObjects = [];
+        let raycaster, mouse;
+
+        function initThreeJS() {
+            const canvas = document.getElementById('station-canvas');
+            const container = canvas.parentElement;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+
+            // Sahne
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020617);
+            scene.fog = new THREE.FogExp2(0x020617, 0.035);
+
+            // Kamera
+            camera = new THREE.PerspectiveCamera(55, w / h, 0.1, 100);
+            camera.position.set(0, 1.6, 4.5);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.1;
+
+            // OrbitControls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxDistance = 8.5;
+            controls.minDistance = 1.2;
+            controls.maxPolarAngle = Math.PI / 2 + 0.1; // Tabanın altına inmeyi engelle
+            controls.target.set(0, 1.2, 0);
+
+            // Raycaster (Nesnelere dokunma/tıklama)
+            raycaster = new THREE.Raycaster();
+            mouse = new THREE.Vector2();
+
+            // Işıklandırma
+            setupStationLighting();
+
+            // Derin Uzay & Yıldızlar
+            createDeepSpaceEnvironment();
+
+            // İstasyon Temel Mimarisi (Koridor ve Kapı)
+            stationGroup = new THREE.Group();
+            scene.add(stationGroup);
+            buildStationArchitecture();
+
+            // Aktif Oda Nesnelerini Oluştur
+            loadRoom3DEnvironment(1);
+
+            // Event Listeners
+            window.addEventListener('resize', onWindowResize);
+            canvas.addEventListener('pointerdown', onCanvasPointerDown);
+
+            // Render Döngüsü
+            animate();
+        }
+
+        function setupStationLighting() {
+            // Ortam ışığı
+            const ambient = new THREE.AmbientLight(0x1e293b, 0.9);
+            scene.add(ambient);
+
+            // Tavan Neon Işıkları (Cyan & Mavi)
+            const ceilingLight = new THREE.PointLight(0x06b6d4, 1.8, 12);
+            ceilingLight.position.set(0, 3.2, 0);
+            scene.add(ceilingLight);
+
+            // Kapı Durum Gösterge Işığı (Kırmızı: Kilitli, Yeşil: Açık)
+            window.doorLight = new THREE.PointLight(0xef4444, 2.5, 6);
+            window.doorLight.position.set(0, 2.7, -3.8);
+            scene.add(window.doorLight);
+
+            // Hologram Alt Işık
+            const holoLight = new THREE.SpotLight(0x38bdf8, 2.2, 8, Math.PI / 4, 0.4);
+            holoLight.position.set(0, 0.1, 0);
+            holoLight.target.position.set(0, 1.5, 0);
+            scene.add(holoLight);
+            scene.add(holoLight.target);
+        }
+
+        function createDeepSpaceEnvironment() {
+            // Yıldız alanı parçacıkları
+            const starsGeo = new THREE.BufferGeometry();
+            const count = 1200;
+            const positions = new Float32Array(count * 3);
+            for (let i = 0; i < count * 3; i += 3) {
+                positions[i] = (Math.random() - 0.5) * 80;
+                positions[i + 1] = (Math.random() - 0.5) * 80;
+                positions[i + 2] = (Math.random() - 0.5) * 80;
+            }
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starsMat = new THREE.PointsMaterial({ color: 0x94a3b8, size: 0.25, transparent: true, opacity: 0.8 });
+            const starField = new THREE.Points(starsGeo, starsMat);
+            scene.add(starField);
+
+            // Uzay Penceresinden Görünen 3D Dünya Küresi
+            const earthGeo = new THREE.SphereGeometry(14, 32, 32);
+            const earthMat = new THREE.MeshPhongMaterial({
+                color: 0x1d4ed8,
+                emissive: 0x051937,
+                specular: 0x38bdf8,
+                shininess: 15
+            });
+            const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            earthMesh.position.set(22, -10, -28);
+            scene.add(earthMesh);
+            animatedObjects.push({ mesh: earthMesh, rotY: 0.0008 });
+        }
+
+        function buildStationArchitecture() {
+            // Zemin: Metalik Grid Paneller
+            const floorGeo = new THREE.PlaneGeometry(8, 9);
+            const floorMat = new THREE.MeshStandardMaterial({
+                color: 0x0f172a,
+                roughness: 0.35,
+                metalness: 0.8
+            });
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            stationGroup.add(floor);
+
+            // Zemin Sci-Fi Işık Çizgileri
+            const lineMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4 });
+            const lineGeo = new THREE.BoxGeometry(0.08, 0.02, 8.5);
+            const leftLine = new THREE.Mesh(lineGeo, lineMat);
+            leftLine.position.set(-2.2, 0.01, 0);
+            const rightLine = new THREE.Mesh(lineGeo, lineMat);
+            rightLine.position.set(2.2, 0.01, 0);
+            stationGroup.add(leftLine, rightLine);
+
+            // Tavan
+            const ceiling = new THREE.Mesh(floorGeo, new THREE.MeshStandardMaterial({ color: 0x090d16, roughness: 0.6 }));
+            ceiling.position.y = 3.4;
+            ceiling.rotation.x = Math.PI / 2;
+            stationGroup.add(ceiling);
+
+            // Yan Duvarlar (Panelli)
+            const wallMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.5, metalness: 0.5 });
+            const leftWall = new THREE.Mesh(new THREE.PlaneGeometry(9, 3.4), wallMat);
+            leftWall.position.set(-3.8, 1.7, 0);
+            leftWall.rotation.y = Math.PI / 2;
+            stationGroup.add(leftWall);
+
+            const rightWall = new THREE.Mesh(new THREE.PlaneGeometry(9, 3.4), wallMat);
+            rightWall.position.set(3.8, 1.7, 0);
+            rightWall.rotation.y = -Math.PI / 2;
+            stationGroup.add(rightWall);
+
+            // Sağ Duvarda Büyük Uzay Gözlem Penceresi (Cam çerçeve)
+            const winFrame = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.4, 24), new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 }));
+            winFrame.position.set(3.78, 1.8, -1.2);
+            winFrame.rotation.y = -Math.PI / 2;
+            stationGroup.add(winFrame);
+
+            // Arka Duvar & Hidrolik Blast Kapısı (Çift Kanatlı Otomatik Açılan Kapı)
+            const backWallGeo = new THREE.PlaneGeometry(8, 3.4);
+            const backWall = new THREE.Mesh(backWallGeo, new THREE.MeshStandardMaterial({ color: 0x090d16, metalness: 0.8 }));
+            backWall.position.set(0, 1.7, -4.2);
+            stationGroup.add(backWall);
+
+            // Kapı Çerçevesi
+            const doorFrame = new THREE.Mesh(new THREE.BoxGeometry(2.4, 2.7, 0.15), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.9 }));
+            doorFrame.position.set(0, 1.35, -4.15);
+            stationGroup.add(doorFrame);
+
+            // Sol Kapı Kanadı
+            const doorPartGeo = new THREE.BoxGeometry(1.05, 2.5, 0.08);
+            const doorMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.8, roughness: 0.3 });
+            doorMeshLeft = new THREE.Mesh(doorPartGeo, doorMat);
+            doorMeshLeft.position.set(-0.55, 1.35, -4.12);
+            stationGroup.add(doorMeshLeft);
+
+            // Sağ Kapı Kanadı
+            doorMeshRight = new THREE.Mesh(doorPartGeo, doorMat);
+            doorMeshRight.position.set(0.55, 1.35, -4.12);
+            stationGroup.add(doorMeshRight);
+
+            // Kapı Üstü Durum LED Ekranı
+            const ledGeo = new THREE.BoxGeometry(0.8, 0.15, 0.05);
+            window.ledStatusMesh = new THREE.Mesh(ledGeo, new THREE.MeshBasicMaterial({ color: 0xef4444 }));
+            window.ledStatusMesh.position.set(0, 2.7, -4.1);
+            stationGroup.add(window.ledStatusMesh);
+        }
+
+        // Kapı Açılma Animasyonu
+        function animateDoorOpen() {
+            playSciFiSound('door');
+            if (window.doorLight) window.doorLight.color.setHex(0x10b981);
+            if (window.ledStatusMesh) window.ledStatusMesh.material.color.setHex(0x10b981);
+
+            let progress = 0;
+            const doorInterval = setInterval(() => {
+                progress += 0.04;
+                if (doorMeshLeft && doorMeshRight) {
+                    doorMeshLeft.position.x = -0.55 - progress * 0.75;
+                    doorMeshRight.position.x = 0.55 + progress * 0.75;
+                }
+                if (progress >= 1) {
+                    clearInterval(doorInterval);
+                }
+            }, 25);
+        }
+
+        function resetDoor() {
+            if (doorMeshLeft && doorMeshRight) {
+                doorMeshLeft.position.x = -0.55;
+                doorMeshRight.position.x = 0.55;
+            }
+            if (window.doorLight) window.doorLight.color.setHex(0xef4444);
+            if (window.ledStatusMesh) window.ledStatusMesh.material.color.setHex(0xef4444);
+        }
+
+        // Her Oda için 3D Nesnelerin Yüklenmesi
+        function loadRoom3DEnvironment(roomNum) {
+            // Önceki odanın nesnelerini temizle
+            if (currentRoomGroup) {
+                scene.remove(currentRoomGroup);
+            }
+            currentRoomGroup = new THREE.Group();
+            scene.add(currentRoomGroup);
+            animatedObjects = animatedObjects.filter(o => o.isPermanent);
+            resetDoor();
+
+            if (roomNum === 1) {
+                // ODA 1: UZAY ARAÇLARI DEPOSU (Roket, Uydu, Sonda, İstasyon)
+                buildRoom1Objects();
+            } else if (roomNum === 2) {
+                // ODA 2: KAYIP UYDU SİNYALİ (Parabolik Antenli İletişim Uydusu)
+                buildRoom2Objects();
+            } else if (roomNum === 3) {
+                // ODA 3: MARS GEZEGEN LABORATUVARI (Keşif Roverı & Analiz Ünitesi)
+                buildRoom3Objects();
+            } else if (roomNum === 4) {
+                // ODA 4: KARANLIK GÖZLEMEVİ (Dev Aynalı Teleskop & Kubbe)
+                buildRoom4Objects();
+            } else if (roomNum === 5) {
+                // ODA 5: UZAY KİRLİLİĞİ ALARMI (Dünya Yörüngesindeki Hurda & Lazer Savar)
+                buildRoom5Objects();
+            } else if (roomNum === 6) {
+                // ODA 6: DÜNYA'YA DÖNÜŞ KAPSÜLÜ (Kokpit & Isı Kalkanı)
+                buildRoom6Objects();
+            }
+
+            renderDynamicPuzzleUI(roomNum);
+        }
+
+        // ODA 1: 3D Nesneler
+        function buildRoom1Objects() {
+            // Merkezi Hologram Pedestalı
+            const pedGeo = new THREE.CylinderGeometry(1.2, 1.4, 0.4, 32);
+            const pedMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.9, roughness: 0.2 });
+            const pedestal = new THREE.Mesh(pedGeo, pedMat);
+            pedestal.position.set(0, 0.2, 0);
+            currentRoomGroup.add(pedestal);
+
+            // Roket Modeli
+            const rocketGroup = new THREE.Group();
+            const bodyGeo = new THREE.CylinderGeometry(0.18, 0.22, 1.4, 16);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.3 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            const noseGeo = new THREE.ConeGeometry(0.2, 0.5, 16);
+            const noseMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
+            const nose = new THREE.Mesh(noseGeo, noseMat);
+            nose.position.y = 0.95;
+            rocketGroup.add(body, nose);
+            rocketGroup.position.set(-1.4, 1.2, -0.5);
+            rocketGroup.userData = {
+                title: "UZAY ROKETİ",
+                desc: "Uzay araçlarını ve astronotları yer çekimini yenerek Dünya atmosferi dışına çıkarmak için üretilen yüksek itme güçlü fırlatma aracıdır."
+            };
+            currentRoomGroup.add(rocketGroup);
+            animatedObjects.push({ mesh: rocketGroup, rotY: 0.015 });
+
+            // Yapay Uydu Modeli (Güneş panelli)
+            const satGroup = new THREE.Group();
+            const satBody = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.4, 0.4), new THREE.MeshStandardMaterial({ color: 0xf59e0b, metalness: 0.8 }));
+            const wingGeo = new THREE.BoxGeometry(1.2, 0.02, 0.3);
+            const wingMat = new THREE.MeshStandardMaterial({ color: 0x0284c7 });
+            const wings = new THREE.Mesh(wingGeo, wingMat);
+            satGroup.add(satBody, wings);
+            satGroup.position.set(0, 1.4, 0);
+            satGroup.userData = {
+                title: "YAPAY UYDU",
+                desc: "Dünya yörüngesinde dolanarak haberleşme, meteoroloji, haritacılık ve askeri istihbarat amaçlarıyla sinyal toplayıp ileten insan yapımı uydudur."
+            };
+            currentRoomGroup.add(satGroup);
+            animatedObjects.push({ mesh: satGroup, rotY: 0.01 });
+
+            // Uzay Sondası Modeli (Voyager tarzı çanaklı)
+            const probeGroup = new THREE.Group();
+            const probeBody = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), new THREE.MeshStandardMaterial({ color: 0x94a3b8 }));
+            const dish = new THREE.Mesh(new THREE.ConeGeometry(0.35, 0.15, 16), new THREE.MeshStandardMaterial({ color: 0xf8fafc }));
+            dish.rotation.x = Math.PI / 2;
+            dish.position.z = 0.25;
+            probeGroup.add(probeBody, dish);
+            probeGroup.position.set(1.4, 1.3, -0.5);
+            probeGroup.userData = {
+                title: "UZAY SONDASI",
+                desc: "Gezegenleri, ayları veya gök cisimlerini yakından incelemek üzere Dünya'dan uzaya gönderilen insansız araştırma aracıdır."
+            };
+            currentRoomGroup.add(probeGroup);
+            animatedObjects.push({ mesh: probeGroup, rotY: 0.012 });
+        }
+
+        // ODA 2: 3D Nesneler (Parabolik Çanak ve Uydu)
+        function buildRoom2Objects() {
+            const dishGroup = new THREE.Group();
+            const baseGeo = new THREE.CylinderGeometry(0.5, 0.7, 0.8, 16);
+            const baseMesh = new THREE.Mesh(baseGeo, new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.8 }));
+            dishGroup.add(baseMesh);
+
+            const dishGeo = new THREE.SphereGeometry(1.1, 24, 24, 0, Math.PI * 2, 0, Math.PI / 2.5);
+            const dishMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, side: THREE.DoubleSide, metalness: 0.7 });
+            window.satelliteDishMesh = new THREE.Mesh(dishGeo, dishMat);
+            window.satelliteDishMesh.position.set(0, 1.2, 0);
+            window.satelliteDishMesh.rotation.x = Math.PI / 3;
+            dishGroup.add(window.satelliteDishMesh);
+
+            // Lazer Veri Işını (Antenden tavana doğru)
+            const beamGeo = new THREE.CylinderGeometry(0.03, 0.08, 3.5, 8);
+            const beamMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.7 });
+            const beam = new THREE.Mesh(beamGeo, beamMat);
+            beam.position.set(0, 2.5, -0.5);
+            beam.rotation.x = Math.PI / 6;
+            dishGroup.add(beam);
+
+            dishGroup.position.set(0, 0.4, 0);
+            dishGroup.userData = {
+                title: "UYDU HABERLEŞME ÇANAĞI",
+                desc: "Türksat ve İMECE uydularından gelen telemetri verilerini yakalayan yüksek frekanslı yer istasyonu terminalidir."
+            };
+            currentRoomGroup.add(dishGroup);
+        }
+
+        // ODA 3: 3D Nesneler (Mars Keşif Roverı)
+        function buildRoom3Objects() {
+            const roverGroup = new THREE.Group();
+            // Gövde
+            const chassis = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.35, 1.2), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 }));
+            chassis.position.y = 0.55;
+            roverGroup.add(chassis);
+
+            // Tekerlekler (6 tekerlek)
+            const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
+            [-0.55, 0.55].forEach(x => {
+                [-0.45, 0, 0.45].forEach(z => {
+                    const wheel = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.12, 16), wheelMat);
+                    wheel.rotation.z = Math.PI / 2;
+                    wheel.position.set(x, 0.2, z);
+                    roverGroup.add(wheel);
+                });
+            });
+
+            // Kamera Direği (Mast)
+            const mast = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.8, 8), new THREE.MeshStandardMaterial({ color: 0x64748b }));
+            mast.position.set(0.25, 1.0, 0.35);
+            const camHead = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.15, 0.15), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
+            camHead.position.set(0.25, 1.45, 0.35);
+            roverGroup.add(mast, camHead);
+
+            roverGroup.position.set(0, 0, 0);
+            roverGroup.userData = {
+                title: "MARS KEŞİF ARACI (ROVER)",
+                desc: "Gezegen yüzeyinde hareket edebilen, kaya ve toprak numunesi toplayıp kimyasal analiz yapan robotik araştırma aracıdır."
+            };
+            currentRoomGroup.add(roverGroup);
+            animatedObjects.push({ mesh: camHead, rotY: 0.02 });
+        }
+
+        // ODA 4: 3D Nesneler (Teleskop ve Gözlemevi Kubbesi)
+        function buildRoom4Objects() {
+            const telescopeGroup = new THREE.Group();
+            // Üçayak (Tripod)
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.9 });
+            for (let i = 0; i < 3; i++) {
+                const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.3, 8), legMat);
+                const angle = (i * Math.PI * 2) / 3;
+                leg.position.set(Math.sin(angle) * 0.4, 0.65, Math.cos(angle) * 0.4);
+                leg.rotation.z = Math.sin(angle) * 0.25;
+                leg.rotation.x = Math.cos(angle) * 0.25;
+                telescopeGroup.add(leg);
+            }
+
+            // Teleskop Optik Tüpü (Aynalı Cassegrain)
+            const tube = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.22, 1.6, 24), new THREE.MeshStandardMaterial({ color: 0x0284c7, metalness: 0.7 }));
+            tube.rotation.x = Math.PI / 4;
+            tube.position.set(0, 1.4, 0);
+            telescopeGroup.add(tube);
+
+            telescopeGroup.position.set(0, 0, 0);
+            telescopeGroup.userData = {
+                title: "AYNALI DEV GÖZLEMEVİ TELESKOBU",
+                desc: "Işığı çukur ayna ile odaklayan, uzaktaki gök cisimlerini, nebulaları ve galaksileri büyüten astronomik gözlem aracıdır."
+            };
+            currentRoomGroup.add(telescopeGroup);
+            animatedObjects.push({ mesh: telescopeGroup, rotY: 0.005 });
+        }
+
+        // ODA 5: 3D Nesneler (Dünya ve Yörüngedeki Uzay Kirliliği Enkazı)
+        function buildRoom5Objects() {
+            const debrisGroup = new THREE.Group();
+            // Ortada Mini Dünya Küresi
+            const globe = new THREE.Mesh(new THREE.SphereGeometry(1.0, 32, 32), new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.4 }));
+            debrisGroup.add(globe);
+
+            // Çevresinde Dönen Uzay Hurda Parçaları (Kessler Kuşağı)
+            const junkMat = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.9 });
+            for (let i = 0; i < 24; i++) {
+                const junk = new THREE.Mesh(new THREE.DodecahedronGeometry(0.06), junkMat);
+                const r = 1.4 + Math.random() * 0.8;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = (Math.random() - 0.5) * Math.PI;
+                junk.position.set(r * Math.cos(theta) * Math.cos(phi), r * Math.sin(phi), r * Math.sin(theta) * Math.cos(phi));
+                debrisGroup.add(junk);
+            }
+
+            debrisGroup.position.set(0, 1.3, 0);
+            debrisGroup.userData = {
+                title: "UZAY KİRLİLİĞİ VE ENKAZ KUŞAĞI",
+                desc: "İşlevini yitirmiş 30.000'den fazla yapay uydu ve roket parçası Dünya çevresinde 28.000 km/s hızla dönerek istasyonları tehdit eder."
+            };
+            currentRoomGroup.add(debrisGroup);
+            animatedObjects.push({ mesh: debrisGroup, rotY: 0.02, rotX: 0.008 });
+        }
+
+        // ODA 6: 3D Nesneler (Dünya'ya Dönüş Kapsülü)
+        function buildRoom6Objects() {
+            const capsuleGroup = new THREE.Group();
+            // Koni Şeklinde Isı Kalkanlı Kapsül (Apollo/Orion benzeri)
+            const capGeo = new THREE.ConeGeometry(1.2, 1.5, 32);
+            const capMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, metalness: 0.8, roughness: 0.2 });
+            const capsule = new THREE.Mesh(capGeo, capMat);
+            capsule.position.y = 1.0;
+
+            // Isı Kalkanı Tabanı
+            const shieldGeo = new THREE.CylinderGeometry(1.22, 1.25, 0.2, 32);
+            const shieldMat = new THREE.MeshStandardMaterial({ color: 0x1c1917, roughness: 0.9 });
+            const shield = new THREE.Mesh(shieldGeo, shieldMat);
+            shield.position.y = 0.2;
+
+            capsuleGroup.add(capsule, shield);
+            capsuleGroup.position.set(0, 0.2, 0);
+            capsuleGroup.userData = {
+                title: "DÜNYA'YA DÖNÜŞ KAPSÜLÜ",
+                desc: "Atmosfere 28.000 km/s hızla girerken oluşan 2000°C sürtünme ısısına dayanıklı kalkanı ve paraşütüyle mürettebatı sağ salim Dünya'ya ulaştırır."
+            };
+            currentRoomGroup.add(capsuleGroup);
+            animatedObjects.push({ mesh: capsuleGroup, rotY: 0.015 });
+        }
+
+        // Dokunmatik / Fare ile Nesne Tıklama
+        function onCanvasPointerDown(e) {
+            const rect = renderer.domElement.getBoundingClientRect();
+            mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+            mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+            if (!currentRoomGroup) return;
+
+            const intersects = raycaster.intersectObjects(currentRoomGroup.children, true);
+            if (intersects.length > 0) {
+                let obj = intersects[0].object;
+                while (obj.parent && obj.parent !== currentRoomGroup && !obj.userData.title) {
+                    obj = obj.parent;
+                }
+                if (obj.userData && obj.userData.title) {
+                    showHologramBanner(obj.userData.title, obj.userData.desc);
+                    playSciFiSound('beep');
+                }
+            }
+        }
+
+        function showHologramBanner(title, desc) {
+            const banner = document.getElementById('object-hologram-banner');
+            document.getElementById('holo-title').textContent = title;
+            document.getElementById('holo-desc').textContent = desc;
+            banner.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-3');
+            banner.classList.add('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        }
+
+        function closeHologramBanner() {
+            const banner = document.getElementById('object-hologram-banner');
+            banner.classList.add('opacity-0', 'pointer-events-none', 'translate-y-3');
+            banner.classList.remove('opacity-100', 'pointer-events-auto', 'translate-y-0');
+        }
+
+        function inspectCurrentObject() {
+            if (currentRoomGroup && currentRoomGroup.children.length > 0) {
+                const targetObj = currentRoomGroup.children.find(c => c.userData && c.userData.title) || currentRoomGroup.children[0];
+                if (targetObj && targetObj.userData && targetObj.userData.title) {
+                    showHologramBanner(targetObj.userData.title, targetObj.userData.desc);
+                    playSciFiSound('beep');
+                }
+            }
+        }
+
+        function resetCameraView() {
+            camera.position.set(0, 1.6, 4.5);
+            controls.target.set(0, 1.2, 0);
+            controls.update();
+            playSciFiSound('beep');
+        }
+
+        function onWindowResize() {
+            const canvas = document.getElementById('station-canvas');
+            const container = canvas.parentElement;
+            if (!container) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            animatedObjects.forEach(item => {
+                if (item.rotY) item.mesh.rotation.y += item.rotY;
+                if (item.rotX) item.mesh.rotation.x += item.rotX;
+            });
+            renderer.render(scene, camera);
+        }
+
+        // -----------------------------------------------------------------
+        // 4. ODA BULMACA VE ETKİLEŞİM PANELİ SİSTEMİ (HUD UI)
+        // -----------------------------------------------------------------
+        function renderDynamicPuzzleUI(roomNum) {
+            const container = document.getElementById('dynamic-puzzle-container');
+            const titleEl = document.getElementById('puzzle-header-title');
+            const alertText = document.getElementById('alert-text');
+            const statusBadge = document.getElementById('room-status-badge');
+
+            // Header Dots Update
+            for (let i = 1; i <= 6; i++) {
+                const dot = document.getElementById(`room-dot-${i}`);
+                if (i === roomNum) {
+                    dot.className = "w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-cyan-400 text-slate-950 ring-2 ring-cyan-200 shadow-[0_0_10px_rgba(6,182,212,0.8)]";
+                } else if (i <= GAME_DATA.unlockedRooms) {
+                    dot.className = "w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-emerald-700 text-white";
+                } else {
+                    dot.className = "w-5 h-5 sm:w-6 sm:h-6 rounded flex items-center justify-center text-[10px] font-bold font-mono transition-all bg-slate-800 text-slate-500";
+                }
+            }
+
+            if (roomNum === 1) {
+                statusBadge.textContent = "ODA 1: UZAY ARAÇLARI DEPOSU";
+                titleEl.textContent = "Görev 1: Araçları Eşleştir ve Terminal Kodunu Gir";
+                alertText.textContent = "Hidrolik Kilit Devrede! 3D araçları incele ve formülü çöz.";
+                container.innerHTML = `
+                    <div class="w-full flex items-center justify-between gap-2 overflow-x-auto no-scrollbar py-1">
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="px-2 py-1 bg-cyan-950 border border-cyan-500/40 rounded text-[11px] font-mono text-cyan-300">
+                                <i class="fa-solid fa-rocket mr-1"></i> Roket: Fırlatıcı
+                            </span>
+                            <span class="px-2 py-1 bg-amber-950 border border-amber-500/40 rounded text-[11px] font-mono text-amber-300">
+                                <i class="fa-solid fa-satellite mr-1"></i> Uydu: Dolanır
+                            </span>
+                            <span class="px-2 py-1 bg-indigo-950 border border-indigo-500/40 rounded text-[11px] font-mono text-indigo-300">
+                                <i class="fa-solid fa-compass mr-1"></i> Sonda: İnsansız
+                            </span>
+                        </div>
+                        <div class="text-[11px] font-mono text-slate-300 shrink-0">
+                            İstasyon Arıza Yılı: <strong class="text-amber-400 font-bold">2085</strong>
+                        </div>
+                    </div>
+                `;
+            } else if (roomNum === 2) {
+                statusBadge.textContent = "ODA 2: KAYIP UYDU SİNYALİ";
+                titleEl.textContent = "Görev 2: Çanak Anteni 42° Türksat Frekansına Hizala";
+                alertText.textContent = "Sinyal Kesildi! Anteni 42° derecesine çevir ve kilidi aç.";
+                container.innerHTML = `
+                    <div class="w-full flex flex-col sm:flex-row items-center justify-between gap-3 py-1">
+                        <div class="flex items-center gap-3 w-full sm:w-auto">
+                            <span class="text-[11px] font-mono text-cyan-300">Anten Açısı:</span>
+                            <input type="range" id="antenna-slider" min="0" max="90" value="15" oninput="updateAntennaAngle(this.value)" class="flex-1 sm:w-48 cursor-pointer">
+                            <span class="text-xs font-mono font-bold text-amber-400 w-10 text-right" id="angle-val">15°</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="lockAntennaSignal()" class="px-3 py-1.5 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs font-mono uppercase transition-all shadow">
+                                SİNYALİ KİLİTLE (42°)
+                            </button>
+                            <span class="text-[10px] text-slate-400 font-mono hidden md:inline">• İlk Başarılı Uydumuz: Türksat 1B (1994)</span>
+                        </div>
+                    </div>
+                `;
+            } else if (roomNum === 3) {
+                statusBadge.textContent = "ODA 3: GEZEGEN ARAŞTIRMALARI LABİ";
+                titleEl.textContent = "Görev 3: Mars Rover Sensörlerini Override Koduna Ayarla";
+                alertText.textContent = "Karbondioksit Basınç Sensörü Uyarısı! Kod: 3720";
+                container.innerHTML = `
+                    <div class="w-full flex items-center justify-between gap-2 py-1">
+                        <div class="flex items-center gap-2 text-[11px] font-mono">
+                            <span class="px-2 py-1 bg-red-950 border border-red-500/40 rounded text-red-300">
+                                🪐 Gezegen: MARS
+                            </span>
+                            <span class="px-2 py-1 bg-slate-800 rounded text-slate-300">
+                                Atmosfer: %95 CO₂
+                            </span>
+                            <span class="px-2 py-1 bg-amber-950 text-amber-300 rounded font-bold">
+                                Hedef Kod: 3720
+                            </span>
+                        </div>
+                        <button onclick="openKeypadModalWithCode('3720')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white rounded font-mono text-xs font-bold">
+                            KODU AKTAR
+                        </button>
+                    </div>
+                `;
+            } else if (roomNum === 4) {
+                statusBadge.textContent = "ODA 4: KARANLIK GÖZLEMEVİ";
+                titleEl.textContent = "Görev 4: Işık Kirliliğinden Kaç, Teleskobu Derin Uzaya Yönelt";
+                alertText.textContent = "Şehir Işıkları Görüşü Engelliyor! Galileo Yılı: 1609";
+                container.innerHTML = `
+                    <div class="w-full flex items-center justify-between gap-2 py-1">
+                        <div class="text-[11px] font-mono text-slate-300">
+                            🔭 <strong>Galileo Galilei</strong> teleskopla ilk gök gözlemini yaptı: <span class="text-cyan-400 font-bold">1609</span>
+                        </div>
+                        <button onclick="openKeypadModalWithCode('1609')" class="px-3 py-1 bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 rounded font-mono text-xs font-black">
+                            1609 İLE KAPIYI AÇ
+                        </button>
+                    </div>
+                `;
+            } else if (roomNum === 5) {
+                statusBadge.textContent = "ODA 5: UZAY KİRLİLİĞİ ALARMI";
+                titleEl.textContent = "Görev 5: Enkaz Savar Lazerini Devreye Sok (Hız: 7800 m/s)";
+                alertText.textContent = "ENKAZ YAKLAŞIYOR! Lazer frekansını yörünge hızına (7800) getir.";
+                container.innerHTML = `
+                    <div class="w-full flex items-center justify-between gap-2 py-1">
+                        <div class="text-[11px] font-mono text-rose-300">
+                            ⚠️ <strong>Kessler Tehlikesi:</strong> Hurda Hızı = <span class="text-amber-400 font-bold">7800 m/s (7.8 km/s)</span>
+                        </div>
+                        <button onclick="fireLaserDefense()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded font-mono text-xs font-black uppercase shadow active:scale-95">
+                            <i class="fa-solid fa-bolt mr-1"></i> LAZERİ ATEŞLE & KAPIYI AÇ
+                        </button>
+                    </div>
+                `;
+            } else if (roomNum === 6) {
+                statusBadge.textContent = "ODA 6: DÜNYA'YA DÖNÜŞ KAPSÜLÜ";
+                titleEl.textContent = "Görev 6: Atmosfere Giriş Açısını Onayla ve Dünya'ya Dön!";
+                alertText.textContent = "DÖNÜŞ KAPSÜLÜ HAZIR! Son bilimsel güvenlik onayını gir: 2026";
+                container.innerHTML = `
+                    <div class="w-full flex items-center justify-between gap-2 py-1">
+                        <div class="text-[11px] font-mono text-emerald-300">
+                            🚀 <strong>Türkiye Yüzyılı Maarif Modeli</strong> Dönüş Kodu: <span class="text-cyan-300 font-bold">2026</span>
+                        </div>
+                        <button onclick="launchReturnCapsule()" class="px-4 py-2 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-400 text-slate-950 rounded-xl font-orbitron text-xs font-black uppercase tracking-wider shadow-[0_0_20px_rgba(245,158,11,0.6)] active:scale-95 animate-pulse">
+                            <i class="fa-solid fa-earth-americas mr-1"></i> DÜNYA'YA DÖN
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 5. ŞİFRE GİRİŞ VE BULMACA ÇÖZÜM MANTIĞI
+        // -----------------------------------------------------------------
+        let currentEnteredKey = "";
+
+        function openKeypadModal() {
+            currentEnteredKey = "";
+            document.getElementById('keypad-screen').textContent = "----";
+            document.getElementById('keypad-error-msg').classList.add('hidden');
+            document.getElementById('keypad-success-msg').classList.add('hidden');
+            document.getElementById('modal-keypad').classList.remove('hidden');
+            playSciFiSound('beep');
+        }
+
+        function openKeypadModalWithCode(code) {
+            openKeypadModal();
+            currentEnteredKey = code;
+            document.getElementById('keypad-screen').textContent = code;
+        }
+
+        function closeKeypadModal() {
+            document.getElementById('modal-keypad').classList.add('hidden');
+        }
+
+        function pressKeypad(num) {
+            if (currentEnteredKey.length < 4) {
+                currentEnteredKey += num;
+                document.getElementById('keypad-screen').textContent = currentEnteredKey.padEnd(4, '-');
+                playSciFiSound('beep');
+            }
+        }
+
+        function clearKeypad() {
+            currentEnteredKey = "";
+            document.getElementById('keypad-screen').textContent = "----";
+            playSciFiSound('beep');
+        }
+
+        function submitKeypad() {
+            const correctCode = GAME_DATA.roomCodes[GAME_DATA.currentRoom];
+            if (currentEnteredKey === correctCode) {
+                document.getElementById('keypad-success-msg').classList.remove('hidden');
+                document.getElementById('keypad-error-msg').classList.add('hidden');
+                playSciFiSound('grant');
+                confetti({ particleCount: 40, spread: 60, origin: { y: 0.6 } });
+
+                setTimeout(() => {
+                    closeKeypadModal();
+                    completeCurrentRoom();
+                }, 900);
+            } else {
+                document.getElementById('keypad-error-msg').classList.remove('hidden');
+                playSciFiSound('error');
+                const screen = document.getElementById('keypad-screen');
+                screen.classList.add('text-rose-500');
+                setTimeout(() => {
+                    screen.classList.remove('text-rose-500');
+                }, 600);
+            }
+        }
+
+        // Oda Başarıyla Tamamlandığında
+        function completeCurrentRoom() {
+            animateDoorOpen();
+            GAME_DATA.score += 20;
+
+            if (GAME_DATA.currentRoom < 6) {
+                GAME_DATA.unlockedRooms = Math.max(GAME_DATA.unlockedRooms, GAME_DATA.currentRoom + 1);
+                setTimeout(() => {
+                    GAME_DATA.currentRoom++;
+                    loadRoom3DEnvironment(GAME_DATA.currentRoom);
+                    saveGameProgress();
+                    speakRoomBriefing();
+                }, 1400);
+            } else {
+                // Oda 6 bitti - Zafer ekranı
+                triggerVictory();
+            }
+        }
+
+        // Oda 2 Çanak Anten Kontrolü
+        function updateAntennaAngle(val) {
+            document.getElementById('angle-val').textContent = `${val}°`;
+            if (window.satelliteDishMesh) {
+                window.satelliteDishMesh.rotation.x = (val * Math.PI) / 180;
+            }
+        }
+
+        function lockAntennaSignal() {
+            const slider = document.getElementById('antenna-slider');
+            slider.value = 42;
+            updateAntennaAngle(42);
+            playSciFiSound('grant');
+            completeCurrentRoom();
+        }
+
+        // Oda 5 Lazer Ateşleme
+        function fireLaserDefense() {
+            playSciFiSound('laser');
+            confetti({ particleCount: 30, spread: 50, colors: ['#ef4444', '#06b6d4'] });
+            setTimeout(() => {
+                completeCurrentRoom();
+            }, 600);
+        }
+
+        // Oda 6 Dönüş Kapsülünü Ateşleme
+        function launchReturnCapsule() {
+            playSciFiSound('victory');
+            triggerVictory();
+        }
+
+        // Zafer Ekranı ve Sertifika
+        function triggerVictory() {
+            clearInterval(GAME_DATA.timerInterval);
+            playSciFiSound('victory');
+            confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
+
+            const min = Math.floor(GAME_DATA.elapsedSeconds / 60);
+            const sec = GAME_DATA.elapsedSeconds % 60;
+            const timeStr = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+
+            document.getElementById('victory-final-time').textContent = timeStr;
+            document.getElementById('victory-final-score').textContent = `${GAME_DATA.score} / 100`;
+            document.getElementById('modal-victory').classList.remove('hidden');
+
+            speakText("Tebrikler araştırmacı! İstasyonun tüm şifrelerini çözdün ve Dünya'ya güvenle döndün!");
+        }
+
+        function downloadCertificate() {
+            const studentName = document.getElementById('student-name-input').value.trim() || "Genç Uzay Araştırmacısı";
+            
+            // HTML Canvas ile Sertifika Çizimi ve İndirme
+            const certCanvas = document.createElement('canvas');
+            certCanvas.width = 1200;
+            certCanvas.height = 800;
+            const ctx = certCanvas.getContext('2d');
+
+            // Arka Plan
+            const grad = ctx.createLinearGradient(0, 0, 1200, 800);
+            grad.addColorStop(0, '#030712');
+            grad.addColorStop(0.5, '#0f172a');
+            grad.addColorStop(1, '#1e1b4b');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 1200, 800);
+
+            // Altın Çerçeve
+            ctx.strokeStyle = '#f59e0b';
+            ctx.lineWidth = 10;
+            ctx.strokeRect(30, 30, 1140, 740);
+
+            ctx.strokeStyle = '#06b6d4';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(45, 45, 1110, 710);
+
+            // Başlıklar
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 36px Orbitron, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText("ROTALI FENCİ EĞİTİM PLATFORMU", 600, 110);
+
+            ctx.fillStyle = '#38bdf8';
+            ctx.font = 'bold 24px Plus Jakarta Sans, sans-serif';
+            ctx.fillText("7. SINIF FEN BİLİMLERİ – UZAY ARAŞTIRMALARI", 600, 155);
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 44px Orbitron, sans-serif';
+            ctx.fillText("ÜSTÜN BAŞARI UZAY SERTİFİKASI", 600, 230);
+
+            ctx.fillStyle = '#94a3b8';
+            ctx.font = '20px Plus Jakarta Sans, sans-serif';
+            ctx.fillText("Bu belge, Yörünge-7 Uzay İstasyonu'ndaki tüm bilimsel kaçış görevlerini başarıyla tamamlayan;", 600, 300);
+
+            // Öğrenci Adı
+            ctx.fillStyle = '#f59e0b';
+            ctx.font = 'bold 50px Plus Jakarta Sans, sans-serif';
+            ctx.fillText(studentName, 600, 380);
+
+            ctx.fillStyle = '#e2e8f0';
+            ctx.font = '20px Plus Jakarta Sans, sans-serif';
+            ctx.fillText("adlı uzay araştırmacısına Fen Bilimleri üstün başarısı nedeniyle takdim edilmiştir.", 600, 440);
+
+            // İstatistik Rozetleri
+            ctx.fillStyle = '#06b6d4';
+            ctx.font = 'bold 22px JetBrains Mono, monospace';
+            ctx.fillText(`Tamamlama Süresi: ${document.getElementById('victory-final-time').textContent}   |   Bilim Skoru: 100/100`, 600, 520);
+
+            // Alt Bilgi
+            ctx.fillStyle = '#64748b';
+            ctx.font = '16px Plus Jakarta Sans, sans-serif';
+            ctx.fillText("Türkiye Yüzyılı Maarif Modeli Uyumlu • @rotalifenci • 2085 Yörünge-7", 600, 680);
+
+            // İndir
+            const link = document.createElement('a');
+            link.download = `Uzaydan_Kacis_Sertifika_${studentName.replace(/\s+/g, '_')}.png`;
+            link.href = certCanvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // -----------------------------------------------------------------
+        // 6. İPUCU, ÖĞRETMEN VE SESLİ ANLATIM YARDIMCILARI
+        // -----------------------------------------------------------------
+        function openHintModal() {
+            const hints = GAME_DATA.hints[GAME_DATA.currentRoom];
+            document.getElementById('hint-text-1').textContent = hints[0];
+            document.getElementById('hint-text-2').textContent = hints[1];
+            document.getElementById('hint-text-3').textContent = hints[2];
+
+            // 2 ve 3'ü sıfırla
+            document.getElementById('hint-text-2').classList.add('hidden');
+            document.getElementById('btn-unlock-hint-2').classList.remove('hidden');
+            document.getElementById('hint-text-3').classList.add('hidden');
+            document.getElementById('btn-unlock-hint-3').classList.remove('hidden');
+
+            document.getElementById('modal-hint').classList.remove('hidden');
+            playSciFiSound('beep');
+        }
+
+        function closeHintModal() {
+            document.getElementById('modal-hint').classList.add('hidden');
+        }
+
+        function revealHintLevel(level) {
+            document.getElementById(`hint-text-${level}`).classList.remove('hidden');
+            document.getElementById(`btn-unlock-hint-${level}`).classList.add('hidden');
+            playSciFiSound('beep');
+        }
+
+        function speakRoomBriefing() {
+            const briefing = GAME_DATA.roomBriefings[GAME_DATA.currentRoom];
+            speakText(briefing);
+        }
+
+        function jumpToRoomIfUnlocked(num) {
+            if (num <= GAME_DATA.unlockedRooms) {
+                GAME_DATA.currentRoom = num;
+                loadRoom3DEnvironment(num);
+                playSciFiSound('beep');
+            } else {
+                playSciFiSound('error');
+            }
+        }
+
+        function teacherJumpToRoom(num) {
+            GAME_DATA.unlockedRooms = Math.max(GAME_DATA.unlockedRooms, num);
+            GAME_DATA.currentRoom = num;
+            loadRoom3DEnvironment(num);
+            closeTeacherModal();
+            playSciFiSound('grant');
+        }
+
+        function unlockAllRoomsForClass() {
+            GAME_DATA.unlockedRooms = 6;
+            renderDynamicPuzzleUI(GAME_DATA.currentRoom);
+            closeTeacherModal();
+            playSciFiSound('grant');
+        }
+
+        function resetGameProgress() {
+            localStorage.removeItem('rotali_uzay_kacis_progress');
+            location.reload();
+        }
+
+        function openTeacherModal() {
+            document.getElementById('modal-teacher').classList.remove('hidden');
+            playSciFiSound('beep');
+        }
+
+        function closeTeacherModal() {
+            document.getElementById('modal-teacher').classList.add('hidden');
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+            }
+        }
+
+        function exitSimulation() {
+            if (window.parent && window.parent !== window && typeof window.parent.closeInteractiveGameModal === 'function') {
+                window.parent.closeInteractiveGameModal();
+            } else if (window.opener) {
+                window.close();
+            } else {
+                window.location.href = '../index.html#grade/grade-7/egitsel-oyunlar';
+            }
+        }
+
+        function startGameMission() {
+            initAudio();
+            document.getElementById('modal-intro').classList.add('hidden');
+            startTimer();
+            speakRoomBriefing();
+            playSciFiSound('door');
+        }
+
+        function startTimer() {
+            if (GAME_DATA.timerInterval) clearInterval(GAME_DATA.timerInterval);
+            GAME_DATA.timerInterval = setInterval(() => {
+                GAME_DATA.elapsedSeconds++;
+                const min = Math.floor(GAME_DATA.elapsedSeconds / 60);
+                const sec = GAME_DATA.elapsedSeconds % 60;
+                document.getElementById('clock-text').textContent = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function saveGameProgress() {
+            try {
+                localStorage.setItem('rotali_uzay_kacis_progress', JSON.stringify({
+                    room: GAME_DATA.currentRoom,
+                    unlocked: GAME_DATA.unlockedRooms,
+                    score: GAME_DATA.score,
+                    seconds: GAME_DATA.elapsedSeconds
+                }));
+            } catch(e) {}
+        }
+
+        function loadSavedGameProgress() {
+            try {
+                const saved = localStorage.getItem('rotali_uzay_kacis_progress');
+                if (saved) {
+                    const data = JSON.parse(saved);
+                    if (data && data.room && data.unlocked) {
+                        GAME_DATA.currentRoom = data.room;
+                        GAME_DATA.unlockedRooms = data.unlocked;
+                        GAME_DATA.score = data.score || 0;
+                        GAME_DATA.elapsedSeconds = data.seconds || 0;
+                    }
+                }
+            } catch(e) {}
+        }
+
+        // Başlangıç Kurulumu
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedGameProgress();
+            initThreeJS();
+        });
+    </script>
+</body>
+</html>

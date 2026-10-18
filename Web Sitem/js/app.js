@@ -5718,14 +5718,25 @@ function renderGradeEducationalGames(grade, subData) {
         return matchesSubTabCategory(m, "egitsel-oyunlar");
     });
 
-    // 2. Müfredat & Dahili İnteraktif Oyunlar (Sabit tohum oyunlar tamamen temizlendi)
+    // 2. Müfredat & Dahili İnteraktif Oyunlar
     const builtinCurriculumGames = {
         "5": [],
         "6": [],
-        "7": [],
+        "7": [
+            {
+                id: "builtin-oyun-7-uzaydan-kacis",
+                title: "Uzaydan Kaçış: Gizemli İstasyon (3D)",
+                badge: "3D Kaçış Odası",
+                type: "3D Simülasyon",
+                desc: "Yörünge-7 İstasyonu'ndaki 6 bilimsel güvenlik kilidini uzay araştırmaları bilginle çöz, Dünya'ya dönüş kapsülüyle eve dön!",
+                icon: "fa-solid fa-satellite",
+                iconColor: "from-cyan-500 to-blue-600",
+                fileUrl: "uzaydan-kacis-3d"
+            }
+        ],
         "8": []
     };
-    const currentBuiltins = [];
+    const currentBuiltins = builtinCurriculumGames[gNum] || [];
 
     return `
         <div class="mb-10 animate-in fade-in duration-300">
@@ -5886,6 +5897,77 @@ function renderGradeEducationalGames(grade, subData) {
                             <i class="fa-solid fa-play text-base"></i> SİMÜLATÖRÜ AÇ (TAM EKRAN)
                         </button>
                         <a href="oyunlar/ayin-evreleri-3d.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        </a>
+                    </div>
+                </div>
+            </div>
+            ` : gNum === "7" ? `
+            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950/60 border-2 border-cyan-400/90 rounded-3xl p-6 sm:p-8 lg:p-10 mb-8 shadow-2xl overflow-hidden text-white group hover:border-cyan-300 transition-all">
+                <!-- Arka Plan Dekoratif Parıltılar -->
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-blue-600/15 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
+                    <!-- Sol: Simülasyon Logosu & Başlık Bilgisi -->
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-5">
+                        <div class="relative shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-700 shadow-[0_0_35px_rgba(6,182,212,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
+                                <div class="w-full h-full rounded-[22px] bg-slate-950 flex flex-col items-center justify-center text-cyan-300">
+                                    <i class="fa-solid fa-satellite text-4xl mb-1 text-cyan-400"></i>
+                                    <span class="text-[9px] font-black font-orbitron tracking-widest uppercase text-cyan-300">YÖRÜNGE-7</span>
+                                </div>
+                            </div>
+                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-cyan-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
+                                🚀 3D KAÇIŞ
+                            </span>
+                        </div>
+
+                        <div class="max-w-xl">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full bg-cyan-400/20 border border-cyan-300/40 text-cyan-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT OYUNU
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                    ✓ Fotogerçekçi 3D Kaçış Odası & Maarif Modeli
+                                </span>
+                            </div>
+                            <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-blue-400 mb-2">
+                                Uzaydan Kaçış: Gizemli İstasyon (3D)
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
+                                2085 yılında Yörünge-7 Uzay İstasyonu'nda kilitli kalan bilim kapılarını uzay teknolojileri bilginle aç! 6 fotogerçekçi 3D kaçış odası, yapay uydular, Mars roverı, dev teleskop, uzay kirliliği alarmı ve Dünya'ya dönüş kapsülüyle heyecan dolu bilimsel macera!
+                            </p>
+                            <!-- Özellik Rozetleri -->
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔒 6 Bilimsel Kaçış Odası
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🛰️ Türksat & İMECE Uyduları
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🪐 Mars Gezgin Roverı
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🔭 Dev Aynalı Teleskop
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ⚠️ Uzay Kirliliği Lazer Savar
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    🏆 Üstün Başarı Sertifikası
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ: Hızlı Başlatma Butonları -->
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('uzaydan-kacis-3d', 'Uzaydan Kaçış: Gizemli İstasyon (3D)')" class="px-8 py-4 bg-gradient-to-r from-cyan-400 via-blue-500 to-cyan-500 hover:from-cyan-300 hover:to-blue-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(6,182,212,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-cyan-300">
+                            <i class="fa-solid fa-play text-base"></i> OYUNU AÇ (TAM EKRAN)
+                        </button>
+                        <a href="oyunlar/uzaydan-kacis-3d.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
                             <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
                         </a>
                     </div>
@@ -15096,6 +15178,40 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
                     <iframe src="oyunlar/ayin-evreleri-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
+    // 🚀 7. Sınıf Uzaydan Kaçış: Gizemli İstasyon 3D Bilimsel Kaçış Odası
+    if (str.includes("uzaydan-kacis") || str.includes("uzaydan_kacis") || str.includes("uzaydan kaçış") || str.includes("gizemli-istasyon") || str.includes("gizemli istasyon") || str.includes("yorunge-7") || str.includes("yörünge-7") || resolvedKey === "uzaydan-kacis-3d" || resolvedKey === "oyun-uzaydan-kacis-3d" || resolvedKey === "oyun-7-uzay") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-cyan-900/60 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-700 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-satellite"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-cyan-300 font-orbitron">🚀 Uzaydan Kaçış: Gizemli İstasyon (3D)</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 7. Sınıf Fen Bilimleri 1. Ünite</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/uzaydan-kacis-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/uzaydan-kacis-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
