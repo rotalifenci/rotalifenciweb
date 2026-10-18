@@ -2955,13 +2955,13 @@ function renderHomePage(container) {
                         </div>
                     </a>
 
-                    <a href="#projects" class="p-5 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
-                        <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-amber-500/20">
-                            <i class="fa-solid fa-trophy"></i>
+                    <a href="#projects" class="p-5 bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200/90 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                        <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-indigo-600/20">
+                            <i class="fa-solid fa-laptop-code"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-black text-slate-900">🏆 Proje Merkezi</h4>
-                            <p class="text-xs text-slate-500">TÜBİTAK 2204-B / TEKNOFEST</p>
+                            <h4 class="text-sm font-black text-slate-900">🇪🇺 AB Kod Haftası</h4>
+                            <p class="text-xs text-slate-500">5, 6 ve 7. Sınıf Fen & Algoritma</p>
                         </div>
                     </a>
 
@@ -7291,490 +7291,136 @@ function getProjectCategoriesWithCustom() {
 // -------------------------------------------------------------
 // 🏆 PROJE FİLTRELEME VE LİSTELEME ALANI BİLEŞENİ (ALPINE.JS & TAILWIND)
 // -------------------------------------------------------------
+// 🇪🇺 AB KOD HAFTASI (EU CODEWEEK 2026) ETKİNLİK MERKEZİ
+// -------------------------------------------------------------
+window.CODEWEEK_ACTIVITIES = [
+    {
+        id: 'cw-5-1',
+        grade: '5',
+        badge: '5. SINIF • ETKİNLİK 1',
+        title: 'Geri Dönüşüm Robotu',
+        outcome: 'Sıralı komutlar, algoritmik düşünme ve atık sınıflandırma',
+        subtitle: 'Akıllı tahtada birlikte çözebilir, kâğıt üzerinde bireysel yapabilirsin.',
+        image: 'assets/codeweek/5-sinif-etkinlik-1-geri-donusum-robotu.jpg',
+        description: 'Geri dönüşüm robotunun merkeze ulaşması için 6 sıralı komut yazma, 8 farklı atığı uygun geri dönüşüm kutularıyla eşleştirme ve kâğıdın geri dönüşüm adımlarını sıralama etkinliği.',
+        sections: [
+            '1. Yönleri Kodla: Robotun geri dönüşüm merkezine ulaşması için 6 komut yaz (ileri, sağa dön, sola dön)',
+            '2. Atıkları Ayır: Cam şişe, gazete, pil, muz kabuğu, plastik şişe, karton kutu, konserve ve yaprak atıklarını Kâğıt, Plastik, Cam ve Organik kutularıyla eşleştir',
+            '3. Algoritmayı Sırala: Kâğıdın geri dönüşüm sürecini 1\'den 5\'e kadar doğru adımlarla sırala',
+            '4. Düşün ve Yaz: Geri dönüşüm neden önemlidir? Evde hangi atıkları ayırabilirsin?'
+        ],
+        themeColor: 'emerald',
+        motto: 'Rotamız Fen • Code for a Greener Planet!'
+    },
+    {
+        id: 'cw-5-2',
+        grade: '5',
+        badge: '5. SINIF • ETKİNLİK 2',
+        title: 'Temiz Dünya Algoritması',
+        outcome: 'Algoritma kurma, sıralama ve çevre/enerji tasarrufu farkındalığı',
+        subtitle: 'Adımları sırala, doğru seçimi yap, çevreni koru!',
+        image: 'assets/codeweek/5-sinif-etkinlik-2-temiz-dunya-algoritmasi.jpg',
+        description: 'Gereksiz ışıkları kapatıp enerji tasarrufu yapma algoritması, atıkların Geri Dönüşür / Yeniden Kullanılır / Çöpe Atılır olarak sınıflandırılması ve ışık düğmesine giden kodlama yolu.',
+        sections: [
+            '1. Adımları Sırala: Gereksiz ışıkları kapatıp enerji tasarrufu yapmak için doğru adımları 1\'den 6\'ya sırala',
+            '2. Doğru Kutuyu Seç: Plastik şişe, karton, cam kavanoz, muz kabuğu, kâğıt ve eski tişörtü doğru kutuyla eşleştir',
+            '3. Kodlama Yolu: Çocuğun hem ışık düğmesine hem de geri dönüşüm kutusuna gitmesi için 1\'den 8\'e komut yaz',
+            '4. Benim Çevre Sözüm: Bugün çevre için, okulda ve evde enerji tasarrufu taahhütlerini doldur'
+        ],
+        themeColor: 'emerald',
+        motto: 'Düşün, Planla, Uygula, Daha Yeşil Bir Gelecek İçin!'
+    },
+    {
+        id: 'cw-6-1',
+        grade: '6',
+        badge: '6. SINIF • ETKİNLİK 1',
+        title: 'Akıllı Sulama Kararları',
+        outcome: 'Koşullu ifadeler ve tekrar eden işlemler (Eğer... ise)',
+        subtitle: 'Koşullara göre doğru kararı ver!',
+        image: 'assets/codeweek/6-sinif-etkinlik-1-akilli-sulama-kararlari.jpg',
+        description: 'Toprak nemine, yağış durumuna ve hava sıcaklığına göre bitkilerin sulanmasıyla ilgili "Eğer... İse..." mantığı, sulama örüntüleri döngüsü ve tam akış şeması (Flowchart) tamamlama.',
+        sections: [
+            '1. Eğer... İse...: Toprak kuruysa, yağmur yağıyorsa, hava çok sıcaksa sulama sonuçlarını tamamla',
+            '2. Karar Ver: 8 farklı durumda Sula, Sulama veya Kontrol Et butonunu işaretle',
+            '3. Döngüleri Bul: Sulama programlarındaki kuralı bulup örüntüyü 3 adım devam ettir',
+            '4. Akış Şeması Tamamla: Başla -> Toprak kuru mu? -> Sula / Sulama -> Bitir blok diyagramını doldur'
+        ],
+        themeColor: 'blue',
+        motto: 'Doğayı Koru, Geleceği Sula! Doğru Zamanda Doğru Miktar Su!'
+    },
+    {
+        id: 'cw-6-2',
+        grade: '6',
+        badge: '6. SINIF • ETKİNLİK 2',
+        title: 'Geri Dönüşüm Dedektifi',
+        outcome: 'Sınıflandırma, karar verme matrisi ve problem çözme',
+        subtitle: 'İpuçlarını incele, doğru kararı kodla!',
+        image: 'assets/codeweek/6-sinif-etkinlik-2-geri-donusum-dedektifi.jpg',
+        description: 'Cam, plastik, kağıt ve metal malzeme özelliklerini ipuçlarından çıkarma, matris tablosunda karar verme, görseldeki 5 geri dönüşüm hatasını bulma ve sınıf atık azaltma önerileri.',
+        sections: [
+            '1. İpuçlarını Oku: Şeffaftır/kırılabilir, hafiftir/incedir, esnektir, parlaktır ipuçlarıyla malzemeyi bul',
+            '2. Koşula Göre Seç: Atık temiz mi, tekrar kullanılabilir mi, geri dönüştürülebilir mi matrisini işaretle',
+            '3. Hata Avcısı: Okul bahçesi geri dönüşüm görselindeki 5 hatayı tespit et',
+            '4. Mini Görev: Sınıfımızda atık miktarını azaltmak için 3 somut öneri yaz'
+        ],
+        themeColor: 'blue',
+        motto: 'Az Tüket, Tekrar Kullan, Geri Dönüştür, Daha Temiz Yarınlar İçin!'
+    },
+    {
+        id: 'cw-7-1',
+        grade: '7',
+        badge: '7. SINIF • ETKİNLİK 1',
+        title: 'Akıllı Sera Algoritmaları',
+        outcome: 'Veri yorumlama, koşullu karar ağacı ve akış şeması kurma',
+        subtitle: 'Sensör verilerine göre sistemi yönet!',
+        image: 'assets/codeweek/7-sinif-etkinlik-1-akilli-sera-algoritmalari.jpg',
+        description: 'Sıcaklık, nem, ışık ve toprak nemi sensör verilerine göre havalandırma fanı, damla sulama ve lambaların yönetilmesi; koşullu karar ağacı ve akış şeması (Flowchart) tamamlama.',
+        sections: [
+            '1. Veriyi Oku: Sıcaklık, nem, ışık (lüks) ve toprak yüzdesine göre fan, sulama ve lamba eylemlerini belirle',
+            '2. Koşulu Tamamla: Sıcaklık çok yüksekse (>30°C), düşükse (<20°C), toprak kuruysa (<%30), ışık azsa (<200 lüks) kararlarını yaz',
+            '3. Akış Şeması: Başla -> Sıcaklık > 30°C mi? -> Toprak nemi < %30 mu? -> Işık < 200 lüks mü? karar diyagramını doldur',
+            '4. Kodlama Sorusu: Sıcaklık yüksek (32°C) ve toprak kuru (%25) senaryosunda doğru komut sırasını ve lambayı açan koşulu işaretle'
+        ],
+        themeColor: 'purple',
+        motto: 'Teknoloji Daha Yeşil Yarınlar İçin • Akıllı Seralar Daha Temiz Bir Dünya İçin!'
+    },
+    {
+        id: 'cw-7-2',
+        grade: '7',
+        badge: '7. SINIF • ETKİNLİK 2',
+        title: 'Yeşil Okul Veri Görevi',
+        outcome: 'Veri analizi, grafik yorumlama ve sürdürülebilir çözüm üretme',
+        subtitle: 'Verileri analiz et, en iyi çözümü seç!',
+        image: 'assets/codeweek/7-sinif-etkinlik-2-yesil-okul-veri-gorevi.jpg',
+        description: 'Okulun haftalık elektrik tüketimi sütun grafiğini inceleme, enerji ve su israfı sorunlarını tespit etme, teneffüste açık kalan cihazlara sürdürülebilir çözümler bulma ve Yeşil Okul projesi tasarlama.',
+        sections: [
+            '1. Grafiği İncele: Pazartesi-Cuma elektrik tüketimini (kWh) analiz et, en fazla/en az günleri ve perşembe artış nedenini açıkla',
+            '2. Sorunu Bul: Açık kalan ışıklar, damlayan musluklar, gereksiz çıktılar ve açık pencereler için Enerji Kaybı / Su İsrafı / Doğru Uygulama işaretle',
+            '3. En Uygun Çözüm: Teneffüste açık kalan bilgisayarlar, çok sıcak sınıflar ve yemekhane atıkları için en sürdürülebilir çözümü seç',
+            '4. Tasarım Köşesi: "Benim Yeşil Okul Fikrim" alanına okulunu daha çevreci yapacak projenin adını, çizimini ve işe yarayışını yaz'
+        ],
+        themeColor: 'purple',
+        motto: 'Doğayı Koru, Enerjiyi Tasarruf Et, Geri Dönüştür • Küçük Fikirler Büyük Değişimler Yaratır!'
+    }
+];
+
 window.projectFilterData = function() {
     return {
-        activeCategory: 'all',
+        codeWeekGradeTab: 'all',
         searchQuery: '',
-        expandedProjectId: null,
-        categories: [
-            {
-                id: 'all',
-                name: 'Tüm Projeler',
-                shortName: 'Tümü',
-                dotClass: 'bg-slate-400',
-                ringClass: 'ring-slate-300/40',
-                count: 10
-            },
-            {
-                id: 'tubitak-2204b',
-                name: 'TÜBİTAK 2204-B Ortaokul Araştırma',
-                shortName: 'TÜBİTAK 2204-B',
-                dotClass: 'bg-emerald-500',
-                ringClass: 'ring-emerald-300/40',
-                count: 3
-            },
-            {
-                id: 'tubitak-4006',
-                name: 'Okul Bilim Fuarı (TÜBİTAK 4006)',
-                shortName: 'TÜBİTAK 4006',
-                dotClass: 'bg-blue-500',
-                ringClass: 'ring-blue-300/40',
-                count: 3
-            },
-            {
-                id: 'teknofest',
-                name: 'Teknoloji Yarışması (TEKNOFEST)',
-                shortName: 'TEKNOFEST',
-                dotClass: 'bg-amber-500',
-                ringClass: 'ring-amber-300/40',
-                count: 2
-            },
-            {
-                id: 'etwinning',
-                name: 'Avrupa Topluluğu (eTwinning)',
-                shortName: 'eTwinning',
-                dotClass: 'bg-rose-500',
-                ringClass: 'ring-rose-300/40',
-                count: 2
-            }
-        ],
-        projects: [
-            {
-                id: 'proj-2204b-1',
-                category: 'tubitak-2204b',
-                categoryName: 'TÜBİTAK 2204-B',
-                badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                badgeBorder: 'border-emerald-200/90',
-                dotClass: 'bg-emerald-500',
-                ringClass: 'ring-emerald-300/40',
-                themeColor: 'emerald',
-                area: 'Biyoloji & Çevre Bilimi',
-                level: '5, 6, 7 ve 8. Sınıf',
-                icon: 'fa-solid fa-leaf text-emerald-600',
-                title: 'Biyoplastik Üretimi: Meyve Kabuklarından Biyo-Çözünür Poşet Geliştirilmesi',
-                summary: 'Petrol türevi plastik atıkları azaltmak amacıyla muz, portakal ve elma kabuklarından nişasta bazlı, doğada 60 günde tamamen çözünebilen biyo-plastik poşet ve ambalaj filmi geliştirilmesi.',
-                problem: 'Geleneksel petrol kökenli plastiklerin doğada yüzyıllarca parçalanmaması, mikroplastik kirliliği oluşturması ve deniz ekosistemini tehdit etmesi.',
-                hypothesis: 'Meyve kabuğu atıklarından elde edilen nişasta ve bitkisel gliserin karışımı ile üretilen biyoplastik filmler, standart naylon poşet kadar gerilme direncine sahip olup toprakta 60 gün içinde tamamen biyolojik olarak çözünür.',
-                independentVar: 'Kullanılan meyve kabuğu türü ve karışıma eklenen gliserin oranı (%)',
-                dependentVar: 'Biyoplastiğin gerilme ve kopma direnci (N/mm²) ile toprakta çözünme hızı (gün)',
-                controlledVar: 'Isıtma sıcaklığı (85°C), karıştırma süresi, kurutma koşulları ve nişasta miktarı',
-                steps: [
-                    'Muz ve portakal kabukları fırında 60°C\'de kurutulduktan sonra öğütülerek un haline getirilir.',
-                    'Destile su, mısır nişastası, elma sirkesi ve gliserin eklenerek karışım 85°C\'de homojen jel kıvamına gelene dek pişirilir.',
-                    'Teflon kalıplara 1 mm kalınlığında dökülerek 48 saat oda sıcaklığında kurumaya bırakılır.',
-                    'Elde edilen film numunelerinin mekanik gerilme direnci dinamometreyle, toprakta çözünürlüğü ise 60 günlük saksı testiyle ölçülür.'
-                ],
-                tags: ['Biyoplastik', 'Sıfır Atık', 'Biyobozunur', 'Çevre Bilimi']
-            },
-            {
-                id: 'proj-2204b-2',
-                category: 'tubitak-2204b',
-                categoryName: 'TÜBİTAK 2204-B',
-                badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                badgeBorder: 'border-emerald-200/90',
-                dotClass: 'bg-emerald-500',
-                ringClass: 'ring-emerald-300/40',
-                themeColor: 'emerald',
-                area: 'Fizik & Tarım Teknolojileri',
-                level: 'Ortaokul Araştırma (6-8. Sınıf)',
-                icon: 'fa-solid fa-magnet text-emerald-600',
-                title: 'Akıllı Tarım: Manyetik Alanın Tohum Çimlenme Hızına Etkisi',
-                summary: 'Farklı şiddetteki manyetik alanların (Neodimyum mıknatıslar) fasulye ve buğday tohumlarının çimlenme süresi, kök gelişim hızı ve biyokütle artışına etkisinin deneysel analizi.',
-                problem: 'Kuraklık ve küresel iklim krizi koşullarında tohumların daha hızlı çimlenmesini sağlayacak kimyasalsız ve çevre dostu tarımsal verimlilik yöntemlerine duyulan ihtiyaç.',
-                hypothesis: 'Ekim öncesinde kontrollü manyetik alana (500-1500 Gauss) maruz bırakılan tohumlar, kontrol grubuna göre en az %30 daha erken çimlenir ve daha güçlü kök sistemi geliştirir.',
-                independentVar: 'Uygulanan manyetik alan şiddeti (Gauss) ve tohumların maruz kalma süresi (saat)',
-                dependentVar: 'Çimlenme başlangıç günü, kök-gövde uzunluğu (cm) ve fidenin yaş/kuru biyokütlesi (gram)',
-                controlledVar: 'Günlük ışık alma süresi (12 saat), oda sıcaklığı (22°C), toprak türü ve sulama miktarı (25 ml/gün)',
-                steps: [
-                    'Özdeş fasulye ve buğday tohumları kontrol (0 G), 500 G ve 1500 G Neodimyum manyetik alanlarında 24 saat bekletilir.',
-                    'Tohumlar özdeş nemli çimlendirme kaplarına ve torf saksılarına standart derinlikte ekilir.',
-                    'Çimlenme anı ve ilk yaprak çıkışları her gün aynı saatte fotoğraflanarak cetvelle ölçülür.',
-                    '14. gün sonunda kök boyları ve hassas terazide kuru biyokütleleri ölçülerek istatistiksel analiz yapılır.'
-                ],
-                tags: ['Manyetizma', 'Akıllı Tarım', 'Çimlenme Hızı', 'Fizik']
-            },
-            {
-                id: 'proj-2204b-3',
-                category: 'tubitak-2204b',
-                categoryName: 'TÜBİTAK 2204-B',
-                badgeBg: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-                badgeBorder: 'border-emerald-200/90',
-                dotClass: 'bg-emerald-500',
-                ringClass: 'ring-emerald-300/40',
-                themeColor: 'emerald',
-                area: 'Kimya & Sürdürülebilirlik',
-                level: 'Ortaokul Araştırma (5-8. Sınıf)',
-                icon: 'fa-solid fa-droplet text-emerald-600',
-                title: 'Su Tasarrufu: Gri Suyun Zeolit Filtre ile Geri Kazanımı',
-                summary: 'Evsel lavabo ve duş atık sularının doğal klinoptilolit zeoliti, kuvars kumu ve aktif karbon filtre katmanlarından geçirilerek bahçe sulama standartlarına getirilmesi.',
-                problem: 'Tatlı su kaynaklarının hızla tükenmesi ve evlerde kullanılan hafif kirli suların (gri su) geri kazanılmadan doğrudan kanalizasyona karışması.',
-                hypothesis: 'Doğal zeolit ve aktif karbon katmanlı filtre düzeneği, evsel gri sudaki bulanıklığı %85+, deterjan fosfat ve yüzey aktif maddelerini %70+ oranında gidererek sulama suyu kalitesine ulaştırır.',
-                independentVar: 'Kullanılan zeolit minerali tane boyutu (mm) ve filtre kolonundaki katman kalınlığı',
-                dependentVar: 'Arıtılan suyun pH değeri, bulanıklık derecesi (NTU) ve elektriksel iletkenliği (EC)',
-                controlledVar: 'Giriş suyu kaynağı (standart duş sabunlu suyu), filtre debisi (50 ml/dk) ve ortam sıcaklığı',
-                steps: [
-                    'Şeffaf akrilik filtre kolonuna çakıl, kuvars kumu, granül klinoptilolit zeolit ve aktif karbon sırayla doldurulur.',
-                    'Evsel gri su numuneleri kontrollü yerçekimi akışıyla filtre kolonundan geçirilir.',
-                    'Filtre giriş ve çıkış sularının pH, bulanıklık ve iletkenlik değerleri dijital problarla ölçülür.',
-                    'Elde edilen arıtılmış su ile okul bahçesindeki süs bitkileri 21 gün sulanarak bitki gelişiminde olumsuz etki olup olmadığı gözlenir.'
-                ],
-                tags: ['Su Tasarrufu', 'Zeolit Filtre', 'Geri Kazanım', 'Kimya']
-            },
-            {
-                id: 'proj-4006-1',
-                category: 'tubitak-4006',
-                categoryName: 'TÜBİTAK 4006',
-                badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
-                badgeBorder: 'border-blue-200/90',
-                dotClass: 'bg-blue-500',
-                ringClass: 'ring-blue-300/40',
-                themeColor: 'blue',
-                area: 'Fizik / Araştırma Projesi',
-                level: '5, 6 ve 7. Sınıf Fuar Sergisi',
-                icon: 'fa-solid fa-flask-vial text-blue-600',
-                title: 'Farklı Sıvıların Yüzey Gerilimlerinin Karşılaştırılması',
-                summary: 'Saf su, tuzlu su, zeytinyağı, gliserin ve deterjanlı suyun yüzey gerilim katsayılarının madeni para üzerine damla sayma ve kılcal boruda yükselme yöntemleriyle deneysel karşılaştırılması.',
-                problem: 'Sıvı molekülleri arasındaki kohezyon kuvvetlerinin ve yüzey geriliminin gözle görülür somut deneylerle anlaşılmasındaki güçlük.',
-                hypothesis: 'Moleküller arası hidrojen bağı kuvvetli olan saf su madeni para üzerinde en fazla damlayı tutarken; bulaşık deterjanı yüzey gerilimini belirgin şekilde düşürür.',
-                independentVar: 'Test edilen sıvı türü ve karışıma eklenen deterjan miktarı (damla)',
-                dependentVar: 'Madeni paranın taşmadan tutabildiği maksimum damla sayısı ve kılcal cam borudaki sıvı seviyesi',
-                controlledVar: 'Damlalık ucu çapı, test edilen 1 TL madeni paranın yüzeyi ve ortam sıcaklığı (20°C)',
-                steps: [
-                    'Yatay teraziye yerleştirilmiş özdeş 1 TL madeni paralar alkol ile temizlenip kurutulur.',
-                    'Aynı damlalık dik açıyla tutularak paranın üzerine sıvı taşana kadar damlalar tek tek sayılır.',
-                    'Her sıvı için deney 5 kez tekrarlanır ve ortalamaları alınarak standart sapma hesaplanır.',
-                    'Kılcal borulardaki yükselme milimetrik kumpasla ölçülüp fuar standında ziyaretçilerin interaktif denemesi sağlanır.'
-                ],
-                tags: ['Yüzey Gerilimi', 'Kohezyon', 'Kılcallık', 'Fizik']
-            },
-            {
-                id: 'proj-4006-2',
-                category: 'tubitak-4006',
-                categoryName: 'TÜBİTAK 4006',
-                badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
-                badgeBorder: 'border-blue-200/90',
-                dotClass: 'bg-blue-500',
-                ringClass: 'ring-blue-300/40',
-                themeColor: 'blue',
-                area: 'Fizik / Tasarım Projesi',
-                level: '6, 7 ve 8. Sınıf Fuar Sergisi',
-                icon: 'fa-solid fa-temperature-arrow-down text-blue-600',
-                title: 'Geleneksel ve Modern İzolasyon Malzemelerinin Isı Yalıtım Performansı',
-                summary: 'Koyun yünü keçesi, strafor (EPS), cam yünü, saman ve karton ile yalıtılmış özdeş ahşap maket evlerin ısı tutma ve soğuma hızlarının dijital termometrelerle karşılaştırılması.',
-                problem: 'Binalarda kışın ısı kaybı, yazın aşırı ısınma nedeniyle artan enerji faturası ve sentetik yalıtım malzemelerinin çevreye olumsuz etkileri.',
-                hypothesis: 'Doğal koyun yünü keçesi ve saman, petrol kökenli strafor kadar yüksek bir ısı yalıtım katsayısı sağlayarak çevre dostu ekonomik bir yalıtım alternatifi oluşturur.',
-                independentVar: 'Maket evlerin duvar ve çatısına uygulanan yalıtım malzemesi türü',
-                dependentVar: 'Maket ev içerisindeki sıcak su kabının 60 dakikadaki sıcaklık düşüş grafiği (°C/dk)',
-                controlledVar: 'Maket ev boyutu (20x20x20 cm), malzeme kalınlığı (2 cm), başlangıç su sıcaklığı (80°C)',
-                steps: [
-                    'Özdeş kontrplaktan 5 adet maket ev inşa edilir; iç duvarlar 2 cm kalınlığında farklı malzemelerle kaplanır.',
-                    'Evlerin tam merkezine 80°C sıcaklıkta 200 ml sıcak su dolu beherglaslar yerleştirilir.',
-                    'Her evin içine yerleştirilen dijital prob termometrelerle 60 dakika boyunca her 5 dakikada bir sıcaklık kaydedilir.',
-                    'Elde edilen sıcaklık-zaman grafikleri renkli afiş üzerinde karşılaştırmalı olarak fuar ziyaretçilerine sunulur.'
-                ],
-                tags: ['Isı Yalıtımı', 'Enerji Verimliliği', 'Doğal Keçe', 'Tasarım']
-            },
-            {
-                id: 'proj-4006-3',
-                category: 'tubitak-4006',
-                categoryName: 'TÜBİTAK 4006',
-                badgeBg: 'bg-blue-50 text-blue-800 border-blue-200',
-                badgeBorder: 'border-blue-200/90',
-                dotClass: 'bg-blue-500',
-                ringClass: 'ring-blue-300/40',
-                themeColor: 'blue',
-                area: 'Biyoloji / İnceleme Projesi',
-                level: '5-8. Sınıf Fuar Sergisi',
-                icon: 'fa-solid fa-seedling text-blue-600',
-                title: 'Yöremizdeki Endemik Bitkilerin Tıbbi Özellikleri',
-                summary: 'Bölgemizde yetişen yabani dağ kekiği, kantaron, adaçayı ve geven bitkilerinin halk hekimliğindeki geleneksel kullanımı ile bilimsel literatürdeki etken maddelerinin incelenip herbaryum sergisi yapılması.',
-                problem: 'Yöresel şifalı bitki kültürünün kaybolma riski ve öğrencilerin yakın çevresindeki endemik florayı yeterince tanımaması.',
-                hypothesis: 'Yöremizde halk arasında üst solunum yolları ve yara iyileşmesinde kullanılan yabani bitkiler, bilimsel farmakolojik literatürdeki antimikrobiyal etken maddelerle tam örtüşmektedir.',
-                independentVar: 'İncelenen tıbbi ve aromatik bitki türleri ve toplandığı rakım/coğrafi bölge',
-                dependentVar: 'Geleneksel kullanım alanları ile bilimsel literatürdeki biyoaktif bileşiklerin eşleşme oranı',
-                controlledVar: 'Herbaryum hazırlama, kurutma ve etiketleme standartları',
-                steps: [
-                    'Kırsal bölgelerde arazi çalışması yapılarak bitkilerin canlı halleri fotoğraflanır ve koordinatları alınır.',
-                    'Örnekler gazete kağıtları arasında preslenerek standart botanik herbaryum kartoteksine dönüştürülür.',
-                    'Köy muhtarları, yaşlılar ve yerel aktarlarla yarı yapılandırılmış mülakatlar yapılır.',
-                    'Bitkilerin etken maddeleri (timol, karvakrol, hiperisin) üniversite araştırma kaynaklarından taranarak sergi panoları hazırlanır.'
-                ],
-                tags: ['Endemik Bitkiler', 'Herbaryum', 'Etnobotanik', 'Biyoloji']
-            },
-            {
-                id: 'proj-tekno-1',
-                category: 'teknofest',
-                categoryName: 'TEKNOFEST',
-                badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-                badgeBorder: 'border-amber-200/90',
-                dotClass: 'bg-amber-500',
-                ringClass: 'ring-amber-300/40',
-                themeColor: 'amber',
-                area: 'Eğitim Teknolojileri / Yapay Zekâ',
-                level: 'TEKNOFEST İnsanlık Yararına Teknoloji',
-                icon: 'fa-solid fa-microchip text-amber-600',
-                title: 'Yapay Zekâ Destekli Görme Engelliler İçin Akıllı Fen Laboratuvar Asistanı',
-                summary: 'Görme engelli öğrencilerin fen dersi deneylerini tek başına güvenle yapabilmesi için sıvı seviyesini, renk değişimlerini (asit-baz turnusol) ve sıcaklığı anlık sesli olarak bildiren akıllı cihaz prototipi.',
-                problem: 'Görme engelli öğrencilerin fen laboratuvarlarında turnusol kağıdı renk değişimini, beherdeki sıvı taşmasını ve termometre ibresini görememeleri sebebiyle deneylere aktif katılamaması.',
-                hypothesis: 'Ultrasonik mesafe, renk sensörü ve gömülü yapay zekâ ses sentezleyicisi entegrasyonu, görme engelli öğrencilerin fen deneylerini %100 bağımsız ve hatasız tamamlamasını sağlar.',
-                independentVar: 'Sensör algılama mesafesi, sıvı rengi tonları ve ışık yoğunluğu',
-                dependentVar: 'Sesli uyarının tepki süresi (milisaniye) ve indikatör rengini doğru tanıma yüzdesi (%)',
-                controlledVar: 'İşlemci mimarisi (ESP32), batarya gerilimi (5V) ve ses sentezleme kütüphanesi',
-                steps: [
-                    'ESP32 mikrodenetleyici kartına TCS3200 renk sensörü, DS18B20 su geçirmez ısı probu ve ultrasonik seviye sensörü bağlanır.',
-                    'Sensör verilerini işleyip Türkçe sesli uyarılara ("Dikkat: Sıvı 80 dereceye ulaştı", "Çözelti maviye döndü - Bazik") dönüştüren yazılım kodlanır.',
-                    'Farklı asit, baz ve tuz çözeltileriyle 50 farklı deney yapılarak renk ve seviye tanıma doğruluğu test edilir.',
-                    '3D yazıcı ile taşınabilir ergonomik gövde basılarak görme engelli öğrenciye kulaklıkla kullanım testi yaptırılır.'
-                ],
-                tags: ['Yapay Zekâ', 'Engelsiz Fen', 'Sensör', 'İnovasyon']
-            },
-            {
-                id: 'proj-tekno-2',
-                category: 'teknofest',
-                categoryName: 'TEKNOFEST',
-                badgeBg: 'bg-amber-50 text-amber-800 border-amber-200',
-                badgeBorder: 'border-amber-200/90',
-                dotClass: 'bg-amber-500',
-                ringClass: 'ring-amber-300/40',
-                themeColor: 'amber',
-                area: 'Çevre & Enerji Teknolojileri',
-                level: 'TEKNOFEST Çevre & Enerji',
-                icon: 'fa-solid fa-smog text-amber-600',
-                title: 'Mikroalg Filtreli Kentsel Hava Temizleme Kulesi',
-                summary: 'Yoğun trafikli kavşak ve okul bahçelerinde havayı temizlemek amacıyla fotosentez hızı ağaçlardan 10 kat yüksek olan Chlorella mikroalgleri içeren dikey fotobiyoreaktör kule tasarımı.',
-                problem: 'Şehir merkezlerinde ve okul çevrelerinde araç egzozlarından kaynaklanan yüksek CO₂ ve partikül madde (PM2.5) kirliliğinin öğrenci sağlığını tehdit etmesi.',
-                hypothesis: 'Dikey akrilik kolonlarda yetiştirilen Chlorella vulgaris mikroalg kültürü, içinden geçirilen havadaki CO₂ oranını 1 saatte en az %45 oranında azaltır ve ortama zengin oksijen verir.',
-                independentVar: 'Hava akış debisi (L/dk) ve mikroalg kolonunu aydınlatan LED dalga boyu (mavi-kırmızı oranları)',
-                dependentVar: 'Çıkış havasındaki CO₂ konsantrasyonu (ppm) ve filtrelenen partikül madde miktarı',
-                controlledVar: 'Alg biyokütle yoğunluğu (OD680), besiyeri formülasyonu ve sıvı sıcaklığı (24°C)',
-                steps: [
-                    'Şeffaf silindirik akrilik kolon içine steril Chlorella vulgaris alg kültürü ve besiyeri yerleştirilir.',
-                    'Giriş hava pompası ve seramik difüzör ile kirli ortam havası tabandan mikro kabarcıklar halinde sıvıya enjekte edilir.',
-                    'MQ-135 ve PMS5003 hava kalite sensörleri ile giriş ve çıkış havasındaki CO₂ ve PM2.5 değerleri kaydedilir.',
-                    'Güneş paneli destekli sistem dikey bir okul bahçesi mobilyası prototipi olarak test edilir.'
-                ],
-                tags: ['Mikroalg', 'Fotobiyoreaktör', 'Hava Kalitesi', 'Çevre']
-            },
-            {
-                id: 'proj-etwin-1',
-                category: 'etwinning',
-                categoryName: 'etwinning',
-                badgeBg: 'bg-rose-50 text-rose-800 border-rose-200',
-                badgeBorder: 'border-rose-200/90',
-                dotClass: 'bg-rose-500',
-                ringClass: 'ring-rose-300/40',
-                themeColor: 'rose',
-                area: 'Sürdürülebilir Çevre & Uluslararası İş Birliği',
-                level: 'eTwinning Uluslararası (5-8. Sınıf)',
-                icon: 'fa-solid fa-earth-americas text-rose-600',
-                title: 'Young Scientists for Green Planet',
-                summary: 'Türkiye, İtalya, Polonya ve Romanya ortaklığında öğrencilerin karbon ayak izini hesapladığı, okul bostanında kompost ürettiği ve iklim eylemi dijital çizgi romanı hazırladığı uluslararası çevre projesi.',
-                problem: 'İklim krizine karşı genç nesillerin küresel boyutta aktif sorumluluk alması ve fen bilimlerini yabancı dil entegrasyonuyla pratik etme ihtiyacı.',
-                hypothesis: 'Farklı ülkelerdeki akranlarla yürütülen ortak çevre eylemleri ve dijital iş birliği görevleri, öğrencilerin çevre okuryazarlığı ve fen motivasyonunu %60+ oranında artırır.',
-                independentVar: 'Uygulanan uluslararası çevre modülleri (Kompost, Su Tasarrufu, Sıfır Atık)',
-                dependentVar: 'Öğrenci çevre tutum ölçeği puanları ve okul bazında azaltılan plastik atık miktarı (kg)',
-                controlledVar: 'Proje süresi (6 ay), katılımcı öğrenci yaş aralığı (10-14 yaş) ve dijital güvenlik kuralları',
-                steps: [
-                    'TwinSpace platformunda Türkiye, İtalya, Polonya ve Romanya öğrencileri karma uluslararası takımlara ayrılır.',
-                    'Her ay bir tema belirlenerek okul bahçelerinde kompost üretimi ve yağmur suyu hasadı düzenekleri kurulur.',
-                    'Öğrenciler Web 2.0 araçlarıyla ortak çok dilli "Genç Bilim İnsanları Yeşil Gezegen Rehberi" e-kitabını oluşturur.',
-                    'Proje sonunda Ulusal ve Avrupa Kalite Etiketi (Quality Label) başvuru dosyası tamamlanır.'
-                ],
-                tags: ['İklim Eylemi', 'TwinSpace', 'Yeşil Gezegen', 'Uluslararası']
-            },
-            {
-                id: 'proj-etwin-2',
-                category: 'etwinning',
-                categoryName: 'etwinning',
-                badgeBg: 'bg-rose-50 text-rose-800 border-rose-200',
-                badgeBorder: 'border-rose-200/90',
-                dotClass: 'bg-rose-500',
-                ringClass: 'ring-rose-300/40',
-                themeColor: 'rose',
-                area: 'Disiplinlerarası STEM & Mühendislik',
-                level: 'eTwinning Uluslararası STEM',
-                icon: 'fa-solid fa-compass-drafting text-rose-600',
-                title: 'STEM Without Borders',
-                summary: 'Avrupa\'dan 6 okulun katılımıyla öğrencilerin depreme dayanıklı bina, güneş fırını ve temiz su filtreleme düzeneklerini sınır ötesi karma takımlarla tasarlayıp sanal laboratuvarda test ettiği STEM projesi.',
-                problem: 'Fen derslerindeki teorik konuların gerçek hayat mühendislik problemleriyle ve kültürlerarası takım çalışmasıyla ilişkilendirilememesi.',
-                hypothesis: 'Mühendislik tasarım döngüsünün sınır ötesi çevrimiçi takımlarla uygulanması, öğrencilerin fen problem çözme becerilerini ve STEM kariyer ilgilerini belirgin düzeyde artırır.',
-                independentVar: 'Verilen STEM tasarım meydan okuma görevi (Sarsıntı Masası, Güneş Fırını, Su Arıtma)',
-                dependentVar: 'Geliştirilen prototiplerin mühendislik dayanıklılık ve verimlilik test skorları',
-                controlledVar: 'Kullanılan geri dönüştürülebilir malzeme kısıtı ve test simülasyon kriterleri',
-                steps: [
-                    'Karma uluslararası takımlara spagetti ve oyun hamuru ile sarsıntı masasında 30 saniye yıkılmayan kule yapma görevi verilir.',
-                    'Güneş enerjili fırın prototipleri yapılarak aynı gün eşzamanlı sıcaklık ölçüm webinarı düzenlenir.',
-                    'Öğrenciler deney süreçlerini İngilizce video blog ve dijital proje günlüğü olarak paylaşır.',
-                    'Avrupa Kalite Etiketi hedeflenerek ortak fen podcast serisi yayınlanır.'
-                ],
-                tags: ['STEM', 'Mühendislik', 'Deprem Modeli', 'İş Birliği']
-            },
-            {
-                id: 'proj-etwin-codeweek',
-                category: 'etwinning',
-                categoryName: 'eTwinning',
-                badgeBg: 'bg-gradient-to-r from-rose-500 to-amber-500 text-white border-rose-300',
-                badgeBorder: 'border-rose-300',
-                dotClass: 'bg-rose-500',
-                ringClass: 'ring-rose-300/40',
-                themeColor: 'rose',
-                area: '🇪🇺 EU CodeWeek (10 - 25 Ekim 2026)',
-                level: '5, 6 ve 7. Sınıf Kodlama Etkinlikleri',
-                icon: 'fa-solid fa-code text-rose-600',
-                title: 'EU CodeWeek 2026: Code for a Greener Planet (10 – 25 Ekim 2026)',
-                summary: 'Avrupa Kodlama Haftası kapsamında 5, 6 ve 7. sınıf öğrencileri için hazırlanan; akıllı tahta ve yazdırılabilir A4 formatında algoritmik düşünme, akıllı sulama ve geri dönüşüm kodlama föyleri.',
-                problem: 'Fen bilimleri öğretiminde algoritmik düşünme, sıralı komutlar ve koşul bloklarının çevre ve sürdürülebilirlik gibi gerçek hayat problemleriyle yeterince pratik edilmemesi.',
-                hypothesis: 'Renkli görsel çalışma kağıtları ve akıllı tahta algoritmalarıyla zenginleştirilen çevre kodlama etkinlikleri, öğrencilerin problem çözme ve fen motivasyonunu %80+ artırır.',
-                independentVar: 'Uygulanan sınıf düzeyi algoritmik görevleri (Sıralı komut, Koşul blokları, Karar matrisi)',
-                dependentVar: 'Öğrencilerin akış şeması ve algoritma kurma başarı yüzdesi ile çevre bilinci',
-                controlledVar: 'Uygulama süresi (1 ders saati), A4 çalışma föyü standartları ve hedef kazanımlar',
-                steps: [
-                    '5. Sınıf: "Geri Dönüşüm Robotu" (Yönleri Kodla & Atıkları Ayır) ve "Temiz Dünya Algoritması" föyleri uygulanır.',
-                    '6. Sınıf: "Akıllı Sulama Kararları" (Eğer... İse koşulları) ve "Geri Dönüşüm Dedektifi" (Karar matrisi & hata avcısı) çözülür.',
-                    '7. Sınıf: "Akıllı Şehir & Yenilenebilir Enerji Şebekesi" ve "Karbon Ayak İzi Simülatörü" algoritmaları tamamlanır.',
-                    'Öğrenci çalışmaları sınıfta ve okul panosunda sergilenerek EU CodeWeek haritasına işlenir ve katılım belgeleri verilir.'
-                ],
-                tags: ['CodeWeek', 'eTwinning', 'Algoritma', 'Yeşil Gezegen', '5-6-7. Sınıf']
-            }
-        ],
-        codeWeekGradeTab: '5',
-        codeWeekActivities: [
-            {
-                id: 'cw-5-1',
-                grade: '5',
-                badge: '5. SINIF • ETKİNLİK 1',
-                title: 'Geri Dönüşüm Robotu',
-                outcome: 'Sıralı komutlar ve sınıflandırma',
-                subtitle: 'Akıllı tahtada birlikte çözebilir, kâğıt üzerinde bireysel yapabilirsin.',
-                image: 'assets/codeweek/5-sinif-etkinlik-1-geri-donusum-robotu.jpg',
-                description: 'Geri dönüşüm robotunun merkeze ulaşması için 6 sıralı komut yazma, 8 farklı atığı uygun geri dönüşüm kutularıyla eşleştirme ve kâğıdın geri dönüşüm adımlarını sıralama etkinliği.',
-                sections: [
-                    '1. Yönleri Kodla: Robotun geri dönüşüm merkezine ulaşması için 6 komut yaz (ileri, sağa dön, sola dön)',
-                    '2. Atıkları Ayır: Cam şişe, gazete, pil, muz kabuğu, plastik şişe, karton kutu, konserve ve yaprak atıklarını Kâğıt, Plastik, Cam ve Organik kutularıyla eşleştir',
-                    '3. Algoritmayı Sırala: Kâğıdın geri dönüşüm sürecini 1\'den 5\'e kadar doğru adımlarla sırala',
-                    '4. Düşün ve Yaz: Geri dönüşüm neden önemlidir? Evde hangi atıkları ayırabilirsin?'
-                ],
-                themeColor: 'emerald',
-                motto: 'Rotamız Fen • Code for a Greener Planet!'
-            },
-            {
-                id: 'cw-5-2',
-                grade: '5',
-                badge: '5. SINIF • ETKİNLİK 2',
-                title: 'Temiz Dünya Algoritması',
-                outcome: 'Algoritma kurma, sıralama ve çevre farkındalığı',
-                subtitle: 'Adımları sırala, doğru seçimi yap, çevreni koru!',
-                image: 'assets/codeweek/5-sinif-etkinlik-2-temiz-dunya-algoritmasi.jpg',
-                description: 'Gereksiz ışıkları kapatarak enerji tasarrufu yapma algoritması, atıkların Geri Dönüşür / Yeniden Kullanılır / Çöpe Atılır olarak sınıflandırılması ve ışık düğmesine giden kodlama yolu.',
-                sections: [
-                    '1. Adımları Sırala: Gereksiz ışıkları kapatıp enerji tasarrufu yapmak için doğru adımları 1\'den 6\'ya sırala',
-                    '2. Doğru Kutuyu Seç: Plastik şişe, karton, cam kavanoz, muz kabuğu, kâğıt ve eski tişörtü doğru kutuyla eşleştir',
-                    '3. Kodlama Yolu: Çocuğun hem ışık düğmesine hem de geri dönüşüm kutusuna gitmesi için 1\'den 8\'e komut yaz',
-                    '4. Benim Çevre Sözüm: Bugün çevre için, okulda ve evde enerji tasarrufu taahhütlerini doldur'
-                ],
-                themeColor: 'emerald',
-                motto: 'Düşün, Planla, Uygula, Daha Yeşil Bir Gelecek İçin!'
-            },
-            {
-                id: 'cw-6-1',
-                grade: '6',
-                badge: '6. SINIF • ETKİNLİK 1',
-                title: 'Akıllı Sulama Kararları',
-                outcome: 'Koşullu ifadeler ve tekrar eden işlemler (Eğer... ise)',
-                subtitle: 'Koşullara göre doğru kararı ver!',
-                image: 'assets/codeweek/6-sinif-etkinlik-1-akilli-sulama-kararlari.jpg',
-                description: 'Toprak nemine, yağış durumuna ve hava sıcaklığına göre bitkilerin sulanmasıyla ilgili "Eğer... İse..." mantığı, sulama örüntüleri döngüsü ve tam akış şeması (Flowchart) tamamlama.',
-                sections: [
-                    '1. Eğer... İse...: Toprak kuruysa, yağmur yağıyorsa, hava çok sıcaksa sulama sonuçlarını tamamla',
-                    '2. Karar Ver: 8 farklı durumda Sula, Sulama veya Kontrol Et butonunu işaretle',
-                    '3. Döngüleri Bul: Sulama programlarındaki kuralı bulup örüntüyü 3 adım devam ettir',
-                    '4. Akış Şeması Tamamla: Başla -> Toprak kuru mu? -> Sula / Sulama -> Bitir blok diyagramını doldur'
-                ],
-                themeColor: 'blue',
-                motto: 'Doğayı Koru, Geleceği Sula! Doğru Zamanda Doğru Miktar Su!'
-            },
-            {
-                id: 'cw-6-2',
-                grade: '6',
-                badge: '6. SINIF • ETKİNLİK 2',
-                title: 'Geri Dönüşüm Dedektifi',
-                outcome: 'Sınıflandırma, karar verme ve problem çözme',
-                subtitle: 'İpuçlarını incele, doğru kararı kodla!',
-                image: 'assets/codeweek/6-sinif-etkinlik-2-geri-donusum-dedektifi.jpg',
-                description: 'Cam, plastik, kağıt ve metal malzeme özelliklerini ipuçlarından çıkarma, matris tablosunda karar verme, görseldeki 5 geri dönüşüm hatasını bulma ve sınıf atık azaltma önerileri.',
-                sections: [
-                    '1. İpuçlarını Oku: Şeffaftır/kırılabilir, hafiftir/incedir, esnektir, parlaktır ipuçlarıyla malzemeyi bul',
-                    '2. Koşula Göre Seç: Atık temiz mi, tekrar kullanılabilir mi, geri dönüştürülebilir mi matrisini işaretle',
-                    '3. Hata Avcısı: Okul bahçesi geri dönüşüm görselindeki 5 hatayı tespit et',
-                    '4. Mini Görev: Sınıfımızda atık miktarını azaltmak için 3 somut öneri yaz'
-                ],
-                themeColor: 'blue',
-                motto: 'Az Tüket, Tekrar Kullan, Geri Dönüştür, Daha Temiz Yarınlar İçin!'
-            },
-            {
-                id: 'cw-7-1',
-                grade: '7',
-                badge: '7. SINIF • ETKİNLİK 1',
-                title: 'Akıllı Sera Algoritmaları',
-                outcome: 'Veri yorumlama, koşul ve algoritma kurma',
-                subtitle: 'Sensör verilerine göre sistemi yönet!',
-                image: 'assets/codeweek/7-sinif-etkinlik-1-akilli-sera-algoritmalari.jpg',
-                description: 'Sıcaklık, nem, ışık ve toprak nemi sensör verilerine göre havalandırma fanı, damla sulama ve lambaların yönetilmesi; koşullu karar ağacı ve akış şeması (Flowchart) tamamlama.',
-                sections: [
-                    '1. Veriyi Oku: Sıcaklık, nem, ışık (lüks) ve toprak yüzdesine göre fan, sulama ve lamba eylemlerini belirle',
-                    '2. Koşulu Tamamla: Sıcaklık çok yüksekse (>30°C), düşükse (<20°C), toprak kuruysa (<%30), ışık azsa (<200 lüks) kararlarını yaz',
-                    '3. Akış Şeması: Başla -> Sıcaklık > 30°C mi? -> Toprak nemi < %30 mu? -> Işık < 200 lüks mü? karar diyagramını doldur',
-                    '4. Kodlama Sorusu: Sıcaklık yüksek (32°C) ve toprak kuru (%25) senaryosunda doğru komut sırasını ve lambayı açan koşulu işaretle'
-                ],
-                themeColor: 'purple',
-                motto: 'Teknoloji Daha Yeşil Yarınlar İçin • Akıllı Seralar Daha Temiz Bir Dünya İçin!'
-            },
-            {
-                id: 'cw-7-2',
-                grade: '7',
-                badge: '7. SINIF • ETKİNLİK 2',
-                title: 'Yeşil Okul Veri Görevi',
-                outcome: 'Veri analizi, yorumlama ve sürdürülebilir çözüm üretme',
-                subtitle: 'Verileri analiz et, en iyi çözümü seç!',
-                image: 'assets/codeweek/7-sinif-etkinlik-2-yesil-okul-veri-gorevi.jpg',
-                description: 'Okulun haftalık elektrik tüketimi sütun grafiğini inceleme, enerji ve su israfı sorunlarını tespit etme, teneffüste açık kalan cihazlara sürdürülebilir çözümler bulma ve Yeşil Okul projesi tasarlama.',
-                sections: [
-                    '1. Grafiği İncele: Pazartesi-Cuma elektrik tüketimini (kWh) analiz et, en fazla/en az günleri ve perşembe artış nedenini açıkla',
-                    '2. Sorunu Bul: Açık kalan ışıklar, damlayan musluklar, gereksiz çıktılar ve açık pencereler için Enerji Kaybı / Su İsrafı / Doğru Uygulama işaretle',
-                    '3. En Uygun Çözüm: Teneffüste açık kalan bilgisayarlar, çok sıcak sınıflar ve yemekhane atıkları için en sürdürülebilir çözümü seç',
-                    '4. Tasarım Köşesi: "Benim Yeşil Okul Fikrim" alanına okulunu daha çevreci yapacak projenin adını, çizimini ve işe yarayışını yaz'
-                ],
-                themeColor: 'purple',
-                motto: 'Doğayı Koru, Enerjiyi Tasarruf Et, Geri Dönüştür • Küçük Fikirler Büyük Değişimler Yaratır!'
-            }
-        ],
+        codeWeekActivities: window.CODEWEEK_ACTIVITIES || [],
         matchesCodeWeekGrade(act) {
-            return this.codeWeekGradeTab === 'all' || act.grade === this.codeWeekGradeTab;
-        },
-        toggleDetails(id) {
-            this.expandedProjectId = this.expandedProjectId === id ? null : id;
-        },
-        copyProject(title) {
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(title).then(() => {
-                    if (typeof showToast === 'function') {
-                        showToast('📋 Proje başlığı panoya kopyalandı!', 'success');
-                    }
-                }).catch(() => {});
-            }
-        },
-        matchesFilter(p) {
-            const matchesCat = this.activeCategory === 'all' || p.category === this.activeCategory;
-            if (!matchesCat) return false;
+            if (this.codeWeekGradeTab !== 'all' && act.grade !== this.codeWeekGradeTab) return false;
             if (!this.searchQuery || !this.searchQuery.trim()) return true;
             const q = this.searchQuery.toLowerCase().trim();
-            return (p.title && p.title.toLowerCase().includes(q)) ||
-                   (p.area && p.area.toLowerCase().includes(q)) ||
-                   (p.summary && p.summary.toLowerCase().includes(q)) ||
-                   (p.tags && p.tags.some(t => t.toLowerCase().includes(q)));
+            return (act.title && act.title.toLowerCase().includes(q)) ||
+                   (act.outcome && act.outcome.toLowerCase().includes(q)) ||
+                   (act.description && act.description.toLowerCase().includes(q)) ||
+                   (act.subtitle && act.subtitle.toLowerCase().includes(q)) ||
+                   (act.badge && act.badge.toLowerCase().includes(q));
         },
-        get filteredCount() {
-            return this.projects.filter(p => this.matchesFilter(p)).length;
+        get filteredActivitiesCount() {
+            return this.codeWeekActivities.filter(a => this.matchesCodeWeekGrade(a)).length;
         },
         openCodeWeekModal(act) {
             if (act && act.image) {
@@ -7797,132 +7443,130 @@ window.projectFilterData = function() {
 
 function renderProjectsPage(container) {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-    const hiddenProjects = getHiddenProjects();
-    const allCategories = getProjectCategoriesWithCustom();
-    const visibleCategories = allCategories.filter(c => !hiddenProjects.includes(c.id));
 
     container.innerHTML = `
         <div x-data="projectFilterData()" class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 animate-in fade-in duration-300">
-            <!-- 🌟 Üst Başlık & Açıklama Alanı -->
-            <div class="mb-8 text-center max-w-3xl mx-auto">
-                <span class="px-4 py-1.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-black tracking-wider uppercase inline-flex items-center gap-2 mb-3 shadow-2xs">
-                    <i class="fa-solid fa-trophy text-amber-500"></i>
-                    <span>BİLİMSEL ÜRETİM & YARIŞMALAR</span>
-                </span>
-                <h2 class="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-3">
-                    Proje Filtreleme ve Listeleme Alanı
-                </h2>
-                <p class="text-sm sm:text-base text-slate-600 font-medium leading-relaxed">
-                    TÜBİTAK 2204-B, TÜBİTAK 4006, TEKNOFEST ve eTwinning için örnek projeler, hipotez kurguları, araştırma basamakları ve resmî rapor şablonları.
-                </p>
-            </div>
+            <!-- 🌟 EU CODEWEEK ÖZEL BAŞLIK & VİTRİN BANNERI -->
+            <div class="mb-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-sky-950 text-white p-6 sm:p-10 border-2 border-indigo-500/30 shadow-2xl relative overflow-hidden">
+                <!-- Dekoratif Işıklar ve Grid -->
+                <div class="absolute -top-24 -right-24 w-80 h-80 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
 
-            <!-- 🔘 KATEGORİ FİLTRELEME KUTUSU (Ekrana Tam Sığan Kutu İçi Tasarım - Kaydırma Yok) -->
-            <div class="mb-8 max-w-6xl mx-auto bg-slate-100/90 border-2 border-slate-200/90 rounded-3xl p-3 sm:p-4 shadow-xs">
-                <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
-                    <!-- 1. Tüm Projeler (Gri Nokta) -->
-                    <button 
-                        type="button" 
-                        @click="activeCategory = 'all'" 
-                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
-                        :class="activeCategory === 'all' 
-                            ? 'bg-white border-slate-600 text-slate-950 ring-2 ring-slate-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white/80 border-slate-200/90 text-slate-700 hover:bg-white hover:border-slate-400 hover:text-slate-950'"
-                    >
-                        <span class="w-3.5 h-3.5 rounded-full bg-slate-400 ring-2 ring-slate-300/40 shrink-0"></span>
-                        <span>Tüm Projeler</span>
-                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'all' ? 'bg-slate-200 text-slate-900' : 'bg-slate-100 text-slate-600'">11</span>
-                    </button>
+                <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    <div class="space-y-3 max-w-3xl">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <span class="px-3 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1.5 shadow-xs">
+                                <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
+                                <span>EU CodeWeek 2026</span>
+                            </span>
+                            <span class="px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1.5">
+                                <i class="fa-regular fa-calendar text-[11px]"></i>
+                                <span>10 – 25 Ekim 2026</span>
+                            </span>
+                            <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5">
+                                <i class="fa-solid fa-leaf text-[11px]"></i>
+                                <span>Code for a Greener Planet</span>
+                            </span>
+                        </div>
+                        <h2 class="text-2xl sm:text-4xl font-black text-white tracking-tight flex items-center gap-3">
+                            <span class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-indigo-600/50 border border-indigo-400/40 flex items-center justify-center text-indigo-300 text-xl sm:text-2xl shrink-0">
+                                <i class="fa-solid fa-laptop-code"></i>
+                            </span>
+                            <span>AB Kod Haftası: 5, 6 ve 7. Sınıf Fen & Algoritma Etkinlikleri</span>
+                        </h2>
+                        <p class="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
+                            Avrupa Kodlama Haftası (EU Code Week) kapsamında ortaokul Fen Bilimleri dersleri için özel hazırlanan akıllı tahta ve A4 baskı uyumlu algoritmik düşünme, sıralı komutlar, koşullu karar ağaçları ve çevre bilinci çalışma kâğıtları.
+                        </p>
+                    </div>
 
-                    <!-- 2. TÜBİTAK 2204-B Ortaokul Araştırma (Zümrüt Yeşili Nokta) -->
-                    <button 
-                        type="button" 
-                        @click="activeCategory = 'tubitak-2204b'" 
-                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
-                        :class="activeCategory === 'tubitak-2204b' 
-                            ? 'bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white/80 border-emerald-200/90 text-slate-700 hover:bg-emerald-50 hover:border-emerald-400 hover:text-emerald-950'"
-                    >
-                        <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 ring-2 ring-emerald-300/40 shrink-0"></span>
-                        <span>TÜBİTAK 2204-B <span class="hidden md:inline">Ortaokul Araştırma</span></span>
-                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'tubitak-2204b' ? 'bg-emerald-200 text-emerald-900' : 'bg-emerald-50 text-emerald-700'">3</span>
-                    </button>
-
-                    <!-- 3. Okul Bilim Fuarı (TÜBİTAK 4006) (Mavi Nokta) -->
-                    <button 
-                        type="button" 
-                        @click="activeCategory = 'tubitak-4006'" 
-                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
-                        :class="activeCategory === 'tubitak-4006' 
-                            ? 'bg-blue-50 border-blue-500 text-blue-950 ring-2 ring-blue-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white/80 border-blue-200/90 text-slate-700 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-950'"
-                    >
-                        <span class="w-3.5 h-3.5 rounded-full bg-blue-500 ring-2 ring-blue-300/40 shrink-0"></span>
-                        <span><span class="hidden md:inline">Okul Bilim Fuarı </span>(TÜBİTAK 4006)</span>
-                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'tubitak-4006' ? 'bg-blue-200 text-blue-900' : 'bg-blue-50 text-blue-700'">3</span>
-                    </button>
-
-                    <!-- 4. Teknoloji Yarışması (TEKNOFEST) (Kehribar/Turuncu Nokta) -->
-                    <button 
-                        type="button" 
-                        @click="activeCategory = 'teknofest'" 
-                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
-                        :class="activeCategory === 'teknofest' 
-                            ? 'bg-amber-50 border-amber-500 text-amber-950 ring-2 ring-amber-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white/80 border-amber-200/90 text-slate-700 hover:bg-amber-50 hover:border-amber-400 hover:text-amber-950'"
-                    >
-                        <span class="w-3.5 h-3.5 rounded-full bg-amber-500 ring-2 ring-amber-300/40 shrink-0"></span>
-                        <span><span class="hidden md:inline">Teknoloji Yarışması </span>(TEKNOFEST)</span>
-                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'teknofest' ? 'bg-amber-200 text-amber-900' : 'bg-amber-50 text-amber-700'">2</span>
-                    </button>
-
-                    <!-- 5. Avrupa Topluluğu (eTwinning) (Gül Kurusu/Pembe Nokta) -->
-                    <button 
-                        type="button" 
-                        @click="activeCategory = 'etwinning'" 
-                        class="rounded-2xl border-2 px-3.5 py-2 sm:px-4 sm:py-2.5 transition-all duration-200 flex items-center gap-2 font-black text-xs sm:text-sm cursor-pointer select-none active:scale-95 hover:scale-[1.02] transform shadow-xs"
-                        :class="activeCategory === 'etwinning' 
-                            ? 'bg-rose-50 border-rose-500 text-rose-950 ring-2 ring-rose-400/40 shadow-sm scale-[1.02]' 
-                            : 'bg-white/80 border-rose-200/90 text-slate-700 hover:bg-rose-50 hover:border-rose-400 hover:text-rose-950'"
-                    >
-                        <span class="w-3.5 h-3.5 rounded-full bg-rose-500 ring-2 ring-rose-300/40 shrink-0"></span>
-                        <span><span class="hidden md:inline">Avrupa Topluluğu </span>(eTwinning)</span>
-                        <span class="ml-1 text-[11px] px-2 py-0.5 rounded-full font-bold" :class="activeCategory === 'etwinning' ? 'bg-rose-200 text-rose-900' : 'bg-rose-50 text-rose-700'">3</span>
-                    </button>
+                    <!-- İstatistik Rozeti -->
+                    <div class="flex sm:flex-col lg:flex-row items-center gap-3 shrink-0 bg-white/10 backdrop-blur-md px-5 py-4 rounded-3xl border border-white/15 shadow-inner">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white text-xl shadow-md shrink-0">
+                            <i class="fa-solid fa-shapes"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-slate-300 uppercase tracking-wider">Etkinlik Koleksiyonu</div>
+                            <div class="text-lg font-black text-white">6 Özel Çalışma Kâğıdı</div>
+                            <div class="text-[11px] text-emerald-300 font-semibold flex items-center gap-1 mt-0.5">
+                                <i class="fa-solid fa-check"></i> Akıllı Tahta & A4 Baskı Uyumlu
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- 🔍 ARAMA & LİSTELEME İSTATİSTİK BARI -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-6 bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
-                <!-- Sol: Filtre Durumu & Sayaç -->
-                <div class="flex items-center gap-2 text-xs font-bold text-slate-700">
-                    <span class="px-2.5 py-1 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 font-black">
-                        <span x-text="filteredCount"></span> Proje Listeleniyor
-                    </span>
-                    <span class="text-slate-400 hidden sm:inline">•</span>
-                    <span class="text-slate-500 text-[11px] sm:text-xs">
-                        <span x-show="activeCategory === 'all'">Tüm yarışma ve bilim fuarı kategorileri</span>
-                        <span x-show="activeCategory === 'tubitak-2204b'">TÜBİTAK 2204-B Ortaokul Araştırma Projeleri</span>
-                        <span x-show="activeCategory === 'tubitak-4006'">TÜBİTAK 4006 Bilim Fuarı Projeleri</span>
-                        <span x-show="activeCategory === 'teknofest'">TEKNOFEST Teknoloji & Havacılık Projeleri</span>
-                        <span x-show="activeCategory === 'etwinning'">eTwinning Uluslararası Eğitim Projeleri</span>
-                    </span>
+            <!-- 🔘 SINIF SEVİYESİ SEÇİMİ VE ARAMA KUTUSU -->
+            <div class="mb-8 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm">
+                <!-- Sol: Sınıf Sekmeleri (Tümü, 5, 6, 7) -->
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                    <button 
+                        type="button" 
+                        @click="codeWeekGradeTab = 'all'" 
+                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
+                        :class="codeWeekGradeTab === 'all' 
+                            ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 scale-[1.02]' 
+                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'"
+                    >
+                        <i class="fa-solid fa-layer-group text-xs"></i>
+                        <span>Tümü</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === 'all' ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-800'">6</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        @click="codeWeekGradeTab = '5'" 
+                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
+                        :class="codeWeekGradeTab === '5' 
+                            ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-[1.02]' 
+                            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200'"
+                    >
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        <span>5. Sınıf</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '5' ? 'bg-emerald-800 text-white' : 'bg-emerald-200 text-emerald-900'">2</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        @click="codeWeekGradeTab = '6'" 
+                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
+                        :class="codeWeekGradeTab === '6' 
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-[1.02]' 
+                            : 'bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200'"
+                    >
+                        <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
+                        <span>6. Sınıf</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '6' ? 'bg-blue-800 text-white' : 'bg-blue-200 text-blue-900'">2</span>
+                    </button>
+
+                    <button 
+                        type="button" 
+                        @click="codeWeekGradeTab = '7'" 
+                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
+                        :class="codeWeekGradeTab === '7' 
+                            ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 scale-[1.02]' 
+                            : 'bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200'"
+                    >
+                        <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
+                        <span>7. Sınıf</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '7' ? 'bg-purple-800 text-white' : 'bg-purple-200 text-purple-900'">2</span>
+                    </button>
                 </div>
 
                 <!-- Sağ: Arama Kutusu -->
-                <div class="relative min-w-[240px] sm:min-w-[280px]">
+                <div class="relative min-w-[260px] sm:min-w-[300px]">
                     <input 
                         type="text" 
                         x-model="searchQuery" 
-                        placeholder="Proje adı, hipotez veya alana göre ara..." 
-                        class="w-full px-3.5 py-2 pl-9 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-red-500 focus:bg-white transition-all shadow-2xs"
+                        placeholder="Etkinlik adı, kazanım veya anahtar kelime..." 
+                        class="w-full px-4 py-2.5 pl-10 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-semibold text-slate-800 placeholder-slate-400 focus:outline-none focus:border-indigo-500 focus:bg-white transition-all shadow-2xs"
                     >
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
                     <button 
                         type="button" 
                         x-show="searchQuery" 
                         @click="searchQuery = ''" 
-                        class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 text-xs font-bold p-1 cursor-pointer"
+                        class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-600 text-xs font-bold p-1 cursor-pointer"
                         title="Aramayı Temizle"
                     >
                         <i class="fa-solid fa-xmark"></i>
@@ -7930,434 +7574,158 @@ function renderProjectsPage(container) {
                 </div>
             </div>
 
-            <!-- 🇪🇺 EU CODEWEEK 2026 ÖZEL ETKİNLİK ALANI (eTwinning / Kodlama Haftası) -->
-            <div 
-                x-show="activeCategory === 'all' || activeCategory === 'etwinning'" 
-                x-transition:enter="transition-all ease-out duration-300"
-                x-transition:enter-start="opacity-0 -translate-y-2"
-                x-transition:enter-end="opacity-100 translate-y-0"
-                class="mb-10 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-sky-950 text-white p-6 sm:p-8 border-2 border-indigo-500/30 shadow-2xl relative overflow-hidden"
-            >
-                <!-- Dekoratif Arka Plan Işıkları ve Grid deseni -->
-                <div class="absolute -top-24 -right-24 w-80 h-80 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -bottom-24 -left-24 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute inset-0 bg-[radial-gradient(#38bdf8_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none"></div>
-
-                <div class="relative z-10">
-                    <!-- Üst Başlık & Rozetler -->
-                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-6 border-b border-indigo-400/20 mb-6">
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-2 flex-wrap">
-                                <span class="px-3 py-1 rounded-full text-xs font-black bg-rose-500/20 text-rose-300 border border-rose-500/30 flex items-center gap-1.5 shadow-xs">
-                                    <span class="w-2 h-2 rounded-full bg-rose-400 animate-pulse"></span>
-                                    <span>EU CodeWeek 2026</span>
-                                </span>
-                                <span class="px-3 py-1 rounded-full text-xs font-black bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1.5">
-                                    <i class="fa-regular fa-calendar text-[11px]"></i>
-                                    <span>10 – 25 Ekim 2026</span>
-                                </span>
-                                <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-1.5">
-                                    <i class="fa-solid fa-code text-[11px]"></i>
-                                    <span>eTwinning Ortak Kodlama & Algoritma</span>
-                                </span>
-                            </div>
-                            <h3 class="text-xl sm:text-2xl font-black text-white tracking-tight flex items-center gap-2.5">
-                                <i class="fa-solid fa-laptop-code text-rose-400"></i>
-                                <span>AB Kod Haftası: 5, 6 ve 7. Sınıf Fen & Algoritma Etkinlikleri</span>
-                            </h3>
-                            <p class="text-xs sm:text-sm text-slate-300 max-w-3xl font-medium leading-relaxed">
-                                Kodlama ve algoritmik düşünceyi fen bilimleri kazanımlarıyla buluşturuyoruz. 5, 6 ve 7. sınıf seviyelerine uygun interaktif çalışma kağıtlarını inceleyebilir, tam ekran görüntüleyebilir, doğrudan A4 boyutunda yazdırabilir veya indirebilirsiniz.
-                            </p>
-                        </div>
-
-                        <!-- İstatistik / Rozet -->
-                        <div class="flex items-center gap-2 shrink-0 bg-white/10 backdrop-blur-md px-4 py-3 rounded-2xl border border-white/15">
-                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 flex items-center justify-center text-white text-lg shadow-md shrink-0">
-                                <i class="fa-solid fa-shapes"></i>
-                            </div>
-                            <div>
-                                <div class="text-[11px] font-bold text-slate-300">Toplam Etkinlik</div>
-                                <div class="text-sm font-black text-white">6 Çalışma Kâğıdı</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- 🎛️ SINIF SEVİYESİ FİLTRELEME BUTONLARI (5, 6 ve 7. Sınıf) -->
-                    <div class="flex items-center gap-2 overflow-x-auto pb-3 mb-6 scrollbar-none">
-                        <button 
-                            type="button" 
-                            @click="codeWeekGradeTab = '5'" 
-                            class="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
-                            :class="codeWeekGradeTab === '5' 
-                                ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30 scale-105' 
-                                : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white border border-white/10'"
-                        >
-                            <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
-                            <span>5. Sınıf</span>
-                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" :class="codeWeekGradeTab === '5' ? 'bg-emerald-700 text-white' : 'bg-white/20 text-white'">2</span>
-                        </button>
-                        <button 
-                            type="button" 
-                            @click="codeWeekGradeTab = '6'" 
-                            class="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
-                            :class="codeWeekGradeTab === '6' 
-                                ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105' 
-                                : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white border border-white/10'"
-                        >
-                            <span class="w-2 h-2 rounded-full bg-blue-300"></span>
-                            <span>6. Sınıf</span>
-                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" :class="codeWeekGradeTab === '6' ? 'bg-blue-700 text-white' : 'bg-white/20 text-white'">2</span>
-                        </button>
-                        <button 
-                            type="button" 
-                            @click="codeWeekGradeTab = '7'" 
-                            class="px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
-                            :class="codeWeekGradeTab === '7' 
-                                ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30 scale-105' 
-                                : 'bg-white/10 text-slate-300 hover:bg-white/20 hover:text-white border border-white/10'"
-                        >
-                            <span class="w-2 h-2 rounded-full bg-purple-300"></span>
-                            <span>7. Sınıf</span>
-                            <span class="px-1.5 py-0.5 rounded-full text-[10px] font-bold" :class="codeWeekGradeTab === '7' ? 'bg-purple-700 text-white' : 'bg-white/20 text-white'">2</span>
-                        </button>
-                    </div>
-
-                    <!-- 📦 ETKİNLİK KARTLARI IZGARASI -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        <template x-for="act in codeWeekActivities" :key="act.id">
-                            <div 
-                                x-show="codeWeekGradeTab === String(act.grade)"
-                                x-transition:enter="transition-all ease-out duration-200"
-                                x-transition:enter-start="opacity-0 scale-95"
-                                x-transition:enter-end="opacity-100 scale-100"
-                                class="bg-slate-900/90 rounded-2xl p-5 border border-white/15 hover:border-white/30 transition-all duration-300 flex flex-col justify-between group shadow-lg hover:shadow-2xl hover:-translate-y-1"
-                            >
-                                <div>
-                                    <!-- Üst Rozet Satırı -->
-                                    <div class="flex items-center justify-between gap-2 mb-3">
-                                        <span class="px-2.5 py-1 rounded-lg text-[11px] font-black border flex items-center gap-1.5"
-                                            :class="{
-                                                'bg-emerald-500/20 text-emerald-300 border-emerald-500/30': act.grade === '5',
-                                                'bg-blue-500/20 text-blue-300 border-blue-500/30': act.grade === '6',
-                                                'bg-purple-500/20 text-purple-300 border-purple-500/30': act.grade === '7'
-                                            }"
-                                        >
-                                            <span class="w-2 h-2 rounded-full"
-                                                :class="{
-                                                    'bg-emerald-400': act.grade === '5',
-                                                    'bg-blue-400': act.grade === '6',
-                                                    'bg-purple-400': act.grade === '7'
-                                                }"
-                                            ></span>
-                                            <span x-text="act.badge"></span>
-                                        </span>
-                                        <span class="text-[11px] font-bold text-slate-400" x-text="act.grade + '. Sınıf'"></span>
-                                    </div>
-
-                                    <!-- Görsel Önizleme / Tıklanabilir Kart -->
-                                    <div 
-                                        @click="openCodeWeekModal(act)" 
-                                        class="relative rounded-xl overflow-hidden mb-3.5 bg-slate-950 border border-white/10 aspect-[4/3] group-hover:border-indigo-400/50 cursor-pointer"
-                                    >
-                                        <template x-if="act.image && act.image.length > 0">
-                                            <img 
-                                                :src="act.image" 
-                                                :alt="act.title" 
-                                                class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                                                loading="lazy"
-                                            >
-                                        </template>
-                                        <template x-if="!act.image || act.image.length === 0">
-                                            <div class="w-full h-full flex flex-col items-center justify-center p-4 text-center bg-gradient-to-br from-purple-950 via-slate-900 to-indigo-950">
-                                                <i :class="act.icon || 'fa-solid fa-network-wired text-purple-400'" class="text-3xl mb-2"></i>
-                                                <span class="text-xs font-bold text-purple-200" x-text="act.subtitle"></span>
-                                                <span class="text-[11px] text-slate-400 mt-1">İnteraktif STEM Çalışma Kâğıdı</span>
-                                            </div>
-                                        </template>
-
-                                        <!-- Hover Katmanı -->
-                                        <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
-                                            <span class="px-3 py-1.5 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-1.5">
-                                                <i class="fa-solid fa-expand text-indigo-600"></i>
-                                                <span>İncele & Büyüt</span>
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Başlık & Açıklama -->
-                                    <h4 class="text-sm font-black text-white group-hover:text-indigo-300 transition-colors line-clamp-2 mb-1.5" x-text="act.title"></h4>
-                                    <p class="text-xs text-slate-300 line-clamp-3 mb-3 leading-relaxed font-normal" x-text="act.description"></p>
-
-                                    <!-- Kazanım & Adımlar -->
-                                    <div class="p-2.5 rounded-xl bg-white/5 border border-white/10 mb-4 text-[11px] text-slate-300 flex items-start gap-2">
-                                        <i class="fa-solid fa-bullseye text-indigo-400 mt-0.5 shrink-0"></i>
-                                        <span class="line-clamp-2 font-medium" x-text="act.outcome"></span>
-                                    </div>
-                                </div>
-
-                                <!-- Aksiyon Butonları -->
-                                <div class="pt-3 border-t border-white/10 flex items-center gap-2">
-                                    <button 
-                                        type="button" 
-                                        @click="openCodeWeekModal(act)" 
-                                        class="flex-1 py-2 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-colors flex items-center justify-center gap-1.5 shadow-sm cursor-pointer"
-                                    >
-                                        <i class="fa-regular fa-eye"></i>
-                                        <span>Görüntüle</span>
-                                    </button>
-                                    <button 
-                                        type="button" 
-                                        @click="printCodeWeekActivity(act)" 
-                                        class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white transition-colors text-xs font-bold cursor-pointer" 
-                                        title="A4 Yazdır"
-                                    >
-                                        <i class="fa-solid fa-print"></i>
-                                    </button>
-                                    <template x-if="act.image && act.image.length > 0">
-                                        <a 
-                                            :href="act.image" 
-                                            :download="act.title + '.jpg'" 
-                                            class="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 hover:text-white transition-colors text-xs font-bold cursor-pointer" 
-                                            title="Görseli İndir"
-                                        >
-                                            <i class="fa-solid fa-download"></i>
-                                        </a>
-                                    </template>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 📋 FİLTRELENEN PROJE KARTLARI IZGARASI -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-12">
-                <template x-for="project in projects" :key="project.id">
+            <!-- 📦 ETKİNLİK KARTLARI IZGARASI -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mb-12">
+                <template x-for="act in codeWeekActivities" :key="act.id">
                     <div 
-                        x-show="matchesFilter(project)"
+                        x-show="matchesCodeWeekGrade(act)"
                         x-transition:enter="transition-all ease-out duration-300"
                         x-transition:enter-start="opacity-0 scale-95"
                         x-transition:enter-end="opacity-100 scale-100"
-                        class="bg-white rounded-3xl p-6 sm:p-7 border-2 border-slate-200/90 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group relative"
-                        :class="{
-                            'hover:border-emerald-400': project.category === 'tubitak-2204b',
-                            'hover:border-blue-400': project.category === 'tubitak-4006',
-                            'hover:border-amber-400': project.category === 'teknofest',
-                            'hover:border-rose-400': project.category === 'etwinning'
-                        }"
+                        class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-slate-200/90 hover:border-indigo-400 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative"
                     >
                         <div>
-                            <!-- Kart Üst Başlık Şeridi -->
+                            <!-- Üst Rozet Satırı -->
                             <div class="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
-                                <div class="flex items-center gap-2">
-                                    <span class="px-3 py-1 rounded-xl font-black text-xs border flex items-center gap-2" :class="project.badgeBg">
-                                        <span class="w-2.5 h-2.5 rounded-full" :class="project.dotClass"></span>
-                                        <span x-text="project.categoryName"></span>
-                                    </span>
-                                    <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200" x-text="project.area"></span>
-                                </div>
-
-                                <button 
-                                    type="button" 
-                                    @click="copyProject(project.title)" 
-                                    class="p-2 text-slate-400 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer text-xs" 
-                                    title="Proje Başlığını Kopyala"
+                                <span class="px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-2"
+                                    :class="{
+                                        'bg-emerald-50 text-emerald-800 border-emerald-200': act.grade === '5',
+                                        'bg-blue-50 text-blue-800 border-blue-200': act.grade === '6',
+                                        'bg-purple-50 text-purple-800 border-purple-200': act.grade === '7'
+                                    }"
                                 >
-                                    <i class="fa-regular fa-copy"></i>
-                                </button>
+                                    <span class="w-2.5 h-2.5 rounded-full"
+                                        :class="{
+                                            'bg-emerald-500': act.grade === '5',
+                                            'bg-blue-500': act.grade === '6',
+                                            'bg-purple-500': act.grade === '7'
+                                        }"
+                                    ></span>
+                                    <span x-text="act.badge"></span>
+                                </span>
+
+                                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">
+                                    <i class="fa-solid fa-code text-indigo-500 mr-1"></i> Fen & Algoritma
+                                </span>
                             </div>
 
-                            <!-- Proje Başlığı -->
-                            <h3 class="text-base sm:text-lg font-black text-slate-900 mb-2.5 leading-snug group-hover:text-amber-600 transition-colors flex items-start gap-2.5">
-                                <i class="fa-solid text-sm mt-1 shrink-0" :class="project.icon"></i>
-                                <span x-text="project.title"></span>
-                            </h3>
+                            <!-- Görsel Önizleme / Tıklanabilir Kart -->
+                            <div 
+                                @click="openCodeWeekModal(act)" 
+                                class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-indigo-400 cursor-pointer shadow-inner"
+                            >
+                                <img 
+                                    :src="act.image" 
+                                    :alt="act.title" 
+                                    class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                                    loading="lazy"
+                                >
+                                <!-- Hover Katmanı -->
+                                <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
+                                    <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
+                                        <i class="fa-solid fa-magnifying-glass-plus text-indigo-600"></i>
+                                        <span>Tam Ekran İncele</span>
+                                    </span>
+                                </div>
+                            </div>
 
-                            <!-- Proje Özeti -->
-                            <p class="text-xs sm:text-sm text-slate-600 font-medium leading-relaxed mb-4" x-text="project.summary"></p>
+                            <!-- Başlık & Alt Başlık -->
+                            <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                            <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
 
-                            <!-- Etiketler -->
-                            <div class="flex flex-wrap items-center gap-1.5 mb-4">
-                                <template x-for="tag in project.tags" :key="tag">
-                                    <span class="px-2.5 py-0.5 rounded-lg bg-slate-50 text-slate-600 border border-slate-200 text-[11px] font-bold" x-text="'#' + tag"></span>
+                            <!-- Fen & Algoritma Kazanımı -->
+                            <div class="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-100 mb-4 text-xs text-slate-800 flex items-start gap-2.5">
+                                <span class="w-5 h-5 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                    <i class="fa-solid fa-bullseye"></i>
+                                </span>
+                                <div>
+                                    <span class="text-[10px] font-black uppercase text-indigo-900 block tracking-wider">Hedef Kazanım</span>
+                                    <span class="font-bold text-slate-700 leading-relaxed" x-text="act.outcome"></span>
+                                </div>
+                            </div>
+
+                            <!-- Etkinlik Adımları -->
+                            <div class="space-y-1.5 mb-4">
+                                <template x-for="(sec, sIdx) in act.sections" :key="sIdx">
+                                    <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-700 font-medium flex items-start gap-2">
+                                        <i class="fa-solid fa-circle-check text-indigo-500 text-[10px] mt-0.5 shrink-0"></i>
+                                        <span class="line-clamp-2" x-text="sec"></span>
+                                    </div>
                                 </template>
                             </div>
 
-                            <!-- 🔬 Genişletilebilir Bilimsel Detay Paneli (Alpine.js x-collapse) -->
-                            <div x-show="expandedProjectId === project.id" x-collapse class="mb-4 pt-3 border-t border-slate-100 space-y-3">
-                                <!-- Problem -->
-                                <div class="p-3 bg-red-50/70 border border-red-100 rounded-2xl text-xs">
-                                    <span class="font-black text-red-900 block mb-0.5 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-triangle-exclamation text-red-600"></i> Araştırma Problemi:
-                                    </span>
-                                    <span class="text-red-950 font-medium leading-relaxed" x-text="project.problem"></span>
-                                </div>
-
-                                <!-- Hipotez -->
-                                <div class="p-3 bg-emerald-50/70 border border-emerald-100 rounded-2xl text-xs">
-                                    <span class="font-black text-emerald-900 block mb-0.5 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-lightbulb text-emerald-600"></i> Bilimsel Hipotez:
-                                    </span>
-                                    <span class="text-emerald-950 font-medium leading-relaxed" x-text="project.hypothesis"></span>
-                                </div>
-
-                                <!-- Değişkenler -->
-                                <div class="p-3 bg-slate-50 border border-slate-200 rounded-2xl text-xs space-y-1.5">
-                                    <span class="font-black text-slate-900 block mb-1">📊 Kontrollü Deney Değişkenleri:</span>
-                                    <div><strong class="text-slate-800">Bağımsız Değişken:</strong> <span class="text-slate-600" x-text="project.independentVar"></span></div>
-                                    <div><strong class="text-slate-800">Bağımlı Değişken:</strong> <span class="text-slate-600" x-text="project.dependentVar"></span></div>
-                                    <div><strong class="text-slate-800">Kontrol Edilen (Sabit):</strong> <span class="text-slate-600" x-text="project.controlledVar"></span></div>
-                                </div>
-
-                                <!-- Deney Adımları -->
-                                <div class="p-3 bg-amber-50/70 border border-amber-100 rounded-2xl text-xs">
-                                    <span class="font-black text-amber-900 block mb-1 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-list-check text-amber-600"></i> Deney Protokolü & Adımları:
-                                    </span>
-                                    <ol class="list-decimal list-inside space-y-1 text-amber-950 font-medium">
-                                        <template x-for="(step, sIdx) in project.steps" :key="sIdx">
-                                            <li x-text="step"></li>
-                                        </template>
-                                    </ol>
-                                </div>
+                            <!-- Slogan / Motto -->
+                            <div class="py-2 px-3 rounded-xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white text-[11px] font-bold text-center mb-4 border border-indigo-400/20">
+                                <span x-text="act.motto"></span>
                             </div>
                         </div>
 
-                        <!-- Kart Alt Butonları -->
+                        <!-- Kart Alt Aksiyon Butonları -->
                         <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
-                            <!-- Detay Aç/Kapat Butonu -->
                             <button 
                                 type="button" 
-                                @click="toggleDetails(project.id)" 
-                                class="flex-1 py-2.5 px-3 rounded-xl border font-black text-xs uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-2xs"
-                                :class="expandedProjectId === project.id 
-                                    ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-500' 
-                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-800 border-slate-200'"
+                                @click="openCodeWeekModal(act)" 
+                                class="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 cursor-pointer"
                             >
-                                <i class="fa-solid" :class="expandedProjectId === project.id ? 'fa-chevron-up' : 'fa-lightbulb'"></i>
-                                <span x-text="expandedProjectId === project.id ? 'Detayları Gizle' : 'Hipotez & Detaylar'"></span>
+                                <i class="fa-regular fa-eye"></i>
+                                <span>Görüntüle</span>
                             </button>
-
-                            <!-- Şablon Aç Butonu -->
                             <button 
                                 type="button" 
-                                @click="openProjectTemplateModal(project.category)" 
-                                class="py-2.5 px-3.5 bg-slate-900 hover:bg-amber-600 text-white rounded-xl font-black text-xs uppercase tracking-wider transition-all shadow-xs flex items-center gap-1.5 cursor-pointer active:scale-95 shrink-0" 
-                                title="Resmî Rapor Formatı ve Şablonunu Aç"
+                                @click="printCodeWeekActivity(act)" 
+                                class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" 
+                                title="A4 Boyutunda Yazdır"
                             >
-                                <i class="fa-solid fa-file-lines text-amber-400"></i>
-                                <span>Şablon</span>
+                                <i class="fa-solid fa-print"></i>
                             </button>
+                            <a 
+                                :href="act.image" 
+                                :download="act.title + '.jpg'" 
+                                class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" 
+                                title="Yüksek Çözünürlüklü Görseli İndir"
+                            >
+                                <i class="fa-solid fa-download"></i>
+                            </a>
                         </div>
                     </div>
                 </template>
             </div>
 
-            <!-- ⚠️ ARAMA VEYA FİLTRE SONUCU BOŞSA -->
-            <div x-show="filteredCount === 0" class="py-16 text-center bg-white rounded-3xl border border-slate-200/90 p-8 max-w-md mx-auto mb-12 shadow-xs">
-                <div class="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl mx-auto mb-3">
+            <!-- ⚠️ ARAMA SONUCU BULUNAMADI -->
+            <div x-show="filteredActivitiesCount === 0" class="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto mb-12 shadow-xs">
+                <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl mx-auto mb-3">
                     <i class="fa-solid fa-folder-open"></i>
                 </div>
-                <h4 class="text-base font-black text-slate-800 mb-1">Eşleşen Proje Bulunamadı</h4>
-                <p class="text-xs text-slate-500 mb-4">Arama kriterlerinizi değiştirebilir veya kategoriler arasında geçiş yapabilirsiniz.</p>
-                <button type="button" @click="activeCategory = 'all'; searchQuery = ''" class="px-4 py-2 bg-slate-900 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer">
+                <h4 class="text-base font-black text-slate-800 mb-1">Eşleşen Etkinlik Bulunamadı</h4>
+                <p class="text-xs text-slate-500 mb-4">Arama kriterlerinizi değiştirebilir veya sınıf sekmelerinden 'Tümü'nü seçebilirsiniz.</p>
+                <button type="button" @click="codeWeekGradeTab = 'all'; searchQuery = ''" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer">
                     Filtreleri Temizle (Tümünü Göster)
                 </button>
             </div>
 
             ${isAdmin ? `
-<!-- 🛠️ YÖNETİCİ DOKÜMAN EKLEME & ÇIKARMA ALANI -->
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border border-amber-200 p-5 rounded-3xl shadow-sm">
+            <!-- 🛠️ YÖNETİCİ DOKÜMAN EKLEME ALANI -->
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 bg-gradient-to-r from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200 p-5 rounded-3xl shadow-sm">
                 <div class="flex items-center gap-3.5">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shadow-md shrink-0">
-                        <i class="fa-solid fa-lightbulb"></i>
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-600 text-white flex items-center justify-center text-xl shadow-md shrink-0">
+                        <i class="fa-solid fa-file-circle-plus"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm sm:text-base font-black text-slate-900">Proje & Doküman Yönetimi</h3>
-                        <p class="text-xs text-slate-500 font-medium">Bu bölüme dilediğiniz TÜBİTAK/TEKNOFEST dokümanını veya şablonunu ekleyebilir; istemediklerinizi çıkarabilirsiniz.</p>
+                        <h3 class="text-sm sm:text-base font-black text-slate-900">Kod Haftası & STEM Materyal Yönetimi</h3>
+                        <p class="text-xs text-slate-500 font-medium">Bu bölüme dilediğiniz ek çalışma kâğıdını, afişi veya rehber dokümanı yükleyebilirsiniz.</p>
                     </div>
                 </div>
                 <div class="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
-                    ${hiddenProjects.length > 0 ? `
-                        <button type="button" onclick="restoreHiddenProjects()" class="px-3.5 py-2.5 bg-white hover:bg-slate-100 text-slate-700 font-bold text-xs rounded-xl border border-slate-200 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
-                            <i class="fa-solid fa-rotate-left text-amber-600"></i>
-                            <span>Gizlenenleri Geri Getir (${hiddenProjects.length})</span>
-                        </button>
-                    ` : ''}
-                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'TÜBİTAK & Projeler')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-emerald-600/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
+                    <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, 'AB Kod Haftası')" class="flex-1 sm:flex-none px-5 py-3 bg-gradient-to-r from-indigo-600 to-blue-700 hover:from-indigo-700 hover:to-blue-800 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-indigo-600/25 transition-all flex items-center justify-center gap-2 active:scale-95 cursor-pointer">
                         <i class="fa-solid fa-plus-circle text-sm"></i>
-                        <span>➕ Yeni Proje / Şablon Ekle</span>
+                        <span>➕ Yeni Etkinlik / Doküman Ekle</span>
                     </button>
                 </div>
             </div>
-` : ''}
+            ` : ''}
 
-            <!-- Kullanıcının Eklediği Özel Proje Materyalleri -->
+            <!-- Kullanıcının Eklediği Özel Kod Haftası Materyalleri -->
             ${renderCustomMaterialsSection("all", "projeler")}
-
-            <!-- 🏛️ RESMÎ PROJE KATEGORİ REHBERLERİ & ŞABLONLARI (Alt Bölüm) -->
-            <div class="mt-12 pt-8 border-t border-slate-200">
-                <div class="mb-6 flex items-center justify-between">
-                    <div>
-                        <h3 class="text-xl sm:text-2xl font-black text-slate-900">Resmî Proje Başvuru Rehberleri & Şablonlar</h3>
-                        <p class="text-xs sm:text-sm text-slate-500 font-medium">Her kategori için resmî proje yazım basamakları ve indirilebilir rapor formatları.</p>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                    ${visibleCategories.map(cat => `
-                        <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm flex flex-col justify-between relative group hover:shadow-xl transition-all duration-300">
-                            <div>
-                                <!-- Kart Üst Bar & Ekle/Düzenle/Çıkar Butonları -->
-                                <div class="flex items-center justify-between mb-4 flex-wrap gap-2">
-                                    <span class="px-3 py-1 rounded-full bg-amber-50 text-amber-800 font-black text-xs border border-amber-200">${cat.badge}</span>
-                                    
-                                    ${isAdmin ? `
-                                    <div class="flex items-center gap-1.5">
-                                        <button type="button" onclick="openMaterialUploadModal('projeler', 'projeler', null, '${cat.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projeye dosya veya rapor ekle">
-                                            <i class="fa-solid fa-plus text-xs"></i>
-                                            <span>Ekle</span>
-                                        </button>
-                                        <button type="button" onclick="openEditProjectCategoryModal('${cat.id}')" class="px-2.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-xs active:scale-95" title="Bu projenin başlığını veya içeriğini düzenle">
-                                            <i class="fa-solid fa-pen-to-square text-xs"></i>
-                                            <span>Düzenle</span>
-                                        </button>
-                                        <button type="button" onclick="hideProjectCard('${cat.id}')" class="px-2.5 py-1.5 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-600 rounded-lg text-xs font-black transition-all flex items-center gap-1 cursor-pointer border border-slate-200 active:scale-95" title="Bu proje kartını bölümden çıkar">
-                                            <i class="fa-solid fa-trash-can text-xs"></i>
-                                            <span>Çıkar</span>
-                                        </button>
-                                    </div>
-                                    ` : ''}
-                                </div>
-
-                                <h3 class="text-lg sm:text-xl font-black text-slate-900 mb-4 flex items-center gap-2.5">
-                                    <span class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-sm shrink-0 shadow-sm">
-                                        <i class="${cat.icon}"></i>
-                                    </span>
-                                    <span>${cat.name}</span>
-                                </h3>
-
-                                <div class="space-y-2 mb-6">
-                                    ${cat.steps.map(s => `
-                                        <div class="p-3 bg-slate-50 rounded-xl text-xs border border-slate-100">
-                                            <span class="font-black text-slate-800 block">${s.step}</span>
-                                            <span class="text-slate-500">${s.detail}</span>
-                                        </div>
-                                    `).join("")}
-                                </div>
-                            </div>
-
-                            <!-- Şablon İncele & İndir Butonu -->
-                            <div class="space-y-2 pt-3 border-t border-slate-100">
-                                <button onclick="openProjectTemplateModal('${cat.id}')" class="w-full py-3 bg-slate-900 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer active:scale-95">
-                                    <i class="fa-solid fa-file-lines text-amber-400"></i>
-                                    <span>Proje Rapor Şablonunu İncele & İndir (DOCX/PDF)</span>
-                                </button>
-                            </div>
-                        </div>
-                    `).join("")}
-                </div>
-            </div>
         </div>
     `;
 
@@ -9708,21 +9076,21 @@ function getPortalSearchIndex() {
         });
     }
 
-    // 6. Proje ve STEM Merkezi (PROJECT_CENTER_DATA)
-    if (typeof PROJECT_CENTER_DATA !== "undefined" && Array.isArray(PROJECT_CENTER_DATA)) {
-        PROJECT_CENTER_DATA.forEach((proj, idx) => {
+    // 6. AB Kod Haftası & Fen-Algoritma Etkinlikleri
+    if (typeof window.CODEWEEK_ACTIVITIES !== "undefined" && Array.isArray(window.CODEWEEK_ACTIVITIES)) {
+        window.CODEWEEK_ACTIVITIES.forEach((cw) => {
             index.push({
-                id: `proj-${idx}`,
-                title: proj.title || "TÜBİTAK 2204-B Projesi",
-                category: "Proje & STEM",
+                id: `codeweek-${cw.id}`,
+                title: `${cw.badge}: ${cw.title}`,
+                category: "AB Kod Haftası",
                 categoryKey: "projeler",
-                grade: proj.grade || "5-8. Sınıflar",
-                gradeNumber: 0,
-                unit: proj.category || "TÜBİTAK & STEM",
-                description: proj.desc || "Ortaokul araştırma projeleri, STEM etkinlikleri ve bilim fuarı rehberi.",
-                keywords: "tubitak 2204 stem robotik kodlama bilim fuari arastirma projesi",
-                icon: "fa-solid fa-trophy",
-                iconBg: "bg-amber-500",
+                grade: `${cw.grade}. Sınıf`,
+                gradeNumber: parseInt(cw.grade, 10) || 0,
+                unit: "Fen & Algoritmik Düşünme",
+                description: `${cw.outcome} - ${cw.subtitle}`,
+                keywords: `ab kod haftasi codeweek etwinning algoritma kodlama fen ${cw.title.toLowerCase()} ${cw.outcome.toLowerCase()}`,
+                icon: "fa-solid fa-laptop-code",
+                iconBg: "bg-indigo-600",
                 url: `#projects`
             });
         });
