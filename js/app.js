@@ -4140,6 +4140,29 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                             </button>
                         </div>
                     </div>
+                    ` : grade.number === 6 ? `
+                    <div class="mb-3 p-2.5 bg-slate-950/90 border border-sky-400/80 rounded-xl shadow-lg flex flex-col sm:flex-row items-center justify-between gap-2.5 text-white backdrop-blur-md">
+                        <div class="flex items-center gap-2.5">
+                            <span class="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-400 via-indigo-600 to-amber-400 text-white flex items-center justify-center text-base shadow-md shrink-0">
+                                <i class="fa-solid fa-solar-panel"></i>
+                            </span>
+                            <div>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🪐 6. SINIF 3D DİJİTAL PLANETARYUM</span>
+                                    <span class="px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-500/40 text-[10px] font-bold">1. ÜNİTE</span>
+                                </div>
+                                <p class="text-[11px] text-slate-300">Güneş Sistemi – 3D Keşif Laboratuvarı, Gezegenler, Dünya-Ay Modu ve 5 Uzay Görevi.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                            <button type="button" onclick="openInteractiveGameModal('gunes-sistemi-3d', 'Güneş Sistemi – 3D Keşif Laboratuvarı')" class="flex-1 sm:flex-none px-3.5 py-1.5 bg-gradient-to-r from-sky-400 via-blue-500 to-amber-400 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-solar-panel"></i> Güneş Sistemi (3D)
+                            </button>
+                            <button type="button" onclick="openInteractiveGameModal('gunes-sistemi-3d', 'Güneş Sistemi – 3D Keşif Laboratuvarı')" class="flex-1 sm:flex-none px-2.5 py-1.5 bg-sky-500/30 hover:bg-sky-500 text-sky-200 hover:text-slate-950 border border-sky-400/50 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-gamepad"></i> Uzay Görevleri
+                            </button>
+                        </div>
+                    </div>
                     ` : ''}
 
                     <!-- ALT BÖLÜM KUTULARI (KOMPAKT DİZİLİM) -->
@@ -4859,6 +4882,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "6": {
             "1": [
                 {
+                    id: "builtin-oyun-6-gunes-sistemi",
+                    title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
+                    icon: "fa-solid fa-solar-panel",
+                    desc: "8 gezegenin gerçek oranlı yörüngeleri, Dünya-Ay özel inceleme modu, gezegen karşılaştırma laboratuvarı ve 5 farklı interaktif uzay görevi!",
+                    type: "3D Dijital Planetaryum",
+                    format: "3D SİMÜLATÖR",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/gunes-sistemi-3d.html",
+                    kapakResmi: "assets/gunes-sistemi-3d-kapak.svg"
+                },
+                {
                     id: "oyun-uzay-ekspresi",
                     title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi",
                     icon: "fa-solid fa-train-subway",
@@ -5174,6 +5208,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             // unitCustoms içinde aynı simülatör veya oyun varsa tekilleştir
                             const alreadyExists = unitCustoms.some(c => 
                                 (c.fileUrl && g.fileUrl && (
+                                    (c.fileUrl.includes("gunes-sistemi") && g.fileUrl.includes("gunes-sistemi")) ||
                                     (c.fileUrl.includes("kozmik-kasif") && g.fileUrl.includes("kozmik-kasif")) ||
                                     (c.fileUrl.includes("kozmik-kosu") && g.fileUrl.includes("kozmik-kosu")) ||
                                     (c.fileUrl.includes("ayin-evreleri") && g.fileUrl.includes("ayin-evreleri")) ||
@@ -5183,6 +5218,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim()) ||
                                 (c.id && (
                                     c.id === g.id ||
+                                    (c.id.includes("gunes-sistemi") && g.id.includes("gunes-sistemi")) ||
                                     (c.id.includes("kozmik-kasif") && g.id.includes("kozmik-kasif")) ||
                                     (c.id.includes("kozmik-kosu") && g.id.includes("kozmik-kosu")) ||
                                     (c.id.includes("ayin-evreleri") && g.id.includes("ayin-evreleri")) ||
@@ -5225,41 +5261,48 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         ${totalItems.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("oyun-");
                                             const isBuiltinGame = String(item.id).startsWith("oyun-");
-                                            const isKozmikKasifItem = (item.fileUrl && item.fileUrl.includes("kozmik-kasif")) ||
+                                            const isGunesSistemiItem = (item.fileUrl && (item.fileUrl.includes("gunes-sistemi") || item.fileUrl.includes("gunes_sistemi"))) ||
+                                                (item.title && (item.title.toLowerCase().includes("güneş sistemi") || item.title.toLowerCase().includes("gunes sistemi"))) ||
+                                                (item.id && String(item.id).includes("gunes-sistemi"));
+                                            const isKozmikKasifItem = !isGunesSistemiItem && ((item.fileUrl && item.fileUrl.includes("kozmik-kasif")) ||
                                                 (item.title && (item.title.toLowerCase().includes("kozmik kâşif") || item.title.toLowerCase().includes("kozmik kasif"))) ||
-                                                (item.id && String(item.id).includes("kozmik-kasif"));
-                                            const isKozmikKosuItem = (item.fileUrl && item.fileUrl.includes("kozmik-kosu")) ||
+                                                (item.id && String(item.id).includes("kozmik-kasif")));
+                                            const isKozmikKosuItem = !isGunesSistemiItem && ((item.fileUrl && item.fileUrl.includes("kozmik-kosu")) ||
                                                 (item.title && (item.title.toLowerCase().includes("kozmik koşu") || item.title.toLowerCase().includes("kozmik kosu") || item.title.toLowerCase().includes("ay evresi avı"))) ||
-                                                (item.id && String(item.id).includes("kozmik-kosu"));
-                                            const isAyinEvreleriItem = !isKozmikKasifItem && !isKozmikKosuItem && (
+                                                (item.id && String(item.id).includes("kozmik-kosu")));
+                                            const isAyinEvreleriItem = !isGunesSistemiItem && !isKozmikKasifItem && !isKozmikKosuItem && (
                                                 (item.fileUrl && item.fileUrl.includes("ayin-evreleri")) ||
                                                 (item.title && (item.title.toLowerCase().includes("ay'ın evreleri") || item.title.toLowerCase().includes("ayin evreleri"))) ||
                                                 (item.id && String(item.id).includes("ayin-evreleri"))
                                             );
-                                            const isGunesItem = !isKozmikKasifItem && !isKozmikKosuItem && !isAyinEvreleriItem && (
+                                            const isGunesItem = !isGunesSistemiItem && !isKozmikKasifItem && !isKozmikKosuItem && !isAyinEvreleriItem && (
                                                 (item.fileUrl && item.fileUrl.includes("gunesi-kesfediyorum")) ||
                                                 (item.title && (item.title.toLowerCase().includes("güneş'i keşfediyorum") || item.title.toLowerCase().includes("gunesi kesfediyorum"))) ||
                                                 (item.id && String(item.id).includes("gunesi-kesfediyorum"))
                                             );
 
-                                            const actionCall = isKozmikKasifItem
-                                                ? `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`
-                                                : (isKozmikKosuItem
-                                                    ? `openInteractiveGameModal('oyunlar/kozmik-kosu-3d.html', 'Kozmik Koşu: Ay Evresi Avı (3D)')`
-                                                    : (isAyinEvreleriItem
-                                                        ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`
-                                                        : (isGunesItem
-                                                            ? `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`
-                                                            : (isBuiltinGame
-                                                                ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
-                                                                : (isCustom
-                                                                    ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
-                                                                    : cfg.btnAction(item))))));
+                                            const actionCall = isGunesSistemiItem
+                                                ? `openInteractiveGameModal('oyunlar/gunes-sistemi-3d.html', 'Güneş Sistemi – 3D Keşif Laboratuvarı')`
+                                                : (isKozmikKasifItem
+                                                    ? `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`
+                                                    : (isKozmikKosuItem
+                                                        ? `openInteractiveGameModal('oyunlar/kozmik-kosu-3d.html', 'Kozmik Koşu: Ay Evresi Avı (3D)')`
+                                                        : (isAyinEvreleriItem
+                                                            ? `openInteractiveGameModal('oyunlar/ayin-evreleri-3d.html', 'Ay Evreleri 3D Simülatörü')`
+                                                            : (isGunesItem
+                                                                ? `openInteractiveGameModal('oyunlar/gunesi-kesfediyorum-3d.html', 'Güneş 3D Uzay Laboratuvarı')`
+                                                                : (isBuiltinGame
+                                                                    ? `openInteractiveGameModal('${item.fileUrl}', '${(item.title || '').replace(/'/g, "\\'")}')`
+                                                                    : (isCustom
+                                                                        ? `openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${normSubTab}', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')`
+                                                                        : cfg.btnAction(item)))))));
 
-                                            const itemActionUI = isAyinEvreleriItem
-                                                ? { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
-                                                : (isGunesItem
-                                                    ? { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
+                                            const itemActionUI = isGunesSistemiItem
+                                                ? { bg: "bg-gradient-to-r from-sky-500 via-indigo-600 to-amber-500 hover:from-sky-600 hover:to-indigo-700 shadow-sky-500/30", text: "Laboratuvara Gir", icon: "fa-solid fa-solar-panel" }
+                                                : (isAyinEvreleriItem
+                                                    ? { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
+                                                    : (isGunesItem
+                                                        ? { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 hover:from-amber-600 hover:to-orange-600 shadow-amber-500/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
                                                     : (isBuiltinGame
                                                         ? { bg: "bg-slate-900 hover:bg-fuchsia-700", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" }
                                                         : getMaterialActionUI(item, normSubTab)));
@@ -5834,7 +5877,18 @@ function renderGradeEducationalGames(grade, subData) {
                 fileUrl: "gunesi-kesfediyorum-3d"
             }
         ],
-        "6": [],
+        "6": [
+            {
+                id: "builtin-oyun-6-gunes-sistemi",
+                title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
+                badge: "3D Dijital Planetaryum",
+                type: "3D Uzay Simülasyonu",
+                desc: "8 gezegenin gerçek oranlı yörüngeleri, Dünya-Ay özel inceleme modu, gezegen karşılaştırma laboratuvarı ve 5 farklı interaktif uzay görevi!",
+                icon: "fa-solid fa-solar-panel",
+                iconColor: "from-sky-400 via-indigo-600 to-amber-400",
+                fileUrl: "gunes-sistemi-3d"
+            }
+        ],
         "7": [
             {
                 id: "builtin-oyun-7-uzaydan-kacis",
@@ -13873,6 +13927,14 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
+    // 🪐 6. SINIF GÜNEŞ SİSTEMİ – 3D KEŞİF LABORATUVARI (3D DIGITAL PLANETARIUM)
+    if (checkTitle.includes("güneş sistemi") || checkTitle.includes("gunes sistemi") ||
+        id === "mat-6-1-oyun-gunes-sistemi-3d" || id === "builtin-oyun-6-gunes-sistemi" || id === "gunes-sistemi-3d" ||
+        targetUrl.includes("gunes-sistemi") || targetUrl.includes("gunes_sistemi")) {
+        openInteractiveGameModal("oyunlar/gunes-sistemi-3d.html", "Güneş Sistemi – 3D Keşif Laboratuvarı");
+        return;
+    }
+
     // 🛰️ 5. SINIF KOZMİK KÂŞİF 3D: AY VE GÜNEŞ ÜSSÜ (3D SPACE & ROVER SIMULATOR)
     if (checkTitle.includes("kozmik kâşif") || checkTitle.includes("kozmik kasif") || checkTitle.includes("ay ve güneş üssü") || checkTitle.includes("ay ve gunes ussu") ||
         id === "mat-5-1-oyun-kozmik-kasif-3d" || id === "builtin-oyun-5-kozmik-kasif" || id === "kozmik-kasif-3d" ||
@@ -15256,8 +15318,42 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     const str = String(gameKeyOrUrl || "").toLowerCase();
     const titleStr = String(gameTitle || "").toLowerCase();
 
+    // 🪐 6. Sınıf Güneş Sistemi – 3D Keşif Laboratuvarı (Dijital Planetaryum)
+    if (str.includes("gunes-sistemi") || str.includes("gunes_sistemi") || str.includes("güneş sistemi") || str.includes("gunes sistemi") || titleStr.includes("güneş sistemi") || titleStr.includes("gunes sistemi") || resolvedKey === "gunes-sistemi-3d" || resolvedKey === "oyun-gunes-sistemi-3d") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-sky-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-sky-400 via-indigo-600 to-amber-400 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-solar-panel"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🪐 Güneş Sistemi – 3D Keşif Laboratuvarı</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 6. Sınıf Fen Bilimleri 1. Ünite</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/gunes-sistemi-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/gunes-sistemi-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
     // ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
-    if (!str.includes("kasif") && !titleStr.includes("kâşif") && !titleStr.includes("kasif") && !str.includes("kosu") && !titleStr.includes("koşu") && (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunesi kesfediyorum") || titleStr.includes("güneş'i keşfediyorum") || titleStr.includes("gunesi kesfediyorum") || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d")) {
+    if (!str.includes("sistemi") && !titleStr.includes("sistemi") && !str.includes("kasif") && !titleStr.includes("kâşif") && !titleStr.includes("kasif") && !str.includes("kosu") && !titleStr.includes("koşu") && (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunesi kesfediyorum") || titleStr.includes("güneş'i keşfediyorum") || titleStr.includes("gunesi kesfediyorum") || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d")) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
                 <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
