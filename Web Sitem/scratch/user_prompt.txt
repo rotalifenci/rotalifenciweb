@@ -1,0 +1,483 @@
+<USER_REQUEST>
+Tümü yazan bölümü sil sınıf sınıf görünsün
+bu bölümde içeriklerde admin girişi yapınca düzenle bölümü görünmüyor düzenleme de yapabileyim
+
+ayrıca 6sınıflara 1.ünite ile ilgili animasyon yapacağım 
+# ROTALI FENCİ – GÜNEŞ SİSTEMİNDE YOLCULUK
+## GERÇEKÇİ 3D SİNEMATİK ANİMASYON
+
+### 1. GÖREVİN
+
+Sen profesyonel bir 3D animasyon geliştiricisi, astronomi uzmanı, NASA düzeyinde bilimsel görselleştirme tasarımcısı, Three.js yazılım mühendisi ve Fen Bilimleri eğitimcisisin.
+
+Rotalı Fenci eğitim platformu için **Güneş Sistemi'ni konu alan, tamamen gerçekçi üç boyutlu görsellerden oluşan, sinematik kamera hareketlerine sahip, bilimsel olarak doğru bir animasyon** geliştir.
+
+Referans:
+
+https://www.youtube.com/watch?v=ZQgOHFhXEMQ
+
+Referans videodaki gezegenlerin büyüklüklerini günlük nesnelerle karşılaştırma fikrini analiz et ve çok daha gerçekçi, bilimsel ve etkileyici bir 3D animasyon oluştur.
+
+**ÖNEMLİ: Bu çalışma MP4 video, slayt, resim galerisi veya soru-cevap oyunu olmayacak. Tarayıcı içerisinde gerçek zamanlı çalışan, kendi kendine oynayabilen, durdurulabilen, yeniden başlatılabilen ve kamera açısı değiştirilebilen gerçek bir 3D ANİMASYON olacak.**
+
+### 2. GÖRSELLER KESİNLİKLE GERÇEKÇİ OLMALI
+
+Bu projenin en önemli koşulu görsel gerçekçiliktir.
+
+Güneş ve sekiz gezegen profesyonel 3D astronomi uygulamalarındaki gibi tasarlanmalıdır.
+
+Kesinlikle şunları kullanma:
+
+- Çizgi film tarzı gezegenler
+- Oyuncak benzeri küreler
+- Basit renkli toplar
+- Düşük çözünürlüklü kaplamalar
+- Sabit iki boyutlu gezegen resimleri
+- Yapay ve gerçek dışı gezegen renkleri
+- Sürekli tekrar eden hazır animasyonlar
+- Gezegenlerin yüzey detaylarını gizleyen aşırı parlak efektler
+
+Bunun yerine:
+
+- NASA görüntülerine dayalı gerçekçi yüzey dokuları
+- 3D küresel gezegen modelleri
+- Yüksek çözünürlüklü 4K/8K kaynak dokular
+- PBR malzeme sistemi
+- Gerçekçi Güneş ışıklandırması
+- Doğru aydınlık ve karanlık bölgeler
+- Yüzey detayları
+- Atmosfer ve bulut katmanları
+- Gerçekçi gölge hesaplamaları
+- Sinematik kamera hareketleri
+
+kullan.
+
+**NASA'nın bilimsel görselleştirmelerine mümkün olduğunca yakın görünüm hedefle.**
+
+Görselleri sıfırdan basit şekiller çizerek geçiştirme. Gerçekçi dokular ve bilimsel verilere dayalı 3D modeller oluştur.
+
+### 3. GÜNEŞ VE SEKİZ GEZEGENİN 3D MODELLERİ
+
+**GÜNEŞ**
+
+- Devasa ve parlak küresel yapı
+- Gerçekçi sarı, turuncu ve beyaz renk tonları
+- Güneş lekeleri
+- Yüzeyde hareketli plazma yapıları
+- Hafif korona etkisi
+- Kendi ekseni çevresinde dönüş
+- Diğer gök cisimlerini gerçekçi biçimde aydınlatma
+
+**MERKÜR**
+
+- Gri ve kraterli yüzey
+- Gerçekçi kayaç dokusu
+- Yüzey ayrıntılarını gösteren kamera yaklaşması
+
+**VENÜS**
+
+- Kalın sarımsı-beyaz bulut tabakası
+- Yoğun atmosfer görünümü
+- Gerçekçi ve yavaş eksen dönüşü
+
+**DÜNYA**
+
+- Gerçekçi kıtalar ve okyanuslar
+- Atmosferin mavi kenar parlaması
+- Hareketli bulut katmanı
+- Kuzey ve güney kutupları
+- Gece-gündüz ayrımı
+- Dünya'nın kendi ekseninde dönüşü
+- Gece tarafında isteğe bağlı şehir ışıkları
+
+**MARS**
+
+- Kızıl yüzey
+- Kraterler
+- Olympus Mons ve diğer önemli yüzey şekilleri
+- Gerçekçi kayaç ve toz kaplamaları
+
+**JÜPİTER**
+
+- Devasa gaz gezegeni
+- Atmosferik bulut kuşakları
+- Büyük Kırmızı Leke
+- Gerçekçi dönüş ve atmosfer hareketi
+
+**SATÜRN**
+
+- Gerçekçi sarımsı atmosfer
+- Çok detaylı halka sistemi
+- Halkalarda boşluklar ve yoğunluk farklılıkları
+- Halkaların farklı kamera açılarından görünmesi
+
+**URANÜS**
+
+- Açık mavi-yeşil atmosfer
+- Büyük eksen eğikliği
+- Gerçekçi, sade gezegen dokusu
+
+**NEPTÜN**
+
+- Koyu mavi atmosfer
+- Gerçekçi bulut yapıları
+- Derin uzay ortamında etkileyici görüntü
+
+Her gezegenin gerçek büyüklüğü, rengi, dönüşü ve fiziksel özellikleri ayrı ayrı modellenmelidir.
+
+### 4. ANİMASYONUN GENEL AKIŞI
+
+Animasyon sekiz sahneden oluşsun.
+
+Sahneler arasında sinematik ve yumuşak kamera geçişleri kullan.
+
+Ana animasyon bir kez tamamlandıktan sonra yeniden başlatılabilsin veya isteğe bağlı döngüye alınabilsin.
+
+**SAHNE 1 – GÜNEŞ SİSTEMİ'NE GİRİŞ**
+
+Kamera uzayın derinliklerinden yavaşça ilerlesin.
+
+Uzakta Güneş belirginleşsin.
+
+Kamera Güneş'e yaklaşırken yüzey detayları ortaya çıksın.
+
+Ardından kamera geri çekilsin ve Güneş Sistemi görünmeye başlasın.
+
+Ekranda büyük başlık:
+
+"GÜNEŞ SİSTEMİNDE YOLCULUK"
+
+Alt başlık:
+
+"8 Gezegen, Sonsuz Keşif!"
+
+**SAHNE 2 – GÜNEŞ SİSTEMİNİN GENEL GÖRÜNÜMÜ**
+
+Güneş ve sekiz gezegen üç boyutlu olarak görünsün.
+
+Gezegenler doğru sırada bulunsun:
+
+Merkür → Venüs → Dünya → Mars → Jüpiter → Satürn → Uranüs → Neptün.
+
+Kamera Güneş Sistemi'nin üstünden geçerek gezegenleri göstersin.
+
+Yörüngeler isteğe bağlı ince çizgilerle görünür olsun.
+
+Gezegenlerin hepsi aynı hızda dönmesin veya dolanmasın.
+
+**SAHNE 3 – GEZEGENLERİ YAKINDAN TANIYALIM**
+
+Kamera Güneş'e en yakın gezegenden başlasın.
+
+Her gezegene sırayla yaklaşsın.
+
+Gezegenler kendi eksenleri çevresinde dönsün.
+
+Kamera gezegenin çevresinde hareket ederek yüzeyini göstersin.
+
+Ekranda gezegenin:
+
+- Adı
+- Güneş'e uzaklık sırası
+- Yaklaşık çapı
+- Dönme süresi
+- Dolanma süresi
+- Bir ayırt edici özelliği
+
+görünsün.
+
+Bilgiler kısa ve okunaklı olsun.
+
+**SAHNE 4 – GEZEGENLERİN GERÇEK BÜYÜKLÜKLERİ**
+
+Bu sahne en etkileyici bölümlerden biri olsun.
+
+Gezegenler yan yana yerleştirilsin.
+
+Büyüklükleri gerçek çap oranlarıyla gösterilsin.
+
+Önce Dünya referans alınsın.
+
+Ardından Merkür, Venüs ve Mars gösterilsin.
+
+Sonra Jüpiter sahneye girsin ve devasa büyüklük farkı ortaya çıksın.
+
+Satürn, Uranüs ve Neptün karşılaştırmaya eklensin.
+
+Son olarak Güneş ile gezegenler karşılaştırılsın.
+
+Kamera bütün gök cisimlerini gösterebilmek için yumuşak biçimde uzaklaşsın.
+
+Büyüklük oranları yanlış gösterilmesin.
+
+**SAHNE 5 – GEZEGENLER TOP BÜYÜKLÜĞÜNDE OLSAYDI**
+
+Referans videodan esinlenen özgün bir bölüm oluştur.
+
+Dünya'nın çapı 1 cm kabul edilerek Güneş ve gezegenler aynı ölçek üzerinde karşılaştırılsın.
+
+Yaklaşık çaplar:
+
+- Merkür: 3,8 mm
+- Venüs: 9,5 mm
+- Dünya: 1 cm
+- Mars: 5,3 mm
+- Jüpiter: 11,2 cm
+- Satürn: 9,5 cm (halkalar hariç)
+- Uranüs: 4 cm
+- Neptün: 3,9 cm
+- Güneş: 109 cm
+
+Bu bölümde gerçekçi fiziksel küre modelleri, ölçek çubukları ve nesne büyüklüğü karşılaştırmaları kullanılabilir.
+
+Nesneler çizgi film tarzında değil, gerçekçi üç boyutlu modeller olarak oluşturulsun.
+
+Ölçüler ekranda görünürken gerçek çap oranları korunsun.
+
+**SAHNE 6 – GÜNEŞ'E UZAKLIKLAR**
+
+Kamera Güneş'ten başlayarak dış gezegenlere doğru ilerlesin.
+
+Gezegenler arasındaki uzaklık farklarını hissettiren bir yolculuk oluştur.
+
+Özellikle iç gezegenlerle dış gezegenler arasındaki uzaklık farkı belirgin olsun.
+
+Ekranda:
+
+- Güneş'e ortalama uzaklık
+- Milyon veya milyar kilometre cinsinden mesafe
+- Gezegenin yörünge sırası
+
+gösterilsin.
+
+Gerçek ölçekli uzaklık gösteriminde gezegenlerin çok küçük görüneceğini dikkate al.
+
+Bunun için "Gerçek Uzaklık Ölçeği" ve "Sinematik Görünüm" seçeneklerini ayır.
+
+**SAHNE 7 – GEZEGENLERİN HAREKETLERİ**
+
+Kamera Güneş Sistemi'nin üstüne yükselsin.
+
+Gezegenlerin Güneş çevresindeki dolanma hareketleri başlasın.
+
+Her gezegen gerçek dolanma süresi oranlarına uygun hızda hareket etsin.
+
+Kendi eksenlerindeki dönüşleri de gösterilsin.
+
+Dünya'nın kendi ekseni etrafında dönmesinden gece ve gündüzün oluştuğu görülebilsin.
+
+Venüs'ün ters yönlü dönüşü ve Uranüs'ün büyük eksen eğikliği doğru gösterilsin.
+
+İnce yörünge çizgileri ve hareket yönünü gösteren oklar isteğe bağlı açılıp kapatılabilsin.
+
+**SAHNE 8 – SİNEMATİK FİNAL**
+
+Kamera Güneş Sistemi'nden yavaşça uzaklaşsın.
+
+Sekiz gezegen ve Güneş birlikte görünsün.
+
+Yıldızlı uzay ortamında etkileyici bir kapanış sahnesi oluşsun.
+
+Ekranda:
+
+"RO TALI FENCİ"
+
+"Güneş Sistemi'ni Keşfet!"
+
+yazsın.
+
+Kapanış tamamlandıktan sonra "Yeniden İzle" düğmesi görünsün.
+
+### 5. SİNEMATİK KAMERA SİSTEMİ
+
+Kamera hareketleri profesyonel belgesel animasyonları kalitesinde olmalı.
+
+- Gezegenlere yavaş yaklaşma
+- Gezegenlerin çevresinde 360 derece kamera dönüşü
+- Yakından yüzey inceleme
+- Uzayda ileri doğru hareket
+- Geniş açıdan yakın plana geçiş
+- Yörüngeler boyunca süzülme
+- Gezegenler arasında yumuşak geçişler
+- Güneş Sistemi'ni üstten ve yandan gösterme
+
+Kamera hareketleri takılmasın.
+
+Cisimlerin içinden geçmesin.
+
+Gezegenler kadraj dışında kesilmesin.
+
+### 6. ANİMASYON KONTROL PANELİ
+
+Tarayıcıda çalışan animasyon için alt kontrol çubuğu oluştur.
+
+Düğmeler:
+
+- Animasyonu Başlat
+- Duraklat
+- Devam Ettir
+- Baştan Başlat
+- Önceki Sahne
+- Sonraki Sahne
+- Animasyon Hızını Değiştir
+- Tam Ekran
+
+Hız seçenekleri:
+
+0,5x – 1x – 1,5x – 2x.
+
+Öğrenci isterse kamera kontrolünü geçici olarak devralabilsin.
+
+"Serbest İnceleme" modunda gezegenlere yakınlaşıp modelleri döndürebilsin.
+
+"Animasyona Dön" düğmesiyle kaldığı sahneden devam edebilsin.
+
+### 7. ÖĞRETMEN MODU
+
+Özel öğretmen kontrolü oluştur.
+
+Öğretmen:
+
+- İstediği sahneyi seçebilsin.
+- Animasyonu istediği anda durdurabilsin.
+- Gezegenlerin adlarını gizleyebilsin.
+- Büyüklük karşılaştırması sahnesini yeniden oynatabilsin.
+- Dönme ve dolanma hareketlerini tekrar gösterebilsin.
+- Bilgi yazılarını açıp kapatabilsin.
+- Tam ekran kullanabilsin.
+
+Bu özellikler akıllı tahtada dokunarak çalışmalıdır.
+
+### 8. TASARIM VE YAZILAR
+
+3D uzay arka planı gerçekçi ve koyu olsun.
+
+Kontrol paneli modern, sade ve şeffaf bir tasarıma sahip olsun.
+
+Türkçe yazılar büyük ve okunaklı olmalı.
+
+Yazılar gezegenlerin görüntülerini kapatmamalı.
+
+Gezegen isimleri, bilgiler ve yörüngeler gerektiğinde gizlenebilmeli.
+
+Öğrenciler animasyonu izlerken görsel ayrıntılar ön planda olmalı.
+
+### 9. MOBİL VE AKILLI TAHTA UYUMU
+
+Animasyon şu cihazlarda çalışmalı:
+
+- 1920×1080 akıllı tahta
+- 1366×768 bilgisayar
+- Tablet
+- Telefon dikey
+- Telefon yatay
+
+Telefon ekranında ana animasyonun bütün gerekli kontrolleri görünür alana sığsın.
+
+Dikey veya yatay sayfa kaydırması oluşmasın.
+
+Mobilde menüler küçültülerek açılır panel hâline getirilsin.
+
+3D sahnenin görüntü alanı mümkün olduğunca geniş tutulsun.
+
+Görsel kalitesi cihaz performansına uygun otomatik ayarlanabilsin.
+
+### 10. ROTALI FENCİ MARKASI
+
+Mevcut projedeki orijinal Rotalı Fenci logosunu kullan.
+
+Yeni logo üretme.
+
+Logoyu ekranın sol üst köşesine yerleştir.
+
+Sağ alt köşeye küçük Instagram simgesiyle:
+
+@rotalifenci
+
+yaz.
+
+Instagram bağlantısı:
+
+https://www.instagram.com/rotalifenci/
+
+### 11. TEKNİK ALTYAPI
+
+Mevcut projenin mimarisine uygun biçimde:
+
+- React
+- TypeScript
+- Three.js
+- React Three Fiber
+- Drei
+- WebGL
+- glTF/GLB modeller
+- Gerçekçi PBR materyaller
+- Sinematik kamera animasyon sistemi
+
+kullan.
+
+Gezegenlerin dönüş ve dolanma hareketlerini gerçek zaman tabanlı hesaplamalarla yönet.
+
+Animasyon geçişlerini zaman çizelgesi üzerinden koordine et.
+
+NASA'nın uygun lisanslı bilimsel dokularından ve verilerinden yararlan.
+
+Temel kaynaklar:
+
+https://science.nasa.gov/solar-system/
+
+https://science.nasa.gov/solar-system/planets/
+
+https://science.nasa.gov/sun/
+
+https://science.nasa.gov/earth/
+
+Animasyonun çalışması harici video dosyalarına bağımlı olmamalıdır.
+
+Gezegenler gerçek zamanlı 3D olarak render edilmelidir.
+
+### 12. GELİŞTİRME VE TEST
+
+Önce Güneş ve sekiz gezegeni yüksek kaliteli 3D modellerle oluştur.
+
+Ardından gerçekçi ışıklandırmayı tamamla.
+
+Sonra sinematik kamera hareketlerini geliştir.
+
+Sekiz animasyon sahnesini oluştur.
+
+Kontrol paneli, öğretmen modu ve serbest inceleme seçeneklerini ekle.
+
+Son olarak mobil ve akıllı tahta uyumluluğunu test et.
+
+Her aşamadan sonra uygulamayı gerçekten çalıştır.
+
+**Bütün görsellerin ekrana tam sığdığını kontrol et.**
+
+Çalışmayan düğme, eksik gezegen, bozuk animasyon veya hatalı bilimsel bilgi bırakma.
+
+### EN ÖNEMLİ TALİMAT
+
+Ben basit bir Güneş Sistemi videosu veya renkli toplardan oluşan bir animasyon istemiyorum.
+
+**NASA görüntülerine dayalı fotogerçekçi gezegenlerin kullanıldığı, sinematik kamera hareketlerinin bulunduğu, gerçek büyüklüklerin ve uzaklıkların karşılaştırıldığı, bilimsel olarak doğru ve etkileyici bir 3D GÜNEŞ SİSTEMİ ANİMASYONU istiyorum.**
+
+Gezegenlerin yüzeyleri gerçekçi olmalı.
+
+Kamera uzayda doğal biçimde hareket etmeli.
+
+Animasyon sürekli ve akıcı çalışmalı.
+
+Öğretmen istediği sahneyi durdurup yeniden başlatabilmeli.
+
+Öğrenciler Güneş Sistemi'nin büyüklüğünü, gezegenlerin özelliklerini, dönme ve dolanma hareketlerini görerek öğrenebilmeli.
+
+**Sonuç MP4 dosyası değil, Rotalı Fenci sitesine entegre edilen, tarayıcı içinde çalışan profesyonel bir 3D animasyon olmalıdır.** 
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-10-19T00:33:55+03:00.
+
+The user has uploaded 1 image(s):
+- C:/Users/my pc/.gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792359113471_1fa36114.png
+You can embed this image in an artifact if you need the USER to review it.
+</ADDITIONAL_METADATA>

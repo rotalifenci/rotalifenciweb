@@ -1037,6 +1037,23 @@ const DEFAULT_CUSTOM_MATERIALS = [
         hasBlob: false,
         tags: ["güneş", "dünya", "ay", "evreler", "3d uzay", "simülatör", "5. sınıf"],
         downloadCount: "🌟 1. Ünite Başyapıtı"
+    },
+    {
+        id: "mat-6-1-oyun-gunes-sistemi-yolculuk-3d",
+        grade: "6",
+        category: "egitsel-oyunlar",
+        targetSection: "1",
+        title: "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon",
+        unit: "1. Ünite: Güneş Sistemi ve Tutulmalar",
+        desc: "8 gezegen, gerçek boyut karşılaştırmaları, Dünya=1cm top ölçeği benzetimi ve sinematik kamera eşliğinde büyüleyici 3D Güneş Sistemi yolculuğu!",
+        fileName: "gunes-sistemi-yolculuk-3d.html",
+        fileUrl: "oyunlar/gunes-sistemi-yolculuk-3d.html",
+        imageUrl: "assets/gunes-sistemi-yolculuk-3d-kapak.svg",
+        kapakResmi: "assets/gunes-sistemi-yolculuk-3d-kapak.svg",
+        format: "3D SİNEMATİK",
+        hasBlob: false,
+        tags: ["güneş sistemi", "gezegenler", "sinematik", "3d animasyon", "yolculuk", "6. sınıf"],
+        downloadCount: "🎬 3D Özel Animasyon"
     }
 ];
 
@@ -4958,6 +4975,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     badge: "🌟 1. Ünite Başyapıtı",
                     fileUrl: "oyunlar/gunes-sistemi-3d.html",
                     kapakResmi: "assets/gunes-sistemi-3d-kapak.svg"
+                },
+                {
+                    id: "builtin-oyun-6-gunes-sistemi-yolculuk",
+                    title: "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon",
+                    icon: "fa-solid fa-film",
+                    desc: "8 gezegen, gerçek boyut karşılaştırmaları, Dünya=1cm top ölçeği benzetimi ve sinematik kamera eşliğinde büyüleyici 3D Güneş Sistemi yolculuğu!",
+                    type: "3D Sinematik Animasyon",
+                    format: "3D SİNEMATİK",
+                    badge: "🎬 3D Özel Animasyon",
+                    fileUrl: "oyunlar/gunes-sistemi-yolculuk-3d.html",
+                    kapakResmi: "assets/gunes-sistemi-yolculuk-3d-kapak.svg"
                 }
             ]
         },
@@ -5975,6 +6003,16 @@ function renderGradeEducationalGames(grade, subData) {
                 icon: "fa-solid fa-solar-panel",
                 iconColor: "from-sky-400 via-indigo-600 to-amber-400",
                 fileUrl: "gunes-sistemi-3d"
+            },
+            {
+                id: "builtin-oyun-6-gunes-sistemi-yolculuk",
+                title: "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon",
+                badge: "3D Sinematik Animasyon",
+                type: "3D Uzay Keşfi",
+                desc: "8 gezegen, gerçek boyut karşılaştırmaları, Dünya=1cm top ölçeği benzetimi ve sinematik kamera eşliğinde büyüleyici 3D Güneş Sistemi yolculuğu!",
+                icon: "fa-solid fa-film",
+                iconColor: "from-amber-400 via-sky-500 to-indigo-600",
+                fileUrl: "gunes-sistemi-yolculuk-3d"
             }
         ],
         "7": [
@@ -7331,8 +7369,8 @@ function getProjectCategoriesWithCustom() {
 // -------------------------------------------------------------
 // 🇪🇺 AB KOD HAFTASI (EU CODEWEEK 2026) ETKİNLİK MERKEZİ
 // -------------------------------------------------------------
-window.CODEWEEK_ACTIVITIES = [
-    {
+window.DEFAULT_CODEWEEK_ACTIVITIES = [
+{
         id: 'cw-5-1',
         grade: '5',
         badge: '5. SINIF • ETKİNLİK 1',
@@ -7442,23 +7480,72 @@ window.CODEWEEK_ACTIVITIES = [
     }
 ];
 
+// 🌟 Özelleştirilmiş ve Yönetici Tarafından Düzenlenmiş Kod Haftası Etkinliklerini Yükle
+window.getCodeWeekActivitiesWithCustom = function() {
+    let customMap = {};
+    try {
+        const stored = localStorage.getItem("rotali_custom_codeweek_activities");
+        if (stored) customMap = JSON.parse(stored);
+    } catch(e) {
+        console.error("Custom codeweek parse error:", e);
+    }
+    return window.DEFAULT_CODEWEEK_ACTIVITIES.map(act => {
+        const ovr = customMap && customMap[act.id];
+        if (!ovr) return { ...act, sections: [...(act.sections || [])] };
+        return {
+            ...act,
+            title: (ovr.title !== undefined && ovr.title.trim() !== '') ? ovr.title : act.title,
+            subtitle: (ovr.subtitle !== undefined && ovr.subtitle.trim() !== '') ? ovr.subtitle : act.subtitle,
+            badge: (ovr.badge !== undefined && ovr.badge.trim() !== '') ? ovr.badge : act.badge,
+            grade: (ovr.grade !== undefined && ovr.grade.trim() !== '') ? ovr.grade : act.grade,
+            outcome: (ovr.outcome !== undefined && ovr.outcome.trim() !== '') ? ovr.outcome : act.outcome,
+            description: (ovr.description !== undefined && ovr.description.trim() !== '') ? ovr.description : act.description,
+            image: (ovr.image !== undefined && ovr.image.trim() !== '') ? ovr.image : act.image,
+            sections: (Array.isArray(ovr.sections) && ovr.sections.length > 0) ? ovr.sections : [...(act.sections || [])],
+            motto: (ovr.motto !== undefined && ovr.motto.trim() !== '') ? ovr.motto : act.motto
+        };
+    });
+};
+
+window.CODEWEEK_ACTIVITIES = window.getCodeWeekActivitiesWithCustom();
+
 window.projectFilterData = function() {
     return {
         codeWeekGradeTab: 'all',
         searchQuery: '',
-        codeWeekActivities: window.CODEWEEK_ACTIVITIES || [],
-        matchesCodeWeekGrade(act) {
-            if (this.codeWeekGradeTab !== 'all' && act.grade !== this.codeWeekGradeTab) return false;
-            if (!this.searchQuery || !this.searchQuery.trim()) return true;
-            const q = this.searchQuery.toLowerCase().trim();
-            return (act.title && act.title.toLowerCase().includes(q)) ||
-                   (act.outcome && act.outcome.toLowerCase().includes(q)) ||
-                   (act.description && act.description.toLowerCase().includes(q)) ||
-                   (act.subtitle && act.subtitle.toLowerCase().includes(q)) ||
-                   (act.badge && act.badge.toLowerCase().includes(q));
+        isAdmin: localStorage.getItem("rotali_is_admin") === "true",
+        codeWeekActivities: window.getCodeWeekActivitiesWithCustom(),
+        init() {
+            window.addEventListener('rotali-codeweek-updated', () => {
+                this.codeWeekActivities = window.getCodeWeekActivitiesWithCustom();
+            });
+            window.addEventListener('storage', (e) => {
+                if (e.key === 'rotali_custom_codeweek_activities') {
+                    this.codeWeekActivities = window.getCodeWeekActivitiesWithCustom();
+                }
+            });
         },
-        get filteredActivitiesCount() {
-            return this.codeWeekActivities.filter(a => this.matchesCodeWeekGrade(a)).length;
+        toggleGradeTab(grade) {
+            if (this.codeWeekGradeTab === grade) {
+                this.codeWeekGradeTab = 'all';
+            } else {
+                this.codeWeekGradeTab = grade;
+            }
+        },
+        getGradeActivities(grade) {
+            let list = this.codeWeekActivities.filter(a => a.grade === grade);
+            if (!this.searchQuery || !this.searchQuery.trim()) return list;
+            const q = this.searchQuery.toLowerCase().trim();
+            return list.filter(act => 
+                (act.title && act.title.toLowerCase().includes(q)) ||
+                (act.outcome && act.outcome.toLowerCase().includes(q)) ||
+                (act.description && act.description.toLowerCase().includes(q)) ||
+                (act.subtitle && act.subtitle.toLowerCase().includes(q)) ||
+                (act.badge && act.badge.toLowerCase().includes(q))
+            );
+        },
+        get totalVisibleCount() {
+            return this.getGradeActivities('5').length + this.getGradeActivities('6').length + this.getGradeActivities('7').length;
         },
         openCodeWeekModal(act) {
             if (act && act.image) {
@@ -7475,6 +7562,11 @@ window.projectFilterData = function() {
             if (typeof window.printCodeWeekImage === 'function') {
                 window.printCodeWeekImage(act);
             }
+        },
+        openEditCodeWeekModal(act) {
+            if (typeof window.openEditCodeWeekModal === 'function') {
+                window.openEditCodeWeekModal(act);
+            }
         }
     };
 };
@@ -7483,7 +7575,7 @@ function renderProjectsPage(container) {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
 
     container.innerHTML = `
-        <div x-data="projectFilterData()" class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 animate-in fade-in duration-300">
+        <div x-data="projectFilterData()" x-init="init()" class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 animate-in fade-in duration-300">
             <!-- 🌟 EU CODEWEEK ÖZEL BAŞLIK & VİTRİN BANNERI -->
             <div class="mb-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-sky-950 text-white p-6 sm:p-10 border-2 border-indigo-500/30 shadow-2xl relative overflow-hidden">
                 <!-- Dekoratif Işıklar ve Grid -->
@@ -7534,60 +7626,50 @@ function renderProjectsPage(container) {
                 </div>
             </div>
 
-            <!-- 🔘 SINIF SEVİYESİ SEÇİMİ VE ARAMA KUTUSU -->
+            <!-- 🔘 SINIF SEVİYESİ SEÇİMİ VE ARAMA KUTUSU (TÜMÜ KALDIRILDI, SINIF SINIF GÖRÜNÜM) -->
             <div class="mb-8 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-3xl border border-slate-200 shadow-sm">
-                <!-- Sol: Sınıf Sekmeleri (Tümü, 5, 6, 7) -->
-                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                <!-- Sol: Sınıf Sekmeleri (5, 6, 7. Sınıf) -->
+                <div class="flex items-center gap-2.5 overflow-x-auto no-scrollbar py-1">
                     <button 
                         type="button" 
-                        @click="codeWeekGradeTab = 'all'" 
-                        class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
-                        :class="codeWeekGradeTab === 'all' 
-                            ? 'bg-slate-900 text-white shadow-md shadow-slate-900/20 scale-[1.02]' 
-                            : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200'"
-                    >
-                        <i class="fa-solid fa-layer-group text-xs"></i>
-                        <span>Tümü</span>
-                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === 'all' ? 'bg-slate-700 text-white' : 'bg-slate-200 text-slate-800'">6</span>
-                    </button>
-
-                    <button 
-                        type="button" 
-                        @click="codeWeekGradeTab = '5'" 
+                        @click="toggleGradeTab('5')" 
                         class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
                         :class="codeWeekGradeTab === '5' 
                             ? 'bg-emerald-600 text-white shadow-md shadow-emerald-600/30 scale-[1.02]' 
-                            : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-200'"
+                            : (codeWeekGradeTab === 'all' ? 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border border-emerald-300 ring-2 ring-emerald-500/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 opacity-75')"
+                        title="5. Sınıf Etkinliklerini Filtrele / Göster"
                     >
                         <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
                         <span>5. Sınıf</span>
-                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '5' ? 'bg-emerald-800 text-white' : 'bg-emerald-200 text-emerald-900'">2</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '5' ? 'bg-emerald-800 text-white' : 'bg-emerald-200 text-emerald-900'" x-text="getGradeActivities('5').length"></span>
                     </button>
 
                     <button 
                         type="button" 
-                        @click="codeWeekGradeTab = '6'" 
+                        @click="toggleGradeTab('6')" 
                         class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
                         :class="codeWeekGradeTab === '6' 
                             ? 'bg-blue-600 text-white shadow-md shadow-blue-600/30 scale-[1.02]' 
-                            : 'bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-200'"
+                            : (codeWeekGradeTab === 'all' ? 'bg-blue-50 hover:bg-blue-100 text-blue-900 border border-blue-300 ring-2 ring-blue-500/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 opacity-75')"
+                        title="6. Sınıf Etkinliklerini Filtrele / Göster"
                     >
                         <span class="w-2.5 h-2.5 rounded-full bg-blue-400"></span>
                         <span>6. Sınıf</span>
-                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '6' ? 'bg-blue-800 text-white' : 'bg-blue-200 text-blue-900'">2</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '6' ? 'bg-blue-800 text-white' : 'bg-blue-200 text-blue-900'" x-text="getGradeActivities('6').length"></span>
                     </button>
 
                     <button 
                         type="button" 
-                        @click="codeWeekGradeTab = '7'" 
+                        @click="toggleGradeTab('7')" 
                         class="px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shrink-0 cursor-pointer select-none active:scale-95 shadow-2xs"
                         :class="codeWeekGradeTab === '7' 
                             ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30 scale-[1.02]' 
-                            : 'bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200'"
+                            : (codeWeekGradeTab === 'all' ? 'bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 ring-2 ring-purple-500/20' : 'bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 opacity-75')"
+                        title="7. Sınıf Etkinliklerini Filtrele / Göster"
                     >
                         <span class="w-2.5 h-2.5 rounded-full bg-purple-400"></span>
                         <span>7. Sınıf</span>
-                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '7' ? 'bg-purple-800 text-white' : 'bg-purple-200 text-purple-900'">2</span>
+                        <span class="px-2 py-0.5 rounded-full text-[11px] font-bold" :class="codeWeekGradeTab === '7' ? 'bg-purple-800 text-white' : 'bg-purple-200 text-purple-900'" x-text="getGradeActivities('7').length"></span>
                     </button>
                 </div>
 
@@ -7612,132 +7694,325 @@ function renderProjectsPage(container) {
                 </div>
             </div>
 
-            <!-- 📦 ETKİNLİK KARTLARI IZGARASI -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7 mb-12">
-                <template x-for="act in codeWeekActivities" :key="act.id">
-                    <div 
-                        x-show="matchesCodeWeekGrade(act)"
-                        x-transition:enter="transition-all ease-out duration-300"
-                        x-transition:enter-start="opacity-0 scale-95"
-                        x-transition:enter-end="opacity-100 scale-100"
-                        class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-slate-200/90 hover:border-indigo-400 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative"
-                    >
+            <!-- ============================================================== -->
+            <!-- 📦 SINIF SINIF ETKİNLİK LİSTESİ -->
+            <!-- ============================================================== -->
+
+            <!-- 🌱 5. SINIF BÖLÜMÜ -->
+            <div x-show="(codeWeekGradeTab === 'all' || codeWeekGradeTab === '5') && getGradeActivities('5').length > 0" class="mb-12">
+                <div class="flex items-center justify-between pb-3.5 mb-5 border-b-2 border-emerald-500/20 flex-wrap gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center font-black text-sm border border-emerald-500/25 shadow-xs shrink-0">
+                            <i class="fa-solid fa-seedling"></i>
+                        </span>
                         <div>
-                            <!-- Üst Rozet Satırı -->
-                            <div class="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
-                                <span class="px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-2"
-                                    :class="{
-                                        'bg-emerald-50 text-emerald-800 border-emerald-200': act.grade === '5',
-                                        'bg-blue-50 text-blue-800 border-blue-200': act.grade === '6',
-                                        'bg-purple-50 text-purple-800 border-purple-200': act.grade === '7'
-                                    }"
-                                >
-                                    <span class="w-2.5 h-2.5 rounded-full"
-                                        :class="{
-                                            'bg-emerald-500': act.grade === '5',
-                                            'bg-blue-500': act.grade === '6',
-                                            'bg-purple-500': act.grade === '7'
-                                        }"
-                                    ></span>
-                                    <span x-text="act.badge"></span>
-                                </span>
-
-                                <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">
-                                    <i class="fa-solid fa-code text-indigo-500 mr-1"></i> Fen & Algoritma
-                                </span>
-                            </div>
-
-                            <!-- Görsel Önizleme / Tıklanabilir Kart -->
-                            <div 
-                                @click="openCodeWeekModal(act)" 
-                                class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-indigo-400 cursor-pointer shadow-inner"
-                            >
-                                <img 
-                                    :src="act.image" 
-                                    :alt="act.title" 
-                                    class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                                    loading="lazy"
-                                >
-                                <!-- Hover Katmanı -->
-                                <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
-                                    <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
-                                        <i class="fa-solid fa-magnifying-glass-plus text-indigo-600"></i>
-                                        <span>Tam Ekran İncele</span>
-                                    </span>
-                                </div>
-                            </div>
-
-                            <!-- Başlık & Alt Başlık -->
-                            <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-indigo-600 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
-                            <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
-
-                            <!-- Fen & Algoritma Kazanımı -->
-                            <div class="p-3 rounded-2xl bg-indigo-50/70 border border-indigo-100 mb-4 text-xs text-slate-800 flex items-start gap-2.5">
-                                <span class="w-5 h-5 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                                    <i class="fa-solid fa-bullseye"></i>
-                                </span>
-                                <div>
-                                    <span class="text-[10px] font-black uppercase text-indigo-900 block tracking-wider">Hedef Kazanım</span>
-                                    <span class="font-bold text-slate-700 leading-relaxed" x-text="act.outcome"></span>
-                                </div>
-                            </div>
-
-                            <!-- Etkinlik Adımları -->
-                            <div class="space-y-1.5 mb-4">
-                                <template x-for="(sec, sIdx) in act.sections" :key="sIdx">
-                                    <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-700 font-medium flex items-start gap-2">
-                                        <i class="fa-solid fa-circle-check text-indigo-500 text-[10px] mt-0.5 shrink-0"></i>
-                                        <span class="line-clamp-2" x-text="sec"></span>
-                                    </div>
-                                </template>
-                            </div>
-
-                            <!-- Slogan / Motto -->
-                            <div class="py-2 px-3 rounded-xl bg-gradient-to-r from-slate-900 to-indigo-950 text-white text-[11px] font-bold text-center mb-4 border border-indigo-400/20">
-                                <span x-text="act.motto"></span>
-                            </div>
-                        </div>
-
-                        <!-- Kart Alt Aksiyon Butonları -->
-                        <div class="pt-3 border-t border-slate-100 flex items-center gap-2">
-                            <button 
-                                type="button" 
-                                @click="openCodeWeekModal(act)" 
-                                class="flex-1 py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-indigo-600/20 active:scale-95 cursor-pointer"
-                            >
-                                <i class="fa-regular fa-eye"></i>
-                                <span>Görüntüle</span>
-                            </button>
-                            <button 
-                                type="button" 
-                                @click="printCodeWeekActivity(act)" 
-                                class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" 
-                                title="A4 Boyutunda Yazdır"
-                            >
-                                <i class="fa-solid fa-print"></i>
-                            </button>
-                            <a 
-                                :href="act.image" 
-                                :download="act.title + '.jpg'" 
-                                class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" 
-                                title="Yüksek Çözünürlüklü Görseli İndir"
-                            >
-                                <i class="fa-solid fa-download"></i>
-                            </a>
+                            <h3 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                <span>5. Sınıf Fen & Algoritma Etkinlikleri</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium">Algoritmik düşünme, sıralı komutlar, atık sınıflandırma ve çevre farkındalığı</p>
                         </div>
                     </div>
-                </template>
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1.5 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span x-text="getGradeActivities('5').length + ' Çalışma Kâğıdı'"></span>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+                    <template x-for="act in getGradeActivities('5')" :key="act.id">
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-emerald-100 hover:border-emerald-400 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative">
+                            <div>
+                                <!-- Üst Rozet Satırı -->
+                                <div class="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
+                                    <span class="px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-2 bg-emerald-50 text-emerald-800 border-emerald-200">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                        <span x-text="act.badge"></span>
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">
+                                        <i class="fa-solid fa-code text-emerald-600 mr-1"></i> Fen & Algoritma
+                                    </span>
+                                </div>
+
+                                <!-- Görsel Önizleme / Tıklanabilir Kart -->
+                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-emerald-400 cursor-pointer shadow-inner">
+                                    <img :src="act.image" :alt="act.title" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                                    <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
+                                        <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
+                                            <i class="fa-solid fa-magnifying-glass-plus text-emerald-600"></i>
+                                            <span>Tam Ekran İncele</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Başlık & Alt Başlık -->
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                                <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
+
+                                <!-- Fen & Algoritma Kazanımı -->
+                                <div class="p-3 rounded-2xl bg-emerald-50/70 border border-emerald-100 mb-4 text-xs text-slate-800 flex items-start gap-2.5">
+                                    <span class="w-5 h-5 rounded-lg bg-emerald-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-bullseye"></i>
+                                    </span>
+                                    <div>
+                                        <span class="text-[10px] font-black uppercase text-emerald-900 block tracking-wider">Hedef Kazanım</span>
+                                        <span class="font-bold text-slate-700 leading-relaxed" x-text="act.outcome"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Etkinlik Adımları -->
+                                <div class="space-y-1.5 mb-4">
+                                    <template x-for="(sec, sIdx) in act.sections" :key="sIdx">
+                                        <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-700 font-medium flex items-start gap-2">
+                                            <i class="fa-solid fa-circle-check text-emerald-500 text-[10px] mt-0.5 shrink-0"></i>
+                                            <span class="line-clamp-2" x-text="sec"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Slogan / Motto -->
+                                <div class="py-2 px-3 rounded-xl bg-gradient-to-r from-slate-900 to-emerald-950 text-white text-[11px] font-bold text-center mb-4 border border-emerald-400/20">
+                                    <span x-text="act.motto"></span>
+                                </div>
+                            </div>
+
+                            <!-- Kart Alt Aksiyon Butonları -->
+                            <div class="pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                                <button type="button" @click="openCodeWeekModal(act)" class="flex-1 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-600/20 active:scale-95 cursor-pointer">
+                                    <i class="fa-regular fa-eye"></i>
+                                    <span>Görüntüle</span>
+                                </button>
+                                <button type="button" @click="printCodeWeekActivity(act)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" title="A4 Boyutunda Yazdır">
+                                    <i class="fa-solid fa-print"></i>
+                                </button>
+                                <a :href="act.image" :download="act.title + '.jpg'" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" title="Yüksek Çözünürlüklü Görseli İndir">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <!-- ✏️ YÖNETİCİ DÜZENLEME BUTONU -->
+                                <template x-if="isAdmin">
+                                    <button type="button" @click="openEditCodeWeekModal(act)" class="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition-colors text-xs font-black active:scale-95 cursor-pointer border border-amber-300 flex items-center gap-1.5 shadow-2xs" title="Bu Etkinliği Düzenle (Yönetici)">
+                                        <i class="fa-solid fa-pen-to-square text-amber-600"></i>
+                                        <span>Düzenle</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- 🌊 6. SINIF BÖLÜMÜ -->
+            <div x-show="(codeWeekGradeTab === 'all' || codeWeekGradeTab === '6') && getGradeActivities('6').length > 0" class="mb-12">
+                <div class="flex items-center justify-between pb-3.5 mb-5 border-b-2 border-blue-500/20 flex-wrap gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-blue-500/15 text-blue-700 flex items-center justify-center font-black text-sm border border-blue-500/25 shadow-xs shrink-0">
+                            <i class="fa-solid fa-droplet"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                <span>6. Sınıf Fen & Algoritma Etkinlikleri</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium">Koşullu durumlar (Eğer... ise), döngüler, akış şemaları ve problem çözme</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-blue-50 text-blue-800 border border-blue-200 flex items-center gap-1.5 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                        <span x-text="getGradeActivities('6').length + ' Çalışma Kâğıdı'"></span>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+                    <template x-for="act in getGradeActivities('6')" :key="act.id">
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-blue-100 hover:border-blue-400 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative">
+                            <div>
+                                <!-- Üst Rozet Satırı -->
+                                <div class="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
+                                    <span class="px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-2 bg-blue-50 text-blue-800 border-blue-200">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                                        <span x-text="act.badge"></span>
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">
+                                        <i class="fa-solid fa-code text-blue-600 mr-1"></i> Fen & Algoritma
+                                    </span>
+                                </div>
+
+                                <!-- Görsel Önizleme / Tıklanabilir Kart -->
+                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-blue-400 cursor-pointer shadow-inner">
+                                    <img :src="act.image" :alt="act.title" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                                    <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
+                                        <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
+                                            <i class="fa-solid fa-magnifying-glass-plus text-blue-600"></i>
+                                            <span>Tam Ekran İncele</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Başlık & Alt Başlık -->
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-blue-700 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                                <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
+
+                                <!-- Fen & Algoritma Kazanımı -->
+                                <div class="p-3 rounded-2xl bg-blue-50/70 border border-blue-100 mb-4 text-xs text-slate-800 flex items-start gap-2.5">
+                                    <span class="w-5 h-5 rounded-lg bg-blue-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-bullseye"></i>
+                                    </span>
+                                    <div>
+                                        <span class="text-[10px] font-black uppercase text-blue-900 block tracking-wider">Hedef Kazanım</span>
+                                        <span class="font-bold text-slate-700 leading-relaxed" x-text="act.outcome"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Etkinlik Adımları -->
+                                <div class="space-y-1.5 mb-4">
+                                    <template x-for="(sec, sIdx) in act.sections" :key="sIdx">
+                                        <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-700 font-medium flex items-start gap-2">
+                                            <i class="fa-solid fa-circle-check text-blue-500 text-[10px] mt-0.5 shrink-0"></i>
+                                            <span class="line-clamp-2" x-text="sec"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Slogan / Motto -->
+                                <div class="py-2 px-3 rounded-xl bg-gradient-to-r from-slate-900 to-blue-950 text-white text-[11px] font-bold text-center mb-4 border border-blue-400/20">
+                                    <span x-text="act.motto"></span>
+                                </div>
+                            </div>
+
+                            <!-- Kart Alt Aksiyon Butonları -->
+                            <div class="pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                                <button type="button" @click="openCodeWeekModal(act)" class="flex-1 py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95 cursor-pointer">
+                                    <i class="fa-regular fa-eye"></i>
+                                    <span>Görüntüle</span>
+                                </button>
+                                <button type="button" @click="printCodeWeekActivity(act)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" title="A4 Boyutunda Yazdır">
+                                    <i class="fa-solid fa-print"></i>
+                                </button>
+                                <a :href="act.image" :download="act.title + '.jpg'" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" title="Yüksek Çözünürlüklü Görseli İndir">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <!-- ✏️ YÖNETİCİ DÜZENLEME BUTONU -->
+                                <template x-if="isAdmin">
+                                    <button type="button" @click="openEditCodeWeekModal(act)" class="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition-colors text-xs font-black active:scale-95 cursor-pointer border border-amber-300 flex items-center gap-1.5 shadow-2xs" title="Bu Etkinliği Düzenle (Yönetici)">
+                                        <i class="fa-solid fa-pen-to-square text-amber-600"></i>
+                                        <span>Düzenle</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+            </div>
+
+            <!-- ⚡ 7. SINIF BÖLÜMÜ -->
+            <div x-show="(codeWeekGradeTab === 'all' || codeWeekGradeTab === '7') && getGradeActivities('7').length > 0" class="mb-12">
+                <div class="flex items-center justify-between pb-3.5 mb-5 border-b-2 border-purple-500/20 flex-wrap gap-2">
+                    <div class="flex items-center gap-3">
+                        <span class="w-9 h-9 rounded-2xl bg-purple-500/15 text-purple-700 flex items-center justify-center font-black text-sm border border-purple-500/25 shadow-xs shrink-0">
+                            <i class="fa-solid fa-bolt"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-lg sm:text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
+                                <span>7. Sınıf Fen & Algoritma Etkinlikleri</span>
+                            </h3>
+                            <p class="text-xs text-slate-500 font-medium">Sensör verileri, akıllı sera algoritmaları, veri grafiği analizi ve sürdürülebilirlik</p>
+                        </div>
+                    </div>
+                    <span class="px-3 py-1 rounded-full text-xs font-black bg-purple-50 text-purple-800 border border-purple-200 flex items-center gap-1.5 shadow-2xs">
+                        <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                        <span x-text="getGradeActivities('7').length + ' Çalışma Kâğıdı'"></span>
+                    </span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+                    <template x-for="act in getGradeActivities('7')" :key="act.id">
+                        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-purple-100 hover:border-purple-400 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative">
+                            <div>
+                                <!-- Üst Rozet Satırı -->
+                                <div class="flex items-center justify-between gap-2 mb-3.5 flex-wrap">
+                                    <span class="px-3 py-1 rounded-xl text-xs font-black border flex items-center gap-2 bg-purple-50 text-purple-800 border-purple-200">
+                                        <span class="w-2.5 h-2.5 rounded-full bg-purple-500"></span>
+                                        <span x-text="act.badge"></span>
+                                    </span>
+                                    <span class="px-2.5 py-1 rounded-xl bg-slate-100 text-slate-700 font-bold text-[11px] border border-slate-200">
+                                        <i class="fa-solid fa-code text-purple-600 mr-1"></i> Fen & Algoritma
+                                    </span>
+                                </div>
+
+                                <!-- Görsel Önizleme / Tıklanabilir Kart -->
+                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-purple-400 cursor-pointer shadow-inner">
+                                    <img :src="act.image" :alt="act.title" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                                    <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
+                                        <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
+                                            <i class="fa-solid fa-magnifying-glass-plus text-purple-600"></i>
+                                            <span>Tam Ekran İncele</span>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Başlık & Alt Başlık -->
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-purple-700 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                                <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
+
+                                <!-- Fen & Algoritma Kazanımı -->
+                                <div class="p-3 rounded-2xl bg-purple-50/70 border border-purple-100 mb-4 text-xs text-slate-800 flex items-start gap-2.5">
+                                    <span class="w-5 h-5 rounded-lg bg-purple-600 text-white flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                        <i class="fa-solid fa-bullseye"></i>
+                                    </span>
+                                    <div>
+                                        <span class="text-[10px] font-black uppercase text-purple-900 block tracking-wider">Hedef Kazanım</span>
+                                        <span class="font-bold text-slate-700 leading-relaxed" x-text="act.outcome"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Etkinlik Adımları -->
+                                <div class="space-y-1.5 mb-4">
+                                    <template x-for="(sec, sIdx) in act.sections" :key="sIdx">
+                                        <div class="p-2 rounded-xl bg-slate-50 border border-slate-100 text-[11px] text-slate-700 font-medium flex items-start gap-2">
+                                            <i class="fa-solid fa-circle-check text-purple-500 text-[10px] mt-0.5 shrink-0"></i>
+                                            <span class="line-clamp-2" x-text="sec"></span>
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Slogan / Motto -->
+                                <div class="py-2 px-3 rounded-xl bg-gradient-to-r from-slate-900 to-purple-950 text-white text-[11px] font-bold text-center mb-4 border border-purple-400/20">
+                                    <span x-text="act.motto"></span>
+                                </div>
+                            </div>
+
+                            <!-- Kart Alt Aksiyon Butonları -->
+                            <div class="pt-3 border-t border-slate-100 flex items-center gap-2 flex-wrap">
+                                <button type="button" @click="openCodeWeekModal(act)" class="flex-1 py-2.5 px-3 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-black text-xs transition-all flex items-center justify-center gap-1.5 shadow-md shadow-purple-600/20 active:scale-95 cursor-pointer">
+                                    <i class="fa-regular fa-eye"></i>
+                                    <span>Görüntüle</span>
+                                </button>
+                                <button type="button" @click="printCodeWeekActivity(act)" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" title="A4 Boyutunda Yazdır">
+                                    <i class="fa-solid fa-print"></i>
+                                </button>
+                                <a :href="act.image" :download="act.title + '.jpg'" class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors text-xs font-bold active:scale-95 cursor-pointer border border-slate-200" title="Yüksek Çözünürlüklü Görseli İndir">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                                <!-- ✏️ YÖNETİCİ DÜZENLEME BUTONU -->
+                                <template x-if="isAdmin">
+                                    <button type="button" @click="openEditCodeWeekModal(act)" class="p-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 hover:text-amber-900 transition-colors text-xs font-black active:scale-95 cursor-pointer border border-amber-300 flex items-center gap-1.5 shadow-2xs" title="Bu Etkinliği Düzenle (Yönetici)">
+                                        <i class="fa-solid fa-pen-to-square text-amber-600"></i>
+                                        <span>Düzenle</span>
+                                    </button>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                </div>
             </div>
 
             <!-- ⚠️ ARAMA SONUCU BULUNAMADI -->
-            <div x-show="filteredActivitiesCount === 0" class="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto mb-12 shadow-xs">
+            <div x-show="totalVisibleCount === 0" class="py-16 text-center bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto mb-12 shadow-xs">
                 <div class="w-16 h-16 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl mx-auto mb-3">
                     <i class="fa-solid fa-folder-open"></i>
                 </div>
                 <h4 class="text-base font-black text-slate-800 mb-1">Eşleşen Etkinlik Bulunamadı</h4>
-                <p class="text-xs text-slate-500 mb-4">Arama kriterlerinizi değiştirebilir veya sınıf sekmelerinden 'Tümü'nü seçebilirsiniz.</p>
+                <p class="text-xs text-slate-500 mb-4">Arama kriterlerinizi değiştirebilir veya arama kutusunu temizleyebilirsiniz.</p>
                 <button type="button" @click="codeWeekGradeTab = 'all'; searchQuery = ''" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer">
-                    Filtreleri Temizle (Tümünü Göster)
+                    Filtreleri Temizle
                 </button>
             </div>
 
@@ -7982,6 +8257,186 @@ window.printCodeWeekImage = function(act) {
         </html>
     `);
     printWindow.document.close();
+};
+
+// =============================================================
+// ✏️ AB KOD HAFTASI ETKİNLİK DÜZENLEME MODALI (YÖNETİCİ ÖZEL)
+// =============================================================
+window.openEditCodeWeekModal = function(act) {
+    if (!act) return;
+    let modal = document.getElementById("edit-codeweek-modal");
+    if (!modal) {
+        modal = document.createElement("div");
+        modal.id = "edit-codeweek-modal";
+        modal.className = "fixed inset-0 z-[9997] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 transition-all duration-300 animate-in fade-in";
+        modal.onclick = function(e) {
+            if (e.target === this) window.closeEditCodeWeekModal();
+        };
+        document.body.appendChild(modal);
+    }
+
+    const sectionsText = Array.isArray(act.sections) ? act.sections.join("\n") : "";
+
+    modal.innerHTML = `
+        <div class="bg-white rounded-3xl p-5 sm:p-7 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-slate-200 relative animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+            <!-- Üst Başlık -->
+            <div class="flex items-center justify-between pb-4 mb-5 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <span class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-lg shadow-md shadow-amber-500/25 shrink-0">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </span>
+                    <div>
+                        <h4 class="text-base sm:text-lg font-black text-slate-900 leading-tight">Etkinlik Kartını Düzenle</h4>
+                        <p class="text-xs text-slate-500 font-medium">Bu etkinlik için metinleri, adımları, kazanımı ve görseli özelleştirin</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.closeEditCodeWeekModal()" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark text-sm"></i>
+                </button>
+            </div>
+
+            <form onsubmit="window.handleSaveCodeWeekActivity(event, '${act.id}')" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Etkinlik Başlığı</label>
+                        <input type="text" id="edit-cw-title" value="${(act.title || '').replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Rozet / Başlık Etiketi</label>
+                        <input type="text" id="edit-cw-badge" value="${(act.badge || '').replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                    <div class="sm:col-span-2">
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Alt Başlık / Çağrı Cümlesi</label>
+                        <input type="text" id="edit-cw-subtitle" value="${(act.subtitle || '').replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Sınıf Seviyesi</label>
+                        <select id="edit-cw-grade" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                            <option value="5" ${act.grade === '5' ? 'selected' : ''}>5. Sınıf</option>
+                            <option value="6" ${act.grade === '6' ? 'selected' : ''}>6. Sınıf</option>
+                            <option value="7" ${act.grade === '7' ? 'selected' : ''}>7. Sınıf</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Hedef Fen & Algoritma Kazanımı</label>
+                    <input type="text" id="edit-cw-outcome" value="${(act.outcome || '').replace(/"/g, '&quot;')}" required class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Detaylı Açıklama</label>
+                    <textarea id="edit-cw-desc" rows="2" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">${(act.description || '').replace(/</g, '&lt;')}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Görsel Dosya Yolu / URL</label>
+                    <input type="text" id="edit-cw-image" value="${(act.image || '').replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-mono text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Etkinlik Adımları / Soru Başlıkları (Her satıra bir adım yazın)</label>
+                    <textarea id="edit-cw-sections" rows="4" class="w-full px-3.5 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all leading-relaxed">${sectionsText.replace(/</g, '&lt;')}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1">Slogan / Motto</label>
+                    <input type="text" id="edit-cw-motto" value="${(act.motto || '').replace(/"/g, '&quot;')}" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:bg-white transition-all">
+                </div>
+
+                <div class="flex items-center justify-between gap-3 pt-3 border-t border-slate-100 flex-wrap">
+                    <button type="button" onclick="window.resetCodeWeekActivity('${act.id}')" class="px-3.5 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl transition-colors border border-rose-200 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-rotate-left"></i>
+                        <span>Varsayılana Dön</span>
+                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="window.closeEditCodeWeekModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer">
+                            İptal
+                        </button>
+                        <button type="submit" class="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-md shadow-amber-500/25 flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Değişiklikleri Kaydet</span>
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    `;
+    document.body.style.overflow = "hidden";
+};
+
+window.closeEditCodeWeekModal = function() {
+    const modal = document.getElementById("edit-codeweek-modal");
+    if (modal) modal.remove();
+    document.body.style.overflow = "";
+};
+
+window.handleSaveCodeWeekActivity = function(event, actId) {
+    if (event) event.preventDefault();
+    const title = document.getElementById("edit-cw-title")?.value.trim();
+    const badge = document.getElementById("edit-cw-badge")?.value.trim();
+    const subtitle = document.getElementById("edit-cw-subtitle")?.value.trim();
+    const grade = document.getElementById("edit-cw-grade")?.value.trim();
+    const outcome = document.getElementById("edit-cw-outcome")?.value.trim();
+    const desc = document.getElementById("edit-cw-desc")?.value.trim();
+    const image = document.getElementById("edit-cw-image")?.value.trim();
+    const sectionsRaw = document.getElementById("edit-cw-sections")?.value || "";
+    const motto = document.getElementById("edit-cw-motto")?.value.trim();
+
+    const sections = sectionsRaw.split("\n").map(s => s.trim()).filter(Boolean);
+
+    let customMap = {};
+    try {
+        const stored = localStorage.getItem("rotali_custom_codeweek_activities");
+        if (stored) customMap = JSON.parse(stored);
+    } catch(e) {}
+
+    customMap[actId] = {
+        title,
+        badge,
+        subtitle,
+        grade,
+        outcome,
+        description: desc,
+        image,
+        sections,
+        motto
+    };
+
+    localStorage.setItem("rotali_custom_codeweek_activities", JSON.stringify(customMap));
+    window.CODEWEEK_ACTIVITIES = window.getCodeWeekActivitiesWithCustom();
+    window.dispatchEvent(new CustomEvent('rotali-codeweek-updated'));
+
+    window.closeEditCodeWeekModal();
+    if (typeof showToast === 'function') {
+        showToast("Etkinlik başarıyla güncellendi!", "success");
+    } else {
+        alert("Etkinlik başarıyla güncellendi!");
+    }
+};
+
+window.resetCodeWeekActivity = function(actId) {
+    if (!confirm("Bu etkinliği orijinal varsayılan haline döndürmek istediğinize emin misiniz?")) return;
+    let customMap = {};
+    try {
+        const stored = localStorage.getItem("rotali_custom_codeweek_activities");
+        if (stored) customMap = JSON.parse(stored);
+    } catch(e) {}
+
+    delete customMap[actId];
+    localStorage.setItem("rotali_custom_codeweek_activities", JSON.stringify(customMap));
+    window.CODEWEEK_ACTIVITIES = window.getCodeWeekActivitiesWithCustom();
+    window.dispatchEvent(new CustomEvent('rotali-codeweek-updated'));
+
+    window.closeEditCodeWeekModal();
+    if (typeof showToast === 'function') {
+        showToast("Etkinlik varsayılan haline döndürüldü.", "info");
+    } else {
+        alert("Etkinlik varsayılan haline döndürüldü.");
+    }
 };
 
 // ✏️ PROJE KARTINI DÜZENLEME MODALI (Başlık, Rozet ve Fikirler)
@@ -13399,6 +13854,13 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
+    // 🎬 6. SINIF GÜNEŞ SİSTEMİNDE YOLCULUK – 3D SİNEMATİK ANİMASYON
+    if (checkTitle.includes("yolculuk") || id === "mat-6-1-oyun-gunes-sistemi-yolculuk-3d" || id === "builtin-oyun-6-gunes-sistemi-yolculuk" || id === "gunes-sistemi-yolculuk-3d" ||
+        targetUrl.includes("gunes-sistemi-yolculuk") || targetUrl.includes("gunes_sistemi_yolculuk")) {
+        openInteractiveGameModal("oyunlar/gunes-sistemi-yolculuk-3d.html", "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon");
+        return;
+    }
+
     // 🪐 6. SINIF GÜNEŞ SİSTEMİ – 3D KEŞİF LABORATUVARI (3D DIGITAL PLANETARIUM)
     if (checkTitle.includes("güneş sistemi") || checkTitle.includes("gunes sistemi") ||
         id === "mat-6-1-oyun-gunes-sistemi-3d" || id === "builtin-oyun-6-gunes-sistemi" || id === "gunes-sistemi-3d" ||
@@ -14816,6 +15278,40 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
                     <iframe src="oyunlar/aya-inis-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
+    // 🎬 6. Sınıf Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon
+    if (str.includes("gunes-sistemi-yolculuk") || str.includes("gunes_sistemi_yolculuk") || titleStr.includes("yolculuk") || resolvedKey === "gunes-sistemi-yolculuk-3d" || resolvedKey === "mat-6-1-oyun-gunes-sistemi-yolculuk-3d" || resolvedKey === "builtin-oyun-6-gunes-sistemi-yolculuk") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-sky-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 via-sky-500 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-film"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🎬 Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 6. Sınıf Fen Bilimleri 1. Ünite</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/gunes-sistemi-yolculuk-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/gunes-sistemi-yolculuk-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
