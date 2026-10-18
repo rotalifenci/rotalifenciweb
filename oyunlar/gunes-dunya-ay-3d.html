@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            navy: '#0f172a',
+                            deepSpace: '#030712',
+                            gold: '#f59e0b',
+                            sun: '#ea580c',
+                            earth: '#0284c7',
+                            moon: '#94a3b8'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js CDN & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            height: 100dvh;
+            height: 100svh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            position: fixed;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #030712;
+            color: #f8fafc;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+        #webgl-canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+            touch-action: none;
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.82);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+        .glass-panel-light {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-gold {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+        }
+        .glow-blue {
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.35);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.3);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(245, 158, 11, 0.4);
+            border-radius: 9999px;
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        /* Pulse animations */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(1.03); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="relative w-full h-full overflow-hidden bg-slate-950 text-slate-100 flex flex-col">
+
+    <!-- 🌌 3D WEBGL SAHNESİ -->
+    <div class="absolute inset-0 w-full h-full z-0 overflow-hidden">
+        <canvas id="webgl-canvas"></canvas>
+    </div>
+
+    <!-- 🌟 ÜST BAŞLIK BARI (HEADER) -->
+    <header class="relative z-20 w-full px-3 sm:px-5 py-2.5 glass-panel border-b border-white/10 flex items-center justify-between gap-3 shrink-0">
+        <!-- Sol: Logo & Başlık -->
+        <div class="flex items-center gap-3 min-w-0">
+            <a href="../#home" class="flex items-center gap-2.5 shrink-0 group hover:opacity-95 transition-opacity" title="Rotalı Fenci Ana Sayfa">
+                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl object-cover border border-amber-400/40 shadow-sm" onerror="this.src='../assets/rotali-fenci-logo.png'">
+                <div class="hidden sm:block">
+                    <div class="font-black text-xs sm:text-sm tracking-wider text-amber-400 uppercase leading-none font-orbitron">ROTALI FENCİ</div>
+                    <div class="text-[9px] font-bold text-slate-300 tracking-widest uppercase mt-0.5">3D HAREKET LABORATUVARI</div>
+                </div>
+            </a>
+
+            <div class="h-6 w-px bg-white/15 hidden md:block"></div>
+
+            <div class="min-w-0">
+                <div class="flex items-center gap-1.5 flex-wrap">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                        5. SINIF FEN BİLİMLERİ
+                    </span>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 hidden lg:inline">
+                        1. ÜNİTE: GÜNEŞ, DÜNYA VE AY
+                    </span>
+                </div>
+                <h1 class="text-xs sm:text-base font-black text-white truncate flex items-center gap-1.5 mt-0.5">
+                    <span>Güneş, Dünya ve Ay: 3D Hareket Simülasyonu</span>
+                </h1>
+            </div>
+        </div>
+
+        <!-- Sağ: Aksiyon Butonları -->
+        <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <!-- Öğretmen Modu Butonu -->
+            <button id="btn-teacher-mode" onclick="toggleTeacherMode()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-amber-600 text-slate-200 hover:text-white font-black text-[11px] sm:text-xs border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95" title="Akıllı Tahta Öğretmen Soru-Cevap Modu">
+                <i class="fa-solid fa-chalkboard-user text-amber-400"></i>
+                <span class="hidden md:inline">Öğretmen Modu</span>
+            </button>
+
+            <!-- Deneyler / Quiz Butonu -->
+            <button onclick="toggleExperimentModal()" class="px-2.5 sm:px-3 py-1.5 rounded-xl bg-indigo-600/80 hover:bg-indigo-600 text-white font-black text-[11px] sm:text-xs border border-indigo-400/30 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95" title="Etkileşimli Deneyler & Görevler">
+                <i class="fa-solid fa-flask-vial text-cyan-300"></i>
+                <span class="hidden sm:inline">Deneyler (4)</span>
+            </button>
+
+            <!-- Tam Ekran -->
+            <button onclick="toggleFullScreen()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/10 text-xs sm:text-sm active:scale-95" title="Tam Ekran">
+                <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+            </button>
+
+            <!-- Yardım / Bilgi Rehberi -->
+            <button onclick="toggleHelpModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-all flex items-center justify-center cursor-pointer border border-white/10 text-xs sm:text-sm active:scale-95" title="Simülasyon Bilimsel Rehberi">
+                <i class="fa-solid fa-circle-question text-amber-300"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 🎛️ 7 SİMÜLASYON MODU HIZLI SEÇİM ŞERİDİ (ÜST MOD SEÇİCİ) -->
+    <div class="relative z-10 w-full px-3 sm:px-5 py-2 glass-panel-light border-b border-white/10 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0 text-xs">
+        <span class="text-[11px] font-black uppercase tracking-wider text-slate-400 shrink-0 hidden lg:inline flex items-center gap-1 mr-1">
+            <i class="fa-solid fa-shapes text-amber-400"></i> MOD:
+        </span>
+        
+        <button onclick="setSimMode(1)" id="mode-btn-1" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
+            <span>☀️ 1. Yalnız Güneş</span>
+        </button>
+        <button onclick="setSimMode(2)" id="mode-btn-2" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
+            <span>🌍 2. Yalnız Dünya</span>
+        </button>
+        <button onclick="setSimMode(3)" id="mode-btn-3" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
+            <span>🌕 3. Yalnız Ay</span>
+        </button>
+        <button onclick="setSimMode(4)" id="mode-btn-4" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
+            <span>☀️🌍 4. Güneş + Dünya</span>
+        </button>
+        <button onclick="setSimMode(5)" id="mode-btn-5" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
+            <span>🌍🌕 5. Dünya + Ay</span>
+        </button>
+        <button onclick="setSimMode(6)" id="mode-btn-6" class="mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20">
+            <span>☀️🌕 6. Güneş + Ay</span>
+        </button>
+        <button onclick="setSimMode(7)" id="mode-btn-7" class="mode-btn px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black border-amber-400 shadow-md scale-[1.02]">
+            <span>🌌 7. Güneş + Dünya + Ay</span>
+        </button>
+    </div>
+
+    <!-- 🚀 ORTA ANA ALAN (3D Sahne Üzerindeki Yüzen Paneller) -->
+    <div class="relative flex-1 w-full h-full pointer-events-none overflow-hidden">
+
+        <!-- 🧭 SOL YÜZEN PANEL: HAREKET KONTROLLERİ & BAĞIMSIZ ANAHTARLAR -->
+        <div id="left-controls-panel" class="pointer-events-auto absolute top-3 left-3 sm:left-4 z-10 w-72 sm:w-80 max-h-[calc(100%-24px)] overflow-y-auto no-scrollbar glass-panel rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all duration-300">
+            
+            <!-- Panel Başlığı & Kapat/Aç Toggle -->
+            <div class="flex items-center justify-between pb-2.5 mb-3 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs">
+                        <i class="fa-solid fa-sliders"></i>
+                    </span>
+                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Kontrolleri</h3>
+                </div>
+                <button onclick="togglePanelCollapse('left-controls-content')" class="text-slate-400 hover:text-white p-1 text-xs cursor-pointer">
+                    <i class="fa-solid fa-chevron-up transition-transform" id="left-panel-chevron"></i>
+                </button>
+            </div>
+
+            <div id="left-controls-content" class="space-y-3">
+                <!-- ☀️ GÜNEŞ KONTROLLERİ -->
+                <div class="p-2.5 rounded-2xl bg-amber-950/40 border border-amber-500/20" id="ctrl-group-sun">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-black text-amber-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-sun"></i> GÜNEŞ
+                        </span>
+                        <span class="text-[10px] text-amber-200/70 font-mono">~25 Gün</span>
+                    </div>
+                    <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                        <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme</span>
+                        <input type="checkbox" id="chk-sun-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-amber-500 accent-amber-500 cursor-pointer">
+                    </label>
+                </div>
+
+                <!-- 🌍 DÜNYA KONTROLLERİ -->
+                <div class="p-2.5 rounded-2xl bg-blue-950/40 border border-blue-500/20" id="ctrl-group-earth">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-black text-cyan-300 flex items-center gap-1.5">
+                            <i class="fa-solid fa-earth-americas"></i> DÜNYA
+                        </span>
+                        <span class="text-[10px] text-cyan-200/70 font-mono">24 Sa / 365 Gün</span>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                            <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme (Gece-Gündüz)</span>
+                            <input type="checkbox" id="chk-earth-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer">
+                        </label>
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                            <span class="font-bold text-slate-200 text-[11px]">Güneş Çevresinde Dolanma (1 Yıl)</span>
+                            <input type="checkbox" id="chk-earth-rev" onchange="updateMovementStates()" class="w-4 h-4 rounded text-cyan-500 accent-cyan-500 cursor-pointer">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 🌕 AY KONTROLLERİ -->
+                <div class="p-2.5 rounded-2xl bg-slate-900/60 border border-slate-400/20" id="ctrl-group-moon">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <span class="text-xs font-black text-slate-200 flex items-center gap-1.5">
+                            <i class="fa-solid fa-moon"></i> AY
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">~27,3 Gün</span>
+                    </div>
+                    <div class="space-y-1.5">
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                            <span class="font-bold text-slate-200 text-[11px]">Kendi Ekseninde Dönme</span>
+                            <input type="checkbox" id="chk-moon-rot" onchange="updateMovementStates()" class="w-4 h-4 rounded text-slate-300 accent-slate-300 cursor-pointer">
+                        </label>
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-black/40 hover:bg-black/60 transition-colors cursor-pointer text-xs">
+                            <span class="font-bold text-slate-200 text-[11px]">Dünya Çevresinde Dolanma</span>
+                            <input type="checkbox" id="chk-moon-rev" onchange="updateMovementStates()" class="w-4 h-4 rounded text-slate-300 accent-slate-300 cursor-pointer">
+                        </label>
+                        <label class="flex items-center justify-between p-2 rounded-xl bg-purple-950/40 border border-purple-500/30 hover:bg-purple-950/60 transition-colors cursor-pointer text-xs">
+                            <span class="font-bold text-purple-200 text-[11px] flex items-center gap-1">
+                                <i class="fa-solid fa-thumbtack text-rose-400"></i> "Aynı Yüz" İşaretini Göster
+                            </span>
+                            <input type="checkbox" id="chk-same-face" onchange="toggleSameFaceMarker()" checked class="w-4 h-4 rounded text-purple-400 accent-purple-400 cursor-pointer">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 🎛️ TOPLU HAREKET YÖNETİM BUTONLARI -->
+                <div class="pt-2 border-t border-white/10 grid grid-cols-2 gap-2">
+                    <button type="button" onclick="startAllMovements()" class="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-play"></i> Hepsini Başlat
+                    </button>
+                    <button type="button" onclick="pauseAllMovements()" class="py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-pause"></i> Hepsini Durdur
+                    </button>
+                    <button type="button" onclick="resetAllPositions()" class="col-span-2 py-1.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs transition-all border border-white/10 flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-rotate-left"></i> Konumları Sıfırla
+                    </button>
+                </div>
+
+                <!-- ⚙️ YARDIMCI GÖRSEL KATMANLAR -->
+                <div class="pt-2 border-t border-white/10 space-y-1.5">
+                    <span class="text-[10px] font-black uppercase text-slate-400 block tracking-wider">Görsel Katmanlar & Oklar</span>
+                    <div class="grid grid-cols-2 gap-1.5 text-[11px]">
+                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
+                            <input type="checkbox" id="chk-show-orbits" checked onchange="toggleOrbits()" class="rounded text-amber-500 accent-amber-500">
+                            <span class="text-slate-300">Yörüngeler</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
+                            <input type="checkbox" id="chk-show-arrows" checked onchange="toggleArrows()" class="rounded text-cyan-500 accent-cyan-500">
+                            <span class="text-slate-300">3D Yön Okları</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
+                            <input type="checkbox" id="chk-show-axes" checked onchange="toggleAxes()" class="rounded text-yellow-500 accent-yellow-500">
+                            <span class="text-slate-300">Dönüş Ekseni</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-1.5 rounded-lg bg-black/30 hover:bg-black/50 cursor-pointer">
+                            <input type="checkbox" id="chk-show-orrery" onchange="toggleOrreryArms()" class="rounded text-amber-500 accent-amber-500">
+                            <span class="text-slate-300 font-bold text-amber-300">Mekanik Kol</span>
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ⏱️ SAĞ ÜST YÜZEN PANEL: ANALOG SAAT & DÖNME YÖNÜ GÖSTERGESİ -->
+        <div id="right-clock-panel" class="pointer-events-auto absolute top-3 right-3 sm:right-4 z-10 w-72 sm:w-80 glass-panel rounded-3xl p-3.5 sm:p-4 border border-white/15 shadow-2xl transition-all">
+            <div class="flex items-center justify-between pb-2 mb-2 border-b border-white/10">
+                <div class="flex items-center gap-2">
+                    <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs">
+                        <i class="fa-regular fa-clock"></i>
+                    </span>
+                    <h3 class="text-xs sm:text-sm font-black text-white uppercase tracking-wider font-orbitron">Hareket Yönü & Saat</h3>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                    KUZEYDEN BAKIŞ
+                </span>
+            </div>
+
+            <!-- Analog Saat Göstergesi -->
+            <div class="flex items-center gap-4 py-1">
+                <!-- SVG Analog Saat -->
+                <div class="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0">
+                    <svg viewBox="0 0 100 100" class="w-full h-full drop-shadow-md">
+                        <!-- Saat Kadranı -->
+                        <circle cx="50" cy="50" r="46" fill="#0f172a" stroke="#f59e0b" stroke-width="2.5" />
+                        <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+                        
+                        <!-- Kadran Çizgileri & Sayılar -->
+                        <g font-family="'JetBrains Mono', monospace" font-size="7" font-weight="900" fill="#f8fafc" text-anchor="middle" dominant-baseline="central">
+                            <text x="50" y="14">12</text>
+                            <text x="86" y="50">3</text>
+                            <text x="50" y="86">6</text>
+                            <text x="14" y="50">9</text>
+                            <text x="68" y="19" fill="#94a3b8" font-size="5.5">1</text>
+                            <text x="81" y="32" fill="#94a3b8" font-size="5.5">2</text>
+                            <text x="81" y="68" fill="#94a3b8" font-size="5.5">4</text>
+                            <text x="68" y="81" fill="#94a3b8" font-size="5.5">5</text>
+                            <text x="32" y="81" fill="#94a3b8" font-size="5.5">7</text>
+                            <text x="19" y="68" fill="#94a3b8" font-size="5.5">8</text>
+                            <text x="19" y="32" fill="#94a3b8" font-size="5.5">10</text>
+                            <text x="32" y="19" fill="#94a3b8" font-size="5.5">11</text>
+                        </g>
+
+                        <!-- Saat Yönü Okları (Dairesel) -->
+                        <path id="clock-arrow-path" d="M 50 18 A 32 32 0 1 0 82 50" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+
+                        <!-- İbre (Animasyonlu Dönen Kol) -->
+                        <line id="clock-hand" x1="50" y1="50" x2="50" y2="18" stroke="#ef4444" stroke-width="3" stroke-linecap="round" />
+                        <circle cx="50" cy="50" r="4.5" fill="#f59e0b" />
+                        <circle cx="50" cy="50" r="2" fill="#ffffff" />
+                    </svg>
+                </div>
+
+                <!-- Saat Bilgisi & Yön Açıklaması -->
+                <div class="space-y-1.5 min-w-0">
+                    <div id="direction-title-badge" class="px-2.5 py-1 rounded-xl text-center bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-black text-xs leading-tight">
+                        SAAT YÖNÜNÜN TERSİ
+                    </div>
+                    <p id="direction-desc" class="text-[11px] text-slate-300 leading-snug font-medium">
+                        Kuzey kutbundan bakıldığında Dünya, Güneş ve Ay <strong>saat yönünün tersine</strong> döner.
+                    </p>
+                    <button type="button" onclick="focusTopViewAndDemonstrate()" class="w-full py-1.5 px-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 text-[10px] font-black transition-all flex items-center justify-center gap-1 active:scale-95 cursor-pointer">
+                        <i class="fa-solid fa-arrows-spin"></i>
+                        <span>Kuzeyden Yönü İncele</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Canlı Astronomik Zaman Sayacı -->
+            <div class="mt-2.5 pt-2 border-t border-white/10 bg-black/40 p-2 rounded-2xl flex items-center justify-between text-xs font-mono">
+                <div>
+                    <span class="text-[9px] text-slate-400 block font-sans uppercase">Geçen Süre</span>
+                    <span id="elapsed-time-counter" class="text-amber-400 font-bold">0 Gün 00 Saat</span>
+                </div>
+                <div class="text-right">
+                    <span class="text-[9px] text-slate-400 block font-sans uppercase">Dünya Turu</span>
+                    <span id="earth-orbit-counter" class="text-cyan-400 font-bold">0.00 Yıl</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🔭 SAĞ ALT YÜZEN PANEL: DÜNYA'DAN AY'A BAKIŞ (EVRE PENCERESİ) -->
+        <div id="moon-phase-pip-panel" class="pointer-events-auto absolute bottom-24 right-3 sm:right-4 z-10 w-44 sm:w-52 glass-panel rounded-2xl p-2.5 border border-white/15 shadow-xl transition-all hidden md:block">
+            <div class="flex items-center justify-between pb-1 mb-1.5 border-b border-white/10">
+                <span class="text-[10px] font-black uppercase tracking-wider text-slate-300 flex items-center gap-1">
+                    <i class="fa-solid fa-telescope text-cyan-400"></i> Dünya'dan Görünüm
+                </span>
+                <span id="phase-name-badge" class="text-[9px] font-bold text-amber-400">Yeni Ay</span>
+            </div>
+            <div class="relative w-full aspect-square bg-slate-950 rounded-xl overflow-hidden border border-white/10 flex items-center justify-center">
+                <canvas id="moon-phase-canvas" width="160" height="160" class="w-full h-full object-contain"></canvas>
+                <div class="absolute bottom-1 left-0 right-0 text-center">
+                    <span id="phase-label" class="text-[9px] font-black bg-black/70 px-2 py-0.5 rounded-full text-slate-200">Karanlık Yüzey</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 📢 ORTA EĞİTİCİ BİLGİ KARTLARI & ÖĞRETMEN SORU KARTI -->
+        <div id="teacher-quiz-overlay" class="pointer-events-auto absolute top-16 left-1/2 -translate-x-1/2 z-30 max-w-lg w-[92%] glass-panel rounded-3xl p-5 border-2 border-amber-500/50 shadow-2xl transition-all duration-300 hidden">
+            <div class="flex items-center justify-between mb-3">
+                <span class="px-3 py-1 rounded-full text-xs font-black bg-amber-500/20 text-amber-300 border border-amber-500/40 flex items-center gap-1.5">
+                    <i class="fa-solid fa-graduation-cap"></i> ÖĞRETMEN DERS MODU: ÖNCE TAHMİN ET
+                </span>
+                <button onclick="toggleTeacherMode()" class="text-slate-400 hover:text-white p-1 cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <h3 id="quiz-question-title" class="text-sm sm:text-base font-black text-white mb-2 leading-snug">
+                Dünya kendi ekseni etrafında hangi yönde döner?
+            </h3>
+            <p id="quiz-question-sub" class="text-xs text-slate-300 mb-4">
+                Öğrencilerinizden tahminleri aldıktan sonra doğru hareketi ve yön ibresini başlatmak için seçeneğe dokunun.
+            </p>
+            <div class="grid grid-cols-2 gap-3 mb-3">
+                <button onclick="checkTeacherAnswer('cw')" class="py-2.5 px-3 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-white/20 text-xs font-bold text-slate-200 hover:text-white transition-all cursor-pointer flex items-center justify-center gap-1.5">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> Saat Yönünde
+                </button>
+                <button onclick="checkTeacherAnswer('ccw')" class="py-2.5 px-3 rounded-2xl bg-cyan-700/80 hover:bg-cyan-600 border border-cyan-400/40 text-xs font-black text-white transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-lg">
+                    <i class="fa-solid fa-rotate-left text-cyan-200"></i> Saat Yönünün Tersi
+                </button>
+            </div>
+            <div id="quiz-feedback-box" class="hidden p-3 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-200 font-medium"></div>
+        </div>
+
+    </div>
+
+    <!-- 🎮 ALT ZAMAN & KAMERA KONTROL MERKEZİ (FOOTER BAR) -->
+    <footer class="relative z-20 w-full px-3 sm:px-5 py-2.5 glass-panel border-t border-white/10 flex flex-col md:flex-row items-center justify-between gap-3 shrink-0">
+        <!-- Sol: Oynatma & Hız Kontrolleri -->
+        <div class="flex items-center gap-2 flex-wrap justify-center sm:justify-start">
+            <!-- Başlat / Duraklat -->
+            <button id="btn-master-play" onclick="toggleMasterPlay()" class="px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-play" id="master-play-icon"></i>
+                <span id="master-play-text">Başlat</span>
+            </button>
+
+            <!-- Hız Seçici Butonları -->
+            <div class="flex items-center gap-1 bg-black/40 p-1 rounded-2xl border border-white/10">
+                <button onclick="setSpeed(0.5)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="0.5">0.5x</button>
+                <button onclick="setSpeed(1)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-black bg-amber-500 text-slate-950 transition-all cursor-pointer" data-speed="1">1x</button>
+                <button onclick="setSpeed(5)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="5">5x</button>
+                <button onclick="setSpeed(20)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer hidden sm:inline" data-speed="20">20x</button>
+                <button onclick="setSpeed(50)" class="speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer" data-speed="50">50x</button>
+            </div>
+
+            <!-- Hızlı Tur Butonları -->
+            <div class="hidden lg:flex items-center gap-1.5 ml-2">
+                <button onclick="demonstrateFullCycle('day')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-[11px] border border-white/10 transition-all cursor-pointer" title="Dünya'nın 1 Günlük Dönüşünü Göster">
+                    <i class="fa-solid fa-sun mr-1"></i> 1 Gün (24s)
+                </button>
+                <button onclick="demonstrateFullCycle('month')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-[11px] border border-white/10 transition-all cursor-pointer" title="Ay'ın 1 Aylık Dolanmasını Göster">
+                    <i class="fa-solid fa-moon mr-1"></i> 1 Ay (27.3g)
+                </button>
+                <button onclick="demonstrateFullCycle('year')" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-[11px] border border-white/10 transition-all cursor-pointer" title="Dünya'nın 1 Yıllık Dolanmasını Göster">
+                    <i class="fa-solid fa-earth-americas mr-1"></i> 1 Yıl (365g)
+                </button>
+            </div>
+        </div>
+
+        <!-- Sağ: Kamera Önayarları & Instagram Bağlantısı -->
+        <div class="flex items-center gap-2 justify-center sm:justify-end">
+            <!-- Kamera Presetleri -->
+            <div class="flex items-center gap-1 bg-black/40 p-1 rounded-2xl border border-white/10 text-xs">
+                <button onclick="setCameraView('perspective')" class="px-2.5 py-1 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer" title="Serbest 3D Kamera">
+                    <i class="fa-solid fa-video mr-1"></i> Serbest
+                </button>
+                <button onclick="setCameraView('top')" class="px-2.5 py-1 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer" title="Kuzey Kutbu Kuşbakışı">
+                    <i class="fa-solid fa-arrows-up-to-line mr-1"></i> Kuzeyden
+                </button>
+                <button onclick="setCameraView('earth')" class="px-2.5 py-1 rounded-xl font-bold text-cyan-300 hover:text-cyan-200 hover:bg-white/10 transition-all cursor-pointer" title="Dünya'ya Odaklan">
+                    <i class="fa-solid fa-crosshairs mr-1"></i> Dünya
+                </button>
+                <button onclick="setCameraView('moon')" class="px-2.5 py-1 rounded-xl font-bold text-slate-300 hover:text-white hover:bg-white/10 transition-all cursor-pointer" title="Ay'a Odaklan">
+                    <i class="fa-solid fa-moon mr-1"></i> Ay
+                </button>
+            </div>
+
+            <!-- Instagram Linki (@rotalifenci) -->
+            <a href="https://www.instagram.com/rotalifenci/" target="_blank" rel="noopener noreferrer" class="px-3 py-1.5 rounded-2xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-600 text-white font-bold text-xs flex items-center gap-1.5 hover:opacity-90 transition-opacity shadow-sm shrink-0" title="Rotalı Fenci Instagram">
+                <i class="fa-brands fa-instagram text-sm"></i>
+                <span class="hidden sm:inline">@rotalifenci</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- 🧪 4 ETKİLEŞİMLİ DENEY MODALI -->
+    <div id="modal-experiments" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300 hidden">
+        <div class="bg-slate-900 border border-indigo-500/30 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+            <!-- Üst Bar -->
+            <div class="p-4 sm:p-5 bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-500/20 flex items-center justify-between text-white">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-xl bg-indigo-500/20 text-cyan-300 flex items-center justify-center text-sm border border-indigo-500/30">
+                        <i class="fa-solid fa-flask-vial"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron">5. Sınıf 3D Etkileşimli Deneyler</h3>
+                        <p class="text-[11px] text-slate-300">Yaparak ve deneyerek astronomik kavramları keşfet!</p>
+                    </div>
+                </div>
+                <button onclick="toggleExperimentModal()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-rose-600 text-slate-300 hover:text-white transition-colors flex items-center justify-center cursor-pointer text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Deney Kartları Listesi -->
+            <div class="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
+                <!-- Deney 1 -->
+                <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-amber-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-amber-400">Deney 1</span>
+                        <h4 class="text-sm font-black text-white">Dönme mi, Dolanma mı?</h4>
+                        <p class="text-xs text-slate-300 mt-1">Gök cisimlerinin kendi ekseninde dönmesi ile bir başkası çevresinde dolanmasını test et.</p>
+                    </div>
+                    <button onclick="launchExperiment(1)" class="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs shrink-0 cursor-pointer shadow-md">
+                        Deneyi Başlat
+                    </button>
+                </div>
+
+                <!-- Deney 2 -->
+                <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-cyan-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-cyan-400">Deney 2</span>
+                        <h4 class="text-sm font-black text-white">Hareket Yönünü Bul (Analog Saat)</h4>
+                        <p class="text-xs text-slate-300 mt-1">Kuzey kutbundan bakışta analog saatin ibresi ile gök cisminin dönme yönünü eşleştir.</p>
+                    </div>
+                    <button onclick="launchExperiment(2)" class="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs shrink-0 cursor-pointer shadow-md">
+                        Deneyi Başlat
+                    </button>
+                </div>
+
+                <!-- Deney 3 -->
+                <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-purple-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-purple-400">Deney 3</span>
+                        <h4 class="text-sm font-black text-white">Ay Neden Hep Aynı Yüzünü Gösterir?</h4>
+                        <p class="text-xs text-slate-300 mt-1">Ay'ın dönme ve dolanma sürelerinin eşitliğini "Aynı Yüz" pini ile kanıtla.</p>
+                    </div>
+                    <button onclick="launchExperiment(3)" class="px-4 py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-black text-xs shrink-0 cursor-pointer shadow-md">
+                        Deneyi Başlat
+                    </button>
+                </div>
+
+                <!-- Deney 4 -->
+                <div class="p-4 rounded-2xl bg-black/40 border border-white/10 hover:border-emerald-500/50 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div>
+                        <span class="text-[10px] font-black uppercase text-emerald-400">Deney 4</span>
+                        <h4 class="text-sm font-black text-white">Bir Gün, Bir Ay ve Bir Yıl</h4>
+                        <p class="text-xs text-slate-300 mt-1">Dünya'nın 24 saatlik dönüşü ile Ay'ın 27.3 günü ve Dünya'nın 365 gününü karşılaştır.</p>
+                    </div>
+                    <button onclick="launchExperiment(4)" class="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs shrink-0 cursor-pointer shadow-md">
+                        Deneyi Başlat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📚 BİLİMSEL REHBER VE YARDIM MODALI -->
+    <div id="modal-help" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 transition-all duration-300 hidden">
+        <div class="bg-slate-900 border border-white/20 rounded-3xl max-w-2xl w-full max-h-[90vh] flex flex-col shadow-2xl overflow-hidden" onclick="event.stopPropagation()">
+            <div class="p-4 sm:p-5 bg-gradient-to-r from-slate-900 via-amber-950/40 to-slate-900 border-b border-white/10 flex items-center justify-between text-white">
+                <div class="flex items-center gap-2.5">
+                    <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm border border-amber-500/30">
+                        <i class="fa-solid fa-book-open"></i>
+                    </span>
+                    <h3 class="text-sm sm:text-base font-black font-orbitron">Güneş, Dünya ve Ay Bilimsel Rehberi</h3>
+                </div>
+                <button onclick="toggleHelpModal()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-rose-600 text-slate-300 hover:text-white transition-colors flex items-center justify-center cursor-pointer text-sm">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 sm:p-6 overflow-y-auto space-y-4 text-xs text-slate-300 leading-relaxed">
+                <div class="p-3.5 rounded-2xl bg-amber-950/30 border border-amber-500/20">
+                    <h4 class="font-black text-amber-300 text-sm mb-1">☀️ Güneş'in Hareketleri</h4>
+                    <p>Güneş kendi ekseni etrafında döner (Ekvator bölgesinde yaklaşık 25 Dünya günü). Güneş katı bir küre olmadığı için (plazma/gaz) farklı enlemleri farklı hızlarda döner. Ayrıca Güneş Sistemi ile birlikte Samanyolu Galaksisi merkezi etrafında dolanır (Dünya çevresinde dolanmaz!).</p>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-blue-950/30 border border-blue-500/20">
+                    <h4 class="font-black text-cyan-300 text-sm mb-1">🌍 Dünya'nın Hareketleri</h4>
+                    <p>Dünya kendi ekseni etrafında saat yönünün tersine (batıdan doğuya) 24 saatte döner; böylece gece ve gündüz ardalanır. Güneş çevresinde ise elips bir yörüngede yaklaşık 365 gün 6 saatte (1 yılda) dolanır. 23.5° eksen eğikliği mevsimlerin oluşmasını sağlar.</p>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-800/40 border border-white/10">
+                    <h4 class="font-black text-slate-200 text-sm mb-1">🌕 Ay'ın Hareketleri ve "Aynı Yüz"</h4>
+                    <p>Ay kendi ekseni etrafındaki dönmesini yaklaşık 27,3 günde tamamlar. Dünya çevresindeki dolanmasını da yaklaşık 27,3 günde tamamlar. <strong>Dönme ve dolanma süreleri birbirine eşit olduğu için Dünya'dan bakıldığında Ay'ın hep aynı yüzü görülür (Kütleçekim Kilidi / Synchronous Rotation).</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🪐 JAVASCRIPT: THREE.JS 3D MOTORU & TÜM BİLİMSEL HAREKET SİSTEMİ -->
+    <script>
+        // -------------------------------------------------------------
+        // 🚀 SİMÜLASYON DURUMU VE DEĞİŞKENLER
+        // -------------------------------------------------------------
+        const state = {
+            currentMode: 7, // 1 to 7
+            isPlaying: false, // Default paused as requested by user
+            simSpeed: 1.0,
+            elapsedSeconds: 0,
+            elapsedDays: 0,
+            
+            // Hareket Anahtarları (Bağımsız Aç/Kapat)
+            movements: {
+                sunRotation: false,
+                earthRotation: false,
+                earthRevolution: false,
+                moonRotation: false,
+                moonRevolution: false
+            },
+
+            // Görsel Katmanlar
+            showOrbits: true,
+            showArrows: true,
+            showAxes: true,
+            showOrreryArms: false,
+            showSameFacePin: true,
+
+            // Açı ve Pozisyon Değerleri (Radyan)
+            angles: {
+                sunRot: 0,
+                earthRot: 0,
+                earthRev: 0,
+                moonRot: 0,
+                moonRev: 0
+            },
+
+            // Kamera Modu
+            cameraMode: 'perspective', // perspective, top, earth, moon, sun
+            isTeacherMode: false
+        };
+
+        // Astronomik Oranlar (Açısal Hız Katsayıları)
+        // Dünya 1 gün = 24 saat (1 tur).
+        // Ay dönme = 27.3 gün (1/27.3 tur/gün).
+        // Dünya dolanma = 365.25 gün (1/365.25 tur/gün).
+        // Güneş dönme = ~25.4 gün (1/25.4 tur/gün).
+        const SPEEDS = {
+            earthRot: (Math.PI * 2) / 1.0,           // 1 gün baz alındığında
+            moonRot: (Math.PI * 2) / 27.3,
+            moonRev: (Math.PI * 2) / 27.3,
+            earthRev: (Math.PI * 2) / 365.25,
+            sunRot: (Math.PI * 2) / 25.4
+        };
+
+        // 3D Three.js Değişkenleri
+        let scene, camera, renderer, controls;
+        let sunMesh, sunCorona, sunLight, sunAxisGroup;
+        let earthMesh, earthClouds, earthAtmosphere, earthGroup, earthAxisGroup;
+        let moonMesh, moonGroup, moonPivot, moonSameFacePin;
+        let earthOrbitLine, moonOrbitLine;
+        let arrowSunRot, arrowEarthRot, arrowEarthRev, arrowMoonRot, arrowMoonRev;
+        let orreryMainArm, orreryMoonArm;
+        let starParticles;
+
+        // Moon phase 2D canvas context
+        let phaseCanvas, phaseCtx;
+
+        // -------------------------------------------------------------
+        // 🎨 PROCEDURAL DOKU ÜRETİCİLERİ (GÜNEŞ, DÜNYA, AY)
+        // -------------------------------------------------------------
+        
+        // ☀️ Güneş Dokusu (Granüller, Güneş Lekeleri ve Plazma)
+        function generateSunTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Sıcak plazma taban rengi
+            const grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            grad.addColorStop(0, '#ea580c');
+            grad.addColorStop(0.5, '#f59e0b');
+            grad.addColorStop(1, '#ea580c');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Granül dokular (Hücresel plazma kabarcıkları)
+            ctx.fillStyle = '#fef08a';
+            for (let i = 0; i < 4000; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const r = Math.random() * 3 + 1;
+                ctx.globalAlpha = Math.random() * 0.45 + 0.15;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Gerçekçi Güneş Lekeleri (Koyu umbra ve yarı gölgeli penumbra)
+            ctx.globalAlpha = 1.0;
+            const sunspotPositions = [
+                { x: 300, y: 220, r: 18 },
+                { x: 330, y: 235, r: 11 },
+                { x: 680, y: 270, r: 22 },
+                { x: 710, y: 285, r: 13 },
+                { x: 500, y: 190, r: 15 }
+            ];
+
+            sunspotPositions.forEach(spot => {
+                // Penumbra (Açık kahverengi kenar)
+                ctx.fillStyle = '#7c2d12';
+                ctx.beginPath();
+                ctx.arc(spot.x, spot.y, spot.r, 0, Math.PI * 2);
+                ctx.fill();
+                // Umbra (Karanlık merkez)
+                ctx.fillStyle = '#1c0702';
+                ctx.beginPath();
+                ctx.arc(spot.x, spot.y, spot.r * 0.55, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // 🌍 Dünya Dokusu (NASA Blue Marble Stili Kıtalar, Okyanuslar, Buzullar)
+        function generateEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Derin Okyanuslar
+            ctx.fillStyle = '#0a2e5c';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Sığ kıyı suları (Turkuaz parıltı)
+            ctx.fillStyle = '#0284c7';
+            ctx.globalAlpha = 0.4;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1.0;
+
+            // Kıtalar (Gerçekçi Coğrafi Konumlar)
+            ctx.fillStyle = '#1e7b42'; // Yeşil bitki örtüsü
+
+            // Avrupa & Afrika
+            ctx.beginPath();
+            ctx.ellipse(510, 240, 75, 105, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            // Sahra Çölü
+            ctx.fillStyle = '#d97706';
+            ctx.beginPath();
+            ctx.ellipse(510, 210, 50, 30, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Asya
+            ctx.fillStyle = '#15803d';
+            ctx.beginPath();
+            ctx.ellipse(710, 180, 130, 85, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Kuzey Amerika
+            ctx.fillStyle = '#166534';
+            ctx.beginPath();
+            ctx.ellipse(230, 160, 95, 65, 0.4, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Güney Amerika
+            ctx.fillStyle = '#15803d';
+            ctx.beginPath();
+            ctx.ellipse(320, 320, 60, 95, -0.2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Avustralya
+            ctx.fillStyle = '#b45309';
+            ctx.beginPath();
+            ctx.ellipse(820, 340, 50, 35, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Kutuplar (Antarktika & Arktik Buzulları)
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, canvas.width, 35);
+            ctx.fillRect(0, canvas.height - 45, canvas.width, 45);
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // ☁️ Bulut Dokusu
+        function generateCloudsTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 120; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const rx = Math.random() * 80 + 30;
+                const ry = Math.random() * 25 + 10;
+                ctx.globalAlpha = Math.random() * 0.45 + 0.1;
+                ctx.beginPath();
+                ctx.ellipse(x, y, rx, ry, Math.random() * 0.5, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // 🌕 Ay Dokusu (Kraterler ve Ay Denizleri / Maria)
+        function generateMoonTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Ay açık gri taban
+            ctx.fillStyle = '#94a3b8';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Ay Denizleri (Koyu bazaltik Maria ovaları)
+            ctx.fillStyle = '#475569';
+            ctx.globalAlpha = 0.75;
+            
+            // Mare Imbrium
+            ctx.beginPath();
+            ctx.arc(170, 80, 45, 0, Math.PI * 2);
+            ctx.fill();
+            // Mare Serenitatis & Tranquillitatis
+            ctx.beginPath();
+            ctx.arc(260, 110, 40, 0, Math.PI * 2);
+            ctx.fill();
+            // Oceanus Procellarum
+            ctx.beginPath();
+            ctx.ellipse(110, 120, 60, 80, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Yüzlerce Beyaz/Koyu Krater Halkaları
+            ctx.globalAlpha = 0.9;
+            for (let i = 0; i < 600; i++) {
+                const x = Math.random() * canvas.width;
+                const y = Math.random() * canvas.height;
+                const r = Math.random() * 6 + 1.5;
+                // Koyu iç
+                ctx.fillStyle = '#334155';
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+                // Parlak krater kenarı
+                ctx.strokeStyle = '#e2e8f0';
+                ctx.lineWidth = 0.8;
+                ctx.stroke();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Parıltı / Glow Sprite Dokusu
+        function generateGlowTexture(colorStr) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 128;
+            canvas.height = 128;
+            const ctx = canvas.getContext('2d');
+            const grad = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+            grad.addColorStop(0, colorStr);
+            grad.addColorStop(0.3, colorStr.replace(/[\d\.]+\)$/, '0.3)'));
+            grad.addColorStop(0.8, colorStr.replace(/[\d\.]+\)$/, '0.05)'));
+            grad.addColorStop(1, 'transparent');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 128, 128);
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // -------------------------------------------------------------
+        // 🏛️ THREE.JS SAHNE KURULUMU
+        // -------------------------------------------------------------
+        function init3D() {
+            const container = document.getElementById('webgl-canvas');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            // Sahne
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x030712, 0.0007);
+
+            // Kamera
+            camera = new THREE.PerspectiveCamera(45, width / height, 0.5, 4000);
+            camera.position.set(0, 75, 175);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({
+                canvas: container,
+                antialias: true,
+                alpha: false,
+                powerPreference: 'high-performance'
+            });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.1;
+
+            // Kontroller (OrbitControls)
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxDistance = 600;
+            controls.minDistance = 8;
+            controls.target.set(0, 0, 0);
+
+            // 🌌 Yıldızlar (Deep Space Starfield)
+            buildStarfield();
+
+            // 💡 Işıklandırma
+            // Güneş'in Merkezindeki Işık
+            sunLight = new THREE.PointLight(0xfff5e6, 2.2, 1200, 0.4);
+            sunLight.position.set(0, 0, 0);
+            scene.add(sunLight);
+
+            // Çok hafif ortam ışığı (Uzayda tamamen zifiri karanlık olmasın, formlar seçilsin)
+            const ambientLight = new THREE.AmbientLight(0x1e293b, 0.28);
+            scene.add(ambientLight);
+
+            // ☀️ GÜNEŞ OLUŞTURMA
+            buildSun();
+
+            // 🌍 DÜNYA OLUŞTURMA (Merkez grup ve yörünge grubu)
+            buildEarthAndMoon();
+
+            // ⭕ YÖRÜNGE VE YÖN OKLARI
+            buildOrbitsAndArrows();
+
+            // 🛠️ MEKANİK ORRERY KOLLARI
+            buildOrreryArms();
+
+            // 2D Ay Evreleri Canvas
+            phaseCanvas = document.getElementById('moon-phase-canvas');
+            if (phaseCanvas) phaseCtx = phaseCanvas.getContext('2d');
+
+            // Pencere boyutu değişimi
+            window.addEventListener('resize', onWindowResize);
+
+            // İlk animasyon döngüsü
+            animate();
+        }
+
+        // Yıldız Alanı
+        function buildStarfield() {
+            const count = 2500;
+            const geo = new THREE.BufferGeometry();
+            const positions = new Float32Array(count * 3);
+            const colors = new Float32Array(count * 3);
+
+            for (let i = 0; i < count; i++) {
+                const r = 800 + Math.random() * 800;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+
+                positions[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i * 3 + 2] = r * Math.cos(phi);
+
+                // Renk tonları (Beyaz, mavi, kehribar)
+                const cTone = Math.random();
+                if (cTone > 0.7) {
+                    colors[i * 3] = 0.95; colors[i * 3 + 1] = 0.85; colors[i * 3 + 2] = 0.5; // Sarı/Amber
+                } else if (cTone > 0.4) {
+                    colors[i * 3] = 0.7; colors[i * 3 + 1] = 0.85; colors[i * 3 + 2] = 1.0;  // Mavi
+                } else {
+                    colors[i * 3] = 1.0; colors[i * 3 + 1] = 1.0; colors[i * 3 + 2] = 1.0;   // Beyaz
+                }
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const mat = new THREE.PointsMaterial({
+                size: 2.2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.85
+            });
+
+            starParticles = new THREE.Points(geo, mat);
+            scene.add(starParticles);
+        }
+
+        // ☀️ Güneş
+        function buildSun() {
+            const sunGeo = new THREE.SphereGeometry(14, 64, 64);
+            const sunMat = new THREE.MeshBasicMaterial({
+                map: generateSunTexture(),
+                color: 0xffffff
+            });
+            sunMesh = new THREE.Mesh(sunGeo, sunMat);
+            sunMesh.position.set(0, 0, 0);
+            scene.add(sunMesh);
+
+            // Güneş Korona Halesi (Sprite)
+            const coronaMat = new THREE.SpriteMaterial({
+                map: generateGlowTexture('rgba(245, 158, 11, 0.8)'),
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.85
+            });
+            sunCorona = new THREE.Sprite(coronaMat);
+            sunCorona.scale.set(52, 52, 1);
+            sunMesh.add(sunCorona);
+
+            // Güneş Dönme Ekseni Çizgisi
+            const axisGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, -22, 0),
+                new THREE.Vector3(0, 22, 0)
+            ]);
+            const axisMat = new THREE.LineBasicMaterial({ color: 0xfbbf24, transparent: true, opacity: 0.7 });
+            const sunAxisLine = new THREE.Line(axisGeo, axisMat);
+            sunMesh.add(sunAxisLine);
+        }
+
+        // 🌍 Dünya & 🌕 Ay
+        function buildEarthAndMoon() {
+            // Dünya Yörünge Grubu (Güneş etrafında dolanacak grup)
+            earthGroup = new THREE.Group();
+            earthGroup.position.set(75, 0, 0); // Yarıçap = 75
+            scene.add(earthGroup);
+
+            // Dünya Küresi (23.5 Derece Eksen Eğikliği)
+            earthAxisGroup = new THREE.Group();
+            earthAxisGroup.rotation.z = THREE.MathUtils.degToRad(-23.5); // 23.5° Eğiklik
+            earthGroup.add(earthAxisGroup);
+
+            const earthGeo = new THREE.SphereGeometry(4.2, 48, 48);
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: generateEarthTexture(),
+                roughness: 0.65,
+                metalness: 0.1
+            });
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+            earthAxisGroup.add(earthMesh);
+
+            // Bulut Katmanı
+            const cloudsGeo = new THREE.SphereGeometry(4.35, 48, 48);
+            const cloudsMat = new THREE.MeshStandardMaterial({
+                map: generateCloudsTexture(),
+                transparent: true,
+                opacity: 0.4,
+                blending: THREE.AdditiveBlending
+            });
+            earthClouds = new THREE.Mesh(cloudsGeo, cloudsMat);
+            earthAxisGroup.add(earthClouds);
+
+            // Atmosfer Mavi Halesi (Sprite)
+            const atmoMat = new THREE.SpriteMaterial({
+                map: generateGlowTexture('rgba(56, 189, 248, 0.45)'),
+                blending: THREE.AdditiveBlending,
+                transparent: true,
+                opacity: 0.75
+            });
+            earthAtmosphere = new THREE.Sprite(atmoMat);
+            earthAtmosphere.scale.set(13, 13, 1);
+            earthAxisGroup.add(earthAtmosphere);
+
+            // Dünya Eksen Çizgisi
+            const earthAxisGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, -7.5, 0),
+                new THREE.Vector3(0, 7.5, 0)
+            ]);
+            const earthAxisMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.8 });
+            const earthAxisLine = new THREE.Line(earthAxisGeo, earthAxisMat);
+            earthAxisGroup.add(earthAxisLine);
+
+            // 🌕 AY SİSTEMİ
+            // Ay Dünya çevresinde dolanacağı için pivot
+            moonPivot = new THREE.Group();
+            earthGroup.add(moonPivot);
+
+            moonGroup = new THREE.Group();
+            moonGroup.position.set(14, 0, 0); // Ay-Dünya mesafesi = 14
+            moonPivot.add(moonGroup);
+
+            const moonGeo = new THREE.SphereGeometry(1.4, 32, 32);
+            const moonMat = new THREE.MeshStandardMaterial({
+                map: generateMoonTexture(),
+                roughness: 0.85,
+                metalness: 0.05
+            });
+            moonMesh = new THREE.Mesh(moonGeo, moonMat);
+            moonGroup.add(moonMesh);
+
+            // 🔴 "Aynı Yüz" İşareti (Tidal Locking Kanıt Pini)
+            // Ay'ın tam Dünya'ya bakan tarafına (+X yönünde değil, Dünya'ya bakan -X yönünde) bir işaret
+            const pinGeo = new THREE.SphereGeometry(0.3, 16, 16);
+            const pinMat = new THREE.MeshBasicMaterial({ color: 0xef4444 });
+            moonSameFacePin = new THREE.Mesh(pinGeo, pinMat);
+            moonSameFacePin.position.set(-1.4, 0, 0); // Dünya'ya bakan yüz
+            moonMesh.add(moonSameFacePin);
+
+            // Ay Eksen Çizgisi
+            const moonAxisGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, -2.5, 0),
+                new THREE.Vector3(0, 2.5, 0)
+            ]);
+            const moonAxisMat = new THREE.LineBasicMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.6 });
+            const moonAxisLine = new THREE.Line(moonAxisGeo, moonAxisMat);
+            moonMesh.add(moonAxisLine);
+        }
+
+        // ⭕ Yörünge Çizgileri ve 3D Hareket Okları
+        function buildOrbitsAndArrows() {
+            // Dünya Yörüngesi (Güneş etrafında 75 yarıçaplı çember)
+            const earthOrbitPoints = [];
+            for (let i = 0; i <= 128; i++) {
+                const a = (i / 128) * Math.PI * 2;
+                earthOrbitPoints.push(new THREE.Vector3(Math.cos(a) * 75, 0, Math.sin(a) * 75));
+            }
+            const earthOrbitGeo = new THREE.BufferGeometry().setFromPoints(earthOrbitPoints);
+            const earthOrbitMat = new THREE.LineDashedMaterial({
+                color: 0xf59e0b,
+                dashSize: 2.5,
+                gapSize: 1.5,
+                transparent: true,
+                opacity: 0.55
+            });
+            earthOrbitLine = new THREE.Line(earthOrbitGeo, earthOrbitMat);
+            earthOrbitLine.computeLineDistances();
+            scene.add(earthOrbitLine);
+
+            // Ay Yörüngesi (Dünya etrafında 14 yarıçaplı çember)
+            const moonOrbitPoints = [];
+            for (let i = 0; i <= 64; i++) {
+                const a = (i / 64) * Math.PI * 2;
+                moonOrbitPoints.push(new THREE.Vector3(Math.cos(a) * 14, 0, Math.sin(a) * 14));
+            }
+            const moonOrbitGeo = new THREE.BufferGeometry().setFromPoints(moonOrbitPoints);
+            const moonOrbitMat = new THREE.LineDashedMaterial({
+                color: 0x38bdf8,
+                dashSize: 1.2,
+                gapSize: 0.8,
+                transparent: true,
+                opacity: 0.65
+            });
+            moonOrbitLine = new THREE.Line(moonOrbitGeo, moonOrbitMat);
+            moonOrbitLine.computeLineDistances();
+            earthGroup.add(moonOrbitLine);
+
+            // 3D Kavisli Hareket Okları Üretici Yardımcısı
+            // Mavi = Dönme, Turuncu/Altın = Dolanma
+            arrowSunRot = createCurvedArrow(16, Math.PI * 0.8, 0xfbbf24);
+            arrowSunRot.position.set(0, 0, 0);
+            scene.add(arrowSunRot);
+
+            arrowEarthRot = createCurvedArrow(5.6, Math.PI * 0.9, 0x38bdf8);
+            earthAxisGroup.add(arrowEarthRot);
+
+            arrowEarthRev = createCurvedArrow(76, Math.PI * 0.35, 0xf59e0b);
+            scene.add(arrowEarthRev);
+
+            arrowMoonRot = createCurvedArrow(2.1, Math.PI * 0.8, 0xa855f7);
+            moonMesh.add(arrowMoonRot);
+
+            arrowMoonRev = createCurvedArrow(14.8, Math.PI * 0.5, 0x38bdf8);
+            earthGroup.add(arrowMoonRev);
+        }
+
+        // Kavisli 3D Yön Oku (Saat yönünün tersini gösteren ok başı ile)
+        function createCurvedArrow(radius, arcAngle, colorHex) {
+            const group = new THREE.Group();
+            const curvePoints = [];
+            const segments = 24;
+            
+            // Kuzeyden bakışta saat yönünün tersi (CCW: 0'dan arcAngle'a)
+            for (let i = 0; i <= segments; i++) {
+                const theta = (i / segments) * arcAngle;
+                curvePoints.push(new THREE.Vector3(Math.cos(theta) * radius, 0, Math.sin(theta) * radius));
+            }
+            const curveGeo = new THREE.BufferGeometry().setFromPoints(curvePoints);
+            const curveMat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity: 0.85 });
+            const line = new THREE.Line(curveGeo, curveMat);
+            group.add(line);
+
+            // Ok Ucu (Koni)
+            const headGeo = new THREE.ConeGeometry(radius * 0.05 + 0.35, radius * 0.12 + 0.8, 8);
+            const headMat = new THREE.MeshBasicMaterial({ color: colorHex });
+            const head = new THREE.Mesh(headGeo, headMat);
+
+            const lastPoint = curvePoints[segments];
+            const prevPoint = curvePoints[segments - 1];
+            head.position.copy(lastPoint);
+
+            // Ok yönünü teğet yönüne çevir
+            const dir = new THREE.Vector3().subVectors(lastPoint, prevPoint).normalize();
+            head.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir);
+            group.add(head);
+
+            return group;
+        }
+
+        // 🛠️ Mekanik Orrery Bağlantı Kolları (Kullanıcı fotoğrafındaki model referansı)
+        function buildOrreryArms() {
+            const orreryGroup = new THREE.Group();
+
+            // Güneş'ten Dünya'ya uzanan pirinç ana kol
+            const armGeo = new THREE.CylinderGeometry(0.5, 0.5, 75, 12);
+            const brassMat = new THREE.MeshStandardMaterial({
+                color: 0xd97706,
+                roughness: 0.3,
+                metalness: 0.8
+            });
+            orreryMainArm = new THREE.Mesh(armGeo, brassMat);
+            orreryMainArm.rotation.z = Math.PI / 2;
+            orreryMainArm.position.set(37.5, -2, 0);
+            orreryGroup.add(orreryMainArm);
+
+            // Dünya'dan Ay'a uzanan ince kol
+            const moonArmGeo = new THREE.CylinderGeometry(0.25, 0.25, 14, 8);
+            const chromeMat = new THREE.MeshStandardMaterial({
+                color: 0x94a3b8,
+                roughness: 0.2,
+                metalness: 0.9
+            });
+            orreryMoonArm = new THREE.Mesh(moonArmGeo, chromeMat);
+            orreryMoonArm.rotation.z = Math.PI / 2;
+            orreryMoonArm.position.set(7, -1, 0);
+            moonPivot.add(orreryMoonArm);
+
+            orreryGroup.visible = false;
+            orreryMoonArm.visible = false;
+            scene.add(orreryGroup);
+        }
+
+        // -------------------------------------------------------------
+        // 🔄 ANİMASYON & HAREKET GÜNCELLEME DÖNGÜSÜ
+        // -------------------------------------------------------------
+        let lastTime = performance.now();
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const now = performance.now();
+            const delta = Math.min((now - lastTime) / 1000, 0.1);
+            lastTime = now;
+
+            if (state.isPlaying) {
+                // Zaman ölçeği: 1 saniye gerçek süre = state.simSpeed gün simülasyon
+                const simDaysDelta = delta * state.simSpeed * 0.8;
+                state.elapsedSeconds += delta;
+                state.elapsedDays += simDaysDelta;
+
+                // 1. Güneş'in Kendi Ekseninde Dönmesi (Saat Yönünün Tersi)
+                if (state.movements.sunRotation) {
+                    state.angles.sunRot += SPEEDS.sunRot * simDaysDelta;
+                    if (sunMesh) sunMesh.rotation.y = state.angles.sunRot;
+                }
+
+                // 2. Dünya'nın Kendi Ekseninde Dönmesi (Saat Yönünün Tersi)
+                if (state.movements.earthRotation) {
+                    state.angles.earthRot += SPEEDS.earthRot * simDaysDelta;
+                    if (earthMesh) earthMesh.rotation.y = state.angles.earthRot;
+                    if (earthClouds) earthClouds.rotation.y = state.angles.earthRot * 1.05; // Bulutlar hafif farklı hızda
+                }
+
+                // 3. Dünya'nın Güneş Çevresinde Dolanması (Saat Yönünün Tersi)
+                if (state.movements.earthRevolution) {
+                    state.angles.earthRev += SPEEDS.earthRev * simDaysDelta;
+                    const r = 75;
+                    earthGroup.position.x = Math.cos(state.angles.earthRev) * r;
+                    earthGroup.position.z = Math.sin(state.angles.earthRev) * r;
+
+                    // Mekanik ana kol dönmesi
+                    if (orreryMainArm) {
+                        orreryMainArm.parent.rotation.y = -state.angles.earthRev;
+                    }
+
+                    // Dolanma yön oku konumu
+                    if (arrowEarthRev) {
+                        arrowEarthRev.rotation.y = state.angles.earthRev;
+                    }
+                }
+
+                // 4. Ay'ın Dünya Çevresinde Dolanması (Saat Yönünün Tersi)
+                if (state.movements.moonRevolution) {
+                    state.angles.moonRev += SPEEDS.moonRev * simDaysDelta;
+                    if (moonPivot) moonPivot.rotation.y = state.angles.moonRev;
+                }
+
+                // 5. Ay'ın Kendi Ekseninde Dönmesi (Tidal Locking / Kütleçekim Kilidi)
+                if (state.movements.moonRotation) {
+                    // Ay dönmesi dolanmasıyla eşit oranda
+                    state.angles.moonRot += SPEEDS.moonRot * simDaysDelta;
+                    if (moonMesh) moonMesh.rotation.y = state.angles.moonRot;
+                }
+
+                // Canlı Sayaçları Güncelle
+                updateTimeCounters();
+
+                // Analog Saati Güncelle
+                updateAnalogClock();
+
+                // 2D Ay Evresi Penceresini Güncelle
+                updateMoonPhasePIP();
+            }
+
+            // Güneş Parıltı Efekti (Hafif nefes alma)
+            if (sunCorona) {
+                const s = 52 + Math.sin(now * 0.003) * 1.5;
+                sunCorona.scale.set(s, s, 1);
+            }
+
+            // Kamera Hedef Takibi
+            updateCameraFocus();
+
+            // Kontroller & Render
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // -------------------------------------------------------------
+        // 🕰️ ANALOG SAAT VE YÖN GÖSTERGESİ SİSTEMİ
+        // -------------------------------------------------------------
+        function updateAnalogClock() {
+            const clockHand = document.getElementById('clock-hand');
+            if (!clockHand) return;
+
+            // Kuzeyden bakışta saat yönünün tersi (CCW: 12 -> 9 -> 6 -> 3 -> 12)
+            // Normal saat açıları saat yönünde 0'dan 360'adır.
+            // Saat yönünün tersi için eksi açı kullanılır.
+            const rotSpeedFactor = 8;
+            const angleDeg = -(state.angles.earthRot * (180 / Math.PI) * rotSpeedFactor) % 360;
+
+            clockHand.setAttribute('transform', `rotate(${angleDeg} 50 50)`);
+        }
+
+        function updateTimeCounters() {
+            const timeEl = document.getElementById('elapsed-time-counter');
+            const orbitEl = document.getElementById('earth-orbit-counter');
+
+            if (timeEl) {
+                const days = Math.floor(state.elapsedDays);
+                const hours = Math.floor((state.elapsedDays % 1) * 24);
+                timeEl.innerText = `${days} Gün ${String(hours).padStart(2, '0')} Sa`;
+            }
+            if (orbitEl) {
+                const years = (state.elapsedDays / 365.25).toFixed(2);
+                orbitEl.innerText = `${years} Yıl`;
+            }
+        }
+
+        // 🌒 2D Dünya'dan Ay'a Bakış (Evre Hesaplayıcı & Çizici)
+        function updateMoonPhasePIP() {
+            if (!phaseCtx) return;
+
+            // Ay ile Güneş'in Dünya'ya göre açısı (Faz açısı)
+            // Dünya merkezde (0,0,0 gibi düşünülür), Güneş (Güneş vektörü), Ay (Ay vektörü)
+            const earthPos = earthGroup.position;
+            const moonWorldPos = new THREE.Vector3();
+            moonMesh.getWorldPosition(moonWorldPos);
+
+            const sunDir = new THREE.Vector3().sub(earthPos).normalize(); // Dünya'dan Güneş'e
+            const moonDir = new THREE.Vector3().subVectors(moonWorldPos, earthPos).normalize(); // Dünya'dan Ay'a
+
+            // İki boyutlu açıyı al (X-Z düzleminde)
+            let angle = Math.atan2(moonDir.z, moonDir.x) - Math.atan2(sunDir.z, sunDir.x);
+            if (angle < 0) angle += Math.PI * 2;
+
+            // Faz oranı (0: Yeni Ay, 0.5: İlk Dördün, 1.0: Dolunay, 1.5: Son Dördün)
+            const phaseRatio = angle / (Math.PI * 2);
+
+            // Çizim
+            const w = phaseCanvas.width;
+            const h = phaseCanvas.height;
+            const cx = w / 2;
+            const cy = h / 2;
+            const r = 58;
+
+            phaseCtx.clearRect(0, 0, w, h);
+
+            // Karanlık Ay Gövdesi
+            phaseCtx.fillStyle = '#1e293b';
+            phaseCtx.beginPath();
+            phaseCtx.arc(cx, cy, r, 0, Math.PI * 2);
+            phaseCtx.fill();
+
+            // Aydınlık Parça Çizimi
+            phaseCtx.fillStyle = '#f8fafc';
+            const k = Math.cos(angle); // -1 to 1
+
+            phaseCtx.beginPath();
+            if (angle <= Math.PI) {
+                // Sağ taraf aydınlık (Büyüyen Hilal, İlk Dördün, Büyüyen Şişkin)
+                phaseCtx.arc(cx, cy, r, -Math.PI / 2, Math.PI / 2, false);
+                phaseCtx.ellipse(cx, cy, Math.abs(k) * r, r, 0, Math.PI / 2, -Math.PI / 2, k > 0);
+            } else {
+                // Sol taraf aydınlık (Küçülen Şişkin, Son Dördün, Küçülen Hilal)
+                phaseCtx.arc(cx, cy, r, Math.PI / 2, -Math.PI / 2, false);
+                phaseCtx.ellipse(cx, cy, Math.abs(k) * r, r, 0, -Math.PI / 2, Math.PI / 2, k > 0);
+            }
+            phaseCtx.fill();
+
+            // Evre İsimlendirmesi
+            let phaseName = 'Yeni Ay';
+            let phaseLabel = 'Karanlık Yüzey (Yeni Ay)';
+
+            if (phaseRatio < 0.05 || phaseRatio > 0.95) {
+                phaseName = 'Yeni Ay';
+                phaseLabel = 'Ay görünmez (Yeni Ay)';
+            } else if (phaseRatio < 0.2) {
+                phaseName = 'Hilal (Büyüyen)';
+                phaseLabel = 'Hilal (Ters C şeklinde)';
+            } else if (phaseRatio < 0.3) {
+                phaseName = 'İlk Dördün';
+                phaseLabel = 'İlk Dördün (D harfi gibi)';
+            } else if (phaseRatio < 0.45) {
+                phaseName = 'Şişkin Ay (Büyüyen)';
+                phaseLabel = 'Şişkin Ay';
+            } else if (phaseRatio < 0.55) {
+                phaseName = 'Dolunay';
+                phaseLabel = 'Tamamen aydınlık (Dolunay)';
+            } else if (phaseRatio < 0.7) {
+                phaseName = 'Şişkin Ay (Küçülen)';
+                phaseLabel = 'Küçülen Şişkin Ay';
+            } else if (phaseRatio < 0.8) {
+                phaseName = 'Son Dördün';
+                phaseLabel = 'Son Dördün (Ters D harfi)';
+            } else {
+                phaseName = 'Hilal (Küçülen)';
+                phaseLabel = 'Hilal (C harfi şeklinde)';
+            }
+
+            const badge = document.getElementById('phase-name-badge');
+            const label = document.getElementById('phase-label');
+            if (badge) badge.innerText = phaseName;
+            if (label) label.innerText = phaseLabel;
+        }
+
+        // -------------------------------------------------------------
+        // 🎛️ 7 SİMÜLASYON MODU YÖNETİMİ
+        // -------------------------------------------------------------
+        function setSimMode(modeNum) {
+            state.currentMode = modeNum;
+
+            // UI Buton Aktifliği
+            document.querySelectorAll('.mode-btn').forEach((btn, idx) => {
+                if (idx + 1 === modeNum) {
+                    btn.className = 'mode-btn px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black border-amber-400 shadow-md scale-[1.02]';
+                } else {
+                    btn.className = 'mode-btn px-3 py-1.5 rounded-xl font-black text-xs transition-all shrink-0 flex items-center gap-1.5 cursor-pointer border bg-white/10 text-slate-300 border-white/10 hover:bg-white/20';
+                }
+            });
+
+            // Gök cisimlerinin görünürlükleri
+            switch(modeNum) {
+                case 1: // YALNIZ GÜNEŞ
+                    setVisibilities(true, false, false);
+                    setMovementSwitches(true, false, false, false, false);
+                    setCameraTarget(0, 0, 0, 45);
+                    break;
+                case 2: // YALNIZ DÜNYA
+                    setVisibilities(false, true, false);
+                    setMovementSwitches(false, true, false, false, false);
+                    setCameraTarget(earthGroup.position.x, earthGroup.position.y, earthGroup.position.z, 22);
+                    break;
+                case 3: // YALNIZ AY
+                    setVisibilities(false, false, true);
+                    setMovementSwitches(false, false, false, true, false);
+                    setCameraTarget(earthGroup.position.x + 14, 0, 0, 10);
+                    break;
+                case 4: // GÜNEŞ + DÜNYA
+                    setVisibilities(true, true, false);
+                    setMovementSwitches(true, true, true, false, false);
+                    setCameraTarget(35, 0, 0, 140);
+                    break;
+                case 5: // DÜNYA + AY
+                    setVisibilities(false, true, true);
+                    setMovementSwitches(false, true, false, true, true);
+                    setCameraTarget(earthGroup.position.x, 0, 0, 38);
+                    break;
+                case 6: // GÜNEŞ + AY
+                    setVisibilities(true, false, true);
+                    setMovementSwitches(true, false, false, true, true);
+                    setCameraTarget(35, 0, 0, 140);
+                    break;
+                case 7: // GÜNEŞ + DÜNYA + AY (Ana Master Mod)
+                default:
+                    setVisibilities(true, true, true);
+                    setMovementSwitches(false, false, false, false, false); // Paused by default as requested
+                    setCameraTarget(0, 45, 175, 175);
+                    break;
+            }
+
+            // Pip panel görünürlüğü (Dünya ve Ay varken anlamlı)
+            const pip = document.getElementById('moon-phase-pip-panel');
+            if (pip) {
+                pip.style.display = (modeNum === 5 || modeNum === 7) ? 'block' : 'none';
+            }
+        }
+
+        function setVisibilities(sunVis, earthVis, moonVis) {
+            if (sunMesh) sunMesh.visible = sunVis;
+            if (sunCorona) sunCorona.visible = sunVis;
+            if (arrowSunRot) arrowSunRot.visible = sunVis && state.showArrows;
+
+            if (earthMesh) earthMesh.visible = earthVis;
+            if (earthClouds) earthClouds.visible = earthVis;
+            if (earthAtmosphere) earthAtmosphere.visible = earthVis;
+            if (earthOrbitLine) earthOrbitLine.visible = earthVis && state.showOrbits;
+            if (arrowEarthRot) arrowEarthRot.visible = earthVis && state.showArrows;
+            if (arrowEarthRev) arrowEarthRev.visible = earthVis && state.showArrows;
+
+            if (moonMesh) moonMesh.visible = moonVis;
+            if (moonOrbitLine) moonOrbitLine.visible = moonVis && state.showOrbits;
+            if (arrowMoonRot) arrowMoonRot.visible = moonVis && state.showArrows;
+            if (arrowMoonRev) arrowMoonRev.visible = moonVis && state.showArrows;
+        }
+
+        function setMovementSwitches(sRot, eRot, eRev, mRot, mRev) {
+            document.getElementById('chk-sun-rot').checked = sRot;
+            document.getElementById('chk-earth-rot').checked = eRot;
+            document.getElementById('chk-earth-rev').checked = eRev;
+            document.getElementById('chk-moon-rot').checked = mRot;
+            document.getElementById('chk-moon-rev').checked = mRev;
+            updateMovementStates();
+        }
+
+        function updateMovementStates() {
+            state.movements.sunRotation = document.getElementById('chk-sun-rot').checked;
+            state.movements.earthRotation = document.getElementById('chk-earth-rot').checked;
+            state.movements.earthRevolution = document.getElementById('chk-earth-rev').checked;
+            state.movements.moonRotation = document.getElementById('chk-moon-rot').checked;
+            state.movements.moonRevolution = document.getElementById('chk-moon-rev').checked;
+        }
+
+        // -------------------------------------------------------------
+        // 🎮 OYNATMA & HIZ & SIFIRLAMA METODLARI
+        // -------------------------------------------------------------
+        function toggleMasterPlay() {
+            state.isPlaying = !state.isPlaying;
+            const btn = document.getElementById('btn-master-play');
+            const icon = document.getElementById('master-play-icon');
+            const text = document.getElementById('master-play-text');
+
+            if (state.isPlaying) {
+                // If all checkboxes are false, enable realistic set
+                const allFalse = Object.values(state.movements).every(v => !v);
+                if (allFalse) {
+                    setMovementSwitches(true, true, true, true, true);
+                }
+                btn.className = 'px-4 py-2 rounded-2xl bg-amber-600 hover:bg-amber-500 text-white font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-600/25 active:scale-95 cursor-pointer';
+                icon.className = 'fa-solid fa-pause';
+                text.innerText = 'Duraklat';
+            } else {
+                btn.className = 'px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 font-black text-xs sm:text-sm transition-all flex items-center gap-2 shadow-lg shadow-amber-500/25 active:scale-95 cursor-pointer';
+                icon.className = 'fa-solid fa-play';
+                text.innerText = 'Başlat';
+            }
+        }
+
+        function startAllMovements() {
+            setMovementSwitches(true, true, true, true, true);
+            if (!state.isPlaying) toggleMasterPlay();
+        }
+
+        function pauseAllMovements() {
+            if (state.isPlaying) toggleMasterPlay();
+        }
+
+        function resetAllPositions() {
+            state.angles = { sunRot: 0, earthRot: 0, earthRev: 0, moonRot: 0, moonRev: 0 };
+            state.elapsedSeconds = 0;
+            state.elapsedDays = 0;
+            
+            if (sunMesh) sunMesh.rotation.y = 0;
+            if (earthMesh) earthMesh.rotation.y = 0;
+            if (earthGroup) earthGroup.position.set(75, 0, 0);
+            if (moonPivot) moonPivot.rotation.y = 0;
+            if (moonMesh) moonMesh.rotation.y = 0;
+
+            updateTimeCounters();
+            updateAnalogClock();
+        }
+
+        function setSpeed(speedVal) {
+            state.simSpeed = speedVal;
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                if (parseFloat(btn.dataset.speed) === speedVal) {
+                    btn.className = 'speed-btn px-2.5 py-1 rounded-xl text-xs font-black bg-amber-500 text-slate-950 transition-all cursor-pointer';
+                } else {
+                    btn.className = 'speed-btn px-2.5 py-1 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all cursor-pointer';
+                }
+            });
+        }
+
+        // Hızlı Bir Tam Döngü Gösterme (1 Gün / 1 Ay / 1 Yıl)
+        function demonstrateFullCycle(type) {
+            resetAllPositions();
+            if (!state.isPlaying) toggleMasterPlay();
+
+            if (type === 'day') {
+                setMovementSwitches(false, true, false, false, false);
+                setSpeed(5);
+            } else if (type === 'month') {
+                setMovementSwitches(false, true, false, true, true);
+                setSpeed(20);
+            } else if (type === 'year') {
+                setMovementSwitches(true, true, true, true, true);
+                setSpeed(50);
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 📷 KAMERA YÖNETİMİ
+        // -------------------------------------------------------------
+        function setCameraView(viewName) {
+            state.cameraMode = viewName;
+
+            switch(viewName) {
+                case 'top':
+                    // Kuzey Kutbundan Kuşbakışı (Analog saat yönü incelemesi için)
+                    controls.target.set(0, 0, 0);
+                    camera.position.set(0, 190, 0.1);
+                    break;
+                case 'earth':
+                    controls.target.copy(earthGroup.position);
+                    camera.position.set(earthGroup.position.x, 10, earthGroup.position.z + 24);
+                    break;
+                case 'moon':
+                    const mw = new THREE.Vector3();
+                    moonMesh.getWorldPosition(mw);
+                    controls.target.copy(mw);
+                    camera.position.set(mw.x, 5, mw.z + 12);
+                    break;
+                case 'perspective':
+                default:
+                    controls.target.set(0, 0, 0);
+                    camera.position.set(0, 75, 175);
+                    break;
+            }
+        }
+
+        function setCameraTarget(tx, ty, tz, dist) {
+            controls.target.set(tx, ty, tz);
+            camera.position.set(tx, ty + dist * 0.45, tz + dist);
+        }
+
+        function updateCameraFocus() {
+            if (state.cameraMode === 'earth' && earthGroup) {
+                controls.target.copy(earthGroup.position);
+            } else if (state.cameraMode === 'moon' && moonMesh) {
+                const mw = new THREE.Vector3();
+                moonMesh.getWorldPosition(mw);
+                controls.target.copy(mw);
+            }
+        }
+
+        function focusTopViewAndDemonstrate() {
+            setCameraView('top');
+            if (!state.isPlaying) toggleMasterPlay();
+            confetti({
+                particleCount: 40,
+                spread: 60,
+                origin: { y: 0.2 }
+            });
+        }
+
+        // -------------------------------------------------------------
+        // 👁️ GÖRSEL KATMAN AÇ/KAPAT
+        // -------------------------------------------------------------
+        function toggleOrbits() {
+            state.showOrbits = document.getElementById('chk-show-orbits').checked;
+            if (earthOrbitLine) earthOrbitLine.visible = state.showOrbits && (state.currentMode === 4 || state.currentMode === 7);
+            if (moonOrbitLine) moonOrbitLine.visible = state.showOrbits && (state.currentMode === 3 || state.currentMode === 5 || state.currentMode === 7);
+        }
+
+        function toggleArrows() {
+            state.showArrows = document.getElementById('chk-show-arrows').checked;
+            if (arrowSunRot) arrowSunRot.visible = state.showArrows && (state.currentMode === 1 || state.currentMode === 4 || state.currentMode === 6 || state.currentMode === 7);
+            if (arrowEarthRot) arrowEarthRot.visible = state.showArrows && (state.currentMode === 2 || state.currentMode === 4 || state.currentMode === 5 || state.currentMode === 7);
+            if (arrowEarthRev) arrowEarthRev.visible = state.showArrows && (state.currentMode === 4 || state.currentMode === 7);
+            if (arrowMoonRot) arrowMoonRot.visible = state.showArrows && (state.currentMode === 3 || state.currentMode === 5 || state.currentMode === 6 || state.currentMode === 7);
+            if (arrowMoonRev) arrowMoonRev.visible = state.showArrows && (state.currentMode === 5 || state.currentMode === 6 || state.currentMode === 7);
+        }
+
+        function toggleAxes() {
+            state.showAxes = document.getElementById('chk-show-axes').checked;
+            // Aks çizgileri
+            if (earthAxisGroup) {
+                earthAxisGroup.children.forEach(c => {
+                    if (c instanceof THREE.Line) c.visible = state.showAxes;
+                });
+            }
+            if (sunMesh) {
+                sunMesh.children.forEach(c => {
+                    if (c instanceof THREE.Line) c.visible = state.showAxes;
+                });
+            }
+        }
+
+        function toggleOrreryArms() {
+            state.showOrreryArms = document.getElementById('chk-show-orrery').checked;
+            if (orreryMainArm) orreryMainArm.parent.visible = state.showOrreryArms;
+            if (orreryMoonArm) orreryMoonArm.visible = state.showOrreryArms;
+        }
+
+        function toggleSameFaceMarker() {
+            state.showSameFacePin = document.getElementById('chk-same-face').checked;
+            if (moonSameFacePin) moonSameFacePin.visible = state.showSameFacePin;
+        }
+
+        function togglePanelCollapse(panelContentId) {
+            const el = document.getElementById(panelContentId);
+            const icon = document.getElementById('left-panel-chevron');
+            if (el) {
+                el.classList.toggle('hidden');
+                if (icon) icon.classList.toggle('rotate-180');
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 👨‍🏫 ÖĞRETMEN MODU & TAHMİN ET QUIZİ
+        // -------------------------------------------------------------
+        function toggleTeacherMode() {
+            state.isTeacherMode = !state.isTeacherMode;
+            const overlay = document.getElementById('teacher-quiz-overlay');
+            const btn = document.getElementById('btn-teacher-mode');
+
+            if (state.isTeacherMode) {
+                if (overlay) overlay.classList.remove('hidden');
+                if (btn) btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black text-[11px] sm:text-xs transition-all shadow-md active:scale-95 cursor-pointer';
+                // Öğretmen soru başlangıcı: Yön oklarını gizle
+                document.getElementById('chk-show-arrows').checked = false;
+                toggleArrows();
+                setCameraView('top');
+            } else {
+                if (overlay) overlay.classList.add('hidden');
+                if (btn) btn.className = 'px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-amber-600 text-slate-200 hover:text-white font-black text-[11px] sm:text-xs border border-white/10 transition-all flex items-center gap-1.5 cursor-pointer shadow-sm active:scale-95';
+                document.getElementById('chk-show-arrows').checked = true;
+                toggleArrows();
+            }
+        }
+
+        function checkTeacherAnswer(ans) {
+            const feedback = document.getElementById('quiz-feedback-box');
+            if (!feedback) return;
+
+            feedback.classList.remove('hidden');
+
+            if (ans === 'ccw') {
+                feedback.className = 'p-3 rounded-2xl bg-emerald-950/80 border border-emerald-500/40 text-xs text-emerald-200 font-bold';
+                feedback.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+                        <span class="text-white text-sm">Tebrikler! Doğru Cevap!</span>
+                    </div>
+                    <p>Kuzey Kutbu'ndan bakıldığında Dünya kendi ekseni etrafında <strong>Saat Yönünün Tersine (Batıdan Doğuya)</strong> döner. Yön okları ve analog saat çalıştırılıyor!</p>
+                `;
+                // Okları aç ve başlat
+                document.getElementById('chk-show-arrows').checked = true;
+                toggleArrows();
+                setMovementSwitches(false, true, false, false, false);
+                if (!state.isPlaying) toggleMasterPlay();
+
+                confetti({
+                    particleCount: 70,
+                    spread: 80,
+                    origin: { y: 0.3 }
+                });
+            } else {
+                feedback.className = 'p-3 rounded-2xl bg-rose-950/80 border border-rose-500/40 text-xs text-rose-200 font-bold';
+                feedback.innerHTML = `
+                    <div class="flex items-center gap-2 mb-1">
+                        <i class="fa-solid fa-circle-xmark text-rose-400 text-base"></i>
+                        <span class="text-white text-sm">Tekrar Düşünelim!</span>
+                    </div>
+                    <p>Güneş doğudan doğup batıdan battığı için Dünya kendi ekseninde batıdan doğuya, yani kuzeyden bakıldığında <strong>Saat Yönünün Tersine</strong> döner.</p>
+                `;
+            }
+        }
+
+        // -------------------------------------------------------------
+        // 🧪 4 ETKİLEŞİMLİ DENEY LAUNCHER
+        // -------------------------------------------------------------
+        function toggleExperimentModal() {
+            const modal = document.getElementById('modal-experiments');
+            if (modal) modal.classList.toggle('hidden');
+        }
+
+        function toggleHelpModal() {
+            const modal = document.getElementById('modal-help');
+            if (modal) modal.classList.toggle('hidden');
+        }
+
+        function launchExperiment(expId) {
+            toggleExperimentModal();
+
+            if (expId === 1) { // Dönme mi, Dolanma mı?
+                setSimMode(4);
+                setMovementSwitches(false, true, true, false, false);
+                if (!state.isPlaying) toggleMasterPlay();
+            } else if (expId === 2) { // Hareket Yönü (Analog Saat)
+                setSimMode(2);
+                setCameraView('top');
+                if (!state.isPlaying) toggleMasterPlay();
+            } else if (expId === 3) { // Ay Neden Hep Aynı Yüzünü Gösterir?
+                setSimMode(5);
+                document.getElementById('chk-same-face').checked = true;
+                toggleSameFaceMarker();
+                setCameraView('earth');
+                if (!state.isPlaying) toggleMasterPlay();
+            } else if (expId === 4) { // Bir Gün, Bir Ay, Bir Yıl
+                demonstrateFullCycle('year');
+            }
+
+            confetti({
+                particleCount: 50,
+                spread: 70,
+                origin: { y: 0.25 }
+            });
+        }
+
+        // -------------------------------------------------------------
+        // 📱 TAM EKRAN VE RESIZE YARDIMCILARI
+        // -------------------------------------------------------------
+        function toggleFullScreen() {
+            const doc = window.document;
+            const docEl = doc.documentElement;
+            const icon = document.getElementById('fullscreen-icon');
+
+            const requestFullScreen = docEl.requestFullscreen || docEl.mozRequestFullScreen || docEl.webkitRequestFullScreen || docEl.msRequestFullscreen;
+            const cancelFullScreen = doc.exitFullscreen || doc.mozCancelFullScreen || doc.webkitExitFullscreen || doc.msExitFullscreen;
+
+            if (!doc.fullscreenElement && !doc.mozFullScreenElement && !doc.webkitFullscreenElement && !doc.msFullscreenElement) {
+                if (requestFullScreen) requestFullScreen.call(docEl);
+                if (icon) icon.className = 'fa-solid fa-compress';
+            } else {
+                if (cancelFullScreen) cancelFullScreen.call(doc);
+                if (icon) icon.className = 'fa-solid fa-expand';
+            }
+        }
+
+        function onWindowResize() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            if (camera && renderer) {
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+                renderer.setSize(width, height);
+            }
+        }
+
+        // Başlat
+        window.addEventListener('DOMContentLoaded', () => {
+            init3D();
+            setSimMode(7); // Master Mode 7 başlangıç
+        });
+    </script>
+</body>
+</html>

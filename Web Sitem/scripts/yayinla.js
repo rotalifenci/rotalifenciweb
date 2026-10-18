@@ -66,7 +66,7 @@ const codeweekAssets = [
         dest: path.join(codeweekDir, "7-sinif-etkinlik-1-akilli-sera-algoritmalari.jpg")
     },
     {
-        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792270867531_a050137b.jpg"),
+        src: path.resolve(process.env.USERPROFILE || "C:/Users/my pc", ".gemini/antigravity/brain/76e370d0-33ce-4a14-8375-08210d748d8a/.user_uploaded/media_1792355804107_b7a17c24.jpg"),
         dest: path.join(codeweekDir, "7-sinif-etkinlik-2-yesil-okul-veri-gorevi.jpg")
     }
 ];

@@ -1005,6 +1005,23 @@ function sanitizeMaterialItem(raw) {
 // 🎮 YERLEŞİK VE MERKEZİ MATERYAL SEED TANIMLAMALARI
 const DEFAULT_CUSTOM_MATERIALS = [
     {
+        id: "mat-5-1-oyun-gunes-dunya-ay-3d",
+        grade: "5",
+        category: "egitsel-oyunlar",
+        targetSection: "1",
+        title: "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı",
+        unit: "1. Ünite: Güneş, Dünya ve Ay",
+        desc: "Güneş, Dünya ve Ay'ın dönme ve dolanma hareketlerini 7 farklı modda, bağımsız kontrollerle, çalışan analog saat yön göstergesi ve Ay evreleriyle 3D olarak keşfedin!",
+        fileName: "gunes-dunya-ay-3d.html",
+        fileUrl: "oyunlar/gunes-dunya-ay-3d.html",
+        imageUrl: "assets/gunes-dunya-ay-3d-kapak.svg",
+        kapakResmi: "assets/gunes-dunya-ay-3d-kapak.svg",
+        format: "3D SİMÜLATÖR",
+        hasBlob: false,
+        tags: ["güneş", "dünya", "ay", "hareketler", "dönme", "dolanma", "3d uzay", "simülatör", "5. sınıf"],
+        downloadCount: "🌟 1. Ünite Başyapıtı"
+    },
+    {
         id: "mat-5-1-oyun-ayin-evreleri-3d",
         grade: "5",
         category: "egitsel-oyunlar",
@@ -4862,6 +4879,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "5": {
             "1": [
                 {
+                    id: "builtin-oyun-5-gunes-dunya-ay",
+                    title: "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı",
+                    icon: "fa-solid fa-arrows-spin",
+                    desc: "Güneş, Dünya ve Ay'ın dönme ve dolanma hareketlerini 7 farklı modda, bağımsız kontrollerle, çalışan analog saat yön göstergesi ve Ay evreleriyle 3D olarak keşfedin!",
+                    type: "3D Hareket Simülatörü",
+                    format: "3D SİMÜLATÖR",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/gunes-dunya-ay-3d.html",
+                    kapakResmi: "assets/gunes-dunya-ay-3d-kapak.svg"
+                },
+                {
                     id: "builtin-oyun-apollo11-aya-inis",
                     title: "Ay'a İniş – 3D Keşif ve VR Deneyimi (Apollo 11 & Dünya Gözlemi)",
                     icon: "fa-solid fa-flag",
@@ -5876,6 +5904,16 @@ function renderGradeEducationalGames(grade, subData) {
     // 2. Müfredat & Dahili İnteraktif Oyunlar
     const builtinCurriculumGames = {
         "5": [
+            {
+                id: "builtin-oyun-5-gunes-dunya-ay",
+                title: "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı",
+                badge: "3D Simülatör",
+                type: "3D Hareket Laboratuvarı",
+                desc: "Güneş, Dünya ve Ay'ın dönme ve dolanma hareketlerini 7 farklı modda, bağımsız kontrollerle, çalışan analog saat yön göstergesi ve Ay evreleriyle 3D keşfet!",
+                icon: "fa-solid fa-arrows-spin",
+                iconColor: "from-amber-400 via-blue-500 to-indigo-600",
+                fileUrl: "gunes-dunya-ay-3d"
+            },
             {
                 id: "builtin-oyun-apollo11-aya-inis",
                 title: "Ay'a İniş: 3D Keşif ve VR Deneyimi (Apollo 11)",
@@ -14812,7 +14850,41 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         return;
     }
 
-    // ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
+        // 🪐 5. Sınıf Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı
+    if (str.includes("gunes-dunya-ay") || str.includes("gunes_dunya_ay") || (titleStr.includes("güneş") && titleStr.includes("dünya") && titleStr.includes("ay")) || resolvedKey === "mat-5-1-oyun-gunes-dunya-ay-3d" || resolvedKey === "builtin-oyun-5-gunes-dunya-ay" || resolvedKey === "gunes-dunya-ay-3d") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-amber-400 via-sky-500 to-indigo-600 text-slate-950 flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-arrows-spin text-white"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-amber-300">🪐 Güneş, Dünya ve Ay: 3D Hareket Laboratuvarı</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/gunes-dunya-ay-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/gunes-dunya-ay-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
+// ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
     if (!str.includes("sistemi") && !titleStr.includes("sistemi") && !str.includes("kasif") && !titleStr.includes("kâşif") && !titleStr.includes("kasif") && !str.includes("kosu") && !titleStr.includes("koşu") && (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunesi kesfediyorum") || titleStr.includes("güneş'i keşfediyorum") || titleStr.includes("gunesi kesfediyorum") || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d")) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
