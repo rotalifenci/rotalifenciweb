@@ -198,8 +198,19 @@
                     </button>
                 </div>
 
-                <!-- 7 Core Modules Navigation Pills -->
+                <!-- 8 Core Modules Navigation Pills -->
                 <div class="space-y-1.5 text-xs font-semibold">
+                    <!-- 0. Saturn V Fırlatılış (Dünya'dan Ay'a) -->
+                    <button onclick="switchAppMode('saturn_launch')" id="nav-btn-launch" class="w-full text-left p-2 rounded-xl bg-orange-950/60 hover:bg-orange-900/80 border border-orange-500/40 text-orange-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-orange-600/30 flex items-center justify-center text-orange-400 shrink-0">
+                            <i class="fa-solid fa-rocket"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-orange-200">Dünya'dan Fırlatma (Saturn V)</div>
+                            <div class="text-[9px] text-orange-400/80 font-normal">Kennedy Uzay Merkezi'nden kalkış</div>
+                        </div>
+                    </button>
+
                     <!-- 1. Ay'da Yürü (FPS) -->
                     <button onclick="switchAppMode('fps_walk')" id="nav-btn-fps" class="w-full text-left p-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/80 border border-sky-500/30 text-white flex items-center gap-2.5 transition-all cursor-pointer">
                         <div class="w-7 h-7 rounded-lg bg-sky-600/30 flex items-center justify-center text-sky-300 shrink-0">
@@ -659,6 +670,7 @@
         ------------------------------------------------------------- */
         let scene, camera, renderer, controls;
         let moonSurfaceMesh, earthMesh, earthCloudsMesh, earthAtmosphereMesh, sunLight, ambientLight, earthLight;
+        let sunVisualGroup = null;
         let starsFieldMesh;
         let showDayStars = false;
 
@@ -667,7 +679,13 @@
         let astronautArmstrongGroup, astronautAldrinGroup;
         let interactiveObjects = [];
 
-        // Modes: 'fps_walk' | 'earth_observe' | 'earth_phases' | 'lunar_day' | 'orbit_macro' | 'historical_mission' | 'quiz_missions'
+        // Saturn V Launch Scene Globals
+        let saturnLaunchGroup = null;
+        let isLaunchingSaturn = false;
+        let saturnLaunchTime = 0;
+        let saturnParticles = [];
+
+        // Modes: 'fps_walk' | 'earth_observe' | 'earth_phases' | 'lunar_day' | 'orbit_macro' | 'historical_mission' | 'quiz_missions' | 'saturn_launch'
         let currentMode = 'earth_observe';
 
         // Simulation Clock & Rates
@@ -1526,13 +1544,42 @@
             interactiveObjects.push(earthMesh);
             scene.add(earthMesh);
 
-            // B. SUN VISUAL DISK (Blazing White-Yellow Star in Lunar Sky)
-            const sunDisk = new THREE.Mesh(
-                new THREE.SphereGeometry(9, 32, 32),
-                new THREE.MeshBasicMaterial({ color: 0xfffef0 })
+            // B. SUN VISUAL GROUP (Blazing White-Yellow Star in Lunar Sky + Radiant Corona)
+            sunVisualGroup = new THREE.Group();
+            
+            // Core Blazing Disk
+            const sunCore = new THREE.Mesh(
+                new THREE.SphereGeometry(16, 32, 32),
+                new THREE.MeshBasicMaterial({ color: 0xfffff0 })
             );
-            sunDisk.position.copy(sunLight.position);
-            sunDisk.userData = {
+            sunVisualGroup.add(sunCore);
+
+            // Inner Golden Corona Glow
+            const innerCorona = new THREE.Mesh(
+                new THREE.SphereGeometry(22, 32, 32),
+                new THREE.MeshBasicMaterial({
+                    color: 0xfde047,
+                    transparent: true,
+                    opacity: 0.55,
+                    side: THREE.BackSide
+                })
+            );
+            sunVisualGroup.add(innerCorona);
+
+            // Outer Radiant Atmospheric Halo
+            const outerHalo = new THREE.Mesh(
+                new THREE.SphereGeometry(32, 32, 32),
+                new THREE.MeshBasicMaterial({
+                    color: 0xf97316,
+                    transparent: true,
+                    opacity: 0.25,
+                    side: THREE.BackSide
+                })
+            );
+            sunVisualGroup.add(outerHalo);
+
+            sunVisualGroup.position.copy(sunLight.position);
+            sunVisualGroup.userData = {
                 type: 'sun',
                 title: "Güneş (Yıldızımız)",
                 category: "GÖK CİSMİ GÖZLEMİ",
@@ -1543,8 +1590,8 @@
                     "Ay yüzeyinde Güneş'in doğuşundan batışına kadar tam 14 Dünya günü geçer."
                 ]
             };
-            interactiveObjects.push(sunDisk);
-            scene.add(sunDisk);
+            interactiveObjects.push(sunVisualGroup);
+            scene.add(sunVisualGroup);
         }
 
         function positionEarthInSky() {
@@ -1574,15 +1621,19 @@
             }
 
             // 2. Earth Phases & Sun Movement in Lunar Sky (Synodic Month: 29.53 days)
+            // At Apollo 11 landing epoch (20 July 1969 20:17 UTC), Sun elevation is ~15° above eastern horizon
             const synodicProgress = ((simCurrentTime / 1000) % SYNODIC_MONTH_SEC) / SYNODIC_MONTH_SEC;
-            const sunAngle = synodicProgress * Math.PI * 2;
+            const sunAngle = (synodicProgress * Math.PI * 2) + 0.35; // Calibrated so Sun is always visible in daytime sky
 
             // Update Sun light position across lunar horizon
-            const sunRadius = 240;
+            const sunRadius = 260;
             const sx = Math.cos(sunAngle) * sunRadius;
-            const sy = Math.sin(sunAngle) * sunRadius;
-            const sz = -100;
-            sunLight.position.set(sx, Math.max(sy, -80), sz);
+            const sy = Math.max(Math.sin(sunAngle) * sunRadius, 25); // Keep above horizon for visibility
+            const sz = -120;
+            sunLight.position.set(sx, sy, sz);
+            if (sunVisualGroup) {
+                sunVisualGroup.position.copy(sunLight.position);
+            }
 
             // Update UI Date & Phase Label
             updateHUDTimeDisplay();
@@ -1626,13 +1677,17 @@
             controls.enabled = true;
 
             // Highlight active nav pill
-            const pills = ['fps', 'earth', 'phases', 'sun', 'orbit', 'history', 'quiz'];
+            const pills = ['launch', 'fps', 'earth', 'phases', 'sun', 'orbit', 'history', 'quiz'];
             pills.forEach(p => {
                 const btn = document.getElementById(`nav-btn-${p}`);
                 if (btn) btn.className = "w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer";
             });
 
-            if (mode === 'fps_walk') {
+            if (mode === 'saturn_launch') {
+                const launchBtn = document.getElementById('nav-btn-launch');
+                if (launchBtn) launchBtn.className = "w-full text-left p-2 rounded-xl bg-orange-950/90 border border-orange-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                startSaturnVLaunchSequence();
+            } else if (mode === 'fps_walk') {
                 document.getElementById('nav-btn-fps').className = "w-full text-left p-2 rounded-xl bg-sky-950/80 border border-sky-400 text-white flex items-center gap-2.5 transition-all shadow-md";
                 document.getElementById('helmet-hud-overlay').classList.remove('hidden');
                 document.getElementById('fps-touch-controls').classList.remove('hidden');
@@ -1811,8 +1866,228 @@
         }
 
         /* -------------------------------------------------------------
-           12. GUIDED HISTORICAL MISSION MODE (20 JULY 1969)
+           11B. SATURN V ROCKET EARTH LAUNCH SEQUENCE (CAPE CANAVERAL 1969)
         ------------------------------------------------------------- */
+        let saturnStages = { s1c: null, s2: null, s4b: null, plume: null };
+
+        function buildSaturnVRocket() {
+            if (saturnLaunchGroup) return;
+
+            saturnLaunchGroup = new THREE.Group();
+            saturnLaunchGroup.position.set(0, 0, -180); // Placed at launch site
+
+            // Materials
+            const whiteMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+            const blackMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.4 });
+            const engineMat = new THREE.MeshStandardMaterial({ color: 0x475569, metalness: 0.8, roughness: 0.2 });
+
+            // Launch Pad Platform
+            const padMesh = new THREE.Mesh(new THREE.CylinderGeometry(14, 16, 2, 32), new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.8 }));
+            padMesh.position.y = 1;
+            saturnLaunchGroup.add(padMesh);
+
+            // Red Launch Umbilical Tower (LUT)
+            const lutMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.4, roughness: 0.6 });
+            const lutTower = new THREE.Mesh(new THREE.BoxGeometry(4, 55, 4), lutMat);
+            lutTower.position.set(10, 28, 0);
+            saturnLaunchGroup.add(lutTower);
+
+            // Rocket Body Group (Animates Upward)
+            const rocketBody = new THREE.Group();
+            rocketBody.name = "rocketBody";
+
+            // Stage 1 (S-IC): Height 42m, Diameter 10m -> Scale: H: 20, R: 2.2
+            const s1 = new THREE.Mesh(new THREE.CylinderGeometry(2.2, 2.2, 20, 32), whiteMat);
+            s1.position.y = 12;
+            rocketBody.add(s1);
+
+            // S-IC Black Roll Pattern Strips
+            const stripeMat = new THREE.MeshBasicMaterial({ color: 0x0f172a });
+            const stripe = new THREE.Mesh(new THREE.CylinderGeometry(2.22, 2.22, 6, 16), stripeMat);
+            stripe.position.y = 14;
+            rocketBody.add(stripe);
+
+            // 5x F-1 Rocket Engines
+            for (let i = 0; i < 4; i++) {
+                const angle = (i * Math.PI) / 2;
+                const engine = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2.2, 16), engineMat);
+                engine.rotation.x = Math.PI;
+                engine.position.set(Math.cos(angle) * 1.3, 1, Math.sin(angle) * 1.3);
+                rocketBody.add(engine);
+            }
+            const centerEngine = new THREE.Mesh(new THREE.ConeGeometry(0.7, 2.2, 16), engineMat);
+            centerEngine.rotation.x = Math.PI;
+            centerEngine.position.set(0, 1, 0);
+            rocketBody.add(centerEngine);
+
+            // Stage 2 (S-II): H: 12, R: 2.0
+            const s2 = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.2, 12, 32), whiteMat);
+            s2.position.y = 28;
+            rocketBody.add(s2);
+
+            // Stage 3 (S-IVB) + Instrument Unit: H: 8, R: 1.6
+            const s3 = new THREE.Mesh(new THREE.CylinderGeometry(1.6, 2.0, 8, 32), whiteMat);
+            s3.position.y = 38;
+            rocketBody.add(s3);
+
+            // Apollo Command / Service Module (CSM) + Launch Escape Tower (LES)
+            const sm = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 4.5, 32), engineMat);
+            sm.position.y = 44;
+            rocketBody.add(sm);
+
+            const cm = new THREE.Mesh(new THREE.ConeGeometry(1.5, 3, 32), new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.2 }));
+            cm.position.y = 47.5;
+            rocketBody.add(cm);
+
+            // Launch Escape System Needle
+            const les = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.2, 8, 8), new THREE.MeshStandardMaterial({ color: 0xd97706 }));
+            les.position.y = 53;
+            rocketBody.add(les);
+
+            // Fiery Exhaust Plume Mesh (Dynamic Scale)
+            const plumeGeo = new THREE.ConeGeometry(3.5, 18, 32);
+            plumeGeo.rotateX(Math.PI);
+            const plumeMat = new THREE.MeshBasicMaterial({
+                color: 0xf97316,
+                transparent: true,
+                opacity: 0.9
+            });
+            const plumeMesh = new THREE.Mesh(plumeGeo, plumeMat);
+            plumeMesh.position.y = -8;
+            plumeMesh.visible = false;
+            rocketBody.add(plumeMesh);
+
+            // Core Blazing White Plume
+            const plumeCoreGeo = new THREE.ConeGeometry(1.8, 12, 16);
+            plumeCoreGeo.rotateX(Math.PI);
+            const plumeCoreMat = new THREE.MeshBasicMaterial({ color: 0xfffbeb });
+            const plumeCoreMesh = new THREE.Mesh(plumeCoreGeo, plumeCoreMat);
+            plumeCoreMesh.position.y = -5;
+            plumeMesh.add(plumeCoreMesh);
+
+            saturnStages.plume = plumeMesh;
+            saturnLaunchGroup.add(rocketBody);
+            scene.add(saturnLaunchGroup);
+        }
+
+        function startSaturnVLaunchSequence() {
+            buildSaturnVRocket();
+            isLaunchingSaturn = true;
+            saturnLaunchTime = 0;
+
+            // Camera focuses on Saturn V launch pad
+            controls.enabled = false;
+            camera.position.set(22, 16, -150);
+            camera.lookAt(new THREE.Vector3(0, 25, -180));
+
+            const box = document.getElementById('dynamic-overlay-box');
+            box.classList.remove('hidden');
+            box.innerHTML = `
+                <div class="hud-glass p-3.5 rounded-2xl border border-orange-500/50 text-xs space-y-2.5 max-w-md shadow-2xl animate-fadeIn">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-orange-400 text-xs flex items-center gap-1.5 font-orbitron">
+                            <i class="fa-solid fa-rocket animate-bounce"></i> SATURN V FIRLATILIŞI (16 TEMMUZ 1969)
+                        </span>
+                        <span id="launch-countdown-badge" class="px-2 py-0.5 rounded-lg bg-orange-600 text-white font-mono font-bold text-[10px]">T-00:05</span>
+                    </div>
+                    <p id="launch-status-text" class="text-[11px] text-slate-200 leading-snug">
+                        Kennedy Uzay Merkezi Pad 39A. 110 metre boyunda, 3.000 tonluk Saturn V roketi Ay yolculuğu için hazır!
+                    </p>
+                    <div class="w-full bg-slate-800 rounded-full h-2 overflow-hidden border border-slate-700">
+                        <div id="launch-progress-bar" class="bg-gradient-to-r from-amber-500 to-orange-500 h-full w-0 transition-all duration-200"></div>
+                    </div>
+                    <div class="flex justify-between items-center pt-1 text-[10px]">
+                        <button onclick="skipToMoonLanding()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold transition-all">
+                            Ay İnişine Geç <i class="fa-solid fa-forward-step ml-1"></i>
+                        </button>
+                        <button onclick="restartSaturnLaunch()" class="px-3 py-1.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold transition-all">
+                            Yeniden Fırlat <i class="fa-solid fa-rotate-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            playSciFiBeep('quindar_intro');
+        }
+
+        function restartSaturnLaunch() {
+            if (saturnLaunchGroup) {
+                const rocket = saturnLaunchGroup.getObjectByName("rocketBody");
+                if (rocket) rocket.position.y = 0;
+                if (saturnStages.plume) saturnStages.plume.visible = false;
+            }
+            startSaturnVLaunchSequence();
+        }
+
+        function skipToMoonLanding() {
+            isLaunchingSaturn = false;
+            if (saturnLaunchGroup) {
+                const rocket = saturnLaunchGroup.getObjectByName("rocketBody");
+                if (rocket) rocket.position.y = 0;
+                if (saturnStages.plume) saturnStages.plume.visible = false;
+            }
+            switchAppMode('earth_observe');
+            showToast("🚀 Apollo 11 Ay yörüngesine girdi ve Sessizlik Denizi'ne başarıyla indi!", "info");
+        }
+
+        function updateSaturnVPhysics(delta) {
+            if (!isLaunchingSaturn || !saturnLaunchGroup) return;
+
+            saturnLaunchTime += delta;
+            const rocket = saturnLaunchGroup.getObjectByName("rocketBody");
+            const badge = document.getElementById('launch-countdown-badge');
+            const statusEl = document.getElementById('launch-status-text');
+            const progressEl = document.getElementById('launch-progress-bar');
+
+            if (saturnLaunchTime < 3.5) {
+                // Countdown T-3, 2, 1
+                const cd = Math.max(0, Math.ceil(3.5 - saturnLaunchTime));
+                if (badge) badge.innerText = `T-00:0${cd}`;
+                if (statusEl) statusEl.innerText = `Son hazırlıklar... Kule kolları geri çekiliyor. Motor ateşleme sekansı başladı! (T-${cd})`;
+                if (progressEl) progressEl.style.width = `${(saturnLaunchTime / 3.5) * 25}%`;
+            } else if (saturnLaunchTime < 4.5) {
+                // Ignition!
+                if (badge) {
+                    badge.innerText = "LIFTOFF!";
+                    badge.className = "px-2 py-0.5 rounded-lg bg-red-600 text-white font-mono font-bold text-[10px] animate-pulse";
+                }
+                if (statusEl) statusEl.innerText = "🔥 ATEŞLEME! 5 adet devasa F-1 motoru 34.5 Milyon Newton itiş gücü üretiyor!";
+                if (saturnStages.plume) {
+                    saturnStages.plume.visible = true;
+                    saturnStages.plume.scale.set(1 + Math.random() * 0.2, 1 + Math.random() * 0.2, 1 + Math.random() * 0.2);
+                }
+                playSciFiBeep('beep');
+            } else if (saturnLaunchTime < 18.0) {
+                // Liftoff and Ascending into Sky
+                const flightTime = saturnLaunchTime - 4.5;
+                const altitude = 0.5 * 3.8 * flightTime * flightTime; // s = 1/2 a t^2
+                if (rocket) rocket.position.y = altitude;
+
+                if (saturnStages.plume) {
+                    saturnStages.plume.visible = true;
+                    saturnStages.plume.scale.set(1 + Math.random() * 0.3, 1 + Math.random() * 0.4, 1 + Math.random() * 0.3);
+                }
+
+                // Camera smoothly tracks rising rocket
+                const targetY = Math.min(altitude + 25, 120);
+                camera.position.set(22 + flightTime * 1.5, 16 + flightTime * 3.5, -150 + flightTime * 2);
+                camera.lookAt(new THREE.Vector3(0, targetY, -180));
+
+                if (badge) badge.innerText = `T+00:${Math.floor(flightTime).toString().padStart(2, '0')}`;
+                if (progressEl) progressEl.style.width = `${25 + (flightTime / 13.5) * 75}%`;
+
+                if (flightTime < 4) {
+                    if (statusEl) statusEl.innerText = "🚀 Roket fırlatma kulesini terk etti! 'Tower cleared!' Saatte binlerce km hıza ulaşıyor.";
+                } else if (flightTime < 9) {
+                    if (statusEl) statusEl.innerText = "☁️ 1. Aşama (S-IC) atmosferi yırtarak yükseliyor. Maksimum dinamik basınç (Max-Q) aşıldı!";
+                } else {
+                    if (statusEl) statusEl.innerText = "🌌 Dünya atmosferinden çıkıldı! 2. ve 3. aşamalar (S-IVB) Ay transfer rotasına (TLI) yöneliyor.";
+                }
+            } else {
+                // Transition to Moon landing
+                skipToMoonLanding();
+            }
+        }
         let currentHistoricalStep = 1;
         const HISTORICAL_STEPS = [
             {
@@ -2398,6 +2673,9 @@
 
             // Update Physics & Astronomical Movements
             updateEarthAndMoonPhysics(delta);
+
+            // Update Saturn V Earth Launch if active
+            updateSaturnVPhysics(delta);
 
             // Update FPS walking if active
             updateAstronautFPSMovement(delta);

@@ -1,7 +1,7 @@
 [
   {
     "id": "mat-apollo11-aya-inis-3d",
-    "grade": "all",
+    "grade": "5",
     "category": "egitsel-oyunlar",
     "targetSection": "1",
     "title": "Ay'a İniş – 3D Keşif ve VR Deneyimi (Apollo 11 & Dünya Gözlemi)",
@@ -27,9 +27,7 @@
       "akıllı tahta",
       "öğretmen modu",
       "fen bilimleri",
-      "5. sınıf",
-      "6. sınıf",
-      "7. sınıf"
+      "5. sınıf"
     ],
     "visibility": "public",
     "downloadCount": "🌟 3D VR Başyapıtı",

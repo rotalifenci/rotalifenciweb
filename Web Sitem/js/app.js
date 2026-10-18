@@ -4157,13 +4157,10 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                     <span class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🪐 6. SINIF 3D DİJİTAL PLANETARYUM</span>
                                     <span class="px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-500/40 text-[10px] font-bold">1. ÜNİTE</span>
                                 </div>
-                                <p class="text-[11px] text-slate-300">Güneş Sistemi – 3D Keşif Laboratuvarı, Ay'a İniş 3D VR ve Uzay Görevleri.</p>
+                                <p class="text-[11px] text-slate-300">Güneş Sistemi – 3D Keşif Laboratuvarı, Gezegenler, Dünya-Ay Modu ve 5 Uzay Görevi.</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-                            <button type="button" onclick="openInteractiveGameModal('aya-inis-3d', 'Ay\'a İniş – 3D Keşif ve VR Deneyimi')" class="flex-1 sm:flex-none px-3 py-1.5 bg-gradient-to-r from-sky-400 via-blue-500 to-amber-300 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
-                                <i class="fa-solid fa-flag"></i> Ay'a İniş (3D VR)
-                            </button>
                             <button type="button" onclick="openInteractiveGameModal('gunes-sistemi-3d', 'Güneş Sistemi – 3D Keşif Laboratuvarı')" class="flex-1 sm:flex-none px-3.5 py-1.5 bg-gradient-to-r from-sky-400 via-blue-500 to-amber-400 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-solar-panel"></i> Güneş Sistemi (3D)
                             </button>
@@ -4923,17 +4920,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         },
         "6": {
             "1": [
-                {
-                    id: "builtin-oyun-6-aya-inis",
-                    title: "Ay'a İniş – 3D Keşif ve VR Deneyimi (Apollo 11 & Dünya Gözlemi)",
-                    icon: "fa-solid fa-flag",
-                    desc: "Mare Tranquillitatis'te Ay modülü Eagle, astronotlar ve bayrak yanında 1.62 m/s² Ay çekimiyle yürü! Ay gökyüzünden Dünya'nın 24 saatlik dönüşünü, 8 evresini ve Güneş döngüsünü gerçekçi 3D ve WebXR VR ile keşfet!",
-                    type: "3D VR Simülatörü",
-                    format: "3D VR SİMÜLATÖR",
-                    badge: "🌟 3D VR Başyapıtı",
-                    fileUrl: "oyunlar/aya-inis-3d.html",
-                    kapakResmi: "assets/aya-inis-3d-kapak.svg"
-                },
                 {
                     id: "builtin-oyun-6-gunes-sistemi",
                     title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
@@ -5942,16 +5928,6 @@ function renderGradeEducationalGames(grade, subData) {
             }
         ],
         "6": [
-            {
-                id: "builtin-oyun-6-aya-inis",
-                title: "Ay'a İniş: 3D Keşif ve VR Deneyimi (Apollo 11)",
-                badge: "3D VR Deneyimi",
-                type: "3D VR Simülatörü",
-                desc: "Mare Tranquillitatis'te astronot Neil Armstrong olarak yürü, Ay modülü Eagle'ı incele, Ay göğünden Dünya'nın 24 saatlik dönüşünü ve 8 evresini gözlemle!",
-                icon: "fa-solid fa-flag",
-                iconColor: "from-sky-400 via-blue-600 to-amber-400",
-                fileUrl: "aya-inis-3d"
-            },
             {
                 id: "builtin-oyun-6-gunes-sistemi",
                 title: "Güneş Sistemi – 3D Keşif Laboratuvarı",

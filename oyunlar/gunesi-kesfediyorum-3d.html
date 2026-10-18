@@ -577,73 +577,79 @@
             lightTravelSeconds: 499
         };
 
-        // 6 Güneş Katmanı Tanımı
+        // MEB 5. Sınıf Fen Bilimleri Müfredatı: Güneş'in 4 Ana Katmanı (İçten Dışa)
         const SUN_LAYERS = [
             {
                 id: "core",
                 name: "Çekirdek",
+                order: "1. Katman (En İçte)",
                 temp: "15.000.000 °C",
-                depth: "0 - 0.25 R",
-                radius: 1.6,
+                depth: "Güneş'in Kalbi (0 - 0.25 R)",
+                radius: 2.0,
                 color: 0xffffff,
                 emissive: 0xfef08a,
-                desc: "Güneş'in merkezidir. Çok yüksek sıcaklık ve basınç altında hidrojenin helyuma dönüşmesiyle (nükleer füzyon) devasa enerji açığa çıkar.",
-                voice: "Güneş'in çekirdeği. Sıcaklığı yaklaşık 15 milyon derecedir. Tüm enerjinin üretildiği merkezdir."
-            },
-            {
-                id: "radiative",
-                name: "Işınım Bölgesi",
-                temp: "7.000.000 °C",
-                depth: "0.25 - 0.7 R",
-                radius: 3.2,
-                color: 0xfde047,
-                emissive: 0xf59e0b,
-                desc: "Çekirdekte üretilen enerjinin yoğun madde parçacıkları arasında sürekli saçılıp soğurularak yüzeye doğru aktarıldığı geniş katmandır.",
-                voice: "Işınım bölgesi. Çekirdekte oluşan enerji fotonlarla dışarıya doğru taşınır."
-            },
-            {
-                id: "convective",
-                name: "Taşınım (Konveksiyon) Bölgesi",
-                temp: "2.000.000 °C",
-                depth: "0.7 - 1.0 R",
-                radius: 4.6,
-                color: 0xf97316,
-                emissive: 0xd97706,
-                desc: "Kaynayan su gibi sıcak plazmanın yukarı yükseldiği, soğuyan plazmanın ise dibe çöktüğü döngüsel hareketler bölgesidir.",
-                voice: "Taşınım bölgesi. Sıcak plazma yükselir, soğuyan plazma aşağı iner. Enerjiyi yüzeye taşır."
+                emissiveIntensity: 0.95,
+                desc: "Güneş'in merkezidir ve en sıcak katmanıdır. Devasa basınç ve 15 milyon °C sıcaklıkta hidrojen atomları nükleer füzyonla helyuma dönüşür ve Güneş'in tüm enerjisi burada doğar.",
+                voice: "Güneş'in çekirdeği. En içteki ve yaklaşık 15 milyon dereceyle en sıcak katmandır. Tüm yaşam enerjisi burada üretilir.",
+                facts: [
+                    "Sıcaklık yaklaşık 15 milyon santigrat derecedir.",
+                    "Güneş enerjisi çekirdekteki nükleer füzyon (hidrojenin helyuma dönüşmesi) reaksiyonlarıyla üretilir.",
+                    "Güneş'in en iç ve en yoğun katmanıdır."
+                ]
             },
             {
                 id: "photosphere",
                 name: "Işık Küre (Fotosfer)",
-                temp: "5.500 °C",
+                order: "2. Katman (Görünen Yüzey)",
+                temp: "6.000 °C",
                 depth: "Görünen Yüzey (~400 km)",
-                radius: 5.6,
-                color: 0xf59e0b,
-                emissive: 0xb45309,
-                desc: "Gözlerimizle gördüğümüz parlak sarı-beyaz yüzeydir. Güneş lekeleri ve kaynayan granül yapılar bu yüzeyde yer alır.",
-                voice: "Işık küre yani Fotosfer. Güneş'in gördüğümüz yüzeyidir. Sıcaklığı 5500 derecedir."
+                radius: 4.4,
+                color: 0xfbbf24,
+                emissive: 0xd97706,
+                emissiveIntensity: 0.5,
+                desc: "Dünya'dan gökyüzüne baktığımızda gördüğümüz parlak sarı-turuncu yüzeydir. Güneş lekeleri ve kaynayan plazma granül yapıları bu katmanda yer alır.",
+                voice: "Işık küre yani Fotosfer. Gözümüzle gördüğümüz parlak yüzeydir. Sıcaklığı yaklaşık 6 bin derecedir ve Güneş lekeleri buradadır.",
+                facts: [
+                    "Güneş'in gözlerimizle gördüğümüz parlak katmanıdır.",
+                    "Yüzey sıcaklığı yaklaşık 6.000 °C'dir.",
+                    "Galileo'nun teleskopla keşfettiği koyu renkli Güneş lekeleri bu katmanda bulunur."
+                ]
             },
             {
                 id: "chromosphere",
                 name: "Renk Küre (Kromosfer)",
+                order: "3. Katman (İç Atmosfer)",
                 temp: "10.000 °C",
-                depth: "Yüzeyin Üstü (~2.000 km)",
-                radius: 6.2,
+                depth: "Işık Kürenin Üzeri (~2.000 km)",
+                radius: 5.7,
                 color: 0xf43f5e,
                 emissive: 0xe11d48,
-                desc: "Fotosferin hemen üzerindeki ince, pembe-kırmızımsı atmosfer katmanıdır. Güneş tutulmalarında hilal gibi görülebilir.",
-                voice: "Renk küre yani Kromosfer. Güneş atmosferinin pembe kırmızımsı ince katmanıdır."
+                emissiveIntensity: 0.65,
+                desc: "Işık kürenin hemen üzerindeki ince, parlak kırmızımsı-pembe renkli gaz tabakasıdır. Tam Güneş tutulması anında Ay Güneş'i örttüğünde ince kırmızı bir yay olarak gözlemlenebilir.",
+                voice: "Renk küre yani Kromosfer. Işık kürenin üzerindeki kırmızımsı pembe gaz tabakasıdır. Sıcaklığı 10 bin derecedir.",
+                facts: [
+                    "Işık kürenin hemen üzerindeki gaz katmanıdır.",
+                    "Kırmızımsı-pembe rengi nedeniyle Renk Küre adı verilmiştir.",
+                    "Tam Güneş tutulmasında Ay diskinin kenarında parıldayan alev fışkırmaları buradan yükselir."
+                ]
             },
             {
                 id: "corona",
                 name: "Taç Küre (Korona)",
-                temp: "1.000.000 - 3.000.000 °C",
-                depth: "Dış Atmosfer (Milyonlarca km)",
-                radius: 7.2,
+                order: "4. Katman (En Dış Atmosfer)",
+                temp: "1.000.000 - 2.000.000 °C",
+                depth: "Uzaya Yayılan Hale (Milyonlarca km)",
+                radius: 7.4,
                 color: 0x38bdf8,
                 emissive: 0x0284c7,
-                desc: "Güneş'i çevreleyen çok geniş, son derece sıcak ve seyrek dış atmosferdir. Tam Güneş tutulmasında beyaz bir taç şeklinde parlar.",
-                voice: "Taç küre yani Korona. Güneş'in milyonlarca kilometre uzanan çok sıcak dış atmosferidir."
+                emissiveIntensity: 0.4,
+                desc: "Güneş'in en dışındaki son derece sıcak, seyrek ve milyonlarca kilometre uzaya uzanan plazma halesidir. Sadece tam Güneş tutulmasında inci beyazı parıldayan muhteşem bir taç şeklinde görülebilir.",
+                voice: "Taç küre yani Korona. Güneş'in en dıştaki milyonlarca derece sıcaklığa ulaşan devasa beyaz atmosfer tacıdır.",
+                facts: [
+                    "Güneş'in en dış katmanıdır.",
+                    "Sıcaklığı 1 ila 2 milyon °C'yi aşar.",
+                    "Sadece tam Güneş tutulması sırasında inci beyazı bir taç şeklinde seçilebilir."
+                ]
             }
         ];
 
@@ -945,19 +951,37 @@
             setupRaycasterInteractions(canvas);
         }
 
-        // Katmanların 3D İnşası
+        // Katmanların 3D İnşası (4 MEB Katmanı: Çekirdek, Işık Küre, Renk Küre, Taç Küre)
         function buildSunLayers() {
             layerMeshes = [];
             SUN_LAYERS.forEach((layer, idx) => {
                 // Çeyrek dilim kesit için thetaLength = Math.PI * 1.5 (270° kapalı, 90° açık)
-                const geo = new THREE.SphereGeometry(layer.radius, 48, 48, 0, Math.PI * 1.5);
-                const mat = new THREE.MeshStandardMaterial({
-                    color: layer.color,
-                    emissive: layer.emissive,
-                    emissiveIntensity: 0.35,
-                    roughness: 0.5,
-                    side: THREE.DoubleSide
-                });
+                const geo = new THREE.SphereGeometry(layer.radius, 56, 56, 0, Math.PI * 1.5);
+                let mat;
+                if (layer.id === 'core') {
+                    mat = new THREE.MeshBasicMaterial({
+                        color: 0xffffff,
+                        side: THREE.DoubleSide
+                    });
+                } else if (layer.id === 'corona') {
+                    mat = new THREE.MeshStandardMaterial({
+                        color: 0xbae6fd,
+                        emissive: 0x38bdf8,
+                        emissiveIntensity: 0.5,
+                        transparent: true,
+                        opacity: 0.65,
+                        roughness: 0.2,
+                        side: THREE.DoubleSide
+                    });
+                } else {
+                    mat = new THREE.MeshStandardMaterial({
+                        color: layer.color,
+                        emissive: layer.emissive,
+                        emissiveIntensity: layer.emissiveIntensity || 0.4,
+                        roughness: layer.roughness || 0.5,
+                        side: THREE.DoubleSide
+                    });
+                }
                 const mesh = new THREE.Mesh(geo, mat);
                 mesh.visible = false;
                 mesh.userData = { layerId: layer.id, layerIndex: idx, layerName: layer.name };
@@ -1810,18 +1834,25 @@
                     </div>
                 `;
             } else {
-                // Katman Eşleştirme (Game 2)
+                // Katman Eşleştirme (Game 2) - 4 MEB Katmanı
+                const matchClues = [
+                    { clue: '"15 Milyon °C nükleer füzyon enerjisinin üretildiği Güneş\'in kalbidir."', correctId: 'core', layerName: 'Çekirdek' },
+                    { clue: '"Gözlerimizle gördüğümüz parlak sarı yüzeydir, Güneş lekeleri buradadır."', correctId: 'photosphere', layerName: 'Işık Küre' },
+                    { clue: '"Işık kürenin üzerindeki kırmızımsı-pembe renkli gaz tabakasıdır."', correctId: 'chromosphere', layerName: 'Renk Küre' },
+                    { clue: '"Sadece tam Güneş tutulmasında görülen inci beyazı en dış atmosfer tacıdır."', correctId: 'corona', layerName: 'Taç Küre' }
+                ];
+                const activeMatchCard = matchClues[quizState.currentQIdx % matchClues.length];
                 arena.innerHTML = `
                     <div class="p-3 bg-orange-50/80 border border-orange-200 rounded-2xl space-y-2">
                         <div class="text-center">
                             <h4 class="text-xs sm:text-sm font-black text-slate-900">Katman Özelliğini Eşleştir</h4>
-                            <p class="text-[10px] text-slate-500 font-semibold">"15 Milyon °C nükleer füzyon enerjisinin üretildiği Güneş merkezidir."</p>
+                            <p class="text-[11px] text-slate-700 font-bold bg-white/80 p-2 rounded-xl border border-orange-200 mt-1">${activeMatchCard.clue}</p>
                         </div>
                         <div class="grid grid-cols-2 gap-1.5 text-xs font-black">
-                            <button onclick="answerLayerMatch('core')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Çekirdek</button>
-                            <button onclick="answerLayerMatch('photosphere')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Işık Küre</button>
-                            <button onclick="answerLayerMatch('corona')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Taç Küre</button>
-                            <button onclick="answerLayerMatch('convective')" class="p-2 bg-white hover:bg-orange-100 rounded-xl border text-center">Taşınım Bölgesi</button>
+                            <button onclick="answerLayerMatch('core', '${activeMatchCard.correctId}', '${activeMatchCard.layerName}')" class="p-2.5 bg-white hover:bg-orange-100 rounded-xl border text-center shadow-xs">Çekirdek</button>
+                            <button onclick="answerLayerMatch('photosphere', '${activeMatchCard.correctId}', '${activeMatchCard.layerName}')" class="p-2.5 bg-white hover:bg-orange-100 rounded-xl border text-center shadow-xs">Işık Küre</button>
+                            <button onclick="answerLayerMatch('chromosphere', '${activeMatchCard.correctId}', '${activeMatchCard.layerName}')" class="p-2.5 bg-white hover:bg-orange-100 rounded-xl border text-center shadow-xs">Renk Küre</button>
+                            <button onclick="answerLayerMatch('corona', '${activeMatchCard.correctId}', '${activeMatchCard.layerName}')" class="p-2.5 bg-white hover:bg-orange-100 rounded-xl border text-center shadow-xs">Taç Küre</button>
                         </div>
                         <div id="match-feedback" class="hidden p-2 rounded-xl text-xs font-bold text-center"></div>
                     </div>
@@ -1904,17 +1935,21 @@
             }, 2200);
         }
 
-        function answerLayerMatch(layerId) {
+        function answerLayerMatch(selectedId, correctId, layerName) {
             const fb = document.getElementById('match-feedback');
             fb.classList.remove('hidden');
-            if (layerId === 'core') {
+            if (selectedId === correctId) {
                 fb.className = 'p-2 rounded-xl text-xs font-bold bg-emerald-100 text-emerald-900 text-center';
-                fb.innerHTML = `🎉 <strong>Tebrikler!</strong> Çekirdek doğru cevaptı!`;
+                fb.innerHTML = `🎉 <strong>Harika!</strong> ${layerName} doğru cevaptı!`;
                 playSuccessChime();
-                selectLayer('core');
+                selectLayer(correctId);
+                setTimeout(() => {
+                    quizState.currentQIdx++;
+                    loadActiveSubGame();
+                }, 1800);
             } else {
                 fb.className = 'p-2 rounded-xl text-xs font-bold bg-rose-100 text-rose-900 text-center';
-                fb.innerHTML = `❌ Bu özellik <strong>Çekirdek</strong> katmanına aittir.`;
+                fb.innerHTML = `❌ Bu özellik <strong>${layerName}</strong> katmanına aittir.`;
                 playErrorBuzz();
             }
         }

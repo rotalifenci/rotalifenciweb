@@ -1083,6 +1083,9 @@
                     if (obsType === 'low' && dx < 0.9 && dz < 0.9) {
                         // Alçak engel: Zıplanmadıysa çarpar
                         if (GAME.playerY < 0.8) hit = true;
+                    } else if (obsType === 'crater' && dx < 0.95 && dz < 1.0) {
+                        // 🌑 Ay Krateri: Üzerinden zıplanmadıysa krater çukuruna takılır!
+                        if (GAME.playerY < 0.75) hit = true;
                     } else if (obsType === 'high' && dx < 0.9 && dz < 0.9) {
                         // Yüksek engel: Kayılmadıysa çarpar
                         if (!GAME.isSliding) hit = true;
@@ -1127,8 +1130,9 @@
                 const typeRand = Math.random();
 
                 if (typeRand < 0.65) {
-                    // Engel Oluştur
-                    const obsType = Math.random() < 0.5 ? 'low' : 'high';
+                    // Engel Oluştur (krater, alçak bariyer, yüksek tabela)
+                    const r = Math.random();
+                    const obsType = r < 0.38 ? 'crater' : (r < 0.70 ? 'low' : 'high');
                     spawnObstacle(lanePick, -55, obsType);
                 } else if (typeRand < 0.88) {
                     // Yıldız Dizisi Oluştur
@@ -1156,6 +1160,31 @@
                 const bar = new THREE.Mesh(barGeo, barMat);
                 bar.position.y = 0.25;
                 obsGroup.add(bar);
+            } else if (type === 'crater') {
+                // 🌑 AY KRATERİ ÇUKURU (Derin regolit çukuru, yükseltilmiş taşlı kenar ve tehlike ikazı)
+                const rimGeo = new THREE.TorusGeometry(0.85, 0.22, 12, 24);
+                rimGeo.rotateX(Math.PI / 2);
+                const rimMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.95 });
+                const rim = new THREE.Mesh(rimGeo, rimMat);
+                rim.position.y = 0.12;
+                obsGroup.add(rim);
+
+                // Kraterin derin iç karanlığı
+                const pitGeo = new THREE.CircleGeometry(0.82, 24);
+                pitGeo.rotateX(-Math.PI / 2);
+                const pitMat = new THREE.MeshBasicMaterial({ color: 0x020617 });
+                const pit = new THREE.Mesh(pitGeo, pitMat);
+                pit.position.y = 0.02;
+                obsGroup.add(pit);
+
+                // Krater kenarında 2 tehlike uyarı lazer çubuğu
+                const beaconGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8);
+                const beaconMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706 });
+                [-0.85, 0.85].forEach(bx => {
+                    const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+                    beacon.position.set(bx, 0.25, 0);
+                    obsGroup.add(beacon);
+                });
             } else {
                 // Yüksek Engel (Kayarak geçilecek asılı enerji tabelası)
                 const postMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
