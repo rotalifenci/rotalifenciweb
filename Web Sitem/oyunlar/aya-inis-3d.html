@@ -1,0 +1,2404 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full overflow-hidden select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>AY'A İNİŞ – 3D KEŞİF VE VR DENEYİMİ | Rotalı Fenci</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Orbitron & Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Three.js (r128) & OrbitControls & Canvas Confetti -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #000000;
+            color: #f8fafc;
+            height: 100dvh;
+            width: 100vw;
+            overflow: hidden;
+            touch-action: none;
+        }
+        .font-orbitron {
+            font-family: 'Orbitron', monospace;
+        }
+        /* Custom scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(56, 189, 248, 0.4); border-radius: 4px; }
+
+        /* Helmet Visor Effect Overlay */
+        .visor-curvature {
+            pointer-events: none;
+            background: radial-gradient(circle at 50% 45%, rgba(2, 6, 23, 0) 58%, rgba(2, 6, 23, 0.45) 85%, rgba(2, 6, 23, 0.92) 100%);
+            box-shadow: inset 0 0 80px rgba(56, 189, 248, 0.12);
+        }
+        .visor-reflection {
+            pointer-events: none;
+            background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.01) 30%, transparent 60%);
+        }
+
+        /* Glass HUD panels */
+        .hud-glass {
+            background: rgba(10, 15, 30, 0.78);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+        }
+        .hud-glass-gold {
+            background: rgba(25, 20, 10, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(234, 179, 8, 0.35);
+            box-shadow: 0 10px 30px rgba(234, 179, 8, 0.15);
+        }
+
+        /* Scanline retro effect */
+        .scanlines {
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+        }
+
+        /* Crosshair in FPS */
+        .fps-crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 14px;
+            height: 14px;
+            pointer-events: none;
+        }
+        .fps-crosshair::before, .fps-crosshair::after {
+            content: '';
+            position: absolute;
+            background: rgba(56, 189, 248, 0.75);
+        }
+        .fps-crosshair::before { top: 6px; left: 0; width: 14px; height: 2px; }
+        .fps-crosshair::after { top: 0; left: 6px; width: 2px; height: 14px; }
+    </style>
+</head>
+<body class="relative flex flex-col justify-between">
+
+    <!-- 3D WebGL Canvas Container -->
+    <div id="canvas-container" class="absolute inset-0 z-0"></div>
+
+    <!-- Visor Curvature & Helmet Rim Overlay (Toggled in Astronaut Walk Mode) -->
+    <div id="helmet-hud-overlay" class="absolute inset-0 z-10 pointer-events-none hidden visor-curvature">
+        <div class="absolute inset-0 visor-reflection"></div>
+        <div class="fps-crosshair"></div>
+        <!-- Vital Telemetry Top Right -->
+        <div class="absolute top-16 right-4 sm:top-20 sm:right-6 flex flex-col items-end gap-1 font-orbitron text-[10px] text-cyan-300 hud-glass px-3 py-1.5 rounded-lg border border-cyan-500/30">
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-heart-pulse text-rose-400 animate-pulse"></i>
+                <span>NABIZ: <strong id="telemetry-hr" class="text-white">78</strong> BPM</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-lungs text-sky-400"></i>
+                <span>OKSİJEN: <strong class="text-emerald-400">98%</strong></span>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-shield text-amber-400"></i>
+                <span>KASK BASINCI: <strong class="text-white">0.31 BAR</strong></span>
+            </div>
+            <div class="text-[9px] text-slate-400 mt-0.5">AY ÇEKİMİ: 1.62 m/s² (1/6 g)</div>
+        </div>
+    </div>
+
+    <!-- 1. TOP HEADER & BRANDING BAR -->
+    <header class="relative z-20 flex items-center justify-between px-3 py-2 sm:px-5 sm:py-2.5 hud-glass border-b border-sky-500/20">
+        <!-- Left: Logo & Instagram -->
+        <div class="flex items-center gap-2.5 sm:gap-3">
+            <a href="../index.html" class="flex items-center gap-2 group cursor-pointer" title="Ana Sayfaya Dön">
+                <img src="../assets/logo.jpg" alt="Rotalı Fenci" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-sky-400/40 shadow-sm object-cover group-hover:scale-105 transition-all">
+                <div class="flex flex-col">
+                    <span class="font-orbitron font-extrabold text-[11px] sm:text-xs text-sky-400 tracking-wider flex items-center gap-1">
+                        ROTALI FENCİ <i class="fa-solid fa-chevron-right text-[8px] text-sky-400/60"></i>
+                    </span>
+                    <span class="text-[9px] sm:text-[10px] text-slate-400">3D Uzay Laboratuvarı</span>
+                </div>
+            </a>
+            <div class="h-6 w-px bg-slate-700/60 hidden sm:block"></div>
+            <a href="https://www.instagram.com/rotalifenci/" target="_blank" rel="noopener noreferrer" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-[11px] text-pink-400 hover:text-pink-300 font-bold transition-all shadow-sm">
+                <i class="fa-brands fa-instagram text-sm"></i>
+                <span>@rotalifenci</span>
+            </a>
+        </div>
+
+        <!-- Center: Simulation Title -->
+        <div class="text-center">
+            <h1 class="font-orbitron font-black text-xs sm:text-sm md:text-base text-white tracking-wider flex items-center justify-center gap-1.5 drop-shadow-md">
+                <i class="fa-solid fa-moon text-amber-400"></i>
+                <span>AY'A İNİŞ – 3D KEŞİF DENEYİMİ</span>
+            </h1>
+            <p class="text-[9px] sm:text-[10px] text-sky-300 font-medium hidden md:block">
+                Ay yüzeyinde yürü, Dünya'yı gözlemle, uzayın sırlarını keşfet!
+            </p>
+        </div>
+
+        <!-- Right: Action Buttons (Teacher Mode, WebXR VR, Audio, Fullscreen) -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <!-- WebXR VR Button -->
+            <button id="btn-vr-toggle" onclick="toggleWebXRSession()" class="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-purple-600/80 hover:bg-purple-500 border border-purple-400/50 text-white font-orbitron font-bold text-[10px] sm:text-xs tracking-wider flex items-center gap-1.5 transition-all shadow-lg shadow-purple-600/20 active:scale-95 cursor-pointer" title="WebXR VR Modunu Başlat">
+                <i class="fa-solid fa-vr-cardboard text-amber-300"></i>
+                <span class="hidden sm:inline">VR MODU</span>
+            </button>
+
+            <!-- Teacher Mode Button -->
+            <button id="btn-teacher-toggle" onclick="toggleTeacherMode()" class="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-sky-950/80 hover:bg-sky-900 border border-sky-400/40 text-sky-300 font-bold text-[10px] sm:text-xs flex items-center gap-1.5 transition-all active:scale-95 cursor-pointer" title="Akıllı Tahta Öğretmen Modu">
+                <i class="fa-solid fa-chalkboard-user text-amber-400"></i>
+                <span class="hidden md:inline">Öğretmen Modu</span>
+            </button>
+
+            <!-- Audio Toggle Button -->
+            <button id="btn-audio-toggle" onclick="toggleAudio()" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer" title="Telsiz & Ortam Sesi">
+                <i id="audio-icon" class="fa-solid fa-volume-xmark text-slate-400"></i>
+            </button>
+
+            <!-- Stars Day/Night Toggle Button -->
+            <button id="btn-stars-toggle" onclick="toggleDayStars()" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-amber-400 hover:text-amber-300 flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer" title="Yıldızları Aç/Kapa (Gündüz Pozlaması)">
+                <i class="fa-solid fa-star"></i>
+            </button>
+
+            <!-- Fullscreen Button -->
+            <button onclick="toggleFullscreen()" class="w-8 h-8 rounded-xl bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 text-slate-300 hover:text-white flex items-center justify-center text-xs transition-all active:scale-95 cursor-pointer" title="Tam Ekran">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 2. MAIN WORKSPACE / FLOATING SIDEBARS -->
+    <div class="relative z-10 flex-1 flex pointer-events-none overflow-hidden">
+
+        <!-- LEFT CONTROL TRAY: Navigation Modes & Exploration Pillars -->
+        <div id="left-sidebar" class="pointer-events-auto p-2 sm:p-3 flex flex-col justify-between max-w-[280px] sm:max-w-[320px] transition-transform duration-300 -translate-x-full sm:translate-x-0">
+            <div class="hud-glass p-2.5 sm:p-3 rounded-2xl space-y-2 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                <div class="flex items-center justify-between pb-1 border-b border-slate-700/50">
+                    <span class="font-orbitron font-bold text-[10px] text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
+                        <i class="fa-solid fa-compass"></i> KEŞİF MODLARI
+                    </span>
+                    <button onclick="toggleLeftSidebar()" class="sm:hidden text-slate-400 hover:text-white p-1">
+                        <i class="fa-solid fa-xmark text-xs"></i>
+                    </button>
+                </div>
+
+                <!-- 7 Core Modules Navigation Pills -->
+                <div class="space-y-1.5 text-xs font-semibold">
+                    <!-- 1. Ay'da Yürü (FPS) -->
+                    <button onclick="switchAppMode('fps_walk')" id="nav-btn-fps" class="w-full text-left p-2 rounded-xl bg-sky-950/60 hover:bg-sky-900/80 border border-sky-500/30 text-white flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-sky-600/30 flex items-center justify-center text-sky-300 shrink-0">
+                            <i class="fa-solid fa-person-walking"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-sky-200">Ay'da Yürü (1. Şahıs)</div>
+                            <div class="text-[9px] text-slate-400 font-normal">1.62 m/s² Ay çekimiyle keşfet</div>
+                        </div>
+                    </button>
+
+                    <!-- 2. Dünya'yı Gözlemle -->
+                    <button onclick="switchAppMode('earth_observe')" id="nav-btn-earth" class="w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-blue-600/30 flex items-center justify-center text-blue-300 shrink-0">
+                            <i class="fa-solid fa-earth-americas"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-blue-200">Dünya'yı Gözlemle</div>
+                            <div class="text-[9px] text-slate-400 font-normal">24 saatlik eksen dönüşünü izle</div>
+                        </div>
+                    </button>
+
+                    <!-- 3. Dünya'nın Evreleri -->
+                    <button onclick="switchAppMode('earth_phases')" id="nav-btn-phases" class="w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-600/30 flex items-center justify-center text-indigo-300 shrink-0">
+                            <i class="fa-solid fa-circle-half-stroke"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-indigo-200">Dünya'nın Evreleri (8 Evre)</div>
+                            <div class="text-[9px] text-slate-400 font-normal">Ay evreleriyle ters geometri</div>
+                        </div>
+                    </button>
+
+                    <!-- 4. Ay'da Bir Gün & Güneş -->
+                    <button onclick="switchAppMode('lunar_day')" id="nav-btn-sun" class="w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-amber-600/30 flex items-center justify-center text-amber-300 shrink-0">
+                            <i class="fa-solid fa-sun"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-amber-200">Ay'da Bir Gün & Gölgeler</div>
+                            <div class="text-[9px] text-slate-400 font-normal">29.5 günlük Güneş döngüsü</div>
+                        </div>
+                    </button>
+
+                    <!-- 5. Uzaydan Gözlem (Heliocentric) -->
+                    <button onclick="switchAppMode('orbit_macro')" id="nav-btn-orbit" class="w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-purple-600/30 flex items-center justify-center text-purple-300 shrink-0">
+                            <i class="fa-solid fa-satellite"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-purple-200">Uzaydan Gözlem</div>
+                            <div class="text-[9px] text-slate-400 font-normal">Güneş, Dünya ve Ay hareketleri</div>
+                        </div>
+                    </button>
+
+                    <!-- 6. Tarihsel Apollo 11 Görevi -->
+                    <button onclick="switchAppMode('historical_mission')" id="nav-btn-history" class="w-full text-left p-2 rounded-xl bg-amber-950/40 hover:bg-amber-900/60 border border-amber-500/30 text-amber-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/30 flex items-center justify-center text-amber-300 shrink-0">
+                            <i class="fa-solid fa-flag"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-amber-100">Apollo 11'i Yaşa (1969)</div>
+                            <div class="text-[9px] text-amber-400/80 font-normal">7 aşamalı tarihsel görev</div>
+                        </div>
+                    </button>
+
+                    <!-- 7. Uzay Görevleri & Bilgi Yarışması -->
+                    <button onclick="switchAppMode('quiz_missions')" id="nav-btn-quiz" class="w-full text-left p-2 rounded-xl bg-emerald-950/50 hover:bg-emerald-900/70 border border-emerald-500/30 text-emerald-200 flex items-center gap-2.5 transition-all cursor-pointer">
+                        <div class="w-7 h-7 rounded-lg bg-emerald-600/30 flex items-center justify-center text-emerald-300 shrink-0">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <div class="flex-1 truncate">
+                            <div class="font-bold text-[11px] text-emerald-100">Uzay Görevleri & Yarışma</div>
+                            <div class="text-[9px] text-emerald-400/80 font-normal">Rastgele sorularla test et</div>
+                        </div>
+                    </button>
+                </div>
+
+                <!-- Quick Camera Focus POIs -->
+                <div class="pt-2 border-t border-slate-700/50">
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Hızlı Odaklanma:</span>
+                    <div class="grid grid-cols-2 gap-1 text-[10px]">
+                        <button onclick="focusCameraOn('eagle')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-sky-700 text-slate-200 font-bold transition-all truncate">
+                            🚀 Eagle Modülü
+                        </button>
+                        <button onclick="focusCameraOn('earth')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-blue-700 text-slate-200 font-bold transition-all truncate">
+                            🌍 Dünya'ya Bak
+                        </button>
+                        <button onclick="focusCameraOn('flag')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-amber-700 text-slate-200 font-bold transition-all truncate">
+                            🇺🇸 Amerikan Bayrağı
+                        </button>
+                        <button onclick="focusCameraOn('sun')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-orange-700 text-slate-200 font-bold transition-all truncate">
+                            ☀️ Güneş'e Bak
+                        </button>
+                        <button onclick="focusCameraOn('experiments')" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-emerald-700 text-slate-200 font-bold transition-all truncate">
+                            🔬 Sismometre & Lazer
+                        </button>
+                        <button onclick="resetToInitialView()" class="px-2 py-1 rounded-lg bg-slate-800 hover:bg-indigo-700 text-slate-200 font-bold transition-all truncate">
+                            🔄 Başlangıç Açısı
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MOBILE EXPAND TOGGLE FOR LEFT SIDEBAR -->
+        <button onclick="toggleLeftSidebar()" class="sm:hidden pointer-events-auto absolute top-2 left-2 z-20 w-8 h-8 rounded-full bg-slate-900/90 border border-sky-400/50 text-sky-300 flex items-center justify-center text-xs shadow-lg">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+
+        <!-- RIGHT HUD PANEL: Object Inspector & Dynamic Info Cards -->
+        <div id="right-info-panel" class="pointer-events-auto absolute top-2 right-2 sm:top-3 sm:right-3 max-w-[280px] sm:max-w-[340px] transition-all duration-300 z-20 hidden">
+            <div class="hud-glass p-3 sm:p-4 rounded-2xl border border-sky-500/30 text-xs space-y-2.5 shadow-2xl">
+                <!-- Header -->
+                <div class="flex items-center justify-between pb-1.5 border-b border-slate-700">
+                    <span id="info-category-tag" class="px-2 py-0.5 rounded-full bg-sky-950 border border-sky-500/40 text-[9px] font-bold text-sky-300 uppercase tracking-wider">
+                        AY NESNESİ BİLGİSİ
+                    </span>
+                    <button onclick="closeInfoPanel()" class="text-slate-400 hover:text-white p-1">
+                        <i class="fa-solid fa-xmark text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Title & Thumbnail -->
+                <div class="flex items-start gap-2.5">
+                    <div id="info-icon-box" class="w-10 h-10 rounded-xl bg-sky-600/30 border border-sky-400/40 flex items-center justify-center text-sky-300 text-lg shrink-0">
+                        <i class="fa-solid fa-shuttle-space"></i>
+                    </div>
+                    <div>
+                        <h3 id="info-title" class="font-bold text-sm text-white leading-tight">Eagle Ay Modülü (LM-5)</h3>
+                        <p id="info-subtitle" class="text-[10px] text-slate-400">Apollo 11 İniş Aracı</p>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <p id="info-desc" class="text-slate-300 text-[11px] leading-relaxed">
+                    Neil Armstrong ve Buzz Aldrin'i 20 Temmuz 1969'da Sessizlik Denizi'ne başarıyla indiren iki aşamalı uzay aracıdır.
+                </p>
+
+                <!-- 3 Key Scientific Facts -->
+                <div id="info-facts-container" class="space-y-1 bg-slate-950/60 p-2 rounded-xl border border-slate-800 text-[10px]">
+                    <div class="text-sky-300 font-bold mb-0.5">🔍 Bilimsel Gerçekler:</div>
+                    <div id="info-fact-1" class="text-slate-300">• Altın renkli yüzey, aşırı Güneş sıcağını yansıtan Mylar termal folyodur.</div>
+                    <div id="info-fact-2" class="text-slate-300">• Alt kademe Ay'da kalırken, üst kabin astronotları yörüngeye taşımıştır.</div>
+                    <div id="info-fact-3" class="text-slate-300">• Merdiven ayağında barış mesajı taşıyan pirinç plaka yer alır.</div>
+                </div>
+
+                <!-- Action Button inside Info Panel -->
+                <div class="pt-1 flex items-center justify-between">
+                    <button id="info-action-btn" onclick="executeInfoAction()" class="px-3 py-1.5 rounded-xl bg-sky-600 hover:bg-sky-500 text-slate-950 font-black text-[10px] uppercase tracking-wider transition-all shadow-md cursor-pointer">
+                        Daha Yakından İncele
+                    </button>
+                    <span id="info-coord-tag" class="text-[9px] font-mono text-slate-500">0.67° N, 23.47° E</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- INTERACTIVE WORKSPACE FLOATING MODAL OVERLAYS (Dynamic for Earth Phases, Rotation, Missions) -->
+        <div id="dynamic-overlay-box" class="pointer-events-auto absolute bottom-20 left-1/2 -translate-x-1/2 max-w-xl w-[94vw] sm:w-auto z-20 hidden">
+            <!-- Injected by active mode (Phase slider, 24h Earth rotation controls, Day/Night scrub bar) -->
+        </div>
+
+        <!-- ON-SCREEN TOUCH JOYSTICK & SMARTBOARD CONTROLS FOR ASTRONAUT FPS WALK -->
+        <div id="fps-touch-controls" class="pointer-events-auto absolute inset-x-0 bottom-16 sm:bottom-20 z-15 flex justify-between items-end px-4 sm:px-8 hidden">
+            <!-- Left: Virtual D-Pad / Smartboard Movement Arrows -->
+            <div class="flex flex-col items-center gap-1 hud-glass p-2 rounded-2xl shadow-xl">
+                <button onpointerdown="startMovement('forward')" onpointerup="stopMovement('forward')" onpointerleave="stopMovement('forward')" class="w-11 h-11 rounded-xl bg-slate-800 active:bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow">
+                    <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <div class="flex gap-1">
+                    <button onpointerdown="startMovement('left')" onpointerup="stopMovement('left')" onpointerleave="stopMovement('left')" class="w-11 h-11 rounded-xl bg-slate-800 active:bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button onpointerdown="startMovement('backward')" onpointerup="stopMovement('backward')" onpointerleave="stopMovement('backward')" class="w-11 h-11 rounded-xl bg-slate-800 active:bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow">
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </button>
+                    <button onpointerdown="startMovement('right')" onpointerup="stopMovement('right')" onpointerleave="stopMovement('right')" class="w-11 h-11 rounded-xl bg-slate-800 active:bg-sky-600 text-white font-bold flex items-center justify-center text-sm shadow">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                </div>
+                <span class="text-[8px] font-mono text-slate-400">YÜRÜ</span>
+            </div>
+
+            <!-- Right: Float Jump & Interaction Action Buttons -->
+            <div class="flex flex-col gap-2">
+                <button onclick="astronautJump()" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-cyan-600 to-sky-500 active:scale-95 text-slate-950 font-black text-xs flex flex-col items-center justify-center shadow-lg border border-cyan-300">
+                    <i class="fa-solid fa-arrow-up-from-bracket text-base"></i>
+                    <span class="text-[9px] font-bold">ZIPLA (1/6g)</span>
+                </button>
+                <button onclick="triggerNearbyInteraction()" class="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 active:scale-95 text-slate-950 font-black text-xs flex flex-col items-center justify-center shadow-lg border border-yellow-200">
+                    <i class="fa-solid fa-hand-pointer text-base"></i>
+                    <span class="text-[9px] font-bold">İNCELE</span>
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 3. BOTTOM TIMELINE & ASTRONOMY CONTROLS BAR -->
+    <footer class="relative z-20 px-3 py-2 sm:px-5 sm:py-2.5 hud-glass border-t border-sky-500/20 flex flex-wrap items-center justify-between gap-2">
+        <!-- Play / Pause & Time Multiplier -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <button id="btn-play-pause" onclick="toggleSimPlay()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-sky-600 hover:bg-sky-500 text-slate-950 font-black text-xs flex items-center justify-center transition-all shadow-md active:scale-95 cursor-pointer">
+                <i id="play-pause-icon" class="fa-solid fa-pause"></i>
+            </button>
+            <button onclick="resetSimulationTime()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs flex items-center justify-center transition-all active:scale-95 cursor-pointer" title="Zamanı Sıfırla (20 Temmuz 1969)">
+                <i class="fa-solid fa-rotate-left"></i>
+            </button>
+
+            <!-- Speed Pills -->
+            <div class="flex items-center bg-slate-900/90 rounded-xl p-0.5 border border-slate-700/60 text-[10px] font-orbitron font-bold">
+                <button onclick="setSimSpeed(1)" id="spd-btn-1" class="px-2 py-1 rounded-lg bg-sky-600 text-white">1x</button>
+                <button onclick="setSimSpeed(5)" id="spd-btn-5" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white">5x</button>
+                <button onclick="setSimSpeed(24)" id="spd-btn-24" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hidden sm:inline">1G/sn</button>
+                <button onclick="setSimSpeed(168)" id="spd-btn-168" class="px-2 py-1 rounded-lg text-slate-400 hover:text-white hidden md:inline">7G/sn</button>
+            </div>
+        </div>
+
+        <!-- Center: Astronomical Clock & Sun-Earth Vector Telemetry -->
+        <div class="flex items-center gap-2 sm:gap-4 font-mono text-[11px] text-slate-300">
+            <div class="flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-amber-400"></i>
+                <span class="text-slate-400 hidden sm:inline">SİMÜLASYON:</span>
+                <strong id="sim-date-display" class="text-white font-orbitron">20 Tem 1969, 20:17 UTC</strong>
+            </div>
+            <div class="hidden lg:flex items-center gap-1.5 text-sky-300">
+                <i class="fa-solid fa-earth-americas text-blue-400"></i>
+                <span>DÜNYA EVRESİ: <strong id="earth-phase-label" class="text-white">Küçülen Şişkin Dünya</strong></span>
+            </div>
+        </div>
+
+        <!-- Right: Camera Modes Shortcut Selector -->
+        <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 hidden sm:inline">KAMERA:</span>
+            <select id="camera-select" onchange="changeCameraAngle(this.value)" class="bg-slate-900/90 border border-slate-700 text-sky-300 text-xs font-semibold rounded-xl px-2.5 py-1.5 cursor-pointer outline-none hover:border-sky-500 transition-all">
+                <option value="orbit">Serbest Kamera (360° Yörünge)</option>
+                <option value="fps">Astronot Gözü (FPS Yürüyüş)</option>
+                <option value="earth_zoom">Dünya'ya Yakın Plan (Teleskop)</option>
+                <option value="eagle_close">Eagle İniş Modülü (Detay)</option>
+                <option value="panoramic">Geniş Ay Ufku Panoraması</option>
+                <option value="sun_focus">Güneş ve Gökyüzü</option>
+                <option value="outer_space">Uzaydan Sistem (Güneş-Dünya-Ay)</option>
+            </select>
+        </div>
+    </footer>
+
+    <!-- TEACHER SMARTBOARD TOOLBAR MODAL -->
+    <div id="modal-teacher" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="hud-glass p-5 rounded-3xl max-w-xl w-full border-2 border-amber-400/50 space-y-4">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base text-white">ÖĞRETMEN MODU (Akıllı Tahta Paneli)</h2>
+                        <p class="text-[10px] text-slate-400">Sınıf içi interaktif fen soruları ve kontrol araçları</p>
+                    </div>
+                </div>
+                <button onclick="toggleTeacherMode()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- "Önce Tahmin Et – Sonra Göster" Soru Kartı -->
+            <div class="bg-slate-900/90 p-4 rounded-2xl border border-amber-500/30 space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold text-[10px]">
+                        🧠 ÖNCE TAHMİN ET – SONRA GÖSTER
+                    </span>
+                    <button onclick="nextTeacherQuestion()" class="text-sky-400 hover:underline font-bold text-[11px]">
+                        Yeni Soru Getir <i class="fa-solid fa-forward ml-1"></i>
+                    </button>
+                </div>
+                <h3 id="teacher-q-title" class="text-sm font-bold text-white leading-relaxed">
+                    "Dünya'dan baktığımızda Dolunay evresi görülürken, Ay'dan bakan bir astronot Dünya'yı hangi evrede görür?"
+                </h3>
+                <div id="teacher-q-answer" class="hidden p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs leading-relaxed animate-fadeIn">
+                    <strong>Bilimsel Cevap:</strong> <em>Yeni Dünya</em> (Tamamen karanlık veya ince mavi halkalı). Çünkü Dünya'nın evreleri Ay'ın evreleriyle zıt/ters ilişkilidir!
+                </div>
+                <div class="flex gap-2">
+                    <button id="btn-reveal-teacher-ans" onclick="revealTeacherAnswer()" class="flex-1 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-md cursor-pointer">
+                        Cevabı ve Gerçek Evreyi Göster
+                    </button>
+                    <button onclick="closeTeacherModalAndSimulate()" class="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold text-xs transition-all">
+                        3D Sahneye Uygula
+                    </button>
+                </div>
+            </div>
+
+            <!-- Classroom Controls -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
+                <button onclick="teacherFocusMode('earth_phase')" class="p-2.5 rounded-xl bg-slate-800 hover:bg-sky-600 font-bold text-white text-center transition-all">
+                    🌍 Dünya Evresi
+                </button>
+                <button onclick="teacherFocusMode('shadow_test')" class="p-2.5 rounded-xl bg-slate-800 hover:bg-amber-600 font-bold text-white text-center transition-all">
+                    ☀️ Gölge Hareketi
+                </button>
+                <button onclick="teacherFocusMode('orbit_motion')" class="p-2.5 rounded-xl bg-slate-800 hover:bg-purple-600 font-bold text-white text-center transition-all">
+                    🛰️ Dönme vs Dolanma
+                </button>
+                <button onclick="teacherFocusMode('eagle_inspect')" class="p-2.5 rounded-xl bg-slate-800 hover:bg-emerald-600 font-bold text-white text-center transition-all">
+                    🚀 Eagle Modülü
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MISSIONS & QUIZ MODAL (Uzay Görevleri ve Bilgi Yarışması) -->
+    <div id="modal-missions" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md hidden items-center justify-center p-3 sm:p-5">
+        <div class="hud-glass p-5 rounded-3xl max-w-2xl w-full border border-sky-400/40 space-y-4 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-700">
+                <div class="flex items-center gap-2">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-trophy"></i>
+                    </div>
+                    <div>
+                        <h2 class="font-bold text-base text-white">APOLLO 11 UZAY GÖREVLERİ &amp; TESTİ</h2>
+                        <p class="text-[10px] text-slate-400">Her açılışta rastgele karışan bilimsel sorular</p>
+                    </div>
+                </div>
+                <button onclick="closeMissionsModal()" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <!-- Content Area: Mission Quiz Container -->
+            <div id="missions-dynamic-content" class="space-y-4">
+                <!-- Dynamically populated by setupQuizMission() -->
+            </div>
+        </div>
+    </div>
+
+    <!-- HISTORICAL TIMELINE PROGRESS BAR (For Guided Historical Mode) -->
+    <div id="historical-guide-card" class="fixed top-16 left-1/2 -translate-x-1/2 z-30 hud-glass-gold p-3 rounded-2xl max-w-lg w-[92vw] border border-amber-400/50 space-y-2 hidden animate-fadeIn">
+        <div class="flex items-center justify-between">
+            <span class="font-orbitron font-bold text-[10px] text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-solid fa-clock-rotate-left"></i> AŞAMA <span id="hist-step-num">1</span> / 7
+            </span>
+            <button onclick="exitHistoricalMode()" class="text-slate-400 hover:text-white text-xs">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <h4 id="hist-step-title" class="font-bold text-xs sm:text-sm text-white">Aşama 1: Ay Yörüngesinde Alçalma</h4>
+        <p id="hist-step-desc" class="text-[11px] text-slate-300 leading-relaxed">
+            Eagle iniş modülü komuta modülü Columbia'dan ayrıldı ve Sessizlik Denizi'ne doğru iniş motorunu ateşledi.
+        </p>
+        <div class="flex justify-between items-center pt-1">
+            <button onclick="prevHistoricalStep()" class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 hover:text-white text-xs font-bold">
+                <i class="fa-solid fa-chevron-left mr-1"></i> Önceki
+            </button>
+            <button onclick="playHistoricalAudio()" class="px-3 py-1 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1">
+                <i class="fa-solid fa-radio"></i> Telsiz Kaydı
+            </button>
+            <button onclick="nextHistoricalStep()" class="px-3 py-1 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black uppercase">
+                Sonraki <i class="fa-solid fa-chevron-right ml-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- AUDIO ELEMENT & WEB AUDIO ENGINE SCRIPT -->
+    <script>
+        /* -------------------------------------------------------------
+           0. PROCEDURAL WEB AUDIO SYNTHESIZER (QUINDAR BEEPS, BREATH, ENGINE)
+        ------------------------------------------------------------- */
+        let audioCtx = null;
+        let isAudioMuted = true;
+        let breathOsc = null;
+        let breathGain = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        function playSciFiBeep(type = 'beep') {
+            if (isAudioMuted) return;
+            initAudio();
+            const now = audioCtx.currentTime;
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            if (type === 'quindar_intro') {
+                // Apollo Quindar Tone 2525 Hz
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2525, now);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'quindar_outro') {
+                // Apollo Quindar Tone 2475 Hz
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(2475, now);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                osc.start(now);
+                osc.stop(now + 0.45);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.setValueAtTime(140, now + 0.15);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            }
+        }
+
+        function toggleAudio() {
+            isAudioMuted = !isAudioMuted;
+            const icon = document.getElementById('audio-icon');
+            if (isAudioMuted) {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-400';
+            } else {
+                initAudio();
+                icon.className = 'fa-solid fa-volume-high text-cyan-400 animate-pulse';
+                playSciFiBeep('quindar_intro');
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            }
+        }
+    </script>
+
+    <!-- MAIN THREE.JS SIMULATION LOGIC SCRIPT -->
+    <script>
+        /* -------------------------------------------------------------
+           1. CORE THREE.JS GLOBALS & ASTRONOMICAL PARAMETERS
+        ------------------------------------------------------------- */
+        let scene, camera, renderer, controls;
+        let moonSurfaceMesh, earthMesh, earthCloudsMesh, earthAtmosphereMesh, sunLight, ambientLight, earthLight;
+        let starsFieldMesh;
+        let showDayStars = false;
+
+        // Apollo 11 Models & Interactive Elements
+        let eagleModuleGroup, flagGroup, lrrrGroup, psepGroup, swcGroup, cameraTripodGroup;
+        let astronautArmstrongGroup, astronautAldrinGroup;
+        let interactiveObjects = [];
+
+        // Modes: 'fps_walk' | 'earth_observe' | 'earth_phases' | 'lunar_day' | 'orbit_macro' | 'historical_mission' | 'quiz_missions'
+        let currentMode = 'earth_observe';
+
+        // Simulation Clock & Rates
+        // Epoch: 20 July 1969 20:17:40 UTC
+        let simEpoch = new Date('1969-07-20T20:17:40Z').getTime();
+        let simCurrentTime = simEpoch;
+        let isSimPlaying = true;
+        let simSpeedMultiplier = 1; // 1x, 5x, 24x (1day/s), 168x (7days/s)
+
+        // Moon & Earth Constants
+        // Mare Tranquillitatis: 0.67416° N, 23.47314° E
+        // Earth sits ~48° above WSW horizon
+        const EARTH_AZIMUTH = 250 * (Math.PI / 180);
+        const EARTH_ELEVATION = 48 * (Math.PI / 180);
+        const EARTH_DISTANCE = 320; // Visual perspective distance
+
+        // Sun orbit in Lunar Sky: 29.53 Earth-days per lunar solar day
+        const SYNODIC_MONTH_SEC = 29.530588 * 24 * 3600;
+
+        // FPS Astronaut Walking Variables
+        let fpsControlsActive = false;
+        let astronautPos = new THREE.Vector3(0, 1.8, 12);
+        let astronautVelocity = new THREE.Vector3();
+        let isGrounded = true;
+        const LUNAR_GRAVITY = 1.62; // m/s²
+        let moveState = { forward: false, backward: false, left: false, right: false };
+        let fpsYaw = 0, fpsPitch = 0;
+        let isPointerLocked = false;
+
+        // Raycasting for object selection
+        let raycaster = new THREE.Raycaster();
+        let mouseVec = new THREE.Vector2();
+
+        /* -------------------------------------------------------------
+           2. PROCEDURAL TEXTURE GENERATORS (NASA QUALITY PBR CANVASES)
+        ------------------------------------------------------------- */
+        function generateMoonRegolithTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Base Gray Tone
+            ctx.fillStyle = '#42454b';
+            ctx.fillRect(0, 0, 1024, 1024);
+
+            // Perlin/Noise speckles for powdery regolith
+            for (let i = 0; i < 90000; i++) {
+                const x = Math.random() * 1024;
+                const y = Math.random() * 1024;
+                const brightness = Math.floor(45 + Math.random() * 45);
+                ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
+                ctx.fillRect(x, y, 1.5, 1.5);
+            }
+
+            // Small craterlets
+            for (let c = 0; c < 120; c++) {
+                const cx = Math.random() * 1024;
+                const cy = Math.random() * 1024;
+                const cr = 2 + Math.random() * 18;
+                const grad = ctx.createRadialGradient(cx, cy, cr * 0.1, cx, cy, cr);
+                grad.addColorStop(0, '#1c1e22');
+                grad.addColorStop(0.7, '#2a2d33');
+                grad.addColorStop(0.9, '#5e636e');
+                grad.addColorStop(1, '#42454b');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, cr, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function generateEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 2048;
+            canvas.height = 1024;
+            const ctx = canvas.getContext('2d');
+
+            // Deep Blue Oceans
+            const oceanGrad = ctx.createLinearGradient(0, 0, 0, 1024);
+            oceanGrad.addColorStop(0, '#0f3166');
+            oceanGrad.addColorStop(0.5, '#0a2347');
+            oceanGrad.addColorStop(1, '#081c38');
+            ctx.fillStyle = oceanGrad;
+            ctx.fillRect(0, 0, 2048, 1024);
+
+            // Polar Ice Caps
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, 2048, 65);
+            ctx.fillRect(0, 960, 2048, 64);
+
+            // Continents (Africa, Europe, Asia, Americas, Australia)
+            ctx.fillStyle = '#2d6a4f';
+            // Africa & Europe
+            ctx.beginPath();
+            ctx.ellipse(1080, 520, 180, 260, 0.2, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = '#d4a373'; // Sahara & Deserts
+            ctx.beginPath();
+            ctx.ellipse(1080, 420, 140, 80, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Eurasia
+            ctx.fillStyle = '#2d6a4f';
+            ctx.beginPath();
+            ctx.ellipse(1350, 320, 350, 160, -0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Americas
+            ctx.beginPath();
+            ctx.ellipse(450, 340, 160, 140, -0.4, 0, Math.PI * 2); // N America
+            ctx.ellipse(560, 640, 110, 180, 0.3, 0, Math.PI * 2); // S America
+            ctx.fill();
+
+            // Australia
+            ctx.fillStyle = '#c87d55';
+            ctx.beginPath();
+            ctx.ellipse(1680, 720, 90, 60, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function generateCloudTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 1024, 512);
+
+            ctx.fillStyle = '#ffffff';
+            for (let i = 0; i < 400; i++) {
+                const x = Math.random() * 1024;
+                const y = 80 + Math.random() * 350;
+                const r = 10 + Math.random() * 45;
+                ctx.globalAlpha = 0.15 + Math.random() * 0.45;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function generateGoldMylarTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#d97706';
+            ctx.fillRect(0, 0, 256, 256);
+
+            // Foil crinkles
+            ctx.strokeStyle = '#fef08a';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < 140; i++) {
+                ctx.beginPath();
+                ctx.moveTo(Math.random() * 256, Math.random() * 256);
+                ctx.lineTo(Math.random() * 256, Math.random() * 256);
+                ctx.stroke();
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        /* -------------------------------------------------------------
+           3. THREE.JS SCENE INITIALIZATION & LIGHTING
+        ------------------------------------------------------------- */
+        function initThreeScene() {
+            const container = document.getElementById('canvas-container');
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000003); // Deep space black
+
+            camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 4000);
+            camera.position.set(0, 4, 18);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(width, height);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.05;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.xr.enabled = true;
+            container.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.02; // Keep camera above surface
+            controls.minDistance = 1.5;
+            controls.maxDistance = 1500;
+            controls.target.set(0, 2, 0);
+
+            // Build Environment & Objects
+            setupLighting();
+            createStarfield();
+            createMoonSurface();
+            createEarthAndSun();
+            buildEagleLunarModule();
+            createAstronauts();
+            createSurfaceExperiments();
+
+            // Events
+            window.addEventListener('resize', onWindowResize);
+            setupInputListeners();
+
+            animate();
+        }
+
+        function setupLighting() {
+            // Sunlight (Directional Light with sharp shadows)
+            sunLight = new THREE.DirectionalLight(0xfffaed, 2.8);
+            sunLight.position.set(160, 110, -90);
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.camera.near = 10;
+            sunLight.shadow.camera.far = 400;
+            sunLight.shadow.camera.left = -60;
+            sunLight.shadow.camera.right = 60;
+            sunLight.shadow.camera.top = 60;
+            sunLight.shadow.camera.bottom = -60;
+            sunLight.shadow.bias = -0.0003;
+            scene.add(sunLight);
+
+            // Ambient Light (Very low in vacuum, filled by earthshine)
+            ambientLight = new THREE.AmbientLight(0x1e2433, 0.28);
+            scene.add(ambientLight);
+
+            // Earthlight (Subtle soft bluish fill from the direction of Earth)
+            earthLight = new THREE.DirectionalLight(0x60a5fa, 0.45);
+            updateEarthLightPosition();
+            scene.add(earthLight);
+        }
+
+        function updateEarthLightPosition() {
+            const ex = Math.sin(EARTH_AZIMUTH) * Math.cos(EARTH_ELEVATION) * 100;
+            const ey = Math.sin(EARTH_ELEVATION) * 100;
+            const ez = Math.cos(EARTH_AZIMUTH) * Math.cos(EARTH_ELEVATION) * 100;
+            earthLight.position.set(ex, ey, ez);
+        }
+
+        function createStarfield() {
+            const starsGeo = new THREE.BufferGeometry();
+            const count = 3000;
+            const positions = new Float32Array(count * 3);
+
+            for (let i = 0; i < count * 3; i += 3) {
+                const u = Math.random();
+                const v = Math.random();
+                const theta = u * 2.0 * Math.PI;
+                const phi = Math.acos(2.0 * v - 1.0);
+                const r = 1800;
+                positions[i] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i + 1] = Math.abs(r * Math.cos(phi)) + 20; // Above horizon
+                positions[i + 2] = r * Math.sin(phi) * Math.sin(theta);
+            }
+
+            starsGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            const starsMat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 2.2,
+                transparent: true,
+                opacity: 0.0, // Default 0 for daytime Apollo exposure! Toggled by user
+                sizeAttenuation: false
+            });
+
+            starsFieldMesh = new THREE.Points(starsGeo, starsMat);
+            scene.add(starsFieldMesh);
+        }
+
+        function toggleDayStars() {
+            showDayStars = !showDayStars;
+            if (starsFieldMesh) {
+                starsFieldMesh.material.opacity = showDayStars ? 0.75 : 0.0;
+            }
+            playSciFiBeep('beep');
+        }
+
+        /* -------------------------------------------------------------
+           4. REALISTIC MOON SURFACE WITH CRATERS & REGOLITH
+        ------------------------------------------------------------- */
+        function createMoonSurface() {
+            const regolithTex = generateMoonRegolithTexture();
+            regolithTex.wrapS = THREE.RepeatWrapping;
+            regolithTex.wrapT = THREE.RepeatWrapping;
+            regolithTex.repeat.set(16, 16);
+
+            // Plane Geometry with crater heightfield displacement
+            const size = 360;
+            const segments = 160;
+            const geo = new THREE.PlaneGeometry(size, size, segments, segments);
+            geo.rotateX(-Math.PI / 2);
+
+            const pos = geo.attributes.position;
+            // Define Mare Tranquillitatis topographical features
+            const craters = [
+                { x: 35, z: -40, r: 24, depth: 3.5 }, // West Craterlet
+                { x: -55, z: 25, r: 35, depth: 4.8 }, // Little West Crater
+                { x: -20, z: -60, r: 18, depth: 2.6 },
+                { x: 60, z: 70, r: 42, depth: 5.5 },
+                { x: 12, z: 18, r: 6, depth: 1.1 }   // Small landing crater
+            ];
+
+            for (let i = 0; i < pos.count; i++) {
+                const vx = pos.getX(i);
+                const vz = pos.getZ(i);
+
+                // Undulating rolling terrain
+                let vy = Math.sin(vx * 0.02) * Math.cos(vz * 0.02) * 1.8 +
+                         Math.sin(vx * 0.06 + vz * 0.04) * 0.6;
+
+                // Carve craters
+                craters.forEach(c => {
+                    const dist = Math.hypot(vx - c.x, vz - c.z);
+                    if (dist < c.r) {
+                        const factor = 1 - (dist / c.r);
+                        // Crater bowl with raised rim
+                        const bowl = -Math.cos(factor * Math.PI * 0.5) * c.depth;
+                        const rim = Math.sin(factor * Math.PI) * (c.depth * 0.28);
+                        vy += (bowl + rim);
+                    }
+                });
+
+                // Keep landing site center flat for the Eagle
+                const centerDist = Math.hypot(vx, vz);
+                if (centerDist < 16) {
+                    vy *= (centerDist / 16);
+                }
+
+                pos.setY(i, vy);
+            }
+            geo.computeVertexNormals();
+
+            const mat = new THREE.MeshStandardMaterial({
+                map: regolithTex,
+                roughness: 0.94,
+                metalness: 0.04,
+                color: 0x8c8f96
+            });
+
+            moonSurfaceMesh = new THREE.Mesh(geo, mat);
+            moonSurfaceMesh.receiveShadow = true;
+            scene.add(moonSurfaceMesh);
+
+            // Add scattered surface rocks & boulders
+            createBoulders();
+            createFootprintTrail();
+        }
+
+        function createBoulders() {
+            const rockGeo = new THREE.DodecahedronGeometry(1, 1);
+            const rockMat = new THREE.MeshStandardMaterial({
+                color: 0x61656e,
+                roughness: 0.95
+            });
+
+            const boulderPositions = [
+                { x: -14, z: -8, s: 0.8 },
+                { x: 12, z: -16, s: 1.2 },
+                { x: 22, z: 14, s: 1.5 },
+                { x: -18, z: 22, s: 0.9 },
+                { x: 8, z: 28, s: 1.1 },
+                { x: -32, z: -14, s: 2.2 }
+            ];
+
+            boulderPositions.forEach(b => {
+                const rock = new THREE.Mesh(rockGeo, rockMat);
+                rock.position.set(b.x, b.s * 0.4, b.z);
+                rock.scale.set(b.s, b.s * 0.65, b.s * 1.1);
+                rock.rotation.set(Math.random(), Math.random(), Math.random());
+                rock.castShadow = true;
+                rock.receiveShadow = true;
+                scene.add(rock);
+            });
+        }
+
+        function createFootprintTrail() {
+            // Texture decals for Apollo astronaut bootprints
+            const printGeo = new THREE.PlaneGeometry(0.35, 0.7);
+            printGeo.rotateX(-Math.PI / 2);
+            const printMat = new THREE.MeshBasicMaterial({
+                color: 0x2b2e34,
+                transparent: true,
+                opacity: 0.75,
+                depthWrite: false
+            });
+
+            // Path from Eagle ladder (0, 0, 5) towards Flag (-6, 0, 8) and LRRR (14, 0, 10)
+            const waypoints = [
+                { x: 0, z: 5.5 }, { x: -1.2, z: 6.2 }, { x: -2.5, z: 7 }, { x: -4, z: 7.6 }, { x: -5.5, z: 8.2 },
+                { x: 1.5, z: 6.5 }, { x: 3.5, z: 7.2 }, { x: 6.5, z: 8 }, { x: 9.5, z: 9 }, { x: 13, z: 10 }
+            ];
+
+            waypoints.forEach((p, idx) => {
+                const print = new THREE.Mesh(printGeo, printMat);
+                print.position.set(p.x, 0.02, p.z);
+                print.rotation.y = idx % 2 === 0 ? 0.2 : -0.2;
+                scene.add(print);
+            });
+        }
+
+        /* -------------------------------------------------------------
+           5. APOLLO 11 LUNAR MODULE "EAGLE" (LM-5) 3D BUILDER
+        ------------------------------------------------------------- */
+        function buildEagleLunarModule() {
+            eagleModuleGroup = new THREE.Group();
+            eagleModuleGroup.position.set(0, 0, 0);
+
+            const goldTex = generateGoldMylarTexture();
+            const goldMat = new THREE.MeshStandardMaterial({
+                map: goldTex,
+                color: 0xf59e0b,
+                metalness: 0.85,
+                roughness: 0.25
+            });
+
+            const alloyMat = new THREE.MeshStandardMaterial({
+                color: 0x94a3b8,
+                metalness: 0.7,
+                roughness: 0.35
+            });
+
+            const darkHeatShieldMat = new THREE.MeshStandardMaterial({
+                color: 0x1e293b,
+                roughness: 0.8,
+                metalness: 0.2
+            });
+
+            // --- A. DESCENT STAGE (Octagonal Prism Body) ---
+            const descentGeo = new THREE.CylinderGeometry(3.6, 4.0, 2.2, 8);
+            const descentMesh = new THREE.Mesh(descentGeo, goldMat);
+            descentMesh.position.y = 2.1;
+            descentMesh.castShadow = true;
+            descentMesh.receiveShadow = true;
+            eagleModuleGroup.add(descentMesh);
+
+            // Descent Engine Nozzle
+            const nozzleGeo = new THREE.ConeGeometry(0.9, 1.4, 16, 1, true);
+            nozzleGeo.rotateX(Math.PI);
+            const nozzleMat = new THREE.MeshStandardMaterial({ color: 0x18181b, roughness: 0.7 });
+            const nozzle = new THREE.Mesh(nozzleGeo, nozzleMat);
+            nozzle.position.y = 1.0;
+            eagleModuleGroup.add(nozzle);
+
+            // 4 Landing Gear Legs & Footpads
+            const legAngles = [Math.PI * 0.25, Math.PI * 0.75, Math.PI * 1.25, Math.PI * 1.75];
+            legAngles.forEach((ang, idx) => {
+                const legGroup = new THREE.Group();
+                legGroup.rotation.y = ang;
+
+                // Main strut
+                const strut = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 5.2, 8), alloyMat);
+                strut.position.set(0, 1.5, 3.6);
+                strut.rotation.x = -Math.PI * 0.22;
+                strut.castShadow = true;
+                legGroup.add(strut);
+
+                // Circular Dish Footpad
+                const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.12, 16), alloyMat);
+                pad.position.set(0, 0.08, 5.4);
+                pad.castShadow = true;
+                pad.receiveShadow = true;
+                legGroup.add(pad);
+
+                // Front Leg Ladder (Idx 0: Front facing towards +Z)
+                if (idx === 0) {
+                    const ladderGroup = new THREE.Group();
+                    ladderGroup.position.set(0, 1.6, 3.6);
+                    ladderGroup.rotation.x = -Math.PI * 0.22;
+
+                    for (let r = -2; r <= 2; r += 0.45) {
+                        const rung = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.04, 0.04), alloyMat);
+                        rung.position.set(0, r, 0.18);
+                        ladderGroup.add(rung);
+                    }
+                    legGroup.add(ladderGroup);
+
+                    // Egress Platform (Porch)
+                    const porch = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.1, 1.0), darkHeatShieldMat);
+                    porch.position.set(0, 3.1, 2.2);
+                    porch.castShadow = true;
+                    eagleModuleGroup.add(porch);
+                }
+
+                eagleModuleGroup.add(legGroup);
+            });
+
+            // --- B. ASCENT STAGE (Crew Cabin & Flight Cockpit) ---
+            const cabinGeo = new THREE.DodecahedronGeometry(2.4, 1);
+            cabinGeo.scale(1.1, 0.9, 1.0);
+            const cabinMat = new THREE.MeshStandardMaterial({
+                color: 0xe2e8f0,
+                metalness: 0.6,
+                roughness: 0.4
+            });
+            const cabin = new THREE.Mesh(cabinGeo, cabinMat);
+            cabin.position.set(0, 4.6, 0);
+            cabin.castShadow = true;
+            cabin.receiveShadow = true;
+            eagleModuleGroup.add(cabin);
+
+            // Triangular Windows (Cyan tint)
+            const winMat = new THREE.MeshBasicMaterial({ color: 0x0284c7 });
+            const leftWin = new THREE.Mesh(new THREE.BufferGeometry(), winMat);
+            const winVertices = new Float32Array([
+                -0.3, 4.8, 2.1,
+                -1.1, 4.8, 1.9,
+                -0.7, 4.2, 2.0
+            ]);
+            leftWin.geometry.setAttribute('position', new THREE.BufferAttribute(winVertices, 3));
+            eagleModuleGroup.add(leftWin);
+
+            const rightWin = new THREE.Mesh(new THREE.BufferGeometry(), winMat);
+            const rWinVertices = new Float32Array([
+                0.3, 4.8, 2.1,
+                1.1, 4.8, 1.9,
+                0.7, 4.2, 2.0
+            ]);
+            rightWin.geometry.setAttribute('position', new THREE.BufferAttribute(rWinVertices, 3));
+            eagleModuleGroup.add(rightWin);
+
+            // Steerable S-band High Gain Antenna Dish
+            const dishGroup = new THREE.Group();
+            dishGroup.position.set(1.5, 6.2, -1.2);
+            const dish = new THREE.Mesh(new THREE.SphereGeometry(0.7, 16, 8, 0, Math.PI * 2, 0, Math.PI * 0.4), alloyMat);
+            dish.rotation.x = Math.PI * 0.8;
+            dishGroup.add(dish);
+            const dishMast = new THREE.Mesh(new THREE.CylinderGeometry(0.05, 0.05, 1.2, 8), alloyMat);
+            dishMast.position.y = -0.6;
+            dishGroup.add(dishMast);
+            eagleModuleGroup.add(dishGroup);
+
+            // 4 RCS Thruster Quads
+            [[-2.4, 4.6, 0], [2.4, 4.6, 0], [0, 4.6, -2.4], [0, 4.6, 2.4]].forEach(p => {
+                const rcs = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.35, 0.35), darkHeatShieldMat);
+                rcs.position.set(p[0], p[1], p[2]);
+                eagleModuleGroup.add(rcs);
+            });
+
+            // Register clickable
+            eagleModuleGroup.userData = {
+                type: 'eagle',
+                title: "Eagle Ay Modülü (LM-5)",
+                category: "UZAY ARACI",
+                desc: "Apollo 11 iniş aracı 'Kartal'. 20 Temmuz 1969'da Neil Armstrong ve Buzz Aldrin ile Sessizlik Denizi'ne indi. İniş aşaması sonsuza dek Ay'da kalacaktır.",
+                facts: [
+                    "Altın folyo, Güneş radyasyonunu yansıtan 25 katmanlı kaplamadır.",
+                    "İnişte 25 saniyelik yakıt kalmışken Armstrong manuel kontrolle güvenle indirmiştir.",
+                    "Ayağındaki plakada: 'Dünya gezegeninden insanlar ilk kez burada Ay'a ayak bastı' yazar."
+                ]
+            };
+            interactiveObjects.push(eagleModuleGroup);
+
+            scene.add(eagleModuleGroup);
+        }
+
+        /* -------------------------------------------------------------
+           6. ASTRONAUTS (NEIL ARMSTRONG & BUZZ ALDRIN)
+        ------------------------------------------------------------- */
+        function createAstronauts() {
+            // Neil Armstrong (Near the flag, taking photo)
+            astronautArmstrongGroup = buildAstronautFigure("Neil Armstrong", "APOLLO 11 KOMUTANI", [
+                "20 Temmuz 1969'da Ay'a ilk ayak basan insandır.",
+                "'İnsan için küçük, insanlık için dev bir adım' sözünü söylemiştir.",
+                "Ay yüzeyinde 2 saat 31 dakika kalarak örnekler toplamıştır."
+            ]);
+            astronautArmstrongGroup.position.set(-5, 0, 8);
+            astronautArmstrongGroup.rotation.y = Math.PI * 0.6;
+            scene.add(astronautArmstrongGroup);
+
+            // Buzz Aldrin (Inspecting scientific equipment)
+            astronautAldrinGroup = buildAstronautFigure("Buzz Aldrin", "AY MODÜLÜ PİLOTU", [
+                "Ay'a ayak basan ikinci astronottur.",
+                "Ay yüzeyini 'Muazzam bir ıssızlık' (Magnificent Desolation) olarak tarif etmiştir.",
+                "Sismik deney ve güneş rüzgârı folyosunu kurmuştur."
+            ]);
+            astronautAldrinGroup.position.set(8, 0, 9);
+            astronautAldrinGroup.rotation.y = -Math.PI * 0.3;
+            scene.add(astronautAldrinGroup);
+        }
+
+        function buildAstronautFigure(name, subtitle, facts) {
+            const group = new THREE.Group();
+
+            const suitMat = new THREE.MeshStandardMaterial({
+                color: 0xf1f5f9,
+                roughness: 0.7,
+                metalness: 0.1
+            });
+            const visorMat = new THREE.MeshStandardMaterial({
+                color: 0xf59e0b,
+                metalness: 0.95,
+                roughness: 0.05
+            });
+            const packMat = new THREE.MeshStandardMaterial({
+                color: 0xe2e8f0,
+                roughness: 0.6
+            });
+
+            // Torso
+            const torso = new THREE.Mesh(new THREE.BoxGeometry(0.8, 1.0, 0.5), suitMat);
+            torso.position.y = 1.35;
+            torso.castShadow = true;
+            group.add(torso);
+
+            // Life Support Backpack (PLSS)
+            const plss = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.9, 0.38), packMat);
+            plss.position.set(0, 1.4, -0.42);
+            plss.castShadow = true;
+            group.add(plss);
+
+            // Helmet & Golden Sun Visor
+            const helmet = new THREE.Mesh(new THREE.SphereGeometry(0.38, 16, 16), suitMat);
+            helmet.position.set(0, 2.05, 0);
+            helmet.castShadow = true;
+            group.add(helmet);
+
+            const visor = new THREE.Mesh(new THREE.SphereGeometry(0.32, 16, 16, 0, Math.PI * 2, 0, Math.PI * 0.5), visorMat);
+            visor.position.set(0, 2.05, 0.1);
+            visor.rotation.x = Math.PI * 0.5;
+            group.add(visor);
+
+            // Legs & Lunar Overshoes
+            const lLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.9, 8), suitMat);
+            lLeg.position.set(-0.25, 0.55, 0);
+            lLeg.castShadow = true;
+            group.add(lLeg);
+
+            const rLeg = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.18, 0.9, 8), suitMat);
+            rLeg.position.set(0.25, 0.55, 0);
+            rLeg.castShadow = true;
+            group.add(rLeg);
+
+            // Overshoes
+            const lShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.18, 0.45), suitMat);
+            lShoe.position.set(-0.25, 0.09, 0.08);
+            group.add(lShoe);
+            const rShoe = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.18, 0.45), suitMat);
+            rShoe.position.set(0.25, 0.09, 0.08);
+            group.add(rShoe);
+
+            group.userData = {
+                type: 'astronaut',
+                title: name,
+                category: subtitle,
+                desc: `Apollo 11 astronotu. 1969 Apollo A7L basınçlı uzay kıyafeti ve sırt yaşam ünitesi (PLSS) ile Ay'ın vakum ve -170°C/+120°C ortamında güvenle çalışmıştır.`,
+                facts: facts
+            };
+            interactiveObjects.push(group);
+
+            return group;
+        }
+
+        /* -------------------------------------------------------------
+           7. SURFACE SCIENTIFIC EXPERIMENTS (LRRR, PSEP, FLAG, SWC)
+        ------------------------------------------------------------- */
+        function createSurfaceExperiments() {
+            // --- A. AMERICAN FLAG (With Wire Rod, Non-Fluttering) ---
+            flagGroup = new THREE.Group();
+            flagGroup.position.set(-6, 0, 8);
+
+            // Flagpole
+            const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.6, 8), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+            pole.position.y = 1.3;
+            pole.castShadow = true;
+            flagGroup.add(pole);
+
+            // Horizontal Top Crossbar
+            const topBar = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 1.5, 8), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+            topBar.position.set(0.75, 2.55, 0);
+            topBar.rotation.z = Math.PI * 0.5;
+            flagGroup.add(topBar);
+
+            // Canvas Fabric Texture for Flag
+            const flagCanvas = document.createElement('canvas');
+            flagCanvas.width = 300; flagCanvas.height = 180;
+            const fctx = flagCanvas.getContext('2d');
+            fctx.fillStyle = '#ef4444'; fctx.fillRect(0, 0, 300, 180);
+            fctx.fillStyle = '#ffffff';
+            for (let i = 1; i < 13; i += 2) fctx.fillRect(0, i * 13.8, 300, 13.8);
+            fctx.fillStyle = '#1e3a8a'; fctx.fillRect(0, 0, 120, 96);
+            fctx.fillStyle = '#ffffff';
+            for (let s = 0; s < 30; s++) {
+                fctx.fillRect(10 + (s % 6) * 18, 10 + Math.floor(s / 6) * 16, 4, 4);
+            }
+
+            const flagTex = new THREE.CanvasTexture(flagCanvas);
+            const flagGeo = new THREE.PlaneGeometry(1.5, 0.9, 10, 6);
+            // Add natural wrinkles to fabric since horizontal rod didn't deploy completely
+            const fPos = flagGeo.attributes.position;
+            for (let i = 0; i < fPos.count; i++) {
+                const fx = fPos.getX(i);
+                fPos.setZ(i, Math.sin(fx * 4.5) * 0.06);
+            }
+            flagGeo.computeVertexNormals();
+
+            const flagMesh = new THREE.Mesh(flagGeo, new THREE.MeshStandardMaterial({ map: flagTex, side: THREE.DoubleSide, roughness: 0.7 }));
+            flagMesh.position.set(0.75, 2.1, 0);
+            flagMesh.castShadow = true;
+            flagGroup.add(flagMesh);
+
+            flagGroup.userData = {
+                type: 'flag',
+                title: "Amerikan Bayrağı",
+                category: "TARİHSEL NESNE",
+                desc: "Ay'da rüzgâr ve atmosfer bulunmadığı için bayrağın açık durması amacıyla üst kısmına yatay bir tel çubuk yerleştirilmiştir.",
+                facts: [
+                    "Kumaştaki kıvrımlar rüzgârdan değil, astronotların çubuğu tam açamamasından kalmıştır.",
+                    "Ay'da hava akımı olmadığı için bayrak rüzgârla dalgalanmaz, sabit durur.",
+                    "Güneş'in sert morötesi ışınları nedeniyle kumaşın günümüzde beyazladığı tahmin edilir."
+                ]
+            };
+            interactiveObjects.push(flagGroup);
+            scene.add(flagGroup);
+
+            // --- B. LASER RANGING RETROREFLECTOR (LRRR) ---
+            lrrrGroup = new THREE.Group();
+            lrrrGroup.position.set(14, 0, 11);
+
+            const lrrrBase = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.25, 0.9), new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.5 }));
+            lrrrBase.position.y = 0.3;
+            lrrrGroup.add(lrrrBase);
+
+            // 100 quartz retroreflector prism array
+            const prismMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.9, roughness: 0.1 });
+            const prismGrid = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.05, 0.65), prismMat);
+            prismGrid.position.set(0, 0.45, 0);
+            prismGrid.rotation.x = -Math.PI * 0.15; // Tilted toward Earth!
+            lrrrGroup.add(prismGrid);
+
+            lrrrGroup.userData = {
+                type: 'lrrr',
+                title: "Lazer Retroreflektör (LRRR)",
+                category: "BİLİMSEL CİHAZ",
+                desc: "Dünya'daki gözlemevlerinden fırlatılan lazer ışınlarını doğrudan geri yansıtan 100 adet özel prizmadan oluşur. Bugün hâlâ çalışmaktadır!",
+                facts: [
+                    "Dünya ile Ay arasındaki mesafeyi milimetre hassasiyetiyle ölçer (Ortalama 384.400 km).",
+                    "Ay'ın her yıl Dünya'dan yaklaşık 3.8 cm uzaklaştığını kanıtlamıştır.",
+                    "Hiçbir elektrik enerjisine ihtiyaç duymadan sonsuza kadar çalışır."
+                ]
+            };
+            interactiveObjects.push(lrrrGroup);
+            scene.add(lrrrGroup);
+
+            // --- C. PASSIVE SEISMIC EXPERIMENT PACKAGE (PSEP) ---
+            psepGroup = new THREE.Group();
+            psepGroup.position.set(11, 0, 7);
+
+            const psepBody = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.45, 0.4, 16), new THREE.MeshStandardMaterial({ color: 0xe2e8f0 }));
+            psepBody.position.y = 0.2;
+            psepGroup.add(psepBody);
+
+            // Dual Solar Arrays
+            const solarMat = new THREE.MeshStandardMaterial({ color: 0x1e3a8a, metalness: 0.8, roughness: 0.2 });
+            const leftSolar = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.03, 0.5), solarMat);
+            leftSolar.position.set(-0.7, 0.3, 0);
+            psepGroup.add(leftSolar);
+            const rightSolar = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.03, 0.5), solarMat);
+            rightSolar.position.set(0.7, 0.3, 0);
+            psepGroup.add(rightSolar);
+
+            psepGroup.userData = {
+                type: 'psep',
+                title: "Pasif Sismik Deney Cihazı (PSEP)",
+                category: "BİLİMSEL CİHAZ",
+                desc: "Ay'daki depremleri (ay sarsıntıları) ve gök taşı çarpmalarını algılayan sismometre cihazıdır.",
+                facts: [
+                    "Güneş enerjisi panelleriyle çalışan ilk bağımsız sismik istasyondur.",
+                    "Gök taşı çarpmalarının Ay içindeki titreşim dalgalarını kaydetmiştir.",
+                    "Ay'ın içinin Dünya gibi sıcak katı ve erimiş tabakalardan oluştuğunu kanıtlamıştır."
+                ]
+            };
+            interactiveObjects.push(psepGroup);
+            scene.add(psepGroup);
+        }
+
+        /* -------------------------------------------------------------
+           8. THE EARTH & SUN IN THE LUNAR SKY (CORE SCIENTIFIC FEATURE)
+        ------------------------------------------------------------- */
+        function createEarthAndSun() {
+            // A. EARTH 3D MESH
+            const earthRadius = 14; // Visually sized for realistic angle
+            const earthGeo = new THREE.SphereGeometry(earthRadius, 64, 64);
+            const earthMat = new THREE.MeshStandardMaterial({
+                map: generateEarthTexture(),
+                roughness: 0.65,
+                metalness: 0.1
+            });
+            earthMesh = new THREE.Mesh(earthGeo, earthMat);
+
+            // Cloud Layer on Earth
+            const cloudGeo = new THREE.SphereGeometry(earthRadius * 1.018, 48, 48);
+            const cloudMat = new THREE.MeshStandardMaterial({
+                map: generateCloudTexture(),
+                transparent: true,
+                opacity: 0.55,
+                blending: THREE.AdditiveBlending
+            });
+            earthCloudsMesh = new THREE.Mesh(cloudGeo, cloudMat);
+            earthMesh.add(earthCloudsMesh);
+
+            // Atmospheric Blue Fresnel Halo
+            const atmosGeo = new THREE.SphereGeometry(earthRadius * 1.05, 32, 32);
+            const atmosMat = new THREE.ShaderMaterial({
+                vertexShader: `
+                    varying vec3 vNormal;
+                    void main() {
+                        vNormal = normalize(normalMatrix * normal);
+                        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                    }
+                `,
+                fragmentShader: `
+                    varying vec3 vNormal;
+                    void main() {
+                        float intensity = pow(0.65 - dot(vNormal, vec3(0.0, 0.0, 1.0)), 2.5);
+                        gl_FragColor = vec4(0.25, 0.65, 1.0, 1.0) * intensity * 1.4;
+                    }
+                `,
+                blending: THREE.AdditiveBlending,
+                side: THREE.BackSide,
+                transparent: true
+            });
+            earthAtmosphereMesh = new THREE.Mesh(atmosGeo, atmosMat);
+            earthMesh.add(earthAtmosphereMesh);
+
+            // Place Earth in Mare Tranquillitatis Sky (Azimuth ~250°, Elev ~48°)
+            positionEarthInSky();
+
+            earthMesh.userData = {
+                type: 'earth',
+                title: "Gezegenimiz Dünya",
+                category: "GÖK CİSMİ GÖZLEMİ",
+                desc: "Ay'dan bakıldığında masmavi parlayan 'Mavi Mermer'. Güneş'ten aldığı ışıkla 8 farklı evre gösterir ve 24 saatte kendi ekseninde döner.",
+                facts: [
+                    "Ay'dan bakıldığında Dünya gökyüzünde Dünya'dan görünen Ay'dan 4 kat daha büyük görünür.",
+                    "Ay'ın eşzamanlı dönüşü nedeniyle Dünya gökyüzünde sabit bir noktada asılı durur.",
+                    "Dünya'nın evreleri, Ay'ın Dünya'dan görünen evrelerinin tam tersidir!"
+                ]
+            };
+            interactiveObjects.push(earthMesh);
+            scene.add(earthMesh);
+
+            // B. SUN VISUAL DISK (Blazing White-Yellow Star in Lunar Sky)
+            const sunDisk = new THREE.Mesh(
+                new THREE.SphereGeometry(9, 32, 32),
+                new THREE.MeshBasicMaterial({ color: 0xfffef0 })
+            );
+            sunDisk.position.copy(sunLight.position);
+            sunDisk.userData = {
+                type: 'sun',
+                title: "Güneş (Yıldızımız)",
+                category: "GÖK CİSMİ GÖZLEMİ",
+                desc: "Sistemimizin merkezindeki orta büyüklükte sarı cüce yıldız. Ay yüzeyine güçlü doğrudan ışık verir ve gölgeleri oluşturur.",
+                facts: [
+                    "Ay'da atmosfer olmadığı için Güneş gökyüzündeyken bile etraf kapkaradır.",
+                    "Güneş ışığı 150 milyon kilometreyi aşarak Ay'a 8 dakika 20 saniyede ulaşır.",
+                    "Ay yüzeyinde Güneş'in doğuşundan batışına kadar tam 14 Dünya günü geçer."
+                ]
+            };
+            interactiveObjects.push(sunDisk);
+            scene.add(sunDisk);
+        }
+
+        function positionEarthInSky() {
+            const ex = Math.sin(EARTH_AZIMUTH) * Math.cos(EARTH_ELEVATION) * EARTH_DISTANCE;
+            const ey = Math.sin(EARTH_ELEVATION) * EARTH_DISTANCE;
+            const ez = Math.cos(EARTH_AZIMUTH) * Math.cos(EARTH_ELEVATION) * EARTH_DISTANCE;
+            earthMesh.position.set(ex, ey, ez);
+        }
+
+        /* -------------------------------------------------------------
+           9. EARTH ROTATION & EARTH PHASES PHYSICS ENGINE
+        ------------------------------------------------------------- */
+        function updateEarthAndMoonPhysics(deltaTime) {
+            if (!isSimPlaying) return;
+
+            // Increment simulation clock
+            simCurrentTime += deltaTime * 1000 * simSpeedMultiplier;
+
+            // 1. Earth's Axial Rotation (24h period)
+            const earthDaySeconds = 24 * 3600;
+            const dayProgress = ((simCurrentTime / 1000) % earthDaySeconds) / earthDaySeconds;
+            if (earthMesh) {
+                earthMesh.rotation.y = dayProgress * Math.PI * 2;
+            }
+            if (earthCloudsMesh) {
+                earthCloudsMesh.rotation.y = dayProgress * Math.PI * 2 * 1.15; // Clouds drift faster
+            }
+
+            // 2. Earth Phases & Sun Movement in Lunar Sky (Synodic Month: 29.53 days)
+            const synodicProgress = ((simCurrentTime / 1000) % SYNODIC_MONTH_SEC) / SYNODIC_MONTH_SEC;
+            const sunAngle = synodicProgress * Math.PI * 2;
+
+            // Update Sun light position across lunar horizon
+            const sunRadius = 240;
+            const sx = Math.cos(sunAngle) * sunRadius;
+            const sy = Math.sin(sunAngle) * sunRadius;
+            const sz = -100;
+            sunLight.position.set(sx, Math.max(sy, -80), sz);
+
+            // Update UI Date & Phase Label
+            updateHUDTimeDisplay();
+        }
+
+        function updateHUDTimeDisplay() {
+            const d = new Date(simCurrentTime);
+            const months = ["Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+            const dateStr = `${d.getUTCDate()} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}, ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} UTC`;
+            document.getElementById('sim-date-display').innerText = dateStr;
+
+            // Calculate Earth Phase from Sun and Earth vectors
+            const sunDir = sunLight.position.clone().normalize();
+            const earthDir = earthMesh.position.clone().normalize();
+            const angleBetween = sunDir.angleTo(earthDir); // 0 = Full Earth, PI = New Earth
+            const phaseDeg = (angleBetween * 180) / Math.PI;
+
+            let phaseName = "Dolunay Dünya";
+            if (phaseDeg < 25) phaseName = "Dolunay Dünya (Tam Aydınlık)";
+            else if (phaseDeg < 70) phaseName = "Küçülen Şişkin Dünya";
+            else if (phaseDeg < 110) phaseName = "Son Dördün Dünya (Yarım)";
+            else if (phaseDeg < 155) phaseName = "Küçülen Hilal Dünya";
+            else if (phaseDeg >= 155) phaseName = "Yeni Dünya (Karanlık Disk)";
+
+            const phaseEl = document.getElementById('earth-phase-label');
+            if (phaseEl) phaseEl.innerText = phaseName;
+        }
+
+        /* -------------------------------------------------------------
+           10. CAMERA CONTROLLER & PRESET MODES
+        ------------------------------------------------------------- */
+        function switchAppMode(mode) {
+            currentMode = mode;
+            playSciFiBeep('beep');
+
+            // Reset UI states
+            document.getElementById('helmet-hud-overlay').classList.add('hidden');
+            document.getElementById('fps-touch-controls').classList.add('hidden');
+            document.getElementById('dynamic-overlay-box').classList.add('hidden');
+            document.getElementById('historical-guide-card').classList.add('hidden');
+            controls.enabled = true;
+
+            // Highlight active nav pill
+            const pills = ['fps', 'earth', 'phases', 'sun', 'orbit', 'history', 'quiz'];
+            pills.forEach(p => {
+                const btn = document.getElementById(`nav-btn-${p}`);
+                if (btn) btn.className = "w-full text-left p-2 rounded-xl bg-slate-900/60 hover:bg-slate-800 border border-slate-700/60 text-slate-200 flex items-center gap-2.5 transition-all cursor-pointer";
+            });
+
+            if (mode === 'fps_walk') {
+                document.getElementById('nav-btn-fps').className = "w-full text-left p-2 rounded-xl bg-sky-950/80 border border-sky-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                document.getElementById('helmet-hud-overlay').classList.remove('hidden');
+                document.getElementById('fps-touch-controls').classList.remove('hidden');
+                controls.enabled = false;
+                camera.position.set(astronautPos.x, astronautPos.y, astronautPos.z);
+            } else if (mode === 'earth_observe') {
+                document.getElementById('nav-btn-earth').className = "w-full text-left p-2 rounded-xl bg-blue-950/80 border border-blue-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                focusCameraOn('earth');
+                renderEarthRotationHUD();
+            } else if (mode === 'earth_phases') {
+                document.getElementById('nav-btn-phases').className = "w-full text-left p-2 rounded-xl bg-indigo-950/80 border border-indigo-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                focusCameraOn('earth');
+                renderEarthPhasesSliderHUD();
+            } else if (mode === 'lunar_day') {
+                document.getElementById('nav-btn-sun').className = "w-full text-left p-2 rounded-xl bg-amber-950/80 border border-amber-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                focusCameraOn('sun');
+                renderLunarDayHUD();
+            } else if (mode === 'orbit_macro') {
+                document.getElementById('nav-btn-orbit').className = "w-full text-left p-2 rounded-xl bg-purple-950/80 border border-purple-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                renderMacroOrbitHUD();
+            } else if (mode === 'historical_mission') {
+                document.getElementById('nav-btn-history').className = "w-full text-left p-2 rounded-xl bg-amber-950 border border-amber-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                startHistoricalMissionMode();
+            } else if (mode === 'quiz_missions') {
+                document.getElementById('nav-btn-quiz').className = "w-full text-left p-2 rounded-xl bg-emerald-950 border border-emerald-400 text-white flex items-center gap-2.5 transition-all shadow-md";
+                openMissionsModal();
+            }
+        }
+
+        function focusCameraOn(targetKey) {
+            controls.enabled = true;
+            document.getElementById('helmet-hud-overlay').classList.add('hidden');
+            document.getElementById('fps-touch-controls').classList.add('hidden');
+
+            if (targetKey === 'earth') {
+                // Orient camera directly toward Earth
+                controls.target.copy(earthMesh.position);
+                camera.position.set(0, 3, 10);
+            } else if (targetKey === 'eagle') {
+                controls.target.set(0, 3, 0);
+                camera.position.set(0, 4, 14);
+            } else if (targetKey === 'flag') {
+                controls.target.set(-6, 1.5, 8);
+                camera.position.set(-6, 2.2, 12);
+            } else if (targetKey === 'sun') {
+                controls.target.copy(sunLight.position);
+                camera.position.set(0, 3, 5);
+            } else if (targetKey === 'experiments') {
+                controls.target.set(12, 0.8, 9);
+                camera.position.set(12, 2.5, 14);
+            }
+            controls.update();
+            playSciFiBeep('beep');
+        }
+
+        function resetToInitialView() {
+            controls.target.set(0, 2, 0);
+            camera.position.set(0, 4, 18);
+            controls.update();
+            playSciFiBeep('beep');
+        }
+
+        function changeCameraAngle(val) {
+            if (val === 'fps') switchAppMode('fps_walk');
+            else if (val === 'earth_zoom') focusCameraOn('earth');
+            else if (val === 'eagle_close') focusCameraOn('eagle');
+            else if (val === 'panoramic') {
+                controls.target.set(0, 1.5, 0);
+                camera.position.set(0, 8, 38);
+                controls.update();
+            } else if (val === 'sun_focus') focusCameraOn('sun');
+            else if (val === 'outer_space') switchAppMode('orbit_macro');
+            else resetToInitialView();
+        }
+
+        /* -------------------------------------------------------------
+           11. INTERACTIVE WORKSPACE FLOATING HUDS (PHASES, ROTATION, DAY)
+        ------------------------------------------------------------- */
+        function renderEarthRotationHUD() {
+            const box = document.getElementById('dynamic-overlay-box');
+            box.classList.remove('hidden');
+            box.innerHTML = `
+                <div class="hud-glass p-3 rounded-2xl border border-blue-500/30 text-xs flex flex-wrap items-center justify-between gap-3 shadow-xl">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-earth-americas text-blue-400 text-lg"></i>
+                        <div>
+                            <strong class="text-white block text-xs">Dünya'nın Kendi Ekseninde Dönüşü (24 Saat)</strong>
+                            <span class="text-[10px] text-slate-400">Ay'dan bakıldığında kıtalar ve bulutlar döner, fakat Dünya gökyüzünde sabit kalır.</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 font-orbitron text-[10px]">
+                        <button onclick="setSimSpeed(1)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600 text-white font-bold">1x</button>
+                        <button onclick="setSimSpeed(24)" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold">1 Gün / sn</button>
+                        <button onclick="setSimSpeed(72)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600 text-white font-bold">3 Gün / sn</button>
+                        <button onclick="setSimSpeed(168)" class="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-blue-600 text-white font-bold">7 Gün / sn</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderEarthPhasesSliderHUD() {
+            const box = document.getElementById('dynamic-overlay-box');
+            box.classList.remove('hidden');
+            box.innerHTML = `
+                <div class="hud-glass p-3 rounded-2xl border border-indigo-500/40 text-xs space-y-2 max-w-lg w-full shadow-2xl">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-indigo-300 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-half-stroke text-amber-400"></i> Dünya'nın 8 Evresi (29.53 Günlük Döngü)
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">Ters Evre Prensibi</span>
+                    </div>
+                    <input type="range" min="0" max="29.53" step="0.5" value="14.7" oninput="scrubEarthPhase(this.value)" class="w-full cursor-pointer accent-indigo-400">
+                    <div class="flex justify-between text-[9px] font-bold text-slate-400 font-mono">
+                        <span>Yeni Dünya</span>
+                        <span>İlk Dördün</span>
+                        <span class="text-white font-bold">Dolunay Dünya</span>
+                        <span>Son Dördün</span>
+                        <span>Yeni Dünya</span>
+                    </div>
+                    <p class="text-[10px] text-slate-300 bg-slate-950/50 p-1.5 rounded-lg border border-slate-800 leading-tight">
+                        💡 <strong>Önemli Kural:</strong> Dünya'dan Yeni Ay görülürken, Ay'dan Dolunay Dünya görülür! Güneş daima Dünya'nın bir yüzünü aydınlatır.
+                    </p>
+                </div>
+            `;
+        }
+
+        function scrubEarthPhase(dayVal) {
+            isSimPlaying = false;
+            document.getElementById('play-pause-icon').className = 'fa-solid fa-play';
+            const progress = dayVal / 29.530588;
+            simCurrentTime = simEpoch + progress * SYNODIC_MONTH_SEC * 1000;
+            updateEarthAndMoonPhysics(0);
+        }
+
+        function renderLunarDayHUD() {
+            const box = document.getElementById('dynamic-overlay-box');
+            box.classList.remove('hidden');
+            box.innerHTML = `
+                <div class="hud-glass p-3 rounded-2xl border border-amber-500/40 text-xs space-y-2 shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-amber-300 text-xs flex items-center gap-1.5">
+                            <i class="fa-solid fa-sun text-amber-400"></i> Ay'da Bir Gün (Güneş Döngüsü & Gölgeler)
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">1 Ay Günü ≈ 29.5 Dünya Günü</span>
+                    </div>
+                    <p class="text-[10px] text-slate-300 leading-relaxed">
+                        Ay'da gündüz 14 gün, gece 14 gün sürer! Güneş doğduğunda keskin ve upuzun gölgeler uzanır.
+                    </p>
+                    <div class="flex gap-2">
+                        <button onclick="setSimSpeed(24)" class="flex-1 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-black text-[10px] uppercase">
+                            Güneş'i İlerlet & Gölgeleri İzle
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderMacroOrbitHUD() {
+            const box = document.getElementById('dynamic-overlay-box');
+            box.classList.remove('hidden');
+            box.innerHTML = `
+                <div class="hud-glass p-3.5 rounded-2xl border border-purple-500/40 text-xs space-y-2 max-w-md shadow-2xl">
+                    <div class="flex items-center gap-2 text-purple-300 font-bold">
+                        <i class="fa-solid fa-satellite text-lg"></i>
+                        <span>UZAYDAN GÖZLEM (GÜNEŞ-DÜNYA-AY SİSTEMİ)</span>
+                    </div>
+                    <p class="text-[10px] text-slate-300 leading-relaxed">
+                        1. Dünya Güneş çevresinde 365.25 günde dolanır.<br>
+                        2. Ay Dünya çevresinde 27.32 günde dolanır ve kendi ekseninde de 27.32 günde döner (Eşzamanlı dönüş). Bu yüzden Dünya'dan hep aynı yüzü görülür!
+                    </p>
+                    <button onclick="resetToInitialView()" class="w-full py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-[10px] uppercase">
+                        Ay Yüzeyine Geri Dön
+                    </button>
+                </div>
+            `;
+        }
+
+        /* -------------------------------------------------------------
+           12. GUIDED HISTORICAL MISSION MODE (20 JULY 1969)
+        ------------------------------------------------------------- */
+        let currentHistoricalStep = 1;
+        const HISTORICAL_STEPS = [
+            {
+                step: 1,
+                title: "1. Aşama: Ay Yörüngesinde Ayrılma",
+                desc: "20 Temmuz 1969. Eagle iniş modülü komuta modülü Columbia'dan ayrıldı. Armstrong ve Aldrin alçalma motorunu ateşledi.",
+                camPos: [0, 10, 45], target: [0, 4, 0]
+            },
+            {
+                step: 2,
+                title: "2. Aşama: Sessizlik Denizi'ne Alçalma",
+                desc: "Bilgisayar aşırı yük alarmı verdi (1202 alarmı). Armstrong manuel kontrole geçerek kayalık kraterden kaçındı.",
+                camPos: [15, 6, 20], target: [0, 2, 0]
+            },
+            {
+                step: 3,
+                title: "3. Aşama: Ay'a Temas ('Eagle Has Landed')",
+                desc: "20:17:40 UTC. İniş ayakları Ay tozuna değdi. 'Houston, Sessizlik Üssü burada. Kartal indi!'",
+                camPos: [0, 2, 8], target: [0, 2, 0]
+            },
+            {
+                step: 4,
+                title: "4. Aşama: Ay'a İlk Adım",
+                desc: "Neil Armstrong merdivenden indi ve sol ayağını bastı: 'İnsan için küçük, insanlık için dev bir adım.'",
+                camPos: [-1, 2, 6], target: [0, 2, 4]
+            },
+            {
+                step: 5,
+                title: "5. Aşama: Amerikan Bayrağının Dikilmesi",
+                desc: "Aldrin yüzeye indi. İki astronot bayrağı kurdu. Bayrak rüzgârdan değil, yatay gergi telinden dolayı açık durmaktadır.",
+                camPos: [-5, 2, 11], target: [-6, 1.5, 8]
+            },
+            {
+                step: 6,
+                title: "6. Aşama: Bilimsel Deneylerin Kurulumu",
+                desc: "Lazer retroreflektör (LRRR) ve sismometre kuruldu. Ay toprağı ve kayaç örnekleri toplandı.",
+                camPos: [12, 3, 13], target: [12, 1, 9]
+            },
+            {
+                step: 7,
+                title: "7. Aşama: Ay'dan Dünya'ya Bakış",
+                desc: "Astronotlar gökyüzündeki kırılgan mavi vatanı izledi. Masmavi Dünya, uzayın siyahlığında yaşam barındıran tek yuvamızdır.",
+                camPos: [0, 3, 10], target: [earthMesh.position.x, earthMesh.position.y, earthMesh.position.z]
+            }
+        ];
+
+        function startHistoricalMissionMode() {
+            currentHistoricalStep = 1;
+            document.getElementById('historical-guide-card').classList.remove('hidden');
+            updateHistoricalStepView();
+            playSciFiBeep('quindar_intro');
+        }
+
+        function updateHistoricalStepView() {
+            const data = HISTORICAL_STEPS[currentHistoricalStep - 1];
+            document.getElementById('hist-step-num').innerText = data.step;
+            document.getElementById('hist-step-title').innerText = data.title;
+            document.getElementById('hist-step-desc').innerText = data.desc;
+
+            controls.target.set(data.target[0], data.target[1], data.target[2]);
+            camera.position.set(data.camPos[0], data.camPos[1], data.camPos[2]);
+            controls.update();
+        }
+
+        function nextHistoricalStep() {
+            if (currentHistoricalStep < HISTORICAL_STEPS.length) {
+                currentHistoricalStep++;
+                updateHistoricalStepView();
+                playSciFiBeep('beep');
+            } else {
+                confetti({ particleCount: 80, spread: 70 });
+                playSciFiBeep('correct');
+                exitHistoricalMode();
+            }
+        }
+
+        function prevHistoricalStep() {
+            if (currentHistoricalStep > 1) {
+                currentHistoricalStep--;
+                updateHistoricalStepView();
+                playSciFiBeep('beep');
+            }
+        }
+
+        function playHistoricalAudio() {
+            playSciFiBeep('quindar_intro');
+            showToast("📻 Telsiz: 'That\'s one small step for [a] man, one giant leap for mankind.'", "info");
+        }
+
+        function exitHistoricalMode() {
+            document.getElementById('historical-guide-card').classList.add('hidden');
+            switchAppMode('earth_observe');
+        }
+
+        /* -------------------------------------------------------------
+           13. ASTRONAUT FPS WALK CONTROLLER (1.62 m/s² LUNAR GRAVITY)
+        ------------------------------------------------------------- */
+        function updateAstronautFPSMovement(delta) {
+            if (currentMode !== 'fps_walk') return;
+
+            const walkSpeed = 5.5; // m/s
+            const moveVec = new THREE.Vector3();
+
+            if (moveState.forward) moveVec.z -= 1;
+            if (moveState.backward) moveVec.z += 1;
+            if (moveState.left) moveVec.x -= 1;
+            if (moveState.right) moveVec.x += 1;
+
+            if (moveVec.lengthSq() > 0) {
+                moveVec.normalize();
+                moveVec.applyAxisAngle(new THREE.Vector3(0, 1, 0), fpsYaw);
+                astronautPos.addScaledVector(moveVec, walkSpeed * delta);
+            }
+
+            // Low gravity jumping & falling
+            if (!isGrounded) {
+                astronautVelocity.y -= LUNAR_GRAVITY * delta * 2.8;
+                astronautPos.y += astronautVelocity.y * delta;
+                if (astronautPos.y <= 1.8) {
+                    astronautPos.y = 1.8;
+                    astronautVelocity.y = 0;
+                    isGrounded = true;
+                }
+            }
+
+            // Boundary collision
+            const dist = Math.hypot(astronautPos.x, astronautPos.z);
+            if (dist > 120) {
+                astronautPos.setLength(120);
+            }
+
+            // Sync camera position
+            camera.position.copy(astronautPos);
+            const lookDir = new THREE.Vector3(0, 0, -1);
+            lookDir.applyAxisAngle(new THREE.Vector3(1, 0, 0), fpsPitch);
+            lookDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), fpsYaw);
+            camera.lookAt(astronautPos.clone().add(lookDir));
+        }
+
+        function astronautJump() {
+            if (isGrounded) {
+                astronautVelocity.y = 4.2; // Float high in 1/6 g
+                isGrounded = false;
+                playSciFiBeep('beep');
+            }
+        }
+
+        function startMovement(dir) { moveState[dir] = true; }
+        function stopMovement(dir) { moveState[dir] = false; }
+
+        function triggerNearbyInteraction() {
+            // Find closest interactive object
+            let closest = null;
+            let minDist = 8;
+            interactiveObjects.forEach(obj => {
+                const d = camera.position.distanceTo(obj.position);
+                if (d < minDist) {
+                    minDist = d;
+                    closest = obj;
+                }
+            });
+
+            if (closest) {
+                showObjectInfoCard(closest.userData);
+            } else {
+                showToast("🔍 Yakında incelenecek nesne yok. Nesnelere yaklaşın!", "info");
+            }
+        }
+
+        /* -------------------------------------------------------------
+           14. OBJECT INSPECTOR & INTERACTION SYSTEM
+        ------------------------------------------------------------- */
+        function setupInputListeners() {
+            const dom = renderer.domElement;
+
+            dom.addEventListener('pointerdown', (e) => {
+                mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouseVec, camera);
+                const intersects = raycaster.intersectObjects(interactiveObjects, true);
+
+                if (intersects.length > 0) {
+                    let hit = intersects[0].object;
+                    while (hit && !hit.userData.title && hit.parent) {
+                        hit = hit.parent;
+                    }
+                    if (hit && hit.userData.title) {
+                        showObjectInfoCard(hit.userData);
+                        playSciFiBeep('beep');
+                    }
+                }
+            });
+
+            // Keyboard controls for WASD / Arrow keys
+            window.addEventListener('keydown', (e) => {
+                if (e.code === 'KeyW' || e.code === 'ArrowUp') moveState.forward = true;
+                if (e.code === 'KeyS' || e.code === 'ArrowDown') moveState.backward = true;
+                if (e.code === 'KeyA' || e.code === 'ArrowLeft') moveState.left = true;
+                if (e.code === 'KeyD' || e.code === 'ArrowRight') moveState.right = true;
+                if (e.code === 'Space') astronautJump();
+                if (e.code === 'KeyE') triggerNearbyInteraction();
+            });
+
+            window.addEventListener('keyup', (e) => {
+                if (e.code === 'KeyW' || e.code === 'ArrowUp') moveState.forward = false;
+                if (e.code === 'KeyS' || e.code === 'ArrowDown') moveState.backward = false;
+                if (e.code === 'KeyA' || e.code === 'ArrowLeft') moveState.left = false;
+                if (e.code === 'KeyD' || e.code === 'ArrowRight') moveState.right = false;
+            });
+        }
+
+        function showObjectInfoCard(data) {
+            if (!data) return;
+            const panel = document.getElementById('right-info-panel');
+            panel.classList.remove('hidden');
+
+            document.getElementById('info-title').innerText = data.title;
+            document.getElementById('info-subtitle').innerText = data.category;
+            document.getElementById('info-desc').innerText = data.desc;
+
+            const facts = data.facts || [];
+            document.getElementById('info-fact-1').innerText = facts[0] ? `• ${facts[0]}` : "";
+            document.getElementById('info-fact-2').innerText = facts[1] ? `• ${facts[1]}` : "";
+            document.getElementById('info-fact-3').innerText = facts[2] ? `• ${facts[2]}` : "";
+        }
+
+        function closeInfoPanel() {
+            document.getElementById('right-info-panel').classList.add('hidden');
+        }
+
+        function executeInfoAction() {
+            showToast("🔍 İnceleme tamamlandı! Puan hanene eklendi.", "success");
+            closeInfoPanel();
+        }
+
+        /* -------------------------------------------------------------
+           15. TEACHER SMARTBOARD MODE ("ÖNCE TAHMİN ET – SONRA GÖSTER")
+        ------------------------------------------------------------- */
+        const TEACHER_QUESTIONS_POOL = [
+            {
+                q: "Dünya'dan baktığımızda Dolunay evresi görülürken, Ay'dan bakan bir astronot Dünya'yı hangi evrede görür?",
+                ans: "Yeni Dünya (Tamamen karanlık veya ince mavi halkalı). Çünkü Dünya'nın evreleri Ay'ın evreleriyle zıttır!",
+                targetAngle: 0
+            },
+            {
+                q: "Ay'dan gökyüzüne bakan bir astronot Dünya'nın her 24 saatte bir doğup battığını görür mü?",
+                ans: "HAYIR! Ay'ın eşzamanlı dönüşü nedeniyle Dünya gökyüzünde hep aynı konumda sabit asılı kalır; yalnızca kendi ekseninde döner.",
+                targetAngle: 90
+            },
+            {
+                q: "Ay yüzeyindeki Amerikan bayrağı neden rüzgârla dalgalanmaz?",
+                ans: "Çünkü Ay'da atmosfer ve hava akımı (rüzgâr) yoktur! Bayrağın açık durmasını üstteki yatay tel çubuk sağlar.",
+                targetAngle: 180
+            },
+            {
+                q: "Güneş tepedeyken bir nesnenin gölgesi mi uzundur, yoksa Güneş ufka yakınken mi?",
+                ans: "Güneş ufka yakınken gölgeler upuzundur; tepedeyken en kısa halini alır.",
+                targetAngle: 270
+            }
+        ];
+        let currentTeacherQIdx = 0;
+
+        function toggleTeacherMode() {
+            const modal = document.getElementById('modal-teacher');
+            modal.classList.toggle('hidden');
+            modal.classList.toggle('flex');
+            if (!modal.classList.contains('hidden')) {
+                loadTeacherQuestion(currentTeacherQIdx);
+            }
+        }
+
+        function loadTeacherQuestion(idx) {
+            const q = TEACHER_QUESTIONS_POOL[idx % TEACHER_QUESTIONS_POOL.length];
+            document.getElementById('teacher-q-title').innerText = `"${q.q}"`;
+            document.getElementById('teacher-q-answer').innerHTML = `<strong>Bilimsel Cevap:</strong> ${q.ans}`;
+            document.getElementById('teacher-q-answer').classList.add('hidden');
+            document.getElementById('btn-reveal-teacher-ans').classList.remove('hidden');
+        }
+
+        function nextTeacherQuestion() {
+            currentTeacherQIdx++;
+            loadTeacherQuestion(currentTeacherQIdx);
+            playSciFiBeep('beep');
+        }
+
+        function revealTeacherAnswer() {
+            document.getElementById('teacher-q-answer').classList.remove('hidden');
+            document.getElementById('btn-reveal-teacher-ans').classList.add('hidden');
+            playSciFiBeep('correct');
+        }
+
+        function closeTeacherModalAndSimulate() {
+            toggleTeacherMode();
+            focusCameraOn('earth');
+        }
+
+        function teacherFocusMode(type) {
+            toggleTeacherMode();
+            if (type === 'earth_phase') switchAppMode('earth_phases');
+            else if (type === 'shadow_test') switchAppMode('lunar_day');
+            else if (type === 'orbit_motion') switchAppMode('orbit_macro');
+            else if (type === 'eagle_inspect') focusCameraOn('eagle');
+        }
+
+        /* -------------------------------------------------------------
+           16. MISSIONS & QUIZ ENGINE (RANDOMIZED QUESTIONS & SHUFFLED CHOICES)
+        ------------------------------------------------------------- */
+        const QUIZ_MASTER_POOL = [
+            {
+                q: "Apollo 11 astronotlarının Ay yüzeyine bıraktığı ayak izlerinin milyonlarca yıl silinmeden kalabilmesinin temel nedeni nedir?",
+                options: [
+                    { t: "Ay'da rüzgâr ve yağış gibi hava olaylarını oluşturan bir atmosferin olmaması", correct: true },
+                    { t: "Ay toprağının aşırı sert ve yapışkan çimento gibi olması", correct: false },
+                    { t: "Ay'ın Dünya'dan çok uzakta bulunması", correct: false },
+                    { t: "Ay'ın kendi ekseni etrafında hiç dönmemesi", correct: false }
+                ]
+            },
+            {
+                q: "Dünya'dan gökyüzüne bakıldığında Yeni Ay evresi gözlenirken, Ay'dan Dünya'ya bakan bir astronot Dünya'yı hangi evrede görür?",
+                options: [
+                    { t: "Dolunay Dünya (Tam Aydınlık)", correct: true },
+                    { t: "Yeni Dünya (Karanlık)", correct: false },
+                    { t: "İlk Dördün Dünya", correct: false },
+                    { t: "Hilal Dünya", correct: false }
+                ]
+            },
+            {
+                q: "Ay yüzeyinde yerçekimi Dünya'dakinin yaklaşık kaçta kaçı kadardır?",
+                options: [
+                    { t: "6'da 1'i kadardır (1.62 m/s²)", correct: true },
+                    { t: "2'de 1'i kadardır (Yarısı)", correct: false },
+                    { t: "Dünya ile tamamen eşittir", correct: false },
+                    { t: "Sıfırdır (Hiç çekim yoktur)", correct: false }
+                ]
+            },
+            {
+                q: "Ay'dan gökyüzüne bakıldığında Güneş varken bile gökyüzünün kapkara görünmesinin sebebi nedir?",
+                options: [
+                    { t: "Işığı saçacak bir hava tabakasının (atmosfer) bulunmaması", correct: true },
+                    { t: "Güneş'in Ay'da sönük ışık vermesi", correct: false },
+                    { t: "Uzayın sadece geceleri aydınlanması", correct: false },
+                    { t: "Ay toprağının bütün ışığı emmesi", correct: false }
+                ]
+            },
+            {
+                q: "Apollo 11'in iniş yaptığı tarihsel Ay bölgesi aşağıdakilerden hangisidir?",
+                options: [
+                    { t: "Mare Tranquillitatis (Sessizlik Denizi)", correct: true },
+                    { t: "Fırtınalar Okyanusu", correct: false },
+                    { t: "Yağmurlar Denizi", correct: false },
+                    { t: "Kopernik Krateri", correct: false }
+                ]
+            },
+            {
+                q: "Ay'ın Dünya çevresindeki dolanma süresi ile kendi ekseni etrafındaki dönme süresi eşit (27.3 gün) olduğu için ne gerçekleşir?",
+                options: [
+                    { t: "Dünya'dan Ay'ın hep aynı yüzü görülür", correct: true },
+                    { t: "Ay'da gece-gündüz oluşmaz", correct: false },
+                    { t: "Dünya'da mevsimler durur", correct: false },
+                    { t: "Güneş tutulması her gün yaşanır", correct: false }
+                ]
+            },
+            {
+                q: "Ay yüzeyindeki lazer reflektörü (LRRR) ile Dünya'dan yapılan ölçümler neyi kanıtlamıştır?",
+                options: [
+                    { t: "Ay'ın her yıl Dünya'dan yaklaşık 3.8 cm uzaklaştığını", correct: true },
+                    { t: "Ay'ın Dünya'ya giderek çarpmak üzere yaklaştığını", correct: false },
+                    { t: "Ay'ın içinin tamamen suyla dolu olduğunu", correct: false },
+                    { t: "Güneş'in Dünya etrafında dolandığını", correct: false }
+                ]
+            }
+        ];
+
+        let activeQuizQuestions = [];
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+
+        function openMissionsModal() {
+            // Soruları ve şıkları her açılışta rastgele karıştır
+            activeQuizQuestions = [...QUIZ_MASTER_POOL].sort(() => Math.random() - 0.5);
+            currentQuizIndex = 0;
+            quizScore = 0;
+
+            const modal = document.getElementById('modal-missions');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            renderQuizQuestionView();
+        }
+
+        function closeMissionsModal() {
+            const modal = document.getElementById('modal-missions');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function renderQuizQuestionView() {
+            const container = document.getElementById('missions-dynamic-content');
+            if (currentQuizIndex >= activeQuizQuestions.length) {
+                // Quiz Victory
+                confetti({ particleCount: 100, spread: 70 });
+                playSciFiBeep('correct');
+                container.innerHTML = `
+                    <div class="text-center p-6 space-y-3 bg-emerald-950/60 rounded-2xl border border-emerald-500">
+                        <div class="w-16 h-16 rounded-full bg-amber-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">
+                            <i class="fa-solid fa-trophy"></i>
+                        </div>
+                        <h3 class="font-orbitron font-black text-lg text-white">AY KÂŞİFİ – GÖREV TAMAMLANDI!</h3>
+                        <p class="text-sm font-bold text-emerald-300">Tebrikler! Toplam Skor: ${quizScore} / ${activeQuizQuestions.length * 100}</p>
+                        <p class="text-xs text-slate-300">Apollo 11, Ay'ın yapısı ve Dünya evreleri hakkındaki bilgileri başarıyla kavradınız!</p>
+                        <button onclick="openMissionsModal()" class="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs uppercase tracking-wider">
+                            Yeniden Başla (Yeni Karışık Sorular)
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const qData = activeQuizQuestions[currentQuizIndex];
+            // Şıkları karıştır
+            const shuffledOptions = [...qData.options].sort(() => Math.random() - 0.5);
+
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="px-3 py-1 rounded-full bg-sky-950 border border-sky-400/40 text-sky-300 font-bold">
+                            SORU ${currentQuizIndex + 1} / ${activeQuizQuestions.length}
+                        </span>
+                        <span class="font-orbitron text-amber-400 font-bold">Skor: ${quizScore}</span>
+                    </div>
+                    <h3 class="text-sm sm:text-base font-bold text-white leading-relaxed">
+                        ${qData.q}
+                    </h3>
+                    <div class="space-y-2">
+                        ${shuffledOptions.map((opt, i) => `
+                            <button onclick="submitQuizAnswer(${opt.correct})" class="w-full text-left p-3 rounded-xl bg-slate-900/90 hover:bg-sky-950 border border-slate-700 hover:border-sky-500 text-xs text-slate-200 font-medium transition-all cursor-pointer">
+                                <strong>${['A)', 'B)', 'C)', 'D)'][i]}</strong> ${opt.t}
+                            </button>
+                        `).join('')}
+                    </div>
+                    <div id="quiz-ans-feedback" class="hidden p-3 rounded-xl text-xs font-bold leading-relaxed"></div>
+                </div>
+            `;
+        }
+
+        function submitQuizAnswer(isCorrect) {
+            const fb = document.getElementById('quiz-ans-feedback');
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                quizScore += 100;
+                playSciFiBeep('correct');
+                fb.className = "p-3 rounded-xl text-xs font-bold bg-emerald-950 border border-emerald-500 text-emerald-300 animate-fadeIn";
+                fb.innerHTML = "✅ <strong>Harika Doğru!</strong> Tebrikler, Apollo bilimsel kazanımını kavradınız! (+100 Puan)";
+            } else {
+                playSciFiBeep('wrong');
+                fb.className = "p-3 rounded-xl text-xs font-bold bg-rose-950 border border-rose-500 text-rose-300 animate-fadeIn";
+                fb.innerHTML = "❌ <strong>Dikkate Değer!</strong> Ay'ın atmosferi ve yerçekimi Dünya'dan çok farklıdır.";
+            }
+
+            setTimeout(() => {
+                currentQuizIndex++;
+                renderQuizQuestionView();
+            }, 1600);
+        }
+
+        /* -------------------------------------------------------------
+           17. WEBXR VIRTUAL REALITY (VR) INTEGRATION
+        ------------------------------------------------------------- */
+        let xrSession = null;
+
+        function toggleWebXRSession() {
+            if (!navigator.xr) {
+                showToast("⚠️ Bu tarayıcı veya cihaz WebXR VR teknolojisini desteklemiyor. Normal 3D modda devam edebilirsiniz.", "warning");
+                return;
+            }
+
+            navigator.xr.isSessionSupported('immersive-vr').then(supported => {
+                if (supported) {
+                    if (!xrSession) {
+                        navigator.xr.requestSession('immersive-vr', {
+                            optionalFeatures: ['local-floor', 'bounded-floor', 'hand-tracking']
+                        }).then(onVRSessionStarted);
+                    } else {
+                        xrSession.end();
+                    }
+                } else {
+                    showToast("ℹ️ Bu cihazda VR gözlüğü algılanmadı. Meta Quest, HTC Vive veya uyumlu VR gözlüğüyle deneyimleyebilirsiniz.", "info");
+                }
+            }).catch(() => {
+                showToast("ℹ️ VR modunu kullanmak için uyumlu bir WebXR gözlüğü gereklidir.", "info");
+            });
+        }
+
+        function onVRSessionStarted(session) {
+            xrSession = session;
+            renderer.xr.setSession(session);
+            document.getElementById('btn-vr-toggle').innerHTML = '<i class="fa-solid fa-xmark text-rose-400"></i> VR Çık';
+            session.addEventListener('end', onVRSessionEnded);
+            showToast("🥽 VR Deneyimi Başlatıldı!", "success");
+        }
+
+        function onVRSessionEnded() {
+            xrSession = null;
+            document.getElementById('btn-vr-toggle').innerHTML = '<i class="fa-solid fa-vr-cardboard text-amber-300"></i> VR MODU';
+            showToast("VR Modundan Çıkıldı.", "info");
+        }
+
+        /* -------------------------------------------------------------
+           18. UTILITIES, TOASTS & EVENT HANDLERS
+        ------------------------------------------------------------- */
+        function toggleLeftSidebar() {
+            const bar = document.getElementById('left-sidebar');
+            bar.classList.toggle('-translate-x-full');
+        }
+
+        function toggleSimPlay() {
+            isSimPlaying = !isSimPlaying;
+            document.getElementById('play-pause-icon').className = isSimPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+            playSciFiBeep('beep');
+        }
+
+        function resetSimulationTime() {
+            simCurrentTime = simEpoch;
+            isSimPlaying = true;
+            document.getElementById('play-pause-icon').className = 'fa-solid fa-pause';
+            playSciFiBeep('quindar_intro');
+            showToast("🔄 Zaman 20 Temmuz 1969 20:17 UTC'ye sıfırlandı.", "info");
+        }
+
+        function setSimSpeed(spd) {
+            simSpeedMultiplier = spd;
+            [1, 5, 24, 168].forEach(s => {
+                const b = document.getElementById(`spd-btn-${s}`);
+                if (b) {
+                    b.className = s === spd ? "px-2 py-1 rounded-lg bg-sky-600 text-white" : "px-2 py-1 rounded-lg text-slate-400 hover:text-white";
+                }
+            });
+            playSciFiBeep('beep');
+        }
+
+        function showToast(msg, type = 'info') {
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-emerald-950 border-emerald-500 text-emerald-200' :
+                       type === 'warning' ? 'bg-amber-950 border-amber-500 text-amber-200' :
+                       'bg-slate-900 border-sky-500 text-sky-200';
+            toast.className = `fixed top-16 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-2xl border shadow-2xl text-xs font-bold transition-all duration-300 flex items-center gap-2 ${bg}`;
+            toast.innerHTML = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        /* -------------------------------------------------------------
+           19. ANIMATION LOOP
+        ------------------------------------------------------------- */
+        let clock = new THREE.Clock();
+
+        function animate() {
+            renderer.setAnimationLoop(renderLoop);
+        }
+
+        function renderLoop() {
+            const delta = clock.getDelta();
+
+            // Update Physics & Astronomical Movements
+            updateEarthAndMoonPhysics(delta);
+
+            // Update FPS walking if active
+            updateAstronautFPSMovement(delta);
+
+            // Orbitcontrols update
+            if (controls.enabled) {
+                controls.update();
+            }
+
+            // Astronaut idle animation
+            const time = clock.getElapsedTime();
+            if (astronautArmstrongGroup && !moveState.forward) {
+                astronautArmstrongGroup.position.y = Math.sin(time * 1.5) * 0.04;
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        // Initialize when window is ready
+        window.addEventListener('DOMContentLoaded', initThreeScene);
+    </script>
+</body>
+</html>

@@ -4125,15 +4125,18 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                     <span class="text-xs sm:text-sm font-black text-amber-300 font-orbitron">🚀 5. SINIF 3D EĞİTSEL UZAY OYUNLARI</span>
                                     <span class="px-2 py-0.5 rounded-full bg-amber-950 text-amber-400 border border-amber-500/40 text-[10px] font-bold">1. ÜNİTE</span>
                                 </div>
-                                <p class="text-[11px] text-slate-300">Kozmik Koşu: Ay Evresi Avı, Ay'ın Evreleri Planetaryumu ve 3D Güneş Laboratuvarı.</p>
+                                <p class="text-[11px] text-slate-300">Ay'a İniş 3D VR, Kozmik Koşu, Ay'ın Evreleri Planetaryumu ve Güneş Laboratuvarı.</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto flex-wrap sm:flex-nowrap">
-                            <button type="button" onclick="openInteractiveGameModal('kozmik-kasif-3d', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')" class="flex-1 sm:flex-none px-3 py-1.5 bg-gradient-to-r from-cyan-400 via-sky-400 to-amber-300 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
-                                <i class="fa-solid fa-satellite-dish"></i> Kozmik Kâşif (3D)
+                            <button type="button" onclick="openInteractiveGameModal('aya-inis-3d', 'Ay\'a İniş – 3D Keşif ve VR Deneyimi')" class="flex-1 sm:flex-none px-3 py-1.5 bg-gradient-to-r from-sky-400 via-blue-500 to-amber-300 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-flag"></i> Ay'a İniş (3D VR)
                             </button>
-                            <button type="button" onclick="openInteractiveGameModal('kozmik-kosu-3d', 'Kozmik Koşu: Ay Evresi Avı (3D)')" class="flex-1 sm:flex-none px-3 py-1.5 bg-gradient-to-r from-amber-400 via-pink-500 to-purple-600 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
-                                <i class="fa-solid fa-person-running"></i> Kozmik Koşu (3D)
+                            <button type="button" onclick="openInteractiveGameModal('kozmik-kasif-3d', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')" class="flex-1 sm:flex-none px-2.5 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-satellite-dish"></i> Kozmik Kâşif
+                            </button>
+                            <button type="button" onclick="openInteractiveGameModal('kozmik-kosu-3d', 'Kozmik Koşu: Ay Evresi Avı (3D)')" class="flex-1 sm:flex-none px-2.5 py-1.5 bg-gradient-to-r from-amber-400 to-pink-500 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-person-running"></i> Kozmik Koşu
                             </button>
                             <button type="button" onclick="openInteractiveGameModal('oyun-ayin-evreleri-3d', 'Ay\'ın Evreleri 3D Simülatörü')" class="flex-1 sm:flex-none px-2.5 py-1.5 bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
                                 <i class="fa-solid fa-moon"></i> Ay'ın Evreleri
@@ -4154,10 +4157,13 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                     <span class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🪐 6. SINIF 3D DİJİTAL PLANETARYUM</span>
                                     <span class="px-2 py-0.5 rounded-full bg-sky-950 text-sky-400 border border-sky-500/40 text-[10px] font-bold">1. ÜNİTE</span>
                                 </div>
-                                <p class="text-[11px] text-slate-300">Güneş Sistemi – 3D Keşif Laboratuvarı, Gezegenler, Dünya-Ay Modu ve 5 Uzay Görevi.</p>
+                                <p class="text-[11px] text-slate-300">Güneş Sistemi – 3D Keşif Laboratuvarı, Ay'a İniş 3D VR ve Uzay Görevleri.</p>
                             </div>
                         </div>
                         <div class="flex items-center gap-1.5 shrink-0 w-full sm:w-auto flex-wrap sm:flex-nowrap">
+                            <button type="button" onclick="openInteractiveGameModal('aya-inis-3d', 'Ay\'a İniş – 3D Keşif ve VR Deneyimi')" class="flex-1 sm:flex-none px-3 py-1.5 bg-gradient-to-r from-sky-400 via-blue-500 to-amber-300 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-flag"></i> Ay'a İniş (3D VR)
+                            </button>
                             <button type="button" onclick="openInteractiveGameModal('gunes-sistemi-3d', 'Güneş Sistemi – 3D Keşif Laboratuvarı')" class="flex-1 sm:flex-none px-3.5 py-1.5 bg-gradient-to-r from-sky-400 via-blue-500 to-amber-400 hover:brightness-110 text-slate-950 font-black text-xs uppercase rounded-xl transition-all shadow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-solar-panel"></i> Güneş Sistemi (3D)
                             </button>
@@ -4859,6 +4865,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "5": {
             "1": [
                 {
+                    id: "builtin-oyun-apollo11-aya-inis",
+                    title: "Ay'a İniş – 3D Keşif ve VR Deneyimi (Apollo 11 & Dünya Gözlemi)",
+                    icon: "fa-solid fa-flag",
+                    desc: "Mare Tranquillitatis'te Ay modülü Eagle, astronotlar ve bayrak yanında 1.62 m/s² Ay çekimiyle yürü! Ay gökyüzünden Dünya'nın 24 saatlik dönüşünü, 8 evresini ve Güneş döngüsünü gerçekçi 3D ve WebXR VR ile keşfet!",
+                    type: "3D VR Simülatörü",
+                    format: "3D VR SİMÜLATÖR",
+                    badge: "🌟 3D VR Başyapıtı",
+                    fileUrl: "oyunlar/aya-inis-3d.html",
+                    kapakResmi: "assets/aya-inis-3d-kapak.svg"
+                },
+                {
                     id: "builtin-oyun-5-kozmik-kasif",
                     title: "Kozmik Kâşif 3D: Ay ve Güneş Üssü",
                     icon: "fa-solid fa-satellite-dish",
@@ -4906,6 +4923,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         },
         "6": {
             "1": [
+                {
+                    id: "builtin-oyun-6-aya-inis",
+                    title: "Ay'a İniş – 3D Keşif ve VR Deneyimi (Apollo 11 & Dünya Gözlemi)",
+                    icon: "fa-solid fa-flag",
+                    desc: "Mare Tranquillitatis'te Ay modülü Eagle, astronotlar ve bayrak yanında 1.62 m/s² Ay çekimiyle yürü! Ay gökyüzünden Dünya'nın 24 saatlik dönüşünü, 8 evresini ve Güneş döngüsünü gerçekçi 3D ve WebXR VR ile keşfet!",
+                    type: "3D VR Simülatörü",
+                    format: "3D VR SİMÜLATÖR",
+                    badge: "🌟 3D VR Başyapıtı",
+                    fileUrl: "oyunlar/aya-inis-3d.html",
+                    kapakResmi: "assets/aya-inis-3d-kapak.svg"
+                },
                 {
                     id: "builtin-oyun-6-gunes-sistemi",
                     title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
@@ -5278,28 +5306,33 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         ${totalItems.map(item => {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("oyun-");
                                             const isBuiltinGame = String(item.id).startsWith("oyun-");
-                                            const isGunesSistemiItem = (item.fileUrl && (item.fileUrl.includes("gunes-sistemi") || item.fileUrl.includes("gunes_sistemi"))) ||
+                                            const isAyaInisItem = (item.fileUrl && (item.fileUrl.includes("aya-inis") || item.fileUrl.includes("aya_inis"))) ||
+                                                (item.title && (item.title.toLowerCase().includes("ay'a iniş") || item.title.toLowerCase().includes("aya inis") || item.title.toLowerCase().includes("apollo 11"))) ||
+                                                (item.id && (String(item.id).includes("aya-inis") || String(item.id).includes("apollo11")));
+                                            const isGunesSistemiItem = !isAyaInisItem && ((item.fileUrl && (item.fileUrl.includes("gunes-sistemi") || item.fileUrl.includes("gunes_sistemi"))) ||
                                                 (item.title && (item.title.toLowerCase().includes("güneş sistemi") || item.title.toLowerCase().includes("gunes sistemi"))) ||
-                                                (item.id && String(item.id).includes("gunes-sistemi"));
-                                            const isKozmikKasifItem = !isGunesSistemiItem && ((item.fileUrl && item.fileUrl.includes("kozmik-kasif")) ||
+                                                (item.id && String(item.id).includes("gunes-sistemi")));
+                                            const isKozmikKasifItem = !isAyaInisItem && !isGunesSistemiItem && ((item.fileUrl && item.fileUrl.includes("kozmik-kasif")) ||
                                                 (item.title && (item.title.toLowerCase().includes("kozmik kâşif") || item.title.toLowerCase().includes("kozmik kasif"))) ||
                                                 (item.id && String(item.id).includes("kozmik-kasif")));
-                                            const isKozmikKosuItem = !isGunesSistemiItem && ((item.fileUrl && item.fileUrl.includes("kozmik-kosu")) ||
+                                            const isKozmikKosuItem = !isAyaInisItem && !isGunesSistemiItem && ((item.fileUrl && item.fileUrl.includes("kozmik-kosu")) ||
                                                 (item.title && (item.title.toLowerCase().includes("kozmik koşu") || item.title.toLowerCase().includes("kozmik kosu") || item.title.toLowerCase().includes("ay evresi avı"))) ||
                                                 (item.id && String(item.id).includes("kozmik-kosu")));
-                                            const isAyinEvreleriItem = !isGunesSistemiItem && !isKozmikKasifItem && !isKozmikKosuItem && (
+                                            const isAyinEvreleriItem = !isAyaInisItem && !isGunesSistemiItem && !isKozmikKasifItem && !isKozmikKosuItem && (
                                                 (item.fileUrl && item.fileUrl.includes("ayin-evreleri")) ||
                                                 (item.title && (item.title.toLowerCase().includes("ay'ın evreleri") || item.title.toLowerCase().includes("ayin evreleri"))) ||
                                                 (item.id && String(item.id).includes("ayin-evreleri"))
                                             );
-                                            const isGunesItem = !isGunesSistemiItem && !isKozmikKasifItem && !isKozmikKosuItem && !isAyinEvreleriItem && (
+                                            const isGunesItem = !isAyaInisItem && !isGunesSistemiItem && !isKozmikKasifItem && !isKozmikKosuItem && !isAyinEvreleriItem && (
                                                 (item.fileUrl && item.fileUrl.includes("gunesi-kesfediyorum")) ||
                                                 (item.title && (item.title.toLowerCase().includes("güneş'i keşfediyorum") || item.title.toLowerCase().includes("gunesi kesfediyorum"))) ||
                                                 (item.id && String(item.id).includes("gunesi-kesfediyorum"))
                                             );
 
                                             let actionCall = cfg.btnAction(item);
-                                            if (isGunesSistemiItem) {
+                                            if (isAyaInisItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/aya-inis-3d.html', 'Ay\\'a İniş – 3D Keşif ve VR Deneyimi')`;
+                                            } else if (isGunesSistemiItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/gunes-sistemi-3d.html', 'Güneş Sistemi – 3D Keşif Laboratuvarı')`;
                                             } else if (isKozmikKasifItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`;
@@ -5316,7 +5349,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             }
 
                                             let itemActionUI = getMaterialActionUI(item, normSubTab);
-                                            if (isGunesSistemiItem) {
+                                            if (isAyaInisItem) {
+                                                itemActionUI = { bg: "bg-gradient-to-r from-sky-500 via-blue-600 to-amber-500 hover:from-sky-600 hover:to-blue-700 shadow-sky-500/30", text: "Ay'a İniş Yap (3D VR)", icon: "fa-solid fa-flag" };
+                                            } else if (isGunesSistemiItem) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-sky-500 via-indigo-600 to-amber-500 hover:from-sky-600 hover:to-indigo-700 shadow-sky-500/30", text: "Laboratuvara Gir", icon: "fa-solid fa-solar-panel" };
                                             } else if (isAyinEvreleriItem) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30", text: "Animasyonu Görüntüle", icon: "fa-solid fa-play" };
@@ -5856,6 +5891,16 @@ function renderGradeEducationalGames(grade, subData) {
     const builtinCurriculumGames = {
         "5": [
             {
+                id: "builtin-oyun-apollo11-aya-inis",
+                title: "Ay'a İniş: 3D Keşif ve VR Deneyimi (Apollo 11)",
+                badge: "3D VR Deneyimi",
+                type: "3D VR Simülatörü",
+                desc: "Mare Tranquillitatis'te astronot Neil Armstrong olarak yürü, Ay modülü Eagle'ı incele, Ay göğünden Dünya'nın 24 saatlik dönüşünü ve 8 evresini gözlemle!",
+                icon: "fa-solid fa-flag",
+                iconColor: "from-sky-400 via-blue-600 to-amber-400",
+                fileUrl: "aya-inis-3d"
+            },
+            {
                 id: "builtin-oyun-5-kozmik-kasif",
                 title: "Kozmik Kâşif 3D: Ay ve Güneş Üssü",
                 badge: "3D Uzay Simülatörü",
@@ -5897,6 +5942,16 @@ function renderGradeEducationalGames(grade, subData) {
             }
         ],
         "6": [
+            {
+                id: "builtin-oyun-6-aya-inis",
+                title: "Ay'a İniş: 3D Keşif ve VR Deneyimi (Apollo 11)",
+                badge: "3D VR Deneyimi",
+                type: "3D VR Simülatörü",
+                desc: "Mare Tranquillitatis'te astronot Neil Armstrong olarak yürü, Ay modülü Eagle'ı incele, Ay göğünden Dünya'nın 24 saatlik dönüşünü ve 8 evresini gözlemle!",
+                icon: "fa-solid fa-flag",
+                iconColor: "from-sky-400 via-blue-600 to-amber-400",
+                fileUrl: "aya-inis-3d"
+            },
             {
                 id: "builtin-oyun-6-gunes-sistemi",
                 title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
@@ -13946,6 +14001,14 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
+    // 🌕 APOLLO 11 AY'A İNİŞ VE DÜNYA GÖZLEMİ 3D VR SİMÜLASYONU
+    if (checkTitle.includes("ay'a iniş") || checkTitle.includes("aya inis") || checkTitle.includes("aya iniş") || checkTitle.includes("apollo 11") || checkTitle.includes("apollo11") ||
+        id === "mat-apollo11-aya-inis-3d" || id === "builtin-oyun-apollo11-aya-inis" || id === "builtin-oyun-6-aya-inis" || id === "aya-inis-3d" ||
+        targetUrl.includes("aya-inis") || targetUrl.includes("aya_inis")) {
+        openInteractiveGameModal("oyunlar/aya-inis-3d.html", "Ay'a İniş – 3D Keşif ve VR Deneyimi");
+        return;
+    }
+
     // 🪐 6. SINIF GÜNEŞ SİSTEMİ – 3D KEŞİF LABORATUVARI (3D DIGITAL PLANETARIUM)
     if (checkTitle.includes("güneş sistemi") || checkTitle.includes("gunes sistemi") ||
         id === "mat-6-1-oyun-gunes-sistemi-3d" || id === "builtin-oyun-6-gunes-sistemi" || id === "gunes-sistemi-3d" ||
@@ -15336,6 +15399,40 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     let resolvedKey = gameKeyOrUrl;
     const str = String(gameKeyOrUrl || "").toLowerCase();
     const titleStr = String(gameTitle || "").toLowerCase();
+
+    // 🌕 Apollo 11 Ay'a İniş ve Dünya Gözlemi 3D VR Simülasyonu
+    if (str.includes("aya-inis") || str.includes("aya_inis") || str.includes("ay'a iniş") || str.includes("aya inis") || str.includes("apollo") || titleStr.includes("ay'a iniş") || titleStr.includes("aya inis") || titleStr.includes("apollo") || resolvedKey === "aya-inis-3d" || resolvedKey === "oyun-aya-inis-3d" || resolvedKey === "mat-apollo11-aya-inis-3d" || resolvedKey === "builtin-oyun-apollo11-aya-inis" || resolvedKey === "builtin-oyun-6-aya-inis") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-sky-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-sky-400 via-blue-600 to-amber-400 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-flag"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🚀 Ay'a İniş – 3D Keşif ve VR Deneyimi</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• Apollo 11 & Dünya Gözlemi</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/aya-inis-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/aya-inis-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen; xr-spatial-tracking" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
 
     // 🪐 6. Sınıf Güneş Sistemi – 3D Keşif Laboratuvarı (Dijital Planetaryum)
     if (str.includes("gunes-sistemi") || str.includes("gunes_sistemi") || str.includes("güneş sistemi") || str.includes("gunes sistemi") || titleStr.includes("güneş sistemi") || titleStr.includes("gunes sistemi") || resolvedKey === "gunes-sistemi-3d" || resolvedKey === "oyun-gunes-sistemi-3d") {
