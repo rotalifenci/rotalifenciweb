@@ -13247,7 +13247,7 @@ async function openFullScreenPresentationModal(item) {
     let targetUrl = item.fileUrl || item.downloadUrl || item.rawUrl || "";
     if (targetUrl && !targetUrl.startsWith("http") && !targetUrl.startsWith("data:") && !targetUrl.startsWith("blob:") && targetUrl !== "#") {
         try {
-            targetUrl = new URL(targetUrl, window.location.origin + "/").href;
+            targetUrl = new URL(targetUrl, window.location.href).href;
         } catch (e) {}
     }
     let downloadUrl = targetUrl;
@@ -13855,95 +13855,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         }
     }
 
-    // 🪐 5. SINIF GÜNEŞ, DÜNYA VE AY: 3D HAREKET LABORATUVARI
-    if (checkTitle.includes("hareket laboratuvarı") || checkTitle.includes("hareket laboratuvari") || (checkTitle.includes("güneş") && checkTitle.includes("dünya") && checkTitle.includes("ay")) ||
-        id === "mat-5-1-oyun-gunes-dunya-ay-3d" || id === "builtin-oyun-5-gunes-dunya-ay" || id === "gunes-dunya-ay-3d" ||
-        targetUrl.includes("gunes-dunya-ay") || targetUrl.includes("gunes_dunya_ay")) {
-        openInteractiveGameModal("oyunlar/gunes-dunya-ay-3d.html", "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı");
-        return;
-    }
-
-    // 🌕 APOLLO 11 AY'A İNİŞ VE DÜNYA GÖZLEMİ 3D VR SİMÜLASYONU
-    if (checkTitle.includes("ay'a iniş") || checkTitle.includes("aya inis") || checkTitle.includes("aya iniş") || checkTitle.includes("apollo 11") || checkTitle.includes("apollo11") ||
-        id === "mat-apollo11-aya-inis-3d" || id === "builtin-oyun-apollo11-aya-inis" || id === "builtin-oyun-6-aya-inis" || id === "aya-inis-3d" ||
-        targetUrl.includes("aya-inis") || targetUrl.includes("aya_inis")) {
-        openInteractiveGameModal("oyunlar/aya-inis-3d.html", "Ay'a İniş – 3D Keşif ve VR Deneyimi");
-        return;
-    }
-
-    // 🎬 6. SINIF GÜNEŞ SİSTEMİNDE YOLCULUK – 3D SİNEMATİK ANİMASYON
-    if (checkTitle.includes("yolculuk") || id === "mat-6-1-oyun-gunes-sistemi-yolculuk-3d" || id === "builtin-oyun-6-gunes-sistemi-yolculuk" || id === "gunes-sistemi-yolculuk-3d" ||
-        targetUrl.includes("gunes-sistemi-yolculuk") || targetUrl.includes("gunes_sistemi_yolculuk")) {
-        openInteractiveGameModal("oyunlar/gunes-sistemi-yolculuk-3d.html", "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon");
-        return;
-    }
-
-    // 🪐 6. SINIF GÜNEŞ SİSTEMİ – 3D KEŞİF LABORATUVARI (3D DIGITAL PLANETARIUM)
-    if (checkTitle.includes("güneş sistemi") || checkTitle.includes("gunes sistemi") ||
-        id === "mat-6-1-oyun-gunes-sistemi-3d" || id === "builtin-oyun-6-gunes-sistemi" || id === "gunes-sistemi-3d" ||
-        targetUrl.includes("gunes-sistemi") || targetUrl.includes("gunes_sistemi")) {
-        openInteractiveGameModal("oyunlar/gunes-sistemi-3d.html", "Güneş Sistemi – 3D Keşif Laboratuvarı");
-        return;
-    }
-
-    // 🛰️ 5. SINIF KOZMİK KÂŞİF 3D: AY VE GÜNEŞ ÜSSÜ (3D SPACE & ROVER SIMULATOR)
-    if (checkTitle.includes("kozmik kâşif") || checkTitle.includes("kozmik kasif") || checkTitle.includes("ay ve güneş üssü") || checkTitle.includes("ay ve gunes ussu") ||
-        id === "mat-5-1-oyun-kozmik-kasif-3d" || id === "builtin-oyun-5-kozmik-kasif" || id === "kozmik-kasif-3d" ||
-        targetUrl.includes("kozmik-kasif") || targetUrl.includes("kozmik_kasif")) {
-        openInteractiveGameModal("oyunlar/kozmik-kasif-3d.html", "Kozmik Kâşif 3D: Ay ve Güneş Üssü");
-        return;
-    }
-
-    // 🏃 5. SINIF KOZMİK KOŞU: AY EVRESİ AVI (3D SUBWAY SURFERS ENDLESS RUNNER)
-    if (checkTitle.includes("kozmik koşu") || checkTitle.includes("kozmik kosu") || checkTitle.includes("ay evresi avı") || checkTitle.includes("ay evresi avi") ||
-        id === "mat-5-1-oyun-kozmik-kosu-3d" || id === "builtin-oyun-5-kozmik-kosu" || id === "kozmik-kosu-3d" ||
-        targetUrl.includes("kozmik-kosu") || targetUrl.includes("kozmik_kosu")) {
-        openInteractiveGameModal("oyunlar/kozmik-kosu-3d.html", "Kozmik Koşu: Ay Evresi Avı (3D)");
-        return;
-    }
-
-    // 🌕 AY'IN EVRELERİ 3D PLANETARYUM VE UZAY SİMÜLATÖRÜ
-    if (checkTitle.includes("ay'ın evreleri") || checkTitle.includes("ayin evreleri") ||
-        id === "mat-5-1-oyun-ayin-evreleri-3d" || id === "oyun-5-gunes" || id === "oyun-ayin-evreleri-3d" ||
-        targetUrl.includes("ayin-evreleri")) {
-        openInteractiveGameModal("oyunlar/ayin-evreleri-3d.html", "Ay Evreleri 3D Simülatörü");
-        return;
-    }
-
-    // ☀️ GÜNEŞ'İ KEŞFEDİYORUM 3D ETKİLEŞİMLİ UZAY LABORATUVARI
-    if (checkTitle.includes("güneş'i keşfediyorum") || checkTitle.includes("gunesi kesfediyorum") ||
-        id === "mat-5-1-oyun-gunesi-kesfediyorum-3d" || id === "oyun-gunesi-kesfediyorum-3d" ||
-        targetUrl.includes("gunesi-kesfediyorum")) {
-        openInteractiveGameModal("oyunlar/gunesi-kesfediyorum-3d.html", "Güneş 3D Uzay Laboratuvarı");
-        return;
-    }
-
-    // 🚀 GEZEGEN KOŞUSU: ANTGRAVITY GALAKSİSİ (3D SUBWAY SURFERS RUNNER)
-    if (checkTitle.includes("gezegen koşusu") || checkTitle.includes("gezegen kosusu") || checkTitle.includes("antgravity galaksi") ||
-        id === "mat-game-gezegen-kosusu" || id === "oyun-gezegen-kosusu" || targetUrl === "oyun-gezegen-kosusu" || targetUrl.includes("gezegen-kosusu")) {
-        openInteractiveGameModal("oyun-gezegen-kosusu", title || (found && found.title) || "Gezegen Koşusu: Antgravity Galaksisi");
-        return;
-    }
-
-    // 🚀 7. SINIF UZAYDAN KAÇIŞ: GİZEMLİ İSTASYON 3D BİLİMSEL KAÇIŞ ODASI
-    if (checkTitle.includes("uzaydan") || checkTitle.includes("gizemli istasyon") || checkTitle.includes("gizemli-istasyon") ||
-        id === "mat-7-1-oyun-uzaydan-kacis-3d" || id === "builtin-oyun-7-uzaydan-kacis" || id === "uzaydan-kacis-3d" ||
-        targetUrl.includes("uzaydan-kacis") || targetUrl.includes("uzaydan_kacis")) {
-        openInteractiveGameModal("oyunlar/uzaydan-kacis-3d.html", "Uzaydan Kaçış: Gizemli İstasyon (3D)");
-        return;
-    }
-
-    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME (Laboratuvar Kaçış Odası)
-    if (!checkTitle.includes("uzay") && !targetUrl.includes("uzay") &&
-        (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
-        id === "mat-5-lab-kacis-gemini" || id === "oyun-lab-kacis" ||
-        targetUrl === "oyun-lab-kacis" || (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) ||
-        (fallbackUrl && (fallbackUrl.includes("gemini.google") || fallbackUrl.includes("share.gemini.google"))))) {
-        openInteractiveGameModal("oyun-lab-kacis", title || (found && found.title) || "Laboratuvar Kaçış Odası");
-        return;
-    }
-
-    // 🌐 GOOGLE DRIVE VE DOCS BAĞLANTILARI
+        // 🌐 GOOGLE DRIVE VE DOCS BAĞLANTILARI
     if (targetUrl && (targetUrl.includes("drive.google.com") || targetUrl.includes("docs.google.com"))) {
         let drivePreview = targetUrl;
         const fileIdMatch = targetUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || targetUrl.match(/id=([a-zA-Z0-9_-]+)/);
@@ -13987,16 +13899,21 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 
     // 🚀 1.8 🌟 İNTERAKTİF HTML5 AKILLI TAHTA SUNUMLARI (3D Sinematik Sunum)
-    const isHtmlPresentation = (checkFile.endsWith(".html") || (targetUrl && targetUrl.includes(".html")) || checkFormat.includes("İNTERAKTİF SUNUM") || checkFormat.includes("HTML SUNUM"));
+    const isHtmlPresentation = (
+        targetUrl.includes("sunumlar/") ||
+        id === "mat-5-1-sunum-gunes-dunya-ay" ||
+        ((checkFormat.includes("İNTERAKTİF SUNUM") || checkFormat.includes("HTML SUNUM") || checkCat === "ders-sunumu") && !targetUrl.includes("oyunlar/") && (checkFile.endsWith(".html") || targetUrl.endsWith(".html")))
+    );
+
     if (isHtmlPresentation && targetUrl && targetUrl !== "#") {
-        const fullUrl = targetUrl.startsWith("http") ? targetUrl : new URL(targetUrl, window.location.origin + window.location.pathname.replace(/\/[^/]*$/, "/")).href;
+        const fullUrl = targetUrl;
         await openFullScreenPresentationModal({
             id: (found && found.id) || id,
-            title: (found && found.title) || title || "Akıllı Tahta 3D Ders Sunumu",
-            fileName: (found && found.fileName) || fileName || "sunum.html",
+            title: (found && found.title) || title || "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay (3D Sinematik Akıllı Tahta Sunumu)",
+            fileName: (found && found.fileName) || fileName || "5-sinif-1-unite-gunes-dunya-ay.html",
             fileUrl: fullUrl,
             format: "İNTERAKTİF SUNUM",
-            unit: (found && found.unit) || "",
+            unit: (found && found.unit) || "1. Ünite: Güneş, Dünya ve Ay",
             grade: gradeStr,
             cover: coverUrl,
             isHtmlEmbed: true
@@ -14007,6 +13924,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     // 🖥️ 2. GERÇEK OFİS SUNUMLARI (PowerPoint PPTX/PPT veya Dahili Akıllı Tahta Sunum Şablonu)
     const isPresentation = !isPdfFile && !isHtmlPresentation && (
         checkFile.endsWith(".pptx") || checkFile.endsWith(".ppt") ||
+        targetUrl.endsWith(".pptx") || targetUrl.endsWith(".ppt") ||
         checkFormat.includes("PPT") || checkFormat.includes("SLAYT") ||
         checkFormat === "SUNUM" ||
         (id && String(id).startsWith("sunum-")) ||
@@ -14027,7 +13945,128 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
-    // 0.1 📑 DİĞER OFİS BELGELERİ (Word, Excel, Zip)
+    // 🪐 5. SINIF GÜNEŞ, DÜNYA VE AY: 3D HAREKET LABORATUVARI
+    if (
+        id === "mat-5-1-oyun-gunes-dunya-ay-3d" ||
+        id === "builtin-oyun-5-gunes-dunya-ay" ||
+        id === "gunes-dunya-ay-3d" ||
+        targetUrl.includes("oyunlar/gunes-dunya-ay-3d.html") ||
+        ((checkTitle.includes("hareket laboratuvarı") || checkTitle.includes("hareket laboratuvari")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/gunes-dunya-ay-3d.html", "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı");
+        return;
+    }
+
+    // 🌕 APOLLO 11 AY'A İNİŞ VE DÜNYA GÖZLEMİ 3D VR SİMÜLASYONU
+    if (
+        id === "mat-apollo11-aya-inis-3d" ||
+        id === "builtin-oyun-apollo11-aya-inis" ||
+        id === "builtin-oyun-6-aya-inis" ||
+        id === "aya-inis-3d" ||
+        targetUrl.includes("oyunlar/aya-inis-3d.html") ||
+        ((checkTitle.includes("ay'a iniş") || checkTitle.includes("aya inis") || checkTitle.includes("apollo 11")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/aya-inis-3d.html", "Ay'a İniş – 3D Keşif ve VR Deneyimi");
+        return;
+    }
+
+    // 🎬 6. SINIF GÜNEŞ SİSTEMİNDE YOLCULUK – 3D SİNEMATİK ANİMASYON
+    if (
+        id === "mat-6-1-oyun-gunes-sistemi-yolculuk-3d" ||
+        id === "builtin-oyun-6-gunes-sistemi-yolculuk" ||
+        id === "gunes-sistemi-yolculuk-3d" ||
+        targetUrl.includes("oyunlar/gunes-sistemi-yolculuk-3d.html") ||
+        ((checkTitle.includes("güneş sisteminde yolculuk") || checkTitle.includes("gunes sisteminde yolculuk")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/gunes-sistemi-yolculuk-3d.html", "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon");
+        return;
+    }
+
+    // 🪐 6. SINIF GÜNEŞ SİSTEMİ – 3D KEŞİF LABORATUVARI (3D DIGITAL PLANETARIUM)
+    if (
+        id === "mat-6-1-oyun-gunes-sistemi-3d" ||
+        id === "builtin-oyun-6-gunes-sistemi" ||
+        id === "gunes-sistemi-3d" ||
+        targetUrl.includes("oyunlar/gunes-sistemi-3d.html") ||
+        ((checkTitle.includes("güneş sistemi – 3d") || checkTitle.includes("keşif laboratuvarı") || checkTitle.includes("dijital planetaryum")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/") && !targetUrl.includes(".pptx"))
+    ) {
+        openInteractiveGameModal("oyunlar/gunes-sistemi-3d.html", "Güneş Sistemi – 3D Keşif Laboratuvarı");
+        return;
+    }
+
+    // 🛰️ 5. SINIF KOZMİK KÂŞİF 3D: AY VE GÜNEŞ ÜSSÜ (3D SPACE & ROVER SIMULATOR)
+    if (
+        id === "mat-5-1-oyun-kozmik-kasif-3d" ||
+        id === "builtin-oyun-5-kozmik-kasif" ||
+        id === "kozmik-kasif-3d" ||
+        targetUrl.includes("oyunlar/kozmik-kasif-3d.html") ||
+        ((checkTitle.includes("kozmik kâşif") || checkTitle.includes("kozmik kasif") || checkTitle.includes("ay ve güneş üssü")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/kozmik-kasif-3d.html", "Kozmik Kâşif 3D: Ay ve Güneş Üssü");
+        return;
+    }
+
+    // 🏃 5. SINIF KOZMİK KOŞU: AY EVRESİ AVI (3D SUBWAY SURFERS ENDLESS RUNNER)
+    if (
+        id === "mat-5-1-oyun-kozmik-kosu-3d" ||
+        id === "builtin-oyun-5-kozmik-kosu" ||
+        id === "kozmik-kosu-3d" ||
+        targetUrl.includes("oyunlar/kozmik-kosu-3d.html") ||
+        ((checkTitle.includes("kozmik koşu") || checkTitle.includes("kozmik kosu") || checkTitle.includes("ay evresi avı")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/kozmik-kosu-3d.html", "Kozmik Koşu: Ay Evresi Avı (3D)");
+        return;
+    }
+
+    // 🌕 AY'IN EVRELERİ 3D PLANETARYUM VE UZAY SİMÜLATÖRÜ
+    if (
+        id === "mat-5-1-oyun-ayin-evreleri-3d" ||
+        id === "oyun-5-gunes" ||
+        id === "oyun-ayin-evreleri-3d" ||
+        targetUrl.includes("oyunlar/ayin-evreleri-3d.html") ||
+        ((checkTitle.includes("ay'ın evreleri 3d") || checkTitle.includes("ayin evreleri 3d") || (checkTitle.includes("evreleri") && checkTitle.includes("simülatör"))) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/ayin-evreleri-3d.html", "Ay Evreleri 3D Simülatörü");
+        return;
+    }
+
+    // ☀️ GÜNEŞ'İ KEŞFEDİYORUM 3D ETKİLEŞİMLİ UZAY LABORATUVARI
+    if (
+        id === "mat-5-1-oyun-gunesi-kesfediyorum-3d" ||
+        id === "oyun-gunesi-kesfediyorum-3d" ||
+        targetUrl.includes("oyunlar/gunesi-kesfediyorum-3d.html") ||
+        ((checkTitle.includes("güneş'i keşfediyorum") || checkTitle.includes("gunesi kesfediyorum")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/gunesi-kesfediyorum-3d.html", "Güneş 3D Uzay Laboratuvarı");
+        return;
+    }
+
+    // 🚀 GEZEGEN KOŞUSU: ANTGRAVITY GALAKSİSİ (3D SUBWAY SURFERS RUNNER)
+    if (checkTitle.includes("gezegen koşusu") || checkTitle.includes("gezegen kosusu") || checkTitle.includes("antgravity galaksi") ||
+        id === "mat-game-gezegen-kosusu" || id === "oyun-gezegen-kosusu" || targetUrl === "oyun-gezegen-kosusu" || targetUrl.includes("gezegen-kosusu")) {
+        openInteractiveGameModal("oyun-gezegen-kosusu", title || (found && found.title) || "Gezegen Koşusu: Antgravity Galaksisi");
+        return;
+    }
+
+    // 🚀 7. SINIF UZAYDAN KAÇIŞ: GİZEMLİ İSTASYON 3D BİLİMSEL KAÇIŞ ODASI
+    if (checkTitle.includes("uzaydan") || checkTitle.includes("gizemli istasyon") || checkTitle.includes("gizemli-istasyon") ||
+        id === "mat-7-1-oyun-uzaydan-kacis-3d" || id === "builtin-oyun-7-uzaydan-kacis" || id === "uzaydan-kacis-3d" ||
+        targetUrl.includes("uzaydan-kacis") || targetUrl.includes("uzaydan_kacis")) {
+        openInteractiveGameModal("oyunlar/uzaydan-kacis-3d.html", "Uzaydan Kaçış: Gizemli İstasyon (3D)");
+        return;
+    }
+
+    // 🛡️ KAÇIŞ ODASI & GEMINI ÖNCELİKLİ YÖNLENDİRME (Laboratuvar Kaçış Odası)
+    if (!checkTitle.includes("uzay") && !targetUrl.includes("uzay") &&
+        (checkTitle.includes("kaçış") || checkTitle.includes("kacis") || checkTitle.includes("escape") || checkTitle.includes("gemini") ||
+        id === "mat-5-lab-kacis-gemini" || id === "oyun-lab-kacis" ||
+        targetUrl === "oyun-lab-kacis" || (targetUrl && (targetUrl.includes("gemini.google") || targetUrl.includes("share.gemini.google"))) ||
+        (fallbackUrl && (fallbackUrl.includes("gemini.google") || fallbackUrl.includes("share.gemini.google"))))) {
+        openInteractiveGameModal("oyun-lab-kacis", title || (found && found.title) || "Laboratuvar Kaçış Odası");
+        return;
+    }
+
+// 0.1 📑 DİĞER OFİS BELGELERİ (Word, Excel, Zip)
     const isOtherOffice = !isPdfFile && !isPresentation && (
         ["DOCX", "DOC", "XLSX", "XLS", "ZIP", "RAR", "7Z"].includes(checkFormat) ||
         checkFormat.includes("WORD") || checkFormat.includes("EXCEL") ||
@@ -15372,7 +15411,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
         // 🪐 5. Sınıf Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı
-    if (str.includes("gunes-dunya-ay") || str.includes("gunes_dunya_ay") || (titleStr.includes("güneş") && titleStr.includes("dünya") && titleStr.includes("ay")) || resolvedKey === "mat-5-1-oyun-gunes-dunya-ay-3d" || resolvedKey === "builtin-oyun-5-gunes-dunya-ay" || resolvedKey === "gunes-dunya-ay-3d") {
+    if (str.includes("oyunlar/gunes-dunya-ay") || str.includes("gunes-dunya-ay-3d") || resolvedKey === "mat-5-1-oyun-gunes-dunya-ay-3d" || resolvedKey === "builtin-oyun-5-gunes-dunya-ay" || resolvedKey === "gunes-dunya-ay-3d" || ((titleStr.includes("hareket laboratuvarı") || titleStr.includes("hareket laboratuvari")) && !titleStr.includes("sunum"))) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
                 <div class="px-3 py-1.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
