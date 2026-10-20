@@ -1045,9 +1045,9 @@
     "id": "mat-6-2-sim-kuvvet-laboratuvari",
     "grade": "6",
     "category": "egitsel-oyunlar",
-    "targetSection": "1",
+    "targetSection": "2",
     "title": "Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!",
-    "unit": "Kuvvet ve Hareket",
+    "unit": "2. Ünite: Kuvvet ve Hareket",
     "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D fizik simülasyonu! 5 etkileşimli deney, bileşke kuvvet hesaplama, halat çekme yarışması, dengeleyici kuvvet bulma oyunu ve 10 soruluk değerlendirme.",
     "fileName": "kuvvet-laboratuvari.html",
     "fileUrl": "oyunlar/kuvvet-laboratuvari.html",
@@ -1058,6 +1058,7 @@
     "hasBlob": false,
     "tags": [
       "6. sınıf",
+      "2. ünite",
       "kuvvet",
       "hareket",
       "bileşke kuvvet",
@@ -1068,7 +1069,7 @@
       "maarif modeli"
     ],
     "visibility": "public",
-    "downloadCount": "🌟 Yeni Maarif Başyapıtı",
+    "downloadCount": "🌟 2. Ünite Başyapıtı",
     "createdAt": "2026-10-21T00:00:00.000Z",
     "updatedAt": "2026-10-21T00:00:00.000Z"
   },
