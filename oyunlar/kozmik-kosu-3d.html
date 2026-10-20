@@ -188,32 +188,67 @@
         <!-- Hasar Kırmızı Flaş Efekti -->
         <div id="damage-overlay" class="absolute inset-0 pointer-events-none"></div>
 
-        <!-- ❓ 3D BİLİMSEL SORU VE GEÇİT BİLGİ KARTI (Soru Yaklaştığında Açılır) -->
-        <div id="question-hud" class="absolute top-12 left-2 right-2 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-xl z-20 bg-slate-900/95 backdrop-blur-md border-2 border-cyan-400/80 p-3 sm:p-4 rounded-2xl shadow-[0_0_35px_rgba(6,182,212,0.4)] text-white transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-4">
-            <div class="flex items-center justify-between border-b border-cyan-900/60 pb-1.5 mb-2">
-                <span class="px-2 py-0.5 rounded-full bg-cyan-950 border border-cyan-500/50 text-cyan-300 text-[10px] font-orbitron uppercase tracking-wider flex items-center gap-1">
-                    <i class="fa-solid fa-graduation-cap"></i> BİLİMSEL GEÇİT YAKLAŞIYOR!
-                </span>
-                <span class="text-[10px] text-amber-400 font-mono font-bold">+100 PUAN</span>
-            </div>
+        <!-- ❓ 3D BİLİMSEL SORU KARTI (10 Saniyelik Bekleme & 2 Şıklı Seçenek A - B) -->
+        <div id="question-hud" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none">
+            <div class="relative w-full max-w-lg bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-2 border-cyan-400/90 p-4 sm:p-6 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.5)] text-white transform transition-transform duration-300 scale-95" id="question-card-inner">
+                
+                <!-- Üst Bilgi Başlığı ve 10sn Geri Sayım Sayacı -->
+                <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3 mb-3">
+                    <div class="flex items-center gap-2">
+                        <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
+                            <i class="fa-solid fa-moon"></i>
+                        </span>
+                        <div>
+                            <span class="text-[10px] font-orbitron tracking-wider text-cyan-300 font-extrabold uppercase block">AY'IN EVRELERİ SORU GEÇİDİ</span>
+                            <span class="text-[9px] text-slate-400 font-semibold" id="question-level-badge">5. Sınıf Fen Bilimleri • 1. Ünite</span>
+                        </div>
+                    </div>
 
-            <h3 class="text-xs sm:text-sm md:text-base font-extrabold text-white text-center leading-snug" id="question-text">
-                Güneş hangi gök cismidir?
-            </h3>
+                    <!-- 10 Saniyelik Canlı Geri Sayım Rozeti -->
+                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950 border border-amber-400/60 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                        <i class="fa-solid fa-stopwatch text-amber-400 text-xs animate-pulse"></i>
+                        <span id="question-timer-text" class="text-xs sm:text-sm font-black font-mono text-amber-300">10.0s</span>
+                    </div>
+                </div>
 
-            <!-- Şerit Cevap Yönlendirmeleri (Sol, Orta, Sağ) -->
-            <div class="grid grid-cols-3 gap-1.5 sm:gap-2 mt-2.5 text-center">
-                <div class="p-1.5 rounded-xl bg-slate-950/80 border border-slate-700 text-[11px] sm:text-xs">
-                    <span class="block text-[9px] font-mono text-cyan-400 font-bold mb-0.5">◀ SOL ŞERİT</span>
-                    <span class="font-bold text-slate-200" id="option-left-text">Gezegen</span>
+                <!-- 10sn Süre İlerleme Çubuğu -->
+                <div class="w-full bg-slate-800 rounded-full h-2 mb-4 overflow-hidden border border-slate-700/50">
+                    <div id="question-timer-bar" class="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-emerald-400 transition-all duration-100" style="width: 100%;"></div>
                 </div>
-                <div class="p-1.5 rounded-xl bg-slate-950/80 border border-slate-700 text-[11px] sm:text-xs">
-                    <span class="block text-[9px] font-mono text-amber-400 font-bold mb-0.5">▲ ORTA ŞERİT</span>
-                    <span class="font-bold text-slate-200" id="option-mid-text">Yıldız</span>
+
+                <!-- Soru Metni -->
+                <h3 class="text-sm sm:text-base md:text-lg font-black text-white text-center leading-snug mb-5 px-1 min-h-[50px] flex items-center justify-center" id="question-text">
+                    Soru metni yükleniyor...
+                </h3>
+
+                <!-- 2 Şıklı Cevap Butonları (A ve B) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
+                    <!-- ŞIK A -->
+                    <button type="button" id="btn-option-a" onclick="handleQuestionAnswerChoice(0)" class="group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-cyan-950/80 border-2 border-cyan-500/50 hover:border-cyan-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer">
+                        <span class="w-9 h-9 rounded-xl bg-cyan-500/20 group-hover:bg-cyan-500 group-hover:text-slate-950 border border-cyan-400 text-cyan-300 font-orbitron font-black text-sm flex items-center justify-center shrink-0 transition-colors">
+                            A
+                        </span>
+                        <div class="flex-1 min-w-0">
+                            <span class="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-white leading-tight block" id="option-a-text">Seçenek A</span>
+                            <span class="text-[9px] text-cyan-400/80 font-mono mt-0.5 block hidden sm:block">[ Klavye: A / 1 / ◀ ]</span>
+                        </div>
+                    </button>
+
+                    <!-- ŞIK B -->
+                    <button type="button" id="btn-option-b" onclick="handleQuestionAnswerChoice(1)" class="group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-amber-950/80 border-2 border-amber-500/50 hover:border-amber-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer">
+                        <span class="w-9 h-9 rounded-xl bg-amber-500/20 group-hover:bg-amber-500 group-hover:text-slate-950 border border-amber-400 text-amber-300 font-orbitron font-black text-sm flex items-center justify-center shrink-0 transition-colors">
+                            B
+                        </span>
+                        <div class="flex-1 min-w-0">
+                            <span class="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-white leading-tight block" id="option-b-text">Seçenek B</span>
+                            <span class="text-[9px] text-amber-400/80 font-mono mt-0.5 block hidden sm:block">[ Klavye: B / 2 / ▶ ]</span>
+                        </div>
+                    </button>
                 </div>
-                <div class="p-1.5 rounded-xl bg-slate-950/80 border border-slate-700 text-[11px] sm:text-xs">
-                    <span class="block text-[9px] font-mono text-cyan-400 font-bold mb-0.5">SAĞ ŞERİT ▶</span>
-                    <span class="font-bold text-slate-200" id="option-right-text">Doğal Uydu</span>
+
+                <!-- Bilimsel Açıklama / Anında İpucu Kutusu (Cevaplandıktan sonra görünür) -->
+                <div id="question-fact-box" class="hidden p-3 rounded-xl bg-slate-950/90 border border-slate-700 text-xs font-medium text-slate-200 leading-relaxed text-center">
+                    <span id="question-fact-content">Bilimsel açıklama</span>
                 </div>
             </div>
         </div>
@@ -486,6 +521,41 @@
             osc.connect(gain);
             gain.connect(audioCtx.destination);
 
+            if (type === 'meteor_impact') {
+                // Derin meteor patlama ve çarpışma gürlemesi
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, t);
+                osc.frequency.exponentialRampToValueAtTime(35, t + 0.45);
+                gain.gain.setValueAtTime(0.35, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+                osc.start(t);
+                osc.stop(t + 0.5);
+
+                // Ekstra düşük frekanslı sarsıntı tonu
+                try {
+                    const subOsc = audioCtx.createOscillator();
+                    const subGain = audioCtx.createGain();
+                    subOsc.type = 'sine';
+                    subOsc.frequency.setValueAtTime(80, t);
+                    subOsc.frequency.exponentialRampToValueAtTime(25, t + 0.6);
+                    subGain.gain.setValueAtTime(0.4, t);
+                    subGain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
+                    subOsc.connect(subGain);
+                    subGain.connect(audioCtx.destination);
+                    subOsc.start(t);
+                    subOsc.stop(t + 0.6);
+                } catch(e) {}
+                return;
+            } else if (type === 'timer_tick') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(880, t);
+                gain.gain.setValueAtTime(0.08, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + 0.05);
+                osc.start(t);
+                osc.stop(t + 0.05);
+                return;
+            }
+
             if (type === 'step') {
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(120, t);
@@ -579,83 +649,84 @@
         }
 
         // -----------------------------------------------------------------
-        // 2. 50 SORULUK BİLİMSEL SORU HAVUZU (5 Bölüm x 10 Soru)
+        
         // -----------------------------------------------------------------
-        const QUESTION_BANK = {
-            1: [ // Bölüm 1: Güneş Tüneli
-                { q: "Güneş hangi gök cismi türüne girer?", options: ["Gezegen", "Yıldız", "Doğal Uydu"], correct: 1, fact: "Güneş, bize en yakın orta büyüklükte bir yıldızdır." },
-                { q: "Güneş'in geometrik şekli nasıldır?", options: ["Küreye Yakın", "Düz Disk", "Küp"], correct: 0, fact: "Güneş, diğer yıldızlar gibi gazlardan oluşan küresel bir şekle sahiptir." },
-                { q: "Güneş ile Dünya'nın büyüklük ilişkisi nasıldır?", options: ["Dünya Daha Büyük", "Güneş Çok Daha Büyük", "Eşit Boyutta"], correct: 1, fact: "Güneş'in içine yaklaşık 1.3 milyon tane Dünya sığabilir!" },
-                { q: "Güneş yüzeyindeki koyu renkli lekeler nedir?", options: ["Güneş Lekeleri", "Göl Kraterleri", "Yanmış Taşlar"], correct: 0, fact: "Güneş lekeleri, çevrelerine göre daha serin olan manyetik bölgelerdir." },
-                { q: "Güneş kendi ekseni etrafında döner mi?", options: ["Hayır Sabittir", "Evet Döner (Batıdan Doğuya)", "Sadece Zıplar"], correct: 1, fact: "Galileo Güneş lekelerini inceleyerek Güneş'in kendi ekseninde döndüğünü kanıtlamıştır." },
-                { q: "Dünya için temel yaşam, ısı ve ışık kaynağı nedir?", options: ["Ay", "Güneş", "Kutup Yıldızı"], correct: 1, fact: "Dünya'daki tüm yaşam ve iklim olaylarının enerji kaynağı Güneş'tir." },
-                { q: "Güneş'e çıplak göz veya normal dürbünle bakmak güvenli midir?", options: ["Kesinlikle Zararlıdır", "Zararsızdır", "Gözleri İyileştirir"], correct: 0, fact: "Güneş'e doğrudan bakmak kalıcı körlüğe yol açabilir; özel filtre gereklidir." },
-                { q: "Güneş katmanlardan oluşur mu?", options: ["Evet Katmanlıdır", "Hayır İçi Boştur", "Sadece Dış Kabuktur"], correct: 0, fact: "Güneş; Çekirdek, Işınım, Kaynama, Renkküre ve Taç katmanlarından oluşur." },
-                { q: "Güneş'in merkezindeki sıcaklık yaklaşık ne kadardır?", options: ["100 °C", "15 Milyon °C", "0 °C"], correct: 1, fact: "Güneş'in çekirdeğinde nükleer füzyon gerçekleşir ve sıcaklık 15 milyon °C'dir." },
-                { q: "Güneş'ten çıkan ışık Dünya'ya yaklaşık ne kadar sürede ulaşır?", options: ["1 Saniyede", "8 Dakikada", "3 Günde"], correct: 1, fact: "150 milyon km mesafeyi ışık yaklaşık 8 dakika 20 saniyede kat eder." }
-            ],
-            2: [ // Bölüm 2: Ay Kraterleri Macerası
-                { q: "Ay kendi ışığını üretebilir mi?", options: ["Evet Kendisi Üretir", "Hayır Güneş'i Yansıtır", "Sadece Gece Üretir"], correct: 1, fact: "Ay bir ışık kaynağı değildir; Güneş'ten aldığı ışığı bize yansıtır." },
-                { q: "Ay'ın yüzeyindeki derin çukurlara ne ad verilir?", options: ["Krater", "Kanyon", "Okyanus"], correct: 0, fact: "Gök taşlarının (meteorların) çarpmasıyla Ay'da derin kraterler oluşur." },
-                { q: "Ay'ın atmosferi nasıldır?", options: ["Yok Denecek Kadar İncedir", "Dünya ile Aynıdır", "Çok Kalındır"], correct: 0, fact: "Ay'da kalın bir atmosfer olmadığı için rüzgâr, yağmur ve hava olayları görülmez." },
-                { q: "Ay'ın Dünya'ya göre büyüklüğü nasıldır?", options: ["Dünya'dan 4 Kat Küçüktür", "Dünya'dan Büyüktür", "Aynı Boyuttadır"], correct: 0, fact: "Ay'ın çapı Dünya'nın çapının yaklaşık 4'te 1'i kadardır." },
-                { q: "Ay'da rüzgâr ve yağmur görülür mü?", options: ["Hava Olayı Görülmez", "Sık Sık Yağmur Yağar", "Kar Fırtınası Olur"], correct: 0, fact: "Atmosfer olmadığı için hava olayları yaşanmaz; astronotların ayak izleri silinmez." },
-                { q: "Ay'ın yer çekimi Dünya'ya kıyasla nasıldır?", options: ["6'da 1'i Kadardır (Az)", "Dünya'dan Çoktur", "Sıfırdır"], correct: 0, fact: "Ay'da kütle çekimi Dünya'dakinin yaklaşık 1/6'sı kadardır." },
-                { q: "Ay Dünya'nın neyidir?", options: ["Tek Doğal Uydusudur", "Güneşidir", "Yapay Roketidir"], correct: 0, fact: "Ay, gezegenimiz Dünya'nın tek doğal uydusudur." },
-                { q: "Ay'da gece ile gündüz sıcaklık farkı nasıldır?", options: ["Aşırı Fazladır", "Her Zaman Ilıktır", "Fark Yoktur"], correct: 0, fact: "Atmosfer ısıyı tutamadığı için gündüz +120°C, gece -170°C'ye kadar düşer." },
-                { q: "Neil Armstrong Ay'a ilk ayak basan astronot mudur?", options: ["Evet (Apollo 11)", "Hayır (Galileo)", "Hayır (Ali Kuşçu)"], correct: 0, fact: "1969 yılında Apollo 11 göreviyle Ay'a ilk insan ayak basmıştır." },
-                { q: "Ay'ın yüzeyini kaplayan ince toz tabakasına ne ad verilir?", options: ["Regolit (Ay Tozu)", "Volkanik Çamur", "Deniz Kumu"], correct: 0, fact: "Ay yüzeyi mikrometeor çarpmalarıyla ufalanmış keskin ince tozla kaplıdır." }
-            ],
-            3: [ // Bölüm 3: Ay Evresi Avı
-                { q: "Ay'ın Dünya'dan hiç ışık almayan karanlık evresi hangisidir?", options: ["Yeni Ay", "Dolunay", "İlk Dördün"], correct: 0, fact: "Yeni Ay evresinde Ay'ın aydınlık yüzü Güneş'e, karanlık yüzü Dünya'ya bakar." },
-                { q: "Ay'ın sağ yarısının 'D' harfi şeklinde aydınlık olduğu evre?", options: ["Son Dördün", "İlk Dördün", "Yeni Ay"], correct: 1, fact: "İlk dördün evresinde Ay Dünya'dan bakıldığında düz 'D' şeklinde görünür." },
-                { q: "Ay'ın Dünya'ya bakan yüzünün tamamen parlak olduğu evre?", options: ["Dolunay", "Yeni Ay", "Hilal"], correct: 0, fact: "Dolunay evresinde Dünya Ay ile Güneş arasındadır ve Ay tamamen aydınlık görülür." },
-                { q: "Ay'ın sol yarısının ters 'D' şeklinde aydınlık olduğu evre?", options: ["İlk Dördün", "Son Dördün", "Dolunay"], correct: 1, fact: "Son dördün evresinde Ay'ın sol yarısı aydınlıktır (ters D görünümü)." },
-                { q: "Ay'ın evrelerinin yaklaşık tamamlanma süresi ne kadardır?", options: ["29.5 Gün (Yaklaşık 1 Ay)", "365 Gün", "24 Saat"], correct: 0, fact: "Yeni Ay'dan tekrar Yeni Ay'a kadar geçen süre yaklaşık 29.5 gündür." },
-                { q: "İki ana evre arasında geçen süre yaklaşık ne kadardır?", options: ["1 Hafta (7 Gün)", "1 Yıl", "1 Gün"], correct: 0, fact: "Yeni Ay, İlk Dördün, Dolunay ve Son Dördün arası yaklaşık 7'şer gündür." },
-                { q: "Ay'ın evrelerinin oluşma sebebi nedir?", options: ["Dünya Çevresinde Dolanması", "Dünya'nın Gölgesi", "Güneş'in Sönmesi"], correct: 0, fact: "Ay Dünya çevresinde dolandıkça Güneş ışığını alan aydınlık kısmın görünüşü değişir." },
-                { q: "Yeni Ay ile İlk Dördün arasında görülen ara evre?", options: ["Büyüyen Hilal", "Dolunay", "Son Dördün"], correct: 0, fact: "Ay hilal şeklinde aydınlanmaya başlar ve sağ tarafı hilal görünür." },
-                { q: "İlk Dördün ile Dolunay arasındaki ara evre hangisidir?", options: ["Şişkin Ay", "Hilal", "Yeni Ay"], correct: 0, fact: "Ay'ın yarıdan fazlasının aydınlık göründüğü evreye Şişkin Ay denir." },
-                { q: "Ay'ın evreleri Dünya'nın gölgesi yüzünden mi oluşur?", options: ["Hayır, Ay'ın Konumundandır", "Evet, Gölgedir", "Güneş Dönmediğindendir"], correct: 0, fact: "Büyük kavram yanılgısı! Evreler gölge değil, Ay'ın dolanırken bakış açımızın değişmesidir." }
-            ],
-            4: [ // Bölüm 4: Yörünge Yarışı
-                { q: "Dünya hangi gök cisminin etrafında dolanır?", options: ["Ay", "Güneş", "Mars"], correct: 1, fact: "Dünya Güneş etrafında elips yörüngede 365 gün 6 saatte dolanır." },
-                { q: "Ay hangi gök cisminin etrafında dolanır?", options: ["Dünya", "Kutup Yıldızı", "Venüs"], correct: 0, fact: "Ay Dünya'nın uydusudur ve Dünya'nın etrafında dolanır." },
-                { q: "Güneş, Dünya ve Ay'ın dönme yönü genel olarak nasıldır?", options: ["Saat Yönünün Tersi (Batıdan Doğuya)", "Saat Yönünde", "Aşağıdan Yukarı"], correct: 0, fact: "Kuzey kutbundan bakıldığında bu hareketler saat yönünün tersinedir." },
-                { q: "Ay'ın hep aynı yüzünü görmemizin bilimsel sebebi nedir?", options: ["Dönme ve Dolanma Süresi Eşittir", "Ay Hiç Dönmez", "Dünya Durur"], correct: 0, fact: "Ay'ın kendi etrafında dönme süresi ile Dünya etrafında dolanma süresi eşittir (27.3 gün)." },
-                { q: "Dünya'nın kendi ekseni etrafında dönmesi sonucu ne oluşur?", options: ["Gece ve Gündüz", "Mevsimler", "Güneş Tutulması"], correct: 0, fact: "Dünya kendi ekseninde 24 saatte döner ve gece-gündüz ardalanması gerçekleşir." },
-                { q: "Dünya'nın Güneş etrafında dolanması sonucu ne oluşur?", options: ["1 Yıl (Mevsimler)", "Gece ve Gündüz", "Ay Evreleri"], correct: 0, fact: "Dünya Güneş çevresinde 1 yılda dolanarak mevsimsel döngüyü oluşturur." },
-                { q: "Dönme ile Dolanma arasındaki temel fark nedir?", options: ["Dönme Kendi Ekseninde, Dolanma Başka Cisim Çevresindedir", "İkisi Aynıdır", "Dönme Düz Çizgidir"], correct: 0, fact: "Fatoş topaç gibi 'döner', okul bahçesinde arkadaşının çevresinde 'dolanır'." },
-                { q: "Ay Dünya ile birlikte aynı zamanda kimin etrafında dolanır?", options: ["Güneş'in Etrafında", "Kutup Yıldızı", "Hiçbiri"], correct: 0, fact: "Ay hem Dünya çevresinde dolanır hem de Dünya ile birlikte Güneş etrafında dolanır." },
-                { q: "Güneş, Dünya ve Ay'ı boyutlarına göre büyükten küçüğe sıralayınız?", options: ["Güneş > Dünya > Ay", "Dünya > Güneş > Ay", "Ay > Dünya > Güneş"], correct: 0, fact: "Basketbol topu (Güneş), Nohut (Dünya), Mercimek tanesi (Ay) benzetmesi yapılır." },
-                { q: "Ay'ın Dünya etrafındaki yörüngesi tam dairesel midir?", options: ["Hayır, Elipse Yakındır", "Tam Kusursuz Daire", "Kare Şeklindedir"], correct: 0, fact: "Gök cisimlerinin yörüngeleri tam daire değil eliptik şekildedir." }
-            ],
-            5: [ // Bölüm 5: Kozmik Final
-                { q: "Güneş, Dünya ve Ay modelleri için hangisi en uygundur?", options: ["Basketbol Topu - Nohut - Mercimek", "Karpuz - Karpuz - Elma", "Ceviz - Portakal - Fındık"], correct: 0, fact: "MEB kazanımına göre Güneş basketbol topu, Dünya nohut, Ay mercimek tanesiyle modellenir." },
-                { q: "Hangisi kendi ışığını üreten tek gök cismidir?", options: ["Güneş (Yıldız)", "Dünya", "Ay"], correct: 0, fact: "Sistemimizde ışık kaynağı olan tek cisim Güneş'tir; Dünya ve Ay aydınlatılır." },
-                { q: "Ay'da rüzgâr bayrakları dalgalandırır mı?", options: ["Hayır, Atmosfer Yoktur", "Evet, Çok Şiddetli Eser", "Sadece Gündüz Eser"], correct: 0, fact: "Apollo bayrağının dik durması için üstüne tel mekanizma yerleştirilmiştir." },
-                { q: "Ay'ın evreleri hangi sırada gerçekleşir?", options: ["Yeni Ay - İlk Dördün - Dolunay - Son Dördün", "Dolunay - Yeni Ay - Hilal", "Son Dördün - Dolunay"], correct: 0, fact: "Ana evreler sırasıyla: Yeni Ay ➔ İlk Dördün ➔ Dolunay ➔ Son Dördün." },
-                { q: "Güneş'in yapısında en çok bulunan gaz hangisidir?", options: ["Hidrojen (%73)", "Oksijen", "Karbondioksit"], correct: 0, fact: "Güneş nükleer füzyonla hidrojeni helyuma dönüştürerek ışıldar." },
-                { q: "Ay gökyüzünde Güneş kadar büyük görünür. Bunun sebebi nedir?", options: ["Ay Dünya'ya Çok Daha Yakındır", "Ay Gerçekte Güneş'le Aynıdır", "Optik Yanılsama Yoktur"], correct: 0, fact: "Güneş 400 kat büyük olmasına rağmen 400 kat uzaktadır; perspektiften eşit görünürler." },
-                { q: "Ay'ın iki ana evresi arasında kaç günlük süre vardır?", options: ["Yaklaşık 7 Gün (1 Hafta)", "30 Gün", "1 Gün"], correct: 0, fact: "Her ana evre arası yaklaşık 7.4 gündür." },
-                { q: "İlk Türk ve İslam astronomlarından olan, Ay'ın haritasını çizen kimdir?", options: ["Ali Kuşçu", "Galileo", "Newton"], correct: 0, fact: "NASA, Ay'ın bir kraterine Ali Kuşçu'nun ismini vermiştir." },
-                { q: "Güneş'in kendi ekseni etrafında dönme süresi ortalama ne kadardır?", options: ["Yaklaşık 25 Gün", "24 Saat", "365 Gün"], correct: 0, fact: "Güneş gaz yapıda olduğu için ekvatorunda yaklaşık 25 günde döner." },
-                { q: "5. Sınıf Fen Bilgisi 1. Ünite Şampiyonu araştırmacı ne kazandı?", options: ["Kozmik Altın Kupa & Üstün Başarı", "Sadece Taş", "Hiçbir Şey"], correct: 0, fact: "Tebrikler! Kozmik Koşu şampiyonu oldun ve gökyüzü sırlarını çözdün!" }
-            ]
-        };
+        // 2. 50 SORULUK BİLİMSEL AY'IN EVRELERİ SORU HAVUZU (2 ŞIKLI & KARIŞIK)
+        // -----------------------------------------------------------------
+        const QUESTIONS_POOL_50 = [
+            { q: "Ay, ışığını hangi gök cisminden alır?", ans: "Güneş", dist: "Dünya", fact: "Ay kendi ışığını üretemez; ayna gibi Güneş'ten aldığı ışığı yansıtır." },
+            { q: "Ay'ın kendine ait ışığı var mıdır?", ans: "Hayır (Işık Kaynağı Değildir)", dist: "Evet (Kendi Işığı Vardır)", fact: "Ay bir ışık kaynağı değildir, sadece Güneş ışığını yansıtır." },
+            { q: "Ay'ın Dünya etrafında dolanması sonucunda ne oluşur?", ans: "Ay'ın Evreleri", dist: "Mevsimler", fact: "Ay Dünya çevresinde dolandıkça Güneş ışığı alan aydınlık kısmının görünümü değişir ve evreler oluşur." },
+            { q: "Ay'ın kaç ana evresi vardır?", ans: "4 Ana Evre", dist: "8 Ana Evre", fact: "Ay'ın 4 ana evresi (Yeni Ay, İlk Dördün, Dolunay, Son Dördün) ve 4 ara evresi (Hilal, Şişkin Ay) vardır." },
+            { q: "Ay'ın ana evrelerinden biri hangisidir?", ans: "Dolunay (Ana Evre)", dist: "Hilal (Ara Evre)", fact: "Yeni Ay, İlk Dördün, Dolunay ve Son Dördün ana evrelerdir. Hilal ise ara evredir." },
+            { q: "Ay'ın ara evrelerinden biri hangisidir?", ans: "Hilal (Ara Evre)", dist: "İlk Dördün (Ana Evre)", fact: "Hilal ve Şişkin Ay ara evre; İlk Dördün ve Son Dördün ana evredir." },
+            { q: "Ay'ın Dünya'dan görünmediği evrenin adı nedir?", ans: "Yeni Ay", dist: "Dolunay", fact: "Yeni Ay evresinde Ay'ın aydınlık yüzü Güneş'e, karanlık yüzü Dünya'ya dönüktür." },
+            { q: "Ay'ın tamamen aydınlık ve yuvarlak göründüğü evre hangisidir?", ans: "Dolunay", dist: "Son Dördün", fact: "Dolunay evresinde Dünya Güneş ile Ay arasındadır ve Ay tam bir daire gibi parlar." },
+            { q: "Ay'ın sağ yarısının aydınlık göründüğü (D harfi) ana evre hangisidir?", ans: "İlk Dördün (D Harfi)", dist: "Son Dördün (Ters D)", fact: "İlk dördün evresinde Ay'ın sağ yarısı aydınlıktır ve düz 'D' harfine benzer." },
+            { q: "Ay'ın sol yarısının aydınlık göründüğü (ters D) ana evre hangisidir?", ans: "Son Dördün (Ters D)", dist: "İlk Dördün (D Harfi)", fact: "Son dördün evresinde Ay'ın sol yarısı aydınlıktır ve ters 'D' harfine benzer." },
+            { q: "Yeni ay evresinden sonra hangi ara evre görülür?", ans: "Hilal", dist: "Şişkin Ay", fact: "Yeni ay ile ilk dördün arasında ince yay biçiminde Hilal görülür." },
+            { q: "İlk dördün evresinden sonra hangi ara evre görülür?", ans: "Şişkin Ay", dist: "Hilal", fact: "İlk dördün ile dolunay arasında yarısından fazlası aydınlık Şişkin Ay görülür." },
+            { q: "Dolunay evresinden sonra hangi ara evre görülür?", ans: "Şişkin Ay", dist: "Yeni Ay", fact: "Dolunaydan son dördüne geçerken Ay küçülen şişkin ay evresindedir." },
+            { q: "Son dördün evresinden sonra hangi ara evre görülür?", ans: "Hilal", dist: "Dolunay", fact: "Son dördünden yeni aya geçerken Ay ince bir hilal halini alır." },
+            { q: "Ay'ın ince, yay şeklinde göründüğü evreye ne denir?", ans: "Hilal", dist: "Şişkin Ay", fact: "Hilal evresinde Ay gökyüzünde ince bir yay veya 'C' harfi şeklinde ışıldar." },
+            { q: "Ay'ın yarısından fazlasının aydınlık göründüğü ara evre hangisidir?", ans: "Şişkin Ay", dist: "Hilal", fact: "Yarıdan fazlası aydınlık ancak tam dolunay olmayan ara evre Şişkin Ay'dır." },
+            { q: "Ay'ın iki ana evresi arasında yaklaşık kaç gün vardır?", ans: "7 Gün (1 Hafta)", dist: "14 Gün (2 Hafta)", fact: "Her ana evre arasında yaklaşık 1 haftalık (7 gün) bir süre geçer." },
+            { q: "Ay'ın evreleri yaklaşık kaç günde tamamlanır?", ans: "29,5 Gün (Yaklaşık 1 Ay)", dist: "365 Gün (1 Yıl)", fact: "Yeni Ay'dan bir sonraki Yeni Ay'a kadar evre döngüsü 29,5 günde tamamlanır." },
+            { q: "Bir ay içinde yaklaşık kaç kez dolunay görülür?", ans: "Genellikle 1 Kez", dist: "Genellikle 4 Kez", fact: "Evre döngüsü 29,5 gün olduğu için bir takvim ayında kural olarak 1 kez dolunay yaşanır." },
+            { q: "Ay'ın evrelerinin oluşmasına neden olan Ay hareketi hangisidir?", ans: "Dünya Çevresinde Dolanma", dist: "Kendi Ekseninde Dönme", fact: "Ay Dünya çevresinde dolandığı için Güneş ışığını gören kısmı farklı açılardan izlenir." },
+            { q: "Yeni ay evresinden yaklaşık bir hafta sonra hangi evre görülür?", ans: "İlk Dördün", dist: "Dolunay", fact: "Yeni Ay'dan 1 hafta sonra sağ tarafı aydınlık İlk Dördün oluşur." },
+            { q: "Yeni ay evresinden yaklaşık iki hafta sonra hangi evre görülür?", ans: "Dolunay", dist: "Son Dördün", fact: "Yeni Ay'dan 14 gün sonra Ay Güneş'in tam karşısına geçerek Dolunay olur." },
+            { q: "Yeni ay evresinden yaklaşık üç hafta sonra hangi evre görülür?", ans: "Son Dördün", dist: "İlk Dördün", fact: "Yeni Ay ➔ İlk Dördün (1. hafta) ➔ Dolunay (2. hafta) ➔ Son Dördün (3. hafta)." },
+            { q: "Dolunaydan yaklaşık bir hafta sonra hangi ana evre görülür?", ans: "Son Dördün", dist: "Yeni Ay", fact: "Dolunaydan 7 gün sonra sol tarafı aydınlık olan Son Dördün evresi gelir." },
+            { q: "İlk dördünden yaklaşık bir hafta sonra hangi evre görülür?", ans: "Dolunay", dist: "Yeni Ay", fact: "İlk Dördün'den 1 hafta sonra Ay'ın aydınlık yüzü büyüyerek Dolunay'a ulaşır." },
+            { q: "Son dördünden yaklaşık bir hafta sonra hangi evre görülür?", ans: "Yeni Ay", dist: "Dolunay", fact: "Son Dördün'den 1 hafta sonra döngü başa döner ve Yeni Ay oluşur." },
+            { q: "İlk dördün ile dolunay arasında hangi ara evre bulunur?", ans: "Şişkin Ay", dist: "Hilal", fact: "İlk Dördün ve Dolunay arasındaki ara evre büyüyen Şişkin Ay'dır." },
+            { q: "Dolunay ile son dördün arasında hangi ara evre bulunur?", ans: "Şişkin Ay", dist: "Hilal", fact: "Dolunaydan sonra Ay yavaşça küçülen Şişkin Ay evresine geçer." },
+            { q: "Yeni ay ile ilk dördün arasında hangi ara evre bulunur?", ans: "Hilal", dist: "Şişkin Ay", fact: "Yeni Ay'dan hemen sonra Ay ince bir Hilal şeklinde parlamaya başlar." },
+            { q: "Son dördün ile yeni ay arasında hangi ara evre bulunur?", ans: "Hilal", dist: "Şişkin Ay", fact: "Son Dördün'den Yeni Ay'a giderken gökyüzünde son olarak Hilal izlenir." },
+            { q: "Ay'ın aydınlık görünen kısmının giderek büyümesine ne denir?", ans: "Büyüyen Ay", dist: "Küçülen Ay", fact: "Yeni Ay'dan Dolunay'a doğru aydınlık kısım artar, buna Büyüyen Ay denir." },
+            { q: "Ay'ın aydınlık görünen kısmının giderek küçülmesine ne denir?", ans: "Küçülen Ay", dist: "Büyüyen Ay", fact: "Dolunay'dan Yeni Ay'a doğru aydınlık kısım azalır, buna Küçülen Ay denir." },
+            { q: "Ay'ın hangi ana evresinde aydınlık görünen kısmı en fazladır?", ans: "Dolunay", dist: "Yeni Ay", fact: "Dolunay evresinde Ay'ın Dünya'ya bakan yüzünün tamamı (%100) aydınlıktır." },
+            { q: "Ay'ın hangi ana evresinde aydınlık görünen kısmı en azdır?", ans: "Yeni Ay", dist: "Dolunay", fact: "Yeni Ay evresinde Dünya'ya bakan yüzü hiç ışık almadığı için %0 görünür." },
+            { q: "İlk dördün evresinde Ay'ın görünen yüzünün ne kadarı aydınlıktır?", ans: "Yarısı (%50)", dist: "Tamamı (%100)", fact: "İlk dördünde Ay'ın sağ yarısı aydınlık görünür." },
+            { q: "Son dördün evresinde Ay'ın görünen yüzünün ne kadarı aydınlıktır?", ans: "Yarısı (%50)", dist: "Çeyreği (%25)", fact: "Son dördünde Ay'ın sol yarısı aydınlık görünür." },
+            { q: "Ay'ın evreleri Dünya'nın gölgesinden mi kaynaklanır?", ans: "Hayır (Gölgeden Değildir)", dist: "Evet (Dünya Gölgesidir)", fact: "Büyük kavram yanılgısı! Evreler gölge değil, Ay dolanırken bakış açımızın değişmesidir." },
+            { q: "Ay'ın evreleri Dünya'nın hangi hareketi nedeniyle oluşmaz?", ans: "Dünya'nın Kendi Ekseninde Dönmesi", dist: "Dünya'nın Güneş Çevresinde Dolanması", fact: "Dünya'nın kendi ekseninde dönmesi gece-gündüzü oluşturur, Ay evrelerine etkisi yoktur." },
+            { q: "Dünya'nın kuzey kutbu üzerinden bakıldığında Ay'ın dolanma yönü nedir?", ans: "Saat Yönünün Tersi", dist: "Saat Yönünde", fact: "Güneş, Dünya ve Ay'ın dönme ve dolanma yönleri saat yönünün tersinedir (Batıdan Doğuya)." },
+            { q: "Ay'ın dört ana evresi arasında toplam kaç ara evre geçişi bulunur?", ans: "4 (İki Hilal, İki Şişkin Ay)", dist: "2 (Sadece İki Hilal)", fact: "Ana evreler arasında iki hilal ve iki şişkin ay olmak üzere 4 ara evre yer alır." },
+            { q: "Güneş, Ay ve Dünya aynı doğrultudayken Ay'ın hangi iki evresi oluşur?", ans: "Yeni Ay ve Dolunay", dist: "İlk Dördün ve Son Dördün", fact: "Aynı doğrultuda Yeni Ay ve Dolunay; dik açıda ise Dördünler oluşur." },
+            { q: "Yeni ay evresinde Ay, Dünya ile Güneş'in neresinde bulunur?", ans: "Güneş ile Dünya'nın Arasında", dist: "Dünya'nın Arkasında", fact: "Güneş ➔ Ay ➔ Dünya dizilimi Yeni Ay evresini oluşturur." },
+            { q: "Dolunay evresinde Dünya, hangi iki gök cisminin yaklaşık arasında bulunur?", ans: "Güneş ve Ay'ın Arasında", dist: "Ay ve Mars'ın Arasında", fact: "Güneş ➔ Dünya ➔ Ay diziliminde Ay tamamen aydınlanır (Dolunay)." },
+            { q: "Ay'ın Dünya'ya dönük yüzünün tamamına yakınının aydınlık olduğu evre hangisidir?", ans: "Dolunay", dist: "Yeni Ay", fact: "Dünya'ya dönük küre yüzeyinin tamamı Güneş ışığıyla parlar." },
+            { q: "İlk dördün evresinden dört gün sonra Ay hangi ara evrede olabilir?", ans: "Şişkin Ay", dist: "Hilal", fact: "İlk dördünden sonra Ay dolunaya doğru büyür ve şişkin ay evresindedir." },
+            { q: "Dolunaydan dört gün sonra Ay hangi ara evrede olabilir?", ans: "Şişkin Ay", dist: "Hilal", fact: "Dolunaydan sonra Ay son dördüne doğru küçülürken yine şişkin aydır." },
+            { q: "Ay'ın aydınlık görünen kısmı artarken dolunaydan hemen önce hangi evre yaşanır?", ans: "Şişkin Ay", dist: "Hilal", fact: "Dolunaydan önceki son ara evre büyüyen Şişkin Ay'dır." },
+            { q: "Ay'ın aydınlık görünen kısmı azalırken yeni aydan hemen önce hangi evre yaşanır?", ans: "Hilal", dist: "Şişkin Ay", fact: "Yeni Ay'dan önceki son ara evre küçülen Hilal'dir." },
+            { q: "Ay neden Dünya'nın her yerinden aynı anda gözlemlenemez?", ans: "Dünya'nın Küresel Şekli ve Dönmesi", dist: "Ay'ın Işığının Yetersiz Olması", fact: "Dünya küreseldir ve döner; bir taraf gündüz iken diğer taraf geceyi yaşar." },
+            { q: "Ay'ın dolanma süresi ile evre döngüsünün süresi aynı mıdır?", ans: "Hayır (27,3 Gün ve 29,5 Gün)", dist: "Evet (Her İkisi de 30 Gün)", fact: "Dünya da Güneş etrafında ilerlediği için evre döngüsü (29.5 gün) dolanma süresinden (27.3 gün) biraz uzundur." }
+        ];
+
+        function shuffleArray(arr) {
+            const copy = [...arr];
+            for (let i = copy.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [copy[i], copy[j]] = [copy[j], copy[i]];
+            }
+            return copy;
+        }
 
         // -----------------------------------------------------------------
         // 3. OYUN DURUMU & DEĞİŞKENLER
         // -----------------------------------------------------------------
         const GAME = {
-            state: 'menu', // 'menu', 'playing', 'paused', 'gameover', 'victory'
+            state: 'menu', // 'menu', 'playing', 'paused', 'gameover', 'victory', 'question_pause'
             mode: 'story', // 'story', 'endless', 'class'
             level: 1,
             score: 0,
             stars: 0,
             lives: 3,
             distance: 0,
-            speed: 18, // Temel hız
+            speed: 18,
             baseSpeed: 18,
             difficulty: 'easy',
             correctAnswersCount: 0,
@@ -669,6 +740,7 @@
             playerY: 0,
             playerVY: 0,
             isJumping: false,
+            jumpTimer: 0, // Zıplama havada asılı kalma önleme zamanlayıcısı
             isSliding: false,
             slideTimer: 0,
             isInvulnerable: false,
@@ -679,16 +751,29 @@
             bonusTimer: 0,
             hasShield: false,
 
-            // Soru Mekaniği
+            // 50 Soruluk Karışık Havuz Mekaniği
             isQuestionActive: false,
+            isPausedForQuestion: false,
             currentQuestion: null,
-            nextQuestionDistance: 250,
+            nextQuestionDistance: 240,
+            shuffledQuestions: [],
+            questionPoolIndex: 0,
+            questionTimer: 10,
+            questionInterval: null,
+            activeQuestionOptions: [],
+            questionAnswered: false,
 
             // Sınıf Modu Sayacı
             classTimer: 120,
             classRemainingSeconds: 120,
             classInterval: null
         };
+
+        // Meteor Çarpma ve Krater Sistemi Değişkenleri
+        let activeMeteor = null;
+        let meteorNextDistance = 90;
+        let cameraShakeTimer = 0;
+        let meteorWarningMesh = null;
 
         // -----------------------------------------------------------------
         // 4. THREE.JS 3D GRAFİK MOTORU
@@ -931,7 +1016,15 @@
         let lastSpawnZ = -30;
 
         function updateGameLoop(delta) {
-            if (GAME.state !== 'playing') return;
+            // Soru beklemesinde veya menüde koşuyu durdur
+            if (GAME.state !== 'playing' || GAME.isPausedForQuestion) {
+                // Kamera sarsıntısı varsa sonlandır
+                if (cameraShakeTimer > 0) {
+                    cameraShakeTimer = 0;
+                    camera.position.set(0, 3.8, 6.2);
+                }
+                return;
+            }
 
             // Koşu İlerlemesi ve Mesafe
             const moveDist = GAME.speed * delta;
@@ -943,22 +1036,38 @@
             GAME.laneX += (GAME.targetLaneX - GAME.laneX) * 0.22;
             playerGroup.position.x = GAME.laneX;
 
-            // Zıplama & Yerçekimi Fiziği
+            // 🛡️ KESİN ZIPLAMA VE YERÇEKİMİ FİZİĞİ (Havada Asılı Kalmayı %100 Önleyen Koruma)
             if (GAME.isJumping) {
+                GAME.jumpTimer += delta;
                 GAME.playerY += GAME.playerVY * delta;
-                GAME.playerVY -= 38 * delta; // Yerçekimi
-                if (GAME.playerY <= 0) {
+                GAME.playerVY -= 38 * delta; // Ay yerçekimi ivmesi
+
+                // Yere basma kontrolü VEYA 0.85sn güvenlik aşımı (asla havada takılı kalmaz)
+                if (GAME.playerY <= 0 || GAME.jumpTimer > 0.85) {
                     GAME.playerY = 0;
                     GAME.isJumping = false;
                     GAME.playerVY = 0;
+                    GAME.jumpTimer = 0;
                 }
             } else if (GAME.activeBonus === 'jetpack') {
                 // Jetpack havalanması
                 GAME.playerY += (2.5 - GAME.playerY) * 0.15;
             } else {
-                GAME.playerY = 0;
+                // Yerde kalma garantisi (herhangi bir sapmada anında yere çeker)
+                if (GAME.playerY > 0) {
+                    GAME.playerY -= 22 * delta;
+                    if (GAME.playerY < 0) GAME.playerY = 0;
+                } else {
+                    GAME.playerY = 0;
+                }
+                GAME.isJumping = false;
+                GAME.playerVY = 0;
+                GAME.jumpTimer = 0;
             }
             playerGroup.position.y = GAME.playerY;
+
+            // ☄️ DİNAMİK METEOR ÇARPMA VE KRATER OLUŞTURMA MOTORU
+            updateMeteorSystem(delta, moveDist);
 
             // Kayma (Slide) Zamanlayıcısı
             if (GAME.isSliding) {
@@ -1324,13 +1433,195 @@
             }
         }
 
+        
         // -----------------------------------------------------------------
-        // 6. 3 ŞERİTLİ BİLİMSEL SORU GEÇİTLERİ (KAPILAR)
+        // ☄️ PARKURA METEOR DÜŞME VE KRATER OLUŞTURMA SİSTEMİ
+        // -----------------------------------------------------------------
+        function updateMeteorSystem(delta, moveDist) {
+            // Mesafe kontrolü: Periyodik olarak parkura yeni meteor düşür
+            if (!activeMeteor && GAME.distance >= meteorNextDistance && !GAME.isQuestionActive && !GAME.isPausedForQuestion) {
+                meteorNextDistance = GAME.distance + 110 + Math.random() * 90;
+                triggerMeteorStrike();
+            }
+
+            // Aktif Düşen Meteor Hareketi
+            if (activeMeteor) {
+                // Meteor yere doğru hızla dalış yapar
+                activeMeteor.mesh.position.y -= 42 * delta;
+                activeMeteor.mesh.position.x += (activeMeteor.targetX - activeMeteor.mesh.position.x) * 0.15;
+                activeMeteor.mesh.position.z += moveDist * 0.6; // Parkur hareketine göre yaklaşır
+                activeMeteor.mesh.rotation.x += 10 * delta;
+                activeMeteor.mesh.rotation.y += 12 * delta;
+
+                // Uyarı hologramı parkurla birlikte yaklaşır
+                if (activeMeteor.warningMesh) {
+                    activeMeteor.warningMesh.position.z += moveDist;
+                    activeMeteor.warningMesh.material.opacity = 0.5 + Math.sin(Date.now() * 0.02) * 0.4;
+                }
+
+                // Yere Çarpma Anı (Impact!)
+                if (activeMeteor.mesh.position.y <= 0.2) {
+                    executeMeteorImpact();
+                }
+            }
+
+            // Kamera Sarsıntısı Efekti
+            if (cameraShakeTimer > 0) {
+                cameraShakeTimer -= delta;
+                const shakeIntensity = 0.18 * (cameraShakeTimer / 0.28);
+                camera.position.x = (Math.random() - 0.5) * shakeIntensity;
+                camera.position.y = 3.8 + (Math.random() - 0.5) * shakeIntensity;
+                if (cameraShakeTimer <= 0) {
+                    camera.position.set(0, 3.8, 6.2);
+                }
+            }
+        }
+
+        function triggerMeteorStrike() {
+            // Rastgele şerit seç (-1: Sol, 0: Orta, 1: Sağ)
+            const targetLane = Math.floor(Math.random() * 3) - 1;
+            const targetX = targetLane * GAME.laneWidth;
+            const targetZ = -46;
+
+            // 1. Parkurda Uyarı Hedef Dairesi (Kırmızı Parlayan Hologram)
+            const warnGeo = new THREE.RingGeometry(0.5, 1.25, 24);
+            warnGeo.rotateX(-Math.PI / 2);
+            const warnMat = new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.8, side: THREE.DoubleSide });
+            const warnMesh = new THREE.Mesh(warnGeo, warnMat);
+            warnMesh.position.set(targetX, 0.06, targetZ);
+            scene.add(warnMesh);
+
+            // 2. Gökyüzünden Düşen 3D Alevli Meteor Taşı
+            const meteorGeo = new THREE.DodecahedronGeometry(0.85, 1);
+            // Köşeleri rastgele deforme ederek gerçekçi gök taşı şekli ver
+            const posAttr = meteorGeo.attributes.position;
+            for (let i = 0; i < posAttr.count; i++) {
+                const vx = posAttr.getX(i) * (0.8 + Math.random() * 0.4);
+                const vy = posAttr.getY(i) * (0.8 + Math.random() * 0.4);
+                const vz = posAttr.getZ(i) * (0.8 + Math.random() * 0.4);
+                posAttr.setXYZ(i, vx, vy, vz);
+            }
+            meteorGeo.computeVertexNormals();
+
+            const meteorMat = new THREE.MeshStandardMaterial({
+                color: 0x1c1917,
+                emissive: 0xea580c,
+                emissiveIntensity: 0.85,
+                roughness: 0.95
+            });
+            const meteorMesh = new THREE.Mesh(meteorGeo, meteorMat);
+
+            // Alevli Plazma Hale Katmanı
+            const glowGeo = new THREE.SphereGeometry(1.2, 12, 12);
+            const glowMat = new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.55 });
+            const glowMesh = new THREE.Mesh(glowGeo, glowMat);
+            meteorMesh.add(glowMesh);
+
+            // Dinamik Meteor Işığı
+            const light = new THREE.PointLight(0xf97316, 3, 25);
+            meteorMesh.add(light);
+
+            // Başlangıç: Gökyüzünde yüksekte ve uzakta
+            meteorMesh.position.set(targetX + (Math.random() - 0.5) * 4, 28, targetZ - 18);
+            scene.add(meteorMesh);
+
+            activeMeteor = {
+                mesh: meteorMesh,
+                warningMesh: warnMesh,
+                targetLane: targetLane,
+                targetX: targetX,
+                targetZ: targetZ
+            };
+        }
+
+        function executeMeteorImpact() {
+            if (!activeMeteor) return;
+
+            const impactX = activeMeteor.targetX;
+            const impactZ = activeMeteor.warningMesh ? activeMeteor.warningMesh.position.z : -46;
+
+            // Sahneden düşen meteoru ve uyarı işaretini temizle
+            scene.remove(activeMeteor.mesh);
+            if (activeMeteor.warningMesh) scene.remove(activeMeteor.warningMesh);
+
+            // 1. Patlama Sesi ve Kamera Sarsıntısı
+            playSound('meteor_impact');
+            cameraShakeTimer = 0.28;
+
+            // 2. Patlama Şok Dalgası Görseli (Genişleyen Halka)
+            const shockGeo = new THREE.RingGeometry(0.2, 0.6, 24);
+            shockGeo.rotateX(-Math.PI / 2);
+            const shockMat = new THREE.MeshBasicMaterial({ color: 0xfde047, transparent: true, opacity: 0.95, side: THREE.DoubleSide });
+            const shockwave = new THREE.Mesh(shockGeo, shockMat);
+            shockwave.position.set(impactX, 0.08, impactZ);
+            scene.add(shockwave);
+
+            // Şok dalgası genişleyip kaybolsun
+            let shockScale = 1;
+            const shockInterval = setInterval(() => {
+                shockScale += 0.35;
+                shockwave.scale.set(shockScale, shockScale, 1);
+                shockMat.opacity -= 0.12;
+                if (shockMat.opacity <= 0) {
+                    clearInterval(shockInterval);
+                    scene.remove(shockwave);
+                }
+            }, 30);
+
+            // 3. 🌑 YERDE YENİ AY KRATERİ OLUŞTUR VE ENGELLERE EKLE
+            spawnDynamicCrater(impactX, impactZ);
+
+            activeMeteor = null;
+        }
+
+        function spawnDynamicCrater(x, z) {
+            const obsGroup = new THREE.Group();
+            obsGroup.position.set(x, 0, z);
+            obsGroup.userData = { type: 'crater' };
+
+            // Yükseltilmiş Krater Kenarı (Regolit Torus Halkası)
+            const rimGeo = new THREE.TorusGeometry(0.95, 0.26, 12, 28);
+            rimGeo.rotateX(Math.PI / 2);
+            const rimMat = new THREE.MeshStandardMaterial({
+                color: 0x475569,
+                roughness: 0.98,
+                emissive: 0x7c2d12,
+                emissiveIntensity: 0.35
+            });
+            const rim = new THREE.Mesh(rimGeo, rimMat);
+            rim.position.y = 0.14;
+            obsGroup.add(rim);
+
+            // Kraterin derin koyu çukuru
+            const pitGeo = new THREE.CircleGeometry(0.88, 24);
+            pitGeo.rotateX(-Math.PI / 2);
+            const pitMat = new THREE.MeshBasicMaterial({ color: 0x020617 });
+            const pit = new THREE.Mesh(pitGeo, pitMat);
+            pit.position.y = 0.03;
+            obsGroup.add(pit);
+
+            // Krater kenarında kor halinde parlayan sıcak gök taşı parçaları
+            for (let i = 0; i < 4; i++) {
+                const emberGeo = new THREE.DodecahedronGeometry(0.12);
+                const emberMat = new THREE.MeshBasicMaterial({ color: 0xf97316 });
+                const ember = new THREE.Mesh(emberGeo, emberMat);
+                const angle = (i / 4) * Math.PI * 2;
+                ember.position.set(Math.cos(angle) * 0.9, 0.22, Math.sin(angle) * 0.9);
+                obsGroup.add(ember);
+            }
+
+            scene.add(obsGroup);
+            activeObstacles.push(obsGroup);
+        }
+
+// -----------------------------------------------------------------
+        // -----------------------------------------------------------------
+        // 6. 10 SANİYE BEKLEMELİ & 2 ŞIKLI BİLİMSEL SORU GEÇİTLERİ
         // -----------------------------------------------------------------
         function checkQuestionGateTriggers() {
-            if (GAME.isQuestionActive || activeGateGroup) return;
+            if (GAME.isQuestionActive || GAME.isPausedForQuestion || activeGateGroup) return;
 
-            // Her 250 metrede bir bilimsel soru geçidi aç
+            // Her 240 metrede bir bilimsel soru geçidi aç
             if (GAME.distance >= GAME.nextQuestionDistance) {
                 triggerQuestionGate();
             }
@@ -1338,65 +1629,174 @@
 
         function triggerQuestionGate() {
             GAME.isQuestionActive = true;
-            GAME.speed = 10; // Soruyu rahatça okuması için oyunu yavaşlat
+            GAME.isPausedForQuestion = true;
+            GAME.questionAnswered = false;
 
-            // Seviyenin soru listesinden rastgele soru seç
-            const questions = QUESTION_BANK[GAME.level] || QUESTION_BANK[1];
-            const qObj = questions[Math.floor(Math.random() * questions.length)];
+            // Karakteri havada kalmaması için anında yere oturt
+            GAME.playerY = 0;
+            playerGroup.position.y = 0;
+            GAME.isJumping = false;
+            GAME.playerVY = 0;
+            GAME.jumpTimer = 0;
 
-            // 3 Şerit Seçeneklerini Fisher-Yates ile rastgele karıştır
-            const rawOpts = qObj.options.map((text, idx) => ({
-                text,
-                isCorrect: (idx === qObj.correct)
-            }));
-            for (let i = rawOpts.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [rawOpts[i], rawOpts[j]] = [rawOpts[j], rawOpts[i]];
+            // 50 Soruluk Karışık Havuzdan Sıradaki Soruyu Seç
+            if (!GAME.shuffledQuestions || GAME.shuffledQuestions.length === 0 || GAME.questionPoolIndex >= GAME.shuffledQuestions.length) {
+                GAME.shuffledQuestions = shuffleArray(QUESTIONS_POOL_50);
+                GAME.questionPoolIndex = 0;
             }
 
+            const qObj = GAME.shuffledQuestions[GAME.questionPoolIndex++];
             GAME.currentQuestion = qObj;
-            GAME.activeGateOptions = rawOpts;
 
-            // HUD Soru Paneli (Rastgele dağıtılmış şeritler)
+            // 2 Şıkkı (A ve B) %50 İhtimalle Rastgele Dağıt
+            const isAnsFirst = Math.random() < 0.5;
+            GAME.activeQuestionOptions = [
+                {
+                    key: 'A',
+                    text: isAnsFirst ? qObj.ans : qObj.dist,
+                    isCorrect: isAnsFirst
+                },
+                {
+                    key: 'B',
+                    text: isAnsFirst ? qObj.dist : qObj.ans,
+                    isCorrect: !isAnsFirst
+                }
+            ];
+
+            // UI Metinlerini Doldur
             document.getElementById('question-text').textContent = qObj.q;
-            document.getElementById('option-left-text').textContent = rawOpts[0].text;
-            document.getElementById('option-mid-text').textContent = rawOpts[1].text;
-            document.getElementById('option-right-text').textContent = rawOpts[2].text;
+            document.getElementById('option-a-text').textContent = GAME.activeQuestionOptions[0].text;
+            document.getElementById('option-b-text').textContent = GAME.activeQuestionOptions[1].text;
+            document.getElementById('question-level-badge').textContent = `5. Sınıf Fen • Soru ${GAME.questionPoolIndex} / 50`;
 
+            // Buton Stillerini Sıfırla
+            resetOptionButtonStyles();
+
+            // Açıklama Kutusunu Gizle
+            const factBox = document.getElementById('question-fact-box');
+            factBox.className = 'hidden';
+
+            // Soru Modalını Aç (Koşuyu Durdurur)
             const qHud = document.getElementById('question-hud');
-            qHud.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
-            qHud.classList.add('opacity-100', 'translate-y-0');
+            qHud.classList.remove('opacity-0', 'pointer-events-none');
+            qHud.classList.add('opacity-100');
+            const cardInner = document.getElementById('question-card-inner');
+            if (cardInner) {
+                cardInner.classList.remove('scale-95');
+                cardInner.classList.add('scale-100');
+            }
 
-            // 3 Şeritli 3D Kapı Kemeri İnşa Et
-            build3LaneGateMesh(-45, qObj);
+            // 3D Sahnede 2 Şeritli Kemer İnşa Et (Sol: A, Sağ: B)
+            build2LaneGateMesh(-35);
+
+            // 10 Saniyelik Bekleme Sayacını Başlat
+            startQuestionCountdown(10);
         }
 
-        function build3LaneGateMesh(zPos, qObj) {
+        function resetOptionButtonStyles() {
+            const btnA = document.getElementById('btn-option-a');
+            const btnB = document.getElementById('btn-option-b');
+            if (btnA) {
+                btnA.className = 'group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-cyan-950/80 border-2 border-cyan-500/50 hover:border-cyan-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer';
+                btnA.disabled = false;
+            }
+            if (btnB) {
+                btnB.className = 'group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-amber-950/80 border-2 border-amber-500/50 hover:border-amber-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer';
+                btnB.disabled = false;
+            }
+        }
+
+        // ⏱️ 10 Saniyelik Canlı Geri Sayım Zamanlayıcısı
+        function startQuestionCountdown(seconds) {
+            if (GAME.questionInterval) clearInterval(GAME.questionInterval);
+
+            GAME.questionTimer = seconds;
+            const timerText = document.getElementById('question-timer-text');
+            const timerBar = document.getElementById('question-timer-bar');
+
+            if (timerText) timerText.textContent = `${GAME.questionTimer.toFixed(1)}s`;
+            if (timerBar) {
+                timerBar.style.width = '100%';
+                timerBar.className = 'h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-emerald-400 transition-all duration-100';
+            }
+
+            const startTime = performance.now();
+            const totalDuration = seconds * 1000;
+
+            GAME.questionInterval = setInterval(() => {
+                if (GAME.questionAnswered) {
+                    clearInterval(GAME.questionInterval);
+                    return;
+                }
+
+                const elapsed = performance.now() - startTime;
+                const remaining = Math.max(0, (totalDuration - elapsed) / 1000);
+                GAME.questionTimer = remaining;
+
+                if (timerText) {
+                    timerText.textContent = `${remaining.toFixed(1)}s`;
+                    if (remaining <= 3.0) {
+                        timerText.className = 'text-xs sm:text-sm font-black font-mono text-rose-400 animate-pulse';
+                    } else {
+                        timerText.className = 'text-xs sm:text-sm font-black font-mono text-amber-300';
+                    }
+                }
+
+                if (timerBar) {
+                    const pct = Math.max(0, (remaining / seconds) * 100);
+                    timerBar.style.width = `${pct}%`;
+                    if (remaining <= 3.0) {
+                        timerBar.className = 'h-full bg-rose-500 transition-all duration-100';
+                    }
+                }
+
+                // Süre Doldu!
+                if (remaining <= 0) {
+                    clearInterval(GAME.questionInterval);
+                    handleQuestionTimeout();
+                }
+            }, 50);
+        }
+
+        // 3D Sahnede 2 Şeritli Soru Kapısı (Sol: A, Sağ: B)
+        function build2LaneGateMesh(zPos) {
+            if (activeGateGroup) scene.remove(activeGateGroup);
             activeGateGroup = new THREE.Group();
             activeGateGroup.position.set(0, 0, zPos);
 
-            // 3 Kapı Kemerleri (Sol: x=-2.2, Orta: x=0, Sağ: x=2.2)
-            [-2.2, 0, 2.2].forEach((x, idx) => {
+            // 2 Şerit (Sol: x = -2.2 [A], Sağ: x = 2.2 [B])
+            const gateConfigs = [
+                { x: -2.2, color: 0x06b6d4, letter: 'A' },
+                { x: 2.2, color: 0xf59e0b, letter: 'B' }
+            ];
+
+            gateConfigs.forEach(cfg => {
                 const archGroup = new THREE.Group();
-                archGroup.position.set(x, 0, 0);
+                archGroup.position.set(cfg.x, 0, 0);
 
                 // Yan Direkler
-                [-0.95, 0.95].forEach(postX => {
-                    const post = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 8), new THREE.MeshStandardMaterial({ color: 0x0284c7 }));
-                    post.position.set(postX, 1.6, 0);
+                [-1.0, 1.0].forEach(px => {
+                    const post = new THREE.Mesh(
+                        new THREE.CylinderGeometry(0.08, 0.08, 3.4, 8),
+                        new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.color, emissiveIntensity: 0.4 })
+                    );
+                    post.position.set(px, 1.7, 0);
                     archGroup.add(post);
                 });
 
                 // Üst Kemer
-                const topBar = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.4, 0.2), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 }));
-                topBar.position.set(0, 3.2, 0);
+                const topBar = new THREE.Mesh(
+                    new THREE.BoxGeometry(2.3, 0.45, 0.25),
+                    new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.color, emissiveIntensity: 0.5 })
+                );
+                topBar.position.set(0, 3.4, 0);
                 archGroup.add(topBar);
 
-                // Işıltılı Şerit Portalı (İçinden geçilecek alan)
-                const portalGeo = new THREE.PlaneGeometry(1.8, 2.9);
-                const portalMat = new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.25, side: THREE.DoubleSide });
+                // Şeffaf Işıltılı Portal
+                const portalGeo = new THREE.PlaneGeometry(2.0, 3.1);
+                const portalMat = new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
                 const portal = new THREE.Mesh(portalGeo, portalMat);
-                portal.position.set(0, 1.5, 0);
+                portal.position.set(0, 1.6, 0);
                 archGroup.add(portal);
 
                 activeGateGroup.add(archGroup);
@@ -1405,42 +1805,165 @@
             scene.add(activeGateGroup);
         }
 
-        // Geçitten Geçildiğinde Değerlendirme
-        function evaluateGateAnswer(playerLane) {
-            GAME.isQuestionActive = false;
-            const chosenIndex = playerLane + 1; // -1 -> 0, 0 -> 1, 1 -> 2
-            const isCorrect = GAME.activeGateOptions 
-                ? (GAME.activeGateOptions[chosenIndex] && GAME.activeGateOptions[chosenIndex].isCorrect)
-                : (chosenIndex === GAME.currentQuestion.correct);
+        // Kullanıcı A veya B Şıkkını Seçtiğinde
+        function handleQuestionAnswerChoice(choiceIndex) {
+            if (GAME.questionAnswered || !GAME.isPausedForQuestion) return;
+            GAME.questionAnswered = true;
 
-            // Soru HUD'ını Kapat
-            const qHud = document.getElementById('question-hud');
-            qHud.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
-            qHud.classList.remove('opacity-100', 'translate-y-0');
+            if (GAME.questionInterval) clearInterval(GAME.questionInterval);
+
+            const chosen = GAME.activeQuestionOptions[choiceIndex];
+            const isCorrect = chosen ? chosen.isCorrect : false;
+
+            const btnA = document.getElementById('btn-option-a');
+            const btnB = document.getElementById('btn-option-b');
+            if (btnA) btnA.disabled = true;
+            if (btnB) btnB.disabled = true;
+
+            const chosenBtn = choiceIndex === 0 ? btnA : btnB;
+            const otherBtn = choiceIndex === 0 ? btnB : btnA;
+
+            const factBox = document.getElementById('question-fact-box');
+            const factContent = document.getElementById('question-fact-content');
 
             if (isCorrect) {
+                // DOĞRU CEVAP
                 playSound('correct');
-                confetti({ particleCount: 35, spread: 60, origin: { y: 0.5 } });
+                confetti({ particleCount: 45, spread: 70, origin: { y: 0.5 } });
+
+                if (chosenBtn) {
+                    chosenBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-emerald-600/95 border-2 border-emerald-300 text-left transition-all shadow-[0_0_25px_rgba(16,185,129,0.7)] flex items-center gap-3';
+                }
+
                 GAME.score += 100;
                 GAME.correctAnswersCount++;
                 GAME.streak++;
                 if (GAME.streak >= 3) {
-                    GAME.score += 150; // Seri bonusu
+                    GAME.score += 150; // Süper seri bonusu
                 }
                 document.getElementById('hud-score').textContent = GAME.score;
-                showFeedbackToast(`🎉 HARİKA! ${GAME.currentQuestion.fact}`, true);
+
+                if (factBox && factContent) {
+                    factBox.className = 'block p-3 rounded-xl bg-emerald-950/90 border border-emerald-500/70 text-xs font-bold text-emerald-200 text-center animate-in fade-in';
+                    factContent.innerHTML = `<span class="text-emerald-400 font-black">✓ TEBRİKLER! DOĞRU CEVAP</span><br>${GAME.currentQuestion.fact}`;
+                }
+
+                // 1.25 saniye sonra soru ekranını kapat ve koşuyu devam ettir
+                setTimeout(() => {
+                    closeQuestionModalAndResume();
+                }, 1300);
+
             } else {
+                // YANLIŞ CEVAP
                 playSound('hit');
                 GAME.streak = 0;
-                showFeedbackToast(`💡 BİLGİ: ${GAME.currentQuestion.fact}`, false);
+                GAME.lives -= 1;
+                updateLivesHUD();
+                triggerDamageFlash();
+
+                if (chosenBtn) {
+                    chosenBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-rose-600/95 border-2 border-rose-300 text-left transition-all shadow-[0_0_25px_rgba(244,63,94,0.7)] flex items-center gap-3';
+                }
+                // Doğru olan şıkkı yeşil olarak göster
+                if (otherBtn) {
+                    otherBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-emerald-700/80 border-2 border-emerald-400 text-left transition-all flex items-center gap-3';
+                }
+
+                if (factBox && factContent) {
+                    factBox.className = 'block p-3 rounded-xl bg-rose-950/90 border border-rose-500/70 text-xs font-bold text-rose-200 text-center animate-in fade-in';
+                    factContent.innerHTML = `<span class="text-rose-400 font-black">✗ YANLIŞ CEVAP (DOĞRUSU: ${GAME.currentQuestion.ans})</span><br>${GAME.currentQuestion.fact}`;
+                }
+
+                if (GAME.lives <= 0) {
+                    setTimeout(() => {
+                        closeQuestionModalAndResume();
+                        triggerGameOver();
+                    }, 1700);
+                } else {
+                    setTimeout(() => {
+                        closeQuestionModalAndResume();
+                    }, 1700);
+                }
+            }
+        }
+
+        // 10 Saniye Süre Dolduğunda
+        function handleQuestionTimeout() {
+            if (GAME.questionAnswered || !GAME.isPausedForQuestion) return;
+            GAME.questionAnswered = true;
+
+            playSound('hit');
+            GAME.streak = 0;
+            GAME.lives -= 1;
+            updateLivesHUD();
+            triggerDamageFlash();
+
+            const btnA = document.getElementById('btn-option-a');
+            const btnB = document.getElementById('btn-option-b');
+            if (btnA) btnA.disabled = true;
+            if (btnB) btnB.disabled = true;
+
+            // Doğru olan butonu yeşil göster
+            const correctIndex = GAME.activeQuestionOptions.findIndex(o => o.isCorrect);
+            const correctBtn = correctIndex === 0 ? btnA : btnB;
+            if (correctBtn) {
+                correctBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-emerald-700/90 border-2 border-emerald-400 text-left transition-all flex items-center gap-3';
             }
 
-            // Normal Hıza Geri Dön
-            GAME.speed = GAME.baseSpeed;
-            GAME.nextQuestionDistance = GAME.distance + 280;
+            const factBox = document.getElementById('question-fact-box');
+            const factContent = document.getElementById('question-fact-content');
+            if (factBox && factContent) {
+                factBox.className = 'block p-3 rounded-xl bg-amber-950/95 border border-amber-500/80 text-xs font-bold text-amber-200 text-center animate-in fade-in';
+                factContent.innerHTML = `<span class="text-amber-400 font-black">⏰ 10 SANİYELİK SÜRE DOLDU! (DOĞRUSU: ${GAME.currentQuestion.ans})</span><br>${GAME.currentQuestion.fact}`;
+            }
 
-            // Hikâye Modunda 5 Doğru Sonrası Bölüm Tamamlama
-            if (GAME.mode === 'story' && GAME.correctAnswersCount >= 4) {
+            if (GAME.lives <= 0) {
+                setTimeout(() => {
+                    closeQuestionModalAndResume();
+                    triggerGameOver();
+                }, 1800);
+            } else {
+                setTimeout(() => {
+                    closeQuestionModalAndResume();
+                }, 1800);
+            }
+        }
+
+        function closeQuestionModalAndResume() {
+            const qHud = document.getElementById('question-hud');
+            if (qHud) {
+                qHud.classList.add('opacity-0', 'pointer-events-none');
+                qHud.classList.remove('opacity-100');
+            }
+            const cardInner = document.getElementById('question-card-inner');
+            if (cardInner) {
+                cardInner.classList.add('scale-95');
+                cardInner.classList.remove('scale-100');
+            }
+
+            // 3D Kapı Kemerini Kaldır
+            if (activeGateGroup) {
+                scene.remove(activeGateGroup);
+                activeGateGroup = null;
+            }
+
+            // Koşuyu Kesintisiz ve Yere Oturmuş Olarak Devam Ettir
+            GAME.playerY = 0;
+            playerGroup.position.y = 0;
+            GAME.isJumping = false;
+            GAME.playerVY = 0;
+            GAME.jumpTimer = 0;
+
+            GAME.isPausedForQuestion = false;
+            GAME.isQuestionActive = false;
+            GAME.questionAnswered = false;
+            GAME.state = 'playing';
+
+            GAME.speed = GAME.baseSpeed;
+            GAME.nextQuestionDistance = GAME.distance + 240;
+
+            // Hikâye Modunda 5 Doğru Sonrası Zafer
+            if (GAME.mode === 'story' && GAME.correctAnswersCount >= 5) {
                 triggerVictory();
             }
         }
@@ -1462,7 +1985,21 @@
         function setupInputControls() {
             // Klavye
             window.addEventListener('keydown', (e) => {
-                if (GAME.state !== 'playing') return;
+            // Soru bekleme anında A, B, 1, 2 veya Ok tuşlarıyla cevap verme
+            if (GAME.isPausedForQuestion) {
+                const k = e.key.toLowerCase();
+                if (k === 'a' || k === '1' || e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    handleQuestionAnswerChoice(0);
+                    return;
+                } else if (k === 'b' || k === '2' || e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    handleQuestionAnswerChoice(1);
+                    return;
+                }
+            }
+
+            if (GAME.state !== 'playing') return;
 
                 if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
                     changeLane(-1);
@@ -1519,14 +2056,30 @@
         }
 
         function doJump() {
-            if (!GAME.isJumping) {
+            // Soru beklemesinde veya havada iken tekrar zıplamaya izin verme
+            if (GAME.state !== 'playing' || GAME.isPausedForQuestion || GAME.isQuestionActive) return;
+
+            // Karakter yalnızca yerde iken ve jetpack yokken zıplayabilir
+            if (!GAME.isJumping && GAME.playerY <= 0.05 && GAME.activeBonus !== 'jetpack') {
                 GAME.isJumping = true;
                 GAME.playerVY = 14;
+                GAME.jumpTimer = 0;
                 playSound('jump');
             }
         }
 
         function doSlide() {
+            if (GAME.state !== 'playing' || GAME.isPausedForQuestion) return;
+
+            // Karakter zıplarken aşağı kayma tuşuna basarsa anında yere çakılır (Fast-fall Subway Surfers mekaniği)
+            if (GAME.isJumping) {
+                GAME.playerY = 0;
+                playerGroup.position.y = 0;
+                GAME.isJumping = false;
+                GAME.playerVY = 0;
+                GAME.jumpTimer = 0;
+            }
+
             if (!GAME.isSliding) {
                 GAME.isSliding = true;
                 GAME.slideTimer = 0.75;
@@ -1556,6 +2109,29 @@
             GAME.distance = 0;
             GAME.correctAnswersCount = 0;
             GAME.lane = 0;
+            GAME.isPausedForQuestion = false;
+            GAME.isQuestionActive = false;
+            GAME.questionAnswered = false;
+
+            // 50 Soruluk Ay'ın Evreleri Havuzunu Her Oyunda Yeniden Rastgele Karıştır
+            GAME.shuffledQuestions = shuffleArray(QUESTIONS_POOL_50);
+            GAME.questionPoolIndex = 0;
+
+            // Karakteri kesinlikle yerde başlat
+            GAME.playerY = 0;
+            playerGroup.position.y = 0;
+            GAME.isJumping = false;
+            GAME.playerVY = 0;
+            GAME.jumpTimer = 0;
+
+            // Meteor ve krater zamanlayıcılarını sıfırla
+            if (activeMeteor) {
+                scene.remove(activeMeteor.mesh);
+                if (activeMeteor.warningMesh) scene.remove(activeMeteor.warningMesh);
+                activeMeteor = null;
+            }
+            meteorNextDistance = 90;
+
             updateLivesHUD();
 
             document.getElementById('hud-score').textContent = '0';
