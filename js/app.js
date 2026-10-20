@@ -30,7 +30,7 @@ let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
 const PROTECTED_MATERIAL_IDS = new Set([
-    "mat-game-gezegen-kosusu", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
+     "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-3d", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi", "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi",
@@ -13982,6 +13982,32 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
+            // ⚡ 6. SINIF KUVVET LABORATUVARI – KUVVETLERİ DENGELE, HAREKETİ KEŞFET!
+    if (
+        id === "mat-6-2-sim-kuvvet-laboratuvari" ||
+        id === "kuvvet-laboratuvari" ||
+        targetUrl.includes("kuvvet-laboratuvari") ||
+        checkTitle.includes("kuvvet laboratuvarı") ||
+        checkTitle.includes("kuvvet laboratuvari")
+    ) {
+        openInteractiveGameModal("oyunlar/kuvvet-laboratuvari.html", "Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!");
+        return;
+    }
+
+    // 🚂 6. SINIF UZAY EKSPRESİ: GÜNEŞ SİSTEMİ KEŞFİ
+    if (
+        id === "mat-6-oyun-uzay-ekspresi" ||
+        id === "builtin-oyun-6-uzay-ekspresi" ||
+        id === "oyun-uzay-ekspresi" ||
+        id === "oyun-6-uzay-ekspresi" ||
+        targetUrl.includes("uzay-ekspresi") ||
+        checkTitle.includes("uzay ekspresi") ||
+        checkTitle.includes("uzay-ekspresi")
+    ) {
+        openInteractiveGameModal("oyun-uzay-ekspresi", "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi");
+        return;
+    }
+
     // 🪐 6. SINIF GÜNEŞ SİSTEMİ – 3D KEŞİF LABORATUVARI (3D DIGITAL PLANETARIUM)
     if (
         id === "mat-6-1-oyun-gunes-sistemi-3d" ||
@@ -15308,6 +15334,74 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     const str = String(gameKeyOrUrl || "").toLowerCase();
     const titleStr = String(gameTitle || "").toLowerCase();
 
+    // ⚡ 6. Sınıf Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!
+    if (str.includes("kuvvet-laboratuvari") || str.includes("kuvvet laboratuvarı") || str.includes("kuvvet laboratuvari") || titleStr.includes("kuvvet laboratuvarı") || titleStr.includes("kuvvet laboratuvari") || resolvedKey === "mat-6-2-sim-kuvvet-laboratuvari" || resolvedKey === "kuvvet-laboratuvari") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-cyan-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 via-blue-600 to-indigo-600 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-atom"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-cyan-300">⚡ Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 6. Sınıf Fen Bilimleri • Maarif Modeli</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/kuvvet-laboratuvari.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/kuvvet-laboratuvari.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
+
+
+    // 🚂 Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Bilim Treni Oyunu)
+    if (str.includes("uzay-ekspresi") || str.includes("uzay ekspresi") || str.includes("uzay_ekspresi") || titleStr.includes("uzay ekspresi") || resolvedKey === "oyun-uzay-ekspresi" || resolvedKey === "oyun-6-uzay-ekspresi" || resolvedKey === "mat-6-oyun-uzay-ekspresi") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 rounded-2xl w-full max-w-[99vw] h-[98vh] h-[98dvh] border border-amber-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
+                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 text-slate-950 flex items-center justify-center text-sm sm:text-lg font-black shadow-md">
+                            <i class="fa-solid fa-train-subway"></i>
+                        </span>
+                        <div>
+                            <h3 class="text-xs sm:text-base font-black text-amber-400">🚂 Rotalı Fenci - Uzay Ekspresi</h3>
+                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:inline">3D Sonsuz Uzay Treni & Maarif Modeli Bilgi Kapıları • MEB 6. Sınıf 1. Ünite</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <a href="oyunlar/uzay-ekspresi.html" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
+                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/uzay-ekspresi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        return;
+    }
+
     // 🌕 Apollo 11 Ay'a İniş ve Dünya Gözlemi 3D VR Simülasyonu
     if (str.includes("aya-inis") || str.includes("aya_inis") || str.includes("ay'a iniş") || str.includes("aya inis") || str.includes("apollo") || titleStr.includes("ay'a iniş") || titleStr.includes("aya inis") || titleStr.includes("apollo") || resolvedKey === "aya-inis-3d" || resolvedKey === "oyun-aya-inis-3d" || resolvedKey === "mat-apollo11-aya-inis-3d" || resolvedKey === "builtin-oyun-apollo11-aya-inis" || resolvedKey === "builtin-oyun-6-aya-inis") {
         modal.innerHTML = `
@@ -15377,7 +15471,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     }
 
     // 🪐 6. Sınıf Güneş Sistemi – 3D Keşif Laboratuvarı (Dijital Planetaryum)
-    if (str.includes("gunes-sistemi") || str.includes("gunes_sistemi") || str.includes("güneş sistemi") || str.includes("gunes sistemi") || titleStr.includes("güneş sistemi") || titleStr.includes("gunes sistemi") || resolvedKey === "gunes-sistemi-3d" || resolvedKey === "oyun-gunes-sistemi-3d") {
+    if (!str.includes("uzay") && !titleStr.includes("uzay") && (str.includes("gunes-sistemi") || str.includes("gunes_sistemi") || str.includes("güneş sistemi") || str.includes("gunes sistemi") || titleStr.includes("güneş sistemi") || titleStr.includes("gunes sistemi") || resolvedKey === "gunes-sistemi-3d" || resolvedKey === "oyun-gunes-sistemi-3d")) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
                 <div class="px-3 py-1.5 bg-slate-900 border-b border-sky-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
@@ -15678,37 +15772,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         return;
     }
 
-    // 🚂 Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi Bilim Treni Oyunu)
-    if (str.includes("uzay-ekspresi") || str.includes("uzay ekspresi") || str.includes("uzay_ekspresi") || titleStr.includes("uzay ekspresi") || resolvedKey === "oyun-uzay-ekspresi" || resolvedKey === "oyun-6-uzay-ekspresi" || resolvedKey === "mat-6-oyun-uzay-ekspresi") {
-        modal.innerHTML = `
-            <div class="bg-slate-950 rounded-2xl w-full max-w-[99vw] h-[98vh] h-[98dvh] border border-amber-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
-                <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
-                    <div class="flex items-center gap-2 sm:gap-3">
-                        <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 text-slate-950 flex items-center justify-center text-sm sm:text-lg font-black shadow-md">
-                            <i class="fa-solid fa-train-subway"></i>
-                        </span>
-                        <div>
-                            <h3 class="text-xs sm:text-base font-black text-amber-400">🚂 Rotalı Fenci - Uzay Ekspresi</h3>
-                            <span class="text-[10px] sm:text-[11px] text-slate-400 font-medium hidden sm:inline">3D Sonsuz Uzay Treni & Maarif Modeli Bilgi Kapıları • MEB 6. Sınıf 1. Ünite</span>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-1.5 sm:gap-2">
-                        <a href="oyunlar/uzay-ekspresi.html" target="_blank" rel="noopener noreferrer" class="px-2.5 sm:px-3 py-1.5 bg-slate-800 hover:bg-amber-500 hover:text-slate-950 text-white rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shadow-sm" title="Tam Ekran Yeni Sekmede Oyna">
-                            <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Tam Ekran Aç</span>
-                        </a>
-                        <button type="button" onclick="closeInteractiveGameModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
-                            <i class="fa-solid fa-xmark"></i>
-                        </button>
-                    </div>
-                </div>
-                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
-                    <iframe src="oyunlar/uzay-ekspresi.html" class="w-full h-full border-0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
-                </div>
-            </div>
-        `;
-        modal.classList.remove("hidden");
-        return;
-    }
+    
 
     // Determine if it's a built-in interactive game or external URL
     const rawGameData = INTERACTIVE_GAMES_POOL[resolvedKey] ||

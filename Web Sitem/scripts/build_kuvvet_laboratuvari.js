@@ -1,0 +1,1972 @@
+const fs = require('fs');
+const path = require('path');
+
+const targetPath = path.join(__dirname, '../oyunlar/kuvvet-laboratuvari.html');
+
+const htmlContent = `<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950 select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet! | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lab: {
+                            bg: '#030712',
+                            card: '#0b1329',
+                            border: '#1e293b',
+                            cyan: '#06b6d4',
+                            sky: '#38bdf8',
+                            green: '#10b981',
+                            red: '#ef4444',
+                            blue: '#3b82f6',
+                            gold: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #030712;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            touch-action: none;
+        }
+
+        #webgl-container {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        /* Özel Kaydırıcı Stilleri (Akıllı Tahta Dokunmatik Uyumlu) */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+
+        input[type=range]:focus {
+            outline: none;
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
+            cursor: pointer;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* Yeşil Sağ Slider */
+        .slider-green::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #064e3b, #10b981);
+        }
+        .slider-green::-webkit-slider-thumb {
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #34d399;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(52, 211, 153, 0.8), 0 0 0 2px #ffffff;
+            transition: transform 0.1s;
+        }
+        .slider-green::-webkit-slider-thumb:active {
+            transform: scale(1.18);
+        }
+
+        /* Kırmızı Sol Slider */
+        .slider-red::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #ef4444, #7f1d1d);
+        }
+        .slider-red::-webkit-slider-thumb {
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #f87171;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(248, 113, 113, 0.8), 0 0 0 2px #ffffff;
+            transition: transform 0.1s;
+        }
+        .slider-red::-webkit-slider-thumb:active {
+            transform: scale(1.18);
+        }
+
+        /* Mavi Slider */
+        .slider-blue::-webkit-slider-runnable-track {
+            background: linear-gradient(90deg, #1e3a8a, #3b82f6);
+        }
+        .slider-blue::-webkit-slider-thumb {
+            height: 28px;
+            width: 28px;
+            border-radius: 50%;
+            background: #60a5fa;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.8), 0 0 0 2px #ffffff;
+            transition: transform 0.1s;
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1329;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+
+        .hud-glass {
+            background: rgba(11, 19, 41, 0.88);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+    </style>
+</head>
+<body class="h-full w-full overflow-hidden flex flex-col justify-between">
+
+    <!-- 3D WebGL Canvas Alanı -->
+    <div id="webgl-container"></div>
+
+    <!-- 🔝 ÜST BAŞLIK VE MODÜL MENÜSÜ -->
+    <header class="relative z-20 w-full px-3 py-2 hud-glass border-b border-cyan-500/30 flex items-center justify-between shrink-0 shadow-2xl">
+        <!-- Logo ve Başlık -->
+        <div class="flex items-center gap-2 sm:gap-3">
+            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(6,182,212,0.6)]">
+                <i class="fa-solid fa-atom text-base sm:text-lg animate-spin-slow"></i>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs sm:text-sm font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-amber-300 uppercase tracking-wider">
+                        KUVVET LABORATUVARI
+                    </span>
+                    <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 hidden md:inline">
+                        6. SINIF • MAARİF MODELİ
+                    </span>
+                </div>
+                <p class="text-[10px] text-slate-300 font-medium hidden sm:block">
+                    Kuvvetleri Dengele, Hareketi Keşfet! • Rotalı Fenci
+                </p>
+            </div>
+        </div>
+
+        <!-- 5 Deney Modülü Seçici Butonları -->
+        <nav class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 px-1 max-w-[62vw] no-scrollbar">
+            <button type="button" onclick="switchExperiment(1)" id="nav-btn-1" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 shrink-0 bg-cyan-500/20 text-cyan-300 border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]" title="1. Kuvvetleri Keşfet">
+                <i class="fa-solid fa-arrows-left-right text-xs"></i>
+                <span class="hidden md:inline">1. Kuvvetleri Keşfet</span>
+                <span class="md:hidden">1. Keşfet</span>
+            </button>
+            <button type="button" onclick="switchExperiment(2)" id="nav-btn-2" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" title="2. Halat Çekme Yarışması">
+                <i class="fa-solid fa-people-pulling text-xs"></i>
+                <span class="hidden md:inline">2. Halat Çekme</span>
+                <span class="md:hidden">2. Halat</span>
+            </button>
+            <button type="button" onclick="switchExperiment(3)" id="nav-btn-3" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" title="3. Kutuyu Hareket Ettir">
+                <i class="fa-solid fa-truck-ramp-box text-xs"></i>
+                <span class="hidden md:inline">3. Kutuyu Hareket Ettir</span>
+                <span class="md:hidden">3. Hareket</span>
+            </button>
+            <button type="button" onclick="switchExperiment(4)" id="nav-btn-4" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" title="4. Dengeleyici Kuvveti Bul">
+                <i class="fa-solid fa-scale-balanced text-xs"></i>
+                <span class="hidden md:inline">4. Dengeleyici Kuvvet</span>
+                <span class="md:hidden">4. Denge</span>
+            </button>
+            <button type="button" onclick="switchExperiment(5)" id="nav-btn-5" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:text-white" title="5. Kuvvet Dedektifi">
+                <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                <span class="hidden md:inline">5. Kuvvet Dedektifi</span>
+                <span class="md:hidden">5. Dedektif</span>
+            </button>
+        </nav>
+
+        <!-- Sağ Yardımcı Butonlar: Test, Tablo, Tam Ekran -->
+        <div class="flex items-center gap-1.5 shrink-0">
+            <button type="button" onclick="openQuizModal()" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all flex items-center gap-1.5 active:scale-95" title="10 Soruluk Ölçme ve Değerlendirme">
+                <i class="fa-solid fa-award"></i>
+                <span class="hidden lg:inline">Ölçme Testi</span>
+            </button>
+            <button type="button" onclick="openObservationLogModal()" class="p-1.5 sm:px-2.5 sm:py-1.5 bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs rounded-xl border border-cyan-500/30 transition-all flex items-center gap-1" title="Öğretmen Gözlem Tablosu">
+                <i class="fa-solid fa-clipboard-list"></i>
+                <span class="hidden lg:inline">Gözlem Tablosu</span>
+            </button>
+            <button type="button" onclick="toggleFullscreen()" class="w-8 h-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all" title="Tam Ekran">
+                <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- 📊 ORTA DİNAMİK CANLI BİLGİ HUD ŞERİDİ (Bileşke Kuvvet & Durum Göstergesi) -->
+    <div class="relative z-10 w-full px-4 pt-2 pointer-events-none flex items-start justify-between">
+        
+        <!-- Sol Panel: Anlık Kuvvetler & Vektör Özeti -->
+        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl max-w-xs pointer-events-auto transition-all duration-200">
+            <div class="text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                <span><i class="fa-solid fa-gauge text-cyan-400"></i> KUVVET VEKTÖRLERİ</span>
+                <span id="force-math-compact" class="text-cyan-300 font-mono text-[10px]"></span>
+            </div>
+            <div class="space-y-1.5 text-xs font-bold">
+                <div class="flex items-center justify-between text-emerald-400 bg-emerald-950/40 px-2 py-1 rounded-lg border border-emerald-500/20">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-right text-emerald-400"></i> Sağa Kuvvet (F₁):</span>
+                    <span id="hud-val-right" class="font-mono font-black text-sm">15 N</span>
+                </div>
+                <div class="flex items-center justify-between text-rose-400 bg-rose-950/40 px-2 py-1 rounded-lg border border-rose-500/20">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-left text-rose-400"></i> Sola Kuvvet (F₂):</span>
+                    <span id="hud-val-left" class="font-mono font-black text-sm">9 N</span>
+                </div>
+                <div class="flex items-center justify-between text-sky-400 bg-sky-950/50 px-2 py-1.5 rounded-lg border border-sky-500/40 shadow-inner">
+                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-sky-400"></i> Bileşke Kuvvet (R):</span>
+                    <span id="hud-val-net" class="font-mono font-black text-sm sm:text-base text-sky-300">6 N Sağa</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ Panel: Dengelenmiş / Dengelenmemiş Durum Rozeti -->
+        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl pointer-events-auto text-right">
+            <div class="text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1">
+                KUVVET DURUMU
+            </div>
+            <div id="hud-balance-badge" class="px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm tracking-wide inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
+                <i class="fa-solid fa-circle-exclamation text-amber-400"></i>
+                <span id="hud-balance-text">DENGELENMEMİŞ KUVVETLER</span>
+            </div>
+            <div class="text-[11px] text-slate-300 font-bold mt-1.5 flex items-center justify-end gap-1.5" id="hud-motion-effect">
+                <span>Hareket Etkisi:</span> <span class="text-amber-300 font-black" id="hud-motion-text">Sağa Doğru Hızlanıyor</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🎮 ALT İNTERAKTİF KONTROL PANELİ (Deneylere Göre Dinamik Değişir) -->
+    <footer class="relative z-20 w-full px-3 py-3 hud-glass border-t border-cyan-500/30 shrink-0 shadow-2xl">
+        <div class="max-w-6xl mx-auto w-full">
+            
+            <!-- ===================== MODÜL 1 KONTROLLERİ: KUVVETLERİ KEŞFET ===================== -->
+            <div id="controls-module-1" class="module-controls-panel grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <!-- Sol Kuvvet Slider (Kırmızı) -->
+                <div class="md:col-span-4 bg-slate-900/80 p-2.5 rounded-2xl border border-rose-500/30">
+                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Sola Uygulanan Kuvvet (Kırmızı):</span>
+                        <span id="label-slider-left" class="font-mono font-black text-base text-rose-400 bg-rose-950 px-2 py-0.5 rounded-lg border border-rose-500/40">9 N</span>
+                    </div>
+                    <input type="range" id="slider-force-left" min="0" max="30" value="9" step="1" class="slider-red" oninput="onForceLeftChange(this.value)">
+                    <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
+                        <span>0 N</span>
+                        <span>15 N</span>
+                        <span>30 N</span>
+                    </div>
+                </div>
+
+                <!-- Orta Hızlı Ön Ayarlar & Eylemler -->
+                <div class="md:col-span-4 flex flex-col gap-2">
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" onclick="setPresetForces(15, 15)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                            F₁ = F₂ (Denge)
+                        </button>
+                        <button type="button" onclick="setPresetForces(20, 5)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                            Sağ > Sol
+                        </button>
+                        <button type="button" onclick="setPresetForces(5, 20)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                            Sol > Sağ
+                        </button>
+                        <button type="button" onclick="setPresetForces(0, 0)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                            Sıfırla (0 N)
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="openPredictModal(1)" class="flex-1 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-lightbulb"></i> <span>Tahmin Et</span>
+                        </button>
+                        <button type="button" onclick="recordCurrentObservation()" class="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Bu deneyi gözlem tablosuna ekle">
+                            <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Kaydet</span>
+                        </button>
+                        <button type="button" onclick="resetPhysicsBox()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer" title="Konumu merkeze al">
+                            <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sağ Kuvvet Slider (Yeşil) -->
+                <div class="md:col-span-4 bg-slate-900/80 p-2.5 rounded-2xl border border-emerald-500/30">
+                    <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
+                        <span class="flex items-center gap-1.5">Sağa Uygulanan Kuvvet (Yeşil): <i class="fa-solid fa-arrow-right"></i></span>
+                        <span id="label-slider-right" class="font-mono font-black text-base text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-500/40">15 N</span>
+                    </div>
+                    <input type="range" id="slider-force-right" min="0" max="30" value="15" step="1" class="slider-green" oninput="onForceRightChange(this.value)">
+                    <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
+                        <span>0 N</span>
+                        <span>15 N</span>
+                        <span>30 N</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== MODÜL 2 KONTROLLERİ: HALAT ÇEKME YARIŞMASI ===================== -->
+            <div id="controls-module-2" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <!-- Sol Kırmızı Takım -->
+                <div class="md:col-span-4 bg-rose-950/40 p-2.5 rounded-2xl border border-rose-500/40">
+                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-group"></i> Kırmızı Takım Çekişi:</span>
+                        <span id="label-tug-red" class="font-mono font-black text-base text-rose-300 bg-rose-950 px-2 py-0.5 rounded-lg border border-rose-500/40">20 N</span>
+                    </div>
+                    <input type="range" id="slider-tug-red" min="0" max="30" value="20" step="1" class="slider-red" oninput="onTugRedChange(this.value)">
+                    <div class="flex justify-between text-[9px] font-mono text-rose-400/60 mt-1">
+                        <span>0 N</span>
+                        <span>15 N</span>
+                        <span>30 N</span>
+                    </div>
+                </div>
+
+                <!-- Yarışma Başlat / Duraklat / Sorular -->
+                <div class="md:col-span-4 flex flex-col gap-2 items-center text-center">
+                    <div class="text-xs font-black text-white" id="tug-status-text">
+                        Yarışma Başlamaya Hazır!
+                    </div>
+                    <div class="flex items-center gap-2 w-full">
+                        <button type="button" onclick="toggleTugRace()" id="btn-tug-action" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-play"></i> <span id="btn-tug-action-text">Yarışmayı Başlat</span>
+                        </button>
+                        <button type="button" onclick="resetTugRace()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sağ Mavi Takım -->
+                <div class="md:col-span-4 bg-sky-950/40 p-2.5 rounded-2xl border border-sky-500/40">
+                    <div class="flex items-center justify-between text-xs font-black text-sky-300 mb-1">
+                        <span class="flex items-center gap-1.5">Mavi Takım Çekişi: <i class="fa-solid fa-user-group"></i></span>
+                        <span id="label-tug-blue" class="font-mono font-black text-base text-sky-300 bg-sky-950 px-2 py-0.5 rounded-lg border border-sky-500/40">10 N</span>
+                    </div>
+                    <input type="range" id="slider-tug-blue" min="0" max="30" value="10" step="1" class="slider-blue" oninput="onTugBlueChange(this.value)">
+                    <div class="flex justify-between text-[9px] font-mono text-sky-400/60 mt-1">
+                        <span>0 N</span>
+                        <span>15 N</span>
+                        <span>30 N</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== MODÜL 3 KONTROLLERİ: KUTUYU HAREKET ETTİR ===================== -->
+            <div id="controls-module-3" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <!-- Sol Kuvvet Slider -->
+                <div class="md:col-span-3 bg-slate-900/80 p-2 rounded-2xl border border-rose-500/30">
+                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
+                        <span>Sola Kuvvet (F₂):</span>
+                        <span id="label-m3-left" class="font-mono font-black text-rose-400">0 N</span>
+                    </div>
+                    <input type="range" id="slider-m3-left" min="0" max="30" value="0" step="1" class="slider-red" oninput="onM3LeftChange(this.value)">
+                </div>
+
+                <!-- Başlangıç Hareketi & Oynat/Durdur Butonları -->
+                <div class="md:col-span-6 flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
+                        <span class="text-[10px] font-bold text-slate-400 px-2">Başlangıç Hareketi:</span>
+                        <div class="grid grid-cols-3 gap-1 flex-1">
+                            <button type="button" onclick="setM3InitialVelocity(-4)" id="btn-v0-left" class="py-1 px-1.5 rounded-lg text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all">
+                                ⬅️ Sola Hareketli
+                            </button>
+                            <button type="button" onclick="setM3InitialVelocity(0)" id="btn-v0-zero" class="py-1 px-1.5 rounded-lg text-[10px] font-black bg-cyan-600 text-slate-950 font-black border border-cyan-400 shadow transition-all">
+                                🛑 Durgun
+                            </button>
+                            <button type="button" onclick="setM3InitialVelocity(4)" id="btn-v0-right" class="py-1 px-1.5 rounded-lg text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all">
+                                Sağa Hareketli ➡️
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="toggleM3Play()" id="btn-m3-play" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-play"></i> <span id="btn-m3-play-text">Simülasyonu Başlat</span>
+                        </button>
+                        <button type="button" onclick="resetM3Simulation()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
+                        </button>
+                        <button type="button" onclick="toggleM3Friction()" id="btn-m3-friction" class="px-3 py-2 bg-slate-900 text-slate-400 text-xs font-bold rounded-xl border border-slate-700 transition-all flex items-center gap-1" title="Sürtünmeyi Aç / Kapat">
+                            <i class="fa-solid fa-road"></i> <span id="txt-m3-friction">Sürtünmesiz</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sağ Kuvvet Slider -->
+                <div class="md:col-span-3 bg-slate-900/80 p-2 rounded-2xl border border-emerald-500/30">
+                    <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
+                        <span>Sağa Kuvvet (F₁):</span>
+                        <span id="label-m3-right" class="font-mono font-black text-emerald-400">8 N</span>
+                    </div>
+                    <input type="range" id="slider-m3-right" min="0" max="30" value="8" step="1" class="slider-green" oninput="onM3RightChange(this.value)">
+                </div>
+            </div>
+
+            <!-- ===================== MODÜL 4 KONTROLLERİ: DENGELEYİCİ KUVVETİ BUL ===================== -->
+            <div id="controls-module-4" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <!-- Soru ve Görev Kartı -->
+                <div class="md:col-span-4 bg-slate-900/90 p-2.5 rounded-2xl border border-amber-500/40">
+                    <div class="flex items-center justify-between text-[11px] font-black text-amber-400 mb-1">
+                        <span id="m4-level-badge">Seviye 1 / 15 (Kolay)</span>
+                        <span class="font-mono text-cyan-300" id="m4-score-badge">⭐ Puan: 0</span>
+                    </div>
+                    <div class="text-xs text-white font-bold" id="m4-task-prompt">
+                        Kutuya uygulanan kuvvetleri sıfırlayacak <strong>DENGELEYİCİ KUVVETİ</strong> bul!
+                    </div>
+                </div>
+
+                <!-- Dengeleyici Kuvvet Girişi: Yön ve Büyüklük -->
+                <div class="md:col-span-5 bg-slate-900/90 p-2.5 rounded-2xl border border-slate-700 flex flex-col gap-2">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-300 shrink-0">Dengeleyici Yönü:</span>
+                        <div class="grid grid-cols-2 gap-1.5 flex-1">
+                            <button type="button" onclick="setEquilibrantDirection('sol')" id="btn-eq-dir-left" class="py-1 px-2 rounded-xl text-xs font-black bg-rose-600 text-white border border-rose-400 shadow transition-all flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-arrow-left"></i> <span>Sola</span>
+                            </button>
+                            <button type="button" onclick="setEquilibrantDirection('sag')" id="btn-eq-dir-right" class="py-1 px-2 rounded-xl text-xs font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all flex items-center justify-center gap-1.5">
+                                <span>Sağa</span> <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-slate-300 shrink-0">Büyüklük:</span>
+                        <input type="range" id="slider-equilibrant" min="0" max="30" value="11" step="1" class="slider-blue flex-1" oninput="onEquilibrantSliderChange(this.value)">
+                        <span id="label-equilibrant-val" class="font-mono font-black text-base text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded-lg border border-cyan-500/40 shrink-0">11 N</span>
+                    </div>
+                </div>
+
+                <!-- Gönder & Sıradaki Soru Butonları -->
+                <div class="md:col-span-3 flex flex-col gap-1.5">
+                    <button type="button" onclick="applyEquilibrantAnswer()" id="btn-apply-equilibrant" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-check"></i> <span>Kuvveti Uygula</span>
+                    </button>
+                    <button type="button" onclick="nextEquilibrantLevel()" id="btn-next-eq-level" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-1.5 hidden cursor-pointer">
+                        <span>Sıradaki Soru</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===================== MODÜL 5 KONTROLLERİ: KUVVET DEDEKTİFİ ===================== -->
+            <div id="controls-module-5" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                <!-- Sahne Seçici -->
+                <div class="md:col-span-4 flex items-center gap-1 overflow-x-auto py-1">
+                    <button type="button" onclick="switchDetectiveScene(0)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400 shrink-0">
+                        1. Masa İtme
+                    </button>
+                    <button type="button" onclick="switchDetectiveScene(1)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
+                        2. Futbol Topu
+                    </button>
+                    <button type="button" onclick="switchDetectiveScene(2)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
+                        3. Alışveriş Arabası
+                    </button>
+                    <button type="button" onclick="switchDetectiveScene(3)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
+                        4. Halat Yarışı
+                    </button>
+                    <button type="button" onclick="switchDetectiveScene(4)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
+                        5. Oyuncak Araba
+                    </button>
+                </div>
+
+                <!-- Dedektif Soru & Tahmin Girişi -->
+                <div class="md:col-span-6 bg-slate-900/90 p-2.5 rounded-2xl border border-slate-700">
+                    <div class="text-xs font-black text-amber-300 mb-1" id="detective-scene-title">
+                        Olay 1: İki öğrenci masayı zıt yönlerde itiyor.
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" onclick="chooseDetectiveGuess('dengelenmis')" id="btn-det-guess-bal" class="py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center">
+                            Dengelenmiş (R = 0)
+                        </button>
+                        <button type="button" onclick="chooseDetectiveGuess('saga')" id="btn-det-guess-right" class="py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center">
+                            Sağa Hareket Eder
+                        </button>
+                        <button type="button" onclick="chooseDetectiveGuess('sola')" id="btn-det-guess-left" class="py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center">
+                            Sola Hareket Eder
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tahmini Test Et Butonu -->
+                <div class="md:col-span-2">
+                    <button type="button" onclick="testDetectiveGuess()" id="btn-test-detective" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-play"></i> <span>Test Et</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- ===================== MODALLAR: TAHMİN, ÖLÇME DEĞERLENDİRME & GÖZLEM ===================== -->
+
+    <!-- 1. TAHMİN ET MODALI (Maarif Modeli: Tahmin Et - Dene - Gözlemle - Açıkla) -->
+    <div id="modal-predict" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-cyan-400/80 rounded-3xl p-5 max-w-md w-full shadow-2xl text-white transform transition-transform duration-300 scale-95" id="modal-predict-box">
+            <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-sm font-black">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </span>
+                    <h3 class="text-sm sm:text-base font-black text-white font-orbitron">BİLİMSEL TAHMİNİN NEDİR?</h3>
+                </div>
+                <button type="button" onclick="closePredictModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs sm:text-sm text-slate-300 font-semibold mb-4 leading-relaxed" id="predict-modal-prompt">
+                Sağa uygulanan kuvvet 15 N, sola uygulanan kuvvet 9 N iken kutu nasıl hareket eder?
+            </p>
+
+            <div class="space-y-2 mb-4">
+                <button type="button" onclick="submitPrediction('durgun')" class="w-full p-3 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-cyan-400 flex items-center justify-center font-black text-xs">A</span>
+                    <span>Kutu dengelenmiş kuvvetlerin etkisindedir, hareket etmez.</span>
+                </button>
+                <button type="button" onclick="submitPrediction('saga')" class="w-full p-3 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-emerald-400 flex items-center justify-center font-black text-xs">B</span>
+                    <span>Bileşke kuvvet sağa 6 N'dur, kutu sağa doğru hızlanır.</span>
+                </button>
+                <button type="button" onclick="submitPrediction('sola')" class="w-full p-3 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-2.5">
+                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-rose-400 flex items-center justify-center font-black text-xs">C</span>
+                    <span>Bileşke kuvvet sola 6 N'dur, kutu sola doğru hızlanır.</span>
+                </button>
+            </div>
+
+            <div id="predict-feedback" class="hidden p-3 rounded-xl text-xs font-bold text-center mb-3"></div>
+        </div>
+    </div>
+
+    <!-- 2. ÖLÇME VE DEĞERLENDİRME TESTİ MODALI (10 SORU) -->
+    <div id="modal-quiz" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-amber-400/80 rounded-3xl p-5 max-w-xl w-full shadow-2xl text-white max-h-[92vh] flex flex-col justify-between" id="modal-quiz-box">
+            <!-- Soru Başlığı -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 text-slate-950 font-black flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-black font-orbitron text-amber-300">ÖLÇME VE DEĞERLENDİRME</h3>
+                        <span class="text-[10px] text-slate-400 font-bold" id="quiz-progress-text">Soru 1 / 10</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeQuizModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Soru Alanı -->
+            <div class="py-4 flex-1 overflow-y-auto" id="quiz-question-container">
+                <div class="bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800 mb-4">
+                    <h4 class="text-xs sm:text-sm font-bold text-slate-100 leading-relaxed" id="quiz-q-title">
+                        Soru yükleniyor...
+                    </h4>
+                </div>
+                <div class="space-y-2" id="quiz-options-container">
+                    <!-- Dinamik Şıklar -->
+                </div>
+                <div id="quiz-explanation-box" class="hidden mt-3 p-3 rounded-xl text-xs font-semibold leading-relaxed"></div>
+            </div>
+
+            <!-- Alt Butonlar -->
+            <div class="pt-3 border-t border-slate-800 flex items-center justify-between shrink-0">
+                <span class="text-xs font-mono text-cyan-300 font-bold" id="quiz-score-indicator">Doğru: 0 / 10</span>
+                <button type="button" onclick="nextQuizQuestion()" id="btn-next-quiz-q" class="px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider transition-all shadow-md hidden flex items-center gap-1.5">
+                    <span>Sonraki Soru</span> <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. ÖĞRETMEN GÖZLEM TABLOSU MODALI -->
+    <div id="modal-observation" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-cyan-400/80 rounded-3xl p-5 max-w-2xl w-full shadow-2xl text-white max-h-[90vh] flex flex-col justify-between">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 flex items-center justify-center text-sm font-black">
+                        <i class="fa-solid fa-table"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-black font-orbitron text-cyan-300">DENEY GÖZLEM TABLOSU</h3>
+                        <span class="text-[10px] text-slate-400 font-bold">Öğretmen & Öğrenci Deney Kayıt Defteri</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeObservationLogModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="py-3 flex-1 overflow-y-auto">
+                <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-950 text-cyan-300 border-b border-slate-800 font-orbitron text-[10px]">
+                                <th class="p-2.5">#</th>
+                                <th class="p-2.5 text-emerald-400">F₁ (Sağ)</th>
+                                <th class="p-2.5 text-rose-400">F₂ (Sol)</th>
+                                <th class="p-2.5 text-sky-400">Bileşke (R)</th>
+                                <th class="p-2.5 text-amber-300">Durum</th>
+                                <th class="p-2.5">Hareket Etkisi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="observation-table-body" class="divide-y divide-slate-800/80 font-mono text-[11px] text-slate-300">
+                            <!-- Dinamik Deney Kayıtları -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-800 flex items-center justify-between shrink-0">
+                <button type="button" onclick="clearObservationTable()" class="px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-300 text-xs font-bold rounded-xl border border-rose-500/40 transition-colors">
+                    <i class="fa-solid fa-trash"></i> Tabloyu Temizle
+                </button>
+                <button type="button" onclick="closeObservationLogModal()" class="px-5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================== JAVASCRIPT: 3D SAHNE & FİZİK MOTORU ===================== -->
+    <script>
+        // 🔬 SİMÜLASYON DURUMU (GLOBAL STATE)
+        const LAB = {
+            currentModule: 1, // 1: Keşfet, 2: Halat, 3: Hareket, 4: Dengeleyici, 5: Dedektif
+            
+            // Modül 1 & Genel Kuvvet Değerleri
+            forceRight: 15, // Yeşil ok (Sağa)
+            forceLeft: 9,   // Kırmızı ok (Sola)
+            boxMass: 5,     // kg
+
+            // Kutu Dinamikleri (Fizik Motoru)
+            boxX: 0,
+            boxVelocity: 0,
+            boxAccel: 0,
+            isSimPlaying: true,
+
+            // Modül 2: Halat Çekme
+            tugRed: 20,
+            tugBlue: 10,
+            tugRopeOffset: 0,
+            tugVelocity: 0,
+            isTugRunning: false,
+
+            // Modül 3: Kutuyu Hareket Ettir
+            m3ForceRight: 8,
+            m3ForceLeft: 0,
+            m3Velocity: 0,
+            m3Position: 0,
+            m3HasFriction: false,
+            isM3Playing: false,
+
+            // Modül 4: Dengeleyici Kuvveti Bul
+            m4LevelIndex: 0,
+            m4TargetRight: 18,
+            m4TargetLeft: 7,
+            m4EquilibrantDir: 'sol', // 'sol' veya 'sag'
+            m4EquilibrantVal: 11,
+            m4Score: 0,
+
+            // Modül 5: Kuvvet Dedektifi
+            m5SceneIndex: 0,
+            m5Guess: null,
+
+            // Gözlem Defteri
+            observations: []
+        };
+
+        // 15 Aşamalı Dengeleyici Kuvvet Senaryoları (Kolay, Orta, Zor)
+        const EQUILIBRANT_LEVELS = [
+            { id: 1, title: 'Seviye 1 (Kolay)', fRight: 10, fLeft: 4, prompt: 'Sağa 10 N, Sola 4 N uygulanıyor.' },
+            { id: 2, title: 'Seviye 2 (Kolay)', fRight: 6, fLeft: 12, prompt: 'Sağa 6 N, Sola 12 N uygulanıyor.' },
+            { id: 3, title: 'Seviye 3 (Kolay)', fRight: 15, fLeft: 15, prompt: 'Sağa 15 N, Sola 15 N uygulanıyor.' },
+            { id: 4, title: 'Seviye 4 (Kolay)', fRight: 20, fLeft: 5, prompt: 'Sağa 20 N, Sola 5 N uygulanıyor.' },
+            { id: 5, title: 'Seviye 5 (Kolay)', fRight: 0, fLeft: 14, prompt: 'Sadece Sola 14 N uygulanıyor.' },
+            { id: 6, title: 'Seviye 6 (Orta)', fRight: 22, fLeft: 9, prompt: 'Sağa 22 N, Sola 9 N uygulanıyor.' },
+            { id: 7, title: 'Seviye 7 (Orta)', fRight: 13, fLeft: 27, prompt: 'Sağa 13 N, Sola 27 N uygulanıyor.' },
+            { id: 8, title: 'Seviye 8 (Orta)', fRight: 18, fLeft: 7, prompt: 'Sağa 18 N, Sola 7 N uygulanıyor.' },
+            { id: 9, title: 'Seviye 9 (Orta)', fRight: 25, fLeft: 14, prompt: 'Sağa 25 N, Sola 14 N uygulanıyor.' },
+            { id: 10, title: 'Seviye 10 (Orta)', fRight: 11, fLeft: 19, prompt: 'Sağa 11 N, Sola 19 N uygulanıyor.' },
+            { id: 11, title: 'Seviye 11 (Zor)', fRight: 28, fLeft: 13, prompt: 'Sağa 28 N, Sola 13 N uygulanıyor.' },
+            { id: 12, title: 'Seviye 12 (Zor)', fRight: 16, fLeft: 29, prompt: 'Sağa 16 N, Sola 29 N uygulanıyor.' },
+            { id: 13, title: 'Seviye 13 (Zor)', fRight: 30, fLeft: 12, prompt: 'Sağa 30 N, Sola 12 N uygulanıyor.' },
+            { id: 14, title: 'Seviye 14 (Zor)', fRight: 7, fLeft: 26, prompt: 'Sağa 7 N, Sola 26 N uygulanıyor.' },
+            { id: 15, title: 'Seviye 15 (Usta)', fRight: 24, fLeft: 24, prompt: 'Sağa 24 N, Sola 24 N uygulanıyor.' }
+        ];
+
+        // 5 Günlük Yaşam Dedektif Senaryoları
+        const DETECTIVE_SCENES = [
+            {
+                title: 'Olay 1: İki öğrenci masayı zıt yönlerde itiyor.',
+                fRight: 20, fLeft: 20,
+                correctType: 'dengelenmis',
+                explanation: 'Her iki öğrenci de 20 N büyüklüğünde ve zıt yönlerde kuvvet uygulamaktadır. Bileşke kuvvet R = 20 - 20 = 0 N olur. Kuvvetler dengelenmiştir ve masa durmaya devam eder.'
+            },
+            {
+                title: 'Olay 2: Futbolcu duran topa sağa doğru vuruyor.',
+                fRight: 25, fLeft: 0,
+                correctType: 'saga',
+                explanation: 'Topa sadece sağa doğru 25 N kuvvet etki etmektedir. Zıt yönde kuvvet olmadığından bileşke kuvvet 25 N sağadır. Top sağa doğru hızlanır (dengelenmemiş kuvvet).'
+            },
+            {
+                title: 'Olay 3: Alışveriş arabası sola doğru itiliyor ama sürtünme var.',
+                fRight: 8, fLeft: 18,
+                correctType: 'sola',
+                explanation: 'Sola 18 N itme kuvveti, sağa 8 N sürtünme kuvveti etki etmektedir. Bileşke kuvvet R = 18 - 8 = 10 N sola doğrudur. Araba sola doğru hızlanır.'
+            },
+            {
+                title: 'Olay 4: Halat çekme yarışında iki takım yenişemiyor.',
+                fRight: 30, fLeft: 30,
+                correctType: 'dengelenmis',
+                explanation: 'İki takım da eşit büyüklükte (30 N) çektiğinde bileşke kuvvet sıfır (0 N) olur. Halatın ortasındaki işaret hareket etmez, kuvvetler dengelenmiştir.'
+            },
+            {
+                title: 'Olay 5: Sağa giden oyuncak arabaya sola doğru fren kuvveti uygulanıyor.',
+                fRight: 5, fLeft: 15,
+                correctType: 'sola',
+                explanation: 'Araba sağa doğru giderken net kuvvet sola doğru (R = 10 N sola) etki eder. Hareket yönüne zıt bileşke kuvvet arabayı önce yavaşlatır, durdurur ve sola doğru hızlandırır!'
+            }
+        ];
+
+        // 10 Soruluk Ölçme Değerlendirme Havuzu (6. Sınıf Fen Bilimleri Maarif Modeli)
+        const QUIZ_QUESTIONS = [
+            {
+                q: "1. Bir cisme etki eden iki kuvvet aynı yönlü ve büyüklükleri 12 N ile 8 N ise, bu kuvvetlerin bileşkesi kaç Newton'dur?",
+                opts: ["A) 4 N", "B) 10 N", "C) 20 N", "D) 96 N"],
+                ans: 2,
+                exp: "Aynı yönlü kuvvetlerin bileşkesi toplanarak bulunur: R = 12 + 8 = 20 N aynı yöndedir."
+            },
+            {
+                q: "2. Bir masaya doğu yönünde 25 N, batı yönünde 15 N kuvvet uygulanıyor. Masaya etki eden bileşke kuvvet nedir?",
+                opts: ["A) Doğu yönünde 10 N", "B) Batı yönünde 10 N", "C) Doğu yönünde 40 N", "D) 0 N"],
+                ans: 0,
+                exp: "Zıt yönlü kuvvetlerin bileşkesi büyük olandan küçük çıkarılarak bulunur: R = 25 - 15 = 10 N Doğu yönündedir."
+            },
+            {
+                q: "3. Bir cisme uygulanan bileşke kuvvet 0 N (sıfır) ise, bu cisim için hangisi KESİNLİKLE doğrudur?",
+                opts: ["A) Cisim sürekli hızlanmaktadır.", "B) Cisim dengelenmiş kuvvetlerin etkisindedir.", "C) Cisme hiç kuvvet uygulanmamaktadır.", "D) Cisim kesinlikle hareket halindedir."],
+                ans: 1,
+                exp: "Bileşke kuvvet sıfır olduğunda cisim 'dengelenmiş kuvvetler' etkisindedir. Duruyorsa durur, hareketliyse sabit hızla gider."
+            },
+            {
+                q: "4. Sağa doğru 14 N bileşke kuvvetin etki ettiği bir cismi dengelemek için uygulanması gereken DENGELEYİCİ KUVVET hangisidir?",
+                opts: ["A) Sağa 14 N", "B) Sola 14 N", "C) Sola 7 N", "D) Yukarı 14 N"],
+                ans: 1,
+                exp: "Dengeleyici kuvvet, bileşke kuvvete eşit büyüklükte ve ZIT yönde olmalıdır. Sağa 14 N'u dengelemek için Sola 14 N gerekir."
+            },
+            {
+                q: "5. Halat çekme yarışmasında Sol takım 35 N, Sağ takım 35 N kuvvet uyguluyor. Bu durumla ilgili hangisi söylenebilir?",
+                opts: ["A) Sol takım kazanır.", "B) Bileşke kuvvet sıfırdır, kuvvetler dengelenmiştir.", "C) Sağ takım kazanır.", "D) Halat sağa doğru hızlanır."],
+                ans: 1,
+                exp: "Zıt yönlü eşit kuvvetler (35 N - 35 N = 0 N) birbirini dengeler; halat hareket etmez."
+            },
+            {
+                q: "6. Dengelenmemiş kuvvetlerin etkisinde olan bir cismin hareketi için hangisi DOĞRUDUR?",
+                opts: ["A) Hızı kesinlikle değişmez.", "B) Hızlanabilir, yavaşlayabilir veya yön değiştirebilir.", "C) Kesinlikle durur.", "D) Bileşke kuvveti 0 N'dur."],
+                ans: 1,
+                exp: "Dengelenmemiş kuvvetler cisimlerin hızının büyüklüğünü (hızlanma/yavaşlama) veya hareket yönünü değiştirir."
+            },
+            {
+                q: "7. Sağa doğru sabit hızla giden bir arabaya, hareket yönüne ZIT yönde bir net kuvvet etki ederse araba nasıl hareket eder?",
+                opts: ["A) Anında durur.", "B) Daha da hızlanır.", "C) Önce yavaşlar.", "D) Hızı değişmeden gitmeye devam eder."],
+                ans: 2,
+                exp: "Hareket yönüne zıt uygulanan bileşke kuvvet cisme ters ivme kazandırarak önce yavaşlamasına neden olur."
+            },
+            {
+                q: "8. Kırmızı ok sola 18 N, yeşil ok sağa 28 N kuvveti gösteriyorsa, mavi bileşke okunun yönü ve büyüklüğü ne olur?",
+                opts: ["A) Sola 10 N", "B) Sağa 10 N", "C) Sağa 46 N", "D) Sola 46 N"],
+                ans: 1,
+                exp: "Sağ (28 N) > Sol (18 N). Bileşke = 28 - 18 = 10 N Sağa doğrudur."
+            },
+            {
+                q: "9. Sabit süratle (90 km/h) düz bir yolda ilerleyen bir otomobil hakkında hangisi söylenebilir?",
+                opts: ["A) Üzerindeki net kuvvet sıfırdır (dengelenmiş kuvvetler).", "B) Motor kuvveti sürtünmeden büyüktür.", "C) Dengelenmemiş kuvvetler etkisindedir.", "D) Araba sürekli hızlanmaktadır."],
+                ans: 0,
+                exp: "Sabit hızla düz bir çizgide ilerleyen cisimler dengelenmiş kuvvetler etkisindedir (Net kuvvet = 0)."
+            },
+            {
+                q: "10. Kuvvetin birimi aşağıdakilerden hangisidir ve hangi aletle ölçülür?",
+                opts: ["A) Kilogram - Eşit kollu terazi", "B) Newton - Dinamometre", "C) Metre - Mezura", "D) Saniye - Kronometre"],
+                ans: 1,
+                exp: "Kuvvet birimi Newton (N)'dur ve dinamometre adı verilen yaylı ölçüm aletiyle ölçülür."
+            }
+        ];
+
+        // 🎬 THREE.JS SAHNE DEĞİŞKENLERİ
+        let scene, camera, renderer, controls;
+        let mainBoxMesh, ropeMesh, tugFlagMesh;
+        let leftArrowGroup, rightArrowGroup, netArrowGroup, velocityArrowGroup;
+        let groundGrid, labBench;
+        let clock = new THREE.Clock();
+
+        // 🚀 BAŞLATMA
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeScene();
+            setupWindowResize();
+            switchExperiment(1);
+            updateForceCalculations();
+        });
+
+        // 🏛️ THREE.JS SAHNE KURULUMU
+        function initThreeScene() {
+            const container = document.getElementById('webgl-container');
+            
+            // Sahne
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x030712);
+            scene.fog = new THREE.FogExp2(0x030712, 0.022);
+
+            // Kamera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera.position.set(0, 4.8, 12.5);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            // Orbit Kontrolleri (İnceleme kolaylığı)
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.02; // Zeminin altına inmeyi engelle
+            controls.minDistance = 6;
+            controls.maxDistance = 24;
+            controls.target.set(0, 1.2, 0);
+
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
+            scene.add(ambientLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight.position.set(5, 12, 8);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 2048;
+            dirLight.shadow.mapSize.height = 2048;
+            dirLight.shadow.bias = -0.0001;
+            scene.add(dirLight);
+
+            const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.5);
+            fillLight.position.set(-8, 6, -5);
+            scene.add(fillLight);
+
+            // Zemin ve Laboratuvar Masası
+            buildLabEnvironment();
+
+            // 3D Kutu ve Halat Modelleri
+            buildPhysicsCrate();
+            buildTugRope();
+
+            // 3D Vektör Okları
+            buildForceArrows();
+
+            // Animasyon Döngüsü
+            animate();
+        }
+
+        // 🏢 LABORATUVAR ZEMİNİ VE PİSTİ
+        function buildLabEnvironment() {
+            // Taban grid ızgarası
+            const gridHelper = new THREE.GridHelper(40, 40, 0x06b6d4, 0x1e293b);
+            gridHelper.position.y = 0;
+            scene.add(gridHelper);
+
+            // Parlak modern laboratuvar zemini
+            const floorGeo = new THREE.PlaneGeometry(50, 50);
+            const floorMat = new THREE.MeshStandardMaterial({
+                color: 0x050b1a,
+                roughness: 0.35,
+                metalness: 0.25
+            });
+            const floorMesh = new THREE.Mesh(floorGeo, floorMat);
+            floorMesh.rotation.x = -Math.PI / 2;
+            floorMesh.position.y = -0.01;
+            floorMesh.receiveShadow = true;
+            scene.add(floorMesh);
+
+            // Laboratuvar Deney Masası / Pisti
+            const benchGeo = new THREE.BoxGeometry(22, 0.6, 3.8);
+            const benchMat = new THREE.MeshStandardMaterial({
+                color: 0x0f172a,
+                metalness: 0.4,
+                roughness: 0.2
+            });
+            labBench = new THREE.Mesh(benchGeo, benchMat);
+            labBench.position.set(0, 0.3, 0);
+            labBench.receiveShadow = true;
+            scene.add(labBench);
+
+            // Masa üzeri cetvel / mesafe çizgileri
+            const trackLineGeo = new THREE.PlaneGeometry(20, 0.08);
+            const trackLineMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.7 });
+            const trackLine = new THREE.Mesh(trackLineGeo, trackLineMat);
+            trackLine.rotation.x = -Math.PI / 2;
+            trackLine.position.set(0, 0.61, 0);
+            scene.add(trackLine);
+
+            // 0 Noktası İşareti (Merkez)
+            const centerMarkGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.02, 16);
+            const centerMarkMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+            const centerMark = new THREE.Mesh(centerMarkGeo, centerMarkMat);
+            centerMark.position.set(0, 0.62, 0);
+            scene.add(centerMark);
+        }
+
+        // 📦 3D FİZİK KUTUSU
+        function buildPhysicsCrate() {
+            const crateGroup = new THREE.Group();
+
+            // Ana Kutu Gövdesi
+            const boxGeo = new THREE.BoxGeometry(2.0, 1.8, 1.8);
+            const boxMat = new THREE.MeshStandardMaterial({
+                color: 0x0284c7,
+                metalness: 0.2,
+                roughness: 0.4
+            });
+            const boxMesh = new THREE.Mesh(boxGeo, boxMat);
+            boxMesh.position.y = 0.9;
+            boxMesh.castShadow = true;
+            boxMesh.receiveShadow = true;
+            crateGroup.add(boxMesh);
+
+            // Kutu Kenar Koruyucuları / Metal Çerçeveler
+            const edgesGeo = new THREE.EdgesGeometry(boxGeo);
+            const edgesMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2 });
+            const wireframe = new THREE.LineSegments(edgesGeo, edgesMat);
+            wireframe.position.y = 0.9;
+            crateGroup.add(wireframe);
+
+            // Kutu Kütle Etiketi
+            const labelTex = createTextCanvasTexture('5 kg', '#f8fafc', '#0369a1');
+            const labelGeo = new THREE.PlaneGeometry(1.0, 0.5);
+            const labelMat = new THREE.MeshBasicMaterial({ map: labelTex, transparent: true });
+            const labelMesh = new THREE.Mesh(labelGeo, labelMat);
+            labelMesh.position.set(0, 0.9, 0.91);
+            crateGroup.add(labelMesh);
+
+            crateGroup.position.set(0, 0.6, 0);
+            scene.add(crateGroup);
+            mainBoxMesh = crateGroup;
+        }
+
+        // 🪢 3D HALAT ÇEKME HALATI VE MERKEZ İŞARETİ
+        function buildTugRope() {
+            const tugGroup = new THREE.Group();
+
+            // Halat silindiri
+            const ropeGeo = new THREE.CylinderGeometry(0.09, 0.09, 16, 16);
+            const ropeMat = new THREE.MeshStandardMaterial({
+                color: 0xd97706,
+                roughness: 0.8
+            });
+            ropeMesh = new THREE.Mesh(ropeGeo, ropeMat);
+            ropeMesh.rotation.z = Math.PI / 2;
+            ropeMesh.position.y = 1.0;
+            ropeMesh.castShadow = true;
+            tugGroup.add(ropeMesh);
+
+            // Halatın ortasındaki Kırmızı Kurdele / Bayrak İşareti
+            const flagGeo = new THREE.ConeGeometry(0.25, 0.6, 16);
+            const flagMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c });
+            tugFlagMesh = new THREE.Mesh(flagGeo, flagMat);
+            tugFlagMesh.position.set(0, 1.4, 0);
+            tugFlagMesh.rotation.z = Math.PI;
+            tugGroup.add(tugFlagMesh);
+
+            // Sol Takım Temsili Figürleri (Kırmızı)
+            const redTeamGroup = new THREE.Group();
+            redTeamGroup.position.set(-6, 0.6, 0);
+            const figureGeo = new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.3, 0.8, 4, 8) : new THREE.CylinderGeometry(0.3, 0.3, 1.2, 8);
+            const redMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
+            for(let i=0; i<3; i++) {
+                const fig = new THREE.Mesh(figureGeo, redMat);
+                fig.position.set(-i * 0.9, 0.7, 0);
+                fig.castShadow = true;
+                redTeamGroup.add(fig);
+            }
+            tugGroup.add(redTeamGroup);
+
+            // Sağ Takım Temsili Figürleri (Mavi)
+            const blueTeamGroup = new THREE.Group();
+            blueTeamGroup.position.set(6, 0.6, 0);
+            const blueMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6 });
+            for(let i=0; i<3; i++) {
+                const fig = new THREE.Mesh(figureGeo, blueMat);
+                fig.position.set(i * 0.9, 0.7, 0);
+                fig.castShadow = true;
+                blueTeamGroup.add(fig);
+            }
+            tugGroup.add(blueTeamGroup);
+
+            tugGroup.position.set(0, 0, 0);
+            tugGroup.visible = false;
+            scene.add(tugGroup);
+            window.tugGroup = tugGroup;
+        }
+
+        // 🏹 3D VEKTÖR KUVVET OKLARI (Yeşil: Sağ, Kırmızı: Sol, Mavi: Bileşke)
+        function buildForceArrows() {
+            // 1. Sağa Kuvvet Oku (Yeşil: F₁)
+            rightArrowGroup = create3DArrow(0x10b981, 'right');
+            scene.add(rightArrowGroup);
+
+            // 2. Sola Kuvvet Oku (Kırmızı: F₂)
+            leftArrowGroup = create3DArrow(0xef4444, 'left');
+            scene.add(leftArrowGroup);
+
+            // 3. Bileşke Kuvvet Oku (Mavi: R)
+            netArrowGroup = create3DArrow(0x3b82f6, 'net');
+            scene.add(netArrowGroup);
+
+            // 4. Hız Yönü Oku (Açık Camgöbeği: Modül 3 için)
+            velocityArrowGroup = create3DArrow(0x38bdf8, 'velocity');
+            velocityArrowGroup.visible = false;
+            scene.add(velocityArrowGroup);
+        }
+
+        // Ok Objesi Üretici Fonksiyonu
+        function create3DArrow(colorHex, type) {
+            const arrowGroup = new THREE.Group();
+
+            // Gövde (Silindir)
+            const shaftGeo = new THREE.CylinderGeometry(0.08, 0.08, 1, 16);
+            const shaftMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.35 });
+            const shaftMesh = new THREE.Mesh(shaftGeo, shaftMat);
+            shaftMesh.rotation.z = -Math.PI / 2;
+            shaftMesh.position.x = 0.5;
+            arrowGroup.add(shaftMesh);
+            arrowGroup.userData.shaft = shaftMesh;
+
+            // Ok Ucu (Koni)
+            const headGeo = new THREE.ConeGeometry(0.24, 0.55, 16);
+            const headMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.5 });
+            const headMesh = new THREE.Mesh(headGeo, headMat);
+            headMesh.rotation.z = -Math.PI / 2;
+            headMesh.position.x = 1.0;
+            arrowGroup.add(headMesh);
+            arrowGroup.userData.head = headMesh;
+
+            // Ok Değer Levhası (Canvas Texture)
+            const labelGeo = new THREE.PlaneGeometry(1.6, 0.55);
+            const labelMat = new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide });
+            const labelMesh = new THREE.Mesh(labelGeo, labelMat);
+            labelMesh.position.set(0.6, 0.5, 0);
+            arrowGroup.add(labelMesh);
+            arrowGroup.userData.label = labelMesh;
+
+            arrowGroup.userData.type = type;
+            arrowGroup.userData.color = colorHex;
+            return arrowGroup;
+        }
+
+        // 🎨 Dinamik Yazı Dokusu (Billboard Canvas Texture)
+        function createTextCanvasTexture(text, color = '#ffffff', bgColor = '#0284c7') {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 80;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = bgColor;
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(4, 4, 248, 72, 14);
+            else ctx.rect(4, 4, 248, 72);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            if (ctx.roundRect) ctx.roundRect(4, 4, 248, 72, 14);
+            ctx.stroke();
+
+            ctx.fillStyle = color;
+            ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 128, 42);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            return texture;
+        }
+
+        // 🔄 OKLARI GÜNCELLE VE YÖNLENDİR
+        function updateArrowVisuals() {
+            const scaleFactor = 0.14; // Newton başına uzunluk
+
+            if (LAB.currentModule === 2) {
+                // Halat çekme modunda okları halata göre hizala
+                rightArrowGroup.visible = false;
+                leftArrowGroup.visible = false;
+                netArrowGroup.visible = false;
+                velocityArrowGroup.visible = false;
+                return;
+            }
+
+            const boxPos = mainBoxMesh.position;
+
+            // 1. Sağa Uygulanan Yeşil Ok (F₁)
+            if (LAB.forceRight > 0) {
+                rightArrowGroup.visible = true;
+                const len = Math.max(0.6, LAB.forceRight * scaleFactor);
+                rightArrowGroup.position.set(boxPos.x + 1.0, boxPos.y + 0.9, boxPos.z);
+                rightArrowGroup.rotation.y = 0; // Sağa dönük
+
+                rightArrowGroup.userData.shaft.scale.set(1, len, 1);
+                rightArrowGroup.userData.shaft.position.x = len / 2;
+                rightArrowGroup.userData.head.position.x = len;
+                
+                // Etiket
+                rightArrowGroup.userData.label.material.map = createTextCanvasTexture(\`F₁ = \${LAB.forceRight} N\`, '#ffffff', '#047857');
+                rightArrowGroup.userData.label.material.needsUpdate = true;
+                rightArrowGroup.userData.label.position.x = len / 2;
+            } else {
+                rightArrowGroup.visible = false;
+            }
+
+            // 2. Sola Uygulanan Kırmızı Ok (F₂)
+            if (LAB.forceLeft > 0) {
+                leftArrowGroup.visible = true;
+                const len = Math.max(0.6, LAB.forceLeft * scaleFactor);
+                leftArrowGroup.position.set(boxPos.x - 1.0, boxPos.y + 0.9, boxPos.z);
+                leftArrowGroup.rotation.y = Math.PI; // Sola dönük
+
+                leftArrowGroup.userData.shaft.scale.set(1, len, 1);
+                leftArrowGroup.userData.shaft.position.x = len / 2;
+                leftArrowGroup.userData.head.position.x = len;
+
+                leftArrowGroup.userData.label.material.map = createTextCanvasTexture(\`F₂ = \${LAB.forceLeft} N\`, '#ffffff', '#b91c1c');
+                leftArrowGroup.userData.label.material.needsUpdate = true;
+                leftArrowGroup.userData.label.position.x = len / 2;
+            } else {
+                leftArrowGroup.visible = false;
+            }
+
+            // 3. Bileşke Mavi Ok (R)
+            const netF = LAB.forceRight - LAB.forceLeft;
+            const netMag = Math.abs(netF);
+
+            if (netMag > 0) {
+                netArrowGroup.visible = true;
+                const len = Math.max(0.7, netMag * scaleFactor);
+                // Kutunun hemen üstünde göster
+                netArrowGroup.position.set(boxPos.x, boxPos.y + 2.3, boxPos.z);
+                netArrowGroup.rotation.y = netF > 0 ? 0 : Math.PI;
+
+                netArrowGroup.userData.shaft.scale.set(1, len, 1);
+                netArrowGroup.userData.shaft.position.x = len / 2;
+                netArrowGroup.userData.head.position.x = len;
+
+                const dirText = netF > 0 ? 'Sağa' : 'Sola';
+                netArrowGroup.userData.label.material.map = createTextCanvasTexture(\`R = \${netMag} N \${dirText}\`, '#ffffff', '#1d4ed8');
+                netArrowGroup.userData.label.material.needsUpdate = true;
+                netArrowGroup.userData.label.position.x = len / 2;
+            } else {
+                netArrowGroup.visible = false;
+            }
+
+            // 4. Modül 3: Hız Yönü Oku (Hareket Vektörü vs Bileşke Kuvvet)
+            if (LAB.currentModule === 3 && Math.abs(LAB.m3Velocity) > 0.05) {
+                velocityArrowGroup.visible = true;
+                const vLen = Math.min(3.5, Math.max(0.6, Math.abs(LAB.m3Velocity) * 0.4));
+                velocityArrowGroup.position.set(boxPos.x, boxPos.y + 3.2, boxPos.z);
+                velocityArrowGroup.rotation.y = LAB.m3Velocity > 0 ? 0 : Math.PI;
+
+                velocityArrowGroup.userData.shaft.scale.set(1, vLen, 1);
+                velocityArrowGroup.userData.shaft.position.x = vLen / 2;
+                velocityArrowGroup.userData.head.position.x = vLen;
+
+                const vDir = LAB.m3Velocity > 0 ? 'Sağa' : 'Sola';
+                velocityArrowGroup.userData.label.material.map = createTextCanvasTexture(\`Hız: \${vDir}\`, '#ffffff', '#0284c7');
+                velocityArrowGroup.userData.label.material.needsUpdate = true;
+                velocityArrowGroup.userData.label.position.x = vLen / 2;
+            } else {
+                velocityArrowGroup.visible = false;
+            }
+        }
+
+        // 🧠 BİLİMSEL HESAPLAMALAR VE CANLI HUD GÜNCELLEMESİ
+        function updateForceCalculations() {
+            let fRight = LAB.forceRight;
+            let fLeft = LAB.forceLeft;
+
+            if (LAB.currentModule === 3) {
+                fRight = LAB.m3ForceRight;
+                fLeft = LAB.m3ForceLeft;
+            } else if (LAB.currentModule === 4) {
+                fRight = LAB.m4TargetRight + (LAB.m4EquilibrantDir === 'sag' ? LAB.m4EquilibrantVal : 0);
+                fLeft = LAB.m4TargetLeft + (LAB.m4EquilibrantDir === 'sol' ? LAB.m4EquilibrantVal : 0);
+            }
+
+            const netForce = fRight - fLeft;
+            const netMag = Math.abs(netForce);
+
+            // Sayısal Değerler
+            document.getElementById('hud-val-right').textContent = \`\${fRight} N\`;
+            document.getElementById('hud-val-left').textContent = \`\${fLeft} N\`;
+
+            // Bileşke
+            const netValEl = document.getElementById('hud-val-net');
+            const mathCompEl = document.getElementById('force-math-compact');
+            const balanceBadge = document.getElementById('hud-balance-badge');
+            const balanceText = document.getElementById('hud-balance-text');
+            const motionText = document.getElementById('hud-motion-text');
+
+            if (netMag === 0) {
+                netValEl.textContent = '0 N (Kuvvetler Dengede)';
+                mathCompEl.textContent = \`\${fRight} - \${fLeft} = 0 N\`;
+                
+                balanceBadge.className = 'px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm tracking-wide inline-flex items-center gap-2 bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.3)]';
+                balanceText.textContent = 'DENGELENMİŞ KUVVETLER';
+
+                if (LAB.currentModule === 3 && Math.abs(LAB.m3Velocity) > 0.1) {
+                    motionText.textContent = 'Sabit Süratle Hareket Ediyor';
+                } else {
+                    motionText.textContent = 'Hareketsiz (Durgun Kalır)';
+                }
+            } else {
+                const dir = netForce > 0 ? 'Sağa' : 'Sola';
+                netValEl.textContent = \`\${netMag} N \${dir}\`;
+                mathCompEl.textContent = \`|\${fRight} - \${fLeft}| = \${netMag} N \${dir}\`;
+
+                balanceBadge.className = 'px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm tracking-wide inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.3)]';
+                balanceText.textContent = 'DENGELENMEMİŞ KUVVETLER';
+
+                if (LAB.currentModule === 3) {
+                    if (Math.abs(LAB.m3Velocity) < 0.1) {
+                        motionText.textContent = \`\${dir} Doğru Hızlanıyor\`;
+                    } else if ((LAB.m3Velocity > 0 && netForce > 0) || (LAB.m3Velocity < 0 && netForce < 0)) {
+                        motionText.textContent = \`\${dir} Doğru Hızlanıyor\`;
+                    } else {
+                        motionText.textContent = 'Hareket Yönüne Zıt: Yavaşlıyor!';
+                    }
+                } else {
+                    motionText.textContent = \`\${dir} Doğru İvmelenir / Hızlanır\`;
+                }
+            }
+
+            // Okların boyut ve yönlerini güncelle
+            updateArrowVisuals();
+        }
+
+        // 🔄 FİZİK VE ANİMASYON DÖNGÜSÜ
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const delta = clock.getDelta();
+
+            // Modül 1 Fizik İlerlemesi
+            if (LAB.currentModule === 1 && LAB.isSimPlaying) {
+                const netForce = LAB.forceRight - LAB.forceLeft;
+                LAB.boxAccel = netForce / LAB.boxMass; // a = F / m
+                LAB.boxVelocity += LAB.boxAccel * delta;
+
+                // Hafif simülasyon direnci (Pistten uçup gitmesini engeller)
+                LAB.boxVelocity *= 0.985;
+                LAB.boxX += LAB.boxVelocity * delta;
+
+                // Pist sınırları (-9 ile 9 metre arası)
+                if (LAB.boxX > 8.5) {
+                    LAB.boxX = 8.5;
+                    LAB.boxVelocity = 0;
+                } else if (LAB.boxX < -8.5) {
+                    LAB.boxX = -8.5;
+                    LAB.boxVelocity = 0;
+                }
+
+                mainBoxMesh.position.x = LAB.boxX;
+            }
+
+            // Modül 2 Halat Çekme Fizik İlerlemesi
+            if (LAB.currentModule === 2 && LAB.isTugRunning) {
+                const tugNet = LAB.tugBlue - LAB.tugRed; // Sağ (Mavi) - Sol (Kırmızı)
+                const tugAccel = tugNet / 8; // Efektif halat kütlesi
+                LAB.tugVelocity += tugAccel * delta;
+                LAB.tugVelocity *= 0.98;
+                LAB.tugRopeOffset += LAB.tugVelocity * delta;
+
+                // Halat sınırları
+                if (LAB.tugRopeOffset > 4.2) {
+                    LAB.tugRopeOffset = 4.2;
+                    concludeTugRace('mavi');
+                } else if (LAB.tugRopeOffset < -4.2) {
+                    LAB.tugRopeOffset = -4.2;
+                    concludeTugRace('kirmizi');
+                }
+
+                if (ropeMesh) ropeMesh.position.x = LAB.tugRopeOffset;
+                if (tugFlagMesh) tugFlagMesh.position.x = LAB.tugRopeOffset;
+            }
+
+            // Modül 3 Kutuyu Hareket Ettir Fizik İlerlemesi
+            if (LAB.currentModule === 3 && LAB.isM3Playing) {
+                const netForce = LAB.m3ForceRight - LAB.m3ForceLeft;
+                let frictionForce = 0;
+                if (LAB.m3HasFriction && Math.abs(LAB.m3Velocity) > 0.05) {
+                    frictionForce = (LAB.m3Velocity > 0 ? -1 : 1) * 3.5; // 3.5 N sürtünme
+                }
+
+                const totalF = netForce + frictionForce;
+                const accel = totalF / LAB.boxMass;
+                LAB.m3Velocity += accel * delta;
+
+                LAB.m3Position += LAB.m3Velocity * delta;
+
+                // Pist sınırları
+                if (LAB.m3Position > 8.8) {
+                    LAB.m3Position = 8.8;
+                    LAB.m3Velocity = 0;
+                } else if (LAB.m3Position < -8.8) {
+                    LAB.m3Position = -8.8;
+                    LAB.m3Velocity = 0;
+                }
+
+                mainBoxMesh.position.x = LAB.m3Position;
+                updateArrowVisuals();
+            }
+
+            // Orbit kontrollerini güncelle
+            controls.update();
+
+            // Çizim
+            renderer.render(scene, camera);
+        }
+
+        // =========================================================================
+        // 🔀 MODÜL GEÇİŞ YÖNETİMİ
+        // =========================================================================
+        function switchExperiment(moduleIndex) {
+            LAB.currentModule = moduleIndex;
+
+            // Navigasyon butonlarını güncelle
+            document.querySelectorAll('.nav-module-btn').forEach((btn, idx) => {
+                if (idx + 1 === moduleIndex) {
+                    btn.className = 'nav-module-btn px-2.5 py-1.5 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 shrink-0 bg-cyan-500/20 text-cyan-300 border border-cyan-400 shadow-[0_0_12px_rgba(6,182,212,0.4)]';
+                } else {
+                    btn.className = 'nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-700 hover:text-white';
+                }
+            });
+
+            // Alt Kontrol Panellerini Değiştir
+            for (let i = 1; i <= 5; i++) {
+                const p = document.getElementById(\`controls-module-\${i}\`);
+                if (p) {
+                    if (i === moduleIndex) p.classList.remove('hidden');
+                    else p.classList.add('hidden');
+                }
+            }
+
+            // 3D Obje Görünürlüklerini Ayarla
+            if (moduleIndex === 2) {
+                mainBoxMesh.visible = false;
+                window.tugGroup.visible = true;
+                camera.position.set(0, 4.2, 14);
+                controls.target.set(0, 1.0, 0);
+            } else {
+                mainBoxMesh.visible = true;
+                window.tugGroup.visible = false;
+                camera.position.set(0, 4.8, 12.5);
+                controls.target.set(0, 1.2, 0);
+            }
+
+            // Modüle Özel Hazırlık
+            if (moduleIndex === 1) {
+                resetPhysicsBox();
+            } else if (moduleIndex === 2) {
+                resetTugRace();
+            } else if (moduleIndex === 3) {
+                resetM3Simulation();
+            } else if (moduleIndex === 4) {
+                loadEquilibrantLevel(LAB.m4LevelIndex);
+            } else if (moduleIndex === 5) {
+                switchDetectiveScene(0);
+            }
+
+            updateForceCalculations();
+        }
+
+        // =========================================================================
+        // 🎛️ MODÜL 1: KUVVETLERİ KEŞFET KONTROLLERİ
+        // =========================================================================
+        function onForceRightChange(val) {
+            LAB.forceRight = parseInt(val, 10);
+            document.getElementById('label-slider-right').textContent = \`\${LAB.forceRight} N\`;
+            updateForceCalculations();
+        }
+
+        function onForceLeftChange(val) {
+            LAB.forceLeft = parseInt(val, 10);
+            document.getElementById('label-slider-left').textContent = \`\${LAB.forceLeft} N\`;
+            updateForceCalculations();
+        }
+
+        function setPresetForces(right, left) {
+            LAB.forceRight = right;
+            LAB.forceLeft = left;
+
+            document.getElementById('slider-force-right').value = right;
+            document.getElementById('slider-force-left').value = left;
+            document.getElementById('label-slider-right').textContent = \`\${right} N\`;
+            document.getElementById('label-slider-left').textContent = \`\${left} N\`;
+
+            resetPhysicsBox();
+            updateForceCalculations();
+        }
+
+        function resetPhysicsBox() {
+            LAB.boxX = 0;
+            LAB.boxVelocity = 0;
+            LAB.boxAccel = 0;
+            if (mainBoxMesh) mainBoxMesh.position.x = 0;
+            updateArrowVisuals();
+        }
+
+        // =========================================================================
+        // 🪢 MODÜL 2: HALAT ÇEKME YARIŞMASI
+        // =========================================================================
+        function onTugRedChange(val) {
+            LAB.tugRed = parseInt(val, 10);
+            document.getElementById('label-tug-red').textContent = \`\${LAB.tugRed} N\`;
+        }
+
+        function onTugBlueChange(val) {
+            LAB.tugBlue = parseInt(val, 10);
+            document.getElementById('label-tug-blue').textContent = \`\${LAB.tugBlue} N\`;
+        }
+
+        function toggleTugRace() {
+            LAB.isTugRunning = !LAB.isTugRunning;
+            const btn = document.getElementById('btn-tug-action');
+            const txt = document.getElementById('btn-tug-action-text');
+            const status = document.getElementById('tug-status-text');
+
+            if (LAB.isTugRunning) {
+                btn.className = 'flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
+                txt.textContent = 'Yarışmayı Duraklat';
+                status.textContent = '🔥 Çekişme Devam Ediyor!';
+            } else {
+                btn.className = 'flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
+                txt.textContent = 'Yarışmayı Devam Ettir';
+                status.textContent = 'Yarışma Duraklatıldı';
+            }
+        }
+
+        function resetTugRace() {
+            LAB.isTugRunning = false;
+            LAB.tugRopeOffset = 0;
+            LAB.tugVelocity = 0;
+            if (ropeMesh) ropeMesh.position.x = 0;
+            if (tugFlagMesh) tugFlagMesh.position.x = 0;
+
+            const btn = document.getElementById('btn-tug-action');
+            const txt = document.getElementById('btn-tug-action-text');
+            const status = document.getElementById('tug-status-text');
+
+            btn.className = 'flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
+            txt.textContent = 'Yarışmayı Başlat';
+            status.textContent = 'Yarışma Başlamaya Hazır!';
+        }
+
+        function concludeTugRace(winner) {
+            LAB.isTugRunning = false;
+            const status = document.getElementById('tug-status-text');
+            if (winner === 'mavi') {
+                status.innerHTML = '<span class="text-sky-300 font-black">🎉 MAVİ TAKIM KAZANDI!</span> (Bileşke kuvvet sağa oluştu)';
+                confetti({ particleCount: 60, spread: 80, origin: { x: 0.7, y: 0.6 } });
+            } else if (winner === 'kirmizi') {
+                status.innerHTML = '<span class="text-rose-400 font-black">🎉 KIRMIZI TAKIM KAZANDI!</span> (Bileşke kuvvet sola oluştu)';
+                confetti({ particleCount: 60, spread: 80, origin: { x: 0.3, y: 0.6 } });
+            }
+        }
+
+        // =========================================================================
+        // 🚚 MODÜL 3: KUTUYU HAREKET ETTİR
+        // =========================================================================
+        function onM3RightChange(val) {
+            LAB.m3ForceRight = parseInt(val, 10);
+            document.getElementById('label-m3-right').textContent = \`\${LAB.m3ForceRight} N\`;
+            updateForceCalculations();
+        }
+
+        function onM3LeftChange(val) {
+            LAB.m3ForceLeft = parseInt(val, 10);
+            document.getElementById('label-m3-left').textContent = \`\${LAB.m3ForceLeft} N\`;
+            updateForceCalculations();
+        }
+
+        function setM3InitialVelocity(v0) {
+            LAB.m3Velocity = v0;
+            ['btn-v0-left', 'btn-v0-zero', 'btn-v0-right'].forEach(id => {
+                const b = document.getElementById(id);
+                b.className = 'py-1 px-1.5 rounded-lg text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all';
+            });
+
+            if (v0 < 0) {
+                document.getElementById('btn-v0-left').className = 'py-1 px-1.5 rounded-lg text-[10px] font-black bg-rose-600 text-white font-black border border-rose-400 shadow transition-all';
+            } else if (v0 === 0) {
+                document.getElementById('btn-v0-zero').className = 'py-1 px-1.5 rounded-lg text-[10px] font-black bg-cyan-600 text-slate-950 font-black border border-cyan-400 shadow transition-all';
+            } else {
+                document.getElementById('btn-v0-right').className = 'py-1 px-1.5 rounded-lg text-[10px] font-black bg-emerald-600 text-white font-black border border-emerald-400 shadow transition-all';
+            }
+
+            updateForceCalculations();
+        }
+
+        function toggleM3Play() {
+            LAB.isM3Playing = !LAB.isM3Playing;
+            const btn = document.getElementById('btn-m3-play');
+            const txt = document.getElementById('btn-m3-play-text');
+
+            if (LAB.isM3Playing) {
+                btn.className = 'flex-1 py-2 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer';
+                txt.textContent = 'Simülasyonu Duraklat';
+            } else {
+                btn.className = 'flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer';
+                txt.textContent = 'Simülasyonu Devam Ettir';
+            }
+        }
+
+        function resetM3Simulation() {
+            LAB.isM3Playing = false;
+            LAB.m3Position = 0;
+            LAB.m3Velocity = 0;
+            setM3InitialVelocity(0);
+            if (mainBoxMesh) mainBoxMesh.position.x = 0;
+
+            const btn = document.getElementById('btn-m3-play');
+            const txt = document.getElementById('btn-m3-play-text');
+            btn.className = 'flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer';
+            txt.textContent = 'Simülasyonu Başlat';
+            updateForceCalculations();
+        }
+
+        function toggleM3Friction() {
+            LAB.m3HasFriction = !LAB.m3HasFriction;
+            const btn = document.getElementById('btn-m3-friction');
+            const txt = document.getElementById('txt-m3-friction');
+
+            if (LAB.m3HasFriction) {
+                btn.className = 'px-3 py-2 bg-amber-950/80 text-amber-300 text-xs font-bold rounded-xl border border-amber-500/50 transition-all flex items-center gap-1';
+                txt.textContent = 'Sürtünmeli Zemin';
+            } else {
+                btn.className = 'px-3 py-2 bg-slate-900 text-slate-400 text-xs font-bold rounded-xl border border-slate-700 transition-all flex items-center gap-1';
+                txt.textContent = 'Sürtünmesiz';
+            }
+            updateForceCalculations();
+        }
+
+        // =========================================================================
+        // ⚖️ MODÜL 4: DENGELEYİCİ KUVVETİ BUL
+        // =========================================================================
+        function loadEquilibrantLevel(index) {
+            LAB.m4LevelIndex = index;
+            const lvl = EQUILIBRANT_LEVELS[index];
+
+            LAB.m4TargetRight = lvl.fRight;
+            LAB.m4TargetLeft = lvl.fLeft;
+
+            document.getElementById('m4-level-badge').textContent = \`\${lvl.title} - Soru \${index + 1} / \${EQUILIBRANT_LEVELS.length}\`;
+            document.getElementById('m4-task-prompt').innerHTML = \`\${lvl.prompt} <span class="text-cyan-300">Bileşkeyi SIFIRLAYACAK dengeleyici kuvveti ayarla ve uygula!</span>\`;
+
+            // Reset controls
+            LAB.m4EquilibrantVal = 5;
+            document.getElementById('slider-equilibrant').value = 5;
+            document.getElementById('label-equilibrant-val').textContent = '5 N';
+            setEquilibrantDirection('sol');
+
+            document.getElementById('btn-next-eq-level').classList.add('hidden');
+            document.getElementById('btn-apply-equilibrant').classList.remove('hidden');
+
+            resetPhysicsBox();
+            updateForceCalculations();
+        }
+
+        function setEquilibrantDirection(dir) {
+            LAB.m4EquilibrantDir = dir;
+            const btnLeft = document.getElementById('btn-eq-dir-left');
+            const btnRight = document.getElementById('btn-eq-dir-right');
+
+            if (dir === 'sol') {
+                btnLeft.className = 'py-1 px-2 rounded-xl text-xs font-black bg-rose-600 text-white border border-rose-400 shadow transition-all flex items-center justify-center gap-1.5';
+                btnRight.className = 'py-1 px-2 rounded-xl text-xs font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all flex items-center justify-center gap-1.5';
+            } else {
+                btnRight.className = 'py-1 px-2 rounded-xl text-xs font-black bg-emerald-600 text-white border border-emerald-400 shadow transition-all flex items-center justify-center gap-1.5';
+                btnLeft.className = 'py-1 px-2 rounded-xl text-xs font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all flex items-center justify-center gap-1.5';
+            }
+            updateForceCalculations();
+        }
+
+        function onEquilibrantSliderChange(val) {
+            LAB.m4EquilibrantVal = parseInt(val, 10);
+            document.getElementById('label-equilibrant-val').textContent = \`\${LAB.m4EquilibrantVal} N\`;
+            updateForceCalculations();
+        }
+
+        function applyEquilibrantAnswer() {
+            const netBefore = LAB.m4TargetRight - LAB.m4TargetLeft;
+            // Dengeleyici kuvvet net kuvvete eşit ve zıt olmalı
+            const reqDir = netBefore > 0 ? 'sol' : (netBefore < 0 ? 'sag' : 'sifir');
+            const reqMag = Math.abs(netBefore);
+
+            const isCorrect = (reqMag === 0 && LAB.m4EquilibrantVal === 0) || (LAB.m4EquilibrantDir === reqDir && LAB.m4EquilibrantVal === reqMag);
+
+            if (isCorrect) {
+                confetti({ particleCount: 50, spread: 70, origin: { y: 0.5 } });
+                LAB.m4Score += 100;
+                document.getElementById('m4-score-badge').textContent = \`⭐ Puan: \${LAB.m4Score}\`;
+
+                document.getElementById('m4-task-prompt').innerHTML = \`
+                    <span class="text-emerald-400 font-black">🎉 TEBRİKLER! BİLEŞKE KUVVETİ SIFIRLADIN!</span><br>
+                    <span class="text-xs text-emerald-200">Dengeleyici kuvvet (\${reqMag} N \${reqDir === 'sol' ? 'Sola' : 'Sağa'}), bileşkeye eşit büyüklükte ve zıt yöndedir.</span>
+                \`;
+
+                document.getElementById('btn-apply-equilibrant').classList.add('hidden');
+                document.getElementById('btn-next-eq-level').classList.remove('hidden');
+            } else {
+                document.getElementById('m4-task-prompt').innerHTML = \`
+                    <span class="text-rose-400 font-black">❌ TEKRAR DENE!</span><br>
+                    <span class="text-xs text-rose-200">Bileşke kuvvet \${reqMag} N \${netBefore > 0 ? 'Sağa' : 'Sola'}dır. Dengeleyici ise <strong>\${reqMag} N \${reqDir === 'sol' ? 'Sola' : 'Sağa'}</strong> olmalıdır.</span>
+                \`;
+            }
+        }
+
+        function nextEquilibrantLevel() {
+            if (LAB.m4LevelIndex < EQUILIBRANT_LEVELS.length - 1) {
+                loadEquilibrantLevel(LAB.m4LevelIndex + 1);
+            } else {
+                alert('Tebrikler! Dengeleyici Kuvvetin tüm 15 seviyesini başarıyla tamamladın!');
+                loadEquilibrantLevel(0);
+            }
+        }
+
+        // =========================================================================
+        // 🔍 MODÜL 5: KUVVET DEDEKTİFİ
+        // =========================================================================
+        function switchDetectiveScene(idx) {
+            LAB.m5SceneIndex = idx;
+            LAB.m5Guess = null;
+            const sceneObj = DETECTIVE_SCENES[idx];
+
+            document.querySelectorAll('.detective-scene-btn').forEach((btn, i) => {
+                if (i === idx) {
+                    btn.className = 'detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400 shrink-0';
+                } else {
+                    btn.className = 'detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0';
+                }
+            });
+
+            document.getElementById('detective-scene-title').textContent = sceneObj.title;
+
+            // Tahmin butonlarını sıfırla
+            ['btn-det-guess-bal', 'btn-det-guess-right', 'btn-det-guess-left'].forEach(id => {
+                document.getElementById(id).className = 'py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center';
+            });
+
+            LAB.forceRight = sceneObj.fRight;
+            LAB.forceLeft = sceneObj.fLeft;
+            resetPhysicsBox();
+            updateForceCalculations();
+        }
+
+        function chooseDetectiveGuess(guessType) {
+            LAB.m5Guess = guessType;
+            ['btn-det-guess-bal', 'btn-det-guess-right', 'btn-det-guess-left'].forEach(id => {
+                document.getElementById(id).className = 'py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center';
+            });
+
+            if (guessType === 'dengelenmis') {
+                document.getElementById('btn-det-guess-bal').className = 'py-1 px-2 rounded-xl text-xs font-bold bg-cyan-600 text-white border border-cyan-400 shadow text-center';
+            } else if (guessType === 'saga') {
+                document.getElementById('btn-det-guess-right').className = 'py-1 px-2 rounded-xl text-xs font-bold bg-emerald-600 text-white border border-emerald-400 shadow text-center';
+            } else {
+                document.getElementById('btn-det-guess-left').className = 'py-1 px-2 rounded-xl text-xs font-bold bg-rose-600 text-white border border-rose-400 shadow text-center';
+            }
+        }
+
+        function testDetectiveGuess() {
+            if (!LAB.m5Guess) {
+                alert('Lütfen önce bir tahminde bulun!');
+                return;
+            }
+
+            const sceneObj = DETECTIVE_SCENES[LAB.m5SceneIndex];
+            const isCorrect = (LAB.m5Guess === sceneObj.correctType);
+
+            if (isCorrect) {
+                confetti({ particleCount: 45, spread: 70, origin: { y: 0.6 } });
+                alert(\`🎉 DOĞRU TAHMİN!\n\n\${sceneObj.explanation}\`);
+            } else {
+                alert(\`❌ YANLIŞ TAHMİN!\n\nBilimsel Açıklama:\n\${sceneObj.explanation}\`);
+            }
+        }
+
+        // =========================================================================
+        // 💡 MAARİF MODELİ TAHMİN MODALI
+        // =========================================================================
+        function openPredictModal() {
+            const m = document.getElementById('modal-predict');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-predict-box').classList.remove('scale-95');
+                document.getElementById('modal-predict-box').classList.add('scale-100');
+            }, 10);
+
+            const prompt = document.getElementById('predict-modal-prompt');
+            prompt.textContent = \`Sağa uygulanan kuvvet \${LAB.forceRight} N, sola uygulanan kuvvet \${LAB.forceLeft} N iken kutu nasıl hareket eder?\`;
+
+            const fb = document.getElementById('predict-feedback');
+            fb.className = 'hidden';
+        }
+
+        function closePredictModal() {
+            const m = document.getElementById('modal-predict');
+            m.classList.add('opacity-0');
+            document.getElementById('modal-predict-box').classList.remove('scale-100');
+            document.getElementById('modal-predict-box').classList.add('scale-95');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        function submitPrediction(pred) {
+            const fb = document.getElementById('predict-feedback');
+            const netF = LAB.forceRight - LAB.forceLeft;
+            let correct = 'durgun';
+            if (netF > 0) correct = 'saga';
+            else if (netF < 0) correct = 'sola';
+
+            if (pred === correct) {
+                fb.className = 'block p-3 rounded-xl bg-emerald-950/90 border border-emerald-500 text-xs font-bold text-emerald-200 text-center animate-in fade-in';
+                fb.innerHTML = '🎉 Harika! Bilimsel tahminin doğru çıktı. Şimdi simülasyonu çalıştırıp gözlemle!';
+                confetti({ particleCount: 30, spread: 60, origin: { y: 0.6 } });
+            } else {
+                fb.className = 'block p-3 rounded-xl bg-rose-950/90 border border-rose-500 text-xs font-bold text-rose-200 text-center animate-in fade-in';
+                fb.innerHTML = 'İpucu: Kuvvetlerin farkına ve büyük olan kuvvetin yönüne dikkat et!';
+            }
+        }
+
+        // =========================================================================
+        // 📋 ÖĞRETMEN GÖZLEM TABLOSU
+        // =========================================================================
+        function recordCurrentObservation() {
+            const netF = LAB.forceRight - LAB.forceLeft;
+            const dir = netF > 0 ? 'Sağa' : (netF < 0 ? 'Sola' : 'Yok');
+            const status = netF === 0 ? 'Dengelenmiş' : 'Dengelenmemiş';
+            const effect = netF === 0 ? 'Hareketsiz' : \`\${dir} Doğru Hızlanır\`;
+
+            LAB.observations.push({
+                f1: LAB.forceRight,
+                f2: LAB.forceLeft,
+                r: Math.abs(netF),
+                dir: dir,
+                status: status,
+                effect: effect
+            });
+
+            renderObservationTable();
+            alert(\`Deney gözlem tablosuna kaydedildi! (F₁=\${LAB.forceRight}N, F₂=\${LAB.forceLeft}N, R=\${Math.abs(netF)}N)\`);
+        }
+
+        function renderObservationTable() {
+            const tbody = document.getElementById('observation-table-body');
+            tbody.innerHTML = LAB.observations.map((obs, i) => \`
+                <tr class="hover:bg-slate-800/50 transition-colors">
+                    <td class="p-2.5 font-bold text-cyan-400">\${i + 1}</td>
+                    <td class="p-2.5 text-emerald-400">\${obs.f1} N</td>
+                    <td class="p-2.5 text-rose-400">\${obs.f2} N</td>
+                    <td class="p-2.5 text-sky-300 font-bold">\${obs.r} N (\${obs.dir})</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 rounded text-[10px] font-black \${obs.status === 'Dengelenmiş' ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' : 'bg-amber-950 text-amber-300 border border-amber-500/30'}">\${obs.status}</span></td>
+                    <td class="p-2.5 text-slate-300">\${obs.effect}</td>
+                </tr>
+            \`).join('');
+        }
+
+        function clearObservationTable() {
+            LAB.observations = [];
+            renderObservationTable();
+        }
+
+        function openObservationLogModal() {
+            const m = document.getElementById('modal-observation');
+            m.classList.remove('hidden');
+            setTimeout(() => m.classList.remove('opacity-0'), 10);
+            renderObservationTable();
+        }
+
+        function closeObservationLogModal() {
+            const m = document.getElementById('modal-observation');
+            m.classList.add('opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        // =========================================================================
+        // 🎓 10 SORULUK ÖLÇME VE DEĞERLENDİRME TESTİ
+        // =========================================================================
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let isQuizAnswered = false;
+
+        function openQuizModal() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            loadQuizQuestion(0);
+
+            const m = document.getElementById('modal-quiz');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-quiz-box').classList.remove('scale-95');
+                document.getElementById('modal-quiz-box').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeQuizModal() {
+            const m = document.getElementById('modal-quiz');
+            m.classList.add('opacity-0');
+            document.getElementById('modal-quiz-box').classList.remove('scale-100');
+            document.getElementById('modal-quiz-box').classList.add('scale-95');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        function loadQuizQuestion(index) {
+            isQuizAnswered = false;
+            const q = QUIZ_QUESTIONS[index];
+
+            document.getElementById('quiz-progress-text').textContent = \`Soru \${index + 1} / \${QUIZ_QUESTIONS.length}\`;
+            document.getElementById('quiz-q-title').textContent = q.q;
+            document.getElementById('quiz-score-indicator').textContent = \`Doğru: \${quizScore} / \${QUIZ_QUESTIONS.length}\`;
+            document.getElementById('btn-next-quiz-q').classList.add('hidden');
+
+            const expBox = document.getElementById('quiz-explanation-box');
+            expBox.className = 'hidden';
+
+            const optsContainer = document.getElementById('quiz-options-container');
+            optsContainer.innerHTML = q.opts.map((opt, i) => \`
+                <button type="button" onclick="handleQuizAnswerChoice(\${i})" id="quiz-opt-btn-\${i}" class="w-full p-3 rounded-2xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-3 cursor-pointer">
+                    <span class="w-7 h-7 rounded-xl bg-slate-800 text-cyan-300 flex items-center justify-center font-black text-xs shrink-0">\${String.fromCharCode(65 + i)}</span>
+                    <span>\${opt.substring(3)}</span>
+                </button>
+            \`).join('');
+        }
+
+        function handleQuizAnswerChoice(chosenIdx) {
+            if (isQuizAnswered) return;
+            isQuizAnswered = true;
+
+            const q = QUIZ_QUESTIONS[currentQuizIndex];
+            const isCorrect = (chosenIdx === q.ans);
+
+            const chosenBtn = document.getElementById(\`quiz-opt-btn-\${chosenIdx}\`);
+            const correctBtn = document.getElementById(\`quiz-opt-btn-\${q.ans}\`);
+
+            const expBox = document.getElementById('quiz-explanation-box');
+
+            if (isCorrect) {
+                quizScore++;
+                document.getElementById('quiz-score-indicator').textContent = \`Doğru: \${quizScore} / \${QUIZ_QUESTIONS.length}\`;
+                chosenBtn.className = 'w-full p-3 rounded-2xl bg-emerald-600/90 border-2 border-emerald-400 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(16,185,129,0.5)]';
+                
+                expBox.className = 'block mt-3 p-3 rounded-xl bg-emerald-950/80 border border-emerald-500/60 text-xs font-bold text-emerald-200';
+                expBox.innerHTML = \`<span class="text-emerald-300 font-black">✓ TEBRİKLER! DOĞRU CEVAP</span><br>\${q.exp}\`;
+                confetti({ particleCount: 35, spread: 60, origin: { y: 0.6 } });
+            } else {
+                chosenBtn.className = 'w-full p-3 rounded-2xl bg-rose-600/90 border-2 border-rose-400 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-3 shadow-[0_0_20px_rgba(244,63,94,0.5)]';
+                correctBtn.className = 'w-full p-3 rounded-2xl bg-emerald-700/80 border-2 border-emerald-400 text-left text-xs sm:text-sm font-bold text-white transition-all flex items-center gap-3';
+                
+                expBox.className = 'block mt-3 p-3 rounded-xl bg-rose-950/80 border border-rose-500/60 text-xs font-bold text-rose-200';
+                expBox.innerHTML = \`<span class="text-rose-300 font-black">✗ YANLIŞ CEVAP</span><br>\${q.exp}\`;
+            }
+
+            document.getElementById('btn-next-quiz-q').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIndex < QUIZ_QUESTIONS.length - 1) {
+                currentQuizIndex++;
+                loadQuizQuestion(currentQuizIndex);
+            } else {
+                const pct = Math.round((quizScore / QUIZ_QUESTIONS.length) * 100);
+                alert(\`🎉 Test Tamamlandı!\n\nDoğru Sayısı: \${quizScore} / \${QUIZ_QUESTIONS.length}\nBaşarı Oranı: %\${pct}\n\nTürkiye Yüzyılı Maarif Modeli Kuvvet ve Hareket konusundaki gayretini tebrik ederiz!\`);
+                closeQuizModal();
+            }
+        }
+
+        // =========================================================================
+        // 🖥️ RESPONSIVE & TAM EKRAN YÖNETİMİ
+        // =========================================================================
+        function setupWindowResize() {
+            window.addEventListener('resize', () => {
+                if (!camera || !renderer) return;
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                document.getElementById('fullscreen-icon').className = 'fa-solid fa-compress';
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                document.getElementById('fullscreen-icon').className = 'fa-solid fa-expand';
+            }
+        }
+    </script>
+</body>
+</html>
+`;
+
+fs.writeFileSync(targetPath, htmlContent, 'utf8');
+console.log('✔ Successfully created oyunlar/kuvvet-laboratuvari.html (file size:', htmlContent.length, 'bytes)');
