@@ -188,67 +188,34 @@
         <!-- Hasar Kırmızı Flaş Efekti -->
         <div id="damage-overlay" class="absolute inset-0 pointer-events-none"></div>
 
-        <!-- ❓ 3D BİLİMSEL SORU KARTI (10 Saniyelik Bekleme & 2 Şıklı Seçenek A - B) -->
-        <div id="question-hud" class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md transition-all duration-300 opacity-0 pointer-events-none">
-            <div class="relative w-full max-w-lg bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 border-2 border-cyan-400/90 p-4 sm:p-6 rounded-3xl shadow-[0_0_50px_rgba(6,182,212,0.5)] text-white transform transition-transform duration-300 scale-95" id="question-card-inner">
-                
-                <!-- Üst Bilgi Başlığı ve 10sn Geri Sayım Sayacı -->
-                <div class="flex items-center justify-between border-b border-cyan-500/30 pb-3 mb-3">
-                    <div class="flex items-center gap-2">
-                        <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-400 to-blue-600 text-slate-950 flex items-center justify-center font-black text-sm shadow-md">
-                            <i class="fa-solid fa-moon"></i>
-                        </span>
-                        <div>
-                            <span class="text-[10px] font-orbitron tracking-wider text-cyan-300 font-extrabold uppercase block">AY'IN EVRELERİ SORU GEÇİDİ</span>
-                            <span class="text-[9px] text-slate-400 font-semibold" id="question-level-badge">5. Sınıf Fen Bilimleri • 1. Ünite</span>
-                        </div>
-                    </div>
-
-                    <!-- 10 Saniyelik Canlı Geri Sayım Rozeti -->
-                    <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-950 border border-amber-400/60 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                        <i class="fa-solid fa-stopwatch text-amber-400 text-xs animate-pulse"></i>
-                        <span id="question-timer-text" class="text-xs sm:text-sm font-black font-mono text-amber-300">10.0s</span>
-                    </div>
+        <!-- ❓ 3D BİLİMSEL SORU GEÇİDİ ÜST BANNER (OYUNU DURDURMAZ, KOŞARAK SEÇİLİR) -->
+        <div id="live-question-banner" class="fixed top-12 sm:top-14 left-1/2 -translate-x-1/2 z-40 w-[95vw] max-w-xl transition-all duration-300 pointer-events-none opacity-0 -translate-y-4">
+            <div class="bg-slate-950/92 backdrop-blur-md border-2 border-cyan-400/80 rounded-2xl p-2.5 sm:p-3.5 shadow-[0_0_30px_rgba(6,182,212,0.4)] text-white text-center">
+                <div class="flex items-center justify-between gap-2 border-b border-cyan-500/30 pb-1.5 mb-1.5">
+                    <span class="text-[9px] sm:text-[10px] font-orbitron font-extrabold text-cyan-300 uppercase tracking-widest flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-split-up-and-left text-amber-400"></i> BİLİMSEL KAPI GEÇİDİ — DOĞRU KAPIDAN GEÇ!
+                    </span>
+                    <span class="text-[9px] font-mono text-slate-300 bg-slate-900 px-2 py-0.5 rounded-full border border-slate-700" id="live-q-badge">Soru 1 / 50</span>
                 </div>
-
-                <!-- 10sn Süre İlerleme Çubuğu -->
-                <div class="w-full bg-slate-800 rounded-full h-2 mb-4 overflow-hidden border border-slate-700/50">
-                    <div id="question-timer-bar" class="h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-emerald-400 transition-all duration-100" style="width: 100%;"></div>
-                </div>
-
-                <!-- Soru Metni -->
-                <h3 class="text-sm sm:text-base md:text-lg font-black text-white text-center leading-snug mb-5 px-1 min-h-[50px] flex items-center justify-center" id="question-text">
-                    Soru metni yükleniyor...
+                <h3 class="text-xs sm:text-sm md:text-base font-black text-white leading-snug mb-2" id="live-q-text">
+                    Soru yükleniyor...
                 </h3>
-
-                <!-- 2 Şıklı Cevap Butonları (A ve B) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                    <!-- ŞIK A -->
-                    <button type="button" id="btn-option-a" onclick="handleQuestionAnswerChoice(0)" class="group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-cyan-950/80 border-2 border-cyan-500/50 hover:border-cyan-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer">
-                        <span class="w-9 h-9 rounded-xl bg-cyan-500/20 group-hover:bg-cyan-500 group-hover:text-slate-950 border border-cyan-400 text-cyan-300 font-orbitron font-black text-sm flex items-center justify-center shrink-0 transition-colors">
-                            A
-                        </span>
-                        <div class="flex-1 min-w-0">
-                            <span class="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-white leading-tight block" id="option-a-text">Seçenek A</span>
-                            <span class="text-[9px] text-cyan-400/80 font-mono mt-0.5 block hidden sm:block">[ Klavye: A / 1 / ◀ ]</span>
+                <!-- 2 Kapı İpucu Şeritleri -->
+                <div class="grid grid-cols-2 gap-2 text-left">
+                    <div class="p-1.5 sm:p-2 rounded-xl bg-cyan-950/80 border border-cyan-400/60 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-cyan-500 text-slate-950 font-orbitron font-black text-xs flex items-center justify-center shrink-0">A</span>
+                        <div class="min-w-0">
+                            <span class="text-[9px] text-cyan-300 font-bold block uppercase tracking-wider">⬅️ SOL KAPI</span>
+                            <span class="text-xs font-black text-white truncate block" id="live-opt-a-text">Seçenek A</span>
                         </div>
-                    </button>
-
-                    <!-- ŞIK B -->
-                    <button type="button" id="btn-option-b" onclick="handleQuestionAnswerChoice(1)" class="group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-amber-950/80 border-2 border-amber-500/50 hover:border-amber-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer">
-                        <span class="w-9 h-9 rounded-xl bg-amber-500/20 group-hover:bg-amber-500 group-hover:text-slate-950 border border-amber-400 text-amber-300 font-orbitron font-black text-sm flex items-center justify-center shrink-0 transition-colors">
-                            B
-                        </span>
-                        <div class="flex-1 min-w-0">
-                            <span class="text-xs sm:text-sm font-bold text-slate-100 group-hover:text-white leading-tight block" id="option-b-text">Seçenek B</span>
-                            <span class="text-[9px] text-amber-400/80 font-mono mt-0.5 block hidden sm:block">[ Klavye: B / 2 / ▶ ]</span>
+                    </div>
+                    <div class="p-1.5 sm:p-2 rounded-xl bg-amber-950/80 border border-amber-400/60 flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-amber-500 text-slate-950 font-orbitron font-black text-xs flex items-center justify-center shrink-0">B</span>
+                        <div class="min-w-0">
+                            <span class="text-[9px] text-amber-300 font-bold block uppercase tracking-wider">SAĞ KAPI ➡️</span>
+                            <span class="text-xs font-black text-white truncate block" id="live-opt-b-text">Seçenek B</span>
                         </div>
-                    </button>
-                </div>
-
-                <!-- Bilimsel Açıklama / Anında İpucu Kutusu (Cevaplandıktan sonra görünür) -->
-                <div id="question-fact-box" class="hidden p-3 rounded-xl bg-slate-950/90 border border-slate-700 text-xs font-medium text-slate-200 leading-relaxed text-center">
-                    <span id="question-fact-content">Bilimsel açıklama</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1222,9 +1189,10 @@
                     evaluateGateAnswer(GAME.lane);
                 }
 
-                if (activeGateGroup.position.z > 12) {
+                if (activeGateGroup.position.z > 14) {
                     scene.remove(activeGateGroup);
                     activeGateGroup = null;
+                    hideLiveQuestionBanner();
                 }
             }
         }
@@ -1619,27 +1587,20 @@
         // 6. 10 SANİYE BEKLEMELİ & 2 ŞIKLI BİLİMSEL SORU GEÇİTLERİ
         // -----------------------------------------------------------------
         function checkQuestionGateTriggers() {
-            if (GAME.isQuestionActive || GAME.isPausedForQuestion || activeGateGroup) return;
+            if (GAME.isQuestionActive || activeGateGroup) return;
 
-            // Her 240 metrede bir bilimsel soru geçidi aç
+            // Her 220 metrede bir bilimsel soru kapılarını piste yerleştir
             if (GAME.distance >= GAME.nextQuestionDistance) {
                 triggerQuestionGate();
             }
         }
 
+        // 🚪 2 ŞIKLI KESİNTİSİZ 3D SORU KAPILARI (Sol: A Kapısı, Sağ: B Kapısı)
         function triggerQuestionGate() {
             GAME.isQuestionActive = true;
-            GAME.isPausedForQuestion = true;
             GAME.questionAnswered = false;
 
-            // Karakteri havada kalmaması için anında yere oturt
-            GAME.playerY = 0;
-            playerGroup.position.y = 0;
-            GAME.isJumping = false;
-            GAME.playerVY = 0;
-            GAME.jumpTimer = 0;
-
-            // 50 Soruluk Karışık Havuzdan Sıradaki Soruyu Seç
+            // 50 Soruluk Karışık Havuzdan Sıradaki Soruyu Al
             if (!GAME.shuffledQuestions || GAME.shuffledQuestions.length === 0 || GAME.questionPoolIndex >= GAME.shuffledQuestions.length) {
                 GAME.shuffledQuestions = shuffleArray(QUESTIONS_POOL_50);
                 GAME.questionPoolIndex = 0;
@@ -1648,323 +1609,355 @@
             const qObj = GAME.shuffledQuestions[GAME.questionPoolIndex++];
             GAME.currentQuestion = qObj;
 
-            // 2 Şıkkı (A ve B) %50 İhtimalle Rastgele Dağıt
+            // 2 Şıkkı (Sol: A, Sağ: B) %50 İhtimalle Rastgele Dağıt
             const isAnsFirst = Math.random() < 0.5;
-            GAME.activeQuestionOptions = [
-                {
+            GAME.activeGateOptions = {
+                A: {
                     key: 'A',
                     text: isAnsFirst ? qObj.ans : qObj.dist,
-                    isCorrect: isAnsFirst
+                    isCorrect: isAnsFirst,
+                    lane: -1
                 },
-                {
+                B: {
                     key: 'B',
                     text: isAnsFirst ? qObj.dist : qObj.ans,
-                    isCorrect: !isAnsFirst
+                    isCorrect: !isAnsFirst,
+                    lane: 1
                 }
-            ];
+            };
 
-            // UI Metinlerini Doldur
-            document.getElementById('question-text').textContent = qObj.q;
-            document.getElementById('option-a-text').textContent = GAME.activeQuestionOptions[0].text;
-            document.getElementById('option-b-text').textContent = GAME.activeQuestionOptions[1].text;
-            document.getElementById('question-level-badge').textContent = `5. Sınıf Fen • Soru ${GAME.questionPoolIndex} / 50`;
-
-            // Buton Stillerini Sıfırla
-            resetOptionButtonStyles();
-
-            // Açıklama Kutusunu Gizle
-            const factBox = document.getElementById('question-fact-box');
-            factBox.className = 'hidden';
-
-            // Soru Modalını Aç (Koşuyu Durdurur)
-            const qHud = document.getElementById('question-hud');
-            qHud.classList.remove('opacity-0', 'pointer-events-none');
-            qHud.classList.add('opacity-100');
-            const cardInner = document.getElementById('question-card-inner');
-            if (cardInner) {
-                cardInner.classList.remove('scale-95');
-                cardInner.classList.add('scale-100');
+            // Kapı önündeki engelleri temizle (Oyuncunun rahat şerit değiştirmesi için)
+            for (let i = activeObstacles.length - 1; i >= 0; i--) {
+                const obs = activeObstacles[i];
+                if (obs.position.z < -20 && obs.position.z > -75) {
+                    scene.remove(obs);
+                    activeObstacles.splice(i, 1);
+                }
             }
 
-            // 3D Sahnede 2 Şeritli Kemer İnşa Et (Sol: A, Sağ: B)
-            build2LaneGateMesh(-35);
+            // Üst Canlı Soru Banner'ını Güncelle ve Göster
+            const qBanner = document.getElementById('live-question-banner');
+            const qText = document.getElementById('live-q-text');
+            const optAText = document.getElementById('live-opt-a-text');
+            const optBText = document.getElementById('live-opt-b-text');
+            const qBadge = document.getElementById('live-q-badge');
 
-            // 10 Saniyelik Bekleme Sayacını Başlat
-            startQuestionCountdown(10);
+            if (qText) qText.textContent = qObj.q;
+            if (optAText) optAText.textContent = GAME.activeGateOptions.A.text;
+            if (optBText) optBText.textContent = GAME.activeGateOptions.B.text;
+            if (qBadge) qBadge.textContent = `5. Sınıf Fen • Soru ${GAME.questionPoolIndex} / 50`;
+
+            if (qBanner) {
+                qBanner.classList.remove('opacity-0', 'pointer-events-none', '-translate-y-4');
+                qBanner.classList.add('opacity-100', 'translate-y-0');
+            }
+
+            // 3D Sahnede 2 Şeritli Kapıları 62 Metre İleride Oluştur
+            build2LaneGateMesh(-62);
         }
 
-        function resetOptionButtonStyles() {
-            const btnA = document.getElementById('btn-option-a');
-            const btnB = document.getElementById('btn-option-b');
-            if (btnA) {
-                btnA.className = 'group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-cyan-950/80 border-2 border-cyan-500/50 hover:border-cyan-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer';
-                btnA.disabled = false;
+        // 🎨 3D Kapı Tabela Dokusu Oluşturucu (Yüksek Çözünürlüklü Canvas Texture)
+        function createGateSignTexture(letter, text, primaryColorHex, bgColors) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
+
+            // Arka plan degrade kutusu
+            const grad = ctx.createLinearGradient(0, 0, 512, 256);
+            grad.addColorStop(0, bgColors[0]);
+            grad.addColorStop(1, bgColors[1]);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, 512, 256);
+
+            // Dış neon çerçeve
+            ctx.lineWidth = 12;
+            ctx.strokeStyle = primaryColorHex;
+            ctx.strokeRect(6, 6, 500, 244);
+
+            // İç ince çerçeve
+            ctx.lineWidth = 2;
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.strokeRect(18, 18, 476, 220);
+
+            // Şık Rozeti Dairesi (A veya B)
+            ctx.fillStyle = primaryColorHex;
+            ctx.beginPath();
+            ctx.arc(80, 128, 54, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Harf (A / B)
+            ctx.fillStyle = '#030712';
+            ctx.font = '900 68px Orbitron, Montserrat, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter, 80, 131);
+
+            // Cevap Metni (Beyaz, Okunaklı)
+            ctx.fillStyle = '#ffffff';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+
+            let fontSize = 46;
+            if (text.length > 13) fontSize = 36;
+            if (text.length > 22) fontSize = 28;
+            ctx.font = `800 ${fontSize}px Poppins, Montserrat, sans-serif`;
+
+            const words = text.split(' ');
+            if (words.length > 2 && text.length > 15) {
+                const mid = Math.ceil(words.length / 2);
+                const l1 = words.slice(0, mid).join(' ');
+                const l2 = words.slice(mid).join(' ');
+                ctx.fillText(l1, 155, 96);
+                ctx.fillText(l2, 155, 158);
+            } else {
+                ctx.fillText(text, 155, 128);
             }
-            if (btnB) {
-                btnB.className = 'group p-3.5 sm:p-4 rounded-2xl bg-slate-950/90 hover:bg-amber-950/80 border-2 border-amber-500/50 hover:border-amber-400 text-left transition-all duration-200 shadow-lg active:scale-95 flex items-center gap-3 cursor-pointer';
-                btnB.disabled = false;
-            }
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            return texture;
         }
 
-        // ⏱️ 10 Saniyelik Canlı Geri Sayım Zamanlayıcısı
-        function startQuestionCountdown(seconds) {
-            if (GAME.questionInterval) clearInterval(GAME.questionInterval);
+        // 🎨 3D Orta Bariyer Tabelası (⛔ ORTA KAPALI)
+        function createDividerTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 256;
+            const ctx = canvas.getContext('2d');
 
-            GAME.questionTimer = seconds;
-            const timerText = document.getElementById('question-timer-text');
-            const timerBar = document.getElementById('question-timer-bar');
+            ctx.fillStyle = '#450a0a';
+            ctx.fillRect(0, 0, 512, 256);
 
-            if (timerText) timerText.textContent = `${GAME.questionTimer.toFixed(1)}s`;
-            if (timerBar) {
-                timerBar.style.width = '100%';
-                timerBar.className = 'h-full bg-gradient-to-r from-cyan-400 via-amber-400 to-emerald-400 transition-all duration-100';
-            }
+            ctx.lineWidth = 10;
+            ctx.strokeStyle = '#ef4444';
+            ctx.strokeRect(5, 5, 502, 246);
 
-            const startTime = performance.now();
-            const totalDuration = seconds * 1000;
+            ctx.fillStyle = '#ef4444';
+            ctx.font = '900 38px Orbitron, Montserrat, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('⛔ ORTA KAPALI ⛔', 256, 75);
 
-            GAME.questionInterval = setInterval(() => {
-                if (GAME.questionAnswered) {
-                    clearInterval(GAME.questionInterval);
-                    return;
-                }
+            ctx.fillStyle = '#fbbf24';
+            ctx.font = '800 34px Poppins, Montserrat, sans-serif';
+            ctx.fillText('⬅️ [A] KAPI   |   KAPI [B] ➡️', 256, 145);
 
-                const elapsed = performance.now() - startTime;
-                const remaining = Math.max(0, (totalDuration - elapsed) / 1000);
-                GAME.questionTimer = remaining;
+            ctx.fillStyle = '#fca5a5';
+            ctx.font = '600 22px Poppins, sans-serif';
+            ctx.fillText('BİR KAPIDAN GEÇ!', 256, 205);
 
-                if (timerText) {
-                    timerText.textContent = `${remaining.toFixed(1)}s`;
-                    if (remaining <= 3.0) {
-                        timerText.className = 'text-xs sm:text-sm font-black font-mono text-rose-400 animate-pulse';
-                    } else {
-                        timerText.className = 'text-xs sm:text-sm font-black font-mono text-amber-300';
-                    }
-                }
-
-                if (timerBar) {
-                    const pct = Math.max(0, (remaining / seconds) * 100);
-                    timerBar.style.width = `${pct}%`;
-                    if (remaining <= 3.0) {
-                        timerBar.className = 'h-full bg-rose-500 transition-all duration-100';
-                    }
-                }
-
-                // Süre Doldu!
-                if (remaining <= 0) {
-                    clearInterval(GAME.questionInterval);
-                    handleQuestionTimeout();
-                }
-            }, 50);
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            return texture;
         }
 
-        // 3D Sahnede 2 Şeritli Soru Kapısı (Sol: A, Sağ: B)
+        // 3D Sahnede 2 Şeritli Soru Kapısı (Sol: A, Sağ: B, Orta: Bariyer)
         function build2LaneGateMesh(zPos) {
             if (activeGateGroup) scene.remove(activeGateGroup);
             activeGateGroup = new THREE.Group();
             activeGateGroup.position.set(0, 0, zPos);
 
-            // 2 Şerit (Sol: x = -2.2 [A], Sağ: x = 2.2 [B])
-            const gateConfigs = [
-                { x: -2.2, color: 0x06b6d4, letter: 'A' },
-                { x: 2.2, color: 0xf59e0b, letter: 'B' }
-            ];
+            const optA = GAME.activeGateOptions.A;
+            const optB = GAME.activeGateOptions.B;
 
-            gateConfigs.forEach(cfg => {
-                const archGroup = new THREE.Group();
-                archGroup.position.set(cfg.x, 0, 0);
+            // 1. SOL KAPI (A Şıkkı - x: -2.2)
+            const gateA = new THREE.Group();
+            gateA.position.set(-2.2, 0, 0);
 
-                // Yan Direkler
-                [-1.0, 1.0].forEach(px => {
-                    const post = new THREE.Mesh(
-                        new THREE.CylinderGeometry(0.08, 0.08, 3.4, 8),
-                        new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.color, emissiveIntensity: 0.4 })
-                    );
-                    post.position.set(px, 1.7, 0);
-                    archGroup.add(post);
-                });
-
-                // Üst Kemer
-                const topBar = new THREE.Mesh(
-                    new THREE.BoxGeometry(2.3, 0.45, 0.25),
-                    new THREE.MeshStandardMaterial({ color: cfg.color, emissive: cfg.color, emissiveIntensity: 0.5 })
+            // Yan Sütunlar
+            [-1.1, 1.1].forEach(px => {
+                const post = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.12, 0.12, 4.2, 12),
+                    new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x06b6d4, emissiveIntensity: 0.6 })
                 );
-                topBar.position.set(0, 3.4, 0);
-                archGroup.add(topBar);
-
-                // Şeffaf Işıltılı Portal
-                const portalGeo = new THREE.PlaneGeometry(2.0, 3.1);
-                const portalMat = new THREE.MeshBasicMaterial({ color: cfg.color, transparent: true, opacity: 0.35, side: THREE.DoubleSide });
-                const portal = new THREE.Mesh(portalGeo, portalMat);
-                portal.position.set(0, 1.6, 0);
-                archGroup.add(portal);
-
-                activeGateGroup.add(archGroup);
+                post.position.set(px, 2.1, 0);
+                gateA.add(post);
             });
+
+            // Üst Kemer
+            const topBarA = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 0.45, 0.3),
+                new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x06b6d4, emissiveIntensity: 0.7 })
+            );
+            topBarA.position.set(0, 4.2, 0);
+            gateA.add(topBarA);
+
+            // Tabela (A Şıkkı ve Cevabı)
+            const texA = createGateSignTexture('A', optA.text, '#06b6d4', ['#030712', '#082f49']);
+            const signA = new THREE.Mesh(
+                new THREE.PlaneGeometry(2.4, 1.2),
+                new THREE.MeshBasicMaterial({ map: texA, side: THREE.DoubleSide })
+            );
+            signA.position.set(0, 4.9, 0);
+            gateA.add(signA);
+
+            // Geçiş Işık Perdesi (Portal)
+            const portalA = new THREE.Mesh(
+                new THREE.PlaneGeometry(2.1, 3.8),
+                new THREE.MeshBasicMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.38, side: THREE.DoubleSide })
+            );
+            portalA.position.set(0, 1.9, 0);
+            gateA.userData = { portal: portalA, option: optA };
+            gateA.add(portalA);
+
+            activeGateGroup.add(gateA);
+
+            // 2. SAĞ KAPI (B Şıkkı - x: 2.2)
+            const gateB = new THREE.Group();
+            gateB.position.set(2.2, 0, 0);
+
+            [-1.1, 1.1].forEach(px => {
+                const post = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.12, 0.12, 4.2, 12),
+                    new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.6 })
+                );
+                post.position.set(px, 2.1, 0);
+                gateB.add(post);
+            });
+
+            const topBarB = new THREE.Mesh(
+                new THREE.BoxGeometry(2.5, 0.45, 0.3),
+                new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.7 })
+            );
+            topBarB.position.set(0, 4.2, 0);
+            gateB.add(topBarB);
+
+            const texB = createGateSignTexture('B', optB.text, '#f59e0b', ['#030712', '#451a03']);
+            const signB = new THREE.Mesh(
+                new THREE.PlaneGeometry(2.4, 1.2),
+                new THREE.MeshBasicMaterial({ map: texB, side: THREE.DoubleSide })
+            );
+            signB.position.set(0, 4.9, 0);
+            gateB.add(signB);
+
+            const portalB = new THREE.Mesh(
+                new THREE.PlaneGeometry(2.1, 3.8),
+                new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.38, side: THREE.DoubleSide })
+            );
+            portalB.position.set(0, 1.9, 0);
+            gateB.userData = { portal: portalB, option: optB };
+            gateB.add(portalB);
+
+            activeGateGroup.add(gateB);
+
+            // 3. ORTA ŞERİT BARİYERİ (x: 0 - Kapalı Geçit Uyarısı)
+            const midGroup = new THREE.Group();
+            midGroup.position.set(0, 0, 0);
+
+            const midPylon = new THREE.Mesh(
+                new THREE.CylinderGeometry(0.16, 0.22, 3.2, 8),
+                new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0x991b1b, emissiveIntensity: 0.5 })
+            );
+            midPylon.position.set(0, 1.6, 0);
+            midGroup.add(midPylon);
+
+            const divTex = createDividerTexture();
+            const divSign = new THREE.Mesh(
+                new THREE.PlaneGeometry(1.9, 0.95),
+                new THREE.MeshBasicMaterial({ map: divTex, side: THREE.DoubleSide })
+            );
+            divSign.position.set(0, 2.5, 0);
+            midGroup.add(divSign);
+
+            activeGateGroup.add(midGroup);
 
             scene.add(activeGateGroup);
         }
 
-        // Kullanıcı A veya B Şıkkını Seçtiğinde
-        function handleQuestionAnswerChoice(choiceIndex) {
-            if (GAME.questionAnswered || !GAME.isPausedForQuestion) return;
+        // 🏃 KAPIDAN GEÇİŞİN DEĞERLENDİRİLMESİ (Oyun Durmaz, Koşarak Geçilir)
+        function evaluateGateAnswer(lane) {
+            if (GAME.questionAnswered) return;
             GAME.questionAnswered = true;
 
-            if (GAME.questionInterval) clearInterval(GAME.questionInterval);
+            const optA = GAME.activeGateOptions ? GAME.activeGateOptions.A : null;
+            const optB = GAME.activeGateOptions ? GAME.activeGateOptions.B : null;
 
-            const chosen = GAME.activeQuestionOptions[choiceIndex];
+            let chosen = null;
+            if (lane === -1) {
+                chosen = optA; // Sol kapıdan geçti (A)
+            } else if (lane === 1) {
+                chosen = optB; // Sağ kapıdan geçti (B)
+            } else {
+                chosen = null; // Orta şerit (0): İki kapının ortasındaki bariyere çarptı
+            }
+
             const isCorrect = chosen ? chosen.isCorrect : false;
-
-            const btnA = document.getElementById('btn-option-a');
-            const btnB = document.getElementById('btn-option-b');
-            if (btnA) btnA.disabled = true;
-            if (btnB) btnB.disabled = true;
-
-            const chosenBtn = choiceIndex === 0 ? btnA : btnB;
-            const otherBtn = choiceIndex === 0 ? btnB : btnA;
-
-            const factBox = document.getElementById('question-fact-box');
-            const factContent = document.getElementById('question-fact-content');
+            const toast = document.getElementById('feedback-toast');
+            const toastContent = document.getElementById('feedback-toast-content');
 
             if (isCorrect) {
-                // DOĞRU CEVAP
+                // 🎉 DOĞRU KAPIDAN GEÇTİ!
                 playSound('correct');
-                confetti({ particleCount: 45, spread: 70, origin: { y: 0.5 } });
+                confetti({ particleCount: 55, spread: 80, origin: { y: 0.55 } });
 
-                if (chosenBtn) {
-                    chosenBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-emerald-600/95 border-2 border-emerald-300 text-left transition-all shadow-[0_0_25px_rgba(16,185,129,0.7)] flex items-center gap-3';
-                }
-
-                GAME.score += 100;
+                GAME.score += 150;
                 GAME.correctAnswersCount++;
                 GAME.streak++;
                 if (GAME.streak >= 3) {
-                    GAME.score += 150; // Süper seri bonusu
+                    GAME.score += 100;
                 }
                 document.getElementById('hud-score').textContent = GAME.score;
 
-                if (factBox && factContent) {
-                    factBox.className = 'block p-3 rounded-xl bg-emerald-950/90 border border-emerald-500/70 text-xs font-bold text-emerald-200 text-center animate-in fade-in';
-                    factContent.innerHTML = `<span class="text-emerald-400 font-black">✓ TEBRİKLER! DOĞRU CEVAP</span><br>${GAME.currentQuestion.fact}`;
+                if (toast && toastContent) {
+                    toast.className = 'absolute bottom-20 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-md z-30 p-3.5 rounded-2xl bg-emerald-950/95 border-2 border-emerald-400 text-center text-xs sm:text-sm font-bold text-white shadow-[0_0_30px_rgba(16,185,129,0.7)] transition-all duration-300 opacity-100 transform translate-y-0';
+                    toastContent.innerHTML = `<span class="text-emerald-300 font-black text-sm sm:text-base">✨ TEBRİKLER! DOĞRU KAPIDAN GEÇTİN (+150 PUAN)</span><br><span class="text-emerald-100 text-xs font-semibold leading-relaxed mt-1 block">${GAME.currentQuestion.fact}</span>`;
+                    setTimeout(() => {
+                        toast.className = 'opacity-0 pointer-events-none transform translate-y-4';
+                    }, 3500);
                 }
 
-                // 1.25 saniye sonra soru ekranını kapat ve koşuyu devam ettir
-                setTimeout(() => {
-                    closeQuestionModalAndResume();
-                }, 1300);
+                // Hikâye Modunda 5 Doğru Sonrası Zafer
+                if (GAME.mode === 'story' && GAME.correctAnswersCount >= 5) {
+                    setTimeout(() => {
+                        triggerVictory();
+                    }, 1200);
+                }
 
             } else {
-                // YANLIŞ CEVAP
+                // 💥 YANLIŞ KAPI VEYA ORTA BARİYERE ÇARPMA!
                 playSound('hit');
                 GAME.streak = 0;
                 GAME.lives -= 1;
                 updateLivesHUD();
                 triggerDamageFlash();
+                cameraShakeTimer = 0.35;
 
-                if (chosenBtn) {
-                    chosenBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-rose-600/95 border-2 border-rose-300 text-left transition-all shadow-[0_0_25px_rgba(244,63,94,0.7)] flex items-center gap-3';
-                }
-                // Doğru olan şıkkı yeşil olarak göster
-                if (otherBtn) {
-                    otherBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-emerald-700/80 border-2 border-emerald-400 text-left transition-all flex items-center gap-3';
-                }
+                const correctLetter = (optA && optA.isCorrect) ? 'A' : 'B';
+                const correctText = (optA && optA.isCorrect) ? optA.text : (optB ? optB.text : '');
+                const msg = (lane === 0)
+                    ? `⚠️ ORTA BARİYERE ÇARPTIN! KAPILARDAN BİRİNDEN GEÇMELİSİN!`
+                    : `❌ YANLIŞ KAPI! DOĞRUSU: [${correctLetter}] ${correctText}`;
 
-                if (factBox && factContent) {
-                    factBox.className = 'block p-3 rounded-xl bg-rose-950/90 border border-rose-500/70 text-xs font-bold text-rose-200 text-center animate-in fade-in';
-                    factContent.innerHTML = `<span class="text-rose-400 font-black">✗ YANLIŞ CEVAP (DOĞRUSU: ${GAME.currentQuestion.ans})</span><br>${GAME.currentQuestion.fact}`;
+                if (toast && toastContent) {
+                    toast.className = 'absolute bottom-20 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:max-w-md z-30 p-3.5 rounded-2xl bg-rose-950/95 border-2 border-rose-400 text-center text-xs sm:text-sm font-bold text-white shadow-[0_0_30px_rgba(244,63,94,0.7)] transition-all duration-300 opacity-100 transform translate-y-0';
+                    toastContent.innerHTML = `<span class="text-rose-300 font-black text-sm sm:text-base">${msg}</span><br><span class="text-rose-100 text-xs font-semibold leading-relaxed mt-1 block">${GAME.currentQuestion.fact}</span>`;
+                    setTimeout(() => {
+                        toast.className = 'opacity-0 pointer-events-none transform translate-y-4';
+                    }, 3800);
                 }
 
                 if (GAME.lives <= 0) {
                     setTimeout(() => {
-                        closeQuestionModalAndResume();
                         triggerGameOver();
-                    }, 1700);
-                } else {
-                    setTimeout(() => {
-                        closeQuestionModalAndResume();
-                    }, 1700);
+                    }, 900);
                 }
             }
-        }
 
-        // 10 Saniye Süre Dolduğunda
-        function handleQuestionTimeout() {
-            if (GAME.questionAnswered || !GAME.isPausedForQuestion) return;
-            GAME.questionAnswered = true;
-
-            playSound('hit');
-            GAME.streak = 0;
-            GAME.lives -= 1;
-            updateLivesHUD();
-            triggerDamageFlash();
-
-            const btnA = document.getElementById('btn-option-a');
-            const btnB = document.getElementById('btn-option-b');
-            if (btnA) btnA.disabled = true;
-            if (btnB) btnB.disabled = true;
-
-            // Doğru olan butonu yeşil göster
-            const correctIndex = GAME.activeQuestionOptions.findIndex(o => o.isCorrect);
-            const correctBtn = correctIndex === 0 ? btnA : btnB;
-            if (correctBtn) {
-                correctBtn.className = 'p-3.5 sm:p-4 rounded-2xl bg-emerald-700/90 border-2 border-emerald-400 text-left transition-all flex items-center gap-3';
-            }
-
-            const factBox = document.getElementById('question-fact-box');
-            const factContent = document.getElementById('question-fact-content');
-            if (factBox && factContent) {
-                factBox.className = 'block p-3 rounded-xl bg-amber-950/95 border border-amber-500/80 text-xs font-bold text-amber-200 text-center animate-in fade-in';
-                factContent.innerHTML = `<span class="text-amber-400 font-black">⏰ 10 SANİYELİK SÜRE DOLDU! (DOĞRUSU: ${GAME.currentQuestion.ans})</span><br>${GAME.currentQuestion.fact}`;
-            }
-
-            if (GAME.lives <= 0) {
-                setTimeout(() => {
-                    closeQuestionModalAndResume();
-                    triggerGameOver();
-                }, 1800);
-            } else {
-                setTimeout(() => {
-                    closeQuestionModalAndResume();
-                }, 1800);
-            }
-        }
-
-        function closeQuestionModalAndResume() {
-            const qHud = document.getElementById('question-hud');
-            if (qHud) {
-                qHud.classList.add('opacity-0', 'pointer-events-none');
-                qHud.classList.remove('opacity-100');
-            }
-            const cardInner = document.getElementById('question-card-inner');
-            if (cardInner) {
-                cardInner.classList.add('scale-95');
-                cardInner.classList.remove('scale-100');
-            }
-
-            // 3D Kapı Kemerini Kaldır
-            if (activeGateGroup) {
-                scene.remove(activeGateGroup);
-                activeGateGroup = null;
-            }
-
-            // Koşuyu Kesintisiz ve Yere Oturmuş Olarak Devam Ettir
-            GAME.playerY = 0;
-            playerGroup.position.y = 0;
-            GAME.isJumping = false;
-            GAME.playerVY = 0;
-            GAME.jumpTimer = 0;
-
-            GAME.isPausedForQuestion = false;
-            GAME.isQuestionActive = false;
-            GAME.questionAnswered = false;
-            GAME.state = 'playing';
-
-            GAME.speed = GAME.baseSpeed;
+            // Canlı Soru Banner'ını Gizle ve Bir Sonraki Soruyu Planla
+            hideLiveQuestionBanner();
             GAME.nextQuestionDistance = GAME.distance + 240;
 
-            // Hikâye Modunda 5 Doğru Sonrası Zafer
-            if (GAME.mode === 'story' && GAME.correctAnswersCount >= 5) {
-                triggerVictory();
+            setTimeout(() => {
+                GAME.isQuestionActive = false;
+            }, 1200);
+        }
+
+        function hideLiveQuestionBanner() {
+            const qBanner = document.getElementById('live-question-banner');
+            if (qBanner) {
+                qBanner.classList.add('opacity-0', 'pointer-events-none', '-translate-y-4');
+                qBanner.classList.remove('opacity-100', 'translate-y-0');
             }
         }
 
@@ -1985,20 +1978,6 @@
         function setupInputControls() {
             // Klavye
             window.addEventListener('keydown', (e) => {
-            // Soru bekleme anında A, B, 1, 2 veya Ok tuşlarıyla cevap verme
-            if (GAME.isPausedForQuestion) {
-                const k = e.key.toLowerCase();
-                if (k === 'a' || k === '1' || e.key === 'ArrowLeft') {
-                    e.preventDefault();
-                    handleQuestionAnswerChoice(0);
-                    return;
-                } else if (k === 'b' || k === '2' || e.key === 'ArrowRight') {
-                    e.preventDefault();
-                    handleQuestionAnswerChoice(1);
-                    return;
-                }
-            }
-
             if (GAME.state !== 'playing') return;
 
                 if (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') {
@@ -2112,6 +2091,12 @@
             GAME.isPausedForQuestion = false;
             GAME.isQuestionActive = false;
             GAME.questionAnswered = false;
+            GAME.nextQuestionDistance = 200;
+            if (activeGateGroup) {
+                scene.remove(activeGateGroup);
+                activeGateGroup = null;
+            }
+            hideLiveQuestionBanner();
 
             // 50 Soruluk Ay'ın Evreleri Havuzunu Her Oyunda Yeniden Rastgele Karıştır
             GAME.shuffledQuestions = shuffleArray(QUESTIONS_POOL_50);
