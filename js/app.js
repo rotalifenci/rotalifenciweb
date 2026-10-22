@@ -30,6 +30,7 @@ let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
 const PROTECTED_MATERIAL_IDS = new Set([
+    "mat-5-1-sim-dunyanin-5-katmani", "mat-5-1-oyun-gunesi-kesfediyorum-3d", "mat-5-1-oyun-ayin-evreleri-3d", "mat-5-1-oyun-kozmik-kasif-3d", "mat-5-1-oyun-kozmik-kosu-3d",
      "mat-6-2-sim-kuvvet-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-3d", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi", "builtin-oyun-6-gunes-sistemi-yolculuk", 
@@ -5831,6 +5832,16 @@ function renderGradeEducationalGames(grade, subData) {
                 icon: "fa-solid fa-moon",
                 iconColor: "from-cyan-400 via-blue-600 to-indigo-600",
                 fileUrl: "ayin-evreleri-3d"
+            },
+            {
+                id: "builtin-oyun-5-dunyanin-5-katmani",
+                title: "Dünya'nın 5 Katmanı: İnteraktif Simülasyon",
+                badge: "5 Katman Laboratuvarı",
+                type: "İnteraktif Simülasyon",
+                desc: "Hava, su, taş, ateş ve ağır küre katmanlarını keşfet, gözlemlenebilirlik sınıflandırmasını öğren ve rozet avı testini çöz!",
+                icon: "fa-solid fa-earth-americas",
+                iconColor: "from-cyan-400 via-blue-500 to-emerald-500",
+                fileUrl: "dunyanin-5-katmani"
             },
             {
                 id: "builtin-oyun-5-gunesi-kesfediyorum",
@@ -13886,6 +13897,18 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         ((checkTitle.includes("ay'ın evreleri 3d") || checkTitle.includes("ayin evreleri 3d") || (checkTitle.includes("evreleri") && checkTitle.includes("simülatör"))) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
     ) {
         openInteractiveGameModal("oyunlar/ayin-evreleri-3d.html", "Ay Evreleri 3D Simülatörü");
+        return;
+    }
+
+        // 🌍 5. SINIF DÜNYA'NIN 5 KATMANI İNTERAKTİF SİMÜLASYONU
+    if (
+        id === "mat-5-1-sim-dunyanin-5-katmani" ||
+        id === "builtin-oyun-5-dunyanin-5-katmani" ||
+        id === "dunyanin-5-katmani" ||
+        targetUrl.includes("oyunlar/dunyanin-5-katmani.html") ||
+        ((checkTitle.includes("dünya'nın 5 katmanı") || checkTitle.includes("dunyanin 5 katmani") || (checkTitle.includes("dünya") && checkTitle.includes("katman"))) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
+    ) {
+        openInteractiveGameModal("oyunlar/dunyanin-5-katmani.html", "Dünya'nın 5 Katmanı İnteraktif Simülasyonu");
         return;
     }
 
