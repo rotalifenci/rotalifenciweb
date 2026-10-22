@@ -15394,7 +15394,41 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         return;
     }
 
-// ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
+// 🌍 5. Sınıf Dünya'nın 5 Katmanı İnteraktif Simülasyonu
+    if (str.includes("dunyanin-5-katmani") || str.includes("dunyanin_5_katmani") || str.includes("dunyanin-katmanlari") || titleStr.includes("dünya'nın 5 katmanı") || titleStr.includes("dunyanin 5 katmani") || titleStr.includes("dünyanın 5 katmanı") || (titleStr.includes("dünya") && titleStr.includes("katman")) || resolvedKey === "mat-5-1-sim-dunyanin-5-katmani" || resolvedKey === "dunyanin-5-katmani" || resolvedKey === "builtin-oyun-5-dunyanin-5-katmani") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-cyan-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 via-blue-500 to-emerald-500 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-earth-americas"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-cyan-300">🌍 Dünya'nın 5 Katmanı: İnteraktif Laboratuvar</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri • Maarif Modeli</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/dunyanin-5-katmani.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/dunyanin-5-katmani.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
+    // ☀️ 5. Sınıf Güneş'i Keşfediyorum 3D Etkileşimli Uzay Laboratuvarı
     if (!str.includes("sistemi") && !titleStr.includes("sistemi") && !str.includes("kasif") && !titleStr.includes("kâşif") && !titleStr.includes("kasif") && !str.includes("kosu") && !titleStr.includes("koşu") && (str.includes("gunesi-kesfediyorum") || str.includes("güneş'i keşfediyorum") || str.includes("gunesi kesfediyorum") || titleStr.includes("güneş'i keşfediyorum") || titleStr.includes("gunesi kesfediyorum") || resolvedKey === "oyun-gunesi-kesfediyorum-3d" || resolvedKey === "gunesi-kesfediyorum-3d")) {
         modal.innerHTML = `
             <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
@@ -15677,7 +15711,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         renderInteractiveGameScreen(modal);
     } else {
         // Fallback or Iframe web game player (in-page iframe)
-        const embedUrl = (gameKeyOrUrl && gameKeyOrUrl.startsWith("http")) ? gameKeyOrUrl : "#";
+        const embedUrl = (gameKeyOrUrl && (gameKeyOrUrl.startsWith("http") || gameKeyOrUrl.startsWith("oyunlar/") || gameKeyOrUrl.endsWith(".html"))) ? gameKeyOrUrl : "#";
         const isGeminiAI = !str.includes("uzay") && !titleStr.includes("uzay") && (embedUrl.includes("gemini") || str.includes("gemini") || titleStr.includes("gemini") || str.includes("kaçış") || str.includes("kacis") || titleStr.includes("kaçış") || titleStr.includes("kacis") || str.includes("escape") || titleStr.includes("escape"));
 
         if (isGeminiAI) {
