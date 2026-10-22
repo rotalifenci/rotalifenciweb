@@ -296,65 +296,92 @@
         <div class="max-w-6xl mx-auto w-full">
             
             <!-- ===================== MODÜL 1 KONTROLLERİ: KUVVETLERİ KEŞFET ===================== -->
-            <div id="controls-module-1" class="module-controls-panel grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <!-- Sol Kuvvet Slider (Kırmızı) -->
-                <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-rose-500/30">
-                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Sola Uygulanan Kuvvet (Kırmızı):</span>
-                        <span id="label-slider-left" class="font-mono font-black text-base text-rose-400 bg-rose-950 px-2 py-0.5 rounded-lg border border-rose-500/40">9 N</span>
+            <div id="controls-module-1" class="module-controls-panel flex flex-col gap-2.5">
+                <!-- ❓ BİLEŞKE KUVVET VE YÖNÜ SORU KARTI (Kuvvet seçilince üstte doğrudan yazmaz, soru sorar) -->
+                <div id="m1-question-banner" class="bg-gradient-to-r from-slate-900/95 via-cyan-950/40 to-slate-900/95 border-2 border-cyan-500/50 rounded-2xl p-2.5 shadow-[0_0_20px_rgba(6,182,212,0.25)]">
+                    <div class="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-cyan-500/20">
+                        <div class="flex items-center gap-2 text-xs font-black text-amber-300">
+                            <span class="w-5 h-5 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-question animate-bounce"></i></span>
+                            <span class="font-orbitron tracking-wide uppercase text-amber-200">BİLEŞKE KUVVETİ (R) VE YÖNÜNÜ TAHMİN ET!</span>
+                        </div>
+                        <button type="button" onclick="revealM1Answer(true)" class="text-[10px] font-bold text-slate-300 hover:text-white px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer flex items-center gap-1">
+                            <i class="fa-solid fa-eye text-cyan-400"></i> <span>Cevabı Göster</span>
+                        </button>
                     </div>
-                    <input type="range" id="slider-force-left" min="0" max="30" value="9" step="1" class="slider-red" oninput="onForceLeftChange(this.value)">
-                    <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
-                        <span>0 N</span>
-                        <span>15 N</span>
-                        <span>30 N</span>
+
+                    <div class="text-xs sm:text-sm font-bold text-white mb-2" id="m1-quiz-prompt">
+                        Sağa 15 N, Sola 9 N uygulanıyor. Bileşke kuvvet ve yönü nedir?
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="m1-quiz-options">
+                        <!-- 4 dinamik şık butonu -->
+                    </div>
+
+                    <div id="m1-quiz-feedback" class="mt-2 text-xs font-black p-2 rounded-xl hidden transition-all">
                     </div>
                 </div>
 
-                <!-- Orta Hızlı Ön Ayarlar & Eylemler -->
-                <div class="md:col-span-4 flex flex-col gap-2">
-                    <div class="grid grid-cols-4 gap-1.5">
-                        <button type="button" onclick="setPresetForces(15, 15)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                            F₁ = F₂ (Denge)
-                        </button>
-                        <button type="button" onclick="setPresetForces(20, 5)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                            Sağ > Sol
-                        </button>
-                        <button type="button" onclick="setPresetForces(5, 20)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                            Sol > Sağ
-                        </button>
-                        <button type="button" onclick="setPresetForces(0, 0)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                            Sıfırla (0 N)
-                        </button>
+                <!-- Alt Sürgü ve Eylem Kontrolleri (3 Sütun) -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
+                    <!-- Sol Kuvvet Slider (Kırmızı) -->
+                    <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-rose-500/30">
+                        <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
+                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Sola Uygulanan Kuvvet (Kırmızı):</span>
+                            <span id="label-slider-left" class="font-mono font-black text-base text-rose-400 bg-rose-950 px-2 py-0.5 rounded-lg border border-rose-500/40">9 N</span>
+                        </div>
+                        <input type="range" id="slider-force-left" min="0" max="30" value="9" step="1" class="slider-red" oninput="onForceLeftChange(this.value)">
+                        <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
+                            <span>0 N</span>
+                            <span>15 N</span>
+                            <span>30 N</span>
+                        </div>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="toggleM1Play()" id="btn-m1-play" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid fa-play" id="btn-m1-play-icon"></i> <span id="btn-m1-play-text">Hareketi Başlat</span>
-                        </button>
-                        <button type="button" onclick="openPredictModal(1)" class="px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Tahmin Et">
-                            <i class="fa-solid fa-lightbulb"></i> <span class="hidden sm:inline">Tahmin</span>
-                        </button>
-                        <button type="button" onclick="recordCurrentObservation()" class="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Bu deneyi gözlem tablosuna ekle">
-                            <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Kaydet</span>
-                        </button>
-                        <button type="button" onclick="resetPhysicsBox()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer" title="Konumu ve hareketi sıfırla">
-                            <i class="fa-solid fa-rotate-left"></i>
-                        </button>
-                    </div>
-                </div>
+                    <!-- Orta Hızlı Ön Ayarlar & Eylemler -->
+                    <div class="md:col-span-4 flex flex-col gap-2">
+                        <div class="grid grid-cols-4 gap-1.5">
+                            <button type="button" onclick="setPresetForces(15, 15)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                                F₁ = F₂ (Denge)
+                            </button>
+                            <button type="button" onclick="setPresetForces(20, 5)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                                Sağ > Sol
+                            </button>
+                            <button type="button" onclick="setPresetForces(5, 20)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                                Sol > Sağ
+                            </button>
+                            <button type="button" onclick="setPresetForces(0, 0)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
+                                Sıfırla (0 N)
+                            </button>
+                        </div>
 
-                <!-- Sağ Kuvvet Slider (Yeşil) -->
-                <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-emerald-500/30">
-                    <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
-                        <span class="flex items-center gap-1.5">Sağa Uygulanan Kuvvet (Yeşil): <i class="fa-solid fa-arrow-right"></i></span>
-                        <span id="label-slider-right" class="font-mono font-black text-base text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-500/40">15 N</span>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="toggleM1Play()" id="btn-m1-play" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                                <i class="fa-solid fa-play" id="btn-m1-play-icon"></i> <span id="btn-m1-play-text">Hareketi Başlat</span>
+                            </button>
+                            <button type="button" onclick="openPredictModal(1)" class="px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Tahmin Et">
+                                <i class="fa-solid fa-lightbulb"></i> <span class="hidden sm:inline">Tahmin</span>
+                            </button>
+                            <button type="button" onclick="recordCurrentObservation()" class="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Bu deneyi gözlem tablosuna ekle">
+                                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Kaydet</span>
+                            </button>
+                            <button type="button" onclick="resetPhysicsBox()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer" title="Konumu ve hareketi sıfırla">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
                     </div>
-                    <input type="range" id="slider-force-right" min="0" max="30" value="15" step="1" class="slider-green" oninput="onForceRightChange(this.value)">
-                    <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
-                        <span>0 N</span>
-                        <span>15 N</span>
-                        <span>30 N</span>
+
+                    <!-- Sağ Kuvvet Slider (Yeşil) -->
+                    <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-emerald-500/30">
+                        <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
+                            <span class="flex items-center gap-1.5">Sağa Uygulanan Kuvvet (Yeşil): <i class="fa-solid fa-arrow-right"></i></span>
+                            <span id="label-slider-right" class="font-mono font-black text-base text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-500/40">15 N</span>
+                        </div>
+                        <input type="range" id="slider-force-right" min="0" max="30" value="15" step="1" class="slider-green" oninput="onForceRightChange(this.value)">
+                        <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
+                            <span>0 N</span>
+                            <span>15 N</span>
+                            <span>30 N</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -375,7 +402,7 @@
                     </div>
                 </div>
 
-                <!-- Yarışma Başlat / Duraklat / Sorular -->
+                <!-- Yarışma Başlat / Duraklat / Sorular / Müzik Butonları -->
                 <div class="md:col-span-4 flex flex-col gap-2 items-center text-center">
                     <div class="text-xs font-black text-white" id="tug-status-text">
                         Yarışma Başlamaya Hazır!
@@ -387,8 +414,26 @@
                         <button type="button" onclick="resetTugRace()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer">
                             <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
                         </button>
+                        <button type="button" onclick="toggleTugAudio()" id="btn-tug-music" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer" title="Arka Plan Müziği">
+                            <i class="fa-solid fa-volume-high" id="icon-tug-music"></i>
+                        </button>
                     </div>
                 </div>
+
+                <!-- Sağ Mavi Takım -->
+                <div class="md:col-span-4 bg-sky-950/40 border border-sky-700/60 text-slate-100 p-2.5 rounded-2xl border border-sky-500/40">
+                    <div class="flex items-center justify-between text-xs font-black text-sky-300 mb-1">
+                        <span class="flex items-center gap-1.5">Mavi Takım Çekişi: <i class="fa-solid fa-user-group"></i></span>
+                        <span id="label-tug-blue" class="font-mono font-black text-base text-sky-300 bg-sky-950 px-2 py-0.5 rounded-lg border border-sky-500/40">10 N</span>
+                    </div>
+                    <input type="range" id="slider-tug-blue" min="0" max="30" value="10" step="1" class="slider-blue" oninput="onTugBlueChange(this.value)">
+                    <div class="flex justify-between text-[9px] font-mono text-sky-400/60 mt-1">
+                        <span>0 N</span>
+                        <span>15 N</span>
+                        <span>30 N</span>
+                    </div>
+                </div>
+            </div>
 
                 <!-- Sağ Mavi Takım -->
                 <div class="md:col-span-4 bg-sky-950/40 border border-sky-700/60 text-slate-100 p-2.5 rounded-2xl border border-sky-500/40">
@@ -684,6 +729,122 @@
 
     <!-- ===================== JAVASCRIPT: 3D SAHNE & FİZİK MOTORU ===================== -->
     <script>
+        // 🎵 SES VE MÜZİK MOTORU (Web Audio API – İnternet/MEB Filtresine Takılmayan Yerel Sentezleyici)
+        const SoundManager = {
+            ctx: null,
+            isMuted: false,
+            musicInterval: null,
+            musicStep: 0,
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            },
+
+            playTone(freq, type, duration, gainVal = 0.08, delay = 0) {
+                if (this.isMuted) return;
+                this.init();
+                if (!this.ctx) return;
+                try {
+                    const now = this.ctx.currentTime + delay;
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, now);
+
+                    gain.gain.setValueAtTime(gainVal, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start(now);
+                    osc.stop(now + duration);
+                } catch(e) {}
+            },
+
+            playWhistle() {
+                if (this.isMuted) return;
+                this.init();
+                // Hakem düdüğü sesi: Pii-Piiip!
+                this.playTone(2400, 'sine', 0.12, 0.15, 0);
+                this.playTone(2800, 'sine', 0.28, 0.20, 0.14);
+            },
+
+            playCorrect() {
+                if (this.isMuted) return;
+                this.init();
+                // Neşeli başarı tınısı (C-E-G-C)
+                this.playTone(523.25, 'triangle', 0.14, 0.15, 0);
+                this.playTone(659.25, 'triangle', 0.14, 0.15, 0.10);
+                this.playTone(783.99, 'triangle', 0.22, 0.18, 0.20);
+                this.playTone(1046.50, 'triangle', 0.35, 0.22, 0.30);
+            },
+
+            playWrong() {
+                if (this.isMuted) return;
+                this.init();
+                // Düşük sesli uyarı
+                this.playTone(290, 'sawtooth', 0.15, 0.14, 0);
+                this.playTone(220, 'sawtooth', 0.28, 0.16, 0.12);
+            },
+
+            playFanfare() {
+                if (this.isMuted) return;
+                this.init();
+                const notes = [523.25, 659.25, 783.99, 1046.50, 783.99, 1046.50];
+                const times = [0, 0.12, 0.24, 0.36, 0.58, 0.72];
+                notes.forEach((f, i) => {
+                    this.playTone(f, 'triangle', 0.32, 0.20, times[i]);
+                });
+            },
+
+            startTugMusic() {
+                if (this.musicInterval) return;
+                this.init();
+                this.musicStep = 0;
+
+                // Ritmik eğlenceli spor müziği döngüsü (~140 BPM)
+                const bassLine = [130.81, 130.81, 164.81, 196.00, 146.83, 146.83, 174.61, 220.00];
+                const melodyLine = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 293.66, 349.23];
+
+                const stepTimeMs = 214;
+                this.musicInterval = setInterval(() => {
+                    if (this.isMuted || !LAB.isTugRunning) {
+                        if (!LAB.isTugRunning) SoundManager.stopTugMusic();
+                        return;
+                    }
+                    const s = this.musicStep % 8;
+                    // Bas vuruşu
+                    this.playTone(bassLine[s], 'sine', 0.18, 0.12);
+                    // Melodi
+                    if (s % 2 === 0) {
+                        this.playTone(melodyLine[s], 'triangle', 0.15, 0.10);
+                    }
+                    // Trampet ritmi
+                    if (s % 2 === 1) {
+                        this.playTone(700 + Math.random() * 300, 'square', 0.05, 0.03);
+                    }
+                    this.musicStep++;
+                }, stepTimeMs);
+            },
+
+            stopTugMusic() {
+                if (this.musicInterval) {
+                    clearInterval(this.musicInterval);
+                    this.musicInterval = null;
+                }
+            }
+        };
+
         // 🔬 SİMÜLASYON DURUMU (GLOBAL STATE)
         const LAB = {
             currentModule: 1, // 1: Keşfet, 2: Halat, 3: Hareket, 4: Dengeleyici, 5: Dedektif
@@ -692,6 +853,8 @@
             forceRight: 15, // Yeşil ok (Sağa)
             forceLeft: 9,   // Kırmızı ok (Sola)
             boxMass: 5,     // kg
+            m1AnswerRevealed: false,
+            m1CurrentOptions: [],
 
             // Kutu Dinamikleri (Fizik Motoru)
             boxX: 0,
@@ -705,6 +868,7 @@
             tugRopeOffset: 0,
             tugVelocity: 0,
             isTugRunning: false,
+            tugWinner: null,
 
             // Modül 3: Kutuyu Hareket Ettir
             m3ForceRight: 8,
@@ -1202,8 +1366,14 @@
 
             kidGroup.userData = {
                 bodyGroup: bodyGroup,
+                headMesh: headMesh,
+                arm1: arm1,
+                arm2: arm2,
+                leg1Group: leg1Group,
+                leg2Group: leg2Group,
                 isRightTeam: isRightTeam,
-                kidIndex: kidIndex
+                kidIndex: kidIndex,
+                baseX: isRightTeam ? (2.8 + kidIndex * 1.35) : (-2.8 - kidIndex * 1.35)
             };
             return kidGroup;
         }
@@ -1238,7 +1408,7 @@
             // Sol Kırmızı Takım (3 Çocuk Karakter)
             for (let i = 0; i < 3; i++) {
                 const kid = createChildFigure(0xef4444, false, i);
-                kid.position.set(-2.8 - i * 1.35, 0.6, 0);
+                kid.position.set(kid.userData.baseX, 0.6, 0);
                 tugGroup.add(kid);
                 tugFigures.push(kid);
             }
@@ -1246,7 +1416,7 @@
             // Sağ Mavi Takım (3 Çocuk Karakter)
             for (let i = 0; i < 3; i++) {
                 const kid = createChildFigure(0x3b82f6, true, i);
-                kid.position.set(2.8 + i * 1.35, 0.6, 0);
+                kid.position.set(kid.userData.baseX, 0.6, 0);
                 tugGroup.add(kid);
                 tugFigures.push(kid);
             }
@@ -1444,7 +1614,10 @@
             const netF = fRight - fLeft;
             const netMag = Math.abs(netF);
 
-            if (netMag > 0) {
+            // Modül 1'de öğrenci soruyu çözene veya Cevabı Göster denene kadar 3D bileşke oku gizlenir!
+            const hideResultantInM1 = (LAB.currentModule === 1 && !LAB.m1AnswerRevealed);
+
+            if (netMag > 0 && !hideResultantInM1) {
                 netArrowGroup.visible = true;
                 const len = Math.max(0.7, netMag * scaleFactor);
                 netArrowGroup.position.set(boxPos.x, boxPos.y + 2.3, boxPos.z);
@@ -1514,12 +1687,27 @@
             document.getElementById('hud-val-right').textContent = `${fRight} N`;
             document.getElementById('hud-val-left').textContent = `${fLeft} N`;
 
-            // Bileşke
+            // Bileşke ve Durum Elemanları
             const netValEl = document.getElementById('hud-val-net');
             const mathCompEl = document.getElementById('force-math-compact');
             const balanceBadge = document.getElementById('hud-balance-badge');
             const balanceText = document.getElementById('hud-balance-text');
             const motionText = document.getElementById('hud-motion-text');
+
+            // Modül 1 Soru Mantığı (Kuvvet seçilince üstte doğrudan bileşke yazılmaz, soru sorulur)
+            if (LAB.currentModule === 1) {
+                generateM1Question(fRight, fLeft);
+
+                if (!LAB.m1AnswerRevealed) {
+                    netValEl.innerHTML = '<span class="text-amber-300 font-black tracking-wide">❓ Soru Olarak Soruldu</span>';
+                    mathCompEl.innerHTML = '<span class="text-amber-300 font-bold">? N (Sen Bul!)</span>';
+                    balanceBadge.className = 'px-3 py-1.5 rounded-xl font-bold text-xs bg-slate-800 text-slate-400 border border-slate-700';
+                    balanceText.textContent = 'DENGEDE Mİ? TAHMİN ET';
+                    motionText.textContent = 'Cevap bekleniyor...';
+                    updateArrowVisuals(fRight, fLeft);
+                    return;
+                }
+            }
 
             if (netMag === 0) {
                 netValEl.textContent = '0 N (Kuvvetler Dengede)';
@@ -1556,6 +1744,128 @@
 
             // Okların boyut ve yönlerini güncelle
             updateArrowVisuals(fRight, fLeft);
+        }
+
+        // ❓ MODÜL 1: BİLEŞKE KUVVET SORU MOTORU
+        function generateM1Question(fRight, fLeft) {
+            const promptEl = document.getElementById('m1-quiz-prompt');
+            const optionsEl = document.getElementById('m1-quiz-options');
+            const feedbackEl = document.getElementById('m1-quiz-feedback');
+            if (!promptEl || !optionsEl) return;
+
+            if (!LAB.m1AnswerRevealed && feedbackEl) {
+                feedbackEl.classList.add('hidden');
+                feedbackEl.innerHTML = '';
+            }
+
+            promptEl.innerHTML = `Kutuya Sağa <span class="text-emerald-400 font-mono font-black">${fRight} N</span> (F₁), Sola <span class="text-rose-400 font-mono font-black">${fLeft} N</span> (F₂) uygulanıyor. <span class="text-cyan-300">Bileşke kuvvet (R) ve hareket yönü nedir?</span>`;
+
+            const net = fRight - fLeft;
+            const correctText = (net === 0) 
+                ? '0 N (Kuvvetler Dengede)' 
+                : `${Math.abs(net)} N ${net > 0 ? 'Sağa' : 'Sola'}`;
+
+            let candidates = [
+                { text: correctText, isCorrect: true, reason: 'Tebrikler! Doğru hesapladın.' },
+                { 
+                    text: net === 0 ? `${Math.max(5, fRight)} N Sağa` : `${Math.abs(net)} N ${net > 0 ? 'Sola' : 'Sağa'}`, 
+                    isCorrect: false, 
+                    reason: 'Yön yanılgısı! Zıt yönlü kuvvetlerde bileşke, DAİMA büyük olan kuvvetin yönündedir.' 
+                },
+                { 
+                    text: `${fRight + fLeft} N ${net >= 0 ? 'Sağa' : 'Sola'}`, 
+                    isCorrect: false, 
+                    reason: 'Toplama yanılgısı! Kuvvetler aynı yönlü olsaydı toplanırdı; zıt yönlü kuvvetler birbirinden çıkarılır.' 
+                },
+                { 
+                    text: net === 0 ? `${Math.max(3, fRight + 5)} N Sola` : '0 N (Dengede)', 
+                    isCorrect: false, 
+                    reason: 'Denge yanılgısı! Kuvvetlerin bileşkesinin 0 N (dengede) olması için zıt kuvvetlerin büyüklüklerinin eşit olması gerekir.' 
+                }
+            ];
+
+            // Benzersiz kıl
+            const unique = [];
+            const seen = new Set();
+            for (const c of candidates) {
+                if (!seen.has(c.text)) {
+                    seen.add(c.text);
+                    unique.push(c);
+                }
+            }
+            while (unique.length < 4) {
+                const diff = Math.abs(net) + unique.length * 3;
+                const txt = `${diff} N ${net >= 0 ? 'Sağa' : 'Sola'}`;
+                if (!seen.has(txt)) {
+                    seen.add(txt);
+                    unique.push({ text: txt, isCorrect: false, reason: 'Büyüklük hesabı hatalı.' });
+                }
+            }
+
+            // Şıkları sadece soru sıfırlandığında karıştır
+            if (!LAB.m1CurrentOptions || LAB.m1CurrentOptions.length === 0 || !LAB.m1AnswerRevealed) {
+                unique.sort(() => Math.random() - 0.5);
+                LAB.m1CurrentOptions = unique;
+            }
+
+            const letters = ['A', 'B', 'C', 'D'];
+            optionsEl.innerHTML = LAB.m1CurrentOptions.map((opt, idx) => `
+                <button type="button" onclick="selectM1Option(${idx})" id="m1-opt-btn-${idx}" class="p-2 sm:py-2.5 rounded-xl font-bold text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all shadow-md active:scale-95 flex items-center justify-start gap-2 cursor-pointer text-left ${LAB.m1AnswerRevealed && opt.isCorrect ? 'bg-emerald-600 text-white border-emerald-400 ring-2 ring-emerald-400/50' : ''}">
+                    <span class="w-6 h-6 rounded-lg ${LAB.m1AnswerRevealed && opt.isCorrect ? 'bg-emerald-800 text-white' : 'bg-cyan-950 text-cyan-300'} border border-cyan-500/40 flex items-center justify-center font-black text-xs shrink-0">${letters[idx]}</span>
+                    <span class="truncate">${opt.text}</span>
+                </button>
+            `).join('');
+        }
+
+        function selectM1Option(idx) {
+            const opt = LAB.m1CurrentOptions[idx];
+            const btn = document.getElementById(`m1-opt-btn-${idx}`);
+            const feedbackEl = document.getElementById('m1-quiz-feedback');
+
+            if (opt.isCorrect) {
+                SoundManager.playCorrect();
+                if (btn) btn.className = 'p-2 sm:py-2.5 rounded-xl font-black text-xs bg-emerald-600 text-white border-2 border-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-start gap-2 text-left';
+                confetti({ particleCount: 50, spread: 75, origin: { y: 0.7 } });
+
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-black p-2.5 rounded-xl bg-emerald-950/90 text-emerald-200 border border-emerald-500/50 block';
+                    feedbackEl.innerHTML = `🎉 <strong>TEBRİKLER! DOĞRU CEVAP!</strong> Bileşke kuvvet <strong>${opt.text}</strong>. Şimdi hareketi başlatabilirsin!`;
+                }
+
+                revealM1Answer(false);
+            } else {
+                SoundManager.playWrong();
+                if (btn) {
+                    btn.className = 'p-2 sm:py-2.5 rounded-xl font-bold text-xs bg-rose-950 text-rose-200 border border-rose-500 flex items-center justify-start gap-2 text-left';
+                }
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-bold p-2.5 rounded-xl bg-rose-950/90 text-rose-200 border border-rose-500/50 block';
+                    feedbackEl.innerHTML = `❌ <strong>Tekrar Dene:</strong> ${opt.reason}`;
+                }
+            }
+        }
+
+        function revealM1Answer(fromTeacherClick) {
+            LAB.m1AnswerRevealed = true;
+            updateForceCalculations();
+
+            const btnPlay = document.getElementById('btn-m1-play');
+            if (btnPlay) {
+                btnPlay.classList.add('ring-2', 'ring-emerald-400');
+                setTimeout(() => btnPlay && btnPlay.classList.remove('ring-2', 'ring-emerald-400'), 3000);
+            }
+
+            if (fromTeacherClick) {
+                const feedbackEl = document.getElementById('m1-quiz-feedback');
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-black p-2.5 rounded-xl bg-cyan-950/90 text-cyan-200 border border-cyan-500/50 block';
+                    const fR = LAB.forceRight;
+                    const fL = LAB.forceLeft;
+                    const net = fR - fL;
+                    const resTxt = (net === 0) ? '0 N (Kuvvetler Dengede)' : `${Math.abs(net)} N ${net > 0 ? 'Sağa' : 'Sola'}`;
+                    feedbackEl.innerHTML = `💡 <strong>Çözüm:</strong> |${fR} - ${fL}| = <strong>${resTxt}</strong>. Bileşke ok sahnede gösterildi!`;
+                }
+            }
         }
 
         // 🔄 FİZİK VE ANİMASYON DÖNGÜSÜ
@@ -1597,14 +1907,53 @@
 
             // Modül 2 Halat Çekme Fizik İlerlemesi & Çocuk Animasyonları
             if (LAB.currentModule === 2) {
-                // Çocukların halatı çekiştirme ve nefes alma hareketi
+                const elapsed = clock.getElapsedTime();
+                const ropeX = LAB.tugRopeOffset;
+
+                // Çocukların halatla birlikte hareket etmesi ve dinamik çekişme animasyonu
                 if (window.tugFigures && window.tugFigures.length > 0) {
-                    const elapsed = clock.getElapsedTime();
                     window.tugFigures.forEach(kid => {
-                        const baseLean = kid.userData.isRightTeam ? 0.30 : -0.30;
-                        const effortWave = LAB.isTugRunning ? Math.sin(elapsed * 7 + kid.userData.kidIndex * 1.5) * 0.08 : 0;
-                        if (kid.userData.bodyGroup) {
-                            kid.userData.bodyGroup.rotation.z = baseLean + effortWave;
+                        // 1. Çocuklar halatla birlikte çekilir/ilerler
+                        kid.position.x = kid.userData.baseX + ropeX;
+
+                        const isRight = kid.userData.isRightTeam;
+                        const idx = kid.userData.kidIndex;
+
+                        if (LAB.tugWinner) {
+                            const won = (LAB.tugWinner === 'mavi' && isRight) || (LAB.tugWinner === 'kirmizi' && !isRight);
+                            if (won) {
+                                // Kazanan takım zıplar, kolları havada sevinir
+                                kid.position.y = 0.6 + Math.abs(Math.sin(elapsed * 6 + idx)) * 0.22;
+                                if (kid.userData.bodyGroup) kid.userData.bodyGroup.rotation.z = Math.sin(elapsed * 5) * 0.08;
+                                if (kid.userData.arm1) kid.userData.arm1.rotation.z = isRight ? 2.5 : -2.5;
+                                if (kid.userData.arm2) kid.userData.arm2.rotation.z = isRight ? 2.5 : -2.5;
+                            } else {
+                                // Kaybeden takım öne doğru düşer/sendeleyerek yere oturur
+                                kid.position.y = 0.48;
+                                if (kid.userData.bodyGroup) kid.userData.bodyGroup.rotation.z = isRight ? -0.45 : 0.45;
+                                if (kid.userData.arm1) kid.userData.arm1.rotation.z = isRight ? -0.3 : 0.3;
+                                if (kid.userData.arm2) kid.userData.arm2.rotation.z = isRight ? -0.3 : 0.3;
+                            }
+                        } else if (LAB.isTugRunning) {
+                            // Aktif yarış: gövde asılır, bacaklar adım atar, kollar çekiştirir
+                            const pullCycle = Math.sin(elapsed * 8 + idx * 1.3);
+                            const pullStrength = isRight ? (LAB.tugBlue / 30) : (LAB.tugRed / 30);
+                            const baseLean = isRight ? (0.35 + pullStrength * 0.16) : (-0.35 - pullStrength * 0.16);
+
+                            if (kid.userData.bodyGroup) kid.userData.bodyGroup.rotation.z = baseLean + pullCycle * 0.07;
+                            if (kid.userData.leg1Group) kid.userData.leg1Group.rotation.z = (isRight ? 0.32 : -0.32) + pullCycle * 0.10;
+                            if (kid.userData.leg2Group) kid.userData.leg2Group.rotation.z = (isRight ? -0.22 : 0.22) - pullCycle * 0.10;
+                            if (kid.userData.arm1) kid.userData.arm1.rotation.z = (isRight ? 1.05 : -1.05) + pullCycle * 0.08;
+                            if (kid.userData.arm2) kid.userData.arm2.rotation.z = (isRight ? 1.05 : -1.05) - pullCycle * 0.08;
+                            if (kid.userData.headMesh) kid.userData.headMesh.position.y = 1.48 + pullCycle * 0.02;
+                        } else {
+                            // Durgun hazır bekleme
+                            const breath = Math.sin(elapsed * 2.5 + idx) * 0.03;
+                            kid.position.y = 0.6;
+                            if (kid.userData.bodyGroup) kid.userData.bodyGroup.rotation.z = (isRight ? 0.30 : -0.30) + breath;
+                            if (kid.userData.headMesh) kid.userData.headMesh.position.y = 1.48 + breath * 0.3;
+                            if (kid.userData.arm1) kid.userData.arm1.rotation.z = isRight ? 1.05 : -1.05;
+                            if (kid.userData.arm2) kid.userData.arm2.rotation.z = isRight ? 1.05 : -1.05;
                         }
                     });
                 }
@@ -1696,6 +2045,17 @@
                 }
             }
 
+            // Modül 1 Soru Kartı Görünürlüğü
+            const m1Banner = document.getElementById('m1-question-banner');
+            if (m1Banner) {
+                if (moduleIndex === 1) m1Banner.classList.remove('hidden');
+                else m1Banner.classList.add('hidden');
+            }
+
+            if (moduleIndex !== 2) {
+                SoundManager.stopTugMusic();
+            }
+
             // 3D Obje Görünürlüklerini Ayarla
             if (moduleIndex === 2) {
                 mainBoxMesh.visible = false;
@@ -1731,16 +2091,25 @@
         function onForceRightChange(val) {
             LAB.forceRight = parseInt(val, 10);
             document.getElementById('label-slider-right').textContent = `${LAB.forceRight} N`;
+            LAB.m1AnswerRevealed = false;
+            resetPhysicsBox();
             updateForceCalculations();
         }
 
         function onForceLeftChange(val) {
             LAB.forceLeft = parseInt(val, 10);
             document.getElementById('label-slider-left').textContent = `${LAB.forceLeft} N`;
+            LAB.m1AnswerRevealed = false;
+            resetPhysicsBox();
             updateForceCalculations();
         }
 
         function toggleM1Play() {
+            if (!LAB.m1AnswerRevealed) {
+                // Öğrenci doğrudan hareketi başlatmak isterse cevabı çöz ve göster
+                revealM1Answer(false);
+            }
+
             LAB.isSimPlaying = !LAB.isSimPlaying;
             const btn = document.getElementById('btn-m1-play');
             const txt = document.getElementById('btn-m1-play-text');
@@ -1766,6 +2135,7 @@
             document.getElementById('label-slider-right').textContent = `${right} N`;
             document.getElementById('label-slider-left').textContent = `${left} N`;
 
+            LAB.m1AnswerRevealed = false;
             resetPhysicsBox();
             updateForceCalculations();
         }
@@ -1805,10 +2175,14 @@
             const status = document.getElementById('tug-status-text');
 
             if (LAB.isTugRunning) {
+                LAB.tugWinner = null;
+                SoundManager.playWhistle();
+                SoundManager.startTugMusic();
                 btn.className = 'flex-1 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
                 txt.textContent = 'Yarışmayı Duraklat';
                 status.textContent = '🔥 Çekişme Devam Ediyor!';
             } else {
+                SoundManager.stopTugMusic();
                 btn.className = 'flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
                 txt.textContent = 'Yarışmayı Devam Ettir';
                 status.textContent = 'Yarışma Duraklatıldı';
@@ -1817,10 +2191,23 @@
 
         function resetTugRace() {
             LAB.isTugRunning = false;
+            LAB.tugWinner = null;
             LAB.tugRopeOffset = 0;
             LAB.tugVelocity = 0;
+            SoundManager.stopTugMusic();
+
             if (ropeMesh) ropeMesh.position.x = 0;
             if (tugFlagMesh) tugFlagMesh.position.x = 0;
+
+            if (window.tugFigures) {
+                window.tugFigures.forEach(kid => {
+                    kid.position.x = kid.userData.baseX;
+                    kid.position.y = 0.6;
+                    if (kid.userData.bodyGroup) kid.userData.bodyGroup.rotation.z = kid.userData.isRightTeam ? 0.30 : -0.30;
+                    if (kid.userData.arm1) kid.userData.arm1.rotation.z = kid.userData.isRightTeam ? 1.05 : -1.05;
+                    if (kid.userData.arm2) kid.userData.arm2.rotation.z = kid.userData.isRightTeam ? 1.05 : -1.05;
+                });
+            }
 
             const btn = document.getElementById('btn-tug-action');
             const txt = document.getElementById('btn-tug-action-text');
@@ -1833,13 +2220,29 @@
 
         function concludeTugRace(winner) {
             LAB.isTugRunning = false;
+            LAB.tugWinner = winner;
+            SoundManager.stopTugMusic();
+            SoundManager.playFanfare();
+
             const status = document.getElementById('tug-status-text');
             if (winner === 'mavi') {
                 status.innerHTML = '<span class="text-sky-300 font-black">🎉 MAVİ TAKIM KAZANDI!</span> (Bileşke kuvvet sağa oluştu)';
-                confetti({ particleCount: 60, spread: 80, origin: { x: 0.7, y: 0.6 } });
+                confetti({ particleCount: 75, spread: 90, origin: { x: 0.7, y: 0.6 } });
             } else if (winner === 'kirmizi') {
                 status.innerHTML = '<span class="text-rose-400 font-black">🎉 KIRMIZI TAKIM KAZANDI!</span> (Bileşke kuvvet sola oluştu)';
-                confetti({ particleCount: 60, spread: 80, origin: { x: 0.3, y: 0.6 } });
+                confetti({ particleCount: 75, spread: 90, origin: { x: 0.3, y: 0.6 } });
+            }
+        }
+
+        function toggleTugAudio() {
+            SoundManager.isMuted = !SoundManager.isMuted;
+            const icon = document.getElementById('icon-tug-music');
+            if (SoundManager.isMuted) {
+                if (icon) icon.className = 'fa-solid fa-volume-xmark text-rose-400';
+                SoundManager.stopTugMusic();
+            } else {
+                if (icon) icon.className = 'fa-solid fa-volume-high text-cyan-300';
+                if (LAB.isTugRunning) SoundManager.startTugMusic();
             }
         }
 
