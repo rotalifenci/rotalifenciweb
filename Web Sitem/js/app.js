@@ -4949,20 +4949,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     kapakResmi: "assets/kuvvet-laboratuvari-kapak.svg"
                 }
             ]
-            ,
-            "3": [
-                {
-                    id: "mat-6-2-sim-kuvvet-laboratuvari",
-                    title: "Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!",
-                    icon: "fa-solid fa-atom",
-                    desc: "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D fizik simülasyonu! 5 deney modülü, bileşke oklar, halat çekme ve 10 soruluk değerlendirme.",
-                    type: "3D Fizik Simülasyonu",
-                    format: "3D SİMÜLASYON",
-                    badge: "🌟 3. Ünite Başyapıtı",
-                    fileUrl: "oyunlar/kuvvet-laboratuvari.html",
-                    kapakResmi: "assets/kuvvet-laboratuvari-kapak.svg"
-                }
-            ]
         },
         "7": {
             "1": [
@@ -5138,7 +5124,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         if (!matchesSubTabCategory(m, normSubTab)) return false;
                         const targetSec = getMaterialTargetSection(m);
                         if (m.id === "mat-6-2-sim-kuvvet-laboratuvari" || (m.title && m.title.toLowerCase().includes("kuvvet laboratuvarı"))) {
-                            return String(unitNum) === "2" || String(unitNum) === "3";
+                            return String(unitNum) === "2";
                         }
                         return targetSec === String(unitNum);
                     });

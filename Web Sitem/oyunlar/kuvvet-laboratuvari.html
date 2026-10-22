@@ -44,6 +44,11 @@
 
     <!-- Three.js & OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        if (typeof THREE === 'undefined') {
+            document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\/script>');
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
     <!-- Canvas Confetti -->
@@ -847,12 +852,28 @@
         let clock = new THREE.Clock();
 
         // 🚀 BAŞLATMA
-        window.addEventListener('DOMContentLoaded', () => {
-            initThreeScene();
-            setupWindowResize();
-            switchExperiment(1);
-            updateForceCalculations();
-        });
+        function startLaboratuvarApp() {
+            try {
+                initThreeScene();
+            } catch(e) {
+                console.error("initThreeScene hatası:", e);
+            }
+            try {
+                setupWindowResize();
+            } catch(e) {}
+            try {
+                switchExperiment(1);
+            } catch(e) {}
+            try {
+                updateForceCalculations();
+            } catch(e) {}
+        }
+
+        if (document.readyState === 'loading') {
+            window.addEventListener('DOMContentLoaded', startLaboratuvarApp);
+        } else {
+            startLaboratuvarApp();
+        }
 
         // 🏛️ THREE.JS SAHNE KURULUMU
         
@@ -1081,7 +1102,9 @@
             // Sol Takım Temsili Figürleri (Kırmızı)
             const redTeamGroup = new THREE.Group();
             redTeamGroup.position.set(-6, 0.6, 0);
-            const figureGeo = new THREE.CapsuleGeometry ? new THREE.CapsuleGeometry(0.3, 0.8, 4, 8) : new THREE.CylinderGeometry(0.3, 0.3, 1.2, 8);
+            const figureGeo = (typeof THREE.CapsuleGeometry === 'function')
+                ? new THREE.CapsuleGeometry(0.3, 0.8, 4, 8)
+                : new THREE.CylinderGeometry(0.3, 0.3, 1.2, 8);
             const redMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
             for(let i=0; i<3; i++) {
                 const fig = new THREE.Mesh(figureGeo, redMat);
