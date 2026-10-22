@@ -34,7 +34,7 @@ const PROTECTED_MATERIAL_IDS = new Set([
      "mat-6-2-sim-kuvvet-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
-    "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi",
+    "builtin-oyun-6-uzay-ekspresi",
     "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
 ]);
 
@@ -53,6 +53,7 @@ const PERMANENT_DELETED_MATERIAL_IDS = [
     "std-ders-sunumu-5-1", "std-ders-sunumu-6-1", "std-ders-sunumu-7-1", "std-ders-sunumu-8-1",
     "foy-5-1", "foy-6-1", "foy-7-1", "foy-8-1", "lab-5-2", "lab-5-1", "not-5-1",
     "mat-42a537f6-fabc-443a-a056-20e157e53587", "mat-b7fa9166-1db2-4dc4-be53-72888666ade6",
+    "mat-game-gezegen-kosusu", "builtin-oyun-6-gezegen-kosusu", "mat-6-1-oyun-gunes-sistemi-3d", "builtin-oyun-6-gunes-sistemi", "gunes-sistemi-3d",
     "mat-949109b2-106d-45b4-a182-7401685cb24b", "mat-f5ac5994-0af1-4ec3-9ae3-315ad2282df5",
     "mat-2e623580-6601-483b-949d-e4602a7cdc7b", "mat-a9326b86-3be0-4ca0-97c6-b3c36478bcfd",
     "mat-93c68ec9-b803-4f12-bda8-1cfecc085d6b", "mat-a2330c37-83e1-4a97-9fb8-2f8127543e1a",

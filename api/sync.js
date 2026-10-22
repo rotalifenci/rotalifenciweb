@@ -45,7 +45,7 @@ const PROTECTED_IDS = new Set([
      "mat-6-2-sim-kuvvet-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
-    "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi",
+    "builtin-oyun-6-uzay-ekspresi",
     "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
 ]);
 

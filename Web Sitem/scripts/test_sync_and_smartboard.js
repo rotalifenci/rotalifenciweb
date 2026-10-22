@@ -20,10 +20,10 @@ async function testAll() {
     console.log(`Gist deletedIds count: ${gistMats.deletedIds ? gistMats.deletedIds.length : 0}`);
 
     const protectedIds = [
-        "mat-game-gezegen-kosusu", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
-        "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-3d", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
-        "builtin-oyun-6-gunes-sistemi", "builtin-oyun-6-gunes-sistemi-yolculuk", 
-        "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi"
+        "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
+        "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
+        "builtin-oyun-6-gunes-sistemi-yolculuk", 
+        "builtin-oyun-6-uzay-ekspresi"
     ];
 
     let leakFound = false;
