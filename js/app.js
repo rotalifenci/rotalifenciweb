@@ -4949,6 +4949,20 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     kapakResmi: "assets/kuvvet-laboratuvari-kapak.svg"
                 }
             ]
+            ,
+            "3": [
+                {
+                    id: "mat-6-2-sim-kuvvet-laboratuvari",
+                    title: "Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!",
+                    icon: "fa-solid fa-atom",
+                    desc: "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D fizik simülasyonu! 5 deney modülü, bileşke oklar, halat çekme ve 10 soruluk değerlendirme.",
+                    type: "3D Fizik Simülasyonu",
+                    format: "3D SİMÜLASYON",
+                    badge: "🌟 3. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/kuvvet-laboratuvari.html",
+                    kapakResmi: "assets/kuvvet-laboratuvari-kapak.svg"
+                }
+            ]
         },
         "7": {
             "1": [
@@ -5123,6 +5137,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                         if (gClean !== "all" && gClean !== String(grade.number)) return false;
                         if (!matchesSubTabCategory(m, normSubTab)) return false;
                         const targetSec = getMaterialTargetSection(m);
+                        if (m.id === "mat-6-2-sim-kuvvet-laboratuvari" || (m.title && m.title.toLowerCase().includes("kuvvet laboratuvarı"))) {
+                            return String(unitNum) === "2" || String(unitNum) === "3";
+                        }
                         return targetSec === String(unitNum);
                     });
 
@@ -5863,6 +5880,16 @@ function renderGradeEducationalGames(grade, subData) {
         ],
         "6": [
             {
+                id: "builtin-oyun-6-uzay-ekspresi",
+                title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi",
+                badge: "3D Uzay Treni",
+                type: "3D Koşu Oyunu",
+                desc: "3D uzay treninde gezegenleri keşfet, meteorlardan kaç, Maarif Modeli bilgi kapılarından geçerek rekor kır!",
+                icon: "fa-solid fa-train-subway",
+                iconColor: "from-amber-400 via-orange-500 to-yellow-300",
+                fileUrl: "oyun-uzay-ekspresi"
+            },
+            {
                 id: "builtin-oyun-6-gunes-sistemi-yolculuk",
                 title: "Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon",
                 badge: "3D Sinematik Simülasyon",
@@ -5871,6 +5898,16 @@ function renderGradeEducationalGames(grade, subData) {
                 icon: "fa-solid fa-solar-panel",
                 iconColor: "from-amber-400 via-sky-500 to-indigo-600",
                 fileUrl: "gunes-sistemi-yolculuk-3d"
+            },
+            {
+                id: "mat-6-2-sim-kuvvet-laboratuvari",
+                title: "Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!",
+                badge: "3D İnteraktif Simülasyon",
+                type: "3D Fizik Laboratuvarı",
+                desc: "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D fizik simülasyonu! 5 deney modülü, bileşke oklar, halat çekme ve 10 soruluk değerlendirme.",
+                icon: "fa-solid fa-atom",
+                iconColor: "from-blue-500 via-indigo-600 to-teal-400",
+                fileUrl: "kuvvet-laboratuvari"
             }
         ],
         "7": [
