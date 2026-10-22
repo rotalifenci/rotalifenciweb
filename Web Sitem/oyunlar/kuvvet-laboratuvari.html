@@ -297,27 +297,81 @@
             
             <!-- ===================== MODÜL 1 KONTROLLERİ: KUVVETLERİ KEŞFET ===================== -->
             <div id="controls-module-1" class="module-controls-panel flex flex-col gap-2.5">
-                <!-- ❓ BİLEŞKE KUVVET VE YÖNÜ SORU KARTI (Kuvvet seçilince üstte doğrudan yazmaz, soru sorar) -->
-                <div id="m1-question-banner" class="bg-gradient-to-r from-slate-900/95 via-cyan-950/40 to-slate-900/95 border-2 border-cyan-500/50 rounded-2xl p-2.5 shadow-[0_0_20px_rgba(6,182,212,0.25)]">
-                    <div class="flex items-center justify-between gap-2 mb-1.5 pb-1 border-b border-cyan-500/20">
-                        <div class="flex items-center gap-2 text-xs font-black text-amber-300">
-                            <span class="w-5 h-5 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-question animate-bounce"></i></span>
-                            <span class="font-orbitron tracking-wide uppercase text-amber-200">BİLEŞKE KUVVETİ (R) VE YÖNÜNÜ TAHMİN ET!</span>
+                <!-- ❓ BİLEŞKE KUVVET VE YÖNÜ HESAPLAMA & HAREKET KARTI -->
+                <div id="m1-question-banner" class="bg-gradient-to-r from-slate-900/95 via-cyan-950/40 to-slate-900/95 border-2 border-cyan-500/50 rounded-2xl p-3 shadow-[0_0_20px_rgba(6,182,212,0.25)]">
+                    <div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-cyan-500/20">
+                        <div class="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-300">
+                            <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-calculator"></i></span>
+                            <span class="font-orbitron tracking-wide uppercase text-amber-200">BİLEŞKE KUVVETİ (R) VE YÖNÜNÜ BUL!</span>
                         </div>
-                        <button type="button" onclick="revealM1Answer(true)" class="text-[10px] font-bold text-slate-300 hover:text-white px-2 py-0.5 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer flex items-center gap-1">
-                            <i class="fa-solid fa-eye text-cyan-400"></i> <span>Cevabı Göster</span>
-                        </button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="revealM1Answer(true)" class="text-[11px] font-bold text-slate-300 hover:text-white px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer flex items-center gap-1" title="Çözümü ve formülü göster">
+                                <i class="fa-solid fa-eye text-cyan-400"></i> <span>Çözümü Göster</span>
+                            </button>
+                            <button type="button" onclick="resetM1QuizInput()" class="text-[11px] font-bold text-slate-300 hover:text-white px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer flex items-center gap-1" title="Girişleri temizle">
+                                <i class="fa-solid fa-rotate-left text-amber-400"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <div class="text-xs sm:text-sm font-bold text-white mb-2" id="m1-quiz-prompt">
-                        Sağa 15 N, Sola 9 N uygulanıyor. Bileşke kuvvet ve yönü nedir?
+                    <!-- Dinamik Soru Metni -->
+                    <div class="text-xs sm:text-sm font-bold text-white mb-2.5" id="m1-quiz-prompt">
+                        Kutuya Doğuya 15 N (F₁), Batıya 9 N (F₂) uygulanıyor. Bileşke kuvvetin büyüklüğünü yaz, yönünü seç ve hareketi başlat!
                     </div>
 
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="m1-quiz-options">
-                        <!-- 4 dinamik şık butonu -->
+                    <!-- Giriş ve Yön Seçim Alanı -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center bg-slate-950/60 p-2.5 rounded-xl border border-cyan-500/30">
+                        <!-- 1. Büyüklük Sayı Girişi -->
+                        <div class="lg:col-span-4 flex items-center gap-2 bg-slate-900/90 p-2 rounded-xl border border-slate-700/80">
+                            <label for="m1-input-net" class="text-xs font-black text-cyan-300 shrink-0 flex items-center gap-1">
+                                <i class="fa-solid fa-arrow-down-1-9"></i> Büyüklük (R):
+                            </label>
+                            <input type="number" id="m1-input-net" min="0" max="60" placeholder="Sayı yaz..." 
+                                class="w-full px-2.5 py-1.5 text-center text-base sm:text-lg font-mono font-black rounded-lg bg-slate-950 border-2 border-cyan-500/50 text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/30 shadow-inner"
+                                oninput="onM1NetInputChange(this.value)"
+                                onkeydown="if(event.key==='Enter') submitM1AnswerAndPlay()">
+                            <span class="font-mono font-black text-sm text-cyan-400 shrink-0">N</span>
+                        </div>
+
+                        <!-- 2. 4 Yön Otomatik Seçim Butonları -->
+                        <div class="lg:col-span-5 flex flex-col gap-1">
+                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                                <i class="fa-solid fa-compass text-cyan-400"></i> Hareket / Kuvvet Yönü:
+                            </div>
+                            <div class="grid grid-cols-5 gap-1" id="m1-direction-buttons">
+                                <button type="button" onclick="selectM1Direction('dogu')" id="btn-dir-dogu" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-xs">➡️</span>
+                                    <span class="truncate text-[10px]">Doğu (Sağ)</span>
+                                </button>
+                                <button type="button" onclick="selectM1Direction('bati')" id="btn-dir-bati" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-xs">⬅️</span>
+                                    <span class="truncate text-[10px]">Batı (Sol)</span>
+                                </button>
+                                <button type="button" onclick="selectM1Direction('kuzey')" id="btn-dir-kuzey" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-xs">⬆️</span>
+                                    <span class="truncate text-[10px]">Kuzey</span>
+                                </button>
+                                <button type="button" onclick="selectM1Direction('guney')" id="btn-dir-guney" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-xs">⬇️</span>
+                                    <span class="truncate text-[10px]">Güney</span>
+                                </button>
+                                <button type="button" onclick="selectM1Direction('dengede')" id="btn-dir-dengede" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer" title="Kuvvetler Eşit / Dengede">
+                                    <span class="text-xs">⚖️</span>
+                                    <span class="truncate text-[10px]">Dengede (0 N)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 3. Hareketi Başlat & Kontrol Et Butonu -->
+                        <div class="lg:col-span-3 flex">
+                            <button type="button" onclick="submitM1AnswerAndPlay()" id="btn-m1-check-play" class="w-full py-2.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                                <i class="fa-solid fa-play" id="icon-m1-check-play"></i> <span id="text-m1-check-play">Hareketi Başlat</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <div id="m1-quiz-feedback" class="mt-2 text-xs font-black p-2 rounded-xl hidden transition-all">
+                    <!-- Geribildirim / Kontrol Alanı -->
+                    <div id="m1-quiz-feedback" class="mt-2 text-xs font-black p-2.5 rounded-xl hidden transition-all">
                     </div>
                 </div>
 
@@ -839,7 +893,7 @@
             forceLeft: 9,   // Kırmızı ok (Sola)
             boxMass: 5,     // kg
             m1AnswerRevealed: false,
-            m1CurrentOptions: [],
+            m1SelectedDir: null,
 
             // Kutu Dinamikleri (Fizik Motoru)
             boxX: 0,
@@ -1731,125 +1785,229 @@
             updateArrowVisuals(fRight, fLeft);
         }
 
-        // ❓ MODÜL 1: BİLEŞKE KUVVET SORU MOTORU
+        // ❓ MODÜL 1: BİLEŞKE KUVVET VE YÖN BULMA MOTORU
         function generateM1Question(fRight, fLeft) {
             const promptEl = document.getElementById('m1-quiz-prompt');
-            const optionsEl = document.getElementById('m1-quiz-options');
             const feedbackEl = document.getElementById('m1-quiz-feedback');
-            if (!promptEl || !optionsEl) return;
+            if (!promptEl) return;
 
-            if (!LAB.m1AnswerRevealed && feedbackEl) {
+            if (!LAB.m1AnswerRevealed && feedbackEl && !feedbackEl.dataset.keep) {
                 feedbackEl.classList.add('hidden');
                 feedbackEl.innerHTML = '';
             }
 
-            promptEl.innerHTML = `Kutuya Sağa <span class="text-emerald-400 font-mono font-black">${fRight} N</span> (F₁), Sola <span class="text-rose-400 font-mono font-black">${fLeft} N</span> (F₂) uygulanıyor. <span class="text-cyan-300">Bileşke kuvvet (R) ve hareket yönü nedir?</span>`;
-
-            const net = fRight - fLeft;
-            const correctText = (net === 0) 
-                ? '0 N (Kuvvetler Dengede)' 
-                : `${Math.abs(net)} N ${net > 0 ? 'Sağa' : 'Sola'}`;
-
-            let candidates = [
-                { text: correctText, isCorrect: true, reason: 'Tebrikler! Doğru hesapladın.' },
-                { 
-                    text: net === 0 ? `${Math.max(5, fRight)} N Sağa` : `${Math.abs(net)} N ${net > 0 ? 'Sola' : 'Sağa'}`, 
-                    isCorrect: false, 
-                    reason: 'Yön yanılgısı! Zıt yönlü kuvvetlerde bileşke, DAİMA büyük olan kuvvetin yönündedir.' 
-                },
-                { 
-                    text: `${fRight + fLeft} N ${net >= 0 ? 'Sağa' : 'Sola'}`, 
-                    isCorrect: false, 
-                    reason: 'Toplama yanılgısı! Kuvvetler aynı yönlü olsaydı toplanırdı; zıt yönlü kuvvetler birbirinden çıkarılır.' 
-                },
-                { 
-                    text: net === 0 ? `${Math.max(3, fRight + 5)} N Sola` : '0 N (Dengede)', 
-                    isCorrect: false, 
-                    reason: 'Denge yanılgısı! Kuvvetlerin bileşkesinin 0 N (dengede) olması için zıt kuvvetlerin büyüklüklerinin eşit olması gerekir.' 
-                }
-            ];
-
-            // Benzersiz kıl
-            const unique = [];
-            const seen = new Set();
-            for (const c of candidates) {
-                if (!seen.has(c.text)) {
-                    seen.add(c.text);
-                    unique.push(c);
-                }
-            }
-            while (unique.length < 4) {
-                const diff = Math.abs(net) + unique.length * 3;
-                const txt = `${diff} N ${net >= 0 ? 'Sağa' : 'Sola'}`;
-                if (!seen.has(txt)) {
-                    seen.add(txt);
-                    unique.push({ text: txt, isCorrect: false, reason: 'Büyüklük hesabı hatalı.' });
-                }
-            }
-
-            // Şıkları sadece soru sıfırlandığında karıştır
-            if (!LAB.m1CurrentOptions || LAB.m1CurrentOptions.length === 0 || !LAB.m1AnswerRevealed) {
-                unique.sort(() => Math.random() - 0.5);
-                LAB.m1CurrentOptions = unique;
-            }
-
-            const letters = ['A', 'B', 'C', 'D'];
-            optionsEl.innerHTML = LAB.m1CurrentOptions.map((opt, idx) => `
-                <button type="button" onclick="selectM1Option(${idx})" id="m1-opt-btn-${idx}" class="p-2 sm:py-2.5 rounded-xl font-bold text-xs bg-slate-800/90 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all shadow-md active:scale-95 flex items-center justify-start gap-2 cursor-pointer text-left ${LAB.m1AnswerRevealed && opt.isCorrect ? 'bg-emerald-600 text-white border-emerald-400 ring-2 ring-emerald-400/50' : ''}">
-                    <span class="w-6 h-6 rounded-lg ${LAB.m1AnswerRevealed && opt.isCorrect ? 'bg-emerald-800 text-white' : 'bg-cyan-950 text-cyan-300'} border border-cyan-500/40 flex items-center justify-center font-black text-xs shrink-0">${letters[idx]}</span>
-                    <span class="truncate">${opt.text}</span>
-                </button>
-            `).join('');
+            promptEl.innerHTML = `Kutuya Doğuya (Sağa) <span class="text-emerald-400 font-mono font-black">${fRight} N</span> (F₁), Batıya (Sola) <span class="text-rose-400 font-mono font-black">${fLeft} N</span> (F₂) uygulanıyor. <span class="text-cyan-300">Bileşke kuvvetin büyüklüğünü (N) yaz, yönünü seç ve 'Hareketi Başlat'a bas!</span>`;
         }
 
-        function selectM1Option(idx) {
-            const opt = LAB.m1CurrentOptions[idx];
-            const btn = document.getElementById(`m1-opt-btn-${idx}`);
-            const feedbackEl = document.getElementById('m1-quiz-feedback');
+        function onM1NetInputChange(val) {
+            const trimmed = String(val).trim();
+            if (trimmed === '0') {
+                selectM1Direction('dengede');
+            }
+        }
 
-            if (opt.isCorrect) {
-                SoundManager.playCorrect();
-                if (btn) btn.className = 'p-2 sm:py-2.5 rounded-xl font-black text-xs bg-emerald-600 text-white border-2 border-emerald-300 shadow-[0_0_15px_rgba(16,185,129,0.5)] flex items-center justify-start gap-2 text-left';
-                confetti({ particleCount: 50, spread: 75, origin: { y: 0.7 } });
-
-                if (feedbackEl) {
-                    feedbackEl.className = 'mt-2 text-xs font-black p-2.5 rounded-xl bg-emerald-950/90 text-emerald-200 border border-emerald-500/50 block';
-                    feedbackEl.innerHTML = `🎉 <strong>TEBRİKLER! DOĞRU CEVAP!</strong> Bileşke kuvvet <strong>${opt.text}</strong>. Şimdi hareketi başlatabilirsin!`;
+        function selectM1Direction(dir) {
+            LAB.m1SelectedDir = dir;
+            const allDirs = ['dogu', 'bati', 'kuzey', 'guney', 'dengede'];
+            allDirs.forEach(d => {
+                const btn = document.getElementById(`btn-dir-${d}`);
+                if (!btn) return;
+                if (d === dir) {
+                    btn.className = 'dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-cyan-500 text-slate-950 border-2 border-cyan-200 ring-2 ring-cyan-400/50 shadow-md transition-all text-center flex flex-col items-center justify-center cursor-pointer scale-105';
+                } else {
+                    btn.className = 'dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
                 }
+            });
 
-                revealM1Answer(false);
+            if (dir === 'dengede') {
+                const input = document.getElementById('m1-input-net');
+                if (input && input.value === '') input.value = '0';
+            }
+        }
+
+        function resetM1QuizInput() {
+            const input = document.getElementById('m1-input-net');
+            if (input) input.value = '';
+            LAB.m1SelectedDir = null;
+            ['dogu', 'bati', 'kuzey', 'guney', 'dengede'].forEach(d => {
+                const btn = document.getElementById(`btn-dir-${d}`);
+                if (btn) btn.className = 'dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
+            });
+            const feedbackEl = document.getElementById('m1-quiz-feedback');
+            if (feedbackEl) {
+                delete feedbackEl.dataset.keep;
+                feedbackEl.classList.add('hidden');
+                feedbackEl.innerHTML = '';
+            }
+            LAB.m1AnswerRevealed = false;
+            resetPhysicsBox();
+            updateForceCalculations();
+        }
+
+        function syncPlayButtonsState(isPlaying) {
+            const btn1 = document.getElementById('btn-m1-play');
+            const txt1 = document.getElementById('btn-m1-play-text');
+            const icon1 = document.getElementById('btn-m1-play-icon');
+
+            const btn2 = document.getElementById('btn-m1-check-play');
+            const txt2 = document.getElementById('text-m1-check-play');
+            const icon2 = document.getElementById('icon-m1-check-play');
+
+            if (isPlaying) {
+                if (btn1) btn1.className = 'flex-1 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
+                if (txt1) txt1.textContent = 'Hareketi Durdur';
+                if (icon1) icon1.className = 'fa-solid fa-pause';
+
+                if (btn2) btn2.className = 'w-full py-2.5 px-3 bg-gradient-to-r from-amber-500 via-orange-400 to-amber-500 hover:from-amber-400 hover:to-orange-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-amber-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer';
+                if (txt2) txt2.textContent = 'Hareketi Durdur';
+                if (icon2) icon2.className = 'fa-solid fa-pause';
+            } else {
+                if (btn1) btn1.className = 'flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
+                if (txt1) txt1.textContent = 'Hareketi Başlat';
+                if (icon1) icon1.className = 'fa-solid fa-play';
+
+                if (btn2) btn2.className = 'w-full py-2.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer';
+                if (txt2) txt2.textContent = 'Hareketi Başlat & Kontrol Et';
+                if (icon2) icon2.className = 'fa-solid fa-play';
+            }
+        }
+
+        function submitM1AnswerAndPlay() {
+            // Eğer zaten hareket halindeyse durdur
+            if (LAB.isSimPlaying) {
+                LAB.isSimPlaying = false;
+                syncPlayButtonsState(false);
+                return;
+            }
+
+            const input = document.getElementById('m1-input-net');
+            const feedbackEl = document.getElementById('m1-quiz-feedback');
+            const userValStr = input ? input.value.trim() : '';
+            const userDir = LAB.m1SelectedDir;
+
+            if (userValStr === '') {
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-bold p-2.5 rounded-xl bg-amber-950/90 text-amber-200 border border-amber-500/60 block animate-pulse';
+                    feedbackEl.innerHTML = '⚠️ <strong>Lütfen bileşke kuvvet için bir sayı (büyüklük) yazın!</strong>';
+                }
+                if (input) input.focus();
+                return;
+            }
+
+            const userMag = parseInt(userValStr, 10);
+            if (isNaN(userMag) || userMag < 0) {
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-bold p-2.5 rounded-xl bg-rose-950/90 text-rose-200 border border-rose-500/60 block';
+                    feedbackEl.innerHTML = '⚠️ <strong>Lütfen geçerli bir pozitif sayı girin!</strong>';
+                }
+                return;
+            }
+
+            if (userMag > 0 && !userDir) {
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-bold p-2.5 rounded-xl bg-amber-950/90 text-amber-200 border border-amber-500/60 block animate-pulse';
+                    feedbackEl.innerHTML = '⚠️ <strong>Lütfen kuvvetin / hareketin yönünü (Doğu, Batı, Kuzey, Güney) seçin!</strong>';
+                }
+                return;
+            }
+
+            const fRight = LAB.forceRight;
+            const fLeft = LAB.forceLeft;
+            const trueNet = fRight - fLeft;
+            const trueMag = Math.abs(trueNet);
+            let trueDir = 'dengede';
+            if (trueNet > 0) trueDir = 'dogu';
+            else if (trueNet < 0) trueDir = 'bati';
+
+            const isMagCorrect = (userMag === trueMag);
+            let isDirCorrect = false;
+            if (trueMag === 0) {
+                isDirCorrect = (userDir === 'dengede' || !userDir || userMag === 0);
+            } else {
+                isDirCorrect = (userDir === trueDir);
+            }
+
+            const isFullyCorrect = (isMagCorrect && isDirCorrect);
+
+            // Cevabı aç ve 3D oku görünür kıl
+            LAB.m1AnswerRevealed = true;
+            if (feedbackEl) feedbackEl.dataset.keep = 'true';
+            updateForceCalculations();
+
+            const dirNames = {
+                'dogu': 'Doğu (Sağ)',
+                'bati': 'Batı (Sol)',
+                'kuzey': 'Kuzey',
+                'guney': 'Güney',
+                'dengede': 'Dengede (0 N)'
+            };
+
+            if (isFullyCorrect) {
+                SoundManager.playCorrect();
+                confetti({ particleCount: 65, spread: 80, origin: { y: 0.7 } });
+                if (feedbackEl) {
+                    feedbackEl.className = 'mt-2 text-xs font-black p-3 rounded-xl bg-emerald-950/90 text-emerald-200 border-2 border-emerald-400/80 shadow-[0_0_20px_rgba(16,185,129,0.3)] block';
+                    if (trueMag === 0) {
+                        feedbackEl.innerHTML = `🎉 <strong>TEBRİKLER! TAM İSABET!</strong><br>Kuvvetler eşit büyüklükte (F₁ = F₂ = ${fRight} N) olduğundan bileşke kuvvet <strong>R = 0 N</strong>'dur. Kutu dengelenmiş kuvvetlerin etkisinde <strong>durgun kalır</strong>!`;
+                    } else {
+                        feedbackEl.innerHTML = `🎉 <strong>TEBRİKLER! TAM İSABET!</strong><br>Bileşke kuvvet <strong>R = ${trueMag} N ${dirNames[trueDir]}</strong> yönünde.<br>Kutu <strong>${dirNames[trueDir]}</strong> yönünde hızlanarak harekete başladı!`;
+                    }
+                }
             } else {
                 SoundManager.playWrong();
-                if (btn) {
-                    btn.className = 'p-2 sm:py-2.5 rounded-xl font-bold text-xs bg-rose-950 text-rose-200 border border-rose-500 flex items-center justify-start gap-2 text-left';
-                }
                 if (feedbackEl) {
-                    feedbackEl.className = 'mt-2 text-xs font-bold p-2.5 rounded-xl bg-rose-950/90 text-rose-200 border border-rose-500/50 block';
-                    feedbackEl.innerHTML = `❌ <strong>Tekrar Dene:</strong> ${opt.reason}`;
+                    feedbackEl.className = 'mt-2 text-xs font-bold p-3 rounded-xl bg-rose-950/90 text-rose-200 border border-rose-500/80 block';
+                    let msg = `❌ <strong>HATA VAR! Doğru Değerleri İncele:</strong><br>`;
+                    if (!isMagCorrect && !isDirCorrect) {
+                        msg += `• <strong>Büyüklük:</strong> Zıt yönlü kuvvetler çıkarılır: |${fRight} - ${fLeft}| = <strong>${trueMag} N</strong> olmalıydı.<br>`;
+                        msg += `• <strong>Yön:</strong> Bileşke daima büyük olan kuvvetin (${fRight > fLeft ? `F₁ = ${fRight} N` : `F₂ = ${fLeft} N`}) yönündedir: <strong>${dirNames[trueDir]}</strong>.`;
+                    } else if (!isMagCorrect) {
+                        msg += `• Girdiğin büyüklük (${userMag} N) hatalı. Zıt kuvvetlerin bileşkesi: |${fRight} - ${fLeft}| = <strong>${trueMag} N</strong> olmalıydı.`;
+                    } else {
+                        if (userDir === 'kuzey' || userDir === 'guney') {
+                            msg += `• Seçtiğin yön (${dirNames[userDir]}) hatalı! Kuvvetler yatay Doğu-Batı doğrultusundadır. Bileşke <strong>${dirNames[trueDir]}</strong> olmalıdır.`;
+                        } else {
+                            msg += `• Seçtiğin yön hatalı! Zıt yönlü kuvvetlerde bileşke DAİMA büyük kuvvetin yönündedir (${dirNames[trueDir]}).`;
+                        }
+                    }
+                    msg += `<br><span class="text-cyan-300 font-normal">Kutunun gerçek fiziksel hareketini ve mavi bileşke okunu sahnede inceleyebilirsin.</span>`;
+                    feedbackEl.innerHTML = msg;
                 }
             }
+
+            // Hareketi Başlat
+            LAB.isSimPlaying = true;
+            syncPlayButtonsState(true);
         }
 
         function revealM1Answer(fromTeacherClick) {
+            const fR = LAB.forceRight;
+            const fL = LAB.forceLeft;
+            const net = fR - fL;
+            const trueMag = Math.abs(net);
+            let trueDir = 'dengede';
+            if (net > 0) trueDir = 'dogu';
+            else if (net < 0) trueDir = 'bati';
+
+            // Sayıyı ve yönü inputlara otomatik doldur
+            const input = document.getElementById('m1-input-net');
+            if (input) input.value = trueMag;
+            selectM1Direction(trueDir);
+
             LAB.m1AnswerRevealed = true;
+            const feedbackEl = document.getElementById('m1-quiz-feedback');
+            if (feedbackEl) feedbackEl.dataset.keep = 'true';
             updateForceCalculations();
 
-            const btnPlay = document.getElementById('btn-m1-play');
-            if (btnPlay) {
-                btnPlay.classList.add('ring-2', 'ring-emerald-400');
-                setTimeout(() => btnPlay && btnPlay.classList.remove('ring-2', 'ring-emerald-400'), 3000);
-            }
+            const dirNames = {
+                'dogu': 'Doğu (Sağ)',
+                'bati': 'Batı (Sol)',
+                'dengede': 'Dengede (0 N)'
+            };
 
-            if (fromTeacherClick) {
-                const feedbackEl = document.getElementById('m1-quiz-feedback');
-                if (feedbackEl) {
-                    feedbackEl.className = 'mt-2 text-xs font-black p-2.5 rounded-xl bg-cyan-950/90 text-cyan-200 border border-cyan-500/50 block';
-                    const fR = LAB.forceRight;
-                    const fL = LAB.forceLeft;
-                    const net = fR - fL;
-                    const resTxt = (net === 0) ? '0 N (Kuvvetler Dengede)' : `${Math.abs(net)} N ${net > 0 ? 'Sağa' : 'Sola'}`;
-                    feedbackEl.innerHTML = `💡 <strong>Çözüm:</strong> |${fR} - ${fL}| = <strong>${resTxt}</strong>. Bileşke ok sahnede gösterildi!`;
-                }
+            if (feedbackEl) {
+                feedbackEl.className = 'mt-2 text-xs font-black p-3 rounded-xl bg-cyan-950/90 text-cyan-200 border border-cyan-500/60 block';
+                feedbackEl.innerHTML = `💡 <strong>ÇÖZÜM:</strong> Zıt yönlü kuvvetler çıkarılır: |${fR} - ${fL}| = <strong>${trueMag} N</strong>.<br>Bileşke kuvvet <strong>${dirNames[trueDir]}</strong> yönündedir. Mavi bileşke oku (R) sahnede gösterildi! 'Hareketi Başlat' ile izleyebilirsin.`;
             }
         }
 
@@ -2076,38 +2234,29 @@
         function onForceRightChange(val) {
             LAB.forceRight = parseInt(val, 10);
             document.getElementById('label-slider-right').textContent = `${LAB.forceRight} N`;
-            LAB.m1AnswerRevealed = false;
-            resetPhysicsBox();
-            updateForceCalculations();
+            resetM1QuizInput();
         }
 
         function onForceLeftChange(val) {
             LAB.forceLeft = parseInt(val, 10);
             document.getElementById('label-slider-left').textContent = `${LAB.forceLeft} N`;
-            LAB.m1AnswerRevealed = false;
-            resetPhysicsBox();
-            updateForceCalculations();
+            resetM1QuizInput();
         }
 
         function toggleM1Play() {
-            if (!LAB.m1AnswerRevealed) {
-                // Öğrenci doğrudan hareketi başlatmak isterse cevabı çöz ve göster
-                revealM1Answer(false);
-            }
-
-            LAB.isSimPlaying = !LAB.isSimPlaying;
-            const btn = document.getElementById('btn-m1-play');
-            const txt = document.getElementById('btn-m1-play-text');
-            const icon = document.getElementById('btn-m1-play-icon');
-
-            if (LAB.isSimPlaying) {
-                if (btn) btn.className = 'flex-1 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
-                if (txt) txt.textContent = 'Hareketi Durdur';
-                if (icon) icon.className = 'fa-solid fa-pause';
+            if (!LAB.isSimPlaying) {
+                // Eğer öğrenci sayı veya yön girmişse kontrol ederek başlat, yoksa çözümü gösterip başlat
+                const input = document.getElementById('m1-input-net');
+                if (input && input.value.trim() !== '') {
+                    submitM1AnswerAndPlay();
+                } else {
+                    revealM1Answer(false);
+                    LAB.isSimPlaying = true;
+                    syncPlayButtonsState(true);
+                }
             } else {
-                if (btn) btn.className = 'flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
-                if (txt) txt.textContent = 'Hareketi Başlat';
-                if (icon) icon.className = 'fa-solid fa-play';
+                LAB.isSimPlaying = false;
+                syncPlayButtonsState(false);
             }
         }
 
@@ -2120,9 +2269,7 @@
             document.getElementById('label-slider-right').textContent = `${right} N`;
             document.getElementById('label-slider-left').textContent = `${left} N`;
 
-            LAB.m1AnswerRevealed = false;
-            resetPhysicsBox();
-            updateForceCalculations();
+            resetM1QuizInput();
         }
 
         function resetPhysicsBox() {
@@ -2130,12 +2277,7 @@
             LAB.boxVelocity = 0;
             LAB.boxAccel = 0;
             LAB.isSimPlaying = false;
-            const btn = document.getElementById('btn-m1-play');
-            const txt = document.getElementById('btn-m1-play-text');
-            const icon = document.getElementById('btn-m1-play-icon');
-            if (btn) btn.className = 'flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer';
-            if (txt) txt.textContent = 'Hareketi Başlat';
-            if (icon) icon.className = 'fa-solid fa-play';
+            syncPlayButtonsState(false);
             if (mainBoxMesh) mainBoxMesh.position.x = 0;
             updateArrowVisuals();
         }
