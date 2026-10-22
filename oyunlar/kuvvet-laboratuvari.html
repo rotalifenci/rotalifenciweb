@@ -58,6 +58,7 @@
         * {
             box-sizing: border-box;
             -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         body, html {
@@ -65,10 +66,11 @@
             padding: 0;
             width: 100%;
             height: 100%;
+            height: 100dvh;
             overflow: hidden;
-            background-color: #0c1427; color: #f8fafc;
+            background-color: #0c1427;
+            color: #f8fafc;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            touch-action: none;
         }
 
         #webgl-container {
@@ -78,6 +80,7 @@
             top: 0;
             left: 0;
             z-index: 1;
+            touch-action: none !important;
         }
 
         /* Özel Kaydırıcı Stilleri (Akıllı Tahta Dokunmatik Uyumlu) */
@@ -251,10 +254,10 @@
     </header>
 
     <!-- 📊 ORTA DİNAMİK CANLI BİLGİ HUD ŞERİDİ (Bileşke Kuvvet & Durum Göstergesi) -->
-    <div class="relative z-10 w-full px-4 pt-2 pointer-events-none flex items-start justify-between">
+    <div class="relative z-10 w-full px-3 sm:px-4 pt-1.5 sm:pt-2 pointer-events-none flex flex-col sm:flex-row items-start justify-between gap-2">
         
         <!-- Sol Panel: Anlık Kuvvetler & Vektör Özeti -->
-        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl max-w-xs pointer-events-auto transition-all duration-200">
+        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl w-full sm:max-w-xs pointer-events-auto transition-all duration-200">
             <div class="text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
                 <span><i class="fa-solid fa-gauge text-cyan-400"></i> KUVVET VEKTÖRLERİ</span>
                 <span id="force-math-compact" class="text-cyan-300 font-mono text-[10px]"></span>
@@ -276,7 +279,7 @@
         </div>
 
         <!-- Sağ Panel: Dengelenmiş / Dengelenmemiş Durum Rozeti -->
-        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl pointer-events-auto text-right">
+        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl pointer-events-auto text-left sm:text-right w-full sm:w-auto">
             <div class="text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1">
                 KUVVET DURUMU
             </div>
@@ -284,7 +287,7 @@
                 <i class="fa-solid fa-circle-exclamation text-amber-400"></i>
                 <span id="hud-balance-text">DENGELENMEMİŞ KUVVETLER</span>
             </div>
-            <div class="text-[11px] text-slate-300 font-bold mt-1.5 flex items-center justify-end gap-1.5" id="hud-motion-effect">
+            <div class="text-[11px] text-slate-300 font-bold mt-1.5 flex items-center justify-start sm:justify-end gap-1.5" id="hud-motion-effect">
                 <span>Hareket Etkisi:</span> <span class="text-amber-300 font-black" id="hud-motion-text">Sağa Doğru Hızlanıyor</span>
             </div>
         </div>
@@ -292,7 +295,7 @@
     </div>
 
     <!-- 🎮 ALT İNTERAKTİF KONTROL PANELİ (Deneylere Göre Dinamik Değişir) -->
-    <footer class="relative z-20 w-full px-3 py-2.5 sm:py-3 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 text-slate-100 shrink-0 shadow-2xl">
+    <footer class="relative z-20 w-full px-3 py-2 sm:py-2.5 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 text-slate-100 shrink-0 shadow-2xl max-h-[58vh] md:max-h-none overflow-y-auto">
         <div class="max-w-6xl mx-auto w-full">
             
             <!-- ===================== MODÜL 1 KONTROLLERİ: KUVVETLERİ KEŞFET ===================== -->
@@ -338,33 +341,33 @@
                             <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
                                 <i class="fa-solid fa-compass text-cyan-400"></i> Hareket / Kuvvet Yönü:
                             </div>
-                            <div class="grid grid-cols-5 gap-1" id="m1-direction-buttons">
-                                <button type="button" onclick="selectM1Direction('dogu')" id="btn-dir-dogu" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-xs">➡️</span>
-                                    <span class="truncate text-[10px]">Doğu (Sağ)</span>
+                            <div class="grid grid-cols-3 sm:grid-cols-5 gap-1.5" id="m1-direction-buttons">
+                                <button type="button" onclick="selectM1Direction('dogu')" id="btn-dir-dogu" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-sm">➡️</span>
+                                    <span class="truncate text-[10px] sm:text-[11px]">Doğu (Sağ)</span>
                                 </button>
-                                <button type="button" onclick="selectM1Direction('bati')" id="btn-dir-bati" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-xs">⬅️</span>
-                                    <span class="truncate text-[10px]">Batı (Sol)</span>
+                                <button type="button" onclick="selectM1Direction('bati')" id="btn-dir-bati" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-sm">⬅️</span>
+                                    <span class="truncate text-[10px] sm:text-[11px]">Batı (Sol)</span>
                                 </button>
-                                <button type="button" onclick="selectM1Direction('kuzey')" id="btn-dir-kuzey" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-xs">⬆️</span>
-                                    <span class="truncate text-[10px]">Kuzey</span>
+                                <button type="button" onclick="selectM1Direction('kuzey')" id="btn-dir-kuzey" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-sm">⬆️</span>
+                                    <span class="truncate text-[10px] sm:text-[11px]">Kuzey</span>
                                 </button>
-                                <button type="button" onclick="selectM1Direction('guney')" id="btn-dir-guney" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-xs">⬇️</span>
-                                    <span class="truncate text-[10px]">Güney</span>
+                                <button type="button" onclick="selectM1Direction('guney')" id="btn-dir-guney" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
+                                    <span class="text-sm">⬇️</span>
+                                    <span class="truncate text-[10px] sm:text-[11px]">Güney</span>
                                 </button>
-                                <button type="button" onclick="selectM1Direction('dengede')" id="btn-dir-dengede" class="dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer" title="Kuvvetler Eşit / Dengede">
-                                    <span class="text-xs">⚖️</span>
-                                    <span class="truncate text-[10px]">Dengede (0 N)</span>
+                                <button type="button" onclick="selectM1Direction('dengede')" id="btn-dir-dengede" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer" title="Kuvvetler Eşit / Dengede">
+                                    <span class="text-sm">⚖️</span>
+                                    <span class="truncate text-[10px] sm:text-[11px]">Dengede (0 N)</span>
                                 </button>
                             </div>
                         </div>
 
                         <!-- 3. Hareketi Başlat & Kontrol Et Butonu -->
                         <div class="lg:col-span-3 flex">
-                            <button type="button" onclick="submitM1AnswerAndPlay()" id="btn-m1-check-play" class="w-full py-2.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                            <button type="button" onclick="submitM1AnswerAndPlay()" id="btn-m1-check-play" class="w-full py-2.5 px-3 min-h-[44px] bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
                                 <i class="fa-solid fa-play" id="icon-m1-check-play"></i> <span id="text-m1-check-play">Hareketi Başlat</span>
                             </button>
                         </div>
@@ -1813,9 +1816,9 @@
                 const btn = document.getElementById(`btn-dir-${d}`);
                 if (!btn) return;
                 if (d === dir) {
-                    btn.className = 'dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-cyan-500 text-slate-950 border-2 border-cyan-200 ring-2 ring-cyan-400/50 shadow-md transition-all text-center flex flex-col items-center justify-center cursor-pointer scale-105';
+                    btn.className = 'dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-cyan-500 text-slate-950 border-2 border-cyan-200 ring-2 ring-cyan-400/50 shadow-md transition-all text-center flex flex-col items-center justify-center cursor-pointer scale-105';
                 } else {
-                    btn.className = 'dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
+                    btn.className = 'dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
                 }
             });
 
@@ -1831,7 +1834,7 @@
             LAB.m1SelectedDir = null;
             ['dogu', 'bati', 'kuzey', 'guney', 'dengede'].forEach(d => {
                 const btn = document.getElementById(`btn-dir-${d}`);
-                if (btn) btn.className = 'dir-choice-btn py-1.5 px-1 rounded-lg text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
+                if (btn) btn.className = 'dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
             });
             const feedbackEl = document.getElementById('m1-quiz-feedback');
             if (feedbackEl) {
@@ -2795,24 +2798,48 @@ Türkiye Yüzyılı Maarif Modeli Kuvvet ve Hareket konusundaki gayretini tebrik
         }
 
         // =========================================================================
-        // 🖥️ RESPONSIVE & TAM EKRAN YÖNETİMİ
+        // 🖥️ RESPONSIVE & TAM EKRAN YÖNETİMİ (Akıllı Tahta / Pardus & Mobil Uyumlu)
         // =========================================================================
         function setupWindowResize() {
-            window.addEventListener('resize', () => {
+            const handleResize = () => {
                 if (!camera || !renderer) return;
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
+            };
+            window.addEventListener('resize', handleResize);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(handleResize, 150);
+            });
+            document.addEventListener('fullscreenchange', () => {
+                const icon = document.getElementById('fullscreen-icon');
+                if (!icon) return;
+                if (document.fullscreenElement) {
+                    icon.className = 'fa-solid fa-compress';
+                } else {
+                    icon.className = 'fa-solid fa-expand';
+                }
             });
         }
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-                document.getElementById('fullscreen-icon').className = 'fa-solid fa-compress';
+                const docEl = document.documentElement;
+                if (docEl.requestFullscreen) {
+                    docEl.requestFullscreen().catch(() => {});
+                } else if (docEl.webkitRequestFullscreen) {
+                    docEl.webkitRequestFullscreen();
+                } else if (docEl.msRequestFullscreen) {
+                    docEl.msRequestFullscreen();
+                }
             } else {
-                if (document.exitFullscreen) document.exitFullscreen();
-                document.getElementById('fullscreen-icon').className = 'fa-solid fa-expand';
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
             }
         }
     </script>
