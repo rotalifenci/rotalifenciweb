@@ -69,7 +69,7 @@
         </div>
         
         <div class="flex items-center space-x-1.5 md:space-x-2">
-            <div id="userBadge" class="hidden items-center space-x-2 bg-slate-800/90 border border-cyan-500/30 px-2.5 py-1 rounded-full text-xs font-semibold text-cyan-300 shadow-sm">
+            <div id="userBadge" class="flex items-center space-x-2 bg-slate-800/90 border border-cyan-500/30 px-2.5 py-1 rounded-full text-xs font-semibold text-cyan-300 shadow-sm">
                 <i data-lucide="user" class="w-3.5 h-3.5 text-cyan-400"></i>
                 <span id="displayName">Kâşif</span>
             </div>
@@ -85,35 +85,9 @@
     <!-- Main Container -->
     <main class="flex-grow max-w-7xl w-full mx-auto p-2 sm:p-4 md:p-5 flex flex-col justify-center items-center">
 
-        <!-- 1. GİRİŞ EKRANI -->
-        <section id="welcomeScreen" class="w-full max-w-md bg-slate-900/90 backdrop-blur-2xl border-2 border-cyan-500/30 p-6 sm:p-8 rounded-3xl shadow-2xl text-center space-y-6 my-auto">
-            <div class="relative w-20 h-20 mx-auto">
-                <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-3xl blur-lg opacity-60 animate-pulse"></div>
-                <div class="relative w-full h-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-xl text-white text-3xl">
-                    <i class="fa-solid fa-earth-americas"></i>
-                </div>
-            </div>
-            <div class="space-y-2">
-                <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-[10px] font-bold uppercase tracking-wider">
-                    5. Sınıf Fen Bilimleri • 1. Ünite
-                </span>
-                <h2 class="text-2xl font-black text-white font-orbitron tracking-tight">Dünya'nın 5 Katmanı 3B</h2>
-                <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Fotogerçekçi 3B kesit modeliyle gezegenimizin merkezine yolculuk yapın. Katmanları tek tek seçin, simülasyonda belirgin hale getirin ve sırlarını keşfedin!
-                </p>
-            </div>
-            <div class="space-y-2 text-left">
-                <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Öğrenci Adı / Kâşif Kimliği:</label>
-                <input type="text" id="studentNameInput" placeholder="Örn: Ayşe Yılmaz" value="Genç Kâşif" class="w-full bg-slate-950/80 border-2 border-slate-700/80 focus:border-cyan-400 rounded-2xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-all font-semibold text-sm">
-            </div>
-            <button onclick="startSimulation()" class="w-full bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:brightness-110 text-slate-950 font-black py-3.5 px-6 rounded-2xl shadow-xl shadow-cyan-500/30 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-2 cursor-pointer uppercase text-xs tracking-wider">
-                <i class="fa-solid fa-play text-sm"></i>
-                <span>Animasyonu Görüntüle</span>
-            </button>
-        </section>
-
+        <!-- Doğrudan 3B Simülasyon Girişi -->
         <!-- 2. ANA SİMÜLASYON VE İÇERİK EKRANI (Gizli Başlar) -->
-        <section id="simScreen" class="w-full hidden space-y-4">
+        <section id="simScreen" class="w-full space-y-4">
             
             <!-- Üst Navigasyon Sekmeleri -->
             <div class="flex justify-center space-x-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 max-w-md mx-auto shadow-lg backdrop-blur-md">
@@ -641,12 +615,18 @@
             if (nameInput && nameInput.value.trim() !== '') {
                 currentStudentName = nameInput.value.trim();
             }
-            document.getElementById('displayName').innerText = currentStudentName;
-            document.getElementById('userBadge').classList.remove('hidden');
-            document.getElementById('userBadge').classList.add('flex');
+            const displayName = document.getElementById('displayName');
+            if (displayName) displayName.innerText = currentStudentName;
+            const userBadge = document.getElementById('userBadge');
+            if (userBadge) {
+                userBadge.classList.remove('hidden');
+                userBadge.classList.add('flex');
+            }
 
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('simScreen').classList.remove('hidden');
+            const welcomeScreen = document.getElementById('welcomeScreen');
+            if (welcomeScreen) welcomeScreen.classList.add('hidden');
+            const simScreen = document.getElementById('simScreen');
+            if (simScreen) simScreen.classList.remove('hidden');
 
             initThreeScene();
             renderThumbnailCanvases();
@@ -671,7 +651,7 @@
         }
 
         /* -------------------------------------------------------------
-           3B THREE.JS MOTORU (1. GÖRSEL KESİT VE PATLATILMIŞ MODEL)
+           3B THREE.JS MOTORU (FOTOGERÇEKÇİ DÜNYA VE KATMAN KESİT MODELİ)
         ------------------------------------------------------------- */
         let scene, camera, renderer, controls;
         let earthGroup;
@@ -681,30 +661,30 @@
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
 
-        // Patlatılmış Kesit Durumu
-        let explodeFactor = 1.0; // 1. Görseldeki gibi başlangıçta ayrık
-        let targetExplode = 1.0;
-        let isExploded = true;
+        // Patlatılmış / Kesit Durumu
+        let explodeFactor = 0.0; // Başlangıçta Görseldeki gibi birleşik kesit
+        let targetExplode = 0.0;
+        let isExploded = false;
         let isAutoRotate = true;
 
         // Kamera Hedefleri (Yumuşak Geçiş)
-        const camTargetPos = new THREE.Vector3(0, 2.5, 20);
-        const camTargetLookAt = new THREE.Vector3(0.5, 0, 0);
+        const camTargetPos = new THREE.Vector3(-4.5, 2.2, 14.5);
+        const camTargetLookAt = new THREE.Vector3(0, 0, 0);
 
         function initThreeScene() {
             if (renderer) return;
 
             const canvas = document.getElementById('earth-canvas');
             const parent = canvas.parentElement;
-            const w = parent.clientWidth;
-            const h = parent.clientHeight;
+            const w = parent.clientWidth || 800;
+            const h = parent.clientHeight || 560;
 
             scene = new THREE.Scene();
-            // 1. Görseldeki gibi derin siyah uzay
-            scene.background = new THREE.Color(0x000000);
+            // Derin uzay rengi
+            scene.background = new THREE.Color(0x020617);
 
             camera = new THREE.PerspectiveCamera(38, w / h, 0.1, 1000);
-            camera.position.set(0, 2.5, 20);
+            camera.position.copy(camTargetPos);
 
             renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
             renderer.setSize(w, h);
@@ -717,19 +697,23 @@
             controls.dampingFactor = 0.05;
             controls.minDistance = 6;
             controls.maxDistance = 50;
-            controls.target.set(0.5, 0, 0);
+            controls.target.copy(camTargetLookAt);
 
-            // Işıklandırma (Dramatik Uzay Işığı)
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+            // Işıklandırma (Dramatik Uzay & Stüdyo Işığı)
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.75);
             scene.add(ambientLight);
 
-            const keyLight = new THREE.DirectionalLight(0xfff7ed, 1.8);
-            keyLight.position.set(25, 18, 30);
+            const keyLight = new THREE.DirectionalLight(0xffffff, 1.9);
+            keyLight.position.set(25, 20, 28);
             scene.add(keyLight);
 
+            const fillLight = new THREE.DirectionalLight(0x93c5fd, 0.85);
+            fillLight.position.set(-25, -10, -20);
+            scene.add(fillLight);
+
             // Çekirdeğin yaydığı akkor iç ışık
-            const coreGlowLight = new THREE.PointLight(0xfef08a, 3.5, 35, 0.3);
-            coreGlowLight.position.set(5.2, 0, 0);
+            const coreGlowLight = new THREE.PointLight(0xfef08a, 4.0, 40, 0.3);
+            coreGlowLight.position.set(0, 0, 0);
             scene.add(coreGlowLight);
 
             // Yıldızlar
@@ -739,8 +723,8 @@
             earthGroup = new THREE.Group();
             scene.add(earthGroup);
 
-            // Dokular (Procedural Yüksek Çözünürlüklü)
-            const earthTex = generateEarthTexture();
+            // Dokular (Fotogerçekçi Prosedürel + NASA Doku Yükleyici)
+            const earthTex = generateRealisticEarthTexture();
             const mantleTex = generateMantleTexture();
             const mantleFlatTex = generateMantleFlatTexture();
             const outerCoreTex = generateOuterCoreTexture();
@@ -748,12 +732,12 @@
             const strataTex = generateStrataTexture();
 
             // ==============================================================
-            // 1. YER KABUĞU (TAŞ KÜRE & SU KÜRE) - SOL YARIM KÜRE VE KESİTİ
+            // 1. SOL DÜNYA YARIM KÜRESİ (TAŞ & SU KÜRE) - FOTOGERÇEKÇİ KESİT
             // ==============================================================
             const crustGroup = new THREE.Group();
             crustGroup.userData = { layerId: 'yercabugu', name: '3. Taş Küre (Yer Kabuğu)' };
 
-            // Küresel Dış Kabuk
+            // Sol Küresel Dış Kabuk
             const crustGeo = new THREE.SphereGeometry(4.8, 64, 48, -Math.PI / 2, Math.PI, 0, Math.PI);
             const crustMat = new THREE.MeshStandardMaterial({
                 map: earthTex,
@@ -765,7 +749,7 @@
             crustMesh.rotation.y = Math.PI / 2;
             crustGroup.add(crustMesh);
 
-            // Düz Kesit Yüzeyi (Kayaç Katmanları)
+            // Sol Kesit Yüzeyi (Kayaç Katmanları)
             const crustCapGeo = new THREE.CircleGeometry(4.8, 64);
             const crustCapMat = new THREE.MeshStandardMaterial({
                 map: strataTex,
@@ -776,12 +760,12 @@
             crustCapMesh.rotation.y = Math.PI / 2;
             crustGroup.add(crustCapMesh);
 
-            // 1. HAVA KÜRE (ATMOSFER) - İNCE MAVİ ŞEFFAF HARE (ASLA EKRANI KAPLAMAZ!)
-            const atmoGeo = new THREE.SphereGeometry(5.02, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
+            // 1. HAVA KÜRE (ATMOSFER) - SOL ŞEFFAF HARE
+            const atmoGeo = new THREE.SphereGeometry(4.96, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
             const atmoMat = new THREE.MeshBasicMaterial({
                 color: 0x38bdf8,
                 transparent: true,
-                opacity: 0.28,
+                opacity: 0.32,
                 side: THREE.BackSide,
                 blending: THREE.AdditiveBlending
             });
@@ -796,7 +780,63 @@
             clickableObjects.push(crustMesh, crustCapMesh, atmoMesh);
 
             // ==============================================================
-            // 2. ATEŞ KÜRE (MANTO / MAGMA) - 1. GÖRSELLE BİREBİR KIZGIN MAGMA KESİTİ
+            // 2. SAĞ DÜNYA YARIM KÜRESİ (GÖRSELDEKİ ARKA/SAĞ KABUK ÇANAĞI)
+            // ==============================================================
+            const rightCrustGroup = new THREE.Group();
+            rightCrustGroup.userData = { layerId: 'yercabugu', name: '3. Taş Küre (Sağ Kabuk)' };
+
+            const rightCrustGeo = new THREE.SphereGeometry(4.8, 64, 48, Math.PI / 2, Math.PI, 0, Math.PI);
+            const rightCrustMat = new THREE.MeshStandardMaterial({
+                map: earthTex,
+                roughness: 0.55,
+                metalness: 0.1,
+                side: THREE.DoubleSide
+            });
+            const rightCrustMesh = new THREE.Mesh(rightCrustGeo, rightCrustMat);
+            rightCrustMesh.rotation.y = Math.PI / 2;
+            rightCrustGroup.add(rightCrustMesh);
+
+            // Sağ Atmosfer Haresi
+            const rightAtmoGeo = new THREE.SphereGeometry(4.96, 48, 32, Math.PI / 2, Math.PI, 0, Math.PI);
+            const rightAtmoMesh = new THREE.Mesh(rightAtmoGeo, atmoMat);
+            rightAtmoMesh.rotation.y = Math.PI / 2;
+            rightCrustGroup.add(rightAtmoMesh);
+
+            earthGroup.add(rightCrustGroup);
+            layerMeshes.rightCrust = rightCrustGroup;
+            clickableObjects.push(rightCrustMesh);
+
+            // NASA Blue Marble Dokusunu Asenkron Yükle
+            const texLoader = new THREE.TextureLoader();
+            const applyEarthMap = (tex) => {
+                tex.wrapS = THREE.RepeatWrapping;
+                tex.wrapT = THREE.ClampToEdgeWrapping;
+                crustMat.map = tex;
+                crustMat.needsUpdate = true;
+                rightCrustMat.map = tex;
+                rightCrustMat.needsUpdate = true;
+            };
+
+            const earthTextureSources = [
+                '../assets/earth_atmos_2048.jpg',
+                'assets/earth_atmos_2048.jpg',
+                '/assets/earth_atmos_2048.jpg',
+                'https://cdn.jsdelivr.net/gh/mrdoob/three.js@master/examples/textures/planets/earth_atmos_2048.jpg'
+            ];
+
+            function tryLoadEarthTexture(idx) {
+                if (idx >= earthTextureSources.length) return;
+                texLoader.load(
+                    earthTextureSources[idx],
+                    (t) => applyEarthMap(t),
+                    undefined,
+                    () => tryLoadEarthTexture(idx + 1)
+                );
+            }
+            tryLoadEarthTexture(0);
+
+            // ==============================================================
+            // 3. ATEŞ KÜRE (MANTO / MAGMA) - GÖRSELDEKİ VOLKANİK KAYAÇ DOKUSU
             // ==============================================================
             const mantleGroup = new THREE.Group();
             mantleGroup.userData = { layerId: 'manto', name: '4. Ateş Küre (Manto)' };
@@ -805,9 +845,7 @@
             const mantleGeo = new THREE.SphereGeometry(3.95, 64, 48, -Math.PI / 2, Math.PI, 0, Math.PI);
             const mantleMat = new THREE.MeshStandardMaterial({
                 map: mantleTex,
-                emissive: 0xd97706,
-                emissiveIntensity: 0.45,
-                roughness: 0.4,
+                roughness: 0.65,
                 metalness: 0.2,
                 side: THREE.DoubleSide
             });
@@ -815,18 +853,24 @@
             mantleMesh.rotation.y = Math.PI / 2;
             mantleGroup.add(mantleMesh);
 
-            // Manto Düz Kesit Halkası (Kalınlık: 2.5 ile 3.95 arası)
+            // Manto Düz Kesit Halkası (Görseldeki Terrakotta-Kayaç Yüzey)
             const mantleCapGeo = new THREE.RingGeometry(2.5, 3.95, 64);
             const mantleCapMat = new THREE.MeshStandardMaterial({
                 map: mantleFlatTex,
-                emissive: 0xea580c,
-                emissiveIntensity: 0.65,
-                roughness: 0.4,
+                roughness: 0.55,
+                metalness: 0.15,
                 side: THREE.DoubleSide
             });
             const mantleCapMesh = new THREE.Mesh(mantleCapGeo, mantleCapMat);
             mantleCapMesh.rotation.y = Math.PI / 2;
             mantleGroup.add(mantleCapMesh);
+
+            // Manto Dış Kenar Koruyucu Mavi Çember (Görseldeki İnce Dış Şerit)
+            const mantleRimGeo = new THREE.TorusGeometry(3.96, 0.05, 16, 64);
+            const mantleRimMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.4 });
+            const mantleRim = new THREE.Mesh(mantleRimGeo, mantleRimMat);
+            mantleRim.rotation.y = Math.PI / 2;
+            mantleGroup.add(mantleRim);
 
             earthGroup.add(mantleGroup);
             layerMeshes.manto = mantleGroup;
@@ -835,7 +879,7 @@
             clickableObjects.push(mantleMesh, mantleCapMesh);
 
             // ==============================================================
-            // 3. AĞIR KÜRE (DIŞ ÇEKİRDEK) - SIVI AKKOR METAL ÇANAK
+            // 4. AĞIR KÜRE (DIŞ ÇEKİRDEK) - GÖRSELDEKİ AKKOR LAV SİLİNDİRİ
             // ==============================================================
             const outerCoreGroup = new THREE.Group();
             outerCoreGroup.userData = { layerId: 'cekirdek', subType: 'dis', name: '5. Ağır Küre (Dış Çekirdek)' };
@@ -843,10 +887,10 @@
             const outerCoreGeo = new THREE.SphereGeometry(2.5, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
             const outerCoreMat = new THREE.MeshStandardMaterial({
                 map: outerCoreTex,
-                emissive: 0xf59e0b,
-                emissiveIntensity: 0.85,
-                roughness: 0.3,
-                metalness: 0.3,
+                emissive: 0xd97706,
+                emissiveIntensity: 0.6,
+                roughness: 0.35,
+                metalness: 0.2,
                 side: THREE.DoubleSide
             });
             const outerCoreMesh = new THREE.Mesh(outerCoreGeo, outerCoreMat);
@@ -856,8 +900,8 @@
             const outerCoreCapGeo = new THREE.RingGeometry(1.25, 2.5, 48);
             const outerCoreCapMat = new THREE.MeshStandardMaterial({
                 map: outerCoreTex,
-                emissive: 0xf59e0b,
-                emissiveIntensity: 1.0,
+                emissive: 0xea580c,
+                emissiveIntensity: 0.75,
                 side: THREE.DoubleSide
             });
             const outerCoreCapMesh = new THREE.Mesh(outerCoreCapGeo, outerCoreCapMat);
@@ -870,14 +914,14 @@
             clickableObjects.push(outerCoreMesh, outerCoreCapMesh);
 
             // ==============================================================
-            // 4. AĞIR KÜRE (İÇ ÇEKİRDEK) - 1. GÖRSELDEKİ PARLAK AKKOR KÜRE
+            // 5. AĞIR KÜRE (İÇ ÇEKİRDEK) - GÖRSELDEKİ PARLAK AKKOR KÜRE
             // ==============================================================
             const innerCoreGeo = new THREE.SphereGeometry(1.25, 48, 48);
             const innerCoreMat = new THREE.MeshStandardMaterial({
                 map: innerCoreTex,
                 emissive: 0xfef08a,
-                emissiveIntensity: 1.8,
-                roughness: 0.15,
+                emissiveIntensity: 1.6,
+                roughness: 0.2,
                 metalness: 0.2
             });
             const innerCoreMesh = new THREE.Mesh(innerCoreGeo, innerCoreMat);
@@ -887,7 +931,7 @@
             clickableObjects.push(innerCoreMesh);
 
             // ==============================================================
-            // 5. 3B SEÇİM VURGU HALKASI (GLOW HALO)
+            // 6. 3B SEÇİM VURGU HALKASI (GLOW HALO)
             // ==============================================================
             const ringGeo = new THREE.TorusGeometry(1, 0.08, 16, 64);
             const ringMat = new THREE.MeshBasicMaterial({
@@ -934,6 +978,9 @@
             // Başlangıç Katmanı
             selectLayer('havakure', false);
 
+            // Görseldeki Çeyrek Kesit Görünümüne Ayarla
+            setViewPreset('quarter');
+
             // Animasyon Döngüsü
             animate();
         }
@@ -948,161 +995,182 @@
                 starPos[i+2] = (Math.random() - 0.5) * 160;
             }
             starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
-            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.7, transparent: true, opacity: 0.75 });
-            scene.add(new THREE.Points(starGeo, starMat));
+            const starMat = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.8,
+                transparent: true,
+                opacity: 0.7
+            });
+            const stars = new THREE.Points(starGeo, starMat);
+            scene.add(stars);
         }
 
         /* -------------------------------------------------------------
-           PROCEDURAL YÜKSEK ÇÖZÜNÜRLÜKLÜ DOKU ÜRETİCİLERİ
+           FOTOGERÇEKÇİ DOKU ÜRETİCİLERİ (OFFLINE VE GÖRSEL UYUMLU)
         ------------------------------------------------------------- */
-        function generateEarthTexture() {
+        function generateRealisticEarthTexture() {
             const canvas = document.createElement('canvas');
-            canvas.width = 1024;
-            canvas.height = 512;
+            canvas.width = 2048;
+            canvas.height = 1024;
             const ctx = canvas.getContext('2d');
 
-            // Derin Okyanus (Su Küre)
-            const oceanGrad = ctx.createLinearGradient(0, 0, 0, 512);
-            oceanGrad.addColorStop(0, '#0a2540');
+            // 1. Derin Okyanuslar (NASA Blue Marble Gradyanı)
+            const oceanGrad = ctx.createLinearGradient(0, 0, 0, 1024);
+            oceanGrad.addColorStop(0, '#02182b');
+            oceanGrad.addColorStop(0.3, '#0b3c68');
             oceanGrad.addColorStop(0.5, '#0284c7');
-            oceanGrad.addColorStop(1, '#0a2540');
+            oceanGrad.addColorStop(0.7, '#0b3c68');
+            oceanGrad.addColorStop(1, '#02182b');
             ctx.fillStyle = oceanGrad;
-            ctx.fillRect(0, 0, 1024, 512);
+            ctx.fillRect(0, 0, 2048, 1024);
 
-            function drawBlob(cx, cy, rx, ry, col) {
+            function drawLand(cx, cy, rx, ry, col, coastCol) {
+                // Sığ Kıyı Suları
+                ctx.fillStyle = coastCol || 'rgba(56, 189, 248, 0.4)';
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rx * 1.15, ry * 1.15, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Kara Parçası
                 ctx.fillStyle = col;
                 ctx.beginPath();
                 ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Kıtalar (Taş Küre)
-            const landGreen = '#1e7b42';
-            const landBrown = '#78350f';
-            const coastalCyan = 'rgba(34, 211, 238, 0.4)';
+            // Kuzey Amerika
+            drawLand(480, 320, 180, 140, '#2e7d32');
+            drawLand(420, 250, 140, 90, '#15803d');
+            drawLand(520, 380, 100, 80, '#854d0e');
 
-            drawBlob(512, 230, 105, 125, coastalCyan);
-            drawBlob(512, 230, 90, 110, landGreen);
-            drawBlob(512, 210, 65, 65, landBrown);
-            drawBlob(512, 130, 80, 50, landGreen);
+            // Güney Amerika (Görselde Öne Çıkan Kıta)
+            drawLand(640, 680, 130, 210, '#166534');
+            drawLand(600, 620, 110, 130, '#15803d');
+            drawLand(650, 780, 70, 130, '#854d0e');
 
-            drawBlob(680, 160, 140, 85, coastalCyan);
-            drawBlob(680, 160, 125, 70, landGreen);
-            drawBlob(710, 150, 85, 45, landBrown);
+            // Avrupa
+            drawLand(1050, 290, 110, 75, '#15803d');
+            drawLand(1120, 260, 90, 60, '#166534');
 
-            drawBlob(250, 160, 95, 65, coastalCyan);
-            drawBlob(250, 160, 80, 55, landGreen);
-            drawBlob(290, 310, 75, 105, coastalCyan);
-            drawBlob(290, 310, 65, 90, landGreen);
-            drawBlob(290, 320, 40, 55, landBrown);
+            // Afrika
+            drawLand(1080, 520, 150, 200, '#a16207');
+            drawLand(1080, 440, 160, 90, '#ca8a04'); // Sahra
+            drawLand(1090, 600, 110, 120, '#15803d');
 
-            drawBlob(820, 340, 60, 40, coastalCyan);
-            drawBlob(820, 340, 50, 30, landBrown);
+            // Asya
+            drawLand(1420, 320, 260, 160, '#15803d');
+            drawLand(1480, 420, 180, 120, '#166534');
+            drawLand(1320, 440, 90, 80, '#a16207'); // Arap Yarımadası
+            drawLand(1420, 480, 80, 90, '#15803d'); // Hindistan
 
-            // Kutuplar
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, 1024, 25);
-            ctx.fillRect(0, 487, 1024, 25);
+            // Avustralya
+            drawLand(1680, 720, 110, 85, '#a16207');
 
-            // Bulut Şeritleri
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.35)';
-            for(let i = 0; i < 20; i++) {
-                const cx = (i * 55 + 25) % 1024;
-                const cy = 75 + (i % 6) * 55;
-                drawBlob(cx, cy, 65, 18, 'rgba(255, 255, 255, 0.28)');
+            // Kutuplar (Buzullar)
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, 2048, 50);
+            ctx.fillRect(0, 974, 2048, 50);
+
+            // Gerçekçi Bulut Swirl'leri (Görseldeki Gibi Atmosferik Dinamik)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            for (let i = 0; i < 45; i++) {
+                const x = (i * 95 + 40) % 2048;
+                const y = 120 + (i % 8) * 110 + Math.sin(i) * 35;
+                ctx.beginPath();
+                ctx.ellipse(x, y, 90 + Math.random() * 60, 22 + Math.random() * 15, Math.sin(i) * 0.3, 0, Math.PI * 2);
+                ctx.fill();
             }
 
             return new THREE.CanvasTexture(canvas);
         }
 
-        // 1. Görseldeki Gerçekçi Magma / Manto Dokusu
+        // Görseldeki Terrakotta / Volkanik Kayaç Manto Dokusu
         function generateMantleTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 1024;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // Akkor lav ve volkanik bazalt zemin
-            ctx.fillStyle = '#3f0c05';
+            // Terrakotta ve bazaltik kızıl-kahve zemin
+            ctx.fillStyle = '#6c2e12';
             ctx.fillRect(0, 0, 1024, 512);
 
-            // Parlak lav damarları ve konveksiyon hücreleri
-            for (let i = 0; i < 600; i++) {
+            // Kayaç mineralleri ve volkanik doku benekleri
+            for (let i = 0; i < 900; i++) {
                 const x = Math.random() * 1024;
                 const y = Math.random() * 512;
-                const r = 4 + Math.random() * 24;
-                const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
-                grad.addColorStop(0, '#fef08a'); // Akkor sarı
-                grad.addColorStop(0.25, '#f59e0b'); // Turuncu
-                grad.addColorStop(0.65, '#dc2626'); // Kırmızı magma
-                grad.addColorStop(1, 'rgba(63, 12, 5, 0)');
-                ctx.fillStyle = grad;
+                const r = 2 + Math.random() * 12;
+                ctx.fillStyle = Math.random() > 0.4 ? '#9a3412' : (Math.random() > 0.5 ? '#431407' : '#c2410c');
                 ctx.beginPath();
                 ctx.arc(x, y, r, 0, Math.PI * 2);
                 ctx.fill();
             }
 
-            // Koyu bazaltik kabuk plakaları (1. Görseldeki gibi)
-            for (let i = 0; i < 350; i++) {
-                const x = Math.random() * 1024;
-                const y = Math.random() * 512;
-                const r = 3 + Math.random() * 14;
-                ctx.fillStyle = Math.random() > 0.5 ? '#1c0702' : '#280c06';
+            // Yüzey Magma Çatlakları
+            for (let i = 0; i < 80; i++) {
+                ctx.strokeStyle = 'rgba(245, 158, 11, 0.35)';
+                ctx.lineWidth = 1.5;
                 ctx.beginPath();
-                ctx.arc(x, y, r, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.moveTo(Math.random() * 1024, Math.random() * 512);
+                ctx.lineTo(Math.random() * 1024, Math.random() * 512);
+                ctx.stroke();
             }
 
             return new THREE.CanvasTexture(canvas);
         }
 
+        // Manto Düz Kesit Yüzeyi (Görsel 1 ile Birebir Terrakotta Halka)
         function generateMantleFlatTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // Radyal magma kesit gradyanı
+            // Konsantrik jeolojik dairesel katmanlar
             const grad = ctx.createRadialGradient(256, 256, 120, 256, 256, 256);
-            grad.addColorStop(0, '#fef08a');
-            grad.addColorStop(0.3, '#f59e0b');
-            grad.addColorStop(0.7, '#ea580c');
-            grad.addColorStop(1, '#7c2d12');
+            grad.addColorStop(0, '#c2410c'); // İç temas (Sıcak turuncu)
+            grad.addColorStop(0.25, '#9a3412');
+            grad.addColorStop(0.65, '#7c2d12'); // Terrakotta kahve
+            grad.addColorStop(1, '#451a03'); // Dış kabuk sınırı
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, 512, 512);
 
-            for (let i = 0; i < 200; i++) {
+            // Kayaç benekleri
+            for (let i = 0; i < 700; i++) {
                 const angle = Math.random() * Math.PI * 2;
-                const r = 120 + Math.random() * 136;
+                const r = 125 + Math.random() * 130;
                 const x = 256 + Math.cos(angle) * r;
                 const y = 256 + Math.sin(angle) * r;
-                ctx.fillStyle = '#2d0903';
+                ctx.fillStyle = Math.random() > 0.5 ? '#290e04' : '#b45309';
                 ctx.beginPath();
-                ctx.arc(x, y, 2 + Math.random() * 6, 0, Math.PI * 2);
+                ctx.arc(x, y, 1.5 + Math.random() * 4, 0, Math.PI * 2);
                 ctx.fill();
             }
 
             return new THREE.CanvasTexture(canvas);
         }
 
+        // Ağır Küre (Dış Çekirdek) - Görseldeki Parlak Akkor Lav Magması
         function generateOuterCoreTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            ctx.fillStyle = '#ea580c';
+            // Akkor turuncu lav zemin
+            ctx.fillStyle = '#dc2626';
             ctx.fillRect(0, 0, 512, 512);
 
-            for(let i = 0; i < 300; i++) {
+            // Radyal akkor hücreler
+            for(let i = 0; i < 350; i++) {
                 const x = Math.random() * 512;
                 const y = Math.random() * 512;
-                const r = 6 + Math.random() * 22;
+                const r = 8 + Math.random() * 26;
                 const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
                 grad.addColorStop(0, '#fef08a');
-                grad.addColorStop(0.4, '#f59e0b');
-                grad.addColorStop(0.8, '#dc2626');
-                grad.addColorStop(1, 'rgba(234,88,12,0)');
+                grad.addColorStop(0.35, '#f59e0b');
+                grad.addColorStop(0.75, '#ea580c');
+                grad.addColorStop(1, 'rgba(220, 38, 38, 0)');
                 ctx.fillStyle = grad;
                 ctx.beginPath();
                 ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -1111,6 +1179,7 @@
             return new THREE.CanvasTexture(canvas);
         }
 
+        // Ağır Küre (İç Çekirdek) - Görseldeki Parlak Altın-Sarı Küre
         function generateInnerCoreTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -1120,14 +1189,14 @@
             ctx.fillStyle = '#fef08a';
             ctx.fillRect(0, 0, 512, 512);
 
-            for(let i = 0; i < 250; i++) {
+            for(let i = 0; i < 300; i++) {
                 const x = Math.random() * 512;
                 const y = Math.random() * 512;
-                const r = 8 + Math.random() * 24;
+                const r = 10 + Math.random() * 28;
                 const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
                 grad.addColorStop(0, '#ffffff');
-                grad.addColorStop(0.5, '#fde047');
-                grad.addColorStop(1, 'rgba(254,240,138,0)');
+                grad.addColorStop(0.45, '#fde047');
+                grad.addColorStop(1, 'rgba(254, 240, 138, 0)');
                 ctx.fillStyle = grad;
                 ctx.beginPath();
                 ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -1136,16 +1205,17 @@
             return new THREE.CanvasTexture(canvas);
         }
 
+        // Yer Kabuğu Tabakalı Kesit Dokusu
         function generateStrataTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            const bands = ['#451a03', '#78350f', '#92400e', '#b45309', '#573318', '#38200f', '#292524'];
+            const bands = ['#292524', '#451a03', '#78350f', '#92400e', '#573318', '#38200f', '#1c1917'];
             let y = 0;
             while(y < 512) {
-                const h = 12 + Math.random() * 22;
+                const h = 10 + Math.random() * 20;
                 ctx.fillStyle = bands[Math.floor(Math.random() * bands.length)];
                 ctx.fillRect(0, y, 512, h);
                 y += h;
@@ -1164,15 +1234,20 @@
                 earthGroup.rotation.y += 0.003;
             }
 
-            // Patlatılmış Kesit (Exploded View) Interpolasyonu (1. Görsel Birebir)
+            // Patlatılmış Kesit (Exploded View) Hareketi
             explodeFactor += (targetExplode - explodeFactor) * 0.085;
 
             if (layerMeshes.yercabugu) {
-                // Katmanların X Ekseni Boyunca Ayrışması:
-                layerMeshes.yercabugu.position.x = -4.5 * explodeFactor;
-                layerMeshes.manto.position.x = -0.8 * explodeFactor;
-                layerMeshes.outerCore.position.x = 2.4 * explodeFactor;
-                layerMeshes.innerCore.position.x = 5.2 * explodeFactor;
+                const ef = explodeFactor;
+                // Görsel 1'deki gibi: ef=0 iken sol kabuk kesiti hafif aralık (-1.2), katmanlar birleşik
+                // ef=1.0 iken tüm katmanlar yatay eksende ayrışır
+                layerMeshes.yercabugu.position.x = -1.2 - 4.2 * ef;
+                layerMeshes.manto.position.x = -1.4 * ef;
+                layerMeshes.outerCore.position.x = 1.6 * ef;
+                layerMeshes.innerCore.position.x = 4.6 * ef;
+                if (layerMeshes.rightCrust) {
+                    layerMeshes.rightCrust.position.x = 5.2 * ef;
+                }
             }
 
             // Vurgu Çemberi Takibi
@@ -1208,26 +1283,27 @@
                 const ctx = c1.getContext('2d');
                 c1.width = 64; c1.height = 64;
                 ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, 64, 64);
-                // Earth half
-                ctx.fillStyle = '#0284c7'; ctx.beginPath(); ctx.arc(16, 32, 14, Math.PI/2, Math.PI*1.5); ctx.fill();
-                // Mantle slice
-                ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.ellipse(30, 32, 6, 12, 0, 0, Math.PI*2); ctx.fill();
+                // Earth left
+                ctx.fillStyle = '#0284c7'; ctx.beginPath(); ctx.arc(14, 32, 12, Math.PI/2, Math.PI*1.5); ctx.fill();
+                // Mantle
+                ctx.fillStyle = '#b45309'; ctx.beginPath(); ctx.ellipse(28, 32, 5, 11, 0, 0, Math.PI*2); ctx.fill();
                 // Outer core
-                ctx.fillStyle = '#ea580c'; ctx.beginPath(); ctx.ellipse(42, 32, 4, 8, 0, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.ellipse(39, 32, 4, 8, 0, 0, Math.PI*2); ctx.fill();
                 // Inner core
-                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(52, 32, 4, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(49, 32, 4, 0, Math.PI*2); ctx.fill();
             }
 
-            // 2. Thumb: Quarter Cutaway
+            // 2. Thumb: Quarter Cutaway (Kullanıcı Görseli)
             const c2 = document.getElementById('thumb-canvas-quarter');
             if (c2) {
                 const ctx = c2.getContext('2d');
                 c2.width = 64; c2.height = 64;
                 ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, 64, 64);
                 ctx.fillStyle = '#0284c7'; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI*2); ctx.fill();
-                // Quarter wedge
-                ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.moveTo(32, 32); ctx.arc(32, 32, 20, 0, Math.PI/2); ctx.fill();
-                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(32, 32, 6, 0, Math.PI*2); ctx.fill();
+                // Inner wedge
+                ctx.fillStyle = '#9a3412'; ctx.beginPath(); ctx.arc(32, 32, 15, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(32, 32, 9, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(32, 32, 4, 0, Math.PI*2); ctx.fill();
             }
 
             // 3. Thumb: Whole Globe
@@ -1237,7 +1313,7 @@
                 c3.width = 64; c3.height = 64;
                 ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, 64, 64);
                 ctx.fillStyle = '#0284c7'; ctx.beginPath(); ctx.arc(32, 32, 20, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(32, 28, 9, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#166534'; ctx.beginPath(); ctx.arc(30, 28, 10, 0, Math.PI*2); ctx.fill();
                 ctx.fillStyle = '#ffffff'; ctx.fillRect(16, 12, 32, 3);
             }
 
@@ -1247,111 +1323,133 @@
                 const ctx = c4.getContext('2d');
                 c4.width = 64; c4.height = 64;
                 ctx.fillStyle = '#000000'; ctx.fillRect(0, 0, 64, 64);
-                ctx.fillStyle = '#f59e0b'; ctx.beginPath(); ctx.arc(22, 32, 18, 0, Math.PI*2); ctx.fill();
-                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(38, 32, 10, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#9a3412'; ctx.beginPath(); ctx.arc(22, 32, 18, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#dc2626'; ctx.beginPath(); ctx.arc(22, 32, 11, 0, Math.PI*2); ctx.fill();
+                ctx.fillStyle = '#fef08a'; ctx.beginPath(); ctx.arc(22, 32, 5, 0, Math.PI*2); ctx.fill();
             }
         }
 
         /* -------------------------------------------------------------
-           GÖRÜNÜM ÖN AYARLARI (PRESETS) - 1. GÖRSELLE BİREBİR
+           GÖRÜNÜM ÖNAYARLARI (VIEW PRESETS)
         ------------------------------------------------------------- */
-        const VIEW_PRESETS = ['exploded', 'quarter', 'globe', 'perspective'];
+        let currentThumbIndex = 1;
+        const PRESETS = ['exploded', 'quarter', 'globe', 'perspective'];
 
         function setViewPreset(preset) {
             playTone('click');
-            currentPreset = preset;
-
-            // Thumbnail aktifliğini güncelle
-            VIEW_PRESETS.forEach(p => {
+            PRESETS.forEach(p => {
                 const btn = document.getElementById('thumb-' + p);
                 if (btn) {
                     if (p === preset) {
-                        btn.className = "view-thumb-btn view-thumb-active w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 border-cyan-400 p-0.5 overflow-hidden transition-all bg-black hover:scale-105 shadow-lg shadow-cyan-500/20 cursor-pointer relative";
+                        btn.className = "view-thumb-btn view-thumb-active w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 border-cyan-400 p-0.5 overflow-hidden transition-all bg-black hover:scale-105 shadow-lg shadow-cyan-500/20 cursor-pointer relative group/btn";
                     } else {
-                        btn.className = "view-thumb-btn w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 border-slate-700 p-0.5 overflow-hidden transition-all bg-black hover:scale-105 shadow-md hover:border-slate-500 cursor-pointer relative";
+                        btn.className = "view-thumb-btn w-12 h-12 sm:w-16 sm:h-16 rounded-xl border-2 border-slate-700 p-0.5 overflow-hidden transition-all bg-black hover:scale-105 shadow-md hover:border-slate-500 cursor-pointer relative group/btn";
                     }
                 }
             });
 
-            const statusBadge = document.getElementById('sceneStatusBadge');
-            const explodeBtnText = document.getElementById('explodeBtnText');
-            const explodeSlider = document.getElementById('explodeSlider');
+            currentThumbIndex = PRESETS.indexOf(preset);
+            const slider = document.getElementById('explodeSlider');
 
             if (preset === 'exploded') {
-                // 1. Görsel Birebir: Ayrık Patlatılmış Model
                 targetExplode = 1.0;
                 isExploded = true;
-                explodeSlider.value = 100;
-                explodeBtnText.innerText = "Katmanları Birleştir";
-                statusBadge.innerText = "💥 Patlatılmış 3B Kesit";
+                if (slider) slider.value = 100;
                 camTargetPos.set(0, 2.5, 20);
                 camTargetLookAt.set(0.5, 0, 0);
-                showNotification("💥 1. Görünüm: Katmanlar Ayrık (Patlatılmış Kesit)");
+                document.getElementById('sceneStatusBadge').innerText = "💥 Patlatılmış 3B Kesit";
+                document.getElementById('explodeBtnText').innerText = "Katmanları Birleştir";
             } else if (preset === 'quarter') {
-                // Çeyrek / Birleşik Kesit
+                // Kullanıcının yüklediği görseldeki açılı kesit pozisyonu
                 targetExplode = 0.0;
                 isExploded = false;
-                explodeSlider.value = 0;
-                explodeBtnText.innerText = "Katmanları Ayır";
-                statusBadge.innerText = "🌐 Birleşik Katman Modeli";
-                camTargetPos.set(6, 4, 16);
+                if (slider) slider.value = 0;
+                camTargetPos.set(-4.5, 2.2, 14.5);
                 camTargetLookAt.set(0, 0, 0);
-                showNotification("🌐 2. Görünüm: Birleşik Katman Modeli");
+                document.getElementById('sceneStatusBadge').innerText = "🔬 Çeyrek Kesit Modeli";
+                document.getElementById('explodeBtnText').innerText = "Katmanları Ayır";
             } else if (preset === 'globe') {
-                // Tam Dış Küre
                 targetExplode = 0.0;
                 isExploded = false;
-                explodeSlider.value = 0;
-                explodeBtnText.innerText = "Katmanları Ayır";
-                statusBadge.innerText = "🌍 Dış Küre Görünümü";
-                camTargetPos.set(-14, 4, 12);
+                if (slider) slider.value = 0;
+                camTargetPos.set(-15, 0.5, 2);
                 camTargetLookAt.set(0, 0, 0);
-                showNotification("🌍 3. Görünüm: Tam Dünya Küresi");
+                document.getElementById('sceneStatusBadge').innerText = "🌍 Tam Dünya Küresi";
+                document.getElementById('explodeBtnText').innerText = "Katmanları Ayır";
             } else if (preset === 'perspective') {
-                // İç Çekirdek ve Manto Odak
-                targetExplode = 0.65;
+                targetExplode = 0.35;
                 isExploded = true;
-                explodeSlider.value = 65;
-                explodeBtnText.innerText = "Katmanları Birleştir";
-                statusBadge.innerText = "🔥 Manto & Çekirdek Perspektifi";
-                camTargetPos.set(5, 4, 13);
+                if (slider) slider.value = 35;
+                camTargetPos.set(1.5, 1.2, 10.5);
                 camTargetLookAt.set(1.5, 0, 0);
-                showNotification("🔥 4. Görünüm: Manto & Çekirdek Perspektifi");
+                document.getElementById('sceneStatusBadge').innerText = "🔥 İç Çekirdek & Manto Odağı";
+                document.getElementById('explodeBtnText').innerText = "Katmanları Birleştir";
             }
         }
 
         function navThumbnails(dir) {
-            let idx = VIEW_PRESETS.indexOf(currentPreset);
-            idx = (idx + dir + VIEW_PRESETS.length) % VIEW_PRESETS.length;
-            setViewPreset(VIEW_PRESETS[idx]);
+            currentThumbIndex = (currentThumbIndex + dir + PRESETS.length) % PRESETS.length;
+            setViewPreset(PRESETS[currentThumbIndex]);
         }
 
         function toggleExplodedView() {
             playTone('click');
-            isExploded = !isExploded;
-            targetExplode = isExploded ? 1.0 : 0.0;
-            document.getElementById('explodeSlider').value = isExploded ? 100 : 0;
-            document.getElementById('explodeBtnText').innerText = isExploded ? "Katmanları Birleştir" : "Katmanları Ayır";
-            document.getElementById('sceneStatusBadge').innerText = isExploded ? "💥 Patlatılmış 3B Kesit" : "🎯 Birleşik Model";
-            setViewPreset(isExploded ? 'exploded' : 'quarter');
+            if (targetExplode > 0.5) {
+                targetExplode = 0.0;
+                isExploded = false;
+                document.getElementById('explodeSlider').value = 0;
+                document.getElementById('explodeBtnText').innerText = "Katmanları Ayır";
+            } else {
+                targetExplode = 1.0;
+                isExploded = true;
+                document.getElementById('explodeSlider').value = 100;
+                document.getElementById('explodeBtnText').innerText = "Katmanları Birleştir";
+            }
         }
 
         function onExplodeSlider(val) {
-            targetExplode = val / 100;
-            isExploded = targetExplode > 0.4;
+            targetExplode = parseInt(val, 10) / 100.0;
+            isExploded = targetExplode > 0.05;
             document.getElementById('explodeBtnText').innerText = isExploded ? "Katmanları Birleştir" : "Katmanları Ayır";
-            document.getElementById('sceneStatusBadge').innerText = targetExplode > 0.05 ? "Ayrık Kesit (" + val + "%)" : "🎯 Birleşik Model";
         }
 
         function toggleAutoRotate() {
             playTone('click');
             isAutoRotate = !isAutoRotate;
             const btnText = document.getElementById('rotateBtnText');
-            btnText.innerText = isAutoRotate ? "Dönüş: Açık" : "Dönüş: Kapalı";
+            if (btnText) {
+                btnText.innerText = isAutoRotate ? "Dönüş: Açık" : "Dönüş: Duraklatıldı";
+            }
+        }
+
+        function toggleCanvasFullscreen() {
+            const canvasWrapper = document.getElementById('earth-canvas').parentElement.parentElement;
+            if (!document.fullscreenElement) {
+                if (canvasWrapper.requestFullscreen) {
+                    canvasWrapper.requestFullscreen();
+                } else if (canvasWrapper.webkitRequestFullscreen) {
+                    canvasWrapper.webkitRequestFullscreen();
+                }
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function onWindowResize() {
+            if (!camera || !renderer) return;
+            const canvas = document.getElementById('earth-canvas');
+            const parent = canvas.parentElement;
+            const w = parent.clientWidth;
+            const h = parent.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
         }
 
         /* -------------------------------------------------------------
-           KATMAN SEÇİMİ VE VURGU (2. GÖRSELDEKİ HATA DÜZELTİLDİ!)
+           KATMAN SEÇİM VE BİLGİ KARTI GÜNCELLEMESİ
         ------------------------------------------------------------- */
         function selectLayer(layerId, playSound = true) {
             if (playSound) playTone('layerSelect');
@@ -1359,12 +1457,13 @@
             const layer = LAYERS_DB[layerId];
             if (!layer) return;
 
-            // Buton Stillerini Güncelle
-            Object.keys(LAYERS_DB).forEach(k => {
+            // Buton UI stillerini güncelle
+            const layerKeys = ['havakure', 'sukure', 'yercabugu', 'manto', 'cekirdek'];
+            layerKeys.forEach(k => {
                 const btn = document.getElementById('btn-' + k);
                 if (btn) {
                     if (k === layerId) {
-                        btn.className = "p-2.5 rounded-2xl border-2 border-cyan-400 bg-cyan-950/80 transition-all flex flex-col items-center text-center shadow-lg shadow-cyan-500/20";
+                        btn.className = "p-2.5 rounded-2xl border-2 border-cyan-400 bg-cyan-950/60 shadow-lg shadow-cyan-500/25 transition-all flex flex-col items-center text-center group cursor-pointer scale-105";
                     } else {
                         btn.className = "p-2.5 rounded-2xl border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 transition-all flex flex-col items-center text-center group cursor-pointer";
                     }
@@ -1372,27 +1471,41 @@
             });
 
             // Bilgi Kartını Doldur
-            document.getElementById('detailTitle').innerText = layer.name;
-            document.getElementById('detailSubtitle').innerText = layer.subtitle;
-            document.getElementById('detailOtherName').innerText = layer.otherName;
-            document.getElementById('detailState').innerText = layer.state;
-            document.getElementById('detailTemp').innerText = layer.temp;
-            document.getElementById('detailThickness').innerText = layer.thickness;
-            document.getElementById('detailNote').innerText = layer.teacherNote;
+            const orderEl = document.getElementById('detailOrder');
+            if (orderEl) {
+                orderEl.innerText = `KATMAN 0${layer.order}`;
+                orderEl.style.color = layer.color;
+            }
+            const titleEl = document.getElementById('detailTitle');
+            if (titleEl) titleEl.innerText = layer.name;
+            const subEl = document.getElementById('detailSubtitle');
+            if (subEl) subEl.innerText = layer.subtitle;
+            const stateEl = document.getElementById('detailState');
+            if (stateEl) stateEl.innerText = layer.state;
+            const tempEl = document.getElementById('detailTemp');
+            if (tempEl) tempEl.innerText = layer.temp;
+            const thickEl = document.getElementById('detailThickness');
+            if (thickEl) thickEl.innerText = layer.thickness;
+            const noteEl = document.getElementById('detailNote');
+            if (noteEl) noteEl.innerText = layer.teacherNote;
 
-            const obsBadge = document.getElementById('detailObsBadge');
-            if (layer.observable) {
-                obsBadge.innerText = "Gözlemlenebilir";
-                obsBadge.className = "text-[10px] px-2.5 py-1 rounded-full font-bold bg-emerald-950 text-emerald-300 border border-emerald-500/40";
-            } else {
-                obsBadge.innerText = "Doğrudan Gözlemlenemez";
-                obsBadge.className = "text-[10px] px-2.5 py-1 rounded-full font-bold bg-amber-950 text-amber-300 border border-amber-500/40";
+            const obsTag = document.getElementById('detailObservable');
+            if (obsTag) {
+                if (layer.observable) {
+                    obsTag.innerText = "Doğrudan Gözlemlenebilir";
+                    obsTag.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-500/40";
+                } else {
+                    obsTag.innerText = "Gözlemlenemez (İç Katman)";
+                    obsTag.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-950 text-amber-400 border border-amber-500/40";
+                }
             }
 
             const bulletsUl = document.getElementById('detailBullets');
-            bulletsUl.innerHTML = layer.bullets.map(b => `<li>${b}</li>`).join('');
+            if (bulletsUl) {
+                bulletsUl.innerHTML = layer.bullets.map(b => `<li>${b}</li>`).join('');
+            }
 
-            // 3B Sahne Vurguları (HAVA KÜRE ASLA GÖRÜNTÜYÜ KAPATMAZ!)
+            // 3B Sahne Vurguları (Hava Küre asla opak olmaz!)
             update3DHighlight(layerId);
         }
 
@@ -1419,7 +1532,7 @@
                     layerMeshes.havakure.material.opacity = 0.55;
                     layerMeshes.havakure.material.color.setHex(0x38bdf8);
                 } else {
-                    layerMeshes.havakure.material.opacity = 0.15;
+                    layerMeshes.havakure.material.opacity = 0.18;
                     layerMeshes.havakure.material.color.setHex(0x0ea5e9);
                 }
             }
@@ -1427,9 +1540,11 @@
             // Manto Vurgusu
             if (layerMeshes.mantleMesh) {
                 if (layerId === 'manto') {
+                    layerMeshes.mantleMesh.material.emissive = new THREE.Color(0xd97706);
                     layerMeshes.mantleMesh.material.emissiveIntensity = 0.85;
                 } else {
-                    layerMeshes.mantleMesh.material.emissiveIntensity = 0.45;
+                    layerMeshes.mantleMesh.material.emissive = new THREE.Color(0x000000);
+                    layerMeshes.mantleMesh.material.emissiveIntensity = 0.0;
                 }
             }
 
@@ -1438,7 +1553,7 @@
                 if (layerId === 'cekirdek') {
                     layerMeshes.innerCore.material.emissiveIntensity = 2.4;
                 } else {
-                    layerMeshes.innerCore.material.emissiveIntensity = 1.8;
+                    layerMeshes.innerCore.material.emissiveIntensity = 1.6;
                 }
             }
 
@@ -1451,11 +1566,11 @@
                 camTargetPos.set(-4.5, 2, 14);
                 camTargetLookAt.set(-4.5, 0, 0);
             } else if (activeLayerKey === 'manto') {
-                camTargetPos.set(-0.8, 2, 13);
-                camTargetLookAt.set(-0.8, 0, 0);
+                camTargetPos.set(-1.0, 1.8, 12);
+                camTargetLookAt.set(-1.0, 0, 0);
             } else if (activeLayerKey === 'cekirdek') {
-                camTargetPos.set(5.2, 1.5, 9);
-                camTargetLookAt.set(5.2, 0, 0);
+                camTargetPos.set(2.0, 1.2, 8);
+                camTargetLookAt.set(2.0, 0, 0);
             }
         }
 
@@ -1471,18 +1586,6 @@
                 notif.style.opacity = '0';
                 notif.style.transform = 'translate(-50%, -8px)';
             }, 2600);
-        }
-
-        function onWindowResize() {
-            if (!renderer || !camera) return;
-            const canvas = document.getElementById('earth-canvas');
-            if (!canvas) return;
-            const parent = canvas.parentElement;
-            const w = parent.clientWidth;
-            const h = parent.clientHeight;
-            camera.aspect = w / h;
-            camera.updateProjectionMatrix();
-            renderer.setSize(w, h);
         }
 
         /* -------------------------------------------------------------
@@ -1592,6 +1695,12 @@
         function restartQuiz() {
             startQuiz();
         }
+    
+        // Doğrudan Giriş: Sayfa yüklendiğinde isim sormadan doğrudan simülasyona başla
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeScene();
+            renderThumbnailCanvases();
+        });
     </script>
 </body>
 </html>
