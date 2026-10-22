@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Rotalı Fenci | Dünya'nın 5 Katmanı İnteraktif Simülasyonu</title>
+    <title>Rotalı Fenci | Dünya'nın 5 Katmanı 3B İnteraktif Simülasyonu</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide İkonları -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <!-- Canvas Confetti -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Google Fonts: Poppins & Orbitron -->
@@ -17,64 +20,74 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        .glow-effect { box-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
-        .pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: .85; transform: scale(1.02); }
-        }
+        .glow-cyan { box-shadow: 0 0 30px rgba(6, 182, 212, 0.35); }
+        .glow-red { box-shadow: 0 0 30px rgba(239, 68, 68, 0.35); }
+        .glow-amber { box-shadow: 0 0 30px rgba(245, 158, 11, 0.35); }
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-track { background: #0b1120; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+        
+        /* 3D Canvas canvas touch handling */
+        #earth-canvas {
+            touch-action: none !important;
+            cursor: grab;
+        }
+        #earth-canvas:active {
+            cursor: grabbing;
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-full flex flex-col justify-between selection:bg-cyan-500 selection:text-white antialiased">
 
     <!-- Header / Navbar -->
-    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 py-3 px-4 md:px-6 sticky top-0 z-50 flex justify-between items-center shadow-xl">
-        <div class="flex items-center space-x-3">
-            <div class="bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 p-2 md:p-2.5 rounded-2xl shadow-lg shadow-cyan-500/20 text-white flex items-center justify-center">
-                <i data-lucide="globe-2" class="w-5 h-5 md:w-6 md:h-6 animate-spin" style="animation-duration: 25s;"></i>
+    <header class="w-full bg-slate-900/90 backdrop-blur-md border-b border-slate-800/80 py-2.5 px-3 md:px-6 sticky top-0 z-50 flex justify-between items-center shadow-xl">
+        <div class="flex items-center space-x-2.5 md:space-x-3">
+            <div class="bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 p-2 rounded-2xl shadow-lg shadow-cyan-500/20 text-white flex items-center justify-center">
+                <i data-lucide="globe-2" class="w-5 h-5 animate-spin" style="animation-duration: 25s;"></i>
             </div>
             <div>
                 <div class="flex items-center gap-2">
-                    <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 text-base md:text-xl font-orbitron tracking-tight">Rotalı Fenci</h1>
-                    <span class="hidden sm:inline px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-[10px] font-bold text-cyan-300">Maarif Modeli</span>
+                    <h1 class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-blue-400 text-sm md:text-lg font-orbitron tracking-tight">Rotalı Fenci</h1>
+                    <span class="px-2 py-0.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-[9px] md:text-[10px] font-bold text-cyan-300">3B Laboratuvar</span>
                 </div>
-                <p class="text-[11px] md:text-xs text-slate-400 font-medium">5. Sınıf Fen Bilimleri • Dünya'nın 5 Katmanı Laboratuvarı</p>
+                <p class="text-[10px] md:text-xs text-slate-400 font-medium">5. Sınıf Fen Bilimleri • Dünya'nın 5 Katmanı</p>
             </div>
         </div>
-        <div class="flex items-center space-x-2">
-            <div id="userBadge" class="hidden items-center space-x-2 bg-slate-800/90 border border-cyan-500/30 px-3 py-1.5 rounded-full text-xs font-semibold text-cyan-300 shadow-sm">
+        
+        <div class="flex items-center space-x-1.5 md:space-x-2">
+            <div id="userBadge" class="hidden items-center space-x-2 bg-slate-800/90 border border-cyan-500/30 px-2.5 py-1 rounded-full text-xs font-semibold text-cyan-300 shadow-sm">
                 <i data-lucide="user" class="w-3.5 h-3.5 text-cyan-400"></i>
                 <span id="displayName">Kâşif</span>
             </div>
             <button onclick="toggleSound()" id="soundToggleBtn" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all text-xs" title="Sesi Aç/Kapat">
                 <i class="fa-solid fa-volume-high" id="soundIcon"></i>
             </button>
+            <button onclick="toggleFullscreen()" class="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition-all text-xs" title="Tam Ekran">
+                <i class="fa-solid fa-expand"></i>
+            </button>
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="flex-grow max-w-6xl w-full mx-auto p-3 sm:p-4 md:p-6 flex flex-col justify-center items-center">
+    <main class="flex-grow max-w-7xl w-full mx-auto p-2 sm:p-4 md:p-5 flex flex-col justify-center items-center">
 
         <!-- 1. GİRİŞ EKRANI -->
         <section id="welcomeScreen" class="w-full max-w-md bg-slate-900/90 backdrop-blur-2xl border-2 border-cyan-500/30 p-6 sm:p-8 rounded-3xl shadow-2xl text-center space-y-6 my-auto">
             <div class="relative w-20 h-20 mx-auto">
                 <div class="absolute inset-0 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-3xl blur-lg opacity-60 animate-pulse"></div>
-                <div class="relative w-full h-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-xl text-white">
-                    <i data-lucide="compass" class="w-10 h-10"></i>
+                <div class="relative w-full h-full bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 rounded-3xl flex items-center justify-center shadow-xl text-white text-3xl">
+                    <i class="fa-solid fa-earth-americas"></i>
                 </div>
             </div>
             <div class="space-y-2">
                 <span class="px-3 py-1 rounded-full bg-cyan-950 text-cyan-400 border border-cyan-500/40 text-[10px] font-bold uppercase tracking-wider">
                     5. Sınıf Fen Bilimleri • 1. Ünite
                 </span>
-                <h2 class="text-2xl font-black text-white font-orbitron tracking-tight">Dünya'nın 5 Katmanı</h2>
+                <h2 class="text-2xl font-black text-white font-orbitron tracking-tight">Dünya'nın 5 Katmanı 3B</h2>
                 <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Hava → Su → Taş → Ateş → Ağır kuralıyla gezegenimizin tüm katmanlarını interaktif keşfetmeye hazır mısın?
+                    Fotogerçekçi 3B kesit modeliyle gezegenimizin merkezine yolculuk yapın. Katmanları ayırın, inceleyin ve doğrudan tıklayarak sırlarını keşfedin!
                 </p>
             </div>
             <div class="space-y-2 text-left">
@@ -82,19 +95,19 @@
                 <input type="text" id="studentNameInput" placeholder="Örn: Ayşe Yılmaz" value="Genç Kâşif" class="w-full bg-slate-950/80 border-2 border-slate-700/80 focus:border-cyan-400 rounded-2xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none transition-all font-semibold text-sm">
             </div>
             <button onclick="startSimulation()" class="w-full bg-gradient-to-r from-cyan-500 via-sky-400 to-blue-600 hover:brightness-110 text-slate-950 font-black py-3.5 px-6 rounded-2xl shadow-xl shadow-cyan-500/30 transition-all transform hover:scale-[1.02] active:scale-95 flex items-center justify-center space-x-2 cursor-pointer uppercase text-xs tracking-wider">
-                <span>Laboratuvarı Başlat</span>
+                <span>3B Laboratuvarı Başlat</span>
                 <i data-lucide="arrow-right" class="w-5 h-5"></i>
             </button>
         </section>
 
         <!-- 2. ANA SİMÜLASYON VE İÇERİK EKRANI (Gizli Başlar) -->
-        <section id="simScreen" class="w-full hidden space-y-5">
+        <section id="simScreen" class="w-full hidden space-y-4">
             
             <!-- Üst Navigasyon Sekmeleri -->
             <div class="flex justify-center space-x-2 bg-slate-900/80 p-1.5 rounded-2xl border border-slate-800 max-w-md mx-auto shadow-lg backdrop-blur-md">
                 <button onclick="switchTab('simulation')" id="tabSimBtn" class="flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer">
-                    <i data-lucide="layers" class="w-4 h-4"></i>
-                    <span>5 Katman</span>
+                    <i class="fa-solid fa-cube"></i>
+                    <span>3B Katmanlar</span>
                 </button>
                 <button onclick="switchTab('analogy')" id="tabAnalogyBtn" class="flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer">
                     <i data-lucide="eye" class="w-4 h-4"></i>
@@ -106,156 +119,181 @@
                 </button>
             </div>
 
-            <!-- TAB 1: SİMÜLASYON MODÜLÜ (5 KATMAN) -->
-            <div id="tabSimulation" class="space-y-6">
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            <!-- TAB 1: 3B SİMÜLASYON MODÜLÜ (5 KATMAN) -->
+            <div id="tabSimulation" class="space-y-4">
+                
+                <!-- 3B GÖRSELLEŞTİRME VE DETAY ALANI -->
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 items-stretch">
                     
-                    <!-- Sol Taraf: Katman Seçim Butonları & Kesit Diyagramı -->
-                    <div class="lg:col-span-5 space-y-3">
-                        <div class="flex justify-between items-center px-1">
-                            <h3 class="text-xs font-black text-cyan-400 uppercase tracking-wider font-orbitron">Katman Listesi</h3>
-                            <span class="text-[10px] bg-slate-900 text-amber-300 font-bold px-2 py-0.5 rounded-full border border-amber-500/30">Hava→Su→Taş→Ateş→Ağır</span>
-                        </div>
-                        
-                        <!-- 5 Katman Seçim Butonları -->
-                        <div class="space-y-2">
-                            <!-- 1. Hava Küre -->
-                            <button onclick="selectLayer('havakure')" id="btn-havakure" class="w-full text-left p-3 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/80 transition-all flex items-center justify-between group cursor-pointer">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 rounded-full bg-sky-400 shadow-md shadow-sky-400/50 shrink-0"></div>
-                                    <div>
-                                        <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-cyan-300 transition-colors">1. Hava Küre (Atmosfer)</h4>
-                                        <p class="text-[11px] text-slate-400">Gaz tabakası • Gözlemlenebilir</p>
-                                    </div>
+                    <!-- Sol/Üst: 3B WebGL Sahnesi -->
+                    <div class="lg:col-span-8 flex flex-col space-y-3">
+                        <div class="relative w-full h-[460px] sm:h-[520px] md:h-[580px] bg-slate-950 rounded-3xl border-2 border-cyan-500/40 shadow-2xl overflow-hidden flex flex-col group">
+                            
+                            <!-- 3B WebGL Canvas -->
+                            <canvas id="earth-canvas" class="w-full h-full block"></canvas>
+
+                            <!-- 3B Sahne Üst Kontrol Çubuğu (Floating Bar) -->
+                            <div class="absolute top-3 left-3 right-3 flex flex-wrap justify-between items-center gap-2 pointer-events-none z-10">
+                                <div class="bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 px-3 py-1.5 rounded-2xl flex items-center space-x-2 pointer-events-auto shadow-lg">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
+                                    <span class="text-xs font-bold text-cyan-300 font-orbitron" id="sceneStatusBadge">3B İnteraktif Model</span>
+                                    <span class="text-[10px] text-slate-400 hidden sm:inline">• Üzerine Tıkla & İncele</span>
                                 </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white shrink-0"></i>
+
+                                <div class="flex items-center space-x-1.5 pointer-events-auto">
+                                    <!-- Otomatik Dönüş -->
+                                    <button onclick="toggleAutoRotate()" id="rotateToggleBtn" class="px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-xs font-bold text-slate-200 hover:text-cyan-400 transition-all flex items-center space-x-1.5 shadow-lg backdrop-blur-md cursor-pointer" title="Otomatik Döndür / Durdur">
+                                        <i class="fa-solid fa-arrows-rotate text-cyan-400"></i>
+                                        <span class="hidden md:inline" id="rotateBtnText">Dönüş: Açık</span>
+                                    </button>
+
+                                    <!-- Kamera Sıfırla -->
+                                    <button onclick="resetCameraView()" class="px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-xs font-bold text-slate-200 hover:text-cyan-400 transition-all flex items-center space-x-1.5 shadow-lg backdrop-blur-md cursor-pointer" title="Kamera Açısını Sıfırla">
+                                        <i class="fa-solid fa-crosshairs text-sky-400"></i>
+                                        <span class="hidden md:inline">Sıfırla</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Katmanları Ayır / Patlatılmış Kesit Kaydırıcısı (Bottom Controls) -->
+                            <div class="absolute bottom-3 left-3 right-3 bg-slate-900/90 backdrop-blur-md border border-slate-800 px-3 py-2.5 rounded-2xl flex flex-wrap items-center justify-between gap-3 shadow-2xl z-10">
+                                <div class="flex items-center space-x-2">
+                                    <button onclick="toggleExplodedView()" id="explodeBtn" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 hover:brightness-110 text-slate-950 font-black text-xs transition-all shadow-md flex items-center space-x-1.5 cursor-pointer">
+                                        <i class="fa-solid fa-arrows-split-up-and-left"></i>
+                                        <span id="explodeBtnText">Katmanları Ayır</span>
+                                    </button>
+                                    <span class="text-[11px] text-slate-300 font-bold hidden sm:inline">Patlatılmış Kesit:</span>
+                                </div>
+
+                                <div class="flex-1 max-w-xs flex items-center space-x-2">
+                                    <span class="text-[10px] text-slate-400 font-bold">Küre</span>
+                                    <input type="range" id="explodeSlider" min="0" max="100" value="0" oninput="onExplodeSlider(this.value)" class="w-full accent-amber-500 cursor-pointer h-1.5 bg-slate-800 rounded-lg">
+                                    <span class="text-[10px] text-amber-400 font-bold">Ayrık</span>
+                                </div>
+
+                                <div class="text-[10px] text-slate-400 hidden lg:flex items-center space-x-1">
+                                    <i class="fa-solid fa-hand-pointer text-cyan-400"></i>
+                                    <span>Katmanlara doğrudan tıklayabilirsiniz</span>
+                                </div>
+                            </div>
+
+                            <!-- 3B Seçim Balonu / Bildirimi (Floating Overlay) -->
+                            <div id="layer3dNotification" class="absolute top-16 left-1/2 -translate-x-1/2 bg-slate-900/95 border-2 border-cyan-400/80 px-4 py-1.5 rounded-2xl text-xs font-black text-cyan-300 shadow-2xl backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2 z-20 flex items-center space-x-2">
+                                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
+                                <span id="notificationText">Katman Seçildi</span>
+                            </div>
+
+                        </div>
+
+                        <!-- 5 Katman Hızlı Seçim Butonları (Grid) -->
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                            <!-- 1. Hava Küre -->
+                            <button onclick="selectLayer('havakure', true)" id="btn-havakure" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-3.5 h-3.5 rounded-full bg-sky-400 shadow-sm shadow-sky-400/50 mb-1"></div>
+                                <span class="font-bold text-xs text-white group-hover:text-cyan-300">1. Hava Küre</span>
+                                <span class="text-[10px] text-slate-400">Atmosfer</span>
                             </button>
 
                             <!-- 2. Su Küre -->
-                            <button onclick="selectLayer('sukure')" id="btn-sukure" class="w-full text-left p-3 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/80 transition-all flex items-center justify-between group cursor-pointer">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 rounded-full bg-blue-500 shadow-md shadow-blue-500/50 shrink-0"></div>
-                                    <div>
-                                        <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-cyan-300 transition-colors">2. Su Küre (Hidrosfer)</h4>
-                                        <p class="text-[11px] text-slate-400">Yüzeyin %71'i • Gözlemlenebilir</p>
-                                    </div>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white shrink-0"></i>
+                            <button onclick="selectLayer('sukure', true)" id="btn-sukure" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50 mb-1"></div>
+                                <span class="font-bold text-xs text-white group-hover:text-cyan-300">2. Su Küre</span>
+                                <span class="text-[10px] text-slate-400">Hidrosfer</span>
                             </button>
 
                             <!-- 3. Taş Küre -->
-                            <button onclick="selectLayer('yercabugu')" id="btn-yercabugu" class="w-full text-left p-3 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/80 transition-all flex items-center justify-between group cursor-pointer">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/50 shrink-0"></div>
-                                    <div>
-                                        <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-cyan-300 transition-colors">3. Taş Küre (Yer Kabuğu)</h4>
-                                        <p class="text-[11px] text-slate-400">En ince katman • Gözlemlenebilir</p>
-                                    </div>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white shrink-0"></i>
+                            <button onclick="selectLayer('yercabugu', true)" id="btn-yercabugu" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 mb-1"></div>
+                                <span class="font-bold text-xs text-white group-hover:text-cyan-300">3. Taş Küre</span>
+                                <span class="text-[10px] text-slate-400">Yer Kabuğu</span>
                             </button>
 
                             <!-- 4. Ateş Küre -->
-                            <button onclick="selectLayer('manto')" id="btn-manto" class="w-full text-left p-3 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/80 transition-all flex items-center justify-between group cursor-pointer">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 rounded-full bg-amber-500 shadow-md shadow-amber-500/50 shrink-0"></div>
-                                    <div>
-                                        <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-cyan-300 transition-colors">4. Ateş Küre (Manto)</h4>
-                                        <p class="text-[11px] text-slate-400">En kalın katman • Gözlemlenemez</p>
-                                    </div>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white shrink-0"></i>
+                            <button onclick="selectLayer('manto', true)" id="btn-manto" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-3.5 h-3.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50 mb-1"></div>
+                                <span class="font-bold text-xs text-white group-hover:text-cyan-300">4. Ateş Küre</span>
+                                <span class="text-[10px] text-slate-400">Manto</span>
                             </button>
 
                             <!-- 5. Ağır Küre -->
-                            <button onclick="selectLayer('cekirdek')" id="btn-cekirdek" class="w-full text-left p-3 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/80 transition-all flex items-center justify-between group cursor-pointer">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-4 h-4 rounded-full bg-rose-600 shadow-md shadow-rose-600/50 shrink-0"></div>
-                                    <div>
-                                        <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-cyan-300 transition-colors">5. Ağır Küre (Çekirdek)</h4>
-                                        <p class="text-[11px] text-slate-400">En sıcak merkez • Gözlemlenemez</p>
-                                    </div>
-                                </div>
-                                <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500 group-hover:text-white shrink-0"></i>
+                            <button onclick="selectLayer('cekirdek', true)" id="btn-cekirdek" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer col-span-2 sm:col-span-1">
+                                <div class="w-3.5 h-3.5 rounded-full bg-rose-600 shadow-sm shadow-rose-600/50 mb-1"></div>
+                                <span class="font-bold text-xs text-white group-hover:text-cyan-300">5. Ağır Küre</span>
+                                <span class="text-[10px] text-slate-400">Çekirdek</span>
                             </button>
-                        </div>
-
-                        <!-- İnteraktif Kesit Görseli -->
-                        <div class="bg-slate-900/90 border border-slate-800 p-3 rounded-2xl flex flex-col items-center justify-center text-center">
-                            <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">Dünya Kesiti İnteraktif Model</span>
-                            <div class="relative w-44 h-44 flex items-center justify-center">
-                                <!-- 1. Hava Küre (Atmosfer Dış Halka) -->
-                                <div onclick="selectLayer('havakure')" class="absolute inset-0 rounded-full border-2 border-sky-400/50 bg-sky-500/10 cursor-pointer hover:border-sky-300 transition-all flex items-center justify-center" title="1. Hava Küre (Atmosfer)">
-                                    <!-- 2. Su Küre / Taş Küre (Yer Kabuğu) -->
-                                    <div onclick="event.stopPropagation(); selectLayer('yercabugu')" class="w-36 h-36 rounded-full border-2 border-emerald-400 bg-emerald-950/60 cursor-pointer hover:border-emerald-300 transition-all flex items-center justify-center" title="3. Taş Küre (Yer Kabuğu)">
-                                        <!-- 4. Ateş Küre (Manto) -->
-                                        <div onclick="event.stopPropagation(); selectLayer('manto')" class="w-28 h-28 rounded-full border-2 border-amber-500 bg-amber-950/80 cursor-pointer hover:border-amber-400 transition-all flex items-center justify-center" title="4. Ateş Küre (Manto)">
-                                            <!-- 5. Ağır Küre (Çekirdek) -->
-                                            <div onclick="event.stopPropagation(); selectLayer('cekirdek')" class="w-16 h-16 rounded-full border-2 border-rose-500 bg-gradient-to-r from-red-600 to-rose-700 cursor-pointer hover:brightness-125 transition-all shadow-[0_0_15px_rgba(244,63,94,0.6)] flex items-center justify-center text-[10px] font-black text-white" title="5. Ağır Küre (Çekirdek)">
-                                                Çekirdek
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <span class="text-[9px] text-slate-500 mt-2">Diyagramdaki katman halkalarına tıklayarak da seçebilirsiniz.</span>
                         </div>
                     </div>
 
-                    <!-- Sağ Taraf: Detaylı Bilgi Kartı -->
-                    <div class="lg:col-span-7">
-                        <div id="layerDetailCard" class="bg-slate-900/90 backdrop-blur-xl border-2 border-slate-800 p-5 sm:p-7 rounded-3xl shadow-2xl relative overflow-hidden space-y-5">
+                    <!-- Sağ/Alt: Detaylı Bilgi Kartı -->
+                    <div class="lg:col-span-4 flex flex-col">
+                        <div id="layerDetailCard" class="bg-slate-900/90 backdrop-blur-xl border-2 border-slate-800 p-5 rounded-3xl shadow-2xl relative overflow-hidden flex flex-col justify-between h-full space-y-4">
                             
                             <!-- Dekoratif Arka Plan Işıltısı -->
-                            <div class="absolute -right-10 -top-10 w-44 h-44 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                            <div id="cardGlowEffect" class="absolute -right-10 -top-10 w-44 h-44 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none transition-all duration-500"></div>
 
-                            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
-                                <div class="flex items-center space-x-3">
-                                    <div id="detailIconBg" class="p-3 rounded-2xl bg-cyan-500/20 text-cyan-400 shadow-inner">
-                                        <i id="detailHeaderIcon" data-lucide="info" class="w-6 h-6"></i>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                                    <div class="flex items-center space-x-2.5">
+                                        <div id="detailIconBg" class="p-2.5 rounded-2xl bg-cyan-500/20 text-cyan-400 shadow-inner text-lg">
+                                            <i id="detailHeaderIcon" class="fa-solid fa-earth-americas"></i>
+                                        </div>
+                                        <div>
+                                            <h3 id="detailTitle" class="text-base sm:text-lg font-black text-white font-orbitron">1. Hava Küre</h3>
+                                            <p id="detailSubtitle" class="text-[11px] text-slate-400 font-medium">Dünya'yı çevreleyen gaz tabakası</p>
+                                        </div>
                                     </div>
-                                    <div>
-                                        <h3 id="detailTitle" class="text-lg sm:text-xl font-black text-white font-orbitron">1. Hava Küre (Atmosfer)</h3>
-                                        <p id="detailSubtitle" class="text-xs text-slate-400 font-medium">Dünya'yı çevreleyen gaz tabakası</p>
+                                    <span id="detailObsBadge" class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/40">Gözlemlenebilir</span>
+                                </div>
+
+                                <!-- Bilgi Grid Ölçütleri -->
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-0.5">
+                                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Bilimsel Adı</span>
+                                        <p id="detailOtherName" class="text-xs font-bold text-cyan-300 truncate">Atmosfer</p>
+                                    </div>
+                                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-0.5">
+                                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Fiziksel Hali</span>
+                                        <p id="detailState" class="text-xs font-bold text-amber-300">Gaz</p>
+                                    </div>
+                                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-0.5">
+                                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Ortalama Sıcaklık</span>
+                                        <p id="detailTemp" class="text-xs font-bold text-rose-300">15 °C (Ortalama)</p>
+                                    </div>
+                                    <div class="bg-slate-950/70 border border-slate-800 p-2.5 rounded-xl space-y-0.5">
+                                        <span class="text-[9px] uppercase font-bold tracking-wider text-slate-400">Kalınlık</span>
+                                        <p id="detailThickness" class="text-xs font-bold text-emerald-300">~10.000 km</p>
                                     </div>
                                 </div>
-                                <span id="detailObsBadge" class="text-xs px-3 py-1 rounded-full font-bold bg-cyan-950 text-cyan-300 border border-cyan-500/40">Gözlemlenebilir</span>
+
+                                <!-- Açıklama Maddeleri -->
+                                <div class="space-y-1.5">
+                                    <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wide">Müfredat Notları & Özellikler</h4>
+                                    <ul id="detailBullets" class="text-xs text-slate-200 space-y-1.5 bg-slate-950/60 p-3 rounded-2xl border border-slate-800 list-disc list-inside leading-relaxed">
+                                        <li>Dünya'yı çevreleyen gaz tabakasıdır.</li>
+                                        <li>Oksijen ve azot gibi önemli gazlar içerir.</li>
+                                        <li>Yağmur, kar ve rüzgâr gibi hava olayları bu katmanda gerçekleşir.</li>
+                                    </ul>
+                                </div>
+
+                                <!-- Önemli Öğretmen Notu -->
+                                <div class="bg-gradient-to-r from-blue-950/60 to-indigo-950/60 border border-blue-500/40 p-3 rounded-2xl flex items-start space-x-2.5">
+                                    <div class="bg-cyan-500/20 text-cyan-400 p-1.5 rounded-xl mt-0.5 shrink-0 text-xs">
+                                        <i class="fa-solid fa-lightbulb"></i>
+                                    </div>
+                                    <div class="space-y-0.5">
+                                        <h5 class="text-[11px] font-black text-cyan-300 uppercase tracking-wide">Önemli Öğretmen Notu</h5>
+                                        <p id="detailNote" class="text-[11px] text-slate-300 leading-relaxed">
+                                            Hava küre Dünya'yı dıştan tamamen çevreler.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <!-- Bilgi Grid Ölçütleri -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                <div class="bg-slate-950/70 border border-slate-800 p-3.5 rounded-2xl space-y-1">
-                                    <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Diğer / Bilimsel Adı</span>
-                                    <p id="detailOtherName" class="text-sm font-bold text-cyan-300">Atmosfer</p>
-                                </div>
-                                <div class="bg-slate-950/70 border border-slate-800 p-3.5 rounded-2xl space-y-1">
-                                    <span class="text-[10px] uppercase font-bold tracking-wider text-slate-400">Temel Yapı / Özellik</span>
-                                    <p id="detailCoreFeature" class="text-sm font-bold text-amber-300">Oksijen, azot ve gazlar</p>
-                                </div>
-                            </div>
-
-                            <!-- Açıklama Maddeleri -->
-                            <div class="space-y-2">
-                                <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wide">Müfredat Notları & Bilimsel Özellikler</h4>
-                                <ul id="detailBullets" class="text-xs sm:text-sm text-slate-200 space-y-2 bg-slate-950/60 p-4 rounded-2xl border border-slate-800 list-disc list-inside leading-relaxed">
-                                    <li>Dünya'yı çevreleyen gaz tabakasıdır.</li>
-                                    <li>Oksijen ve azot gibi önemli gazlar içerir.</li>
-                                    <li>Yağmur, kar ve rüzgâr gibi hava olayları bu katmanda gerçekleşir.</li>
-                                </ul>
-                            </div>
-
-                            <!-- Önemli Not Kutusu -->
-                            <div class="bg-gradient-to-r from-blue-950/60 to-indigo-950/60 border border-blue-500/40 p-4 rounded-2xl flex items-start space-x-3">
-                                <div class="bg-cyan-500/20 text-cyan-400 p-2 rounded-xl mt-0.5 shrink-0">
-                                    <i data-lucide="bookmark" class="w-5 h-5"></i>
-                                </div>
-                                <div class="space-y-1">
-                                    <h5 class="text-xs font-black text-cyan-300 uppercase tracking-wide">Önemli Öğretmen Notu</h5>
-                                    <p id="detailNote" class="text-xs text-slate-300 leading-relaxed">
-                                        Hava küre Dünya'yı dıştan tamamen çevreler. Su küre ve taş küre yeryüzünde birlikte bulunur; su küre, taş küreyi tamamen saran ayrı bir iç katman değildir.
-                                    </p>
-                                </div>
-                            </div>
+                            <!-- 3B Odaklan Butonu -->
+                            <button onclick="focusOnSelectedLayer()" class="w-full mt-2 py-2.5 px-4 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 border border-slate-700/80 shadow-md cursor-pointer">
+                                <i class="fa-solid fa-bullseye text-cyan-400 group-hover:text-slate-950"></i>
+                                <span>3B Modelde Bu Katmana Yaklaş</span>
+                            </button>
 
                         </div>
                     </div>
@@ -349,7 +387,7 @@
                     </div>
 
                     <!-- Sonuç Ekranı (Gizli Başlar) -->
-                    <div id="quizResultScreen" class="hidden text-center space-y-5 py-6 animate-fadeIn">
+                    <div id="quizResultScreen" class="hidden text-center space-y-5 py-6">
                         <div class="w-20 h-20 bg-gradient-to-tr from-amber-500 to-yellow-400 rounded-3xl flex items-center justify-center mx-auto shadow-2xl shadow-amber-500/40 animate-bounce text-slate-950 text-3xl">
                             <i data-lucide="award" class="w-10 h-10"></i>
                         </div>
@@ -371,19 +409,20 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full text-center py-4 text-xs text-slate-500 border-t border-slate-800/80 bg-slate-950/60">
-        Rotalı Fenci • 5. Sınıf Fen Bilimleri İnteraktif Materyal Platformu © 2026
+    <footer class="w-full text-center py-3 text-xs text-slate-500 border-t border-slate-800/80 bg-slate-950/60">
+        Rotalı Fenci • 5. Sınıf Fen Bilimleri 3B İnteraktif Materyal Platformu © 2026
     </footer>
 
     <!-- JavaScript Mantığı -->
     <script>
-        // Lucide İkonlarını Başlat
         lucide.createIcons();
 
         let currentStudentName = "Genç Kâşif";
         let isAudioMuted = false;
         let audioCtx = null;
+        let activeLayerKey = "havakure";
 
+        // Web Audio Efektleri
         function initAudio() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -403,6 +442,14 @@
             }
         }
 
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
         function playTone(type) {
             if (isAudioMuted) return;
             try {
@@ -416,11 +463,19 @@
                 if (type === 'click') {
                     osc.type = 'sine';
                     osc.frequency.setValueAtTime(600, now);
-                    osc.frequency.exponentialRampToValueAtTime(1000, now + 0.06);
+                    osc.frequency.exponentialRampToValueAtTime(1000, now + 0.05);
                     gain.gain.setValueAtTime(0.12, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
                     osc.start(now);
-                    osc.stop(now + 0.06);
+                    osc.stop(now + 0.05);
+                } else if (type === 'layerSelect') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(440, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                    osc.start(now);
+                    osc.stop(now + 0.12);
                 } else if (type === 'correct') {
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(523.25, now);
@@ -445,86 +500,724 @@
         // 5 Katman Müfredat Verileri
         const layersData = {
             havakure: {
-                title: "1. Hava Küre (Atmosfer)",
+                title: "1. Hava Küre",
                 subtitle: "Dünya'yı çevreleyen gaz tabakası",
                 otherName: "Atmosfer",
-                coreFeature: "Oksijen, azot ve gazlar",
-                obs: "Gözlemlenebilir Katman",
+                state: "Gaz Tabakası",
+                temp: "15 °C (Ortalama)",
+                thickness: "~10.000 km",
+                coreFeature: "Oksijen, azot ve su buharı",
+                obs: "Gözlemlenebilir",
                 bullets: [
-                    "Dünya'yı çevreleyen gaz tabakasıdır.",
-                    "Oksijen ve azot gibi önemli gazlar içerir.",
-                    "Yağmur, kar ve rüzgâr gibi hava olayları bu katmanda gerçekleşir."
+                    "Dünya'yı dıştan tamamen saran koruyucu gaz tabakasıdır.",
+                    "%78 Azot, %21 Oksijen ve %1 diğer gazlardan meydana gelir.",
+                    "Yağmur, kar, rüzgâr ve fırtına gibi meteorolojik olaylar burada oluşur.",
+                    "Güneş'in zararlı ultraviyole (morötesi) ışınlarını süzerek yaşamı korur."
                 ],
-                note: "Hava küre Dünya'yı dıştan tamamen çevreler.",
-                icon: "cloud",
+                note: "Hava küre Dünya'yı dıştan tamamen çevreler. Canlıların solunum yapmasını sağlar.",
+                icon: "fa-solid fa-wind",
                 color: "sky"
             },
             sukure: {
-                title: "2. Su Küre (Hidrosfer)",
+                title: "2. Su Küre",
                 subtitle: "Okyanuslar, denizler ve yer altı suları",
                 otherName: "Hidrosfer",
+                state: "Sıvı & Katı (Buzul)",
+                temp: "0 °C ila 30 °C",
+                thickness: "3.7 km (Ortalama)",
                 coreFeature: "Dünya yüzeyinin %71'i",
-                obs: "Gözlemlenebilir Katman",
+                obs: "Gözlemlenebilir",
                 bullets: [
                     "Okyanuslar, denizler, göller, akarsular, buzullar ve yer altı sularından oluşur.",
-                    "Dünya yüzeyinin yaklaşık %71'i sularla kaplıdır.",
-                    "Birçok canlı için vazgeçilmez yaşam alanıdır."
+                    "Dünya yüzeyinin yaklaşık %71'ini (yaklaşık 3/4'ünü) sular kaplar.",
+                    "Gezegenimize uzaydan bakıldığında 'Mavi Gezegen' denmesinin asıl nedenidir.",
+                    "Su döngüsü sayesinde yaşamın sürekliliğini sağlar."
                 ],
                 note: "Su küre ve taş küre yeryüzünde birlikte bulunur; su küre, taş küreyi tamamen saran ayrı bir iç katman değildir.",
-                icon: "droplets",
+                icon: "fa-solid fa-droplet",
                 color: "blue"
             },
             yercabugu: {
-                title: "3. Taş Küre (Yer Kabuğu)",
-                subtitle: "Üzerinde yaşadığımız katı katman",
-                otherName: "Yer Kabuğu",
-                coreFeature: "Kayaçlardan oluşur",
-                obs: "Gözlemlenebilir Katman",
+                title: "3. Taş Küre",
+                subtitle: "Üzerinde yaşadığımız katı kayaç katmanı",
+                otherName: "Yer Kabuğu / Litosfer",
+                state: "Katı Kayaç",
+                temp: "15 °C ila 1000 °C",
+                thickness: "5 - 70 km",
+                coreFeature: "Sert ve kırılgan kayaçlar",
+                obs: "Gözlemlenebilir",
                 bullets: [
-                    "Üzerinde yaşadığımız katmandır.",
-                    "Kayaçlardan oluşur.",
-                    "Dağlar, ovalar ve deniz tabanları bu katmanda yer alır.",
-                    "Dünya’nın en ince iç katmanıdır."
+                    "Üzerinde insanların, hayvanların ve bitkilerin yaşadığı katı katmandır.",
+                    "Dağlar, ovalar, platolar ve okyanus tabanları bu katmanda yer alır.",
+                    "Karaların altında daha kalın (35-70 km), okyanus tabanlarında daha incedir (5-10 km).",
+                    "Dünya'nın hacim ve kalınlık bakımından en ince katmanıdır (elmanın kabuğu gibidir)."
                 ],
-                note: "Canlıların üzerinde evler yaptığı, tarım yaptığı ve yürüdüğü katmandır.",
-                icon: "mountain",
+                note: "Canlıların üzerinde yaşadığı, tarım yaptığı ve şehirler kurduğu en dış katı tabakadır.",
+                icon: "fa-solid fa-mountain",
                 color: "emerald"
             },
             manto: {
-                title: "4. Ateş Küre (Manto)",
-                subtitle: "Yer kabuğunun altındaki sıcak katman",
-                otherName: "Manto",
-                coreFeature: "Çok sıcak kayaçlar (magma)",
+                title: "4. Ateş Küre",
+                subtitle: "Yer kabuğunun hemen altındaki sıcak magma katmanı",
+                otherName: "Manto / Magma",
+                state: "Akışkan / Yarı-katı Kayaç",
+                temp: "1000 °C - 3700 °C",
+                thickness: "~2.900 km",
+                coreFeature: "Erimiş kızgın kayaçlar (Magma)",
                 obs: "Doğrudan Gözlemlenemez",
                 bullets: [
-                    "Yer kabuğunun hemen altında bulunur.",
-                    "Çok sıcak kayaçlardan oluşur.",
-                    "Dünya’nın en kalın katmanıdır.",
-                    "Büyük bölümü katıdır ancak kayaçlar çok yavaş hareket edebilir."
+                    "Yer kabuğunun hemen altından başlayıp 2.900 km derinliğe kadar uzanır.",
+                    "Aşırı sıcaklık ve basınç nedeniyle kayaçlar akışkan (macunumsu) haldedir.",
+                    "Dünya'nın hacimce en büyük ve en kalın katmanıdır (%84 hacim kaplar).",
+                    "Yanardağlardan fışkıran kızgın lavlar ateş küreden (magma tabakası) kaynaklanır."
                 ],
-                note: "Ateş küredeki eriyik kayaçlar volkanik olaylarla yeryüzüne ulaşabilir.",
-                icon: "flame",
+                note: "Magmanın akıntıları yer kabuğunu iterek kıtaların hareket etmesine ve depremlere yol açar.",
+                icon: "fa-solid fa-fire",
                 color: "amber"
             },
             cekirdek: {
-                title: "5. Ağır Küre (Çekirdek)",
-                subtitle: "Dünya'nın en sıcak ve derin merkezi",
-                otherName: "Çekirdek",
-                coreFeature: "Demir ve nikel zengini",
+                title: "5. Ağır Küre",
+                subtitle: "Dünya'nın en sıcak, en yoğun derin merkezi",
+                otherName: "Çekirdek / Barisfer",
+                state: "Dış Çekirdek Sıvı, İç Çekirdek Katı",
+                temp: "4500 °C - 6000 °C",
+                thickness: "~3.500 km",
+                coreFeature: "Ağır metaller: Demir ve Nikel",
                 obs: "Doğrudan Gözlemlenemez",
                 bullets: [
-                    "Dünya’nın en iç kısmında bulunur.",
-                    "Demir ve nikel bakımından oldukça zengindir.",
-                    "Dünya’nın en sıcak katmanıdır.",
-                    "Dış çekirdek sıvı, iç çekirdek ise katıdır."
+                    "Dünya’nın en merkezinde bulunan en ağır ve en yoğun katmandır.",
+                    "Yoğunluğu en fazla olan demir ve nikel elementlerinden oluşur.",
+                    "Dış Çekirdek sıvı haldedir; Dünya'nın manyetik alanını (pusulayı) oluşturur.",
+                    "İç Çekirdek ise aşırı basınç nedeniyle 6000 °C'de bile katı haldedir (Güneş yüzeyi kadar sıcaktır)."
                 ],
-                note: "Ağır küre aşırı sıcaklığa ve basınca sahiptir.",
-                icon: "target",
+                note: "Dünya'nın kütle çekimini ve manyetik kalkanını sağlayan devasa bir nükleer fırın gibidir.",
+                icon: "fa-solid fa-atom",
                 color: "red"
             }
         };
 
-        // Quiz Soruları (Müfredat Uyumlu)
+        // ==========================================
+        // 🚀 THREE.JS 3B DÜNYA VE KATMANLAR SİSTEMİ
+        // ==========================================
+        let scene, camera, renderer, controls;
+        let earthGroup;
+        let layerMeshes = {};
+        let clickableObjects = [];
+        let raycaster = new THREE.Raycaster();
+        let mouse = new THREE.Vector2();
+        let isAutoRotate = true;
+        let isExploded = false;
+        let explodeFactor = 0; // 0 (birleşik) ile 1 (tam ayrık) arası
+        let targetExplode = 0;
+
+        // Prosedürel Doku Üreteçleri (Harici resim bağımsız, %100 güvenilir)
+        function generateEarthTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 1024;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // 1. Derin Okyanus Gradyanı
+            const oceanGrad = ctx.createLinearGradient(0, 0, 0, 512);
+            oceanGrad.addColorStop(0, '#0c2e5c');
+            oceanGrad.addColorStop(0.5, '#124c8f');
+            oceanGrad.addColorStop(1, '#0c2e5c');
+            ctx.fillStyle = oceanGrad;
+            ctx.fillRect(0, 0, 1024, 512);
+
+            // Kıyı şelfleri (Açık turkuaz kıyı suları)
+            ctx.fillStyle = '#1e7898';
+            function drawBlob(cx, cy, rx, ry, col) {
+                ctx.fillStyle = col;
+                ctx.beginPath();
+                ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            // Kıtalar (Avrasya, Afrika, Amerika, Avustralya)
+            const landGreen = '#2e7d32';
+            const landOchre = '#795548';
+            const coastalCyan = 'rgba(34, 211, 238, 0.35)';
+
+            // Afrika & Avrupa
+            drawBlob(512, 230, 110, 130, coastalCyan);
+            drawBlob(512, 230, 95, 115, landGreen);
+            drawBlob(512, 210, 70, 70, landOchre);
+            drawBlob(512, 130, 85, 55, landGreen);
+
+            // Asya
+            drawBlob(680, 160, 150, 90, coastalCyan);
+            drawBlob(680, 160, 135, 75, landGreen);
+            drawBlob(710, 150, 90, 50, landOchre);
+
+            // Kuzey & Güney Amerika
+            drawBlob(250, 160, 100, 70, coastalCyan);
+            drawBlob(250, 160, 85, 60, landGreen);
+            drawBlob(290, 310, 80, 110, coastalCyan);
+            drawBlob(290, 310, 70, 95, landGreen);
+            drawBlob(290, 320, 45, 60, landOchre);
+
+            // Avustralya
+            drawBlob(820, 340, 65, 45, coastalCyan);
+            drawBlob(820, 340, 55, 35, landOchre);
+
+            // Kutuplar (Beyaz Buzullar)
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, 1024, 30);
+            ctx.fillRect(0, 482, 1024, 30);
+
+            // Atmosferik Beyaz Bulut Şeritleri
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+            for(let i=0; i<18; i++) {
+                const cx = (i * 60 + 30) % 1024;
+                const cy = 80 + (i % 6) * 55;
+                drawBlob(cx, cy, 70, 20, 'rgba(255, 255, 255, 0.35)');
+            }
+
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Manto (Magma / Ateş Küre) Dokusu
+        function generateMantleTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            // Koyu bazalt / volkanik magma tabanı
+            ctx.fillStyle = '#5c0b0b';
+            ctx.fillRect(0, 0, 512, 512);
+
+            // Magma konveksiyon damarları ve çatlaklar
+            for(let i = 0; i < 350; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const r = 5 + Math.random() * 20;
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+                grad.addColorStop(0, '#ffbb00');
+                grad.addColorStop(0.35, '#ff4400');
+                grad.addColorStop(0.7, '#8f1111');
+                grad.addColorStop(1, 'rgba(92,11,11,0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Dış Çekirdek (Sıvı Metal) Dokusu
+        function generateOuterCoreTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#ea580c';
+            ctx.fillRect(0, 0, 512, 512);
+
+            for(let i = 0; i < 300; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const r = 8 + Math.random() * 25;
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+                grad.addColorStop(0, '#fef08a');
+                grad.addColorStop(0.4, '#f59e0b');
+                grad.addColorStop(0.8, '#dc2626');
+                grad.addColorStop(1, 'rgba(234,88,12,0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // İç Çekirdek (Akkor Katı Çekirdek) Dokusu
+        function generateInnerCoreTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = '#fef9c3';
+            ctx.fillRect(0, 0, 512, 512);
+
+            for(let i = 0; i < 180; i++) {
+                const x = Math.random() * 512;
+                const y = Math.random() * 512;
+                const r = 10 + Math.random() * 25;
+                const grad = ctx.createRadialGradient(x, y, 0, x, y, r);
+                grad.addColorStop(0, '#ffffff');
+                grad.addColorStop(0.5, '#fde047');
+                grad.addColorStop(1, 'rgba(254,249,195,0)');
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        // Yer Kabuğu Kayaç Katmanı Dokusu (Kesit Çemberi)
+        function generateCrustStrataTexture() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 512;
+            canvas.height = 512;
+            const ctx = canvas.getContext('2d');
+
+            const bands = ['#451a03', '#78350f', '#92400e', '#b45309', '#573318', '#38200f'];
+            let y = 0;
+            while(y < 512) {
+                const h = 10 + Math.random() * 25;
+                ctx.fillStyle = bands[Math.floor(Math.random() * bands.length)];
+                ctx.fillRect(0, y, 512, h);
+                y += h;
+            }
+            return new THREE.CanvasTexture(canvas);
+        }
+
+        function initThreeScene() {
+            const canvas = document.getElementById('earth-canvas');
+            const parent = canvas.parentElement;
+            const w = parent.clientWidth;
+            const h = parent.clientHeight;
+
+            // Sahne
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x020617); // Derin uzay siyahı
+
+            // Kamera (Perspektif)
+            camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 1000);
+            camera.position.set(13, 5, 15);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            // OrbitControls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.minDistance = 6;
+            controls.maxDistance = 45;
+            controls.target.set(0, 0, 0);
+
+            // Ortam ve Yönsel Işıklar
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.DirectionalLight(0xfff7ed, 1.25);
+            sunLight.position.set(20, 15, 25);
+            scene.add(sunLight);
+
+            const corePointLight = new THREE.PointLight(0xffedd5, 1.5, 30);
+            corePointLight.position.set(0, 0, 0);
+            scene.add(corePointLight);
+
+            // Derin Uzay Yıldızları (Parçacık Bulutu)
+            const starGeo = new THREE.BufferGeometry();
+            const starCount = 1000;
+            const starPos = new Float32Array(starCount * 3);
+            for(let i=0; i<starCount*3; i+=3) {
+                starPos[i] = (Math.random() - 0.5) * 180;
+                starPos[i+1] = (Math.random() - 0.5) * 180;
+                starPos[i+2] = (Math.random() - 0.5) * 180;
+            }
+            starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+            const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.8, transparent: true, opacity: 0.8 });
+            const stars = new THREE.Points(starGeo, starMat);
+            scene.add(stars);
+
+            // Ana Dünya Modeli Grubu
+            earthGroup = new THREE.Group();
+            scene.add(earthGroup);
+
+            // Doku Nesneleri
+            const earthTex = generateEarthTexture();
+            const mantleTex = generateMantleTexture();
+            const outerCoreTex = generateOuterCoreTexture();
+            const innerCoreTex = generateInnerCoreTexture();
+            const crustTex = generateCrustStrataTexture();
+
+            // ==========================================
+            // KATMANLARI OLUŞTUR (REFERANS GÖRSEL BİREBİR)
+            // ==========================================
+
+            // 1. HAVA KÜRE (ATMOSFER) - Şeffaf Dış Işıltı Küresi
+            const atmoGeo = new THREE.SphereGeometry(5.2, 48, 48);
+            const atmoMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.18,
+                side: THREE.BackSide,
+                wireframe: false
+            });
+            const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
+            atmoMesh.userData = { layerId: 'havakure', name: '1. Hava Küre (Atmosfer)', baseColor: 0x38bdf8 };
+            earthGroup.add(atmoMesh);
+            layerMeshes.havakure = atmoMesh;
+            clickableObjects.push(atmoMesh);
+
+            // 2. DIŞ DÜNYA KABUĞU (SU VE TAŞ KÜRE) - 180 Derece Kesit Yarımküre
+            // X eksenine doğru kesilmiş, içi açık
+            const crustGeo = new THREE.SphereGeometry(4.8, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
+            const crustMat = new THREE.MeshStandardMaterial({
+                map: earthTex,
+                roughness: 0.65,
+                metalness: 0.1,
+                side: THREE.DoubleSide
+            });
+            const crustMesh = new THREE.Mesh(crustGeo, crustMat);
+            crustMesh.rotation.y = Math.PI / 2;
+            crustMesh.userData = { layerId: 'yercabugu', name: '3. Taş Küre & 2. Su Küre', baseColor: 0x10b981 };
+            earthGroup.add(crustMesh);
+            layerMeshes.yercabugu = crustMesh;
+            clickableObjects.push(crustMesh);
+
+            // 2b. Taş Küre Kesit Çemberi (Litosfer Kalınlık Kenarı)
+            const crustRimGeo = new THREE.RingGeometry(3.9, 4.8, 48);
+            const crustRimMat = new THREE.MeshStandardMaterial({
+                map: crustTex,
+                roughness: 0.8,
+                side: THREE.DoubleSide
+            });
+            const crustRimMesh = new THREE.Mesh(crustRimGeo, crustRimMat);
+            crustRimMesh.rotation.y = Math.PI / 2;
+            crustMesh.add(crustRimMesh);
+
+            // 3. ATEŞ KÜRE (MANTO / MAGMA) - İkinci İçiçe Kırmızı Magma Yarımküresi
+            const mantleGeo = new THREE.SphereGeometry(3.9, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
+            const mantleMat = new THREE.MeshStandardMaterial({
+                map: mantleTex,
+                roughness: 0.5,
+                metalness: 0.15,
+                emissive: 0x7f1d1d,
+                emissiveIntensity: 0.45,
+                side: THREE.DoubleSide
+            });
+            const mantleMesh = new THREE.Mesh(mantleGeo, mantleMat);
+            mantleMesh.rotation.y = Math.PI / 2;
+            mantleMesh.userData = { layerId: 'manto', name: '4. Ateş Küre (Manto)', baseColor: 0xf59e0b };
+            earthGroup.add(mantleMesh);
+            layerMeshes.manto = mantleMesh;
+            clickableObjects.push(mantleMesh);
+
+            // 3b. Manto Kesit Çemberi (Kızgın Magma İç Yüzeyi)
+            const mantleRimGeo = new THREE.RingGeometry(2.4, 3.9, 48);
+            const mantleRimMat = new THREE.MeshStandardMaterial({
+                map: mantleTex,
+                emissive: 0x991b1b,
+                emissiveIntensity: 0.6,
+                side: THREE.DoubleSide
+            });
+            const mantleRimMesh = new THREE.Mesh(mantleRimGeo, mantleRimMat);
+            mantleRimMesh.rotation.y = Math.PI / 2;
+            mantleMesh.add(mantleRimMesh);
+
+            // 4. DIŞ ÇEKİRDEK (SIVI DEMİR-NİKEL) - Üçüncü Akkor Turuncu Yarımküre
+            const outerCoreGeo = new THREE.SphereGeometry(2.4, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
+            const outerCoreMat = new THREE.MeshStandardMaterial({
+                map: outerCoreTex,
+                roughness: 0.3,
+                emissive: 0xd97706,
+                emissiveIntensity: 0.8,
+                side: THREE.DoubleSide
+            });
+            const outerCoreMesh = new THREE.Mesh(outerCoreGeo, outerCoreMat);
+            outerCoreMesh.rotation.y = Math.PI / 2;
+            outerCoreMesh.userData = { layerId: 'cekirdek', subType: 'dis', name: '5. Ağır Küre (Dış Çekirdek)', baseColor: 0xef4444 };
+            earthGroup.add(outerCoreMesh);
+            layerMeshes.outerCore = outerCoreMesh;
+            clickableObjects.push(outerCoreMesh);
+
+            // 4b. Dış Çekirdek Kesit Çemberi
+            const outerCoreRimGeo = new THREE.RingGeometry(1.25, 2.4, 48);
+            const outerCoreRimMat = new THREE.MeshStandardMaterial({
+                map: outerCoreTex,
+                emissive: 0xea580c,
+                emissiveIntensity: 0.9,
+                side: THREE.DoubleSide
+            });
+            const outerCoreRimMesh = new THREE.Mesh(outerCoreRimGeo, outerCoreRimMat);
+            outerCoreRimMesh.rotation.y = Math.PI / 2;
+            outerCoreMesh.add(outerCoreRimMesh);
+
+            // 5. İÇ ÇEKİRDEK (KATI DEMİR-NİKEL) - En Merkezdeki Parlak Küre
+            const innerCoreGeo = new THREE.SphereGeometry(1.25, 48, 48);
+            const innerCoreMat = new THREE.MeshStandardMaterial({
+                map: innerCoreTex,
+                emissive: 0xfef08a,
+                emissiveIntensity: 1.2,
+                roughness: 0.2
+            });
+            const innerCoreMesh = new THREE.Mesh(innerCoreGeo, innerCoreMat);
+            innerCoreMesh.userData = { layerId: 'cekirdek', subType: 'ic', name: '5. Ağır Küre (İç Çekirdek)', baseColor: 0xffffff };
+            earthGroup.add(innerCoreMesh);
+            layerMeshes.innerCore = innerCoreMesh;
+            clickableObjects.push(innerCoreMesh);
+
+            // Sahne Tıklama & Raycasting Etkileşimi
+            let pointerDownPos = { x: 0, y: 0 };
+            canvas.addEventListener('pointerdown', (e) => {
+                pointerDownPos.x = e.clientX;
+                pointerDownPos.y = e.clientY;
+            });
+
+            canvas.addEventListener('pointerup', (e) => {
+                const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
+                if (dist > 6) return; // Sürükleme hareketi ise tıklamayı sayma
+
+                const rect = canvas.getBoundingClientRect();
+                mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+                mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(clickableObjects, true);
+
+                if (intersects.length > 0) {
+                    let hitMesh = intersects[0].object;
+                    while (hitMesh && !hitMesh.userData.layerId && hitMesh.parent) {
+                        hitMesh = hitMesh.parent;
+                    }
+                    if (hitMesh && hitMesh.userData.layerId) {
+                        selectLayer(hitMesh.userData.layerId, false);
+                        showNotification(hitMesh.userData.name || "Katman İnceleniyor");
+                    }
+                }
+            });
+
+            // Pencere Boyutlandırma
+            window.addEventListener('resize', onWindowResize);
+
+            // Animasyon Döngüsü
+            animate();
+        }
+
+        function onWindowResize() {
+            if (!renderer || !camera) return;
+            const canvas = document.getElementById('earth-canvas');
+            if (!canvas) return;
+            const parent = canvas.parentElement;
+            const w = parent.clientWidth;
+            const h = parent.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+
+        // Animasyon ve Render Döngüsü
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Otomatik Yavaş Dönüş
+            if (isAutoRotate && earthGroup) {
+                earthGroup.rotation.y += 0.0035;
+            }
+
+            // Katmanları Ayırma (Exploded View Interpolasyonu)
+            explodeFactor += (targetExplode - explodeFactor) * 0.08;
+
+            if (layerMeshes.havakure) {
+                // Katmanların X ekseni boyunca referans fotoğraftaki gibi açılması
+                layerMeshes.havakure.position.x = -4.5 * explodeFactor;
+                layerMeshes.yercabugu.position.x = -2.8 * explodeFactor;
+                layerMeshes.manto.position.x = -0.6 * explodeFactor;
+                layerMeshes.outerCore.position.x = 1.8 * explodeFactor;
+                layerMeshes.innerCore.position.x = 4.2 * explodeFactor;
+            }
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        // Katmanları Ayır / Birleştir Toggle
+        function toggleExplodedView() {
+            playTone('click');
+            isExploded = !isExploded;
+            targetExplode = isExploded ? 1 : 0;
+            document.getElementById('explodeSlider').value = isExploded ? 100 : 0;
+            
+            const btnText = document.getElementById('explodeBtnText');
+            const statusBadge = document.getElementById('sceneStatusBadge');
+
+            if (isExploded) {
+                btnText.innerText = "Katmanları Birleştir";
+                statusBadge.innerText = "Patlatılmış Kesit Aktif";
+                showNotification("💥 Katmanlar Ayrıldı: İç yapıyı detaylı inceleyebilirsiniz!");
+            } else {
+                btnText.innerText = "Katmanları Ayır";
+                statusBadge.innerText = "Küre Modu Aktif";
+                showNotification("🌐 Katmanlar Birleştirildi");
+            }
+        }
+
+        function onExplodeSlider(val) {
+            targetExplode = val / 100;
+            isExploded = targetExplode > 0.5;
+            document.getElementById('explodeBtnText').innerText = isExploded ? "Katmanları Birleştir" : "Katmanları Ayır";
+            document.getElementById('sceneStatusBadge').innerText = targetExplode > 0.05 ? "Kesit Görünümü (" + val + "%)" : "Küre Modu";
+        }
+
+        function toggleAutoRotate() {
+            playTone('click');
+            isAutoRotate = !isAutoRotate;
+            const btnText = document.getElementById('rotateBtnText');
+            btnText.innerText = isAutoRotate ? "Dönüş: Açık" : "Dönüş: Kapalı";
+        }
+
+        function resetCameraView() {
+            playTone('click');
+            camera.position.set(13, 5, 15);
+            controls.target.set(0, 0, 0);
+            controls.update();
+            showNotification("🔍 Kamera Açısı Sıfırlandı");
+        }
+
+        function focusOnSelectedLayer() {
+            playTone('click');
+            let targetX = 0;
+            if (activeLayerKey === 'havakure') targetX = -4.5 * explodeFactor;
+            else if (activeLayerKey === 'sukure' || activeLayerKey === 'yercabugu') targetX = -2.8 * explodeFactor;
+            else if (activeLayerKey === 'manto') targetX = -0.6 * explodeFactor;
+            else if (activeLayerKey === 'cekirdek') targetX = 3.0 * explodeFactor;
+
+            controls.target.set(targetX, 0, 0);
+            camera.position.set(targetX + 6, 2, 8);
+            controls.update();
+            showNotification("🎯 Katmana Odaklanıldı");
+        }
+
+        function showNotification(text) {
+            const el = document.getElementById('layer3dNotification');
+            const textEl = document.getElementById('notificationText');
+            if (!el || !textEl) return;
+            textEl.innerText = text;
+            el.classList.remove('opacity-0', '-translate-y-2');
+            el.classList.add('opacity-100', 'translate-y-0');
+            clearTimeout(window._notifTimer);
+            window._notifTimer = setTimeout(() => {
+                el.classList.remove('opacity-100', 'translate-y-0');
+                el.classList.add('opacity-0', '-translate-y-2');
+            }, 2500);
+        }
+
+        // ==========================================
+        // UI & BİLGİ KARTI MANTIĞI
+        // ==========================================
+        function selectLayer(key, shouldHighlight3D = true) {
+            activeLayerKey = key;
+            playTone('layerSelect');
+            const data = layersData[key];
+            if (!data) return;
+
+            // Kart Bilgilerini Güncelle
+            document.getElementById('detailTitle').innerText = data.title;
+            document.getElementById('detailSubtitle').innerText = data.subtitle;
+            document.getElementById('detailOtherName').innerText = data.otherName;
+            document.getElementById('detailState').innerText = data.state;
+            document.getElementById('detailTemp').innerText = data.temp;
+            document.getElementById('detailThickness').innerText = data.thickness;
+            document.getElementById('detailObsBadge').innerText = data.obs;
+            document.getElementById('detailNote').innerText = data.note;
+
+            const iconEl = document.getElementById('detailHeaderIcon');
+            iconEl.className = data.icon + " text-xl";
+
+            const bulletsContainer = document.getElementById('detailBullets');
+            bulletsContainer.innerHTML = "";
+            data.bullets.forEach(b => {
+                const li = document.createElement('li');
+                li.innerText = b;
+                bulletsContainer.appendChild(li);
+            });
+
+            // Buton Aktiflik Durumları
+            const allBtns = ['havakure', 'sukure', 'yercabugu', 'manto', 'cekirdek'];
+            allBtns.forEach(k => {
+                const b = document.getElementById('btn-' + k);
+                if (b) {
+                    if (k === key) {
+                        b.classList.add('border-cyan-400', 'bg-cyan-950/80', 'ring-2', 'ring-cyan-500/40');
+                        b.classList.remove('border-slate-700/80', 'bg-slate-800/80');
+                    } else {
+                        b.classList.remove('border-cyan-400', 'bg-cyan-950/80', 'ring-2', 'ring-cyan-500/40');
+                        b.classList.add('border-slate-700/80', 'bg-slate-800/80');
+                    }
+                }
+            });
+
+            // 3B Modelde Parlama Efekti
+            if (shouldHighlight3D && layerMeshes) {
+                // Geçici olarak ilgili katmanı vurgula
+                let targetMesh = layerMeshes[key] || (key === 'sukure' ? layerMeshes.yercabugu : null);
+                if (key === 'cekirdek') targetMesh = layerMeshes.innerCore;
+                
+                if (targetMesh && targetMesh.material) {
+                    const origEmissive = targetMesh.material.emissiveIntensity || 0;
+                    targetMesh.material.emissiveIntensity = 1.6;
+                    setTimeout(() => {
+                        targetMesh.material.emissiveIntensity = origEmissive;
+                    }, 800);
+                }
+            }
+
+            showNotification(data.title + " İnceleniyor");
+        }
+
+        // Simülasyon Başlatma
+        function startSimulation() {
+            playTone('click');
+            const nameInput = document.getElementById('studentNameInput').value.trim();
+            if(nameInput) {
+                currentStudentName = nameInput;
+            }
+            document.getElementById('displayName').innerText = currentStudentName;
+            document.getElementById('userBadge').classList.remove('hidden');
+            document.getElementById('userBadge').classList.add('flex');
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('simScreen').classList.remove('hidden');
+
+            // 3B Sahneyi Başlat
+            setTimeout(() => {
+                initThreeScene();
+                selectLayer('havakure', false);
+            }, 100);
+        }
+
+        function switchTab(tabName) {
+            playTone('click');
+            document.getElementById('tabSimulation').classList.add('hidden');
+            document.getElementById('tabAnalogy').classList.add('hidden');
+            document.getElementById('tabQuiz').classList.add('hidden');
+
+            const tabSimBtn = document.getElementById('tabSimBtn');
+            const tabAnalogyBtn = document.getElementById('tabAnalogyBtn');
+            const tabQuizBtn = document.getElementById('tabQuizBtn');
+
+            tabSimBtn.className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer";
+            tabAnalogyBtn.className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer";
+            tabQuizBtn.className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer";
+
+            if (tabName === 'simulation') {
+                document.getElementById('tabSimulation').classList.remove('hidden');
+                tabSimBtn.className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer";
+                setTimeout(onWindowResize, 50);
+            } else if (tabName === 'analogy') {
+                document.getElementById('tabAnalogy').classList.remove('hidden');
+                tabAnalogyBtn.className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer";
+            } else if (tabName === 'quiz') {
+                document.getElementById('tabQuiz').classList.remove('hidden');
+                tabQuizBtn.className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer";
+                loadQuestion();
+            }
+        }
+
+        // ==========================================
+        // QUIZ MANTIĞI
+        // ==========================================
         const quizData = [
             {
                 question: "Aşağıdaki katmanlardan hangisi 'Doğrudan Gözlemlenemeyen' katmanlar arasında yer alır?",
@@ -556,83 +1249,6 @@
         let currentQuestionIndex = 0;
         let score = 0;
 
-        function startSimulation() {
-            playTone('click');
-            const nameInput = document.getElementById('studentNameInput').value.trim();
-            if(nameInput) {
-                currentStudentName = nameInput;
-            }
-            document.getElementById('displayName').innerText = currentStudentName;
-            document.getElementById('userBadge').classList.remove('hidden');
-            document.getElementById('userBadge').classList.add('flex');
-
-            document.getElementById('welcomeScreen').classList.add('hidden');
-            document.getElementById('simScreen').classList.remove('hidden');
-
-            // Varsayılan olarak 1. katmanı seç
-            selectLayer('havakure');
-        }
-
-        function switchTab(tabName) {
-            playTone('click');
-            document.getElementById('tabSimulation').classList.add('hidden');
-            document.getElementById('tabAnalogy').classList.add('hidden');
-            document.getElementById('tabQuiz').classList.add('hidden');
-
-            document.getElementById('tabSimBtn').className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer";
-            document.getElementById('tabAnalogyBtn').className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer";
-            document.getElementById('tabQuizBtn').className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all text-slate-400 hover:text-white flex items-center justify-center space-x-1.5 cursor-pointer";
-
-            if(tabName === 'simulation') {
-                document.getElementById('tabSimulation').classList.remove('hidden');
-                document.getElementById('tabSimBtn').className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer";
-            } else if(tabName === 'analogy') {
-                document.getElementById('tabAnalogy').classList.remove('hidden');
-                document.getElementById('tabAnalogyBtn').className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer";
-            } else if(tabName === 'quiz') {
-                document.getElementById('tabQuiz').classList.remove('hidden');
-                document.getElementById('tabQuizBtn').className = "flex-1 py-2 px-3 rounded-xl text-xs md:text-sm font-bold transition-all bg-cyan-500 text-slate-950 shadow-md flex items-center justify-center space-x-1.5 cursor-pointer";
-                loadQuestion();
-            }
-        }
-
-        function selectLayer(layerKey) {
-            playTone('click');
-            const data = layersData[layerKey];
-            if(!data) return;
-
-            // Buton aktiflik sınıflarını güncelle
-            const keys = ['havakure', 'sukure', 'yercabugu', 'manto', 'cekirdek'];
-            keys.forEach(k => {
-                const btn = document.getElementById(`btn-${k}`);
-                if(k === layerKey) {
-                    btn.className = "w-full text-left p-3 rounded-2xl border-2 border-cyan-400 bg-cyan-950/70 shadow-lg shadow-cyan-950/60 transition-all flex items-center justify-between group cursor-pointer";
-                } else {
-                    btn.className = "w-full text-left p-3 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/80 transition-all flex items-center justify-between group cursor-pointer";
-                }
-            });
-
-            // Detay kartını doldur
-            document.getElementById('detailTitle').innerText = data.title;
-            document.getElementById('detailSubtitle').innerText = data.subtitle;
-            document.getElementById('detailOtherName').innerText = data.otherName;
-            document.getElementById('detailCoreFeature').innerText = data.coreFeature;
-            document.getElementById('detailObsBadge').innerText = data.obs;
-            document.getElementById('detailNote').innerText = data.note;
-            document.getElementById('detailHeaderIcon').setAttribute('data-lucide', data.icon);
-
-            const bulletsContainer = document.getElementById('detailBullets');
-            bulletsContainer.innerHTML = "";
-            data.bullets.forEach(bullet => {
-                const li = document.createElement('li');
-                li.innerText = bullet;
-                bulletsContainer.appendChild(li);
-            });
-
-            lucide.createIcons();
-        }
-
-        // Quiz Fonksiyonları
         function loadQuestion() {
             if(currentQuestionIndex >= quizData.length) {
                 showQuizResult();
@@ -640,8 +1256,8 @@
             }
 
             const q = quizData[currentQuestionIndex];
-            document.getElementById('questionCount').innerText = `Soru ${currentQuestionIndex + 1} / ${quizData.length}`;
-            document.getElementById('scoreDisplay').innerText = `Puan: ${score}`;
+            document.getElementById('questionCount').innerText = "Soru " + (currentQuestionIndex + 1) + " / " + quizData.length;
+            document.getElementById('scoreDisplay').innerText = "Puan: " + score;
             document.getElementById('questionText').innerText = q.question;
             document.getElementById('quizFeedback').classList.add('hidden');
 
@@ -651,7 +1267,7 @@
             q.options.forEach((opt, idx) => {
                 const btn = document.createElement('button');
                 btn.className = "w-full text-left p-3.5 rounded-xl border border-slate-700 bg-slate-950/70 hover:bg-slate-800 hover:border-cyan-400 font-medium text-xs sm:text-sm text-white transition-all flex items-center space-x-3 group cursor-pointer";
-                btn.innerHTML = `<span class="w-6 h-6 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-cyan-400 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors shrink-0">${String.fromCharCode(65 + idx)}</span><span>${opt}</span>`;
+                btn.innerHTML = '<span class="w-6 h-6 rounded-lg bg-slate-800 border border-slate-600 flex items-center justify-center text-xs font-bold text-cyan-400 group-hover:bg-cyan-500 group-hover:text-slate-950 transition-colors shrink-0">' + String.fromCharCode(65 + idx) + '</span><span>' + opt + '</span>';
                 btn.onclick = () => checkAnswer(idx, q.correct);
                 container.appendChild(btn);
             });
@@ -672,13 +1288,12 @@
                 playTone('correct');
                 confetti({ particleCount: 40, spread: 50 });
                 feedback.className = "p-3.5 rounded-2xl text-xs sm:text-sm font-semibold bg-emerald-950/80 border border-emerald-500 text-emerald-300 flex items-center space-x-2";
-                feedback.innerHTML = `<i data-lucide="check-circle" class="w-5 h-5 text-emerald-400 shrink-0"></i><span>Harika! Doğru cevap. (+25 Puan)</span>`;
+                feedback.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400 text-lg shrink-0"></i><span>Harika! Doğru cevap. (+25 Puan)</span>';
             } else {
                 playTone('wrong');
                 feedback.className = "p-3.5 rounded-2xl text-xs sm:text-sm font-semibold bg-rose-950/80 border border-rose-500 text-rose-300 flex items-center space-x-2";
-                feedback.innerHTML = `<i data-lucide="x-circle" class="w-5 h-5 text-rose-400 shrink-0"></i><span>Tekrar dene! Ezber kuralı: Hava → Su → Taş → Ateş → Ağır</span>`;
+                feedback.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-400 text-lg shrink-0"></i><span>Tekrar dene! Ezber kuralı: Hava → Su → Taş → Ateş → Ağır</span>';
             }
-            lucide.createIcons();
 
             setTimeout(() => {
                 currentQuestionIndex++;
@@ -692,7 +1307,7 @@
             document.getElementById('quizCard').classList.add('hidden');
             document.getElementById('quizResultScreen').classList.remove('hidden');
             document.getElementById('resultName').innerText = currentStudentName;
-            document.getElementById('finalScoreText').innerText = `Toplam Puanın: ${score} / 100`;
+            document.getElementById('finalScoreText').innerText = "Toplam Puanın: " + score + " / 100";
         }
 
         function restartQuiz() {
