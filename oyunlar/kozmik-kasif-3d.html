@@ -231,7 +231,7 @@
                     *Hava olayları görülmez, ayak izleri silinmez!
                 </div>
                 <div class="flex items-center justify-between text-[11px] font-bold text-amber-300 pt-1.5 border-t border-slate-800">
-                    <span><i class="fa-solid fa-bullseye text-cyan-400"></i> Krater Keşfi:</span>
+                    <span><i class="fa-solid fa-gem text-amber-400"></i> Toplanan Elmas:</span>
                     <span id="crater-discovery-count" class="font-orbitron font-bold text-amber-300">0/20</span>
                 </div>
                 <div id="nearest-crater-hud" class="text-[9px] text-cyan-300 font-medium truncate text-center bg-slate-900/80 rounded-lg py-0.5 px-1 border border-cyan-500/20">
@@ -289,6 +289,15 @@
         <!-- CENTER HUD: Dynamic Prompts & Quick Actions -->
         <div class="w-full flex flex-col items-center justify-center my-auto">
             <!-- Interactive Action Button (e.g. Scan Target, Collect Sample, Open Gate) -->
+            <!-- GEM COLLECTED TOAST NOTIFICATION -->
+            <div id="gem-collect-toast" class="fixed top-16 left-1/2 -translate-x-1/2 z-50 pointer-events-none hidden flex-col items-center gap-1 px-5 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-400 text-slate-950 font-black shadow-[0_0_40px_rgba(245,158,11,0.85)] border-2 border-white animate-bounce">
+                <div class="flex items-center gap-2 text-xs sm:text-sm tracking-wide">
+                    <i class="fa-solid fa-gem text-base"></i>
+                    <span id="gem-toast-title">TEBRİKLER! KRATER ELMASI TOPLANDI!</span>
+                </div>
+                <div class="text-[10px] font-bold tracking-wider uppercase text-slate-900/80">+100 PUAN • AY KÂŞİFİ ENVANTERİNE EKLENDİ 💎</div>
+            </div>
+
             <div id="center-interaction-prompt" class="pointer-events-auto hidden flex-col items-center gap-2 p-3 bg-slate-950/90 backdrop-blur-lg rounded-2xl border-2 border-cyan-400 border-glow-cyan shadow-2xl animate-bounce">
                 <span class="text-xs sm:text-sm font-bold text-cyan-300" id="prompt-action-text">
                     📍 Apollo Ayak İzi Bölgesindesin!
@@ -631,6 +640,30 @@
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                     osc.start(now);
                     osc.stop(now + 0.3);
+                } else if (type === 'gem' || type === 'diamond') {
+                    // Crystalline chime for collecting crater diamond
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(1046.50, now); // C6
+                    osc.frequency.setValueAtTime(1318.51, now + 0.07); // E6
+                    osc.frequency.setValueAtTime(1567.98, now + 0.14); // G6
+                    osc.frequency.setValueAtTime(2093.00, now + 0.21); // C7
+                    gain.gain.setValueAtTime(0.25, now);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.55);
+                    osc.start(now);
+                    osc.stop(now + 0.55);
+
+                    osc2.type = 'triangle';
+                    osc2.frequency.setValueAtTime(2093.00, now);
+                    osc2.frequency.exponentialRampToValueAtTime(3135.96, now + 0.25);
+                    gain2.gain.setValueAtTime(0.15, now);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+                    osc2.start(now);
+                    osc2.stop(now + 0.45);
                 } else if (type === 'correct') {
                     // Two-tone fanfare
                     const osc2 = audioCtx.createOscillator();
@@ -3179,6 +3212,139 @@
             moonGroup.add(roverMesh);
         }
 
+        
+        function createCraterLabelSprite(text, isDone) {
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = isDone ? 'rgba(6, 78, 59, 0.90)' : 'rgba(15, 23, 42, 0.88)';
+            ctx.strokeStyle = isDone ? '#34d399' : '#38bdf8';
+            ctx.lineWidth = 3;
+
+            const x = 6, y = 6, w = 244, h = 52, r = 24;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = isDone ? '#a7f3d0' : '#ffffff';
+            ctx.font = 'bold 20px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 128, 32);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            texture.minFilter = THREE.LinearFilter;
+            const spriteMat = new THREE.SpriteMaterial({ map: texture, transparent: true });
+            const sprite = new THREE.Sprite(spriteMat);
+            sprite.scale.set(5.5, 1.4, 1);
+            sprite.position.y = 5.2;
+            return sprite;
+        }
+
+        function updateCraterLabelSprite(beaconGroup, text, isDone) {
+            if (!beaconGroup || !beaconGroup.userData || !beaconGroup.userData.labelSprite) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = isDone ? 'rgba(6, 78, 59, 0.92)' : 'rgba(15, 23, 42, 0.88)';
+            ctx.strokeStyle = isDone ? '#34d399' : '#38bdf8';
+            ctx.lineWidth = 3;
+
+            const x = 6, y = 6, w = 244, h = 52, r = 24;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.lineTo(x + w - r, y);
+            ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+            ctx.lineTo(x + w, y + h - r);
+            ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+            ctx.lineTo(x + r, y + h);
+            ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+            ctx.lineTo(x, y + r);
+            ctx.quadraticCurveTo(x, y, x + r, y);
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+
+            ctx.fillStyle = isDone ? '#a7f3d0' : '#ffffff';
+            ctx.font = 'bold 20px system-ui, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 128, 32);
+
+            beaconGroup.userData.labelSprite.material.map.dispose();
+            beaconGroup.userData.labelSprite.material.map = new THREE.CanvasTexture(canvas);
+            beaconGroup.userData.labelSprite.material.needsUpdate = true;
+        }
+
+        function collectDiamondBeacon(beaconObj) {
+            if (!beaconObj || beaconObj.userData.isCollected) return;
+            beaconObj.userData.isCollected = true;
+
+            // 1. Diamond Collection Animation: Float up, spin fast, disappear
+            if (beaconObj.userData.gem) {
+                const gem = beaconObj.userData.gem;
+                let step = 0;
+                const animInterval = setInterval(() => {
+                    step++;
+                    gem.position.y += 0.2;
+                    gem.rotation.y += 0.3;
+                    gem.scale.multiplyScalar(0.9);
+                    if (step >= 20) {
+                        clearInterval(animInterval);
+                        gem.visible = false;
+                    }
+                }, 25);
+            }
+
+            // 2. Extinguish the tall beacon light beam (unanswered marker)
+            if (beaconObj.userData.pillar) {
+                beaconObj.userData.pillar.visible = false;
+            }
+
+            // 3. Turn the ground ring to vibrant green
+            if (beaconObj.userData.ring) {
+                beaconObj.userData.ring.material.color.setHex(0x10b981);
+                beaconObj.userData.ring.material.opacity = 0.95;
+            }
+
+            // 4. Reveal the completed Lunar Science Flag & Checkmark
+            if (beaconObj.userData.flagGroup) {
+                beaconObj.userData.flagGroup.visible = true;
+            }
+
+            // 5. Update the 3D billboard sprite
+            updateCraterLabelSprite(beaconObj, "✅ " + beaconObj.userData.label + " ✓", true);
+        }
+
+        function showGemCollectToast(craterTitle) {
+            const toast = document.getElementById('gem-collect-toast');
+            const toastTitle = document.getElementById('gem-toast-title');
+            if (!toast) return;
+            if (toastTitle && craterTitle) {
+                toastTitle.innerText = "TEBRİKLER! " + craterTitle.toUpperCase() + " ELMASI TOPLANDI!";
+            }
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3500);
+        }
+
         function createMissionBeacon(id, x, z, label, colorHex) {
             const beaconGroup = new THREE.Group();
             const groundY = (typeof getMoonTerrainHeight === 'function') ? getMoonTerrainHeight(x, z) : 0;
@@ -3196,29 +3362,73 @@
             const ring = new THREE.Mesh(ringGeo, ringMat);
             beaconGroup.add(ring);
 
-            // Vertical Beacon Light Pillar
-            const pillarGeo = new THREE.CylinderGeometry(0.1, 0.6, 12, 16);
+            // Vertical Beacon Light Pillar (tall beam visible across horizon)
+            const pillarGeo = new THREE.CylinderGeometry(0.12, 0.75, 14, 16);
             const pillarMat = new THREE.MeshBasicMaterial({
                 color: colorHex,
                 transparent: true,
-                opacity: 0.35
+                opacity: 0.4
             });
             const pillar = new THREE.Mesh(pillarGeo, pillarMat);
-            pillar.position.y = 6;
+            pillar.position.y = 7;
             beaconGroup.add(pillar);
 
-            // Floating Hologram Icon/Gem
-            const gemGeo = new THREE.OctahedronGeometry(0.6);
+            // Floating Diamond / Gem (Collected & hidden when question answered)
+            const gemGeo = new THREE.OctahedronGeometry(0.85);
             const gemMat = new THREE.MeshStandardMaterial({
                 color: colorHex,
                 emissive: colorHex,
-                emissiveIntensity: 0.8
+                emissiveIntensity: 0.9,
+                roughness: 0.1,
+                metalness: 0.8
             });
             const gem = new THREE.Mesh(gemGeo, gemMat);
-            gem.position.y = 3.5;
+            gem.position.y = 3.6;
             beaconGroup.add(gem);
 
-            beaconGroup.userData = { id, x, z, label, gem, ring, pillar };
+            // Completed Flag Group (astronaut flag + holographic checkmark, visible after collection)
+            const flagGroup = new THREE.Group();
+            
+            // Silver Flagpole
+            const poleGeo = new THREE.CylinderGeometry(0.04, 0.04, 3.4, 8);
+            const poleMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 });
+            const pole = new THREE.Mesh(poleGeo, poleMat);
+            pole.position.y = 1.7;
+            flagGroup.add(pole);
+
+            // Green Victory Flag banner
+            const flagGeo = new THREE.PlaneGeometry(1.3, 0.8);
+            const flagMat = new THREE.MeshStandardMaterial({
+                color: 0x10b981,
+                side: THREE.DoubleSide,
+                emissive: 0x065f46,
+                emissiveIntensity: 0.6
+            });
+            const flag = new THREE.Mesh(flagGeo, flagMat);
+            flag.position.set(0.7, 2.7, 0);
+            flagGroup.add(flag);
+
+            // Rotating Hologram Checkmark Ring
+            const checkGeo = new THREE.TorusGeometry(0.45, 0.08, 8, 24);
+            const checkMat = new THREE.MeshBasicMaterial({ color: 0x34d399 });
+            const checkRing = new THREE.Mesh(checkGeo, checkMat);
+            checkRing.position.set(0.7, 3.7, 0);
+            flagGroup.add(checkRing);
+
+            flagGroup.visible = false; // Hidden until collected!
+            beaconGroup.add(flagGroup);
+
+            // Floating 3D Billboard Label Sprite above beacon
+            const labelSprite = createCraterLabelSprite("💎 " + label, false);
+            beaconGroup.add(labelSprite);
+
+            beaconGroup.userData = { 
+                id, x, z, label, 
+                gem, ring, pillar, 
+                flagGroup, flag, checkRing, 
+                labelSprite, 
+                isCollected: false 
+            };
             moonGroup.add(beaconGroup);
             moonTargetBeacons.push(beaconGroup);
         }
@@ -3630,8 +3840,16 @@
             }
 
             const craterHudEl = document.getElementById('nearest-crater-hud');
-            if (craterHudEl) {
-                craterHudEl.innerText = `En Yakın: ${nearestCraterName} (${Math.round(nearestDist)}m)`;
+            if (craterHudEl && nearestCraterName) {
+                let nearestCraterObj = MOON_CRATERS.find(c => c.name === nearestCraterName);
+                let isNearestDone = nearestCraterObj ? completedMissions.has(nearestCraterObj.id) : false;
+                if (isNearestDone) {
+                    craterHudEl.className = "text-[10px] font-bold truncate text-center bg-emerald-950/90 rounded-xl py-1 px-2 border border-emerald-500/50 text-emerald-300 shadow-md";
+                    craterHudEl.innerHTML = `En Yakın: ✅ ${nearestCraterName} (${Math.round(nearestDist)}m) - <strong class="text-white">TOPLANDI</strong>`;
+                } else {
+                    craterHudEl.className = "text-[10px] font-bold truncate text-center bg-slate-900/90 rounded-xl py-1 px-2 border border-amber-400/50 text-amber-300 shadow-md";
+                    craterHudEl.innerHTML = `En Yakın: 💎 ${nearestCraterName} (${Math.round(nearestDist)}m) - <strong class="text-rose-300 animate-pulse">ELMAS BEKLİYOR</strong>`;
+                }
             }
         }
 
@@ -3640,7 +3858,7 @@
             let minDist = 9999;
             moonTargetBeacons.forEach(b => {
                 const dist = Math.hypot(rover.pos.x - b.userData.x, rover.pos.z - b.userData.z);
-                if (dist < 4.5 && dist < minDist) {
+                if (dist < 4.8 && dist < minDist) {
                     minDist = dist;
                     foundBeacon = b.userData;
                 }
@@ -3653,8 +3871,15 @@
             if (foundBeacon) {
                 promptEl.classList.remove('hidden');
                 const isDone = completedMissions.has(foundBeacon.id);
-                actionText.innerText = isDone ? `✅ ${foundBeacon.label} Keşfedildi!` : `📍 ${foundBeacon.label} Bölgesindesin!`;
-                btnText.innerText = isDone ? `Bilgileri Tekrar İncele (${foundBeacon.label})` : `Lazer Spektrometre İle İncele (${foundBeacon.label})`;
+                if (isDone) {
+                    promptEl.className = "pointer-events-auto flex flex-col items-center gap-2 p-3 bg-emerald-950/90 backdrop-blur-lg rounded-2xl border-2 border-emerald-400 shadow-[0_0_30px_rgba(16,185,129,0.5)]";
+                    actionText.innerHTML = `<span class="text-emerald-300 font-bold flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> ${foundBeacon.label} • ELMAS TOPLANDI!</span>`;
+                    btnText.innerHTML = `<i class="fa-solid fa-book-open"></i> Bilgileri ve Kısa Cevabı İncele (${foundBeacon.label})`;
+                } else {
+                    promptEl.className = "pointer-events-auto flex flex-col items-center gap-2 p-3 bg-slate-950/90 backdrop-blur-lg rounded-2xl border-2 border-amber-400 shadow-[0_0_30px_rgba(245,158,11,0.6)] animate-bounce";
+                    actionText.innerHTML = `<span class="text-amber-300 font-black flex items-center gap-2 text-xs sm:text-sm"><i class="fa-solid fa-gem text-amber-400 text-base animate-pulse"></i> ${foundBeacon.label} • 💎 ELMAS SENİ BEKLİYOR!</span>`;
+                    btnText.innerHTML = `<i class="fa-solid fa-satellite-dish"></i> Soruyu Çöz ve Elması Topla (${foundBeacon.label})`;
+                }
                 promptEl.dataset.beaconId = foundBeacon.id;
             } else {
                 promptEl.classList.add('hidden');
@@ -3965,11 +4190,15 @@
             // Rover Physics
             updateRoverPhysics();
 
-            // Beacon Floating Gem Animation
+            // Beacon Floating Gem & Victory Flag Animation
             moonTargetBeacons.forEach(b => {
-                if (b.userData.gem) {
-                    b.userData.gem.rotation.y += 0.02;
-                    b.userData.gem.position.y = 3.5 + Math.sin(Date.now() * 0.003 + b.userData.id) * 0.3;
+                if (b.userData.gem && b.userData.gem.visible) {
+                    b.userData.gem.rotation.y += 0.025;
+                    b.userData.gem.position.y = 3.6 + Math.sin(Date.now() * 0.003 + b.userData.id) * 0.35;
+                }
+                if (b.userData.flagGroup && b.userData.flagGroup.visible) {
+                    b.userData.flag.rotation.y = Math.sin(Date.now() * 0.004 + b.userData.id) * 0.25;
+                    b.userData.checkRing.rotation.y += 0.03;
                 }
             });
 
@@ -4021,9 +4250,19 @@
             const shortAns = q.shortAns || mission.shortAns || "";
             let bodyContent = q.body;
             if (isCompleted && shortAns) {
-                bodyContent = `<div class="mb-2 p-2 rounded-xl bg-emerald-950/70 border border-emerald-500/50 text-emerald-300 text-xs font-semibold flex items-center justify-between">
-                    <span><i class="fa-solid fa-circle-check text-emerald-400"></i> Bu Krater Keşfedildi!</span>
-                    <span class="text-amber-300 font-bold">Cevap: ${shortAns}</span>
+                bodyContent = `<div class="mb-3 p-3 rounded-2xl bg-emerald-950/90 border-2 border-emerald-400 text-emerald-200 text-xs font-semibold flex items-center justify-between shadow-lg animate-fadeIn">
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-7 h-7 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center font-bold text-sm shrink-0">
+                            <i class="fa-solid fa-check"></i>
+                        </span>
+                        <div>
+                            <div class="text-emerald-300 font-bold text-xs uppercase">💎 Bu Kraterin Elması Toplandı!</div>
+                            <div class="text-slate-300 text-[11px]">Kısa Cevap: <strong class="text-amber-300">${shortAns}</strong></div>
+                        </div>
+                    </div>
+                    <span class="px-2 py-1 rounded-lg bg-emerald-900 border border-emerald-500/50 text-emerald-300 font-black text-[10px] uppercase">
+                        TAMAMLANDI
+                    </span>
                 </div>` + bodyContent;
             }
             document.getElementById('q-body').innerHTML = bodyContent;
@@ -4063,9 +4302,9 @@
             const shortAns = (currentActiveQuestion && currentActiveQuestion.shortAns) || mission.shortAns || "";
 
             if (selectedOpt.correct) {
-                playSound('correct');
+                playSound('gem');
                 feedbackEl.className = "p-3 rounded-xl text-xs font-semibold leading-relaxed bg-emerald-950 border border-emerald-500 text-emerald-300 animate-fadeIn";
-                let feedbackHtml = `✅ <strong>Doğru Cevap!</strong>`;
+                let feedbackHtml = `✅ <strong>Harika! Soru Doğru Yanıtlandı ve Elmas Toplandı!</strong>`;
                 if (shortAns) {
                     feedbackHtml += ` <div class="mt-1 text-amber-300 font-bold text-sm">Cevap: ${shortAns}</div>`;
                 }
@@ -4075,22 +4314,14 @@
                 if (!completedMissions.has(mission.id)) {
                     completedMissions.add(mission.id);
                     playerScore += 100;
-                    confetti({ particleCount: 50, spread: 60 });
+                    confetti({ particleCount: 60, spread: 70 });
                     updateStats();
+                    showGemCollectToast(mission.title);
 
-                    // Turn corresponding 3D beacon emerald green
+                    // Collect diamond & transform 3D beacon
                     const beaconObj = moonTargetBeacons.find(b => b.userData.id === mission.id);
                     if (beaconObj) {
-                        if (beaconObj.userData.gem) {
-                            beaconObj.userData.gem.material.color.setHex(0x10b981);
-                            beaconObj.userData.gem.material.emissive.setHex(0x10b981);
-                        }
-                        if (beaconObj.userData.ring) {
-                            beaconObj.userData.ring.material.color.setHex(0x10b981);
-                        }
-                        if (beaconObj.userData.pillar) {
-                            beaconObj.userData.pillar.material.color.setHex(0x10b981);
-                        }
+                        collectDiamondBeacon(beaconObj);
                     }
                 }
             } else {
