@@ -66,36 +66,6 @@
     "updatedAt": "2026-10-18T00:00:00.000Z"
   },
   {
-    "id": "mat-6-1-oyun-gunes-sistemi-3d",
-    "grade": "6",
-    "category": "egitsel-oyunlar",
-    "targetSection": "1",
-    "title": "Güneş Sistemi – 3D Keşif Laboratuvarı (Dijital Planetaryum)",
-    "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
-    "desc": "Güneş ve 8 gezegenin gerçekçi 3D modelleri, gerçek oranlı yörünge hareketleri, Dünya-Ay özel inceleme modu, gezegen karşılaştırma laboratuvarı ve 5 farklı eğitsel uzay görevi!",
-    "fileName": "gunes-sistemi-3d.html",
-    "fileUrl": "oyunlar/gunes-sistemi-3d.html",
-    "imageUrl": "assets/gunes-sistemi-3d-kapak.svg",
-    "kapakResmi": "assets/gunes-sistemi-3d-kapak.svg",
-    "cover": "assets/gunes-sistemi-3d-kapak.svg",
-    "format": "3D DİJİTAL PLANETARYUM",
-    "hasBlob": false,
-    "tags": [
-      "6. Sınıf",
-      "5. Sınıf",
-      "7. Sınıf",
-      "1. Ünite",
-      "Güneş Sistemi",
-      "Gezegenler",
-      "Güneş Sistemi ve Tutulmalar",
-      "3D Planetaryum"
-    ],
-    "visibility": "public",
-    "downloadCount": "🌟 3D Keşif Laboratuvarı",
-    "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-19T00:00:00.000Z"
-  },
-  {
     "id": "mat-5-1-oyun-kozmik-kasif-3d",
     "grade": "5",
     "category": "egitsel-oyunlar",
@@ -1113,27 +1083,31 @@
     "grade": "6",
     "category": "egitsel-oyunlar",
     "targetSection": "1",
-    "title": "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon",
+    "title": "Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon",
     "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
-    "desc": "8 gezegen, gerçek boyut karşılaştırmaları, Dünya=1cm top ölçeği benzetimi ve sinematik kamera eşliğinde büyüleyici 3D Güneş Sistemi yolculuğu!",
+    "desc": "8 gezegenin sıralanışı, iç-dış gezegenler, Asteroit Kuşağı, Satürn'ün 293 ve Jüpiter'in 115 uydusu, boyut karşılaştırması ve serbest keşif moduyla sinematik 3D uzay laboratuvarı!",
     "fileName": "gunes-sistemi-yolculuk-3d.html",
     "fileUrl": "oyunlar/gunes-sistemi-yolculuk-3d.html",
     "imageUrl": "assets/gunes-sistemi-yolculuk-3d-kapak.svg",
     "kapakResmi": "assets/gunes-sistemi-yolculuk-3d-kapak.svg",
     "cover": "assets/gunes-sistemi-yolculuk-3d-kapak.svg",
-    "format": "3D SİNEMATİK ANİMASYON",
+    "format": "3D SİNEMATİK SİMÜLASYON",
     "hasBlob": false,
     "tags": [
       "6. Sınıf",
       "1. Ünite",
       "Güneş Sistemi",
       "Gezegenler",
-      "Sinematik 3D",
-      "Animasyon"
+      "Asteroit Kuşağı",
+      "Meteor ve Meteorit",
+      "Doğal Uydular",
+      "3D Simülasyon",
+      "Planetaryum",
+      "Maarif Modeli"
     ],
     "visibility": "public",
-    "downloadCount": "🎬 3D Özel Animasyon",
+    "downloadCount": "🌟 3D Sinematik Başyapıt",
     "createdAt": "2026-10-19T00:00:00.000Z",
-    "updatedAt": "2026-10-19T00:00:00.000Z"
+    "updatedAt": "2026-10-22T18:25:59.200Z"
   }
 ]

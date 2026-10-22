@@ -32,8 +32,8 @@ let ROTALI_MATERIALS_CACHE = null;
 const PROTECTED_MATERIAL_IDS = new Set([
     "mat-5-1-sim-dunyanin-5-katmani", "mat-5-1-oyun-gunesi-kesfediyorum-3d", "mat-5-1-oyun-ayin-evreleri-3d", "mat-5-1-oyun-kozmik-kasif-3d", "mat-5-1-oyun-kozmik-kosu-3d",
      "mat-6-2-sim-kuvvet-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
-    "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-3d", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
-    "builtin-oyun-6-gunes-sistemi", "builtin-oyun-6-gunes-sistemi-yolculuk", 
+    "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
+    "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-gezegen-kosusu", "builtin-oyun-6-uzay-ekspresi",
     "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
 ]);
@@ -4907,24 +4907,13 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     kapakResmi: "assets/rotali-uzay-ekspresi.jpg"
                 },
                 {
-                    id: "builtin-oyun-6-gunes-sistemi",
-                    title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
-                    icon: "fa-solid fa-solar-panel",
-                    desc: "8 gezegenin gerçek oranlı yörüngeleri, Dünya-Ay özel inceleme modu, gezegen karşılaştırma laboratuvarı ve 5 farklı interaktif uzay görevi!",
-                    type: "3D Dijital Planetaryum",
-                    format: "3D SİMÜLATÖR",
-                    badge: "🌟 1. Ünite Başyapıtı",
-                    fileUrl: "oyunlar/gunes-sistemi-3d.html",
-                    kapakResmi: "assets/gunes-sistemi-3d-kapak.svg"
-                },
-                {
                     id: "builtin-oyun-6-gunes-sistemi-yolculuk",
-                    title: "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon",
-                    icon: "fa-solid fa-film",
-                    desc: "8 gezegen, gerçek boyut karşılaştırmaları, Dünya=1cm top ölçeği benzetimi ve sinematik kamera eşliğinde büyüleyici 3D Güneş Sistemi yolculuğu!",
-                    type: "3D Sinematik Animasyon",
-                    format: "3D SİNEMATİK",
-                    badge: "🎬 3D Özel Animasyon",
+                    title: "Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon",
+                    icon: "fa-solid fa-solar-panel",
+                    desc: "8 gezegenin sıralanışı, iç-dış gezegenler, Asteroit Kuşağı, Satürn'ün 293 ve Jüpiter'in 115 uydusu, boyut karşılaştırması ve serbest keşif moduyla sinematik 3D uzay laboratuvarı!",
+                    type: "3D Sinematik Simülasyon",
+                    format: "3D SİMÜLASYON",
+                    badge: "🌟 3D Sinematik Başyapıt",
                     fileUrl: "oyunlar/gunes-sistemi-yolculuk-3d.html",
                     kapakResmi: "assets/gunes-sistemi-yolculuk-3d-kapak.svg"
                 }
@@ -5217,11 +5206,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             } else if (isKuvvetLaboratuvariItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/kuvvet-laboratuvari.html', 'Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!')`;
                                             } else if (isGunesSistemiYolculukItem) {
-                                                actionCall = `openInteractiveGameModal('oyunlar/gunes-sistemi-yolculuk-3d.html', 'Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon')`;
+                                                actionCall = `openInteractiveGameModal('oyunlar/gunes-sistemi-yolculuk-3d.html', 'Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon')`;
                                             } else if (isAyaInisItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/aya-inis-3d.html', 'Ay\\\'a İniş – 3D Keşif ve VR Deneyimi')`;
                                             } else if (isGunesSistemiItem) {
-                                                actionCall = `openInteractiveGameModal('oyunlar/gunes-sistemi-3d.html', 'Güneş Sistemi – 3D Keşif Laboratuvarı')`;
+                                                actionCall = `openInteractiveGameModal('oyunlar/gunes-sistemi-yolculuk-3d.html', 'Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon')`;
                                             } else if (isKozmikKasifItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/kozmik-kasif-3d.html', 'Kozmik Kâşif 3D: Ay ve Güneş Üssü')`;
                                             } else if (isKozmikKosuItem) {
@@ -5856,22 +5845,12 @@ function renderGradeEducationalGames(grade, subData) {
         ],
         "6": [
             {
-                id: "builtin-oyun-6-gunes-sistemi",
-                title: "Güneş Sistemi – 3D Keşif Laboratuvarı",
-                badge: "3D Dijital Planetaryum",
-                type: "3D Uzay Simülasyonu",
-                desc: "8 gezegenin gerçek oranlı yörüngeleri, Dünya-Ay özel inceleme modu, gezegen karşılaştırma laboratuvarı ve 5 farklı interaktif uzay görevi!",
-                icon: "fa-solid fa-solar-panel",
-                iconColor: "from-sky-400 via-indigo-600 to-amber-400",
-                fileUrl: "gunes-sistemi-3d"
-            },
-            {
                 id: "builtin-oyun-6-gunes-sistemi-yolculuk",
-                title: "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon",
-                badge: "3D Sinematik Animasyon",
+                title: "Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon",
+                badge: "3D Sinematik Simülasyon",
                 type: "3D Uzay Keşfi",
-                desc: "8 gezegen, gerçek boyut karşılaştırmaları, Dünya=1cm top ölçeği benzetimi ve sinematik kamera eşliğinde büyüleyici 3D Güneş Sistemi yolculuğu!",
-                icon: "fa-solid fa-film",
+                desc: "8 gezegenin sıralanışı, iç-dış gezegenler, Asteroit Kuşağı, Satürn'ün 293 ve Jüpiter'in 115 uydusu, boyut karşılaştırması ve serbest keşif moduyla sinematik 3D uzay laboratuvarı!",
+                icon: "fa-solid fa-solar-panel",
                 iconColor: "from-amber-400 via-sky-500 to-indigo-600",
                 fileUrl: "gunes-sistemi-yolculuk-3d"
             }
@@ -13822,7 +13801,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         targetUrl.includes("oyunlar/gunes-sistemi-yolculuk-3d.html") ||
         ((checkTitle.includes("güneş sisteminde yolculuk") || checkTitle.includes("gunes sisteminde yolculuk")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/"))
     ) {
-        openInteractiveGameModal("oyunlar/gunes-sistemi-yolculuk-3d.html", "Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon");
+        openInteractiveGameModal("oyunlar/gunes-sistemi-yolculuk-3d.html", "Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon");
         return;
     }
 
@@ -13860,7 +13839,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         targetUrl.includes("oyunlar/gunes-sistemi-3d.html") ||
         ((checkTitle.includes("güneş sistemi – 3d") || checkTitle.includes("keşif laboratuvarı") || checkTitle.includes("dijital planetaryum")) && !checkTitle.includes("sunum") && !targetUrl.includes("sunumlar/") && !targetUrl.includes(".pptx"))
     ) {
-        openInteractiveGameModal("oyunlar/gunes-sistemi-3d.html", "Güneş Sistemi – 3D Keşif Laboratuvarı");
+        openInteractiveGameModal("oyunlar/gunes-sistemi-yolculuk-3d.html", "Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon");
         return;
     }
 
@@ -15302,7 +15281,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                             <i class="fa-solid fa-film"></i>
                         </span>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🎬 Güneş Sisteminde Yolculuk – 3D Sinematik Animasyon</h3>
+                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🎬 Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon</h3>
                             <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 6. Sınıf Fen Bilimleri 1. Ünite</span>
                         </div>
                     </div>
@@ -15336,12 +15315,12 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                             <i class="fa-solid fa-solar-panel"></i>
                         </span>
                         <div class="flex items-center gap-2">
-                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🪐 Güneş Sistemi – 3D Keşif Laboratuvarı</h3>
+                            <h3 class="text-xs sm:text-sm font-black text-sky-300 font-orbitron">🎬 Güneş Sisteminde Yolculuk – 3D Sinematik Simülasyon</h3>
                             <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 6. Sınıf Fen Bilimleri 1. Ünite</span>
                         </div>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <a href="oyunlar/gunes-sistemi-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                        <a href="oyunlar/gunes-sistemi-yolculuk-3d.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-sky-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
                             <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
                         </a>
                         <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
@@ -15351,7 +15330,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                     </div>
                 </div>
                 <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
-                    <iframe src="oyunlar/gunes-sistemi-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                    <iframe src="oyunlar/gunes-sistemi-yolculuk-3d.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
                 </div>
             </div>
         `;
