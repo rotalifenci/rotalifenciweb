@@ -1853,6 +1853,12 @@ function getMaterialActionUI(item, fallbackCat = "") {
         return { text: "Animasyonu Görüntüle", icon: "fa-solid fa-play", bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30" };
     }
 
+    // 0. Dünya'nın 5 Katmanı 3B İnteraktif Simülasyonu Özel Butonu (Animasyonu Görüntüle)
+    const isDunyaninKatmanlari = title.includes("dünya'nın 5 katmanı") || title.includes("dunyanin 5 katmani") || title.includes("dünyanın 5 katmanı") || (title.includes("dünya") && title.includes("katman")) || file.includes("dunyanin-5-katmani") || url.includes("dunyanin-5-katmani") || (item && (item.id === "mat-5-1-sim-dunyanin-5-katmani" || item.id === "dunyanin-5-katmani" || item.id === "builtin-oyun-5-dunyanin-5-katmani"));
+    if (isDunyaninKatmanlari) {
+        return { text: "Animasyonu Görüntüle", icon: "fa-solid fa-play", bg: "bg-gradient-to-r from-cyan-600 via-blue-600 to-indigo-700 hover:from-cyan-700 hover:to-blue-700 shadow-cyan-600/30" };
+    }
+
     if (isPdf) {
         if (cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi")) {
             return { text: "Kitabı Aç", icon: "fa-solid fa-book-open", bg: "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20" };
@@ -4890,6 +4896,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     badge: "🌟 1. Ünite Başyapıtı",
                     fileUrl: "oyunlar/ayin-evreleri-3d.html",
                     kapakResmi: "assets/ayin-evreleri-3d-kapak.svg"
+                },
+                {
+                    id: "mat-5-1-sim-dunyanin-5-katmani",
+                    title: "5. Sınıf Dünya'nın 5 Katmanı İnteraktif Simülasyonu",
+                    icon: "fa-solid fa-earth-americas",
+                    desc: "Hava küre, su küre, taş küre, ateş küre (manto) ve ağır küre (çekirdek) interaktif 3B kesiti, ayrık katman incelemesi ve testler.",
+                    type: "3B İnteraktif Simülasyon",
+                    format: "3B SİMÜLASYON",
+                    badge: "🌟 1. Ünite Simülasyonu",
+                    fileUrl: "oyunlar/dunyanin-5-katmani.html",
+                    kapakResmi: "assets/dunyanin-5-katmani-kapak.svg"
                 }
             ]
         },
