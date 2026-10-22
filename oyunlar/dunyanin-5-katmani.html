@@ -20,22 +20,29 @@
     <style>
         body { font-family: 'Poppins', sans-serif; }
         .font-orbitron { font-family: 'Orbitron', sans-serif; }
-        .glow-cyan { box-shadow: 0 0 30px rgba(6, 182, 212, 0.35); }
-        .glow-red { box-shadow: 0 0 30px rgba(239, 68, 68, 0.35); }
-        .glow-amber { box-shadow: 0 0 30px rgba(245, 158, 11, 0.35); }
+        
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0b1120; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
         ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
         
-        /* 3D Canvas canvas touch handling */
+        /* 3D Canvas touch handling */
         #earth-canvas {
             touch-action: none !important;
             cursor: grab;
         }
         #earth-canvas:active {
             cursor: grabbing;
+        }
+
+        /* Pulsing Glow Effect for Active Layer */
+        @keyframes ringPulse {
+            0%, 100% { transform: scale(1); opacity: 0.95; }
+            50% { transform: scale(1.05); opacity: 0.7; }
+        }
+        .pulse-ring {
+            animation: ringPulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
     </style>
 </head>
@@ -87,7 +94,7 @@
                 </span>
                 <h2 class="text-2xl font-black text-white font-orbitron tracking-tight">Dünya'nın 5 Katmanı 3B</h2>
                 <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                    Fotogerçekçi 3B kesit modeliyle gezegenimizin merkezine yolculuk yapın. Katmanları ayırın, inceleyin ve doğrudan tıklayarak sırlarını keşfedin!
+                    Fotogerçekçi 3B kesit modeliyle gezegenimizin merkezine yolculuk yapın. Katmanları tek tek seçin, simülasyonda belirgin hale getirin ve sırlarını keşfedin!
                 </p>
             </div>
             <div class="space-y-2 text-left">
@@ -134,23 +141,29 @@
 
                             <!-- 3B Sahne Üst Kontrol Çubuğu (Floating Bar) -->
                             <div class="absolute top-3 left-3 right-3 flex flex-wrap justify-between items-center gap-2 pointer-events-none z-10">
-                                <div class="bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 px-3 py-1.5 rounded-2xl flex items-center space-x-2 pointer-events-auto shadow-lg">
+                                <div class="bg-slate-900/90 backdrop-blur-md border border-cyan-500/40 px-3 py-1.5 rounded-2xl flex items-center space-x-2 pointer-events-auto shadow-lg">
                                     <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span>
-                                    <span class="text-xs font-bold text-cyan-300 font-orbitron" id="sceneStatusBadge">3B İnteraktif Model</span>
-                                    <span class="text-[10px] text-slate-400 hidden sm:inline">• Üzerine Tıkla & İncele</span>
+                                    <span class="text-xs font-bold text-cyan-300 font-orbitron" id="sceneStatusBadge">🎯 Katman Odak Modu</span>
+                                    <span class="text-[10px] text-slate-400 hidden sm:inline">• Seçilen Katman Parlar</span>
                                 </div>
 
                                 <div class="flex items-center space-x-1.5 pointer-events-auto">
+                                    <!-- Odak Modu Toggle (Diğerlerini Yarı Saydam Yap) -->
+                                    <button onclick="toggleFocusMode()" id="focusModeBtn" class="px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-cyan-500/50 rounded-xl text-xs font-bold text-cyan-300 hover:text-white transition-all flex items-center space-x-1.5 shadow-lg backdrop-blur-md cursor-pointer" title="Seçilen Katmanı Belirginleştir">
+                                        <i class="fa-solid fa-bullseye text-cyan-400" id="focusModeIcon"></i>
+                                        <span class="hidden md:inline" id="focusModeText">Vurgu: Açık</span>
+                                    </button>
+
                                     <!-- Otomatik Dönüş -->
                                     <button onclick="toggleAutoRotate()" id="rotateToggleBtn" class="px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-xs font-bold text-slate-200 hover:text-cyan-400 transition-all flex items-center space-x-1.5 shadow-lg backdrop-blur-md cursor-pointer" title="Otomatik Döndür / Durdur">
                                         <i class="fa-solid fa-arrows-rotate text-cyan-400"></i>
                                         <span class="hidden md:inline" id="rotateBtnText">Dönüş: Açık</span>
                                     </button>
 
-                                    <!-- Kamera Sıfırla -->
-                                    <button onclick="resetCameraView()" class="px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-xs font-bold text-slate-200 hover:text-cyan-400 transition-all flex items-center space-x-1.5 shadow-lg backdrop-blur-md cursor-pointer" title="Kamera Açısını Sıfırla">
+                                    <!-- Kamera Sıfırla (3B İzometrik Açı) -->
+                                    <button onclick="resetCameraView()" class="px-2.5 py-1.5 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 rounded-xl text-xs font-bold text-slate-200 hover:text-cyan-400 transition-all flex items-center space-x-1.5 shadow-lg backdrop-blur-md cursor-pointer" title="3B Kesit Açısına Sıfırla">
                                         <i class="fa-solid fa-crosshairs text-sky-400"></i>
-                                        <span class="hidden md:inline">Sıfırla</span>
+                                        <span class="hidden md:inline">3B Açı</span>
                                     </button>
                                 </div>
                             </div>
@@ -171,16 +184,16 @@
                                     <span class="text-[10px] text-amber-400 font-bold">Ayrık</span>
                                 </div>
 
-                                <div class="text-[10px] text-slate-400 hidden lg:flex items-center space-x-1">
+                                <div class="text-[10px] text-slate-300 hidden lg:flex items-center space-x-1 font-semibold">
                                     <i class="fa-solid fa-hand-pointer text-cyan-400"></i>
-                                    <span>Katmanlara doğrudan tıklayabilirsiniz</span>
+                                    <span>Katmanlara tıklayarak belirginleştirin</span>
                                 </div>
                             </div>
 
-                            <!-- 3B Seçim Balonu / Bildirimi (Floating Overlay) -->
-                            <div id="layer3dNotification" class="absolute top-16 left-1/2 -translate-x-1/2 bg-slate-900/95 border-2 border-cyan-400/80 px-4 py-1.5 rounded-2xl text-xs font-black text-cyan-300 shadow-2xl backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2 z-20 flex items-center space-x-2">
-                                <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-                                <span id="notificationText">Katman Seçildi</span>
+                            <!-- 3B Seçim Bildirimi (Floating Overlay) -->
+                            <div id="layer3dNotification" class="absolute top-16 left-1/2 -translate-x-1/2 bg-slate-900/95 border-2 border-cyan-400 px-5 py-2 rounded-2xl text-xs sm:text-sm font-black text-white shadow-2xl backdrop-blur-xl transition-all duration-300 opacity-0 pointer-events-none transform -translate-y-2 z-20 flex items-center space-x-2.5">
+                                <span class="w-3 h-3 rounded-full bg-cyan-400 animate-ping shrink-0" id="notifDot"></span>
+                                <span id="notificationText">Katman Belirginleştirildi</span>
                             </div>
 
                         </div>
@@ -188,38 +201,38 @@
                         <!-- 5 Katman Hızlı Seçim Butonları (Grid) -->
                         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
                             <!-- 1. Hava Küre -->
-                            <button onclick="selectLayer('havakure', true)" id="btn-havakure" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
-                                <div class="w-3.5 h-3.5 rounded-full bg-sky-400 shadow-sm shadow-sky-400/50 mb-1"></div>
+                            <button onclick="selectLayer('havakure', true)" id="btn-havakure" class="p-2.5 rounded-2xl border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-4 h-4 rounded-full bg-sky-400 shadow-md shadow-sky-400/60 mb-1.5 flex items-center justify-center text-[8px] text-slate-950 font-black">1</div>
                                 <span class="font-bold text-xs text-white group-hover:text-cyan-300">1. Hava Küre</span>
-                                <span class="text-[10px] text-slate-400">Atmosfer</span>
+                                <span class="text-[10px] text-sky-400 font-semibold">Atmosfer</span>
                             </button>
 
                             <!-- 2. Su Küre -->
-                            <button onclick="selectLayer('sukure', true)" id="btn-sukure" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
-                                <div class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm shadow-blue-500/50 mb-1"></div>
+                            <button onclick="selectLayer('sukure', true)" id="btn-sukure" class="p-2.5 rounded-2xl border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-4 h-4 rounded-full bg-blue-500 shadow-md shadow-blue-500/60 mb-1.5 flex items-center justify-center text-[8px] text-white font-black">2</div>
                                 <span class="font-bold text-xs text-white group-hover:text-cyan-300">2. Su Küre</span>
-                                <span class="text-[10px] text-slate-400">Hidrosfer</span>
+                                <span class="text-[10px] text-blue-400 font-semibold">Hidrosfer</span>
                             </button>
 
                             <!-- 3. Taş Küre -->
-                            <button onclick="selectLayer('yercabugu', true)" id="btn-yercabugu" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
-                                <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm shadow-emerald-500/50 mb-1"></div>
+                            <button onclick="selectLayer('yercabugu', true)" id="btn-yercabugu" class="p-2.5 rounded-2xl border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-4 h-4 rounded-full bg-emerald-500 shadow-md shadow-emerald-500/60 mb-1.5 flex items-center justify-center text-[8px] text-slate-950 font-black">3</div>
                                 <span class="font-bold text-xs text-white group-hover:text-cyan-300">3. Taş Küre</span>
-                                <span class="text-[10px] text-slate-400">Yer Kabuğu</span>
+                                <span class="text-[10px] text-emerald-400 font-semibold">Yer Kabuğu</span>
                             </button>
 
                             <!-- 4. Ateş Küre -->
-                            <button onclick="selectLayer('manto', true)" id="btn-manto" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer">
-                                <div class="w-3.5 h-3.5 rounded-full bg-amber-500 shadow-sm shadow-amber-500/50 mb-1"></div>
+                            <button onclick="selectLayer('manto', true)" id="btn-manto" class="p-2.5 rounded-2xl border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 transition-all flex flex-col items-center text-center group cursor-pointer">
+                                <div class="w-4 h-4 rounded-full bg-amber-500 shadow-md shadow-amber-500/60 mb-1.5 flex items-center justify-center text-[8px] text-slate-950 font-black">4</div>
                                 <span class="font-bold text-xs text-white group-hover:text-cyan-300">4. Ateş Küre</span>
-                                <span class="text-[10px] text-slate-400">Manto</span>
+                                <span class="text-[10px] text-amber-400 font-semibold">Manto</span>
                             </button>
 
                             <!-- 5. Ağır Küre -->
-                            <button onclick="selectLayer('cekirdek', true)" id="btn-cekirdek" class="p-2.5 rounded-2xl border border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer col-span-2 sm:col-span-1">
-                                <div class="w-3.5 h-3.5 rounded-full bg-rose-600 shadow-sm shadow-rose-600/50 mb-1"></div>
+                            <button onclick="selectLayer('cekirdek', true)" id="btn-cekirdek" class="p-2.5 rounded-2xl border-2 border-slate-700 bg-slate-800 hover:bg-slate-700 transition-all flex flex-col items-center text-center group cursor-pointer col-span-2 sm:col-span-1">
+                                <div class="w-4 h-4 rounded-full bg-rose-600 shadow-md shadow-rose-600/60 mb-1.5 flex items-center justify-center text-[8px] text-white font-black">5</div>
                                 <span class="font-bold text-xs text-white group-hover:text-cyan-300">5. Ağır Küre</span>
-                                <span class="text-[10px] text-slate-400">Çekirdek</span>
+                                <span class="text-[10px] text-rose-400 font-semibold">Çekirdek</span>
                             </button>
                         </div>
                     </div>
@@ -292,7 +305,7 @@
                             <!-- 3B Odaklan Butonu -->
                             <button onclick="focusOnSelectedLayer()" class="w-full mt-2 py-2.5 px-4 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center space-x-2 border border-slate-700/80 shadow-md cursor-pointer">
                                 <i class="fa-solid fa-bullseye text-cyan-400 group-hover:text-slate-950"></i>
-                                <span>3B Modelde Bu Katmana Yaklaş</span>
+                                <span>3B Modelde Bu Katmana Odaklan</span>
                             </button>
 
                         </div>
@@ -421,6 +434,7 @@
         let isAudioMuted = false;
         let audioCtx = null;
         let activeLayerKey = "havakure";
+        let isFocusModeActive = true; // Seçilen katmanın belirgin olması modu
 
         // Web Audio Efektleri
         function initAudio() {
@@ -472,7 +486,7 @@
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(440, now);
                     osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
-                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.setValueAtTime(0.16, now);
                     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
                     osc.start(now);
                     osc.stop(now + 0.12);
@@ -508,6 +522,7 @@
                 thickness: "~10.000 km",
                 coreFeature: "Oksijen, azot ve su buharı",
                 obs: "Gözlemlenebilir",
+                colorHex: 0x38bdf8,
                 bullets: [
                     "Dünya'yı dıştan tamamen saran koruyucu gaz tabakasıdır.",
                     "%78 Azot, %21 Oksijen ve %1 diğer gazlardan meydana gelir.",
@@ -527,11 +542,12 @@
                 thickness: "3.7 km (Ortalama)",
                 coreFeature: "Dünya yüzeyinin %71'i",
                 obs: "Gözlemlenebilir",
+                colorHex: 0x0284c7,
                 bullets: [
                     "Okyanuslar, denizler, göller, akarsular, buzullar ve yer altı sularından oluşur.",
                     "Dünya yüzeyinin yaklaşık %71'ini (yaklaşık 3/4'ünü) sular kaplar.",
                     "Gezegenimize uzaydan bakıldığında 'Mavi Gezegen' denmesinin asıl nedenidir.",
-                    "Su döngüsü sayesinde yaşamın sürekliliğini sağlar."
+                    "Su döngüsü sayesinde gezegenin iklimini dengeler ve yaşamı sürdürür."
                 ],
                 note: "Su küre ve taş küre yeryüzünde birlikte bulunur; su küre, taş küreyi tamamen saran ayrı bir iç katman değildir.",
                 icon: "fa-solid fa-droplet",
@@ -539,37 +555,39 @@
             },
             yercabugu: {
                 title: "3. Taş Küre",
-                subtitle: "Üzerinde yaşadığımız katı kayaç katmanı",
+                subtitle: "Üzerinde yaşadığımız sert kayaç katmanı",
                 otherName: "Yer Kabuğu / Litosfer",
                 state: "Katı Kayaç",
                 temp: "15 °C ila 1000 °C",
                 thickness: "5 - 70 km",
                 coreFeature: "Sert ve kırılgan kayaçlar",
                 obs: "Gözlemlenebilir",
+                colorHex: 0x10b981,
                 bullets: [
                     "Üzerinde insanların, hayvanların ve bitkilerin yaşadığı katı katmandır.",
-                    "Dağlar, ovalar, platolar ve okyanus tabanları bu katmanda yer alır.",
+                    "Dağlar, ovalar, vadiler, platolar ve okyanus tabanları bu katmanda yer alır.",
                     "Karaların altında daha kalın (35-70 km), okyanus tabanlarında daha incedir (5-10 km).",
-                    "Dünya'nın hacim ve kalınlık bakımından en ince katmanıdır (elmanın kabuğu gibidir)."
+                    "Dünya'nın hacim bakımından en ince katmanıdır (elmanın kabuğu gibidir)."
                 ],
-                note: "Canlıların üzerinde yaşadığı, tarım yaptığı ve şehirler kurduğu en dış katı tabakadır.",
+                note: "Canlıların üzerinde evler yaptığı, tarım yaptığı ve şehirler kurduğu en dış katı tabakadır.",
                 icon: "fa-solid fa-mountain",
                 color: "emerald"
             },
             manto: {
                 title: "4. Ateş Küre",
-                subtitle: "Yer kabuğunun hemen altındaki sıcak magma katmanı",
+                subtitle: "Yer kabuğunun altındaki çok sıcak magma katmanı",
                 otherName: "Manto / Magma",
                 state: "Akışkan / Yarı-katı Kayaç",
                 temp: "1000 °C - 3700 °C",
                 thickness: "~2.900 km",
                 coreFeature: "Erimiş kızgın kayaçlar (Magma)",
                 obs: "Doğrudan Gözlemlenemez",
+                colorHex: 0xf59e0b,
                 bullets: [
                     "Yer kabuğunun hemen altından başlayıp 2.900 km derinliğe kadar uzanır.",
-                    "Aşırı sıcaklık ve basınç nedeniyle kayaçlar akışkan (macunumsu) haldedir.",
+                    "Aşırı sıcaklık ve basınç nedeniyle kayaçlar eriyik, akışkan (magma) haldedir.",
                     "Dünya'nın hacimce en büyük ve en kalın katmanıdır (%84 hacim kaplar).",
-                    "Yanardağlardan fışkıran kızgın lavlar ateş küreden (magma tabakası) kaynaklanır."
+                    "Yanardağlardan fışkıran lavlar ateş küredeki magmadan kaynaklanır."
                 ],
                 note: "Magmanın akıntıları yer kabuğunu iterek kıtaların hareket etmesine ve depremlere yol açar.",
                 icon: "fa-solid fa-fire",
@@ -584,13 +602,14 @@
                 thickness: "~3.500 km",
                 coreFeature: "Ağır metaller: Demir ve Nikel",
                 obs: "Doğrudan Gözlemlenemez",
+                colorHex: 0xef4444,
                 bullets: [
                     "Dünya’nın en merkezinde bulunan en ağır ve en yoğun katmandır.",
                     "Yoğunluğu en fazla olan demir ve nikel elementlerinden oluşur.",
-                    "Dış Çekirdek sıvı haldedir; Dünya'nın manyetik alanını (pusulayı) oluşturur.",
+                    "Dış Çekirdek sıvı haldedir; Dünya'nın koruyucu manyetik alanını (pusulayı) oluşturur.",
                     "İç Çekirdek ise aşırı basınç nedeniyle 6000 °C'de bile katı haldedir (Güneş yüzeyi kadar sıcaktır)."
                 ],
-                note: "Dünya'nın kütle çekimini ve manyetik kalkanını sağlayan devasa bir nükleer fırın gibidir.",
+                note: "Dünya'nın kütle çekimini ve manyetik kalkanını sağlayan akkor halindeki merkez çekirdektir.",
                 icon: "fa-solid fa-atom",
                 color: "red"
             }
@@ -603,30 +622,29 @@
         let earthGroup;
         let layerMeshes = {};
         let clickableObjects = [];
+        let selectionRing; // 3B Vurgu Çemberi
         let raycaster = new THREE.Raycaster();
         let mouse = new THREE.Vector2();
         let isAutoRotate = true;
         let isExploded = false;
-        let explodeFactor = 0; // 0 (birleşik) ile 1 (tam ayrık) arası
+        let explodeFactor = 0; // 0 ile 1 arası
         let targetExplode = 0;
 
-        // Prosedürel Doku Üreteçleri (Harici resim bağımsız, %100 güvenilir)
+        // Prosedürel Dokular
         function generateEarthTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 1024;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // 1. Derin Okyanus Gradyanı
+            // Derin Okyanus
             const oceanGrad = ctx.createLinearGradient(0, 0, 0, 512);
-            oceanGrad.addColorStop(0, '#0c2e5c');
-            oceanGrad.addColorStop(0.5, '#124c8f');
-            oceanGrad.addColorStop(1, '#0c2e5c');
+            oceanGrad.addColorStop(0, '#0a2347');
+            oceanGrad.addColorStop(0.5, '#0f3c73');
+            oceanGrad.addColorStop(1, '#0a2347');
             ctx.fillStyle = oceanGrad;
             ctx.fillRect(0, 0, 1024, 512);
 
-            // Kıyı şelfleri (Açık turkuaz kıyı suları)
-            ctx.fillStyle = '#1e7898';
             function drawBlob(cx, cy, rx, ry, col) {
                 ctx.fillStyle = col;
                 ctx.beginPath();
@@ -634,39 +652,35 @@
                 ctx.fill();
             }
 
-            // Kıtalar (Avrasya, Afrika, Amerika, Avustralya)
             const landGreen = '#2e7d32';
             const landOchre = '#795548';
-            const coastalCyan = 'rgba(34, 211, 238, 0.35)';
+            const coastalCyan = 'rgba(34, 211, 238, 0.4)';
 
-            // Afrika & Avrupa
+            // Kıtalar
             drawBlob(512, 230, 110, 130, coastalCyan);
             drawBlob(512, 230, 95, 115, landGreen);
             drawBlob(512, 210, 70, 70, landOchre);
             drawBlob(512, 130, 85, 55, landGreen);
 
-            // Asya
             drawBlob(680, 160, 150, 90, coastalCyan);
             drawBlob(680, 160, 135, 75, landGreen);
             drawBlob(710, 150, 90, 50, landOchre);
 
-            // Kuzey & Güney Amerika
             drawBlob(250, 160, 100, 70, coastalCyan);
             drawBlob(250, 160, 85, 60, landGreen);
             drawBlob(290, 310, 80, 110, coastalCyan);
             drawBlob(290, 310, 70, 95, landGreen);
             drawBlob(290, 320, 45, 60, landOchre);
 
-            // Avustralya
             drawBlob(820, 340, 65, 45, coastalCyan);
             drawBlob(820, 340, 55, 35, landOchre);
 
-            // Kutuplar (Beyaz Buzullar)
+            // Kutuplar
             ctx.fillStyle = '#f8fafc';
             ctx.fillRect(0, 0, 1024, 30);
             ctx.fillRect(0, 482, 1024, 30);
 
-            // Atmosferik Beyaz Bulut Şeritleri
+            // Bulutlar
             ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
             for(let i=0; i<18; i++) {
                 const cx = (i * 60 + 30) % 1024;
@@ -677,18 +691,15 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        // Manto (Magma / Ateş Küre) Dokusu
         function generateMantleTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
             canvas.height = 512;
             const ctx = canvas.getContext('2d');
 
-            // Koyu bazalt / volkanik magma tabanı
             ctx.fillStyle = '#5c0b0b';
             ctx.fillRect(0, 0, 512, 512);
 
-            // Magma konveksiyon damarları ve çatlaklar
             for(let i = 0; i < 350; i++) {
                 const x = Math.random() * 512;
                 const y = Math.random() * 512;
@@ -706,7 +717,6 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        // Dış Çekirdek (Sıvı Metal) Dokusu
         function generateOuterCoreTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -733,7 +743,6 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        // İç Çekirdek (Akkor Katı Çekirdek) Dokusu
         function generateInnerCoreTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -743,7 +752,7 @@
             ctx.fillStyle = '#fef9c3';
             ctx.fillRect(0, 0, 512, 512);
 
-            for(let i = 0; i < 180; i++) {
+            for(let i = 0; i < 200; i++) {
                 const x = Math.random() * 512;
                 const y = Math.random() * 512;
                 const r = 10 + Math.random() * 25;
@@ -759,7 +768,6 @@
             return new THREE.CanvasTexture(canvas);
         }
 
-        // Yer Kabuğu Kayaç Katmanı Dokusu (Kesit Çemberi)
         function generateCrustStrataTexture() {
             const canvas = document.createElement('canvas');
             canvas.width = 512;
@@ -783,20 +791,17 @@
             const w = parent.clientWidth;
             const h = parent.clientHeight;
 
-            // Sahne
             scene = new THREE.Scene();
-            scene.background = new THREE.Color(0x020617); // Derin uzay siyahı
+            scene.background = new THREE.Color(0x020617);
 
-            // Kamera (Perspektif)
-            camera = new THREE.PerspectiveCamera(42, w / h, 0.1, 1000);
-            camera.position.set(13, 5, 15);
+            // Başlangıç Kamerası: 3B Kesitin derinliğini en iyi gösteren 45 Derecelik İzometrik Açı
+            camera = new THREE.PerspectiveCamera(40, w / h, 0.1, 1000);
+            camera.position.set(12, 5.5, 14);
 
-            // Renderer
             renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
             renderer.setSize(w, h);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // OrbitControls
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
@@ -804,19 +809,19 @@
             controls.maxDistance = 45;
             controls.target.set(0, 0, 0);
 
-            // Ortam ve Yönsel Işıklar
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
+            // Işıklandırma
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
             scene.add(ambientLight);
 
-            const sunLight = new THREE.DirectionalLight(0xfff7ed, 1.25);
+            const sunLight = new THREE.DirectionalLight(0xfff7ed, 1.3);
             sunLight.position.set(20, 15, 25);
             scene.add(sunLight);
 
-            const corePointLight = new THREE.PointLight(0xffedd5, 1.5, 30);
+            const corePointLight = new THREE.PointLight(0xffedd5, 1.8, 30);
             corePointLight.position.set(0, 0, 0);
             scene.add(corePointLight);
 
-            // Derin Uzay Yıldızları (Parçacık Bulutu)
+            // Yıldızlar
             const starGeo = new THREE.BufferGeometry();
             const starCount = 1000;
             const starPos = new Float32Array(starCount * 3);
@@ -830,29 +835,27 @@
             const stars = new THREE.Points(starGeo, starMat);
             scene.add(stars);
 
-            // Ana Dünya Modeli Grubu
+            // Ana Model Grubu
             earthGroup = new THREE.Group();
             scene.add(earthGroup);
 
-            // Doku Nesneleri
+            // Dokular
             const earthTex = generateEarthTexture();
             const mantleTex = generateMantleTexture();
             const outerCoreTex = generateOuterCoreTexture();
             const innerCoreTex = generateInnerCoreTexture();
             const crustTex = generateCrustStrataTexture();
 
-            // ==========================================
-            // KATMANLARI OLUŞTUR (REFERANS GÖRSEL BİREBİR)
-            // ==========================================
-
-            // 1. HAVA KÜRE (ATMOSFER) - Şeffaf Dış Işıltı Küresi
+            // 1. HAVA KÜRE (ATMOSFER) - Şeffaf Dış Küre
             const atmoGeo = new THREE.SphereGeometry(5.2, 48, 48);
-            const atmoMat = new THREE.MeshBasicMaterial({
+            const atmoMat = new THREE.MeshStandardMaterial({
                 color: 0x38bdf8,
                 transparent: true,
-                opacity: 0.18,
-                side: THREE.BackSide,
-                wireframe: false
+                opacity: 0.75,
+                emissive: 0x0284c7,
+                emissiveIntensity: 0.6,
+                roughness: 0.3,
+                side: THREE.DoubleSide
             });
             const atmoMesh = new THREE.Mesh(atmoGeo, atmoMat);
             atmoMesh.userData = { layerId: 'havakure', name: '1. Hava Küre (Atmosfer)', baseColor: 0x38bdf8 };
@@ -860,41 +863,65 @@
             layerMeshes.havakure = atmoMesh;
             clickableObjects.push(atmoMesh);
 
-            // 2. DIŞ DÜNYA KABUĞU (SU VE TAŞ KÜRE) - 180 Derece Kesit Yarımküre
-            // X eksenine doğru kesilmiş, içi açık
+            // 2. SU KÜRE (HİDROSFER) - Mavi Okyanus Küresi
+            const oceanGeo = new THREE.SphereGeometry(4.84, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
+            const oceanMat = new THREE.MeshStandardMaterial({
+                color: 0x0ea5e9,
+                transparent: true,
+                opacity: 0.95,
+                emissive: 0x0284c7,
+                emissiveIntensity: 0.4,
+                roughness: 0.2,
+                side: THREE.DoubleSide
+            });
+            const oceanMesh = new THREE.Mesh(oceanGeo, oceanMat);
+            oceanMesh.rotation.y = Math.PI / 2;
+            oceanMesh.userData = { layerId: 'sukure', name: '2. Su Küre (Hidrosfer)', baseColor: 0x0284c7 };
+            earthGroup.add(oceanMesh);
+            layerMeshes.sukure = oceanMesh;
+            clickableObjects.push(oceanMesh);
+
+            // 3. TAŞ KÜRE (YER KABUĞU / LİTOSFER) - Kıtalar ve Kayaç Kesit Kenarı
             const crustGeo = new THREE.SphereGeometry(4.8, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
             const crustMat = new THREE.MeshStandardMaterial({
                 map: earthTex,
-                roughness: 0.65,
+                roughness: 0.6,
                 metalness: 0.1,
+                transparent: true,
+                opacity: 1.0,
                 side: THREE.DoubleSide
             });
             const crustMesh = new THREE.Mesh(crustGeo, crustMat);
             crustMesh.rotation.y = Math.PI / 2;
-            crustMesh.userData = { layerId: 'yercabugu', name: '3. Taş Küre & 2. Su Küre', baseColor: 0x10b981 };
+            crustMesh.userData = { layerId: 'yercabugu', name: '3. Taş Küre (Yer Kabuğu)', baseColor: 0x10b981 };
             earthGroup.add(crustMesh);
             layerMeshes.yercabugu = crustMesh;
             clickableObjects.push(crustMesh);
 
-            // 2b. Taş Küre Kesit Çemberi (Litosfer Kalınlık Kenarı)
+            // Taş Küre Kesit Çemberi (Litosfer Kalınlık Kenarı)
             const crustRimGeo = new THREE.RingGeometry(3.9, 4.8, 48);
             const crustRimMat = new THREE.MeshStandardMaterial({
                 map: crustTex,
                 roughness: 0.8,
+                transparent: true,
+                opacity: 1.0,
                 side: THREE.DoubleSide
             });
             const crustRimMesh = new THREE.Mesh(crustRimGeo, crustRimMat);
             crustRimMesh.rotation.y = Math.PI / 2;
             crustMesh.add(crustRimMesh);
+            layerMeshes.crustRim = crustRimMesh;
 
-            // 3. ATEŞ KÜRE (MANTO / MAGMA) - İkinci İçiçe Kırmızı Magma Yarımküresi
+            // 4. ATEŞ KÜRE (MANTO / MAGMA) - Kızgın Magma Yarımküresi
             const mantleGeo = new THREE.SphereGeometry(3.9, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
             const mantleMat = new THREE.MeshStandardMaterial({
                 map: mantleTex,
-                roughness: 0.5,
+                roughness: 0.45,
                 metalness: 0.15,
-                emissive: 0x7f1d1d,
-                emissiveIntensity: 0.45,
+                emissive: 0xef4444,
+                emissiveIntensity: 0.5,
+                transparent: true,
+                opacity: 1.0,
                 side: THREE.DoubleSide
             });
             const mantleMesh = new THREE.Mesh(mantleGeo, mantleMat);
@@ -904,25 +931,30 @@
             layerMeshes.manto = mantleMesh;
             clickableObjects.push(mantleMesh);
 
-            // 3b. Manto Kesit Çemberi (Kızgın Magma İç Yüzeyi)
+            // Manto Kesit Çemberi
             const mantleRimGeo = new THREE.RingGeometry(2.4, 3.9, 48);
             const mantleRimMat = new THREE.MeshStandardMaterial({
                 map: mantleTex,
-                emissive: 0x991b1b,
+                emissive: 0xd97706,
                 emissiveIntensity: 0.6,
+                transparent: true,
+                opacity: 1.0,
                 side: THREE.DoubleSide
             });
             const mantleRimMesh = new THREE.Mesh(mantleRimGeo, mantleRimMat);
             mantleRimMesh.rotation.y = Math.PI / 2;
             mantleMesh.add(mantleRimMesh);
+            layerMeshes.mantleRim = mantleRimMesh;
 
-            // 4. DIŞ ÇEKİRDEK (SIVI DEMİR-NİKEL) - Üçüncü Akkor Turuncu Yarımküre
+            // 5a. AĞIR KÜRE (DIŞ ÇEKİRDEK) - Sıvı Demir-Nikel Yarımküresi
             const outerCoreGeo = new THREE.SphereGeometry(2.4, 48, 32, -Math.PI / 2, Math.PI, 0, Math.PI);
             const outerCoreMat = new THREE.MeshStandardMaterial({
                 map: outerCoreTex,
                 roughness: 0.3,
-                emissive: 0xd97706,
-                emissiveIntensity: 0.8,
+                emissive: 0xea580c,
+                emissiveIntensity: 0.85,
+                transparent: true,
+                opacity: 1.0,
                 side: THREE.DoubleSide
             });
             const outerCoreMesh = new THREE.Mesh(outerCoreGeo, outerCoreMat);
@@ -932,25 +964,30 @@
             layerMeshes.outerCore = outerCoreMesh;
             clickableObjects.push(outerCoreMesh);
 
-            // 4b. Dış Çekirdek Kesit Çemberi
+            // Dış Çekirdek Kesit Çemberi
             const outerCoreRimGeo = new THREE.RingGeometry(1.25, 2.4, 48);
             const outerCoreRimMat = new THREE.MeshStandardMaterial({
                 map: outerCoreTex,
-                emissive: 0xea580c,
+                emissive: 0xf59e0b,
                 emissiveIntensity: 0.9,
+                transparent: true,
+                opacity: 1.0,
                 side: THREE.DoubleSide
             });
             const outerCoreRimMesh = new THREE.Mesh(outerCoreRimGeo, outerCoreRimMat);
             outerCoreRimMesh.rotation.y = Math.PI / 2;
             outerCoreMesh.add(outerCoreRimMesh);
+            layerMeshes.outerCoreRim = outerCoreRimMesh;
 
-            // 5. İÇ ÇEKİRDEK (KATI DEMİR-NİKEL) - En Merkezdeki Parlak Küre
+            // 5b. AĞIR KÜRE (İÇ ÇEKİRDEK) - Akkor Katı Çekirdek Küresi
             const innerCoreGeo = new THREE.SphereGeometry(1.25, 48, 48);
             const innerCoreMat = new THREE.MeshStandardMaterial({
                 map: innerCoreTex,
                 emissive: 0xfef08a,
-                emissiveIntensity: 1.2,
-                roughness: 0.2
+                emissiveIntensity: 1.5,
+                roughness: 0.2,
+                transparent: true,
+                opacity: 1.0
             });
             const innerCoreMesh = new THREE.Mesh(innerCoreGeo, innerCoreMat);
             innerCoreMesh.userData = { layerId: 'cekirdek', subType: 'ic', name: '5. Ağır Küre (İç Çekirdek)', baseColor: 0xffffff };
@@ -958,7 +995,22 @@
             layerMeshes.innerCore = innerCoreMesh;
             clickableObjects.push(innerCoreMesh);
 
-            // Sahne Tıklama & Raycasting Etkileşimi
+            // ==========================================
+            // 🌟 3B PARLAK VURGU ÇEMBERİ (SELECTION HALO)
+            // ==========================================
+            const ringGeo = new THREE.TorusGeometry(1, 0.08, 16, 64);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0x22d3ee,
+                wireframe: false,
+                transparent: true,
+                opacity: 0.95
+            });
+            selectionRing = new THREE.Mesh(ringGeo, ringMat);
+            selectionRing.rotation.y = Math.PI / 2;
+            selectionRing.visible = true;
+            earthGroup.add(selectionRing);
+
+            // Tıklama & Raycasting Etkileşimi
             let pointerDownPos = { x: 0, y: 0 };
             canvas.addEventListener('pointerdown', (e) => {
                 pointerDownPos.x = e.clientX;
@@ -967,7 +1019,7 @@
 
             canvas.addEventListener('pointerup', (e) => {
                 const dist = Math.hypot(e.clientX - pointerDownPos.x, e.clientY - pointerDownPos.y);
-                if (dist > 6) return; // Sürükleme hareketi ise tıklamayı sayma
+                if (dist > 6) return;
 
                 const rect = canvas.getBoundingClientRect();
                 mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -982,16 +1034,16 @@
                         hitMesh = hitMesh.parent;
                     }
                     if (hitMesh && hitMesh.userData.layerId) {
-                        selectLayer(hitMesh.userData.layerId, false);
-                        showNotification(hitMesh.userData.name || "Katman İnceleniyor");
+                        selectLayer(hitMesh.userData.layerId, true);
                     }
                 }
             });
 
-            // Pencere Boyutlandırma
             window.addEventListener('resize', onWindowResize);
 
-            // Animasyon Döngüsü
+            // İlk katman vurgusunu başlat
+            update3DLayerHighlight('havakure');
+
             animate();
         }
 
@@ -1007,25 +1059,155 @@
             renderer.setSize(w, h);
         }
 
+        // ==========================================
+        // 🌟 KATMANI 3B'DE BELİRGİN HALE GETİRME MOTORU
+        // ==========================================
+        function update3DLayerHighlight(key) {
+            if (!layerMeshes.havakure || !selectionRing) return;
+
+            const ringConfigs = {
+                havakure: { radius: 5.25, color: 0x38bdf8, name: "1. Hava Küre (Atmosfer)" },
+                sukure: { radius: 4.88, color: 0x0284c7, name: "2. Su Küre (Hidrosfer)" },
+                yercabugu: { radius: 4.82, color: 0x10b981, name: "3. Taş Küre (Yer Kabuğu)" },
+                manto: { radius: 3.92, color: 0xf59e0b, name: "4. Ateş Küre (Manto)" },
+                cekirdek: { radius: 2.45, color: 0xef4444, name: "5. Ağır Küre (Çekirdek)" }
+            };
+
+            const cfg = ringConfigs[key] || ringConfigs.havakure;
+
+            // 1. Parlak 3B Vurgu Çemberini Konumlandır ve Renklendir
+            selectionRing.visible = true;
+            selectionRing.scale.set(cfg.radius, cfg.radius, 1);
+            selectionRing.material.color.setHex(cfg.color);
+
+            // 2. Odak Modu: Seçilen katmanı parlat, diğerlerini yarı-saydamlaştır
+            const ghostOpacity = isFocusModeActive ? 0.22 : 0.95;
+
+            // Hava Küre
+            if (layerMeshes.havakure) {
+                if (key === 'havakure') {
+                    layerMeshes.havakure.material.opacity = 0.75;
+                    layerMeshes.havakure.material.emissive.setHex(0x0284c7);
+                    layerMeshes.havakure.material.emissiveIntensity = 1.2;
+                } else {
+                    layerMeshes.havakure.material.opacity = isFocusModeActive ? 0.08 : 0.18;
+                    layerMeshes.havakure.material.emissive.setHex(0x000000);
+                    layerMeshes.havakure.material.emissiveIntensity = 0;
+                }
+            }
+
+            // Su Küre
+            if (layerMeshes.sukure) {
+                if (key === 'sukure') {
+                    layerMeshes.sukure.material.opacity = 1.0;
+                    layerMeshes.sukure.material.emissive.setHex(0x0284c7);
+                    layerMeshes.sukure.material.emissiveIntensity = 1.5;
+                } else {
+                    layerMeshes.sukure.material.opacity = ghostOpacity;
+                    layerMeshes.sukure.material.emissive.setHex(0x000000);
+                    layerMeshes.sukure.material.emissiveIntensity = 0;
+                }
+            }
+
+            // Taş Küre (Yer Kabuğu)
+            if (layerMeshes.yercabugu) {
+                if (key === 'yercabugu') {
+                    layerMeshes.yercabugu.material.opacity = 1.0;
+                    layerMeshes.yercabugu.material.emissive.setHex(0x10b981);
+                    layerMeshes.yercabugu.material.emissiveIntensity = 0.9;
+                    if (layerMeshes.crustRim) {
+                        layerMeshes.crustRim.material.opacity = 1.0;
+                        layerMeshes.crustRim.material.emissive = new THREE.Color(0x10b981);
+                    }
+                } else {
+                    layerMeshes.yercabugu.material.opacity = ghostOpacity;
+                    layerMeshes.yercabugu.material.emissive.setHex(0x000000);
+                    layerMeshes.yercabugu.material.emissiveIntensity = 0;
+                    if (layerMeshes.crustRim) {
+                        layerMeshes.crustRim.material.opacity = ghostOpacity;
+                        layerMeshes.crustRim.material.emissive = new THREE.Color(0x000000);
+                    }
+                }
+            }
+
+            // Ateş Küre (Manto)
+            if (layerMeshes.manto) {
+                if (key === 'manto') {
+                    layerMeshes.manto.material.opacity = 1.0;
+                    layerMeshes.manto.material.emissive.setHex(0xff3300);
+                    layerMeshes.manto.material.emissiveIntensity = 1.4;
+                    if (layerMeshes.mantleRim) {
+                        layerMeshes.mantleRim.material.opacity = 1.0;
+                        layerMeshes.mantleRim.material.emissive.setHex(0xffaa00);
+                    }
+                } else {
+                    layerMeshes.manto.material.opacity = ghostOpacity;
+                    layerMeshes.manto.material.emissive.setHex(0x550000);
+                    layerMeshes.manto.material.emissiveIntensity = 0.2;
+                    if (layerMeshes.mantleRim) {
+                        layerMeshes.mantleRim.material.opacity = ghostOpacity;
+                        layerMeshes.mantleRim.material.emissive.setHex(0x000000);
+                    }
+                }
+            }
+
+            // Ağır Küre (Dış & İç Çekirdek)
+            if (layerMeshes.outerCore && layerMeshes.innerCore) {
+                if (key === 'cekirdek') {
+                    layerMeshes.outerCore.material.opacity = 1.0;
+                    layerMeshes.outerCore.material.emissive.setHex(0xff6600);
+                    layerMeshes.outerCore.material.emissiveIntensity = 1.5;
+
+                    layerMeshes.innerCore.material.opacity = 1.0;
+                    layerMeshes.innerCore.material.emissive.setHex(0xffffff);
+                    layerMeshes.innerCore.material.emissiveIntensity = 2.2;
+                } else {
+                    layerMeshes.outerCore.material.opacity = ghostOpacity;
+                    layerMeshes.outerCore.material.emissive.setHex(0x882200);
+                    layerMeshes.outerCore.material.emissiveIntensity = 0.3;
+
+                    layerMeshes.innerCore.material.opacity = isFocusModeActive ? 0.35 : 1.0;
+                    layerMeshes.innerCore.material.emissive.setHex(0xffaa00);
+                    layerMeshes.innerCore.material.emissiveIntensity = 0.5;
+                }
+            }
+
+            showNotification("✨ " + cfg.name + " Belirginleştirildi");
+        }
+
         // Animasyon ve Render Döngüsü
         function animate() {
             requestAnimationFrame(animate);
 
-            // Otomatik Yavaş Dönüş
+            // Yavaş Dönüş
             if (isAutoRotate && earthGroup) {
                 earthGroup.rotation.y += 0.0035;
             }
 
-            // Katmanları Ayırma (Exploded View Interpolasyonu)
+            // Patlatılmış Kesit (Exploded View) Interpolasyonu
             explodeFactor += (targetExplode - explodeFactor) * 0.08;
 
             if (layerMeshes.havakure) {
-                // Katmanların X ekseni boyunca referans fotoğraftaki gibi açılması
                 layerMeshes.havakure.position.x = -4.5 * explodeFactor;
+                if (layerMeshes.sukure) layerMeshes.sukure.position.x = -2.85 * explodeFactor;
                 layerMeshes.yercabugu.position.x = -2.8 * explodeFactor;
                 layerMeshes.manto.position.x = -0.6 * explodeFactor;
                 layerMeshes.outerCore.position.x = 1.8 * explodeFactor;
                 layerMeshes.innerCore.position.x = 4.2 * explodeFactor;
+            }
+
+            // Vurgu Çemberi (Pulsing Glow ve Katman Takibi)
+            if (selectionRing && selectionRing.visible) {
+                const pulse = 1 + Math.sin(Date.now() * 0.006) * 0.04;
+                let targetX = 0;
+                if (activeLayerKey === 'havakure') targetX = layerMeshes.havakure.position.x;
+                else if (activeLayerKey === 'sukure') targetX = layerMeshes.sukure ? layerMeshes.sukure.position.x : layerMeshes.yercabugu.position.x;
+                else if (activeLayerKey === 'yercabugu') targetX = layerMeshes.yercabugu.position.x;
+                else if (activeLayerKey === 'manto') targetX = layerMeshes.manto.position.x;
+                else if (activeLayerKey === 'cekirdek') targetX = layerMeshes.innerCore.position.x;
+
+                selectionRing.position.x = targetX;
+                selectionRing.scale.y = selectionRing.scale.x * pulse;
             }
 
             controls.update();
@@ -1044,11 +1226,11 @@
 
             if (isExploded) {
                 btnText.innerText = "Katmanları Birleştir";
-                statusBadge.innerText = "Patlatılmış Kesit Aktif";
+                statusBadge.innerText = "💥 Patlatılmış Kesit";
                 showNotification("💥 Katmanlar Ayrıldı: İç yapıyı detaylı inceleyebilirsiniz!");
             } else {
                 btnText.innerText = "Katmanları Ayır";
-                statusBadge.innerText = "Küre Modu Aktif";
+                statusBadge.innerText = "🎯 Katman Odak Modu";
                 showNotification("🌐 Katmanlar Birleştirildi");
             }
         }
@@ -1057,7 +1239,7 @@
             targetExplode = val / 100;
             isExploded = targetExplode > 0.5;
             document.getElementById('explodeBtnText').innerText = isExploded ? "Katmanları Birleştir" : "Katmanları Ayır";
-            document.getElementById('sceneStatusBadge').innerText = targetExplode > 0.05 ? "Kesit Görünümü (" + val + "%)" : "Küre Modu";
+            document.getElementById('sceneStatusBadge').innerText = targetExplode > 0.05 ? "Kesit Görünümü (" + val + "%)" : "🎯 Katman Odak Modu";
         }
 
         function toggleAutoRotate() {
@@ -1067,12 +1249,29 @@
             btnText.innerText = isAutoRotate ? "Dönüş: Açık" : "Dönüş: Kapalı";
         }
 
+        function toggleFocusMode() {
+            playTone('click');
+            isFocusModeActive = !isFocusModeActive;
+            const btnText = document.getElementById('focusModeText');
+            const icon = document.getElementById('focusModeIcon');
+            if (isFocusModeActive) {
+                btnText.innerText = "Vurgu: Açık";
+                icon.className = "fa-solid fa-bullseye text-cyan-400";
+                showNotification("🎯 Katman Vurgu Modu Açık");
+            } else {
+                btnText.innerText = "Tümü Parlak";
+                icon.className = "fa-solid fa-eye text-slate-400";
+                showNotification("👁️ Tüm Katmanlar Gösteriliyor");
+            }
+            update3DLayerHighlight(activeLayerKey);
+        }
+
         function resetCameraView() {
             playTone('click');
-            camera.position.set(13, 5, 15);
+            camera.position.set(12, 5.5, 14);
             controls.target.set(0, 0, 0);
             controls.update();
-            showNotification("🔍 Kamera Açısı Sıfırlandı");
+            showNotification("🔍 3B Kesit Açısına Sıfırlandı");
         }
 
         function focusOnSelectedLayer() {
@@ -1084,7 +1283,7 @@
             else if (activeLayerKey === 'cekirdek') targetX = 3.0 * explodeFactor;
 
             controls.target.set(targetX, 0, 0);
-            camera.position.set(targetX + 6, 2, 8);
+            camera.position.set(targetX + 6, 2.5, 8.5);
             controls.update();
             showNotification("🎯 Katmana Odaklanıldı");
         }
@@ -1104,9 +1303,9 @@
         }
 
         // ==========================================
-        // UI & BİLGİ KARTI MANTIĞI
+        // UI & BİLGİ KARTI SEÇİMİ
         // ==========================================
-        function selectLayer(key, shouldHighlight3D = true) {
+        function selectLayer(key, isUserClick = true) {
             activeLayerKey = key;
             playTone('layerSelect');
             const data = layersData[key];
@@ -1133,37 +1332,21 @@
                 bulletsContainer.appendChild(li);
             });
 
-            // Buton Aktiflik Durumları
+            // Buton Aktiflik Durumları & Renk Çerçeveleri
             const allBtns = ['havakure', 'sukure', 'yercabugu', 'manto', 'cekirdek'];
             allBtns.forEach(k => {
                 const b = document.getElementById('btn-' + k);
                 if (b) {
                     if (k === key) {
-                        b.classList.add('border-cyan-400', 'bg-cyan-950/80', 'ring-2', 'ring-cyan-500/40');
-                        b.classList.remove('border-slate-700/80', 'bg-slate-800/80');
+                        b.className = "p-2.5 rounded-2xl border-2 border-cyan-400 bg-cyan-950/90 ring-2 ring-cyan-500/50 shadow-lg shadow-cyan-500/20 transition-all flex flex-col items-center text-center group cursor-pointer scale-[1.03]";
                     } else {
-                        b.classList.remove('border-cyan-400', 'bg-cyan-950/80', 'ring-2', 'ring-cyan-500/40');
-                        b.classList.add('border-slate-700/80', 'bg-slate-800/80');
+                        b.className = "p-2.5 rounded-2xl border-2 border-slate-700/80 bg-slate-800/80 hover:bg-slate-700/90 transition-all flex flex-col items-center text-center group cursor-pointer opacity-75 hover:opacity-100";
                     }
                 }
             });
 
-            // 3B Modelde Parlama Efekti
-            if (shouldHighlight3D && layerMeshes) {
-                // Geçici olarak ilgili katmanı vurgula
-                let targetMesh = layerMeshes[key] || (key === 'sukure' ? layerMeshes.yercabugu : null);
-                if (key === 'cekirdek') targetMesh = layerMeshes.innerCore;
-                
-                if (targetMesh && targetMesh.material) {
-                    const origEmissive = targetMesh.material.emissiveIntensity || 0;
-                    targetMesh.material.emissiveIntensity = 1.6;
-                    setTimeout(() => {
-                        targetMesh.material.emissiveIntensity = origEmissive;
-                    }, 800);
-                }
-            }
-
-            showNotification(data.title + " İnceleniyor");
+            // 3B Modelde Anında Belirginleştir
+            update3DLayerHighlight(key);
         }
 
         // Simülasyon Başlatma
@@ -1180,7 +1363,6 @@
             document.getElementById('welcomeScreen').classList.add('hidden');
             document.getElementById('simScreen').classList.remove('hidden');
 
-            // 3B Sahneyi Başlat
             setTimeout(() => {
                 initThreeScene();
                 selectLayer('havakure', false);
