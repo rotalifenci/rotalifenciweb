@@ -64,23 +64,23 @@
         body, html {
             margin: 0;
             padding: 0;
-            width: 100%;
-            height: 100%;
+            width: 100vw;
             height: 100dvh;
+            max-height: 100dvh;
             overflow: hidden;
             background-color: #0c1427;
             color: #f8fafc;
             font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         #webgl-container {
             width: 100%;
             height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
+            position: relative;
             touch-action: none !important;
+            overflow: hidden;
         }
 
         /* Özel Kaydırıcı Stilleri (Akıllı Tahta Dokunmatik Uyumlu) */
@@ -181,462 +181,476 @@
         }
     </style>
 </head>
-<body class="h-full w-full overflow-hidden flex flex-col justify-between bg-slate-950 text-slate-100">
-
-    <!-- 3D WebGL Canvas Alanı -->
-    <div id="webgl-container"></div>
+<body class="w-screen h-screen overflow-hidden flex flex-col bg-slate-950 text-slate-100 select-none" style="width: 100vw; height: 100dvh; max-height: 100dvh;">
 
     <!-- 🔝 ÜST BAŞLIK VE MODÜL MENÜSÜ -->
-    <header class="relative z-20 w-full px-3 py-2 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white flex items-center justify-between shrink-0 shadow-md">
-        <!-- Logo ve Başlık -->
-        <div class="flex items-center gap-2 sm:gap-3">
-            <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_15px_rgba(6,182,212,0.6)]">
-                <i class="fa-solid fa-atom text-base sm:text-lg animate-spin-slow"></i>
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <span class="text-xs sm:text-sm font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-amber-300 uppercase tracking-wider">
-                        KUVVET LABORATUVARI
+    <header class="w-full shrink-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-slate-800 text-white shadow-md select-none px-2.5 py-1 sm:py-1.5">
+        <!-- Mobil Görünüm: İki Kompakt Satır (< 768px) -->
+        <div class="flex flex-col md:hidden gap-1">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5">
+                    <div class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_10px_rgba(6,182,212,0.6)] shrink-0">
+                        <i class="fa-solid fa-atom text-xs animate-spin-slow"></i>
+                    </div>
+                    <span class="text-xs font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-amber-300 tracking-wider">
+                        KUVVET LAB
                     </span>
-                    <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40 hidden md:inline">
-                        6. SINIF • MAARİF MODELİ
+                    <span class="text-[8px] font-bold px-1.5 py-0.2 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/30">
+                        6. SINIF
                     </span>
                 </div>
-                <p class="text-[10px] text-slate-300 font-medium hidden sm:block">
-                    Kuvvetleri Dengele, Hareketi Keşfet! • Rotalı Fenci
-                </p>
+                <div class="flex items-center gap-1">
+                    <button type="button" onclick="openQuizModal()" class="px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-[10px] rounded-lg shadow flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-award"></i> <span>Test</span>
+                    </button>
+                    <button type="button" onclick="openObservationLogModal()" class="p-1 bg-slate-800 text-cyan-300 rounded-lg border border-cyan-500/30 text-[10px] cursor-pointer" title="Gözlem Tablosu">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                    </button>
+                    <button type="button" onclick="toggleFullscreen()" class="p-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 text-[10px] cursor-pointer" title="Tam Ekran">
+                        <i class="fa-solid fa-expand" id="fullscreen-icon-mobile"></i>
+                    </button>
+                </div>
             </div>
+            <!-- Modül Butonları Mobil Şerit -->
+            <nav class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5">
+                <button type="button" onclick="switchExperiment(1)" id="nav-btn-1" class="nav-module-btn px-2 py-1 rounded-lg font-black text-[11px] whitespace-nowrap shrink-0 bg-cyan-600 text-white border border-cyan-500">
+                    1. Keşfet
+                </button>
+                <button type="button" onclick="switchExperiment(2)" id="nav-btn-2" class="nav-module-btn px-2 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700">
+                    2. Halat
+                </button>
+                <button type="button" onclick="switchExperiment(3)" id="nav-btn-3" class="nav-module-btn px-2 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700">
+                    3. Hareket
+                </button>
+                <button type="button" onclick="switchExperiment(4)" id="nav-btn-4" class="nav-module-btn px-2 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700">
+                    4. Denge
+                </button>
+                <button type="button" onclick="switchExperiment(5)" id="nav-btn-5" class="nav-module-btn px-2 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700">
+                    5. Dedektif
+                </button>
+            </nav>
         </div>
 
-        <!-- 5 Deney Modülü Seçici Butonları -->
-        <nav class="flex items-center gap-1 sm:gap-1.5 overflow-x-auto py-0.5 px-1 max-w-[62vw] no-scrollbar">
-            <button type="button" onclick="switchExperiment(1)" id="nav-btn-1" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 shrink-0 bg-cyan-600 text-white border border-cyan-600 shadow-md shadow-cyan-600/30" title="1. Kuvvetleri Keşfet">
-                <i class="fa-solid fa-arrows-left-right text-xs"></i>
-                <span class="hidden md:inline">1. Kuvvetleri Keşfet</span>
-                <span class="md:hidden">1. Keşfet</span>
-            </button>
-            <button type="button" onclick="switchExperiment(2)" id="nav-btn-2" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700 hover:text-white shadow-xs" title="2. Halat Çekme Yarışması">
-                <i class="fa-solid fa-people-pulling text-xs"></i>
-                <span class="hidden md:inline">2. Halat Çekme</span>
-                <span class="md:hidden">2. Halat</span>
-            </button>
-            <button type="button" onclick="switchExperiment(3)" id="nav-btn-3" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700 hover:text-white shadow-xs" title="3. Kutuyu Hareket Ettir">
-                <i class="fa-solid fa-truck-ramp-box text-xs"></i>
-                <span class="hidden md:inline">3. Kutuyu Hareket Ettir</span>
-                <span class="md:hidden">3. Hareket</span>
-            </button>
-            <button type="button" onclick="switchExperiment(4)" id="nav-btn-4" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700 hover:text-white shadow-xs" title="4. Dengeleyici Kuvveti Bul">
-                <i class="fa-solid fa-scale-balanced text-xs"></i>
-                <span class="hidden md:inline">4. Dengeleyici Kuvvet</span>
-                <span class="md:hidden">4. Denge</span>
-            </button>
-            <button type="button" onclick="switchExperiment(5)" id="nav-btn-5" class="nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700 hover:text-white shadow-xs" title="5. Kuvvet Dedektifi">
-                <i class="fa-solid fa-magnifying-glass text-xs"></i>
-                <span class="hidden md:inline">5. Kuvvet Dedektifi</span>
-                <span class="md:hidden">5. Dedektif</span>
-            </button>
-        </nav>
+        <!-- Masaüstü & Akıllı Tahta Görünüm: Tek Zarif Satır (>= 768px) -->
+        <div class="hidden md:flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 shrink-0">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-[0_0_12px_rgba(6,182,212,0.6)]">
+                    <i class="fa-solid fa-atom text-base animate-spin-slow"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm lg:text-base font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-amber-300 tracking-wider">
+                            KUVVET LABORATUVARI
+                        </span>
+                        <span class="text-[9px] font-extrabold px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-500/40">
+                            6. SINIF • MAARİF MODELİ
+                        </span>
+                    </div>
+                </div>
+            </div>
 
-        <!-- Sağ Yardımcı Butonlar: Test, Tablo, Tam Ekran -->
-        <div class="flex items-center gap-1.5 shrink-0">
-            <button type="button" onclick="openQuizModal()" class="px-2.5 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow-[0_0_12px_rgba(245,158,11,0.5)] transition-all flex items-center gap-1.5 active:scale-95" title="10 Soruluk Ölçme ve Değerlendirme">
-                <i class="fa-solid fa-award"></i>
-                <span class="hidden lg:inline">Ölçme Testi</span>
-            </button>
-            <button type="button" onclick="openObservationLogModal()" class="p-1.5 sm:px-2.5 sm:py-1.5 bg-slate-900 hover:bg-slate-800 text-cyan-300 font-bold text-xs rounded-xl border border-cyan-500/30 transition-all flex items-center gap-1" title="Öğretmen Gözlem Tablosu">
-                <i class="fa-solid fa-clipboard-list"></i>
-                <span class="hidden lg:inline">Gözlem Tablosu</span>
-            </button>
-            <button type="button" onclick="toggleFullscreen()" class="w-8 h-8 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all" title="Tam Ekran">
-                <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
-            </button>
+            <!-- Modül Seçici -->
+            <nav class="flex items-center gap-1 lg:gap-1.5">
+                <button type="button" onclick="switchExperiment(1)" id="nav-btn-1-dt" class="nav-module-btn-dt px-2.5 py-1 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 bg-cyan-600 text-white border border-cyan-500 shadow-sm cursor-pointer">
+                    <i class="fa-solid fa-arrows-left-right text-xs"></i> <span>1. Kuvvetleri Keşfet</span>
+                </button>
+                <button type="button" onclick="switchExperiment(2)" id="nav-btn-2-dt" class="nav-module-btn-dt px-2.5 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer">
+                    <i class="fa-solid fa-people-pulling text-xs"></i> <span>2. Halat Çekme</span>
+                </button>
+                <button type="button" onclick="switchExperiment(3)" id="nav-btn-3-dt" class="nav-module-btn-dt px-2.5 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer">
+                    <i class="fa-solid fa-truck-ramp-box text-xs"></i> <span>3. Kutuyu Hareket Ettir</span>
+                </button>
+                <button type="button" onclick="switchExperiment(4)" id="nav-btn-4-dt" class="nav-module-btn-dt px-2.5 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer">
+                    <i class="fa-solid fa-scale-balanced text-xs"></i> <span>4. Dengeleyici Kuvvet</span>
+                </button>
+                <button type="button" onclick="switchExperiment(5)" id="nav-btn-5-dt" class="nav-module-btn-dt px-2.5 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i> <span>5. Kuvvet Dedektifi</span>
+                </button>
+            </nav>
+
+            <!-- Sağ Butonlar -->
+            <div class="flex items-center gap-1.5 shrink-0">
+                <button type="button" onclick="openQuizModal()" class="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-award"></i> <span>Ölçme Testi</span>
+                </button>
+                <button type="button" onclick="openObservationLogModal()" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs rounded-xl border border-cyan-500/30 transition-all flex items-center gap-1 cursor-pointer">
+                    <i class="fa-solid fa-clipboard-list"></i> <span class="hidden lg:inline">Gözlem Tablosu</span>
+                </button>
+                <button type="button" onclick="toggleFullscreen()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all cursor-pointer" title="Tam Ekran">
+                    <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+                </button>
+            </div>
         </div>
     </header>
 
-    <!-- 📊 ORTA DİNAMİK CANLI BİLGİ HUD ŞERİDİ (Bileşke Kuvvet & Durum Göstergesi) -->
-    <div class="relative z-10 w-full px-3 sm:px-4 pt-1.5 sm:pt-2 pointer-events-none flex flex-col sm:flex-row items-start justify-between gap-2">
+    <!-- 🌟 ANA ÇALIŞMA ALANI (Split-Screen on Desktop/Pardus, Vertical Stack on Mobile) -->
+    <main class="flex-1 min-h-0 w-full overflow-hidden p-1.5 sm:p-2 lg:p-2.5 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 sm:gap-2 lg:gap-3">
         
-        <!-- Sol Panel: Anlık Kuvvetler & Vektör Özeti -->
-        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl w-full sm:max-w-xs pointer-events-auto transition-all duration-200">
-            <div class="text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1.5 flex items-center justify-between">
-                <span><i class="fa-solid fa-gauge text-cyan-400"></i> KUVVET VEKTÖRLERİ</span>
-                <span id="force-math-compact" class="text-cyan-300 font-mono text-[10px]"></span>
-            </div>
-            <div class="space-y-1.5 text-xs font-bold">
-                <div class="flex items-center justify-between text-emerald-400 bg-emerald-950/40 px-2 py-1 rounded-lg border border-emerald-500/20">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-right text-emerald-400"></i> Sağa Kuvvet (F₁):</span>
-                    <span id="hud-val-right" class="font-mono font-black text-sm">15 N</span>
-                </div>
-                <div class="flex items-center justify-between text-rose-400 bg-rose-950/40 border border-rose-700/60 text-slate-100 px-2 py-1 rounded-lg border border-rose-500/20">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-left text-rose-400"></i> Sola Kuvvet (F₂):</span>
-                    <span id="hud-val-left" class="font-mono font-black text-sm">9 N</span>
-                </div>
-                <div class="flex items-center justify-between text-sky-400 bg-sky-950/50 px-2 py-1.5 rounded-lg border border-sky-500/40 shadow-inner">
-                    <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-sky-400"></i> Bileşke Kuvvet (R):</span>
-                    <span id="hud-val-net" class="font-mono font-black text-sm sm:text-base text-sky-300">6 N Sağa</span>
+        <!-- ⬅️ SOL / ORTA GENİŞ ALAN: 3D Sahne + Canlı HUD + Sürgüler (%60-%65) -->
+        <section class="flex flex-col min-h-0 w-full h-[32dvh] sm:h-[36dvh] lg:h-full lg:col-span-7 xl:col-span-8 gap-1.5 sm:gap-2">
+            <!-- 3D Canvas Sahnesi (Kutu, İp, Çocuklar, Oklar) -->
+            <div class="relative flex-1 min-h-0 w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 shadow-inner">
+                <div id="webgl-container" class="w-full h-full"></div>
+                
+                <!-- Sahne İçi Mini Rozet -->
+                <div class="absolute top-2 left-2 pointer-events-none flex items-center gap-1.5 z-10">
+                    <span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-slate-950/80 text-cyan-300 border border-cyan-500/30 backdrop-blur-sm">
+                        <i class="fa-solid fa-cube mr-1"></i> 3D Simülasyon
+                    </span>
                 </div>
             </div>
-        </div>
 
-        <!-- Sağ Panel: Dengelenmiş / Dengelenmemiş Durum Rozeti -->
-        <div class="hud-glass rounded-2xl p-2.5 sm:p-3 border border-slate-800 shadow-xl pointer-events-auto text-left sm:text-right w-full sm:w-auto">
-            <div class="text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-                KUVVET DURUMU
-            </div>
-            <div id="hud-balance-badge" class="px-3 py-1.5 rounded-xl font-black text-xs sm:text-sm tracking-wide inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.3)]">
-                <i class="fa-solid fa-circle-exclamation text-amber-400"></i>
-                <span id="hud-balance-text">DENGELENMEMİŞ KUVVETLER</span>
-            </div>
-            <div class="text-[11px] text-slate-300 font-bold mt-1.5 flex items-center justify-start sm:justify-end gap-1.5" id="hud-motion-effect">
-                <span>Hareket Etkisi:</span> <span class="text-amber-300 font-black" id="hud-motion-text">Sağa Doğru Hızlanıyor</span>
-            </div>
-        </div>
+            <!-- HUD Barı: Canlı Kuvvetler & Durum Bilgisi (Sahnenin Hemen Altında) -->
+            <div class="grid grid-cols-2 gap-1.5 sm:gap-2 shrink-0">
+                <!-- Sol HUD: Kuvvet Vektörleri -->
+                <div class="hud-glass rounded-xl sm:rounded-2xl p-1.5 sm:p-2 border border-slate-800 shadow-md">
+                    <div class="text-[9px] sm:text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-1 flex items-center justify-between">
+                        <span><i class="fa-solid fa-gauge text-cyan-400"></i> KUVVETLER</span>
+                        <span id="force-math-compact" class="text-cyan-300 font-mono text-[9px]"></span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1 text-[10px] sm:text-xs font-bold text-center">
+                        <div class="text-emerald-400 bg-emerald-950/50 p-1 rounded border border-emerald-500/20 truncate">
+                            <span class="text-[8px] sm:text-[9px] block text-emerald-300/80">Sağ (F₁)</span>
+                            <span id="hud-val-right" class="font-mono font-black text-xs sm:text-sm">15 N</span>
+                        </div>
+                        <div class="text-rose-400 bg-rose-950/50 p-1 rounded border border-rose-500/20 truncate">
+                            <span class="text-[8px] sm:text-[9px] block text-rose-300/80">Sol (F₂)</span>
+                            <span id="hud-val-left" class="font-mono font-black text-xs sm:text-sm">9 N</span>
+                        </div>
+                        <div class="text-sky-300 bg-sky-950/60 p-1 rounded border border-sky-500/30 truncate">
+                            <span class="text-[8px] sm:text-[9px] block text-sky-400">Bileşke (R)</span>
+                            <span id="hud-val-net" class="font-mono font-black text-xs sm:text-sm text-sky-300">6 N Sağa</span>
+                        </div>
+                    </div>
+                </div>
 
-    </div>
+                <!-- Sağ HUD: Denge Durumu & Hareket Etkisi -->
+                <div class="hud-glass rounded-xl sm:rounded-2xl p-1.5 sm:p-2 border border-slate-800 shadow-md flex flex-col justify-between">
+                    <div class="text-[9px] sm:text-[10px] font-orbitron font-extrabold text-slate-400 uppercase tracking-wider mb-0.5 flex items-center justify-between">
+                        <span>DURUM</span>
+                        <span class="text-[8px] sm:text-[9px] text-slate-400">Hareket:</span>
+                    </div>
+                    <div class="flex items-center justify-between gap-1 flex-1">
+                        <div id="hud-balance-badge" class="px-2 py-0.5 rounded-lg font-black text-[9px] sm:text-xs tracking-tight inline-flex items-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                            <i class="fa-solid fa-circle-exclamation text-amber-400 text-[10px]"></i>
+                            <span id="hud-balance-text" class="truncate">DENGELENMEMİŞ</span>
+                        </div>
+                        <div class="text-[9px] sm:text-xs font-black text-amber-300 truncate" id="hud-motion-text">
+                            Sağa Hızlanıyor
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    <!-- 🎮 ALT İNTERAKTİF KONTROL PANELİ (Deneylere Göre Dinamik Değişir) -->
-    <footer class="relative z-20 w-full px-3 py-2 sm:py-2.5 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 text-slate-100 shrink-0 shadow-2xl max-h-[58vh] md:max-h-none overflow-y-auto">
-        <div class="max-w-6xl mx-auto w-full">
+            <!-- Modül 1 Sürgüler ve Hızlı Butonlar (Sahnenin Altında) -->
+            <div id="m1-sliders-container" class="bg-slate-900/80 border border-slate-800 rounded-xl p-1.5 sm:p-2 shrink-0">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-1.5 sm:gap-2 items-center">
+                    <!-- Sol Sürgü (Kırmızı) -->
+                    <div class="md:col-span-4 bg-slate-950/60 p-1.5 rounded-lg border border-rose-500/30">
+                        <div class="flex items-center justify-between text-[10px] sm:text-xs font-black text-rose-300 mb-0.5">
+                            <span>⬅️ Sola Kuvvet (F₂):</span>
+                            <span id="label-slider-left" class="font-mono text-rose-400 bg-rose-950 px-1.5 py-0.2 rounded border border-rose-500/40 text-[11px] sm:text-xs font-black">9 N</span>
+                        </div>
+                        <input type="range" id="slider-force-left" min="0" max="30" value="9" step="1" class="slider-red w-full" oninput="onForceLeftChange(this.value)">
+                    </div>
+
+                    <!-- Hızlı Ön Ayarlar -->
+                    <div class="md:col-span-4 grid grid-cols-4 gap-1">
+                        <button type="button" onclick="setPresetForces(15, 15)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="F1 = F2 = 15 N">
+                            Denge
+                        </button>
+                        <button type="button" onclick="setPresetForces(20, 5)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="Sağ 20 N > Sol 5 N">
+                            Sağ>Sol
+                        </button>
+                        <button type="button" onclick="setPresetForces(5, 20)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="Sol 20 N > Sağ 5 N">
+                            Sol>Sağ
+                        </button>
+                        <button type="button" onclick="setPresetForces(0, 0)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="Kuvvetleri Sıfırla">
+                            Sıfırla
+                        </button>
+                    </div>
+
+                    <!-- Sağ Sürgü (Yeşil) -->
+                    <div class="md:col-span-4 bg-slate-950/60 p-1.5 rounded-lg border border-emerald-500/30">
+                        <div class="flex items-center justify-between text-[10px] sm:text-xs font-black text-emerald-300 mb-0.5">
+                            <span>Sağa Kuvvet (F₁) ➡️:</span>
+                            <span id="label-slider-right" class="font-mono text-emerald-400 bg-emerald-950 px-1.5 py-0.2 rounded border border-emerald-500/40 text-[11px] sm:text-xs font-black">15 N</span>
+                        </div>
+                        <input type="range" id="slider-force-right" min="0" max="30" value="15" step="1" class="slider-green w-full" oninput="onForceRightChange(this.value)">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ➡️ SAĞ PANEL: Soru Kartı, Girişler, Butonlar ve Modül Kontrolleri (%35-%40) -->
+        <section class="flex-1 min-h-0 w-full lg:col-span-5 xl:col-span-4 flex flex-col justify-between overflow-hidden bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 rounded-2xl p-2 sm:p-2.5 lg:p-3 shadow-xl">
             
-            <!-- ===================== MODÜL 1 KONTROLLERİ: KUVVETLERİ KEŞFET ===================== -->
-            <div id="controls-module-1" class="module-controls-panel flex flex-col gap-2.5">
-                <!-- ❓ BİLEŞKE KUVVET VE YÖNÜ HESAPLAMA & HAREKET KARTI -->
-                <div id="m1-question-banner" class="bg-gradient-to-r from-slate-900/95 via-cyan-950/40 to-slate-900/95 border-2 border-cyan-500/50 rounded-2xl p-3 shadow-[0_0_20px_rgba(6,182,212,0.25)]">
-                    <div class="flex items-center justify-between gap-2 mb-2 pb-1.5 border-b border-cyan-500/20">
-                        <div class="flex items-center gap-2 text-xs sm:text-sm font-black text-amber-300">
-                            <span class="w-6 h-6 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-xs"><i class="fa-solid fa-calculator"></i></span>
-                            <span class="font-orbitron tracking-wide uppercase text-amber-200">BİLEŞKE KUVVETİ (R) VE YÖNÜNÜ BUL!</span>
-                        </div>
-                        <div class="flex items-center gap-1.5">
-                            <button type="button" onclick="revealM1Answer(true)" class="text-[11px] font-bold text-slate-300 hover:text-white px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer flex items-center gap-1" title="Çözümü ve formülü göster">
-                                <i class="fa-solid fa-eye text-cyan-400"></i> <span>Çözümü Göster</span>
-                            </button>
-                            <button type="button" onclick="resetM1QuizInput()" class="text-[11px] font-bold text-slate-300 hover:text-white px-2 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 transition-all cursor-pointer flex items-center gap-1" title="Girişleri temizle">
-                                <i class="fa-solid fa-rotate-left text-amber-400"></i>
-                            </button>
-                        </div>
+            <!-- ===================== MODÜL 1: BİLEŞKE KUVVET SORU VE EYLEM KARTI ===================== -->
+            <div id="controls-module-1" class="module-controls-panel flex flex-col justify-between h-full min-h-0 gap-1.5">
+                <!-- Kart Başlığı & Aksiyonlar -->
+                <div class="flex items-center justify-between pb-1 border-b border-cyan-500/20 shrink-0">
+                    <div class="flex items-center gap-1.5 text-amber-300 font-black text-[11px] sm:text-xs">
+                        <span class="w-5 h-5 rounded-md bg-amber-500/20 text-amber-400 flex items-center justify-center text-xs"><i class="fa-solid fa-calculator"></i></span>
+                        <span class="font-orbitron uppercase text-amber-200">BİLEŞKE KUVVETİ (R) BUL</span>
                     </div>
-
-                    <!-- Dinamik Soru Metni -->
-                    <div class="text-xs sm:text-sm font-bold text-white mb-2.5" id="m1-quiz-prompt">
-                        Kutuya Doğuya 15 N (F₁), Batıya 9 N (F₂) uygulanıyor. Bileşke kuvvetin büyüklüğünü yaz, yönünü seç ve hareketi başlat!
-                    </div>
-
-                    <!-- Giriş ve Yön Seçim Alanı -->
-                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-2.5 items-center bg-slate-950/60 p-2.5 rounded-xl border border-cyan-500/30">
-                        <!-- 1. Büyüklük Sayı Girişi -->
-                        <div class="lg:col-span-4 flex items-center gap-2 bg-slate-900/90 p-2 rounded-xl border border-slate-700/80">
-                            <label for="m1-input-net" class="text-xs font-black text-cyan-300 shrink-0 flex items-center gap-1">
-                                <i class="fa-solid fa-arrow-down-1-9"></i> Büyüklük (R):
-                            </label>
-                            <input type="number" id="m1-input-net" min="0" max="60" placeholder="Sayı yaz..." 
-                                class="w-full px-2.5 py-1.5 text-center text-base sm:text-lg font-mono font-black rounded-lg bg-slate-950 border-2 border-cyan-500/50 text-cyan-300 placeholder-slate-600 focus:outline-none focus:border-cyan-300 focus:ring-2 focus:ring-cyan-400/30 shadow-inner"
-                                oninput="onM1NetInputChange(this.value)"
-                                onkeydown="if(event.key==='Enter') submitM1AnswerAndPlay()">
-                            <span class="font-mono font-black text-sm text-cyan-400 shrink-0">N</span>
-                        </div>
-
-                        <!-- 2. 4 Yön Otomatik Seçim Butonları -->
-                        <div class="lg:col-span-5 flex flex-col gap-1">
-                            <div class="text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                                <i class="fa-solid fa-compass text-cyan-400"></i> Hareket / Kuvvet Yönü:
-                            </div>
-                            <div class="grid grid-cols-3 sm:grid-cols-5 gap-1.5" id="m1-direction-buttons">
-                                <button type="button" onclick="selectM1Direction('dogu')" id="btn-dir-dogu" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-sm">➡️</span>
-                                    <span class="truncate text-[10px] sm:text-[11px]">Doğu (Sağ)</span>
-                                </button>
-                                <button type="button" onclick="selectM1Direction('bati')" id="btn-dir-bati" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-sm">⬅️</span>
-                                    <span class="truncate text-[10px] sm:text-[11px]">Batı (Sol)</span>
-                                </button>
-                                <button type="button" onclick="selectM1Direction('kuzey')" id="btn-dir-kuzey" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-sm">⬆️</span>
-                                    <span class="truncate text-[10px] sm:text-[11px]">Kuzey</span>
-                                </button>
-                                <button type="button" onclick="selectM1Direction('guney')" id="btn-dir-guney" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer">
-                                    <span class="text-sm">⬇️</span>
-                                    <span class="truncate text-[10px] sm:text-[11px]">Güney</span>
-                                </button>
-                                <button type="button" onclick="selectM1Direction('dengede')" id="btn-dir-dengede" class="dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer" title="Kuvvetler Eşit / Dengede">
-                                    <span class="text-sm">⚖️</span>
-                                    <span class="truncate text-[10px] sm:text-[11px]">Dengede (0 N)</span>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 3. Hareketi Başlat & Kontrol Et Butonu -->
-                        <div class="lg:col-span-3 flex">
-                            <button type="button" onclick="submitM1AnswerAndPlay()" id="btn-m1-check-play" class="w-full py-2.5 px-3 min-h-[44px] bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
-                                <i class="fa-solid fa-play" id="icon-m1-check-play"></i> <span id="text-m1-check-play">Hareketi Başlat</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Geribildirim / Kontrol Alanı -->
-                    <div id="m1-quiz-feedback" class="mt-2 text-xs font-black p-2.5 rounded-xl hidden transition-all">
+                    <div class="flex items-center gap-1">
+                        <button type="button" onclick="revealM1Answer(true)" class="text-[10px] font-bold text-slate-300 hover:text-white px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center gap-1 cursor-pointer" title="Çözümü Göster">
+                            <i class="fa-solid fa-eye text-cyan-400"></i> <span>Çözüm</span>
+                        </button>
+                        <button type="button" onclick="resetM1QuizInput()" class="text-[10px] font-bold text-slate-300 hover:text-white p-1 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 flex items-center cursor-pointer" title="Girişi Sıfırla">
+                            <i class="fa-solid fa-rotate-left text-amber-400"></i>
+                        </button>
                     </div>
                 </div>
 
-                <!-- Alt Sürgü ve Eylem Kontrolleri (3 Sütun) -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                    <!-- Sol Kuvvet Slider (Kırmızı) -->
-                    <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-rose-500/30">
-                        <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrow-left"></i> Sola Uygulanan Kuvvet (Kırmızı):</span>
-                            <span id="label-slider-left" class="font-mono font-black text-base text-rose-400 bg-rose-950 px-2 py-0.5 rounded-lg border border-rose-500/40">9 N</span>
-                        </div>
-                        <input type="range" id="slider-force-left" min="0" max="30" value="9" step="1" class="slider-red" oninput="onForceLeftChange(this.value)">
-                        <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
-                            <span>0 N</span>
-                            <span>15 N</span>
-                            <span>30 N</span>
-                        </div>
-                    </div>
+                <!-- Soru Metni -->
+                <div class="text-[11px] sm:text-xs text-white font-semibold leading-snug shrink-0" id="m1-quiz-prompt">
+                    Kutuya Doğuya 15 N (F₁), Batıya 9 N (F₂) uygulanıyor. Bileşke kuvvetin büyüklüğünü yaz, yönünü seç ve hareketi başlat!
+                </div>
 
-                    <!-- Orta Hızlı Ön Ayarlar & Eylemler -->
-                    <div class="md:col-span-4 flex flex-col gap-2">
-                        <div class="grid grid-cols-4 gap-1.5">
-                            <button type="button" onclick="setPresetForces(15, 15)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                                F₁ = F₂ (Denge)
-                            </button>
-                            <button type="button" onclick="setPresetForces(20, 5)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                                Sağ > Sol
-                            </button>
-                            <button type="button" onclick="setPresetForces(5, 20)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                                Sol > Sağ
-                            </button>
-                            <button type="button" onclick="setPresetForces(0, 0)" class="px-2 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700 text-[10px] font-black transition-all text-center">
-                                Sıfırla (0 N)
-                            </button>
-                        </div>
-
-                        <div class="flex items-center gap-2">
-                            <button type="button" onclick="toggleM1Play()" id="btn-m1-play" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-500/20 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                                <i class="fa-solid fa-play" id="btn-m1-play-icon"></i> <span id="btn-m1-play-text">Hareketi Başlat</span>
-                            </button>
-                            <button type="button" onclick="openPredictModal(1)" class="px-3 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Tahmin Et">
-                                <i class="fa-solid fa-lightbulb"></i> <span class="hidden sm:inline">Tahmin</span>
-                            </button>
-                            <button type="button" onclick="recordCurrentObservation()" class="px-3 py-2 bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer" title="Bu deneyi gözlem tablosuna ekle">
-                                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">Kaydet</span>
-                            </button>
-                            <button type="button" onclick="resetPhysicsBox()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer" title="Konumu ve hareketi sıfırla">
-                                <i class="fa-solid fa-rotate-left"></i>
-                            </button>
-                        </div>
+                <!-- Büyüklük (R) Girişi + Pardus Dokunmatik [-] [+] Stepper Butonları -->
+                <div class="bg-slate-950/70 p-1.5 sm:p-2 rounded-xl border border-cyan-500/30 flex items-center justify-between gap-2 shrink-0">
+                    <span class="text-[11px] sm:text-xs font-black text-cyan-300 flex items-center gap-1 shrink-0">
+                        <i class="fa-solid fa-arrow-down-1-9"></i> Büyüklük:
+                    </span>
+                    <div class="flex items-center gap-1.5 flex-1 justify-center">
+                        <button type="button" onclick="stepM1Magnitude(-1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 font-mono font-black text-base flex items-center justify-center cursor-pointer active:scale-90 select-none" title="1 N Azalt">
+                            −
+                        </button>
+                        <input type="number" id="m1-input-net" min="0" max="60" placeholder="0" 
+                            class="w-16 sm:w-20 py-1 text-center text-base sm:text-lg font-mono font-black rounded-lg bg-slate-900 border-2 border-cyan-500/50 text-cyan-300 focus:outline-none focus:border-cyan-300 focus:ring-1 focus:ring-cyan-400/40"
+                            oninput="onM1NetInputChange(this.value)"
+                            onkeydown="if(event.key==='Enter') submitM1AnswerAndPlay()">
+                        <button type="button" onclick="stepM1Magnitude(1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 font-mono font-black text-base flex items-center justify-center cursor-pointer active:scale-90 select-none" title="1 N Artır">
+                            +
+                        </button>
+                        <span class="font-mono font-black text-xs text-cyan-400 shrink-0">N</span>
                     </div>
+                </div>
 
-                    <!-- Sağ Kuvvet Slider (Yeşil) -->
-                    <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-emerald-500/30">
-                        <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
-                            <span class="flex items-center gap-1.5">Sağa Uygulanan Kuvvet (Yeşil): <i class="fa-solid fa-arrow-right"></i></span>
-                            <span id="label-slider-right" class="font-mono font-black text-base text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-lg border border-emerald-500/40">15 N</span>
-                        </div>
-                        <input type="range" id="slider-force-right" min="0" max="30" value="15" step="1" class="slider-green" oninput="onForceRightChange(this.value)">
-                        <div class="flex justify-between text-[9px] font-mono text-slate-500 mt-1">
-                            <span>0 N</span>
-                            <span>15 N</span>
-                            <span>30 N</span>
-                        </div>
+                <!-- 5 Otomatik Yön Butonları -->
+                <div class="flex flex-col gap-1 shrink-0">
+                    <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-compass text-cyan-400"></i> Kuvvet / Hareket Yönü:
+                    </span>
+                    <div class="grid grid-cols-5 gap-1" id="m1-direction-buttons">
+                        <button type="button" onclick="selectM1Direction('dogu')" id="btn-dir-dogu" class="dir-choice-btn py-1 px-0.5 rounded-lg text-[10px] sm:text-[11px] font-black bg-slate-800 text-slate-300 border border-slate-700 flex flex-col items-center justify-center cursor-pointer min-h-[38px] sm:min-h-[42px] transition-all">
+                            <span>➡️</span> <span class="truncate">Doğu</span>
+                        </button>
+                        <button type="button" onclick="selectM1Direction('bati')" id="btn-dir-bati" class="dir-choice-btn py-1 px-0.5 rounded-lg text-[10px] sm:text-[11px] font-black bg-slate-800 text-slate-300 border border-slate-700 flex flex-col items-center justify-center cursor-pointer min-h-[38px] sm:min-h-[42px] transition-all">
+                            <span>⬅️</span> <span class="truncate">Batı</span>
+                        </button>
+                        <button type="button" onclick="selectM1Direction('kuzey')" id="btn-dir-kuzey" class="dir-choice-btn py-1 px-0.5 rounded-lg text-[10px] sm:text-[11px] font-black bg-slate-800 text-slate-300 border border-slate-700 flex flex-col items-center justify-center cursor-pointer min-h-[38px] sm:min-h-[42px] transition-all">
+                            <span>⬆️</span> <span class="truncate">Kuzey</span>
+                        </button>
+                        <button type="button" onclick="selectM1Direction('guney')" id="btn-dir-guney" class="dir-choice-btn py-1 px-0.5 rounded-lg text-[10px] sm:text-[11px] font-black bg-slate-800 text-slate-300 border border-slate-700 flex flex-col items-center justify-center cursor-pointer min-h-[38px] sm:min-h-[42px] transition-all">
+                            <span>⬇️</span> <span class="truncate">Güney</span>
+                        </button>
+                        <button type="button" onclick="selectM1Direction('dengede')" id="btn-dir-dengede" class="dir-choice-btn py-1 px-0.5 rounded-lg text-[10px] sm:text-[11px] font-black bg-slate-800 text-slate-300 border border-slate-700 flex flex-col items-center justify-center cursor-pointer min-h-[38px] sm:min-h-[42px] transition-all" title="Bileşke 0 N">
+                            <span>⚖️</span> <span class="truncate">Dengede</span>
+                        </button>
                     </div>
+                </div>
+
+                <!-- Hareketi Başlat & Kontrol Et Butonu -->
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <button type="button" onclick="submitM1AnswerAndPlay()" id="btn-m1-check-play" class="flex-1 py-2 sm:py-2.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-emerald-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer min-h-[40px] sm:min-h-[44px]">
+                        <i class="fa-solid fa-play" id="icon-m1-check-play"></i> <span id="text-m1-check-play">Hareketi Başlat & Kontrol Et</span>
+                    </button>
+                    <button type="button" onclick="openPredictModal(1)" class="p-2 sm:px-3 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl border border-slate-700 text-xs font-bold transition-all cursor-pointer min-h-[40px] sm:min-h-[44px] shrink-0" title="Kazanım Tahmin Et">
+                        <i class="fa-solid fa-lightbulb"></i>
+                    </button>
+                    <button type="button" onclick="recordCurrentObservation()" class="p-2 sm:px-3 bg-slate-800 hover:bg-slate-700 text-cyan-300 rounded-xl border border-slate-700 text-xs font-bold transition-all cursor-pointer min-h-[40px] sm:min-h-[44px] shrink-0" title="Gözlem Kaydet">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button type="button" onclick="resetPhysicsBox()" class="p-2 sm:px-3 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 text-xs font-bold transition-all cursor-pointer min-h-[40px] sm:min-h-[44px] shrink-0" title="Sıfırla">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+
+                <!-- Canlı Bilimsel Geribildirim Alanı -->
+                <div id="m1-quiz-feedback" class="text-[10px] sm:text-xs font-bold p-1.5 sm:p-2 rounded-xl hidden transition-all flex-1 min-h-0 overflow-y-auto">
                 </div>
             </div>
 
-            <!-- ===================== MODÜL 2 KONTROLLERİ: HALAT ÇEKME YARIŞMASI ===================== -->
-            <div id="controls-module-2" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <!-- Sol Kırmızı Takım -->
-                <div class="md:col-span-4 bg-rose-950/40 border border-rose-700/60 text-slate-100 p-2.5 rounded-2xl border border-rose-500/40">
-                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-user-group"></i> Kırmızı Takım Çekişi:</span>
-                        <span id="label-tug-red" class="font-mono font-black text-base text-rose-300 bg-rose-950 px-2 py-0.5 rounded-lg border border-rose-500/40">20 N</span>
-                    </div>
-                    <input type="range" id="slider-tug-red" min="0" max="30" value="20" step="1" class="slider-red" oninput="onTugRedChange(this.value)">
-                    <div class="flex justify-between text-[9px] font-mono text-rose-400/60 mt-1">
-                        <span>0 N</span>
-                        <span>15 N</span>
-                        <span>30 N</span>
-                    </div>
+            <!-- ===================== MODÜL 2: HALAT ÇEKME YARIŞMASI ===================== -->
+            <div id="controls-module-2" class="module-controls-panel hidden flex flex-col justify-between h-full min-h-0 gap-2">
+                <div class="text-xs font-black text-cyan-300 flex items-center gap-1.5 pb-1 border-b border-slate-800 shrink-0">
+                    <i class="fa-solid fa-people-pulling"></i> <span>HALAT ÇEKME YARIŞMASI</span>
                 </div>
 
-                <!-- Yarışma Başlat / Duraklat / Sorular / Müzik Butonları -->
-                <div class="md:col-span-4 flex flex-col gap-2 items-center text-center">
+                <!-- Sol Kırmızı Takım -->
+                <div class="bg-rose-950/40 border border-rose-700/60 p-2 rounded-xl">
+                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
+                        <span><i class="fa-solid fa-user-group"></i> Kırmızı Takım (Sol):</span>
+                        <span id="label-tug-red" class="font-mono font-black text-rose-300 bg-rose-950 px-2 py-0.5 rounded border border-rose-500/40">20 N</span>
+                    </div>
+                    <input type="range" id="slider-tug-red" min="0" max="30" value="20" step="1" class="slider-red w-full" oninput="onTugRedChange(this.value)">
+                </div>
+
+                <!-- Durum & Eylemler -->
+                <div class="flex flex-col gap-1.5 items-center text-center">
                     <div class="text-xs font-black text-white" id="tug-status-text">
                         Yarışma Başlamaya Hazır!
                     </div>
                     <div class="flex items-center gap-2 w-full">
-                        <button type="button" onclick="toggleTugRace()" id="btn-tug-action" class="flex-1 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                        <button type="button" onclick="toggleTugRace()" id="btn-tug-action" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
                             <i class="fa-solid fa-play"></i> <span id="btn-tug-action-text">Yarışmayı Başlat</span>
                         </button>
-                        <button type="button" onclick="resetTugRace()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
+                        <button type="button" onclick="resetTugRace()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 cursor-pointer">
+                            <i class="fa-solid fa-rotate-left"></i>
                         </button>
-                        <button type="button" onclick="toggleTugAudio()" id="btn-tug-music" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-cyan-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer" title="Arka Plan Müziği">
+                        <button type="button" onclick="toggleTugAudio()" id="btn-tug-music" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs rounded-xl border border-slate-700 cursor-pointer" title="Arka Plan Müziği">
                             <i class="fa-solid fa-volume-high" id="icon-tug-music"></i>
                         </button>
                     </div>
                 </div>
 
                 <!-- Sağ Mavi Takım -->
-                <div class="md:col-span-4 bg-sky-950/40 border border-sky-700/60 text-slate-100 p-2.5 rounded-2xl border border-sky-500/40">
+                <div class="bg-sky-950/40 border border-sky-700/60 p-2 rounded-xl">
                     <div class="flex items-center justify-between text-xs font-black text-sky-300 mb-1">
-                        <span class="flex items-center gap-1.5">Mavi Takım Çekişi: <i class="fa-solid fa-user-group"></i></span>
-                        <span id="label-tug-blue" class="font-mono font-black text-base text-sky-300 bg-sky-950 px-2 py-0.5 rounded-lg border border-sky-500/40">10 N</span>
+                        <span>Mavi Takım (Sağ): <i class="fa-solid fa-user-group"></i></span>
+                        <span id="label-tug-blue" class="font-mono font-black text-sky-300 bg-sky-950 px-2 py-0.5 rounded border border-sky-500/40">10 N</span>
                     </div>
-                    <input type="range" id="slider-tug-blue" min="0" max="30" value="10" step="1" class="slider-blue" oninput="onTugBlueChange(this.value)">
-                    <div class="flex justify-between text-[9px] font-mono text-sky-400/60 mt-1">
-                        <span>0 N</span>
-                        <span>15 N</span>
-                        <span>30 N</span>
-                    </div>
+                    <input type="range" id="slider-tug-blue" min="0" max="30" value="10" step="1" class="slider-blue w-full" oninput="onTugBlueChange(this.value)">
                 </div>
             </div>
 
-            <!-- ===================== MODÜL 3 KONTROLLERİ: KUTUYU HAREKET ETTİR ===================== -->
-            <div id="controls-module-3" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <!-- Sol Kuvvet Slider -->
-                <div class="md:col-span-3 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2 rounded-2xl border border-rose-500/30">
-                    <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
-                        <span>Sola Kuvvet (F₂):</span>
-                        <span id="label-m3-left" class="font-mono font-black text-rose-400">0 N</span>
-                    </div>
-                    <input type="range" id="slider-m3-left" min="0" max="30" value="0" step="1" class="slider-red" oninput="onM3LeftChange(this.value)">
+            <!-- ===================== MODÜL 3: KUTUYU HAREKET ETTİR ===================== -->
+            <div id="controls-module-3" class="module-controls-panel hidden flex flex-col justify-between h-full min-h-0 gap-2">
+                <div class="text-xs font-black text-cyan-300 flex items-center gap-1.5 pb-1 border-b border-slate-800 shrink-0">
+                    <i class="fa-solid fa-truck-ramp-box"></i> <span>KUTUYU HAREKET ETTİR</span>
                 </div>
 
-                <!-- Başlangıç Hareketi & Oynat/Durdur Butonları -->
-                <div class="md:col-span-6 flex flex-col gap-2">
-                    <div class="flex items-center justify-between gap-1.5 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-1.5 rounded-xl border border-slate-800">
-                        <span class="text-[10px] font-bold text-slate-400 px-2">Başlangıç Hareketi:</span>
-                        <div class="grid grid-cols-3 gap-1 flex-1">
-                            <button type="button" onclick="setM3InitialVelocity(-4)" id="btn-v0-left" class="py-1 px-1.5 rounded-lg text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all">
-                                ⬅️ Sola Hareketli
-                            </button>
-                            <button type="button" onclick="setM3InitialVelocity(0)" id="btn-v0-zero" class="py-1 px-1.5 rounded-lg text-[10px] font-black bg-cyan-600 text-slate-950 font-black border border-cyan-400 shadow transition-all">
-                                🛑 Durgun
-                            </button>
-                            <button type="button" onclick="setM3InitialVelocity(4)" id="btn-v0-right" class="py-1 px-1.5 rounded-lg text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all">
-                                Sağa Hareketli ➡️
-                            </button>
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-slate-950/60 p-2 rounded-xl border border-rose-500/30">
+                        <div class="flex items-center justify-between text-xs font-black text-rose-300 mb-1">
+                            <span>Sola (F₂):</span>
+                            <span id="label-m3-left" class="font-mono font-black text-rose-400">0 N</span>
                         </div>
+                        <input type="range" id="slider-m3-left" min="0" max="30" value="0" step="1" class="slider-red w-full" oninput="onM3LeftChange(this.value)">
                     </div>
+                    <div class="bg-slate-950/60 p-2 rounded-xl border border-emerald-500/30">
+                        <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
+                            <span>Sağa (F₁):</span>
+                            <span id="label-m3-right" class="font-mono font-black text-emerald-400">8 N</span>
+                        </div>
+                        <input type="range" id="slider-m3-right" min="0" max="30" value="8" step="1" class="slider-green w-full" oninput="onM3RightChange(this.value)">
+                    </div>
+                </div>
 
-                    <div class="flex items-center gap-2">
-                        <button type="button" onclick="toggleM3Play()" id="btn-m3-play" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
-                            <i class="fa-solid fa-play"></i> <span id="btn-m3-play-text">Simülasyonu Başlat</span>
+                <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800 flex flex-col gap-1">
+                    <span class="text-[10px] font-bold text-slate-400">Başlangıç Hareketi:</span>
+                    <div class="grid grid-cols-3 gap-1">
+                        <button type="button" onclick="setM3InitialVelocity(-4)" id="btn-v0-left" class="py-1 px-1 rounded text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white cursor-pointer">
+                            ⬅️ Sola
                         </button>
-                        <button type="button" onclick="resetM3Simulation()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
+                        <button type="button" onclick="setM3InitialVelocity(0)" id="btn-v0-zero" class="py-1 px-1 rounded text-[10px] font-black bg-cyan-600 text-slate-950 border border-cyan-400 shadow cursor-pointer">
+                            🛑 Durgun
                         </button>
-                        <button type="button" onclick="toggleM3Friction()" id="btn-m3-friction" class="px-3 py-2 bg-slate-900 text-slate-400 text-xs font-bold rounded-xl border border-slate-700 transition-all flex items-center gap-1" title="Sürtünmeyi Aç / Kapat">
-                            <i class="fa-solid fa-road"></i> <span id="txt-m3-friction">Sürtünmesiz</span>
+                        <button type="button" onclick="setM3InitialVelocity(4)" id="btn-v0-right" class="py-1 px-1 rounded text-[10px] font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white cursor-pointer">
+                            Sağa ➡️
                         </button>
                     </div>
                 </div>
 
-                <!-- Sağ Kuvvet Slider -->
-                <div class="md:col-span-3 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2 rounded-2xl border border-emerald-500/30">
-                    <div class="flex items-center justify-between text-xs font-black text-emerald-300 mb-1">
-                        <span>Sağa Kuvvet (F₁):</span>
-                        <span id="label-m3-right" class="font-mono font-black text-emerald-400">8 N</span>
-                    </div>
-                    <input type="range" id="slider-m3-right" min="0" max="30" value="8" step="1" class="slider-green" oninput="onM3RightChange(this.value)">
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="toggleM3Play()" id="btn-m3-play" class="flex-1 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-play"></i> <span id="btn-m3-play-text">Başlat</span>
+                    </button>
+                    <button type="button" onclick="resetM3Simulation()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl border border-slate-700 cursor-pointer">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                    <button type="button" onclick="toggleM3Friction()" id="btn-m3-friction" class="px-2.5 py-2 bg-slate-900 text-slate-400 text-xs font-bold rounded-xl border border-slate-700 cursor-pointer" title="Sürtünmeyi Aç / Kapat">
+                        <i class="fa-solid fa-road"></i> <span id="txt-m3-friction">Sürtünmesiz</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- ===================== MODÜL 4 KONTROLLERİ: DENGELEYİCİ KUVVETİ BUL ===================== -->
-            <div id="controls-module-4" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <!-- Soru ve Görev Kartı -->
-                <div class="md:col-span-4 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-amber-500/40">
-                    <div class="flex items-center justify-between text-[11px] font-black text-amber-400 mb-1">
-                        <span id="m4-level-badge">Seviye 1 / 15 (Kolay)</span>
-                        <span class="font-mono text-cyan-300" id="m4-score-badge">⭐ Puan: 0</span>
-                    </div>
-                    <div class="text-xs text-white font-bold" id="m4-task-prompt">
-                        Kutuya uygulanan kuvvetleri sıfırlayacak <strong>DENGELEYİCİ KUVVETİ</strong> bul!
-                    </div>
+            <!-- ===================== MODÜL 4: DENGELEYİCİ KUVVET ===================== -->
+            <div id="controls-module-4" class="module-controls-panel hidden flex flex-col justify-between h-full min-h-0 gap-2">
+                <div class="flex items-center justify-between text-xs font-black pb-1 border-b border-slate-800 shrink-0">
+                    <span id="m4-level-badge" class="text-amber-400">Seviye 1 / 15</span>
+                    <span class="font-mono text-cyan-300" id="m4-score-badge">⭐ Puan: 0</span>
                 </div>
 
-                <!-- Dengeleyici Kuvvet Girişi: Yön ve Büyüklük -->
-                <div class="md:col-span-5 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-slate-700 flex flex-col gap-2">
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-bold text-slate-300 shrink-0">Dengeleyici Yönü:</span>
-                        <div class="grid grid-cols-2 gap-1.5 flex-1">
-                            <button type="button" onclick="setEquilibrantDirection('sol')" id="btn-eq-dir-left" class="py-1 px-2 rounded-xl text-xs font-black bg-rose-600 text-white border border-rose-400 shadow transition-all flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-arrow-left"></i> <span>Sola</span>
+                <div class="text-xs text-white font-bold" id="m4-task-prompt">
+                    Kutuya uygulanan kuvvetleri sıfırlayacak <strong>DENGELEYİCİ KUVVETİ</strong> bul!
+                </div>
+
+                <div class="bg-slate-950/60 p-2 rounded-xl border border-slate-800 flex flex-col gap-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-xs font-bold text-slate-300">Yön:</span>
+                        <div class="grid grid-cols-2 gap-1 flex-1">
+                            <button type="button" onclick="setEquilibrantDirection('sol')" id="btn-eq-dir-left" class="py-1 px-2 rounded-lg text-xs font-black bg-rose-600 text-white border border-rose-400 shadow cursor-pointer">
+                                ⬅️ Sola
                             </button>
-                            <button type="button" onclick="setEquilibrantDirection('sag')" id="btn-eq-dir-right" class="py-1 px-2 rounded-xl text-xs font-black bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all flex items-center justify-center gap-1.5">
-                                <span>Sağa</span> <i class="fa-solid fa-arrow-right"></i>
+                            <button type="button" onclick="setEquilibrantDirection('sag')" id="btn-eq-dir-right" class="py-1 px-2 rounded-lg text-xs font-black bg-slate-800 text-slate-300 border border-slate-700 cursor-pointer">
+                                Sağa ➡️
                             </button>
                         </div>
                     </div>
-
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-bold text-slate-300 shrink-0">Büyüklük:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-bold text-slate-300">Büyüklük:</span>
                         <input type="range" id="slider-equilibrant" min="0" max="30" value="11" step="1" class="slider-blue flex-1" oninput="onEquilibrantSliderChange(this.value)">
-                        <span id="label-equilibrant-val" class="font-mono font-black text-base text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded-lg border border-cyan-500/40 shrink-0">11 N</span>
+                        <span id="label-equilibrant-val" class="font-mono font-black text-xs text-cyan-300 bg-cyan-950 px-2 py-0.5 rounded border border-cyan-500/40">11 N</span>
                     </div>
                 </div>
 
-                <!-- Gönder & Sıradaki Soru Butonları -->
-                <div class="md:col-span-3 flex flex-col gap-1.5">
-                    <button type="button" onclick="applyEquilibrantAnswer()" id="btn-apply-equilibrant" class="w-full py-2.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+                <div class="flex flex-col gap-1.5">
+                    <button type="button" onclick="applyEquilibrantAnswer()" id="btn-apply-equilibrant" class="w-full py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all cursor-pointer">
                         <i class="fa-solid fa-check"></i> <span>Kuvveti Uygula</span>
                     </button>
-                    <button type="button" onclick="nextEquilibrantLevel()" id="btn-next-eq-level" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 transition-all flex items-center justify-center gap-1.5 hidden cursor-pointer">
+                    <button type="button" onclick="nextEquilibrantLevel()" id="btn-next-eq-level" class="w-full py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white font-bold text-xs rounded-xl border border-slate-700 hidden cursor-pointer">
                         <span>Sıradaki Soru</span> <i class="fa-solid fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- ===================== MODÜL 5 KONTROLLERİ: KUVVET DEDEKTİFİ ===================== -->
-            <div id="controls-module-5" class="module-controls-panel hidden grid grid-cols-1 md:grid-cols-12 gap-3 items-center">
-                <!-- Sahne Seçici -->
-                <div class="md:col-span-4 flex items-center gap-1 overflow-x-auto py-1">
-                    <button type="button" onclick="switchDetectiveScene(0)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400 shrink-0">
-                        1. Masa İtme
+            <!-- ===================== MODÜL 5: KUVVET DEDEKTİFİ ===================== -->
+            <div id="controls-module-5" class="module-controls-panel hidden flex flex-col justify-between h-full min-h-0 gap-2">
+                <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 shrink-0">
+                    <button type="button" onclick="switchDetectiveScene(0)" class="detective-scene-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400 shrink-0 cursor-pointer">
+                        1. Masa
                     </button>
-                    <button type="button" onclick="switchDetectiveScene(1)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
-                        2. Futbol Topu
+                    <button type="button" onclick="switchDetectiveScene(1)" class="detective-scene-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0 cursor-pointer">
+                        2. Top
                     </button>
-                    <button type="button" onclick="switchDetectiveScene(2)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
-                        3. Alışveriş Arabası
+                    <button type="button" onclick="switchDetectiveScene(2)" class="detective-scene-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0 cursor-pointer">
+                        3. Araba
                     </button>
-                    <button type="button" onclick="switchDetectiveScene(3)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
-                        4. Halat Yarışı
+                    <button type="button" onclick="switchDetectiveScene(3)" class="detective-scene-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0 cursor-pointer">
+                        4. Halat
                     </button>
-                    <button type="button" onclick="switchDetectiveScene(4)" class="detective-scene-btn px-2 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0">
-                        5. Oyuncak Araba
+                    <button type="button" onclick="switchDetectiveScene(4)" class="detective-scene-btn px-2 py-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 shrink-0 cursor-pointer">
+                        5. Fren
                     </button>
                 </div>
 
-                <!-- Dedektif Soru & Tahmin Girişi -->
-                <div class="md:col-span-6 bg-slate-800/80 border border-slate-700/80 text-slate-100 p-2.5 rounded-2xl border border-slate-700">
-                    <div class="text-xs font-black text-amber-300 mb-1" id="detective-scene-title">
-                        Olay 1: İki öğrenci masayı zıt yönlerde itiyor.
-                    </div>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button type="button" onclick="chooseDetectiveGuess('dengelenmis')" id="btn-det-guess-bal" class="py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center">
-                            Dengelenmiş (R = 0)
-                        </button>
-                        <button type="button" onclick="chooseDetectiveGuess('saga')" id="btn-det-guess-right" class="py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center">
-                            Sağa Hareket Eder
-                        </button>
-                        <button type="button" onclick="chooseDetectiveGuess('sola')" id="btn-det-guess-left" class="py-1 px-2 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center">
-                            Sola Hareket Eder
-                        </button>
-                    </div>
+                <div class="text-xs font-black text-amber-300" id="detective-scene-title">
+                    Olay 1: İki öğrenci masayı zıt yönlerde itiyor.
                 </div>
 
-                <!-- Tahmini Test Et Butonu -->
-                <div class="md:col-span-2">
-                    <button type="button" onclick="testDetectiveGuess()" id="btn-test-detective" class="w-full py-2.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid fa-play"></i> <span>Test Et</span>
+                <div class="grid grid-cols-3 gap-1">
+                    <button type="button" onclick="chooseDetectiveGuess('dengelenmis')" id="btn-det-guess-bal" class="py-2 px-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center cursor-pointer">
+                        Dengelenmiş (0 N)
+                    </button>
+                    <button type="button" onclick="chooseDetectiveGuess('saga')" id="btn-det-guess-right" class="py-2 px-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center cursor-pointer">
+                        Sağa Hareket
+                    </button>
+                    <button type="button" onclick="chooseDetectiveGuess('sola')" id="btn-det-guess-left" class="py-2 px-1 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-300 border border-slate-700 hover:text-white transition-all text-center cursor-pointer">
+                        Sola Hareket
                     </button>
                 </div>
+
+                <button type="button" onclick="testDetectiveGuess()" id="btn-test-detective" class="w-full py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition-all cursor-pointer">
+                    <i class="fa-solid fa-play"></i> <span>Tahmini Test Et</span>
+                </button>
             </div>
 
-        </div>
-    </footer>
+        </section>
+
+    </main>
 
     <!-- ===================== MODALLAR: TAHMİN, ÖLÇME DEĞERLENDİRME & GÖZLEM ===================== -->
 
@@ -1137,17 +1151,20 @@
             scene.background = new THREE.Color(0x0c1427);
             scene.fog = new THREE.FogExp2(0x0c1427, 0.016);
 
+            const w = container ? (container.clientWidth || window.innerWidth) : window.innerWidth;
+            const h = container ? (container.clientHeight || 300) : 300;
+
             // Kamera
-            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
             camera.position.set(0, 4.8, 12.5);
 
             // Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setSize(w, h);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            container.appendChild(renderer.domElement);
+            if (container) container.appendChild(renderer.domElement);
 
             // Orbit Kontrolleri — MEB / Çevrimdışı Güvenli Başlatıcı
             if (typeof THREE.OrbitControls === 'function') {
@@ -2173,12 +2190,21 @@
         function switchExperiment(moduleIndex) {
             LAB.currentModule = moduleIndex;
 
-            // Navigasyon butonlarını güncelle
+            // Navigasyon butonlarını güncelle (Mobil Şerit)
             document.querySelectorAll('.nav-module-btn').forEach((btn, idx) => {
                 if (idx + 1 === moduleIndex) {
-                    btn.className = 'nav-module-btn px-2.5 py-1.5 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 shrink-0 bg-cyan-600 text-white border border-cyan-600 shadow-md shadow-cyan-600/30';
+                    btn.className = 'nav-module-btn px-2 py-1 rounded-lg font-black text-[11px] whitespace-nowrap shrink-0 bg-cyan-600 text-white border border-cyan-500 shadow-sm';
                 } else {
-                    btn.className = 'nav-module-btn px-2.5 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shrink-0 bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700 hover:text-white shadow-xs';
+                    btn.className = 'nav-module-btn px-2 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700 hover:text-white';
+                }
+            });
+
+            // Navigasyon butonlarını güncelle (Masaüstü & Akıllı Tahta)
+            document.querySelectorAll('.nav-module-btn-dt').forEach((btn, idx) => {
+                if (idx + 1 === moduleIndex) {
+                    btn.className = 'nav-module-btn-dt px-2.5 py-1 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 bg-cyan-600 text-white border border-cyan-500 shadow-sm cursor-pointer';
+                } else {
+                    btn.className = 'nav-module-btn-dt px-2.5 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer';
                 }
             });
 
@@ -2191,11 +2217,10 @@
                 }
             }
 
-            // Modül 1 Soru Kartı Görünürlüğü
-            const m1Banner = document.getElementById('m1-question-banner');
-            if (m1Banner) {
-                if (moduleIndex === 1) m1Banner.classList.remove('hidden');
-                else m1Banner.classList.add('hidden');
+            const m1Sliders = document.getElementById('m1-sliders-container');
+            if (m1Sliders) {
+                if (moduleIndex === 1) m1Sliders.classList.remove('hidden');
+                else m1Sliders.classList.add('hidden');
             }
 
             if (moduleIndex !== 2) {
@@ -2801,25 +2826,45 @@ Türkiye Yüzyılı Maarif Modeli Kuvvet ve Hareket konusundaki gayretini tebrik
         // 🖥️ RESPONSIVE & TAM EKRAN YÖNETİMİ (Akıllı Tahta / Pardus & Mobil Uyumlu)
         // =========================================================================
         function setupWindowResize() {
+            const container = document.getElementById('webgl-container');
             const handleResize = () => {
                 if (!camera || !renderer) return;
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                const w = container ? (container.clientWidth || window.innerWidth) : window.innerWidth;
+                const h = container ? (container.clientHeight || 300) : 300;
+                if (w > 0 && h > 0) {
+                    camera.aspect = w / h;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(w, h);
+                }
             };
+
+            if (window.ResizeObserver && container) {
+                const ro = new ResizeObserver(() => handleResize());
+                ro.observe(container);
+            }
+
             window.addEventListener('resize', handleResize);
             window.addEventListener('orientationchange', () => {
-                setTimeout(handleResize, 150);
+                setTimeout(handleResize, 120);
             });
             document.addEventListener('fullscreenchange', () => {
-                const icon = document.getElementById('fullscreen-icon');
-                if (!icon) return;
-                if (document.fullscreenElement) {
-                    icon.className = 'fa-solid fa-compress';
-                } else {
-                    icon.className = 'fa-solid fa-expand';
-                }
+                const icon1 = document.getElementById('fullscreen-icon');
+                const icon2 = document.getElementById('fullscreen-icon-mobile');
+                const isFull = !!document.fullscreenElement;
+                if (icon1) icon1.className = isFull ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+                if (icon2) icon2.className = isFull ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+                setTimeout(handleResize, 120);
             });
+        }
+
+        function stepM1Magnitude(delta) {
+            const input = document.getElementById('m1-input-net');
+            if (!input) return;
+            let val = parseInt(input.value, 10);
+            if (isNaN(val)) val = 0;
+            val = Math.max(0, Math.min(60, val + delta));
+            input.value = val;
+            onM1NetInputChange(val);
         }
 
         function toggleFullscreen() {
