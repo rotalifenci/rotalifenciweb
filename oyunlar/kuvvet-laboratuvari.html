@@ -283,13 +283,13 @@
         </div>
     </header>
 
-    <!-- 🌟 ANA ÇALIŞMA ALANI (Split-Screen on Desktop/Pardus, Vertical Stack on Mobile) -->
-    <main class="flex-1 min-h-0 w-full overflow-hidden p-1.5 sm:p-2 lg:p-2.5 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 sm:gap-2 lg:gap-3">
+    <!-- 🌟 ANA ÇALIŞMA ALANI (Split-Screen on Desktop/Pardus, Smooth Mobile Scroll on Phones) -->
+    <main class="flex-1 min-h-0 w-full overflow-y-auto lg:overflow-hidden p-1 sm:p-2 lg:p-2.5 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 sm:gap-2 lg:gap-3">
         
         <!-- ⬅️ SOL / ORTA GENİŞ ALAN: 3D Sahne + Canlı HUD + Sürgüler (%60-%65) -->
-        <section class="flex flex-col min-h-0 w-full h-[32dvh] sm:h-[36dvh] lg:h-full lg:col-span-7 xl:col-span-8 gap-1.5 sm:gap-2">
-            <!-- 3D Canvas Sahnesi (Kutu, İp, Çocuklar, Oklar) -->
-            <div class="relative flex-1 min-h-0 w-full rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 shadow-inner">
+        <section class="flex flex-col w-full shrink-0 lg:shrink lg:min-h-0 lg:h-full lg:col-span-7 xl:col-span-8 gap-1.5 sm:gap-2">
+            <!-- 3D Canvas Sahnesi (Kutu, İp, Çocuklar, Oklar - Mobilde Kesinlikle Görünür) -->
+            <div class="relative w-full h-[190px] sm:h-[230px] lg:h-auto lg:flex-1 min-h-[180px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 shadow-inner shrink-0 lg:shrink">
                 <div id="webgl-container" class="w-full h-full"></div>
                 
                 <!-- Sahne İçi Mini Rozet -->
@@ -342,48 +342,48 @@
                 </div>
             </div>
 
-            <!-- Modül 1 Sürgüler ve Hızlı Butonlar (Sahnenin Altında) -->
-            <div id="m1-sliders-container" class="bg-slate-900/80 border border-slate-800 rounded-xl p-1.5 sm:p-2 shrink-0">
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-1.5 sm:gap-2 items-center">
+            <!-- Modül 1 Sürgüler ve Hızlı Butonlar (Sahnenin Altında - Mobilde Kompakt Yan Yana) -->
+            <div id="m1-sliders-container" class="bg-slate-900/80 border border-slate-800 rounded-xl p-1 sm:p-1.5 shrink-0">
+                <div class="grid grid-cols-2 md:grid-cols-12 gap-1 sm:gap-2 items-center">
                     <!-- Sol Sürgü (Kırmızı) -->
-                    <div class="md:col-span-4 bg-slate-950/60 p-1.5 rounded-lg border border-rose-500/30">
-                        <div class="flex items-center justify-between text-[10px] sm:text-xs font-black text-rose-300 mb-0.5">
-                            <span>⬅️ Sola Kuvvet (F₂):</span>
-                            <span id="label-slider-left" class="font-mono text-rose-400 bg-rose-950 px-1.5 py-0.2 rounded border border-rose-500/40 text-[11px] sm:text-xs font-black">9 N</span>
+                    <div class="col-span-1 md:col-span-4 bg-slate-950/60 p-1 sm:p-1.5 rounded-lg border border-rose-500/30">
+                        <div class="flex items-center justify-between text-[9px] sm:text-xs font-black text-rose-300 mb-0.5">
+                            <span class="truncate">⬅️ Sol (F₂):</span>
+                            <span id="label-slider-left" class="font-mono text-rose-400 bg-rose-950 px-1 py-0.2 rounded border border-rose-500/40 text-[10px] sm:text-xs font-black">9 N</span>
                         </div>
                         <input type="range" id="slider-force-left" min="0" max="30" value="9" step="1" class="slider-red w-full" oninput="onForceLeftChange(this.value)">
                     </div>
 
-                    <!-- Hızlı Ön Ayarlar -->
-                    <div class="md:col-span-4 grid grid-cols-4 gap-1">
-                        <button type="button" onclick="setPresetForces(15, 15)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="F1 = F2 = 15 N">
-                            Denge
-                        </button>
-                        <button type="button" onclick="setPresetForces(20, 5)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="Sağ 20 N > Sol 5 N">
-                            Sağ>Sol
-                        </button>
-                        <button type="button" onclick="setPresetForces(5, 20)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="Sol 20 N > Sağ 5 N">
-                            Sol>Sağ
-                        </button>
-                        <button type="button" onclick="setPresetForces(0, 0)" class="px-1 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer" title="Kuvvetleri Sıfırla">
-                            Sıfırla
-                        </button>
-                    </div>
-
                     <!-- Sağ Sürgü (Yeşil) -->
-                    <div class="md:col-span-4 bg-slate-950/60 p-1.5 rounded-lg border border-emerald-500/30">
-                        <div class="flex items-center justify-between text-[10px] sm:text-xs font-black text-emerald-300 mb-0.5">
-                            <span>Sağa Kuvvet (F₁) ➡️:</span>
-                            <span id="label-slider-right" class="font-mono text-emerald-400 bg-emerald-950 px-1.5 py-0.2 rounded border border-emerald-500/40 text-[11px] sm:text-xs font-black">15 N</span>
+                    <div class="col-span-1 md:col-span-4 bg-slate-950/60 p-1 sm:p-1.5 rounded-lg border border-emerald-500/30">
+                        <div class="flex items-center justify-between text-[9px] sm:text-xs font-black text-emerald-300 mb-0.5">
+                            <span class="truncate">Sağ (F₁) ➡️:</span>
+                            <span id="label-slider-right" class="font-mono text-emerald-400 bg-emerald-950 px-1 py-0.2 rounded border border-emerald-500/40 text-[10px] sm:text-xs font-black">15 N</span>
                         </div>
                         <input type="range" id="slider-force-right" min="0" max="30" value="15" step="1" class="slider-green w-full" oninput="onForceRightChange(this.value)">
+                    </div>
+
+                    <!-- Hızlı Ön Ayarlar -->
+                    <div class="col-span-2 md:col-span-4 grid grid-cols-4 gap-1">
+                        <button type="button" onclick="setPresetForces(15, 15)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer">
+                            Denge
+                        </button>
+                        <button type="button" onclick="setPresetForces(20, 5)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer">
+                            Sağ>Sol
+                        </button>
+                        <button type="button" onclick="setPresetForces(5, 20)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer">
+                            Sol>Sağ
+                        </button>
+                        <button type="button" onclick="setPresetForces(0, 0)" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-[9px] sm:text-[10px] font-bold transition-all text-center cursor-pointer">
+                            Sıfırla
+                        </button>
                     </div>
                 </div>
             </div>
         </section>
 
         <!-- ➡️ SAĞ PANEL: Soru Kartı, Girişler, Butonlar ve Modül Kontrolleri (%35-%40) -->
-        <section class="flex-1 min-h-0 w-full lg:col-span-5 xl:col-span-4 flex flex-col justify-between overflow-hidden bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 rounded-2xl p-2 sm:p-2.5 lg:p-3 shadow-xl">
+        <section class="w-full shrink-0 lg:shrink lg:flex-1 lg:min-h-0 lg:col-span-5 xl:col-span-4 flex flex-col justify-between bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 rounded-2xl p-2 sm:p-2.5 lg:p-3 shadow-xl">
             
             <!-- ===================== MODÜL 1: BİLEŞKE KUVVET SORU VE EYLEM KARTI ===================== -->
             <div id="controls-module-1" class="module-controls-panel flex flex-col justify-between h-full min-h-0 gap-1.5">
