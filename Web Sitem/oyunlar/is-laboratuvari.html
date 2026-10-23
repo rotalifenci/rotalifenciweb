@@ -1,0 +1,3149 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950 select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli Deney) | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lab: {
+                            bg: '#030712',
+                            card: '#0b1329',
+                            border: '#1e293b',
+                            cyan: '#06b6d4',
+                            sky: '#38bdf8',
+                            green: '#10b981',
+                            red: '#ef4444',
+                            blue: '#3b82f6',
+                            gold: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        if (typeof THREE === 'undefined') {
+            document.write('<script src="https://unpkg.com/three@0.128.0/build/three.min.js"><\\/script>');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100dvh;
+            max-height: 100dvh;
+            overflow: hidden;
+            background-color: #080f1e;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Özel Kaydırıcı (Slider) Tasarımı */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            cursor: pointer;
+            height: 24px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 10px;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, #1e293b, #0284c7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 26px;
+            width: 26px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -8px;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.9), 0 0 0 2px #ffffff;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.18);
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b1329;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+
+        .hud-glass {
+            background: rgba(15, 23, 42, 0.90);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.5);
+            color: #f8fafc;
+        }
+
+        @keyframes pulse-subtle {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.85; transform: scale(0.98); }
+        }
+        .pulse-active {
+            animation: pulse-subtle 2s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-full bg-[#080f1e] text-slate-100 overflow-hidden font-sans">
+
+    <!-- 🔝 ÜST BAR (KOMPAKT HEADER) -->
+    <header class="bg-slate-900/95 border-b border-cyan-500/30 px-2 sm:px-3 py-1.5 shrink-0 z-20 backdrop-blur-md shadow-lg">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2">
+            
+            <!-- Logo & Başlık -->
+            <div class="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                <a href="../index.html" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-md shadow-cyan-500/20 active:scale-95 transition-all shrink-0" title="Ana Sayfaya Dön">
+                    <i class="fa-solid fa-atom text-base sm:text-lg"></i>
+                </a>
+                <div class="truncate">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-xs sm:text-sm font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400">
+                            İŞ LABORATUVARI
+                        </span>
+                        <span class="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-black text-[9px]">
+                            7. SINIF
+                        </span>
+                    </div>
+                    <div class="text-[9px] sm:text-[10px] text-slate-400 font-semibold truncate hidden sm:block">
+                        Fiziksel Anlamda İş Var mı, Yok mu? • 40 Etkileşimli 3D Deney
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mod Butonları (Masaüstü & Akıllı Tahta) -->
+            <div class="flex items-center gap-1 overflow-x-auto scrollbar-none py-0.5">
+                <button type="button" onclick="openClassroomModal()" class="px-2 sm:px-2.5 py-1 rounded-xl font-black text-[10px] sm:text-xs transition-all flex items-center gap-1 bg-gradient-to-r from-emerald-500 to-teal-600 text-slate-950 shadow-md cursor-pointer hover:from-emerald-400 hover:to-teal-300 active:scale-95 whitespace-nowrap">
+                    <i class="fa-solid fa-users-line"></i> <span>30 ÖĞRENCİ – 30 DENEY</span>
+                    <span id="header-class-progress-badge" class="ml-1 px-1.5 py-0.2 rounded-full bg-slate-950/80 text-emerald-300 text-[9px] font-mono font-bold">0/30</span>
+                </button>
+                <button type="button" onclick="openExtraExperimentsModal()" class="px-2 sm:px-2.5 py-1 rounded-xl font-bold text-[10px] sm:text-xs transition-all flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/30 cursor-pointer active:scale-95 whitespace-nowrap">
+                    <i class="fa-solid fa-star"></i> <span>+10 EK DENEY</span>
+                </button>
+                <button type="button" onclick="openTeacherDashboardModal()" class="px-2 sm:px-2.5 py-1 rounded-xl font-bold text-[10px] sm:text-xs transition-all flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 cursor-pointer active:scale-95 whitespace-nowrap" title="Öğretmen Masası">
+                    <i class="fa-solid fa-chalkboard-user"></i> <span class="hidden md:inline">Öğretmen Masası</span>
+                </button>
+            </div>
+
+            <!-- Sağ Hızlı Butonlar -->
+            <div class="flex items-center gap-1 shrink-0">
+                <a href="kuvvet-laboratuvari.html" class="px-2 sm:px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-sky-300 border border-sky-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1 cursor-pointer" title="6. Sınıf Kuvvet Laboratuvarına Git">
+                    <i class="fa-solid fa-arrows-left-right text-sky-400"></i> <span class="hidden xl:inline">6. Sınıf Kuvvet Lab</span>
+                </a>
+                <button type="button" onclick="openQuizModal()" class="px-2 sm:px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all flex items-center gap-1 cursor-pointer" title="10 Soruluk Ölçme Testi">
+                    <i class="fa-solid fa-award"></i> <span class="hidden lg:inline">Ölçme Testi</span>
+                </button>
+                <button type="button" onclick="toggleAudio()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all cursor-pointer" title="Sesi Aç / Kapat">
+                    <i class="fa-solid fa-volume-high" id="audio-icon"></i>
+                </button>
+                <button type="button" onclick="toggleFullscreen()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all cursor-pointer" title="Tam Ekran">
+                    <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🌟 ANA ÇALIŞMA ALANI (Split-Screen on Desktop/Pardus, Smooth Mobile Scroll on Phones) -->
+    <main class="flex-1 min-h-0 w-full overflow-y-auto lg:overflow-hidden p-1 sm:p-2 lg:p-2.5 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 sm:gap-2 lg:gap-3">
+        
+        <!-- ⬅️ SOL / ORTA GENİŞ ALAN: 3D Sahne + Canlı HUD + Kontroller (%60-%65) -->
+        <section class="flex flex-col w-full shrink-0 lg:shrink lg:min-h-0 lg:h-full lg:col-span-7 xl:col-span-8 gap-1.5 sm:gap-2">
+            
+            <!-- 3D Canvas Sahnesi -->
+            <div class="relative w-full h-[200px] sm:h-[240px] lg:h-auto lg:flex-1 min-h-[190px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-800 bg-slate-900/60 shadow-inner shrink-0 lg:shrink">
+                <div id="webgl-container" class="w-full h-full"></div>
+                
+                <!-- Sahne İçi Deney Rozeti -->
+                <div class="absolute top-2 left-2 pointer-events-none flex items-center gap-1.5 z-10">
+                    <span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-slate-950/85 text-cyan-300 border border-cyan-500/30 backdrop-blur-sm" id="scene-experiment-badge">
+                        <i class="fa-solid fa-cube mr-1"></i> Deney 1: Sırayı Hareket Ettir!
+                    </span>
+                    <span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-slate-950/85 text-amber-300 border border-amber-500/30 backdrop-blur-sm" id="scene-category-badge">
+                        A. Okulda İş
+                    </span>
+                </div>
+
+                <!-- Sabit / Kilitli Uyarısı (Gerektiğinde Görünür) -->
+                <div id="scene-lock-indicator" class="absolute top-2 right-2 pointer-events-none hidden items-center gap-1 bg-rose-950/90 text-rose-300 border border-rose-500/40 rounded-xl px-2 py-0.5 text-[9px] font-mono font-bold backdrop-blur-sm z-10 shadow-lg">
+                    <i class="fa-solid fa-lock text-rose-400"></i> SABİT / KİLİTLİ NESNE
+                </div>
+
+                <!-- Dik Doğrultu (90°) Rozeti (Exp 20 vb. İçin) -->
+                <div id="scene-perp-indicator" class="absolute bottom-2 left-2 pointer-events-none hidden items-center gap-1 bg-amber-950/90 text-amber-300 border border-amber-500/40 rounded-xl px-2 py-0.5 text-[9px] font-mono font-bold backdrop-blur-sm z-10 shadow-lg animate-pulse">
+                    <i class="fa-solid fa-arrows-split-up-and-left text-amber-400"></i> Kuvvet Yer Değiştirmeye DİK (90°)!
+                </div>
+            </div>
+
+            <!-- HUD Barı: Canlı Fizik Göstergesi (Kuvvet, Yol, İş, Doğrultu) -->
+            <div class="grid grid-cols-4 gap-1 sm:gap-1.5 shrink-0 text-center font-bold">
+                <!-- 1. Kuvvet (F) -->
+                <div class="hud-glass rounded-xl p-1 sm:p-1.5 border border-cyan-500/30">
+                    <span class="text-[7px] sm:text-[8px] text-cyan-300/80 block uppercase tracking-wider">Kuvvet (F)</span>
+                    <span id="hud-force-val" class="text-xs sm:text-sm font-mono font-black text-cyan-300">45 N</span>
+                </div>
+                <!-- 2. Yer Değiştirme (Δx) -->
+                <div class="hud-glass rounded-xl p-1 sm:p-1.5 border border-emerald-500/30">
+                    <span class="text-[7px] sm:text-[8px] text-emerald-300/80 block uppercase tracking-wider">Yol (Δx)</span>
+                    <span id="hud-distance-val" class="text-xs sm:text-sm font-mono font-black text-emerald-400">1.8 m</span>
+                </div>
+                <!-- 3. Fiziksel İş (W) -->
+                <div class="hud-glass rounded-xl p-1 sm:p-1.5 border border-indigo-500/40 bg-indigo-950/30">
+                    <span class="text-[7px] sm:text-[8px] text-indigo-300/80 block uppercase tracking-wider">İş (W = F · Δx)</span>
+                    <span id="hud-work-val" class="text-xs sm:text-sm font-mono font-black text-indigo-300">81.0 J</span>
+                </div>
+                <!-- 4. Karar Rozeti -->
+                <div id="hud-decision-badge" class="rounded-xl p-1 sm:p-1.5 border border-slate-700 bg-slate-900 flex flex-col justify-center items-center">
+                    <span class="text-[7px] sm:text-[8px] text-slate-400 block uppercase tracking-wider">Fiziksel İş</span>
+                    <span id="hud-decision-text" class="text-[10px] sm:text-xs font-black text-amber-300 truncate">TEST EDİLİYOR</span>
+                </div>
+            </div>
+
+            <!-- Kuvvet Kontrol Sürgüsü & Eylem Butonları -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-1.5 sm:p-2 shrink-0 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-1.5 flex-1 min-w-0">
+                    <span class="text-[9px] sm:text-xs font-black text-cyan-300 shrink-0 flex items-center gap-1">
+                        <i class="fa-solid fa-gauge-high"></i> <span class="hidden sm:inline">Kuvvet (F):</span>
+                    </span>
+                    <button type="button" onclick="stepForce(-5)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono font-black flex items-center justify-center cursor-pointer select-none active:scale-90" title="5 N Azalt">−</button>
+                    <input type="range" id="slider-force" min="0" max="100" value="45" step="5" class="w-full flex-1" oninput="onForceSliderChange(this.value)">
+                    <button type="button" onclick="stepForce(5)" class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-mono font-black flex items-center justify-center cursor-pointer select-none active:scale-90" title="5 N Artır">+</button>
+                    <span id="label-force-slider" class="font-mono text-cyan-300 font-black text-xs sm:text-sm min-w-[42px] text-right">45 N</span>
+                </div>
+
+                <div class="flex items-center gap-1 shrink-0">
+                    <button type="button" onclick="togglePlayAnimation()" id="btn-play-sim" class="py-1.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs uppercase rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-play" id="icon-play-sim"></i> <span id="text-play-sim">Uygula & İt</span>
+                    </button>
+                    <button type="button" onclick="resetExperimentState()" class="p-1.5 sm:px-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl border border-slate-700 text-xs font-bold transition-all cursor-pointer" title="Sıfırla">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ➡️ SAĞ PANEL: Öğrenci Karar Kartı, Tahmin ve Bilimsel Açıklama (%35-%40) -->
+        <section class="w-full shrink-0 lg:shrink lg:flex-1 lg:min-h-0 lg:col-span-5 xl:col-span-4 flex flex-col justify-between bg-slate-900/90 backdrop-blur-md border border-cyan-500/30 rounded-2xl p-2 sm:p-2.5 lg:p-3 shadow-xl">
+            
+            <div class="flex flex-col justify-between h-full min-h-0 gap-1.5 sm:gap-2">
+                
+                <!-- Başlık & Öğrenci Numarası -->
+                <div class="flex items-center justify-between pb-1 border-b border-cyan-500/20 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                        <span id="student-num-badge" class="px-2 py-0.5 rounded-lg bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 text-[10px] sm:text-xs font-black font-orbitron">
+                            #1. ÖĞRENCİ
+                        </span>
+                        <span id="experiment-header-title" class="font-black text-xs sm:text-sm text-white truncate">
+                            Sırayı Hareket Ettir!
+                        </span>
+                    </div>
+                    <span id="experiment-status-icon" class="text-xs text-slate-400">
+                        <i class="fa-regular fa-circle-question"></i>
+                    </span>
+                </div>
+
+                <!-- Olay Açıklaması -->
+                <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800 text-xs text-slate-200 leading-snug shrink-0" id="experiment-desc-box">
+                    Öğrenci sınıftaki sırayı ileriye doğru iter. Sıra zemin üzerinde ileri doğru yer değiştirir.
+                </div>
+
+                <!-- ❓ ADIM 1: ÖĞRENCİ TAHMİNİ (İŞ VAR MI / YOK MU?) -->
+                <div class="flex flex-col gap-1 shrink-0">
+                    <span class="text-[9px] sm:text-[10px] font-orbitron font-extrabold text-amber-300 uppercase tracking-wider flex items-center gap-1">
+                        <i class="fa-solid fa-circle-dot"></i> 1. ADIM: Sence Bu Olayda Fiziksel İş Yapılır mı?
+                    </span>
+                    <div class="grid grid-cols-2 gap-1.5">
+                        <button type="button" onclick="selectPrediction(true)" id="btn-predict-yes" class="py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-emerald-500 cursor-pointer active:scale-95">
+                            <span>🟢</span> <span>İŞ YAPILIR</span>
+                        </button>
+                        <button type="button" onclick="selectPrediction(false)" id="btn-predict-no" class="py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-rose-500 cursor-pointer active:scale-95">
+                            <span>🔴</span> <span>İŞ YAPILMAZ</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 🎯 ADIM 2: KONTROL VE DEĞERLENDİRME BUTONU -->
+                <div class="shrink-0">
+                    <button type="button" onclick="evaluateStudentAnswer()" id="btn-check-answer" class="w-full py-2 sm:py-2.5 px-3 bg-gradient-to-r from-cyan-500 via-sky-400 to-indigo-500 hover:from-cyan-400 hover:to-sky-300 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg shadow-cyan-500/25 transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-bullseye"></i> <span>Tahminimi ve Sonucu Kontrol Et</span>
+                    </button>
+                </div>
+
+                <!-- 💡 BİLİMSEL GERİBİLDİRİM VE İPUCU ALANI (Dinamik Açılır) -->
+                <div id="feedback-container" class="flex-1 min-h-0 overflow-y-auto p-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-300 leading-relaxed hidden">
+                    <!-- Dinamik geribildirim içeriği -->
+                </div>
+
+                <!-- 🧭 ALT NAVİGASYON (ÖNCEKİ / LİSTE / SONRAKİ) -->
+                <div class="pt-1 border-t border-slate-800 flex items-center justify-between gap-1 shrink-0">
+                    <button type="button" onclick="navigateExperiment(-1)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-arrow-left"></i> <span class="hidden sm:inline">Önceki</span>
+                    </button>
+                    <button type="button" onclick="openClassroomModal()" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-cyan-950 hover:text-cyan-300 border border-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-list-ol"></i> <span>30 Öğrenci</span>
+                    </button>
+                    <button type="button" onclick="navigateExperiment(1)" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer">
+                        <span class="hidden sm:inline">Sonraki</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- 🎓 MODAL 1: 30 ÖĞRENCİ – 30 DENEY AKILLI SINIF SEÇİM PANELİ -->
+    <!-- ========================================================================= -->
+    <div id="modal-classroom" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-emerald-500/70 rounded-3xl p-3 sm:p-5 max-w-4xl w-full shadow-2xl text-white max-h-[92vh] flex flex-col justify-between" id="modal-classroom-box">
+            
+            <!-- Modal Başlık -->
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 sm:pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center text-sm font-black">
+                        <i class="fa-solid fa-users-line"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-emerald-300">30 ÖĞRENCİ – 30 DENEY AKILLI SINIF MODU</h3>
+                        <span class="text-[10px] text-slate-400">Her öğrenci kendi numarasındaki deneyi uygular ve fiziksel işi keşfeder.</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeClassroomModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Kategori Filtre Butonları -->
+            <div class="flex items-center gap-1 overflow-x-auto py-2 shrink-0 scrollbar-none">
+                <button type="button" onclick="filterClassroomGrid('all')" id="btn-flt-all" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-600 text-white cursor-pointer shrink-0">Tümü (1-30)</button>
+                <button type="button" onclick="filterClassroomGrid('okul')" id="btn-flt-okul" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white cursor-pointer shrink-0">A. Okulda İş (1-6)</button>
+                <button type="button" onclick="filterClassroomGrid('ev')" id="btn-flt-ev" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white cursor-pointer shrink-0">B. Evde İş (7-14)</button>
+                <button type="button" onclick="filterClassroomGrid('kapi')" id="btn-flt-kapi" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white cursor-pointer shrink-0">C. Kapılar & Eşyalar (15-22)</button>
+                <button type="button" onclick="filterClassroomGrid('spor')" id="btn-flt-spor" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white cursor-pointer shrink-0">D. Bahçe & Spor (23-30)</button>
+            </div>
+
+            <!-- 30 Öğrenci Kartları Izgarası (Dinamik Render) -->
+            <div class="py-2 flex-1 overflow-y-auto pr-1">
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-1.5 sm:gap-2" id="classroom-cards-grid">
+                    <!-- Dinamik 30 Kart -->
+                </div>
+            </div>
+
+            <!-- Alt Durum & Eylemler -->
+            <div class="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-between text-xs shrink-0">
+                <div class="text-slate-300 font-bold" id="classroom-summary-text">
+                    Tamamlanan: <span class="text-emerald-400 font-mono">0 / 30</span> (%0)
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="openTeacherDashboardModal(); closeClassroomModal();" class="px-3 py-1 bg-cyan-950 text-cyan-300 border border-cyan-500/40 rounded-xl hover:bg-cyan-900 transition-colors font-bold cursor-pointer">
+                        <i class="fa-solid fa-chart-pie mr-1"></i> Sınıf Raporu
+                    </button>
+                    <button type="button" onclick="closeClassroomModal()" class="px-4 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors font-bold cursor-pointer">
+                        Kapat
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 📊 MODAL 2: ÖĞRETMEN MASASI VE SINIF BAŞARI TABLOSU -->
+    <!-- ========================================================================= -->
+    <div id="modal-teacher" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-cyan-500/70 rounded-3xl p-3 sm:p-5 max-w-3xl w-full shadow-2xl text-white max-h-[92vh] flex flex-col justify-between" id="modal-teacher-box">
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 sm:pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/40 flex items-center justify-center text-sm font-black">
+                        <i class="fa-solid fa-chalkboard-user"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-cyan-300">ÖĞRETMEN KONTROL MASASI</h3>
+                        <span class="text-[10px] text-slate-400">Sınıfın 30 deneydeki katılım ve başarı durumu</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeTeacherDashboardModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="py-3 flex-1 overflow-y-auto space-y-3">
+                <!-- Sınıf İlerleme Çubuğu -->
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="flex items-center justify-between text-xs font-bold mb-1">
+                        <span class="text-slate-300">30 Öğrenci Tamamlanma Oranı:</span>
+                        <span id="teacher-progress-percent" class="text-emerald-400 font-mono font-black text-sm">%0</span>
+                    </div>
+                    <div class="w-full bg-slate-800 h-3 rounded-full overflow-hidden">
+                        <div id="teacher-progress-bar" class="h-full bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-500 transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Henüz Tamamlanmayan Öğrenci Numaraları -->
+                <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800">
+                    <div class="text-xs font-bold text-amber-300 mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-exclamation text-amber-400"></i> Henüz Deneyini Tamamlamayan Öğrenciler:
+                    </div>
+                    <div id="teacher-incomplete-students-list" class="flex flex-wrap gap-1">
+                        <!-- Dinamik Eksik Öğrenci Numaraları Rozetleri -->
+                    </div>
+                </div>
+
+                <!-- 30 Öğrenci Sonuç Listesi Tablosu -->
+                <div class="overflow-x-auto rounded-2xl border border-slate-800">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-slate-950 text-cyan-300 border-b border-slate-800 font-orbitron text-[10px]">
+                                <th class="p-2">Öğrenci</th>
+                                <th class="p-2">Deney Başlığı</th>
+                                <th class="p-2">Fiziksel İş</th>
+                                <th class="p-2">Öğrenci Tahmini</th>
+                                <th class="p-2">Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacher-table-body" class="divide-y divide-slate-800 font-mono text-[11px] text-slate-300">
+                            <!-- Dinamik Tablo Satırları -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Alt Eylemler -->
+            <div class="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-between text-xs shrink-0">
+                <button type="button" onclick="resetAllClassroomData()" class="px-3 py-1.5 bg-rose-950/80 hover:bg-rose-900 text-rose-300 border border-rose-500/40 rounded-xl transition-colors font-bold cursor-pointer">
+                    <i class="fa-solid fa-rotate-left mr-1"></i> Tüm Sınıfı Sıfırla
+                </button>
+                <button type="button" onclick="closeTeacherDashboardModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors font-bold cursor-pointer">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- ➕ MODAL 3: 10 EK GÜNLÜK YAŞAM DENEYİ (31 - 40) -->
+    <!-- ========================================================================= -->
+    <div id="modal-extra" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-amber-500/70 rounded-3xl p-3 sm:p-5 max-w-3xl w-full shadow-2xl text-white max-h-[92vh] flex flex-col justify-between" id="modal-extra-box">
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 sm:pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 flex items-center justify-center text-sm font-black">
+                        <i class="fa-solid fa-star"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-amber-300">+10 EK GÜNLÜK YAŞAM DENEYİ (31 - 40)</h3>
+                        <span class="text-[10px] text-slate-400">Pekiştirme ve ileri düzey kazanım etkinlikleri</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeExtraExperimentsModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="py-3 flex-1 overflow-y-auto">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2" id="extra-cards-grid">
+                    <!-- Dinamik 10 Ek Deney Kartı -->
+                </div>
+            </div>
+
+            <div class="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-end text-xs shrink-0">
+                <button type="button" onclick="closeExtraExperimentsModal()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl transition-colors font-bold cursor-pointer">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 🎓 MODAL 4: 10 SORULUK ÖLÇME VE DEĞERLENDİRME TESTİ -->
+    <!-- ========================================================================= -->
+    <div id="modal-quiz" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-amber-400/80 rounded-3xl p-4 sm:p-5 max-w-xl w-full shadow-2xl text-white max-h-[92vh] flex flex-col justify-between" id="modal-quiz-box">
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 sm:pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 text-slate-950 font-black flex items-center justify-center text-sm">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm font-black font-orbitron text-amber-300">FİZİKSEL İŞ KAZANIM TESTİ</h3>
+                        <span class="text-[10px] text-slate-400 font-bold" id="quiz-progress-text">Soru 1 / 10</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeQuizModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Soru Alanı -->
+            <div class="py-3 flex-1 overflow-y-auto flex flex-col justify-between">
+                <div>
+                    <h4 class="text-xs sm:text-sm font-bold text-white mb-3 leading-relaxed" id="quiz-question-title">
+                        Soru yükleniyor...
+                    </h4>
+                    <div class="space-y-1.5" id="quiz-options-container">
+                        <!-- Seçenekler -->
+                    </div>
+                </div>
+                <div id="quiz-explanation-box" class="mt-3 p-2.5 rounded-xl text-xs font-bold hidden">
+                    <!-- Açıklama -->
+                </div>
+            </div>
+
+            <!-- Alt Butonlar -->
+            <div class="pt-2 sm:pt-3 border-t border-slate-800 flex items-center justify-between text-xs shrink-0">
+                <span class="font-mono text-amber-300 font-bold" id="quiz-score-badge">Puan: 0 / 100</span>
+                <button type="button" onclick="nextQuizQuestion()" id="btn-quiz-next" class="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl font-black transition-all cursor-pointer hidden">
+                    Sonraki Soru <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 🔬 SİMÜLASYON MOTORU VE THREE.JS KODLARI -->
+    <!-- ========================================================================= -->
+    <script>
+        // 40 Deney ve 10 Test Sorusu Verileri
+        const EXPERIMENTS = [
+  {
+    "id": 1,
+    "studentNum": 1,
+    "category": "A. Okulda İş",
+    "categoryKey": "okul",
+    "title": "Sırayı Hareket Ettir!",
+    "icon": "fa-chair",
+    "description": "Öğrenci sınıftaki sırayı ileriye doğru iter. Sıra zemin üzerinde ileri doğru yer değiştirir.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 45,
+    "defaultDistance": 1.8,
+    "modelType": "desk",
+    "scientificExplanation": "Öğrenci sıraya yatay doğrultuda bir kuvvet uygulamış ve sıra uygulanan kuvvet doğrultusunda yer değiştirmiştir. Kuvvet ve yer değiştirme aynı doğrultuda olduğu için fiziksel anlamda İŞ YAPILMIŞTIR (W = F · Δx > 0).",
+    "hint1": "Sıraya yatay yönde bir itme kuvveti uygulandı mı?",
+    "hint2": "Sıra uygulanan kuvvet doğrultusunda yer değiştirdi mi?"
+  },
+  {
+    "id": 2,
+    "studentNum": 2,
+    "category": "A. Okulda İş",
+    "categoryKey": "okul",
+    "title": "Sabit Sırayı İt!",
+    "icon": "fa-lock",
+    "description": "Sıra zemine vidalanarak sabitlenmiştir. Öğrenci ne kadar kuvvet uygularsa uygulasın sıra hareket etmez.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 60,
+    "defaultDistance": 0,
+    "modelType": "desk_fixed",
+    "scientificExplanation": "Sıraya kuvvet uygulanmasına rağmen sıra sabit olduğu için yer değiştirmemiştir (Δx = 0). Fiziksel anlamda iş yapılabilmesi için cismin mutlaka yol alması gerekir. Bu nedenle İŞ YAPILMAZ (W = F · 0 = 0 Joule).",
+    "hint1": "Kuvvet uygulanıyor ancak cisim yer değiştirebiliyor mu?",
+    "hint2": "Yer değiştirme (Δx) sıfır ise yapılan iş ne olur?"
+  },
+  {
+    "id": 3,
+    "studentNum": 3,
+    "category": "A. Okulda İş",
+    "categoryKey": "okul",
+    "title": "Okul Çantasını Kaldır!",
+    "icon": "fa-bag-shopping",
+    "description": "Öğrenci yerde duran okul çantasını yukarı kaldırarak sıranın üzerine koyar.",
+    "forceName": "Düşey Kaldırma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": true,
+    "displacementDirection": "vertical_up",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 30,
+    "defaultDistance": 1.2,
+    "modelType": "backpack_lift",
+    "scientificExplanation": "Çantaya yukarı yönlü kaldırma kuvveti uygulanmış ve çanta yukarı yönde yer değiştirmiştir. Uygulanan kuvvet ile yer değiştirme aynı doğrultuda (düşey) olduğu için yerçekimine karşı fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Çantaya hangi yönde kuvvet uygulandı?",
+    "hint2": "Çanta uygulanan bu kuvvetle aynı doğrultuda yukarı yükseldi mi?"
+  },
+  {
+    "id": 4,
+    "studentNum": 4,
+    "category": "A. Okulda İş",
+    "categoryKey": "okul",
+    "title": "Çantanı Sabit Tut!",
+    "icon": "fa-hand",
+    "description": "Öğrenci çantayı kollarında belirli bir yükseklikte hareketsiz şekilde havada tutmaktadır.",
+    "forceName": "Yukarı Taşıma / Tutma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 30,
+    "defaultDistance": 0,
+    "modelType": "backpack_hold",
+    "scientificExplanation": "Öğrenci çantayı havada tutarken kuvvet uygular ve yorulur; ancak çanta hareketsiz kaldığı ve yer değiştirmediği (Δx = 0) için fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Kollarımız yorulsa bile çanta hareket ediyor mu?",
+    "hint2": "Fiziksel anlamda iş için yol alma (yer değiştirme) şarttır."
+  },
+  {
+    "id": 5,
+    "studentNum": 5,
+    "category": "A. Okulda İş",
+    "categoryKey": "okul",
+    "title": "Tahtayı Sil!",
+    "icon": "fa-chalkboard-user",
+    "description": "Öğrenci silgiyi yazı tahtasına bastırarak yana doğru kaydırır ve yazıları siler.",
+    "forceName": "Yatay Sürtme / İtme Kuvveti (F)",
+    "forceDirection": "horizontal_right",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_right",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 20,
+    "defaultDistance": 1.5,
+    "modelType": "blackboard_erase",
+    "scientificExplanation": "Silgiye tahta boyunca uygulanan yatay kuvvet, silgiyi aynı doğrultuda hareket ettirmiştir. Kuvvet ve hareket aynı doğrultuda olduğu için İŞ YAPILMIŞTIR.",
+    "hint1": "Silgiye uygulanan kuvvet yönü ile hareket yönü aynı mı?",
+    "hint2": "Silgi tahta üzerinde yer değiştirdi mi?"
+  },
+  {
+    "id": 6,
+    "studentNum": 6,
+    "category": "A. Okulda İş",
+    "categoryKey": "okul",
+    "title": "Silgiyi Tahtaya Bastır!",
+    "icon": "fa-hand-back-fist",
+    "description": "Silgi tahtaya doğru dik olarak bastırılır ancak yana veya yukarı hareket ettirilmez.",
+    "forceName": "Tahtaya Dik Bastırma Kuvveti (F)",
+    "forceDirection": "normal_inward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 40,
+    "defaultDistance": 0,
+    "modelType": "blackboard_push",
+    "scientificExplanation": "Silgiye kuvvet uygulanmasına rağmen tahta sert bir engeldir ve silgi içeri giremez veya yer değiştiremez (Δx = 0). Yer değiştirme olmadığı için İŞ YAPILMAZ.",
+    "hint1": "Silgi tahtanın içine doğru ilerleyebildi mi?",
+    "hint2": "Cismin yer değiştirmesi sıfır ise iş yapılabilir mi?"
+  },
+  {
+    "id": 7,
+    "studentNum": 7,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Çekmeceyi Aç!",
+    "icon": "fa-table-cells-large",
+    "description": "Öğrenci komodinin çekmecesini kulbundan tutarak kendine doğru çeker ve çekmece açılır.",
+    "forceName": "Kendine Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_backward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_backward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 25,
+    "defaultDistance": 0.8,
+    "modelType": "drawer_open",
+    "scientificExplanation": "Çekmeceye çekme yönünde kuvvet uygulanmış ve çekmece ray üzerinde aynı yönde yer değiştirmiştir. Bu nedenle fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Çekmeceye çekme kuvveti uygulandı mı?",
+    "hint2": "Çekmece uygulanan çekme kuvveti doğrultusunda dışarı çıktı mı?"
+  },
+  {
+    "id": 8,
+    "studentNum": 8,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Kilitli Çekmeceyi Çek!",
+    "icon": "fa-key",
+    "description": "Çekmece anahtarla kilitlenmiştir. Öğrenci çekmeye çalışır fakat çekmece açılmaz.",
+    "forceName": "Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_backward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 50,
+    "defaultDistance": 0,
+    "modelType": "drawer_locked",
+    "scientificExplanation": "Kilitli çekmeceye kuvvet uygulanmıştır ancak kilit mekanizması yer değiştirmeyi engellemiştir (Δx = 0). Yer değiştirme olmadığı için İŞ YAPILMAZ.",
+    "hint1": "Kilit çekmecenin açılmasını engelliyor mu?",
+    "hint2": "Cisim yer değiştirmediğinde iş yapılmış sayılır mı?"
+  },
+  {
+    "id": 9,
+    "studentNum": 9,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Oyuncak Arabayı Çek!",
+    "icon": "fa-car-side",
+    "description": "Öğrenci oyuncak arabaya bağlı ipi yatay olarak çeker ve araba tekerlekleri üzerinde ilerler.",
+    "forceName": "İple Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 15,
+    "defaultDistance": 2,
+    "modelType": "toy_car_pull",
+    "scientificExplanation": "İp yardımıyla uygulanan çekme kuvveti doğrultusunda oyuncak araba yatayda yol almıştır. Kuvvet ve yer değiştirme aynı doğrultuda olduğu için İŞ YAPILMIŞTIR.",
+    "hint1": "Araba uygulanan çekme kuvveti yönünde hareket etti mi?",
+    "hint2": "Kuvvet ve yer değiştirme vektörleri paralel mi?"
+  },
+  {
+    "id": 10,
+    "studentNum": 10,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Sabit Oyuncak Arabayı Çek!",
+    "icon": "fa-anchor",
+    "description": "Oyuncak araba zemine vidalanmış veya sabit bir nesneye bağlanmıştır. İp gerilir fakat araba ilerlemez.",
+    "forceName": "İp Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 35,
+    "defaultDistance": 0,
+    "modelType": "toy_car_fixed",
+    "scientificExplanation": "İpte gerilme kuvveti oluşmasına rağmen araba hareket etmemiş ve yer değiştirmemiştir (Δx = 0). Bu sebeple fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "İp gergin olsa bile araba yer değiştirdi mi?",
+    "hint2": "Yol alınmadığında fiziksel iş oluşur mu?"
+  },
+  {
+    "id": 11,
+    "studentNum": 11,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Alışveriş Arabasını İt!",
+    "icon": "fa-cart-shopping",
+    "description": "Market arabası tutma kolundan ileriye doğru itilir ve tekerlekleri üzerinde düz yolda ilerler.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 35,
+    "defaultDistance": 2.5,
+    "modelType": "shopping_cart_push",
+    "scientificExplanation": "Market arabasına ileri doğru kuvvet uygulanmış ve araba uygulanan kuvvet doğrultusunda yer değiştirmiştir. Dolayısıyla fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Market arabası kuvvet uygulandığı yönde ilerledi mi?",
+    "hint2": "Kuvvet ve yol vektörlerinin doğrultuları uyuşuyor mu?"
+  },
+  {
+    "id": 12,
+    "studentNum": 12,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Tekerlekleri Kilitli Arabayı İt!",
+    "icon": "fa-ban",
+    "description": "Market arabasının tekerlek kilitleri (frenleri) kapalıdır. İtildiğinde tekerlekler dönmez ve araba hareket etmez.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 70,
+    "defaultDistance": 0,
+    "modelType": "shopping_cart_locked",
+    "scientificExplanation": "Kilitli market arabasına kuvvet uygulanmış ancak araba hareket etmediği için yer değiştirme sıfırdır (Δx = 0). Fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Frenler kilitliyken uygulanan kuvvet arabayı hareket ettirebildi mi?",
+    "hint2": "Yer değiştirme yoksa iş var mıdır?"
+  },
+  {
+    "id": 13,
+    "studentNum": 13,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Kitabı Rafa Kaldır!",
+    "icon": "fa-book-bookmark",
+    "description": "Masa üzerinde duran fen bilimleri kitabı yukarı kaldırılarak kitaplığın üst rafına yerleştirilir.",
+    "forceName": "Düşey Kaldırma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": true,
+    "displacementDirection": "vertical_up",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 12,
+    "defaultDistance": 1.4,
+    "modelType": "book_shelf",
+    "scientificExplanation": "Kitaba düşey yukarı yönde kaldırma kuvveti uygulanmış ve kitap yukarı yönde yer değiştirmiştir. Kuvvet ve yer değiştirme aynı doğrultuda olduğundan yerçekimine karşı İŞ YAPILMIŞTIR.",
+    "hint1": "Kitaba yukarı doğru kuvvet uygulandı mı?",
+    "hint2": "Kitap uygulanan bu kuvvetle yukarıya doğru yükseldi mi?"
+  },
+  {
+    "id": 14,
+    "studentNum": 14,
+    "category": "B. Evde İş",
+    "categoryKey": "ev",
+    "title": "Kitaba Yukarıdan Bastır!",
+    "icon": "fa-hand-point-down",
+    "description": "Kitap masanın üzerindedir. Öğrenci elini kitabın üstüne koyarak aşağıya doğru kuvvetlice bastırır.",
+    "forceName": "Düşey Bastırma Kuvveti (F)",
+    "forceDirection": "vertical_down",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 40,
+    "defaultDistance": 0,
+    "modelType": "book_press",
+    "scientificExplanation": "Kitaba aşağıya doğru bastırma kuvveti uygulanmaktadır ancak sağlam masa tablası kitabın aşağı inmesini engeller. Yer değiştirme gerçekleşmediği için (Δx = 0) İŞ YAPILMAZ.",
+    "hint1": "Masa kırılmadığına göre kitap aşağı yönde hareket edebildi mi?",
+    "hint2": "Kuvvet var ama hareket yoksa iş durumu nedir?"
+  },
+  {
+    "id": 15,
+    "studentNum": 15,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Kapıyı Aç!",
+    "icon": "fa-door-open",
+    "description": "Öğrenci oda kapısını iterek menteşeleri üzerinde döndürür ve kapıyı açar.",
+    "forceName": "İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 25,
+    "defaultDistance": 1,
+    "modelType": "door_open",
+    "scientificExplanation": "Kapıya uygulanan itme kuvveti kapının dönerek yer değiştirmesini sağlamıştır. Kuvvet uygulandığı doğrultuda hareket sağladığı için fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Kapı itildiğinde kanat yer değiştirdi mi?",
+    "hint2": "Kuvvet doğrultusunda bir hareket gerçekleşti mi?"
+  },
+  {
+    "id": 16,
+    "studentNum": 16,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Kilitli Kapıyı İt!",
+    "icon": "fa-door-closed",
+    "description": "Çelik kapı kilitlidir. Öğrenci kapıyı açmak için var gücüyle iter fakat kapı kımıldamaz.",
+    "forceName": "İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 80,
+    "defaultDistance": 0,
+    "modelType": "door_locked",
+    "scientificExplanation": "Öğrenci büyük bir kuvvet uygulayıp enerji harcamasına rağmen kapı kilitli olduğu için yer değiştirmemiştir (Δx = 0). Yer değiştirme olmadan fiziksel anlamda İŞ YAPILAMAZ.",
+    "hint1": "Kapı kilitli olduğuna göre milim bile kıpırdadı mı?",
+    "hint2": "Fizikte iş yapılabilmesi için cismin mutlaka yol alması gerekir."
+  },
+  {
+    "id": 17,
+    "studentNum": 17,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Sandalyeyi Çek!",
+    "icon": "fa-couch",
+    "description": "Öğrenci çalışma sandalyesini masanın altından kendine doğru çekerek yer değiştirir.",
+    "forceName": "Yatay Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_backward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_backward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 20,
+    "defaultDistance": 1.1,
+    "modelType": "chair_pull",
+    "scientificExplanation": "Sandalyeye çekme yönünde kuvvet uygulanmış ve sandalye aynı yönde zemin üzerinde hareket etmiştir. Dolayısıyla fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Sandalye çekme kuvveti yönünde yer değiştirdi mi?",
+    "hint2": "Kuvvet ile yer değiştirme aynı doğrultuda mıdır?"
+  },
+  {
+    "id": 18,
+    "studentNum": 18,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Sabitlenmiş Sandalyeyi İt!",
+    "icon": "fa-thumbtack",
+    "description": "Amfideki sandalye zemine vidalarla sabitlenmiştir. İtildiğinde hareket etmez.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 55,
+    "defaultDistance": 0,
+    "modelType": "chair_fixed",
+    "scientificExplanation": "Sandalye zemine monte edildiği için uygulanan kuvvet sandalyeyi hareket ettirememiştir (Δx = 0). Yer değiştirme sıfır olduğundan İŞ YAPILMAZ.",
+    "hint1": "Zemine vidalanmış nesne yer değiştirebilir mi?",
+    "hint2": "Yer değiştirme yoksa iş sıfırdır."
+  },
+  {
+    "id": 19,
+    "studentNum": 19,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Çamaşır Sepetini Kaldır!",
+    "icon": "fa-basket-shopping",
+    "description": "Dolu çamaşır sepeti yerdeyken öğrenci tarafından iki elle yukarıya doğru kaldırılır.",
+    "forceName": "Düşey Kaldırma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": true,
+    "displacementDirection": "vertical_up",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 35,
+    "defaultDistance": 1,
+    "modelType": "laundry_lift",
+    "scientificExplanation": "Sepete düşey yukarı yönde kaldırma kuvveti uygulanmış ve sepet yukarı doğru yükselmiştir. Kuvvet ile yer değiştirme aynı düşey doğrultuda olduğundan yerçekimine karşı İŞ YAPILMIŞTIR.",
+    "hint1": "Sepete uygulanan kuvvetin yönü nedir?",
+    "hint2": "Sepet uygulanan kuvvetle aynı yönde yukarı çıktı mı?"
+  },
+  {
+    "id": 20,
+    "studentNum": 20,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Sepeti Yatay Taşı! (Önemli Kazanım)",
+    "icon": "fa-arrows-split-up-and-left",
+    "description": "Öğrenci çamaşır sepetini ellerinde aynı yükseklikte tutarak yatay koridorda sabit süratle yürümektedir.",
+    "forceName": "Düşey Taşıma Kuvveti (F - Yukarı)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": true,
+    "hasWork": false,
+    "defaultForce": 35,
+    "defaultDistance": 2.5,
+    "modelType": "laundry_carry_horizontal",
+    "scientificExplanation": "ÖĞRETİCİ ÖRNEK: Öğrencinin sepete uyguladığı taşıma kuvveti DÜŞEY YUKARI (↑) yönlüdür. Ancak sepet YATAY DOĞRULTUDA (→) ilerlemektedir. Uygulanan kuvvet yer değiştirmeye DİKTİR (90°). Kuvvet hareket doğrultusuna dik olduğunda bu kuvvet fiziksel anlamda İŞ YAPMAZ!",
+    "hint1": "Sepeti düşürmemek için uyguladığımız kuvvet hangi yöndedir? (Yukarı)",
+    "hint2": "Yürürken sepet hangi yönde ilerliyor? (Yatay). Bu iki doğrultu birbirine dik midir?"
+  },
+  {
+    "id": 21,
+    "studentNum": 21,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Kutuyu Rampadan Yukarı İt!",
+    "icon": "fa-up-right-from-square",
+    "description": "Ağır kargo kutusu eğimli rampa üzerinde rampa yüzeyine paralel kuvvetle yukarı itilerek çıkarılır.",
+    "forceName": "Rampaya Paralel İtme Kuvveti (F)",
+    "forceDirection": "inclined_up",
+    "hasDisplacement": true,
+    "displacementDirection": "inclined_up",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 50,
+    "defaultDistance": 2.2,
+    "modelType": "ramp_box_push",
+    "scientificExplanation": "Kutuya rampa boyunca yukarı doğru kuvvet uygulanmış ve kutu bu kuvvetin doğrultusunda rampa üzerinde yukarı yer değiştirmiştir. Dolayısıyla fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Kutu rampa boyunca uygulanan kuvvet doğrultusunda yol aldı mı?",
+    "hint2": "Kuvvet yönü ile yer değiştirme yönü aynı mı?"
+  },
+  {
+    "id": 22,
+    "studentNum": 22,
+    "category": "C. Kapılar ve Eşyalar",
+    "categoryKey": "kapi",
+    "title": "Rampadaki Sabit Kutuyu İt!",
+    "icon": "fa-shield",
+    "description": "Rampadaki kutunun önüne sağlam bir takoz konulmuştur. İtildiğinde kutu takoz yüzünden hareket etmez.",
+    "forceName": "Rampaya Paralel İtme Kuvveti (F)",
+    "forceDirection": "inclined_up",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 65,
+    "defaultDistance": 0,
+    "modelType": "ramp_box_fixed",
+    "scientificExplanation": "Kutuya kuvvet uygulanmasına rağmen önüne konulan takoz hareketi engellemiştir. Yer değiştirme gerçekleşmediği için (Δx = 0) fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Takoz kutunun hareket etmesini engelliyor mu?",
+    "hint2": "Cismin yer değiştirmesi sıfır ise yapılan iş ne olur?"
+  },
+  {
+    "id": 23,
+    "studentNum": 23,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Saksıyı Yerden Kaldır!",
+    "icon": "fa-seedling",
+    "description": "Bahçe zemininde duran çiçekli toprak saksı iki elle tutularak yukarı kaldırılır.",
+    "forceName": "Düşey Kaldırma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": true,
+    "displacementDirection": "vertical_up",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 40,
+    "defaultDistance": 1.1,
+    "modelType": "plant_lift",
+    "scientificExplanation": "Saksıya yukarı doğru kaldırma kuvveti uygulanmış ve saksı yukarı yönde yer değiştirmiştir. Kuvvet ile yer değiştirme aynı doğrultuda olduğu için İŞ YAPILMIŞTIR.",
+    "hint1": "Saksıya uygulanan kuvvetin yönü neresidir?",
+    "hint2": "Saksı uygulanan kuvvet doğrultusunda yerden yükseldi mi?"
+  },
+  {
+    "id": 24,
+    "studentNum": 24,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Saksıyı Hareketsiz Tut!",
+    "icon": "fa-hand-holding",
+    "description": "Ağır saksı kucakta tutulmakta, fakat öğrenci durduğu yerde hiç kımıldamadan beklemektedir.",
+    "forceName": "Yukarı Tutma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 40,
+    "defaultDistance": 0,
+    "modelType": "plant_hold",
+    "scientificExplanation": "Saksıyı kucakta tutmak kaslarımızı yorar ancak saksı hareket etmediği (Δx = 0) için fiziksel anlamda İŞ YAPILMAZ. Günlük dildeki \"iş\" ile fizikteki \"iş\" aynı şey değildir!",
+    "hint1": "Saksı havada dururken herhangi bir yöne hareket ediyor mu?",
+    "hint2": "Yorulmamıza rağmen yer değiştirme sıfırsa iş yapılmış sayılır mı?"
+  },
+  {
+    "id": 25,
+    "studentNum": 25,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Futbol Topuna Vur!",
+    "icon": "fa-futbol",
+    "description": "Futbolcu ayağıyla duran topa vurur. Ayak temas süresince topa ileri doğru kuvvet uygular ve top hızla ileri uçar.",
+    "forceName": "İleri İtme / Vuruş Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 85,
+    "defaultDistance": 3,
+    "modelType": "football_kick",
+    "scientificExplanation": "Ayağın topa uyguladığı vuruş kuvveti ile topun hareket yönü aynı doğrultudadır. Top kuvvetin uygulandığı doğrultuda hızlanıp yer değiştirdiği için fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Ayağın uyguladığı kuvvet doğrultusunda top hareket etti mi?",
+    "hint2": "Kuvvet yönü ile topun gidiş yönü aynı mı?"
+  },
+  {
+    "id": 26,
+    "studentNum": 26,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Topa Bastır!",
+    "icon": "fa-shoe-prints",
+    "description": "Futbol topu zemindedir. Oyuncu ayağını topun üstüne koyup dik şekilde aşağıya bastırır, top hareket etmez.",
+    "forceName": "Düşey Bastırma Kuvveti (F)",
+    "forceDirection": "vertical_down",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 60,
+    "defaultDistance": 0,
+    "modelType": "football_press",
+    "scientificExplanation": "Topa yukarıdan bastırma kuvveti uygulanmış ancak zemin topun aşağı gitmesini engellemiştir. Top yer değiştirmediği için (Δx = 0) fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Ayağımızla üstten bastırdığımızda top ileri veya geri gitti mi?",
+    "hint2": "Cismin yer değiştirmesi sıfır ise yapılan iş nedir?"
+  },
+  {
+    "id": 27,
+    "studentNum": 27,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Kaykayı İt!",
+    "icon": "fa-person-skating",
+    "description": "Genç kaykayı ayağıyla iterek ileriye doğru hızlandırır ve kaykay pist boyunca kayar.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 45,
+    "defaultDistance": 2.8,
+    "modelType": "skateboard_push",
+    "scientificExplanation": "Kaykaya uygulanan itme kuvveti ile kaykayın yer değiştirmesi aynı yatay doğrultudadır. Kuvvet doğrultusunda yol alındığı için fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Kaykay uygulanan itme kuvveti yönünde ilerledi mi?",
+    "hint2": "Kuvvet ve yer değiştirme aynı doğrultuda mıdır?"
+  },
+  {
+    "id": 28,
+    "studentNum": 28,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Sabit Kaykayı İt!",
+    "icon": "fa-circle-stop",
+    "description": "Kaykayın tekerlekleri özel emniyet kilidiyle kilitlenmiştir. İtildiğinde tekerlekler dönmez ve kaykay hareket etmez.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 50,
+    "defaultDistance": 0,
+    "modelType": "skateboard_locked",
+    "scientificExplanation": "Kaykaya kuvvet uygulanmaktadır ancak kilitli tekerlekler kaykayın ilerlemesine izin vermemektedir (Δx = 0). Yer değiştirme olmadığı için İŞ YAPILMAZ.",
+    "hint1": "Tekerlekler kilitli iken kaykay yer değiştirebildi mi?",
+    "hint2": "Yol alınmadığında fiziksel iş hesaplanabilir mi?"
+  },
+  {
+    "id": 29,
+    "studentNum": 29,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Sürgülü Pencereyi Aç!",
+    "icon": "fa-window-maximize",
+    "description": "Öğrenci sınıfın sürgülü pencere kanadını ray üzerinde yana doğru iterek açar.",
+    "forceName": "Yana İtme Kuvveti (F)",
+    "forceDirection": "horizontal_right",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_right",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 30,
+    "defaultDistance": 1.2,
+    "modelType": "sliding_window_open",
+    "scientificExplanation": "Pencere kanadına ray doğrultusunda kuvvet uygulanmış ve pencere kanadı aynı doğrultuda yer değiştirmiştir. Bu sebeple fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Pencere kanadı kuvvet uygulanan yönde kaydı mı?",
+    "hint2": "Kuvvet ve hareket doğrultuları aynı mıdır?"
+  },
+  {
+    "id": 30,
+    "studentNum": 30,
+    "category": "D. Bahçe ve Spor",
+    "categoryKey": "spor",
+    "title": "Kilitli Pencereyi İt!",
+    "icon": "fa-shield-halved",
+    "description": "Sürgülü pencerenin emniyet kilidi takılıdır. Yana doğru itilse bile pencere kımıldamaz.",
+    "forceName": "Yana İtme Kuvveti (F)",
+    "forceDirection": "horizontal_right",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 60,
+    "defaultDistance": 0,
+    "modelType": "sliding_window_locked",
+    "scientificExplanation": "Pencereye kuvvet uygulanmasına rağmen emniyet kilidi yer değiştirmeyi engellemiştir (Δx = 0). Yer değiştirme sıfır olduğu için fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Kilit takılıyken pencere hareket edebildi mi?",
+    "hint2": "Yer değiştirme gerçekleşmediğinde iş sıfır mıdır?"
+  },
+  {
+    "id": 31,
+    "studentNum": "Ek-1",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Tekerlekli Valizi Çekerek İlerlet!",
+    "icon": "fa-suitcase-rolling",
+    "description": "Havalimanında tekerlekli seyahat valizi çekme kolundan tutularak zemin üzerinde çekilir ve ilerler.",
+    "forceName": "Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 35,
+    "defaultDistance": 2.5,
+    "modelType": "luggage_pull",
+    "scientificExplanation": "Valize uygulanan çekme kuvveti ile valizin yer değiştirmesi aynı doğrultudadır. Kuvvet doğrultusunda yol alındığı için İŞ YAPILMIŞTIR.",
+    "hint1": "Valiz çekildiğinde tekerlekleri üzerinde yol aldı mı?",
+    "hint2": "Kuvvet ile yer değiştirme aynı yönde midir?"
+  },
+  {
+    "id": 32,
+    "studentNum": "Ek-2",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Sabitlenmiş Valizi Çek!",
+    "icon": "fa-link",
+    "description": "Valiz güvenlik direğine zincirlenmiştir. Çekilmeye çalışılır fakat zincir izin vermez, hareket etmez.",
+    "forceName": "Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 60,
+    "defaultDistance": 0,
+    "modelType": "luggage_locked",
+    "scientificExplanation": "Zincir valizin yer değiştirmesini engellemiştir (Δx = 0). Kuvvet uygulanmasına rağmen yol alınmadığı için İŞ YAPILMAZ.",
+    "hint1": "Zincir valizin ilerlemesine engel oluyor mu?",
+    "hint2": "Cisim yer değiştirmeden iş yapılabilir mi?"
+  },
+  {
+    "id": 33,
+    "studentNum": "Ek-3",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Pazar Sepetini Tezgâha Kaldır!",
+    "icon": "fa-carrot",
+    "description": "Meyve dolu pazar sepeti yerden tutularak pazar tezgâhının üzerine doğru kaldırılır.",
+    "forceName": "Düşey Kaldırma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": true,
+    "displacementDirection": "vertical_up",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 40,
+    "defaultDistance": 1.3,
+    "modelType": "market_basket_lift",
+    "scientificExplanation": "Sepete düşey yukarı yönde kaldırma kuvveti uygulanmış ve sepet tezgaha doğru yükselmiştir. Kuvvet ve yer değiştirme aynı doğrultuda olduğu için İŞ YAPILMIŞTIR.",
+    "hint1": "Sepete uygulanan kaldırma kuvveti ile hareket yönü aynı mı?",
+    "hint2": "Sepet yerden yukarıya yükseldi mi?"
+  },
+  {
+    "id": 34,
+    "studentNum": "Ek-4",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Pazar Sepetini Havada Sabit Tut!",
+    "icon": "fa-hand-holding-hand",
+    "description": "Pazar sepeti elde belirli bir yükseklikte tutulmakta ve hiç hareket ettirilmemektedir.",
+    "forceName": "Düşey Tutma Kuvveti (F)",
+    "forceDirection": "vertical_up",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 40,
+    "defaultDistance": 0,
+    "modelType": "market_basket_hold",
+    "scientificExplanation": "Sepet elde hareketsiz durduğu için yer değiştirme gerçekleşmemiştir (Δx = 0). Kuvvet olmasına rağmen yer değiştirme olmadığından İŞ YAPILMAZ.",
+    "hint1": "Sepet havada dururken herhangi bir yol alıyor mu?",
+    "hint2": "Fiziksel iş için yer değiştirme (Δx) zorunlu mudur?"
+  },
+  {
+    "id": 35,
+    "studentNum": "Ek-5",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Bahçe Hortumunu Sürükle!",
+    "icon": "fa-arrows-left-right",
+    "description": "Bahçeyi sulamak için hortumun ucundan tutulup çimler üzerinde çekilir ve hortum sürüklenerek gelir.",
+    "forceName": "Yatay Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 30,
+    "defaultDistance": 2,
+    "modelType": "garden_hose_pull",
+    "scientificExplanation": "Hortuma yatay doğrultuda çekme kuvveti uygulanmış ve hortum çim üzerinde aynı doğrultuda yer değiştirmiştir. Bu nedenle İŞ YAPILMIŞTIR.",
+    "hint1": "Hortum çekilen yönde çim üzerinde yer değiştirdi mi?",
+    "hint2": "Kuvvet doğrultusu ile hareket doğrultusu uyuşuyor mu?"
+  },
+  {
+    "id": 36,
+    "studentNum": "Ek-6",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Sabitlenmiş Hortumu Çek!",
+    "icon": "fa-faucet-drip",
+    "description": "Hortum musluğa kilitli bir kelepçeyle sıkıca takılmıştır. Çekildiğinde esnemez ve hareket etmez.",
+    "forceName": "Çekme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 50,
+    "defaultDistance": 0,
+    "modelType": "garden_hose_fixed",
+    "scientificExplanation": "Kelepçeli sabit hortum çekilmesine rağmen yerinden kıpırdamaz (Δx = 0). Yer değiştirme olmadığı için fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Hortum musluktan ayrılamadığına göre yer değiştirdi mi?",
+    "hint2": "Yol alınmayan durumlarda iş var mıdır?"
+  },
+  {
+    "id": 37,
+    "studentNum": "Ek-7",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Kalem Kutusunu Masada İt!",
+    "icon": "fa-pencil",
+    "description": "Masa üzerindeki kalem kutusu parmakla yana doğru itilir ve masa üzerinde kayar.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_right",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_right",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 10,
+    "defaultDistance": 0.9,
+    "modelType": "pencil_case_slide",
+    "scientificExplanation": "Kalem kutusuna uygulanan kuvvet kutunun masa boyunca aynı yönde yer değiştirmesini sağlamıştır. Kuvvet ve yer değiştirme aynı doğrultuda olduğu için İŞ YAPILMIŞTIR.",
+    "hint1": "Kalem kutusu itildiği yönde kaydı mı?",
+    "hint2": "Kuvvet ile yol doğrultusu aynı mıdır?"
+  },
+  {
+    "id": 38,
+    "studentNum": "Ek-8",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Kalem Kutusuna Yalnızca Bastır!",
+    "icon": "fa-hand-fist",
+    "description": "Kalem kutusuna yalnızca yukarıdan aşağıya doğru bastırılır. Kutu masaya yapışık kalır, yer değiştirmez.",
+    "forceName": "Düşey Bastırma Kuvveti (F)",
+    "forceDirection": "vertical_down",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 30,
+    "defaultDistance": 0,
+    "modelType": "pencil_case_press",
+    "scientificExplanation": "Kalem kutusuna dik olarak kuvvet uygulanmış ancak kutu yer değiştirmemiştir (Δx = 0). Bu sebeple fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Yukarıdan bastırıldığında kalem kutusu herhangi bir yönde yol aldı mı?",
+    "hint2": "Yer değiştirme sıfırsa iş durumu nedir?"
+  },
+  {
+    "id": 39,
+    "studentNum": "Ek-9",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Kitabı Masada Sürükle!",
+    "icon": "fa-book-open",
+    "description": "Öğrenci kitabı masanın üzerinde ileriye doğru sürükler. Kitap masa boyunca ilerler.",
+    "forceName": "Yatay İtme Kuvveti (F)",
+    "forceDirection": "horizontal_forward",
+    "hasDisplacement": true,
+    "displacementDirection": "horizontal_forward",
+    "isPerpendicular": false,
+    "hasWork": true,
+    "defaultForce": 15,
+    "defaultDistance": 1.2,
+    "modelType": "book_slide",
+    "scientificExplanation": "Kitaba yatay doğrultuda kuvvet uygulanmış ve kitap uygulanan kuvvet doğrultusunda yer değiştirmiştir. Bu nedenle fiziksel anlamda İŞ YAPILMIŞTIR.",
+    "hint1": "Kitap uygulanan kuvvet doğrultusunda hareket etti mi?",
+    "hint2": "Kuvvet ve yer değiştirme aynı doğrultuda mıdır?"
+  },
+  {
+    "id": 40,
+    "studentNum": "Ek-10",
+    "category": "E. Günlük Yaşam",
+    "categoryKey": "ek",
+    "title": "Kitaba Elini Koyup Bastır (Hareketsiz)!",
+    "icon": "fa-hand-dots",
+    "description": "Öğrenci elini masanın üstündeki kitabın üzerine koyarak kuvvet uygular ancak kitabı hiç hareket ettirmez.",
+    "forceName": "Bastırma Kuvveti (F)",
+    "forceDirection": "vertical_down",
+    "hasDisplacement": false,
+    "displacementDirection": "none",
+    "isPerpendicular": false,
+    "hasWork": false,
+    "defaultForce": 25,
+    "defaultDistance": 0,
+    "modelType": "book_hold_press",
+    "scientificExplanation": "Kitaba el ile kuvvet uygulanmasına rağmen kitap hareket etmemiş ve yer değiştirmemiştir (Δx = 0). Yer değiştirme olmadığı için fiziksel anlamda İŞ YAPILMAZ.",
+    "hint1": "Kitap hareket etmeden sabit dururken yer değiştirme oluşur mu?",
+    "hint2": "Fizikte iş yapılabilmesi için cismin mutlaka yer değiştirmesi gerekir."
+  }
+];
+        const QUIZ_QUESTIONS = [
+  {
+    "q": "1. Bir kuvvetin fiziksel anlamda iş yapabilmesi için aşağıdaki şartlardan hangisi KESİNLİKLE gereklidir?",
+    "options": [
+      "Cisme kuvvet uygulanmalı ve cisim bu kuvvet doğrultusunda yer değiştirmelidir.",
+      "Cisme uygulanan kuvvet yer değiştirmeye dik olmalıdır.",
+      "Cisim çok ağır olmalı ve hareket etmemelidir.",
+      "Kuvvet uygulanırken cisim durmaya devam etmelidir."
+    ],
+    "correct": 0,
+    "explanation": "Fiziksel anlamda iş yapılabilmesi için cisme bir kuvvet uygulanmalı ve cisim uygulanan kuvvet doğrultusunda yer değiştirmelidir (W = F · Δx)."
+  },
+  {
+    "q": "2. Yerde duran bir çantayı sıranın üzerine kaldıran Ali ile ilgili hangisi doğrudur?",
+    "options": [
+      "Ali yerçekimine karşı fiziksel anlamda iş yapmıştır.",
+      "Ali hiçbir iş yapmamıştır çünkü çanta hafiftir.",
+      "Ali yerçekimi doğrultusuna dik hareket ettirmiştir.",
+      "Ali iş yapmamıştır çünkü yer değiştirme sıfırdır."
+    ],
+    "correct": 0,
+    "explanation": "Çantaya yukarı yönlü kuvvet uygulanmış ve çanta yukarı yönde yer değiştirmiştir. Kuvvet ve yer değiştirme aynı doğrultuda olduğu için iş yapılmıştır."
+  },
+  {
+    "q": "3. Elindeki çamaşır sepetini sabit yükseklikte tutarak yatay yolda yürüyen bir kişi neden fiziksel anlamda iş YAPMAZ?",
+    "options": [
+      "Uygulanan kaldırma kuvveti (düşey), yer değiştirme doğrultusuna (yatay) DİK olduğu için.",
+      "Sepet çok ağır olduğu için.",
+      "Kişi yeterince hızlı yürümediği için.",
+      "Zeminde sürtünme olmadığı için."
+    ],
+    "correct": 0,
+    "explanation": "Kuvvet düşey yukarı (↑), hareket ise yataydır (→). Kuvvet ile hareket birbirine dik (90°) olduğunda uygulanan kuvvet fiziksel anlamda iş yapmaz!"
+  },
+  {
+    "q": "4. Zemine vidalanmış sabit bir sırayı var gücüyle iten ancak hareket ettiremeyen öğrenci için hangisi söylenebilir?",
+    "options": [
+      "Yorulmuştur fakat cisim yer değiştirmediği (Δx = 0) için fiziksel iş yapmamıştır.",
+      "Çok büyük bir kuvvet uyguladığı için çok büyük iş yapmıştır.",
+      "İtme yönünde iş yapmıştır.",
+      "Yerçekimine karşı iş yapmıştır."
+    ],
+    "correct": 0,
+    "explanation": "Cisim yer değiştirmediği sürece (Δx = 0) ne kadar kuvvet uygulanırsa uygulansın fiziksel anlamda iş sıfırdır (W = F · 0 = 0 J)."
+  },
+  {
+    "q": "5. Fiziksel anlamda işin birimi aşağıdakilerden hangisidir?",
+    "options": [
+      "Joule (J)",
+      "Newton (N)",
+      "Metre (m)",
+      "Kilogram (kg)"
+    ],
+    "correct": 0,
+    "explanation": "Kuvvetin birimi Newton (N), yolun birimi metre (m) iken İş birimi Joule (J) olarak adlandırılır (1 Joule = 1 N · 1 m)."
+  },
+  {
+    "q": "6. Bir cisme 20 N büyüklüğünde yatay kuvvet uygulanarak cisim kuvvet doğrultusunda 3 metre ötelenirse yapılan iş kaç Joule olur?",
+    "options": [
+      "60 Joule",
+      "23 Joule",
+      "17 Joule",
+      "0 Joule"
+    ],
+    "correct": 0,
+    "explanation": "İş = Kuvvet × Yol formülünden: W = F · Δx = 20 N × 3 m = 60 Joule."
+  },
+  {
+    "q": "7. Aşağıdaki olayların hangisinde FİZİKSEL ANLAMDA İŞ YAPILIR?",
+    "options": [
+      "Market arabasını iterek reyonlar arasında ilerletmek",
+      "Duvarda asılı tabloyu havada sabit tutmak",
+      "Kilitli kapıyı var gücüyle itmek",
+      "Masada duran kitaba yalnızca yukarıdan bastırmak"
+    ],
+    "correct": 0,
+    "explanation": "Market arabası uygulanan itme kuvveti doğrultusunda ilerlediği için fiziksel anlamda iş yapılır."
+  },
+  {
+    "q": "8. Sırtındaki çantayla merdivenlerden yukarı kata çıkan bir öğrenci iş yapar mı?",
+    "options": [
+      "Evet, çantayı yukarı taşırken yerçekimine karşı iş yapar.",
+      "Hayır, çanta sırtında sabit durduğu için hiç iş yapılmaz.",
+      "Hayır, sadece yatayda yürürken iş yapılır.",
+      "Sadece merdivenden aşağı inerken iş yapılır."
+    ],
+    "correct": 0,
+    "explanation": "Merdiven çıkarken çanta düşeyde yukarı doğru yükselir (Δy > 0). Yukarı yönlü taşıma kuvveti ile yükselme aynı doğrultuda olduğu için iş yapılır."
+  },
+  {
+    "q": "9. Bir işin büyüklüğü aşağıdakilerden hangilerine bağlıdır?",
+    "options": [
+      "Uygulanan kuvvetin büyüklüğüne ve kuvvet doğrultusundaki yer değiştirmeye",
+      "Sadece cismin rengine ve şekline",
+      "Yalnızca geçen zamana",
+      "Sadece havanın sıcaklığına"
+    ],
+    "correct": 0,
+    "explanation": "Fiziksel iş W = F · Δx formülüne göre uygulanan kuvvetin büyüklüğü (F) ve alınan yolun (Δx) büyüklüğüne bağlıdır."
+  },
+  {
+    "q": "10. \"Kuvvet var fakat cisim hareket etmiyor\" ve \"Cisim hareket ediyor fakat kuvvet harekete dik\" durumlarının ORTAK sonucu nedir?",
+    "options": [
+      "Her iki durumda da fiziksel anlamda İŞ YAPILMAZ (W = 0).",
+      "Her iki durumda da maksimum iş yapılır.",
+      "Her iki durumda da yerçekimi kuvveti iş yapar.",
+      "Her iki durumda da cisim hızlanır."
+    ],
+    "correct": 0,
+    "explanation": "Fiziksel işin sıfır olduğu iki temel durum vardır: 1) Yer değiştirmenin olmaması (Δx = 0), 2) Kuvvetin yer değiştirmeye dik olması (F ⊥ Δx)."
+  }
+];
+
+        // Ses Yöneticisi (Web Audio API Synthesizer)
+        const SoundManager = {
+            ctx: null,
+            isMuted: false,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+            },
+            playTone(freq, type = 'sine', duration = 0.15, vol = 0.15) {
+                if (this.isMuted) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            },
+            playCorrect() {
+                this.playTone(523.25, 'triangle', 0.1, 0.2); // C5
+                setTimeout(() => this.playTone(659.25, 'triangle', 0.12, 0.2), 90); // E5
+                setTimeout(() => this.playTone(783.99, 'triangle', 0.25, 0.25), 180); // G5
+            },
+            playWrong() {
+                this.playTone(330, 'sawtooth', 0.15, 0.2);
+                setTimeout(() => this.playTone(260, 'sawtooth', 0.25, 0.2), 120);
+            },
+            playPush() {
+                this.playTone(180, 'sine', 0.35, 0.15);
+            },
+            playLock() {
+                this.playTone(150, 'square', 0.08, 0.15);
+                setTimeout(() => this.playTone(120, 'square', 0.1, 0.15), 70);
+            }
+        };
+
+        function toggleAudio() {
+            SoundManager.isMuted = !SoundManager.isMuted;
+            const icon = document.getElementById('audio-icon');
+            if (icon) {
+                icon.className = SoundManager.isMuted ? 'fa-solid fa-volume-xmark text-rose-400' : 'fa-solid fa-volume-high text-slate-300';
+            }
+        }
+
+        // =========================================================================
+        // 🌐 GLOBAL STATE
+        // =========================================================================
+        let currentExpIndex = 0; // 0..39
+        let studentPrediction = null; // true (iş var), false (iş yok)
+        let isSimPlaying = false;
+        let simProgress = 0; // 0..1 animation progress
+        let customForce = 45;
+
+        // Öğrenci ilerleme durumu (localStorage senkronize)
+        let studentResults = {}; // { expId: { completed: true/false, userPred: true/false, isCorrect: true/false } }
+        try {
+            const saved = localStorage.getItem('is_lab_results_v1');
+            if (saved) studentResults = JSON.parse(saved);
+        } catch(e) {}
+
+        // Three.js Değişkenleri
+        let scene, camera, renderer, controls;
+        let currentInteractiveGroup = null;
+        let forceArrowGroup, distArrowGroup;
+        let forceArrowLabel, distArrowLabel;
+        let rightAngleMesh = null;
+        let lockIndicatorMesh = null;
+        let clock = new THREE.Clock();
+
+        // Sayfa Başlatıcı
+        window.addEventListener('DOMContentLoaded', () => {
+            initThreeScene();
+            loadExperiment(0);
+            renderClassroomCardsGrid();
+            updateClassroomProgressBadge();
+            window.addEventListener('resize', onWindowResize);
+        });
+
+        function onWindowResize() {
+            const container = document.getElementById('webgl-container');
+            if (!container || !renderer || !camera) return;
+            const w = container.clientWidth;
+            const h = container.clientHeight;
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+        }
+
+        // =========================================================================
+        // 🎬 THREE.JS SAHNE KURULUMU
+        // =========================================================================
+        function initThreeScene() {
+            const container = document.getElementById('webgl-container');
+            if (!container) return;
+
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0c1427);
+            scene.fog = new THREE.FogExp2(0x0c1427, 0.025);
+
+            const w = container.clientWidth || 600;
+            const h = container.clientHeight || 300;
+
+            camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 80);
+            camera.position.set(0, 3.2, 7.5);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
+            renderer.setSize(w, h);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            if (typeof THREE.OrbitControls === 'function') {
+                try {
+                    controls = new THREE.OrbitControls(camera, renderer.domElement);
+                    controls.enableDamping = true;
+                    controls.dampingFactor = 0.06;
+                    controls.maxPolarAngle = Math.PI / 2 - 0.02;
+                    controls.minDistance = 3.5;
+                    controls.maxDistance = 16;
+                    controls.target.set(0, 1.0, 0);
+                } catch(e) {}
+            }
+
+            // Işıklandırma
+            const ambLight = new THREE.AmbientLight(0xffffff, 0.9);
+            scene.add(ambLight);
+
+            const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            dirLight.position.set(6, 12, 8);
+            dirLight.castShadow = true;
+            dirLight.shadow.mapSize.width = 1024;
+            dirLight.shadow.mapSize.height = 1024;
+            dirLight.shadow.bias = -0.0001;
+            scene.add(dirLight);
+
+            const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.55);
+            fillLight.position.set(-8, 6, -5);
+            scene.add(fillLight);
+
+            // Zemin ve Grid
+            buildEnvironment();
+
+            // Vektör Okları
+            buildVectors();
+
+            // Render Döngüsü
+            animate();
+        }
+
+        // Zemin ve Çevre
+        let floorMesh, floorGrid;
+        function buildEnvironment() {
+            floorGrid = new THREE.GridHelper(30, 30, 0x0284c7, 0x1e293b);
+            floorGrid.position.y = 0.01;
+            scene.add(floorGrid);
+
+            const floorGeo = new THREE.PlaneGeometry(36, 36);
+            const floorMat = new THREE.MeshStandardMaterial({
+                color: 0x0f172a,
+                roughness: 0.4,
+                metalness: 0.1
+            });
+            floorMesh = new THREE.Mesh(floorGeo, floorMat);
+            floorMesh.rotation.x = -Math.PI / 2;
+            floorMesh.position.y = 0;
+            floorMesh.receiveShadow = true;
+            scene.add(floorMesh);
+        }
+
+        // 🏹 3D Vektör Okları ve Billboard Etiketleri
+        function buildVectors() {
+            // Kuvvet Oku (Kırmızı/Cyan F)
+            forceArrowGroup = create3DVectorArrow(0x06b6d4, 'F');
+            scene.add(forceArrowGroup);
+            forceArrowLabel = createBillboardText('F = 45 N', '#ffffff', '#0891b2');
+            scene.add(forceArrowLabel);
+
+            // Yer Değiştirme Oku (Yeşil Δx)
+            distArrowGroup = create3DVectorArrow(0x10b981, 'Δx');
+            scene.add(distArrowGroup);
+            distArrowLabel = createBillboardText('Δx = 1.8 m', '#ffffff', '#059669');
+            scene.add(distArrowLabel);
+
+            // 90° Dik Açı Sembolü
+            const rightAngleGeo = new THREE.BufferGeometry();
+            const vertices = new Float32Array([
+                0, 0.4, 0,   0.4, 0.4, 0,
+                0.4, 0.4, 0, 0.4, 0, 0
+            ]);
+            rightAngleGeo.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+            const rightAngleMat = new THREE.LineBasicMaterial({ color: 0xf59e0b, linewidth: 3 });
+            rightAngleMesh = new THREE.LineSegments(rightAngleGeo, rightAngleMat);
+            rightAngleMesh.visible = false;
+            scene.add(rightAngleMesh);
+        }
+
+        function create3DVectorArrow(colorHex, label) {
+            const group = new THREE.Group();
+
+            const shaftGeo = new THREE.CylinderGeometry(0.065, 0.065, 1, 16);
+            const shaftMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.35 });
+            const shaft = new THREE.Mesh(shaftGeo, shaftMat);
+            shaft.rotation.z = -Math.PI / 2;
+            shaft.position.x = 0.5;
+            group.add(shaft);
+            group.userData.shaft = shaft;
+
+            const headGeo = new THREE.ConeGeometry(0.20, 0.45, 16);
+            const headMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.5 });
+            const head = new THREE.Mesh(headGeo, headMat);
+            head.rotation.z = -Math.PI / 2;
+            head.position.x = 1.0;
+            group.add(head);
+            group.userData.head = head;
+
+            return group;
+        }
+
+        function createBillboardText(text, color = '#ffffff', bgColor = '#0284c7') {
+            const canvas = document.createElement('canvas');
+            canvas.width = 280;
+            canvas.height = 90;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = bgColor;
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(4, 4, 272, 82, 16);
+            else ctx.rect(4, 4, 272, 82);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            if (ctx.roundRect) ctx.roundRect(4, 4, 272, 82, 16);
+            ctx.stroke();
+
+            ctx.fillStyle = color;
+            ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 140, 45);
+
+            const texture = new THREE.CanvasTexture(canvas);
+            const labelGeo = new THREE.PlaneGeometry(1.6, 0.52);
+            const labelMat = new THREE.MeshBasicMaterial({ map: texture, transparent: true, side: THREE.FrontSide, depthTest: false });
+            const mesh = new THREE.Mesh(labelGeo, labelMat);
+            mesh.renderOrder = 999;
+            return mesh;
+        }
+
+        function updateBillboardLabelText(labelMesh, text, bgColor = '#0284c7') {
+            if (!labelMesh) return;
+            const canvas = document.createElement('canvas');
+            canvas.width = 280;
+            canvas.height = 90;
+            const ctx = canvas.getContext('2d');
+
+            ctx.fillStyle = bgColor;
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(4, 4, 272, 82, 16);
+            else ctx.rect(4, 4, 272, 82);
+            ctx.fill();
+
+            ctx.strokeStyle = '#ffffff';
+            ctx.lineWidth = 4;
+            if (ctx.roundRect) ctx.roundRect(4, 4, 272, 82, 16);
+            ctx.stroke();
+
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 36px "Plus Jakarta Sans", sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(text, 140, 45);
+
+            labelMesh.material.map.dispose();
+            labelMesh.material.map = new THREE.CanvasTexture(canvas);
+            labelMesh.material.needsUpdate = true;
+        }
+
+        // =========================================================================
+        // 📦 3D PROSEDÜREL NESNE MODELLERİ (40 DENEY İÇİN)
+        // =========================================================================
+        function build3DModelForExperiment(exp) {
+            if (currentInteractiveGroup) {
+                scene.remove(currentInteractiveGroup);
+            }
+            currentInteractiveGroup = new THREE.Group();
+            currentInteractiveGroup.userData.exp = exp;
+            currentInteractiveGroup.userData.basePos = new THREE.Vector3(0, 0, 0);
+
+            // Zemin rengini kategoriye göre ayarla
+            if (exp.categoryKey === 'okul') {
+                floorMesh.material.color.setHex(0x1e293b); // Sınıf parkesi / fayansı
+            } else if (exp.categoryKey === 'ev') {
+                floorMesh.material.color.setHex(0x312e81); // Sıcak oda halısı
+            } else if (exp.categoryKey === 'spor') {
+                floorMesh.material.color.setHex(0x064e3b); // Çim / açık hava
+            } else {
+                floorMesh.material.color.setHex(0x0f172a);
+            }
+
+            const type = exp.modelType;
+
+            // 1. SIRA (Desk)
+            if (type === 'desk' || type === 'desk_fixed') {
+                const deskGroup = new THREE.Group();
+                // Masa tablası
+                const topGeo = new THREE.BoxGeometry(2.4, 0.12, 1.4);
+                const woodMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 });
+                const topMesh = new THREE.Mesh(topGeo, woodMat);
+                topMesh.position.y = 1.3;
+                topMesh.castShadow = true;
+                deskGroup.add(topMesh);
+                // Ayaklar
+                const legGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.3, 12);
+                const legMat = new THREE.MeshStandardMaterial({ color: 0x64748b, metalness: 0.6 });
+                const legOffsets = [[-1.0, -0.55], [1.0, -0.55], [-1.0, 0.55], [1.0, 0.55]];
+                legOffsets.forEach(pos => {
+                    const leg = new THREE.Mesh(legGeo, legMat);
+                    leg.position.set(pos[0], 0.65, pos[1]);
+                    leg.castShadow = true;
+                    deskGroup.add(leg);
+                });
+                // Sandalye
+                const seatGeo = new THREE.BoxGeometry(1.2, 0.08, 0.8);
+                const seatMesh = new THREE.Mesh(seatGeo, woodMat);
+                seatMesh.position.set(0, 0.75, -1.0);
+                deskGroup.add(seatMesh);
+
+                // Eğer sabitse zemine metal kilit plakaları
+                if (type === 'desk_fixed') {
+                    legOffsets.forEach(pos => {
+                        const boltGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.04, 12);
+                        const boltMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0x7f1d1d });
+                        const bolt = new THREE.Mesh(boltGeo, boltMat);
+                        bolt.position.set(pos[0], 0.02, pos[1]);
+                        deskGroup.add(bolt);
+                    });
+                }
+                currentInteractiveGroup.add(deskGroup);
+                currentInteractiveGroup.userData.mainMesh = deskGroup;
+            }
+
+            // 2. ÇANTA (Backpack)
+            else if (type === 'backpack_lift' || type === 'backpack_hold') {
+                const bagGroup = new THREE.Group();
+                const bodyGeo = new THREE.BoxGeometry(1.0, 1.3, 0.6);
+                const bagMat = new THREE.MeshStandardMaterial({ color: 0x0284c7, roughness: 0.5 });
+                const bodyMesh = new THREE.Mesh(bodyGeo, bagMat);
+                bodyMesh.position.y = 0.65;
+                bodyMesh.castShadow = true;
+                bagGroup.add(bodyMesh);
+
+                const pocketGeo = new THREE.BoxGeometry(0.7, 0.6, 0.2);
+                const pocketMat = new THREE.MeshStandardMaterial({ color: 0x0369a1 });
+                const pocket = new THREE.Mesh(pocketGeo, pocketMat);
+                pocket.position.set(0, 0.5, 0.35);
+                bagGroup.add(pocket);
+
+                const handleGeo = new THREE.TorusGeometry(0.2, 0.03, 8, 16, Math.PI);
+                const handleMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+                const handle = new THREE.Mesh(handleGeo, handleMat);
+                handle.rotation.x = Math.PI;
+                handle.position.set(0, 1.35, 0);
+                bagGroup.add(handle);
+
+                // Çantayı sıranın yanına koy
+                if (type === 'backpack_hold') {
+                    bagGroup.position.set(0, 0.8, 0); // Havada sabit duruş
+                } else {
+                    bagGroup.position.set(0, 0, 0); // Yerde duruş
+                }
+                currentInteractiveGroup.add(bagGroup);
+                currentInteractiveGroup.userData.mainMesh = bagGroup;
+            }
+
+            // 3. YAZI TAHTASI VE SİLGİ (Blackboard & Sponge)
+            else if (type === 'blackboard_erase' || type === 'blackboard_push') {
+                const boardGroup = new THREE.Group();
+                // Tahta
+                const boardGeo = new THREE.BoxGeometry(5.0, 2.5, 0.1);
+                const boardMat = new THREE.MeshStandardMaterial({ color: 0x064e3b, roughness: 0.8 });
+                const board = new THREE.Mesh(boardGeo, boardMat);
+                board.position.set(0, 2.0, -0.6);
+                board.receiveShadow = true;
+                boardGroup.add(board);
+
+                // Çerçeve
+                const frameGeo = new THREE.BoxGeometry(5.2, 2.7, 0.08);
+                const frameMat = new THREE.MeshStandardMaterial({ color: 0x78350f });
+                const frame = new THREE.Mesh(frameGeo, frameMat);
+                frame.position.set(0, 2.0, -0.66);
+                boardGroup.add(frame);
+
+                // Silgi
+                const spongeGeo = new THREE.BoxGeometry(0.5, 0.3, 0.2);
+                const spongeMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.9 });
+                const sponge = new THREE.Mesh(spongeGeo, spongeMat);
+                sponge.position.set(-1.4, 2.0, -0.45);
+                sponge.castShadow = true;
+                boardGroup.add(sponge);
+
+                currentInteractiveGroup.add(boardGroup);
+                currentInteractiveGroup.userData.mainMesh = sponge; // Sadece silgi hareket eder!
+            }
+
+            // 4. ÇEKMECE (Drawer)
+            else if (type === 'drawer_open' || type === 'drawer_locked') {
+                const cabinetGroup = new THREE.Group();
+                // Komodin gövdesi
+                const cabGeo = new THREE.BoxGeometry(1.8, 1.6, 1.4);
+                const cabMat = new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.4 });
+                const cab = new THREE.Mesh(cabGeo, cabMat);
+                cab.position.set(0, 0.8, -0.3);
+                cab.receiveShadow = true;
+                cabinetGroup.add(cab);
+
+                // Çekmece kutusu
+                const drawerGeo = new THREE.BoxGeometry(1.5, 0.5, 1.2);
+                const drawerMat = new THREE.MeshStandardMaterial({ color: 0xb45309 });
+                const drawer = new THREE.Mesh(drawerGeo, drawerMat);
+                drawer.position.set(0, 0.95, -0.2);
+                drawer.castShadow = true;
+
+                // Kulp
+                const handleGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.4, 12);
+                const handleMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8 });
+                const handle = new THREE.Mesh(handleGeo, handleMat);
+                handle.rotation.z = Math.PI / 2;
+                handle.position.set(0, 0, 0.65);
+                drawer.add(handle);
+
+                // Kilit rozeti
+                if (type === 'drawer_locked') {
+                    const lockGeo = new THREE.SphereGeometry(0.06, 12, 12);
+                    const lockMat = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0x991b1b });
+                    const lock = new THREE.Mesh(lockGeo, lockMat);
+                    lock.position.set(0, 0.15, 0.62);
+                    drawer.add(lock);
+                }
+
+                cabinetGroup.add(drawer);
+                currentInteractiveGroup.add(cabinetGroup);
+                currentInteractiveGroup.userData.mainMesh = drawer; // Çekmece açılır!
+            }
+
+            // 5. OYUNCAK ARABA (Toy Car)
+            else if (type === 'toy_car_pull' || type === 'toy_car_fixed') {
+                const carGroup = new THREE.Group();
+                const bodyGeo = new THREE.BoxGeometry(1.6, 0.6, 0.9);
+                const bodyMat = new THREE.MeshStandardMaterial({ color: 0xef4444, metalness: 0.2, roughness: 0.3 });
+                const body = new THREE.Mesh(bodyGeo, bodyMat);
+                body.position.y = 0.45;
+                body.castShadow = true;
+                carGroup.add(body);
+
+                const roofGeo = new THREE.BoxGeometry(0.9, 0.4, 0.8);
+                const roofMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8 });
+                const roof = new THREE.Mesh(roofGeo, roofMat);
+                roof.position.set(-0.1, 0.8, 0);
+                carGroup.add(roof);
+
+                // Tekerlekler
+                const wheelGeo = new THREE.CylinderGeometry(0.2, 0.2, 0.15, 16);
+                const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a });
+                const wheelPositions = [[-0.5, 0.2, 0.45], [0.5, 0.2, 0.45], [-0.5, 0.2, -0.45], [0.5, 0.2, -0.45]];
+                wheelPositions.forEach(p => {
+                    const w = new THREE.Mesh(wheelGeo, wheelMat);
+                    w.rotation.x = Math.PI / 2;
+                    w.position.set(p[0], p[1], p[2]);
+                    carGroup.add(w);
+                });
+
+                // Çekme ipi
+                const ropeGeo = new THREE.CylinderGeometry(0.015, 0.015, 1.8, 8);
+                const ropeMat = new THREE.MeshBasicMaterial({ color: 0xf59e0b });
+                const rope = new THREE.Mesh(ropeGeo, ropeMat);
+                rope.rotation.z = Math.PI / 2;
+                rope.position.set(1.5, 0.45, 0);
+                carGroup.add(rope);
+
+                currentInteractiveGroup.add(carGroup);
+                currentInteractiveGroup.userData.mainMesh = carGroup;
+            }
+
+            // 6. ALIŞVERİŞ ARABASI (Shopping Cart)
+            else if (type === 'shopping_cart_push' || type === 'shopping_cart_locked') {
+                const cartGroup = new THREE.Group();
+                const basketGeo = new THREE.BoxGeometry(1.6, 1.0, 1.1);
+                const wireMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, wireframe: true });
+                const basket = new THREE.Mesh(basketGeo, wireMat);
+                basket.position.set(0, 1.2, 0);
+                basket.castShadow = true;
+                cartGroup.add(basket);
+
+                const baseGeo = new THREE.BoxGeometry(1.8, 0.1, 1.1);
+                const baseMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+                const base = new THREE.Mesh(baseGeo, baseMat);
+                base.position.set(0, 0.4, 0);
+                cartGroup.add(base);
+
+                // İtme Kolu
+                const handleGeo = new THREE.CylinderGeometry(0.04, 0.04, 1.0, 12);
+                const handleMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
+                const handle = new THREE.Mesh(handleGeo, handleMat);
+                handle.rotation.x = Math.PI / 2;
+                handle.position.set(-0.85, 1.5, 0);
+                cartGroup.add(handle);
+
+                // Tekerlekler
+                const wGeo = new THREE.SphereGeometry(0.12, 12, 12);
+                const wMat = new THREE.MeshStandardMaterial({ color: type === 'shopping_cart_locked' ? 0xef4444 : 0x0f172a });
+                [[-0.7, 0.15, -0.45], [-0.7, 0.15, 0.45], [0.7, 0.15, -0.45], [0.7, 0.15, 0.45]].forEach(p => {
+                    const wheel = new THREE.Mesh(wGeo, wMat);
+                    wheel.position.set(p[0], p[1], p[2]);
+                    cartGroup.add(wheel);
+                });
+
+                currentInteractiveGroup.add(cartGroup);
+                currentInteractiveGroup.userData.mainMesh = cartGroup;
+            }
+
+            // 7. KİTAP VE RAF (Book on Shelf/Desk)
+            else if (type === 'book_shelf' || type === 'book_press' || type === 'book_slide' || type === 'book_hold_press') {
+                const bookGroup = new THREE.Group();
+                // Masa
+                const tableGeo = new THREE.BoxGeometry(3.0, 0.15, 1.6);
+                const tableMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
+                const table = new THREE.Mesh(tableGeo, tableMat);
+                table.position.set(0, 0.8, 0);
+                table.receiveShadow = true;
+                bookGroup.add(table);
+
+                // Üst Raf (Kitap rafa kaldırılıyorsa)
+                if (type === 'book_shelf') {
+                    const shelfGeo = new THREE.BoxGeometry(2.4, 0.1, 0.8);
+                    const shelfMat = new THREE.MeshStandardMaterial({ color: 0x0284c7 });
+                    const shelf = new THREE.Mesh(shelfGeo, shelfMat);
+                    shelf.position.set(0, 2.2, 0);
+                    bookGroup.add(shelf);
+                }
+
+                // Kitap
+                const bookGeo = new THREE.BoxGeometry(0.7, 0.12, 0.9);
+                const bookMat = new THREE.MeshStandardMaterial({ color: 0x10b981, roughness: 0.3 });
+                const book = new THREE.Mesh(bookGeo, bookMat);
+                book.position.set(0, 0.95, 0);
+                book.castShadow = true;
+                bookGroup.add(book);
+
+                currentInteractiveGroup.add(bookGroup);
+                currentInteractiveGroup.userData.mainMesh = book; // Kitap hareket eder!
+            }
+
+            // 8. KAPI (Door)
+            else if (type === 'door_open' || type === 'door_locked') {
+                const doorFrameGroup = new THREE.Group();
+                // Kasa
+                const frameGeo = new THREE.BoxGeometry(0.15, 3.2, 0.15);
+                const frameMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+                const leftPost = new THREE.Mesh(frameGeo, frameMat);
+                leftPost.position.set(-1.0, 1.6, 0);
+                doorFrameGroup.add(leftPost);
+                const rightPost = new THREE.Mesh(frameGeo, frameMat);
+                rightPost.position.set(1.0, 1.6, 0);
+                doorFrameGroup.add(rightPost);
+
+                // Kapı Kanadı (Menteşe X=-1.0'da)
+                const doorWing = new THREE.Group();
+                doorWing.position.set(-1.0, 0, 0);
+
+                const doorPanelGeo = new THREE.BoxGeometry(1.95, 3.1, 0.08);
+                const doorMat = new THREE.MeshStandardMaterial({ color: type === 'door_locked' ? 0x334155 : 0xb45309, metalness: type === 'door_locked' ? 0.7 : 0.1 });
+                const doorPanel = new THREE.Mesh(doorPanelGeo, doorMat);
+                doorPanel.position.set(0.975, 1.55, 0);
+                doorPanel.castShadow = true;
+                doorWing.add(doorPanel);
+
+                // Kapı Kolu
+                const handleGeo = new THREE.CylinderGeometry(0.03, 0.03, 0.3, 12);
+                const handleMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8 });
+                const handle = new THREE.Mesh(handleGeo, handleMat);
+                handle.rotation.z = Math.PI / 2;
+                handle.position.set(1.7, 1.5, 0.08);
+                doorWing.add(handle);
+
+                doorFrameGroup.add(doorWing);
+                currentInteractiveGroup.add(doorFrameGroup);
+                currentInteractiveGroup.userData.mainMesh = doorWing; // Kapı menteşe etrafında döner!
+                currentInteractiveGroup.userData.isRotational = true;
+            }
+
+            // 9. SANDALYE (Chair)
+            else if (type === 'chair_pull' || type === 'chair_fixed') {
+                const chairGroup = new THREE.Group();
+                const seatGeo = new THREE.BoxGeometry(1.2, 0.1, 1.2);
+                const mat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.4 });
+                const seat = new THREE.Mesh(seatGeo, mat);
+                seat.position.y = 0.9;
+                seat.castShadow = true;
+                chairGroup.add(seat);
+
+                const backGeo = new THREE.BoxGeometry(1.2, 1.0, 0.08);
+                const back = new THREE.Mesh(backGeo, mat);
+                back.position.set(0, 1.45, -0.55);
+                chairGroup.add(back);
+
+                // 4 Ayak
+                const legGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.9, 12);
+                const legMat = new THREE.MeshStandardMaterial({ color: 0x475569 });
+                [[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]].forEach(p => {
+                    const l = new THREE.Mesh(legGeo, legMat);
+                    l.position.set(p[0], 0.45, p[1]);
+                    chairGroup.add(l);
+                });
+
+                currentInteractiveGroup.add(chairGroup);
+                currentInteractiveGroup.userData.mainMesh = chairGroup;
+            }
+
+            // 10. ÇAMAŞIR SEPETİ (Laundry Basket)
+            else if (type === 'laundry_lift' || type === 'laundry_carry_horizontal') {
+                const basketGroup = new THREE.Group();
+                const bodyGeo = new THREE.CylinderGeometry(0.8, 0.65, 0.9, 16);
+                const bodyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.5 });
+                const body = new THREE.Mesh(bodyGeo, bodyMat);
+                body.position.y = 0.45;
+                body.castShadow = true;
+                basketGroup.add(body);
+
+                // İçindeki renkli çamaşırlar
+                const clothesGeo = new THREE.SphereGeometry(0.7, 16, 12);
+                const clothesMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, roughness: 0.8 });
+                const clothes = new THREE.Mesh(clothesGeo, clothesMat);
+                clothes.position.set(0, 0.7, 0);
+                basketGroup.add(clothes);
+
+                if (type === 'laundry_carry_horizontal') {
+                    basketGroup.position.set(0, 1.0, 0); // Karın hizasında tutulur
+                }
+
+                currentInteractiveGroup.add(basketGroup);
+                currentInteractiveGroup.userData.mainMesh = basketGroup;
+            }
+
+            // 11. RAMPA VE KUTU (Ramp & Box)
+            else if (type === 'ramp_box_push' || type === 'ramp_box_fixed') {
+                const rampGroup = new THREE.Group();
+                // Eğimli Rampa (Üçgen prizma veya döndürülmüş plane)
+                const rampGeo = new THREE.BoxGeometry(4.0, 0.15, 1.8);
+                const rampMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.3 });
+                const ramp = new THREE.Mesh(rampGeo, rampMat);
+                ramp.rotation.z = 0.35; // ~20 derece eğim
+                ramp.position.set(0, 0.75, 0);
+                ramp.receiveShadow = true;
+                rampGroup.add(ramp);
+
+                // Kargo Kutusu
+                const boxGeo = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+                const boxMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.8 });
+                const box = new THREE.Mesh(boxGeo, boxMat);
+                box.rotation.z = 0.35;
+                box.position.set(-1.2, 0.65, 0);
+                box.castShadow = true;
+                rampGroup.add(box);
+
+                // Sabit takoz
+                if (type === 'ramp_box_fixed') {
+                    const wedgeGeo = new THREE.BoxGeometry(0.25, 0.3, 0.8);
+                    const wedgeMat = new THREE.MeshStandardMaterial({ color: 0xef4444 });
+                    const wedge = new THREE.Mesh(wedgeGeo, wedgeMat);
+                    wedge.rotation.z = 0.35;
+                    wedge.position.set(-0.7, 0.82, 0);
+                    rampGroup.add(wedge);
+                }
+
+                currentInteractiveGroup.add(rampGroup);
+                currentInteractiveGroup.userData.mainMesh = box; // Kutu rampa boyunca kayar!
+                currentInteractiveGroup.userData.isRamp = true;
+            }
+
+            // 12. SAKSI (Plant Pot)
+            else if (type === 'plant_lift' || type === 'plant_hold') {
+                const potGroup = new THREE.Group();
+                const potGeo = new THREE.CylinderGeometry(0.65, 0.45, 0.9, 16);
+                const potMat = new THREE.MeshStandardMaterial({ color: 0xb45309, roughness: 0.8 });
+                const pot = new THREE.Mesh(potGeo, potMat);
+                pot.position.y = 0.45;
+                pot.castShadow = true;
+                potGroup.add(pot);
+
+                // Bitki Yaprakları
+                const leavesGeo = new THREE.DodecahedronGeometry(0.65);
+                const leavesMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.6 });
+                const leaves = new THREE.Mesh(leavesGeo, leavesMat);
+                leaves.position.y = 1.15;
+                potGroup.add(leaves);
+
+                if (type === 'plant_hold') {
+                    potGroup.position.set(0, 0.8, 0); // Havada sabit
+                }
+
+                currentInteractiveGroup.add(potGroup);
+                currentInteractiveGroup.userData.mainMesh = potGroup;
+            }
+
+            // 13. FUTBOL TOPU (Football)
+            else if (type === 'football_kick' || type === 'football_press') {
+                const ballGroup = new THREE.Group();
+                const ballGeo = new THREE.SphereGeometry(0.45, 24, 24);
+                const ballMat = new THREE.MeshStandardMaterial({ color: 0xf8fafc, roughness: 0.3 });
+                const ball = new THREE.Mesh(ballGeo, ballMat);
+                ball.position.y = 0.45;
+                ball.castShadow = true;
+                ballGroup.add(ball);
+
+                currentInteractiveGroup.add(ballGroup);
+                currentInteractiveGroup.userData.mainMesh = ball;
+                currentInteractiveGroup.userData.isRolling = true;
+            }
+
+            // 14. KAYKAY (Skateboard)
+            else if (type === 'skateboard_push' || type === 'skateboard_locked') {
+                const boardGroup = new THREE.Group();
+                const deckGeo = new THREE.BoxGeometry(2.0, 0.08, 0.6);
+                const deckMat = new THREE.MeshStandardMaterial({ color: 0x6366f1, roughness: 0.4 });
+                const deck = new THREE.Mesh(deckGeo, deckMat);
+                deck.position.y = 0.3;
+                deck.castShadow = true;
+                boardGroup.add(deck);
+
+                // 4 Tekerlek
+                const wGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.1, 16);
+                const wMat = new THREE.MeshStandardMaterial({ color: type === 'skateboard_locked' ? 0xef4444 : 0x0f172a });
+                [[-0.7, -0.25], [-0.7, 0.25], [0.7, -0.25], [0.7, 0.25]].forEach(p => {
+                    const wheel = new THREE.Mesh(wGeo, wMat);
+                    wheel.rotation.x = Math.PI / 2;
+                    wheel.position.set(p[0], 0.12, p[1]);
+                    boardGroup.add(wheel);
+                });
+
+                currentInteractiveGroup.add(boardGroup);
+                currentInteractiveGroup.userData.mainMesh = boardGroup;
+            }
+
+            // 15. SÜRGÜLÜ PENCERE (Sliding Window)
+            else if (type === 'sliding_window_open' || type === 'sliding_window_locked') {
+                const winGroup = new THREE.Group();
+                // Kasa
+                const frameGeo = new THREE.BoxGeometry(3.6, 2.4, 0.15);
+                const frameMat = new THREE.MeshStandardMaterial({ color: 0x334155 });
+                const frame = new THREE.Mesh(frameGeo, frameMat);
+                frame.position.set(0, 1.8, 0);
+                winGroup.add(frame);
+
+                // Sabit cam
+                const glassMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4 });
+                const fixPaneGeo = new THREE.BoxGeometry(1.6, 2.1, 0.04);
+                const fixPane = new THREE.Mesh(fixPaneGeo, glassMat);
+                fixPane.position.set(-0.8, 1.8, -0.02);
+                winGroup.add(fixPane);
+
+                // Sürgülü cam
+                const slidePaneGeo = new THREE.BoxGeometry(1.6, 2.1, 0.06);
+                const slidePaneMat = new THREE.MeshStandardMaterial({ color: 0x06b6d4, transparent: true, opacity: 0.5 });
+                const slidePane = new THREE.Mesh(slidePaneGeo, slidePaneMat);
+                slidePane.position.set(0.8, 1.8, 0.02);
+                slidePane.castShadow = true;
+                winGroup.add(slidePane);
+
+                currentInteractiveGroup.add(winGroup);
+                currentInteractiveGroup.userData.mainMesh = slidePane;
+            }
+
+            // 16. VALİZ (Luggage)
+            else if (type === 'luggage_pull' || type === 'luggage_locked') {
+                const lugGroup = new THREE.Group();
+                const bodyGeo = new THREE.BoxGeometry(0.9, 1.5, 0.5);
+                const bodyMat = new THREE.MeshStandardMaterial({ color: 0x9333ea, roughness: 0.3 });
+                const body = new THREE.Mesh(bodyGeo, bodyMat);
+                body.position.y = 0.85;
+                body.castShadow = true;
+                lugGroup.add(body);
+
+                // Çekme Kolu
+                const handleGeo = new THREE.CylinderGeometry(0.02, 0.02, 0.8, 8);
+                const handleMat = new THREE.MeshStandardMaterial({ color: 0x94a3b8, metalness: 0.8 });
+                const h1 = new THREE.Mesh(handleGeo, handleMat);
+                h1.position.set(-0.25, 1.9, 0);
+                lugGroup.add(h1);
+                const h2 = new THREE.Mesh(handleGeo, handleMat);
+                h2.position.set(0.25, 1.9, 0);
+                lugGroup.add(h2);
+
+                currentInteractiveGroup.add(lugGroup);
+                currentInteractiveGroup.userData.mainMesh = lugGroup;
+            }
+
+            // 17. PAZAR SEPETİ (Market Basket)
+            else if (type === 'market_basket_lift' || type === 'market_basket_hold') {
+                const basketGroup = new THREE.Group();
+                const bGeo = new THREE.BoxGeometry(1.2, 0.7, 0.9);
+                const bMat = new THREE.MeshStandardMaterial({ color: 0xd97706, roughness: 0.9 });
+                const bMesh = new THREE.Mesh(bGeo, bMat);
+                bMesh.position.y = 0.35;
+                bMesh.castShadow = true;
+                basketGroup.add(bMesh);
+
+                const handleGeo = new THREE.TorusGeometry(0.45, 0.04, 8, 16, Math.PI);
+                const handleMat = new THREE.MeshStandardMaterial({ color: 0x78350f });
+                const handle = new THREE.Mesh(handleGeo, handleMat);
+                handle.rotation.x = Math.PI;
+                handle.position.set(0, 0.7, 0);
+                basketGroup.add(handle);
+
+                if (type === 'market_basket_hold') {
+                    basketGroup.position.set(0, 0.9, 0);
+                }
+
+                currentInteractiveGroup.add(basketGroup);
+                currentInteractiveGroup.userData.mainMesh = basketGroup;
+            }
+
+            // 18. BAHÇE HORTUMU (Garden Hose)
+            else if (type === 'garden_hose_pull' || type === 'garden_hose_fixed') {
+                const hoseGroup = new THREE.Group();
+                const coilGeo = new THREE.TorusGeometry(0.8, 0.12, 12, 24);
+                const coilMat = new THREE.MeshStandardMaterial({ color: 0x16a34a, roughness: 0.5 });
+                const coil = new THREE.Mesh(coilGeo, coilMat);
+                coil.rotation.x = Math.PI / 2;
+                coil.position.y = 0.15;
+                coil.castShadow = true;
+                hoseGroup.add(coil);
+
+                const nozzleGeo = new THREE.CylinderGeometry(0.08, 0.12, 0.6, 12);
+                const nozzleMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.8 });
+                const nozzle = new THREE.Mesh(nozzleGeo, nozzleMat);
+                nozzle.rotation.z = Math.PI / 2;
+                nozzle.position.set(1.1, 0.2, 0);
+                hoseGroup.add(nozzle);
+
+                currentInteractiveGroup.add(hoseGroup);
+                currentInteractiveGroup.userData.mainMesh = hoseGroup;
+            }
+
+            // 19. KALEM KUTUSU (Pencil Case)
+            else if (type === 'pencil_case_slide' || type === 'pencil_case_press') {
+                const caseGroup = new THREE.Group();
+                const tableGeo = new THREE.BoxGeometry(3.0, 0.15, 1.6);
+                const tableMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
+                const table = new THREE.Mesh(tableGeo, tableMat);
+                table.position.set(0, 0.8, 0);
+                table.receiveShadow = true;
+                caseGroup.add(table);
+
+                const cGeo = new THREE.CylinderGeometry(0.25, 0.25, 1.2, 16);
+                const cMat = new THREE.MeshStandardMaterial({ color: 0xec4899, roughness: 0.6 });
+                const cMesh = new THREE.Mesh(cGeo, cMat);
+                cMesh.rotation.z = Math.PI / 2;
+                cMesh.position.set(0, 1.05, 0);
+                cMesh.castShadow = true;
+                caseGroup.add(cMesh);
+
+                currentInteractiveGroup.add(caseGroup);
+                currentInteractiveGroup.userData.mainMesh = cMesh;
+            }
+
+            // Varsayılan Kutu Fallback
+            else {
+                const boxGeo = new THREE.BoxGeometry(1.4, 1.4, 1.4);
+                const boxMat = new THREE.MeshStandardMaterial({ color: 0x0284c7 });
+                const boxMesh = new THREE.Mesh(boxGeo, boxMat);
+                boxMesh.position.y = 0.7;
+                boxMesh.castShadow = true;
+                currentInteractiveGroup.add(boxMesh);
+                currentInteractiveGroup.userData.mainMesh = boxMesh;
+            }
+
+            scene.add(currentInteractiveGroup);
+            updateVectorVisuals(0);
+        }
+
+        // =========================================================================
+        // 🔄 VEKTÖRLERİ GÜNCELLE VE YERLEŞTİR
+        // =========================================================================
+        function updateVectorVisuals(progress = 0) {
+            const exp = EXPERIMENTS[currentExpIndex];
+            if (!exp || !currentInteractiveGroup) return;
+
+            const mesh = currentInteractiveGroup.userData.mainMesh || currentInteractiveGroup;
+            const pos = mesh.position;
+
+            const scaleF = Math.max(0.7, (customForce / 100) * 1.8);
+
+            // 1. KUVVET VEKTÖRÜ (F - Mavi/Cyan)
+            forceArrowGroup.visible = true;
+            forceArrowLabel.visible = true;
+
+            if (exp.forceDirection === 'horizontal_forward') {
+                forceArrowGroup.position.set(pos.x - 1.2, pos.y + 0.6, pos.z);
+                forceArrowGroup.rotation.set(0, 0, 0); // İleri (+X)
+                forceArrowLabel.position.set(pos.x - 0.4, pos.y + 1.2, pos.z);
+            } else if (exp.forceDirection === 'horizontal_backward') {
+                forceArrowGroup.position.set(pos.x + 1.2, pos.y + 0.6, pos.z);
+                forceArrowGroup.rotation.set(0, Math.PI, 0); // Geri (-X)
+                forceArrowLabel.position.set(pos.x + 0.4, pos.y + 1.2, pos.z);
+            } else if (exp.forceDirection === 'horizontal_right') {
+                forceArrowGroup.position.set(pos.x - 1.2, pos.y + 0.6, pos.z);
+                forceArrowGroup.rotation.set(0, 0, 0);
+                forceArrowLabel.position.set(pos.x - 0.4, pos.y + 1.2, pos.z);
+            } else if (exp.forceDirection === 'vertical_up') {
+                forceArrowGroup.position.set(pos.x, pos.y + 1.0, pos.z);
+                forceArrowGroup.rotation.set(0, 0, Math.PI / 2); // Yukarı (+Y)
+                forceArrowLabel.position.set(pos.x, pos.y + 1.8, pos.z);
+            } else if (exp.forceDirection === 'vertical_down') {
+                forceArrowGroup.position.set(pos.x, pos.y + 1.4, pos.z);
+                forceArrowGroup.rotation.set(0, 0, -Math.PI / 2); // Aşağı (-Y)
+                forceArrowLabel.position.set(pos.x, pos.y + 2.0, pos.z);
+            } else if (exp.forceDirection === 'inclined_up') {
+                forceArrowGroup.position.set(pos.x - 1.0, pos.y + 0.3, pos.z);
+                forceArrowGroup.rotation.set(0, 0, 0.35); // Rampa boyunca
+                forceArrowLabel.position.set(pos.x - 0.2, pos.y + 1.1, pos.z);
+            } else {
+                forceArrowGroup.position.set(pos.x - 1.0, pos.y + 0.8, pos.z);
+                forceArrowGroup.rotation.set(0, 0, 0);
+                forceArrowLabel.position.set(pos.x, pos.y + 1.5, pos.z);
+            }
+
+            // Ok boyu ayarla
+            forceArrowGroup.userData.shaft.scale.set(1, scaleF, 1);
+            forceArrowGroup.userData.shaft.position.x = scaleF / 2;
+            forceArrowGroup.userData.head.position.x = scaleF;
+
+            // 2. YER DEĞİŞTİRME VEKTÖRÜ (Δx - Yeşil)
+            if (exp.hasDisplacement) {
+                distArrowGroup.visible = true;
+                distArrowLabel.visible = true;
+                const dScale = Math.max(0.8, (exp.defaultDistance / 3) * 2.2);
+
+                if (exp.displacementDirection === 'horizontal_forward' || exp.displacementDirection === 'horizontal_right') {
+                    distArrowGroup.position.set(pos.x, pos.y + 0.1, pos.z + 0.8);
+                    distArrowGroup.rotation.set(0, 0, 0);
+                    distArrowLabel.position.set(pos.x + dScale / 2, pos.y + 0.6, pos.z + 0.8);
+                } else if (exp.displacementDirection === 'horizontal_backward') {
+                    distArrowGroup.position.set(pos.x, pos.y + 0.1, pos.z + 0.8);
+                    distArrowGroup.rotation.set(0, Math.PI, 0);
+                    distArrowLabel.position.set(pos.x - dScale / 2, pos.y + 0.6, pos.z + 0.8);
+                } else if (exp.displacementDirection === 'vertical_up') {
+                    distArrowGroup.position.set(pos.x + 0.9, pos.y, pos.z);
+                    distArrowGroup.rotation.set(0, 0, Math.PI / 2);
+                    distArrowLabel.position.set(pos.x + 1.2, pos.y + dScale / 2, pos.z);
+                } else if (exp.displacementDirection === 'inclined_up') {
+                    distArrowGroup.position.set(pos.x, pos.y + 0.2, pos.z + 0.7);
+                    distArrowGroup.rotation.set(0, 0, 0.35);
+                    distArrowLabel.position.set(pos.x + 0.5, pos.y + 0.9, pos.z + 0.7);
+                }
+
+                distArrowGroup.userData.shaft.scale.set(1, dScale, 1);
+                distArrowGroup.userData.shaft.position.x = dScale / 2;
+                distArrowGroup.userData.head.position.x = dScale;
+            } else {
+                distArrowGroup.visible = false;
+                distArrowLabel.visible = false;
+            }
+
+            // 3. DİK AÇI GÖSTERGESİ (Exp 20 - Sepeti Yatay Taşı)
+            if (exp.isPerpendicular && rightAngleMesh) {
+                rightAngleMesh.visible = true;
+                rightAngleMesh.position.set(pos.x + 0.2, pos.y + 0.8, pos.z);
+            } else if (rightAngleMesh) {
+                rightAngleMesh.visible = false;
+            }
+        }
+
+        // =========================================================================
+        // 🔄 ANİMASYON DÖNGÜSÜ
+        // =========================================================================
+        function animate() {
+            requestAnimationFrame(animate);
+            const delta = clock.getDelta();
+
+            // Billboard Etiketleri Kameraya Hizala
+            if (camera) {
+                if (forceArrowLabel && forceArrowLabel.visible) forceArrowLabel.quaternion.copy(camera.quaternion);
+                if (distArrowLabel && distArrowLabel.visible) distArrowLabel.quaternion.copy(camera.quaternion);
+            }
+
+            // Simülasyon Hareketi İlerlemesi
+            if (isSimPlaying && currentInteractiveGroup) {
+                const exp = EXPERIMENTS[currentExpIndex];
+                const mesh = currentInteractiveGroup.userData.mainMesh || currentInteractiveGroup;
+
+                if (exp.hasDisplacement) {
+                    simProgress += delta * 0.75;
+                    if (simProgress > 1) {
+                        simProgress = 1;
+                        isSimPlaying = false;
+                        updatePlayButtonUI(false);
+                    }
+
+                    // Hareket tipine göre güncelle
+                    if (currentInteractiveGroup.userData.isRotational) {
+                        // Kapı kanadı menteşe etrafında döner
+                        mesh.rotation.y = simProgress * 1.35;
+                    } else if (currentInteractiveGroup.userData.isRamp) {
+                        // Rampa boyunca eğimli kayma
+                        const dist = simProgress * exp.defaultDistance;
+                        mesh.position.set(-1.2 + Math.cos(0.35) * dist, 0.65 + Math.sin(0.35) * dist, 0);
+                    } else if (currentInteractiveGroup.userData.isRolling) {
+                        // Top yuvarlanması
+                        mesh.position.x = simProgress * exp.defaultDistance;
+                        mesh.rotation.z = -simProgress * 6;
+                    } else if (exp.displacementDirection === 'vertical_up') {
+                        // Düşey yükselme
+                        mesh.position.y = (typeIsHolding(exp.modelType) ? 0.8 : 0) + simProgress * exp.defaultDistance;
+                    } else if (exp.displacementDirection === 'horizontal_backward') {
+                        // Geriye doğru çekilme
+                        mesh.position.x = -simProgress * exp.defaultDistance;
+                    } else {
+                        // Standart yatay ilerleme
+                        mesh.position.x = simProgress * exp.defaultDistance;
+                    }
+                } else {
+                    // Sabit veya kilitli nesne (Kuvvet oku titrer ama nesne hareket etmez)
+                    simProgress += delta * 2;
+                    if (simProgress > 1.5) {
+                        simProgress = 0;
+                        isSimPlaying = false;
+                        updatePlayButtonUI(false);
+                        SoundManager.playLock();
+                    }
+                    if (forceArrowGroup) {
+                        forceArrowGroup.position.x += Math.sin(clock.getElapsedTime() * 30) * 0.02;
+                    }
+                }
+
+                updateVectorVisuals(simProgress);
+            }
+
+            if (controls && typeof controls.update === 'function') {
+                try { controls.update(); } catch(e) {}
+            }
+
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        function typeIsHolding(modelType) {
+            return modelType === 'backpack_hold' || modelType === 'plant_hold' || modelType === 'market_basket_hold' || modelType === 'laundry_carry_horizontal';
+        }
+
+        // =========================================================================
+        // 🧪 DENEY YÜKLEME VE KONTROL
+        // =========================================================================
+        function loadExperiment(index) {
+            if (index < 0) index = 0;
+            if (index >= EXPERIMENTS.length) index = EXPERIMENTS.length - 1;
+            currentExpIndex = index;
+            const exp = EXPERIMENTS[index];
+
+            // Durumları sıfırla
+            studentPrediction = null;
+            isSimPlaying = false;
+            simProgress = 0;
+            customForce = exp.defaultForce;
+
+            // UI Güncelle
+            document.getElementById('scene-experiment-badge').innerHTML = `<i class="fa-solid fa-cube mr-1"></i> Deney ${exp.id}: ${exp.title}`;
+            document.getElementById('scene-category-badge').textContent = exp.category;
+            document.getElementById('student-num-badge').textContent = `#${exp.studentNum}. ÖĞRENCİ`;
+            document.getElementById('experiment-header-title').textContent = exp.title;
+            document.getElementById('experiment-desc-box').textContent = exp.description;
+
+            // Kilit rozeti
+            const lockBadge = document.getElementById('scene-lock-indicator');
+            if (lockBadge) {
+                if (!exp.hasDisplacement) lockBadge.classList.replace('hidden', 'flex');
+                else lockBadge.classList.replace('flex', 'hidden');
+            }
+
+            // Dik açı rozeti
+            const perpBadge = document.getElementById('scene-perp-indicator');
+            if (perpBadge) {
+                if (exp.isPerpendicular) perpBadge.classList.replace('hidden', 'flex');
+                else perpBadge.classList.replace('flex', 'hidden');
+            }
+
+            // Sürgüyü senkronize et
+            const slider = document.getElementById('slider-force');
+            if (slider) slider.value = customForce;
+            document.getElementById('label-force-slider').textContent = `${customForce} N`;
+
+            // Tahmin butonlarını sıfırla
+            resetPredictionButtonsUI();
+
+            // Geribildirim alanını gizle
+            const fb = document.getElementById('feedback-container');
+            if (fb) {
+                fb.classList.add('hidden');
+                fb.innerHTML = '';
+            }
+
+            // HUD değerlerini güncelle
+            updateHUDValues(exp, false);
+
+            // 3D Modeli İnşa Et
+            build3DModelForExperiment(exp);
+            updatePlayButtonUI(false);
+            updateVectorVisuals(0);
+        }
+
+        function updateHUDValues(exp, isRevealed) {
+            document.getElementById('hud-force-val').textContent = `${customForce} N`;
+            const dist = exp.hasDisplacement ? exp.defaultDistance : 0.0;
+            document.getElementById('hud-distance-val').textContent = `${dist.toFixed(1)} m`;
+
+            const work = (exp.hasWork && exp.hasDisplacement && !exp.isPerpendicular) ? (customForce * dist) : 0.0;
+            document.getElementById('hud-work-val').textContent = `${work.toFixed(1)} J`;
+
+            const badge = document.getElementById('hud-decision-badge');
+            const text = document.getElementById('hud-decision-text');
+
+            if (!isRevealed) {
+                badge.className = 'rounded-xl p-1 sm:p-1.5 border border-slate-700 bg-slate-900 flex flex-col justify-center items-center';
+                text.className = 'text-[10px] sm:text-xs font-black text-amber-300 truncate';
+                text.textContent = 'TAHMİN ET!';
+            } else {
+                if (exp.hasWork) {
+                    badge.className = 'rounded-xl p-1 sm:p-1.5 border border-emerald-500/50 bg-emerald-950/60 shadow-[0_0_15px_rgba(16,185,129,0.3)] flex flex-col justify-center items-center';
+                    text.className = 'text-[10px] sm:text-xs font-black text-emerald-300 truncate';
+                    text.textContent = 'İŞ YAPILIR (W > 0)';
+                } else {
+                    badge.className = 'rounded-xl p-1 sm:p-1.5 border border-rose-500/50 bg-rose-950/60 shadow-[0_0_15px_rgba(244,63,94,0.3)] flex flex-col justify-center items-center';
+                    text.className = 'text-[10px] sm:text-xs font-black text-rose-300 truncate';
+                    text.textContent = 'İŞ YAPILMAZ (W = 0)';
+                }
+            }
+        }
+
+        function onForceSliderChange(val) {
+            customForce = parseInt(val, 10);
+            document.getElementById('label-force-slider').textContent = `${customForce} N`;
+            const exp = EXPERIMENTS[currentExpIndex];
+            updateHUDValues(exp, studentResults[exp.id] ? studentResults[exp.id].completed : false);
+            updateBillboardLabelText(forceArrowLabel, `F = ${customForce} N`, '#0891b2');
+            updateVectorVisuals(simProgress);
+        }
+
+        function stepForce(delta) {
+            const next = Math.max(0, Math.min(100, customForce + delta));
+            const slider = document.getElementById('slider-force');
+            if (slider) slider.value = next;
+            onForceSliderChange(next);
+        }
+
+        function togglePlayAnimation() {
+            isSimPlaying = !isSimPlaying;
+            if (isSimPlaying) {
+                SoundManager.playPush();
+            }
+            updatePlayButtonUI(isSimPlaying);
+        }
+
+        function updatePlayButtonUI(isPlaying) {
+            const btn = document.getElementById('btn-play-sim');
+            const icon = document.getElementById('icon-play-sim');
+            const txt = document.getElementById('text-play-sim');
+            if (!btn) return;
+            if (isPlaying) {
+                btn.className = 'py-1.5 px-3 bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs uppercase rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer';
+                if (icon) icon.className = 'fa-solid fa-pause';
+                if (txt) txt.textContent = 'Duraklat';
+            } else {
+                btn.className = 'py-1.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs uppercase rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer';
+                if (icon) icon.className = 'fa-solid fa-play';
+                if (txt) txt.textContent = 'Uygula & İt';
+            }
+        }
+
+        function resetExperimentState() {
+            isSimPlaying = false;
+            simProgress = 0;
+            const exp = EXPERIMENTS[currentExpIndex];
+            build3DModelForExperiment(exp);
+            updatePlayButtonUI(false);
+            updateVectorVisuals(0);
+        }
+
+        function navigateExperiment(delta) {
+            let next = currentExpIndex + delta;
+            if (next < 0) next = EXPERIMENTS.length - 1;
+            if (next >= EXPERIMENTS.length) next = 0;
+            loadExperiment(next);
+        }
+
+        // =========================================================================
+        // 🎯 ÖĞRENCİ TAHMİNİ VE KONTROL MOTORU
+        // =========================================================================
+        function selectPrediction(pred) {
+            studentPrediction = pred;
+            const btnYes = document.getElementById('btn-predict-yes');
+            const btnNo = document.getElementById('btn-predict-no');
+
+            if (pred === true) {
+                btnYes.className = 'py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-emerald-600 text-white border-2 border-emerald-400 ring-2 ring-emerald-500/40 shadow-lg scale-102 cursor-pointer';
+                btnNo.className = 'py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-slate-800 text-slate-400 border border-slate-700 opacity-60 cursor-pointer';
+            } else {
+                btnNo.className = 'py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-rose-600 text-white border-2 border-rose-400 ring-2 ring-rose-500/40 shadow-lg scale-102 cursor-pointer';
+                btnYes.className = 'py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-slate-800 text-slate-400 border border-slate-700 opacity-60 cursor-pointer';
+            }
+        }
+
+        function resetPredictionButtonsUI() {
+            const btnYes = document.getElementById('btn-predict-yes');
+            const btnNo = document.getElementById('btn-predict-no');
+            if (btnYes) btnYes.className = 'py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-emerald-500 cursor-pointer active:scale-95';
+            if (btnNo) btnNo.className = 'py-2 px-2 rounded-xl font-black text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-rose-500 cursor-pointer active:scale-95';
+        }
+
+        function evaluateStudentAnswer() {
+            const exp = EXPERIMENTS[currentExpIndex];
+            const fb = document.getElementById('feedback-container');
+
+            if (studentPrediction === null) {
+                fb.classList.remove('hidden');
+                fb.className = 'p-3 rounded-xl bg-amber-950/90 text-amber-200 border border-amber-500/60 block animate-pulse text-xs font-bold';
+                fb.innerHTML = '⚠️ <strong>Lütfen önce 1. Adımda tahminini seç:</strong> [İŞ YAPILIR] veya [İŞ YAPILMAZ] butonuna bas!';
+                return;
+            }
+
+            const isCorrect = (studentPrediction === exp.hasWork);
+
+            // Sonucu kaydet
+            studentResults[exp.id] = {
+                completed: true,
+                userPred: studentPrediction,
+                isCorrect: isCorrect
+            };
+            try {
+                localStorage.setItem('is_lab_results_v1', JSON.stringify(studentResults));
+            } catch(e) {}
+
+            updateClassroomProgressBadge();
+            updateHUDValues(exp, true);
+
+            // Simülasyonu başlat
+            isSimPlaying = true;
+            updatePlayButtonUI(true);
+
+            fb.classList.remove('hidden');
+
+            if (isCorrect) {
+                SoundManager.playCorrect();
+                confetti({ particleCount: 60, spread: 80, origin: { y: 0.7 } });
+
+                fb.className = 'p-3 rounded-xl bg-emerald-950/90 text-emerald-200 border-2 border-emerald-400/80 shadow-[0_0_20px_rgba(16,185,129,0.3)] block text-xs leading-relaxed';
+                fb.innerHTML = `
+                    <div class="flex items-center gap-1.5 font-black text-sm text-emerald-300 mb-1">
+                        <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i> HARİKA! TAM İSABET!
+                    </div>
+                    <div class="mb-2">${exp.scientificExplanation}</div>
+                    <div class="p-2 rounded-lg bg-emerald-900/40 border border-emerald-500/30 font-mono text-[11px] text-emerald-100 flex items-center justify-between">
+                        <span>Yapılan İş:</span>
+                        <span class="font-black text-emerald-300">${(exp.hasWork ? customForce * exp.defaultDistance : 0).toFixed(1)} Joule</span>
+                    </div>
+                `;
+
+                // Öğrenci durum simgesini güncelle
+                const statusIcon = document.getElementById('experiment-status-icon');
+                if (statusIcon) statusIcon.innerHTML = '<i class="fa-solid fa-star text-amber-400 animate-bounce"></i>';
+            } else {
+                SoundManager.playWrong();
+
+                fb.className = 'p-3 rounded-xl bg-rose-950/90 text-rose-200 border border-rose-500/80 block text-xs leading-relaxed';
+                fb.innerHTML = `
+                    <div class="flex items-center gap-1.5 font-black text-sm text-rose-300 mb-1">
+                        <i class="fa-solid fa-circle-xmark text-rose-400 text-base"></i> YANLIŞ TAHMİN! Tekrar Düşün:
+                    </div>
+                    <div class="space-y-1 mb-2">
+                        <p>• ${exp.hint1}</p>
+                        <p>• ${exp.hint2}</p>
+                    </div>
+                    <div class="p-2 rounded-lg bg-rose-900/40 border border-rose-500/30 text-[11px] text-rose-100">
+                        <strong>Kazanım Kuralı:</strong> Bir kuvvetin iş yapabilmesi için cisim uygulanan kuvvet doğrultusunda yer değiştirmelidir.
+                    </div>
+                    <button type="button" onclick="retryExperiment()" class="mt-2 w-full py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 font-bold text-xs border border-cyan-500/40 cursor-pointer">
+                        <i class="fa-solid fa-rotate-left mr-1"></i> Tekrar Dene
+                    </button>
+                `;
+            }
+
+            renderClassroomCardsGrid();
+        }
+
+        function retryExperiment() {
+            studentPrediction = null;
+            resetPredictionButtonsUI();
+            const fb = document.getElementById('feedback-container');
+            if (fb) fb.classList.add('hidden');
+            resetExperimentState();
+        }
+
+        // =========================================================================
+        // 🏫 AKILLI SINIF 30 ÖĞRENCİ GRID VE ÖĞRETMEN YÖNETİMİ
+        // =========================================================================
+        let currentFilter = 'all';
+
+        function filterClassroomGrid(categoryKey) {
+            currentFilter = categoryKey;
+            ['all', 'okul', 'ev', 'kapi', 'spor'].forEach(k => {
+                const btn = document.getElementById('btn-flt-' + k);
+                if (btn) {
+                    if (k === categoryKey) btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-600 text-white cursor-pointer shrink-0';
+                    else btn.className = 'px-2.5 py-1 rounded-lg text-xs font-bold bg-slate-800 text-slate-300 hover:text-white cursor-pointer shrink-0';
+                }
+            });
+            renderClassroomCardsGrid();
+        }
+
+        function renderClassroomCardsGrid() {
+            const grid = document.getElementById('classroom-cards-grid');
+            if (!grid) return;
+
+            const first30 = EXPERIMENTS.slice(0, 30);
+            const filtered = first30.filter(exp => currentFilter === 'all' || exp.categoryKey === currentFilter);
+
+            grid.innerHTML = filtered.map(exp => {
+                const res = studentResults[exp.id];
+                const isCompleted = res && res.completed && res.isCorrect;
+                const isWrong = res && res.completed && !res.isCorrect;
+
+                let cardStyle = 'bg-slate-950/80 border-slate-800 text-slate-300 hover:border-cyan-500';
+                let statusBadge = '<span class="text-slate-500"><i class="fa-regular fa-clock"></i> Bekliyor</span>';
+
+                if (isCompleted) {
+                    cardStyle = 'bg-emerald-950/40 border-emerald-500/60 text-emerald-200 shadow-[0_0_12px_rgba(16,185,129,0.2)]';
+                    statusBadge = '<span class="text-emerald-400 font-bold"><i class="fa-solid fa-star text-amber-400"></i> Tamamlandı</span>';
+                } else if (isWrong) {
+                    cardStyle = 'bg-rose-950/30 border-rose-500/50 text-rose-200';
+                    statusBadge = '<span class="text-rose-400 font-bold"><i class="fa-solid fa-rotate-left"></i> Tekrar</span>';
+                }
+
+                if (exp.id === currentExpIndex + 1) {
+                    cardStyle += ' ring-2 ring-cyan-400';
+                }
+
+                return `
+                    <div onclick="selectStudentExperiment(${exp.id - 1})" class="p-2 sm:p-2.5 rounded-2xl border flex flex-col justify-between transition-all cursor-pointer active:scale-95 ${cardStyle}">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="font-mono font-black text-xs px-1.5 py-0.2 rounded bg-slate-800 text-cyan-300">#${exp.studentNum}</span>
+                            <span class="text-xs">${statusBadge}</span>
+                        </div>
+                        <div class="font-bold text-[11px] sm:text-xs text-white leading-tight mb-2 truncate">
+                            ${exp.title}
+                        </div>
+                        <div class="text-[9px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-800/80">
+                            <span>${exp.categoryKey.toUpperCase()}</span>
+                            <span>${exp.hasWork ? 'İŞ VAR' : 'İŞ YOK'}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            updateClassroomProgressBadge();
+        }
+
+        function selectStudentExperiment(index) {
+            closeClassroomModal();
+            closeExtraExperimentsModal();
+            loadExperiment(index);
+        }
+
+        function updateClassroomProgressBadge() {
+            let completedCount = 0;
+            for (let i = 1; i <= 30; i++) {
+                if (studentResults[i] && studentResults[i].completed && studentResults[i].isCorrect) {
+                    completedCount++;
+                }
+            }
+            const pct = Math.round((completedCount / 30) * 100);
+
+            const badge = document.getElementById('header-class-progress-badge');
+            if (badge) badge.textContent = `${completedCount}/30`;
+
+            const summary = document.getElementById('classroom-summary-text');
+            if (summary) summary.innerHTML = `Tamamlanan: <span class="text-emerald-400 font-mono font-black">${completedCount} / 30</span> (%${pct})`;
+
+            const pBar = document.getElementById('teacher-progress-bar');
+            if (pBar) pBar.style.width = `${pct}%`;
+            const pText = document.getElementById('teacher-progress-percent');
+            if (pText) pText.textContent = `%${pct} (${completedCount} / 30 Öğrenci)`;
+        }
+
+        function openClassroomModal() {
+            const m = document.getElementById('modal-classroom');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-classroom-box').classList.remove('scale-95');
+                document.getElementById('modal-classroom-box').classList.add('scale-100');
+            }, 10);
+            renderClassroomCardsGrid();
+        }
+
+        function closeClassroomModal() {
+            const m = document.getElementById('modal-classroom');
+            m.classList.add('opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        // =========================================================================
+        // 📊 ÖĞRETMEN KONTROL MASASI VE SINIF TABLOSU
+        // =========================================================================
+        function openTeacherDashboardModal() {
+            const m = document.getElementById('modal-teacher');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-teacher-box').classList.remove('scale-95');
+                document.getElementById('modal-teacher-box').classList.add('scale-100');
+            }, 10);
+
+            updateClassroomProgressBadge();
+
+            // Eksik Öğrenciler Rozetleri
+            const incompleteContainer = document.getElementById('teacher-incomplete-students-list');
+            const incompleteNumbers = [];
+            for (let i = 1; i <= 30; i++) {
+                if (!studentResults[i] || !studentResults[i].completed || !studentResults[i].isCorrect) {
+                    incompleteNumbers.push(i);
+                }
+            }
+
+            if (incompleteNumbers.length === 0) {
+                incompleteContainer.innerHTML = '<span class="text-emerald-400 font-bold text-xs"><i class="fa-solid fa-trophy mr-1"></i> Tüm 30 öğrenci deneylerini başarıyla tamamladı! Tebrikler!</span>';
+            } else {
+                incompleteContainer.innerHTML = incompleteNumbers.map(n => `
+                    <button type="button" onclick="selectStudentExperiment(${n - 1}); closeTeacherDashboardModal();" class="px-2 py-0.5 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 text-xs font-mono font-bold hover:bg-amber-500 hover:text-slate-950 transition-colors cursor-pointer" title="Bu Öğrencinin Deneyine Git">
+                        #${n}. Öğrenci
+                    </button>
+                `).join('');
+            }
+
+            // Tablo Satırları
+            const tbody = document.getElementById('teacher-table-body');
+            tbody.innerHTML = EXPERIMENTS.slice(0, 30).map(exp => {
+                const res = studentResults[exp.id];
+                const completed = res && res.completed && res.isCorrect;
+                const predText = res ? (res.userPred ? 'İŞ YAPILIR' : 'İŞ YAPILMAZ') : '—';
+                const statusBadge = completed ? 
+                    '<span class="px-1.5 py-0.2 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40 font-bold">Tamamlandı ⭐</span>' : 
+                    '<span class="px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">Bekliyor</span>';
+
+                return `
+                    <tr class="hover:bg-slate-800/40 transition-colors cursor-pointer" onclick="selectStudentExperiment(${exp.id - 1}); closeTeacherDashboardModal();">
+                        <td class="p-2 font-bold text-cyan-400">#${exp.studentNum}</td>
+                        <td class="p-2 text-white font-semibold">${exp.title}</td>
+                        <td class="p-2 font-bold ${exp.hasWork ? 'text-emerald-400' : 'text-rose-400'}">${exp.hasWork ? 'İŞ VAR' : 'İŞ YOK'}</td>
+                        <td class="p-2 text-slate-300">${predText}</td>
+                        <td class="p-2">${statusBadge}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function closeTeacherDashboardModal() {
+            const m = document.getElementById('modal-teacher');
+            m.classList.add('opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        function resetAllClassroomData() {
+            if (confirm('Tüm 30 öğrencinin deney kayıtları ve ilerleme tablosu sıfırlansın mı?')) {
+                studentResults = {};
+                try {
+                    localStorage.removeItem('is_lab_results_v1');
+                } catch(e) {}
+                updateClassroomProgressBadge();
+                renderClassroomCardsGrid();
+                openTeacherDashboardModal();
+            }
+        }
+
+        // =========================================================================
+        // ➕ MODAL 3: 10 EK GÜNLÜK YAŞAM DENEYİ
+        // =========================================================================
+        function openExtraExperimentsModal() {
+            const m = document.getElementById('modal-extra');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-extra-box').classList.remove('scale-95');
+                document.getElementById('modal-extra-box').classList.add('scale-100');
+            }, 10);
+
+            const grid = document.getElementById('extra-cards-grid');
+            const extras = EXPERIMENTS.slice(30, 40);
+
+            grid.innerHTML = extras.map(exp => `
+                <div onclick="selectStudentExperiment(${exp.id - 1})" class="p-3 rounded-2xl bg-slate-950/80 border border-slate-800 hover:border-amber-500 text-slate-300 transition-all cursor-pointer active:scale-95 flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/30 flex items-center justify-center text-xs font-mono font-black shrink-0">
+                            ${exp.studentNum}
+                        </span>
+                        <div class="truncate">
+                            <h4 class="font-bold text-xs text-white truncate">${exp.title}</h4>
+                            <p class="text-[10px] text-slate-400 truncate">${exp.description}</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-lg text-[10px] font-black shrink-0 ${exp.hasWork ? 'bg-emerald-950 text-emerald-300 border border-emerald-500/40' : 'bg-rose-950 text-rose-300 border border-rose-500/40'}">
+                        ${exp.hasWork ? 'İŞ VAR' : 'İŞ YOK'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function closeExtraExperimentsModal() {
+            const m = document.getElementById('modal-extra');
+            m.classList.add('opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        // =========================================================================
+        // 🎓 MODAL 4: 10 SORULUK TEST
+        // =========================================================================
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let isQuizAnswered = false;
+
+        function openQuizModal() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            loadQuizQuestion(0);
+
+            const m = document.getElementById('modal-quiz');
+            m.classList.remove('hidden');
+            setTimeout(() => {
+                m.classList.remove('opacity-0');
+                document.getElementById('modal-quiz-box').classList.remove('scale-95');
+                document.getElementById('modal-quiz-box').classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeQuizModal() {
+            const m = document.getElementById('modal-quiz');
+            m.classList.add('opacity-0');
+            setTimeout(() => m.classList.add('hidden'), 250);
+        }
+
+        function loadQuizQuestion(idx) {
+            isQuizAnswered = false;
+            const q = QUIZ_QUESTIONS[idx];
+
+            document.getElementById('quiz-progress-text').textContent = `Soru ${idx + 1} / ${QUIZ_QUESTIONS.length}`;
+            document.getElementById('quiz-question-title').textContent = q.q;
+
+            const optBox = document.getElementById('quiz-options-container');
+            optBox.innerHTML = q.options.map((opt, i) => `
+                <button type="button" onclick="answerQuizQuestion(${i})" id="quiz-opt-${i}" class="w-full p-2.5 sm:p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-700 text-left text-xs font-bold text-white transition-all flex items-center gap-2 cursor-pointer">
+                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-cyan-400 flex items-center justify-center font-black text-xs">${['A', 'B', 'C', 'D'][i]}</span>
+                    <span>${opt}</span>
+                </button>
+            `).join('');
+
+            const expBox = document.getElementById('quiz-explanation-box');
+            expBox.className = 'mt-3 p-2.5 rounded-xl text-xs font-bold hidden';
+            document.getElementById('btn-quiz-next').classList.add('hidden');
+        }
+
+        function answerQuizQuestion(selectedIdx) {
+            if (isQuizAnswered) return;
+            isQuizAnswered = true;
+
+            const q = QUIZ_QUESTIONS[currentQuizIndex];
+            const isCorrect = (selectedIdx === q.correct);
+
+            const expBox = document.getElementById('quiz-explanation-box');
+            expBox.classList.remove('hidden');
+
+            if (isCorrect) {
+                SoundManager.playCorrect();
+                quizScore += 10;
+                document.getElementById(`quiz-opt-${selectedIdx}`).className = 'w-full p-3 rounded-xl bg-emerald-950/90 border-2 border-emerald-400 text-emerald-200 text-left text-xs font-bold flex items-center gap-2';
+                expBox.className = 'mt-3 p-2.5 rounded-xl text-xs font-bold bg-emerald-950/80 text-emerald-200 border border-emerald-500/50 block';
+                expBox.innerHTML = `🎉 <strong>TEBRİKLER! DOĞRU CEVAP!</strong><br>${q.explanation}`;
+            } else {
+                SoundManager.playWrong();
+                document.getElementById(`quiz-opt-${selectedIdx}`).className = 'w-full p-3 rounded-xl bg-rose-950/90 border-2 border-rose-500 text-rose-200 text-left text-xs font-bold flex items-center gap-2';
+                document.getElementById(`quiz-opt-${q.correct}`).className = 'w-full p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-left text-xs font-bold flex items-center gap-2';
+                expBox.className = 'mt-3 p-2.5 rounded-xl text-xs font-bold bg-rose-950/80 text-rose-200 border border-rose-500/50 block';
+                expBox.innerHTML = `❌ <strong>YANLIŞ CEVAP!</strong><br>${q.explanation}`;
+            }
+
+            document.getElementById('quiz-score-badge').textContent = `Puan: ${quizScore} / 100`;
+            document.getElementById('btn-quiz-next').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIndex < QUIZ_QUESTIONS.length - 1) {
+                currentQuizIndex++;
+                loadQuizQuestion(currentQuizIndex);
+            } else {
+                confetti({ particleCount: 80, spread: 90, origin: { y: 0.6 } });
+                alert(`🏆 TEBRİKLER! Testi tamamladın. Toplam Puanın: ${quizScore} / 100`);
+                closeQuizModal();
+            }
+        }
+
+        // =========================================================================
+        // ⛶ TAM EKRAN YÖNETİMİ
+        // =========================================================================
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                document.getElementById('fullscreen-icon').className = 'fa-solid fa-compress';
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                document.getElementById('fullscreen-icon').className = 'fa-solid fa-expand';
+            }
+        }
+    </script>
+</body>
+</html>

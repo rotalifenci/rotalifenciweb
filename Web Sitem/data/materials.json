@@ -1,5 +1,37 @@
 [
   {
+    "id": "mat-7-2-sim-is-laboratuvari",
+    "grade": "7",
+    "category": "egitsel-oyunlar",
+    "targetSection": "2",
+    "title": "İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli 3D Deney)",
+    "unit": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+    "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D fizik simülasyonu! 30 Öğrenci – 30 Deney akıllı sınıf modu, 40 etkileşimli günlük yaşam deneyi, öğretmen kontrol masası ve 10 soruluk değerlendirme testi.",
+    "fileName": "is-laboratuvari.html",
+    "fileUrl": "oyunlar/is-laboratuvari.html",
+    "imageUrl": "assets/is-laboratuvari-kapak.svg",
+    "kapakResmi": "assets/is-laboratuvari-kapak.svg",
+    "cover": "assets/is-laboratuvari-kapak.svg",
+    "format": "3D SİMÜLASYON",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "2. ünite",
+      "fiziksel iş",
+      "kuvvet ve enerji",
+      "iş var mı yok mu",
+      "30 öğrenci 30 deney",
+      "3d laboratuvar",
+      "maarif modeli",
+      "joule",
+      "yer değiştirme"
+    ],
+    "visibility": "public",
+    "downloadCount": "🌟 3D İş Laboratuvarı",
+    "createdAt": "2026-10-23T23:04:14.301Z",
+    "updatedAt": "2026-10-23T23:04:14.302Z"
+  },
+  {
     "id": "mat-apollo11-aya-inis-3d",
     "grade": "5",
     "category": "egitsel-oyunlar",
