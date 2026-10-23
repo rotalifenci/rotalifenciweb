@@ -28,16 +28,16 @@ const PORTAL_GRADES = [
         color: "from-emerald-500 to-teal-600",
         badgeBg: "bg-emerald-50 text-emerald-700 border-emerald-200",
         accentColor: "#10b981",
-        description: "Güneş, Dünya ve Ay; Canlılar Dünyası; Kuvvetin Ölçülmesi ve Sürtünme; Madde ve Değişim; Işığın Yayılması.",
+        description: "Gökyüzündeki Komşularımız ve Biz; Kuvveti Tanıyalım; Canlıların Yapısına Yolculuk; Işığın Dünyası; Maddenin Doğası; Yaşamımızdaki Elektrik; Sürdürülebilir Yaşam ve Geri Dönüşüm.",
         unitCount: 7,
         units: [
-            { id: "5-unit-1", code: "F.5.1", name: "Güneş, Dünya ve Ay", icon: "fa-solid fa-sun", topics: 3, hours: 16 },
-            { id: "5-unit-2", code: "F.5.2", name: "Canlılar Dünyası", icon: "fa-solid fa-paw", topics: 4, hours: 20 },
-            { id: "5-unit-3", code: "F.5.3", name: "Kuvvetin Ölçülmesi ve Sürtünme", icon: "fa-solid fa-weight-hanging", topics: 2, hours: 14 },
-            { id: "5-unit-4", code: "F.5.4", name: "Madde ve Değişim", icon: "fa-solid fa-flask-vial", topics: 4, hours: 24 },
-            { id: "5-unit-5", code: "F.5.5", name: "Işığın Yayılması", icon: "fa-solid fa-lightbulb", topics: 3, hours: 16 },
-            { id: "5-unit-6", code: "F.5.6", name: "İnsan ve Çevre", icon: "fa-solid fa-tree", topics: 2, hours: 12 },
-            { id: "5-unit-7", code: "F.5.7", name: "Elektrik Devre Elemanları", icon: "fa-solid fa-bolt", topics: 2, hours: 10 }
+            { id: "5-unit-1", code: "F.5.1", name: "Gökyüzündeki Komşularımız ve Biz", icon: "fa-solid fa-earth-americas", topics: 3, hours: 16 },
+            { id: "5-unit-2", code: "F.5.2", name: "Kuvveti Tanıyalım", icon: "fa-solid fa-weight-hanging", topics: 4, hours: 20 },
+            { id: "5-unit-3", code: "F.5.3", name: "Canlıların Yapısına Yolculuk", icon: "fa-solid fa-dna", topics: 2, hours: 14 },
+            { id: "5-unit-4", code: "F.5.4", name: "Işığın Dünyası", icon: "fa-solid fa-lightbulb", topics: 4, hours: 24 },
+            { id: "5-unit-5", code: "F.5.5", name: "Maddenin Doğası", icon: "fa-solid fa-flask-vial", topics: 3, hours: 16 },
+            { id: "5-unit-6", code: "F.5.6", name: "Yaşamımızdaki Elektrik", icon: "fa-solid fa-bolt", topics: 2, hours: 12 },
+            { id: "5-unit-7", code: "F.5.7", name: "Sürdürülebilir Yaşam ve Geri Dönüşüm", icon: "fa-solid fa-recycle", topics: 2, hours: 10 }
         ]
     },
     {
@@ -48,16 +48,16 @@ const PORTAL_GRADES = [
         color: "from-blue-500 to-indigo-600",
         badgeBg: "bg-blue-50 text-blue-700 border-blue-200",
         accentColor: "#3b82f6",
-        description: "Güneş Sistemi ve Tutulmalar; Vücudumuzdaki Sistemler; Kuvvet ve Hareket; Madde ve Isı; Ses ve Özellikleri.",
+        description: "Güneş Sistemi ve Tutulmalar; Kuvvetin Etkisinde Hareket; Canlılarda Sistemler; Işığın Yansıması ve Renkler; Maddenin Ayırt Edici Özellikleri; Elektriğin İletimi ve Direnç; Sürdürülebilir Yaşam ve Etkileşim.",
         unitCount: 7,
         units: [
             { id: "6-unit-1", code: "F.6.1", name: "Güneş Sistemi ve Tutulmalar", icon: "fa-solid fa-globe", topics: 2, hours: 14 },
-            { id: "6-unit-2", code: "F.6.2", name: "Vücudumuzdaki Sistemler", icon: "fa-solid fa-heart-pulse", topics: 5, hours: 26 },
-            { id: "6-unit-3", code: "F.6.3", name: "Kuvvet ve Hareket", icon: "fa-solid fa-gauge-high", topics: 2, hours: 16 },
-            { id: "6-unit-4", code: "F.6.4", name: "Madde ve Isı", icon: "fa-solid fa-temperature-arrow-up", topics: 3, hours: 18 },
-            { id: "6-unit-5", code: "F.6.5", name: "Ses ve Özellikleri", icon: "fa-solid fa-volume-high", topics: 3, hours: 14 },
-            { id: "6-unit-6", code: "F.6.6", name: "Vücudumuzdaki Sistemler ve Sağlığı", icon: "fa-solid fa-brain", topics: 3, hours: 12 },
-            { id: "6-unit-7", code: "F.6.7", name: "Elektriğin İletimi", icon: "fa-solid fa-plug", topics: 2, hours: 12 }
+            { id: "6-unit-2", code: "F.6.2", name: "Kuvvetin Etkisinde Hareket", icon: "fa-solid fa-gauge-high", topics: 2, hours: 16 },
+            { id: "6-unit-3", code: "F.6.3", name: "Canlılarda Sistemler", icon: "fa-solid fa-heart-pulse", topics: 5, hours: 26 },
+            { id: "6-unit-4", code: "F.6.4", name: "Işığın Yansıması ve Renkler", icon: "fa-solid fa-sun", topics: 3, hours: 18 },
+            { id: "6-unit-5", code: "F.6.5", name: "Maddenin Ayırt Edici Özellikleri", icon: "fa-solid fa-flask", topics: 3, hours: 14 },
+            { id: "6-unit-6", code: "F.6.6", name: "Elektriğin İletimi ve Direnç", icon: "fa-solid fa-bolt-lightning", topics: 3, hours: 12 },
+            { id: "6-unit-7", code: "F.6.7", name: "Sürdürülebilir Yaşam ve Etkileşim", icon: "fa-solid fa-leaf", topics: 2, hours: 12 }
         ]
     },
     {
@@ -68,7 +68,7 @@ const PORTAL_GRADES = [
         color: "from-amber-500 to-orange-600",
         badgeBg: "bg-amber-50 text-amber-700 border-amber-200",
         accentColor: "#f59e0b",
-        description: "Uzay Çağı; Kuvvet ve Enerjiyi Keşfedelim; Vücudumuzdaki Sistemler; Işığın Kırılması ve Mercekler; Maddenin Doğasına Yolculuk; Elektriklenme; Sürdürülebilir Yaşam ve Geri Dönüşüm.",
+        description: "Uzay Çağı; Kuvvet ve Enerjiyi Keşfedelim; Vücudumuzdaki Sistemler; Işığın Kırılması ve Mercekler; Maddenin Doğasına Yolculuk; Elektriklenme; Sürdürülebilir Yaşam ve Enerji.",
         unitCount: 7,
         units: [
             { id: "7-unit-1", code: "F.7.1", name: "Uzay Çağı", icon: "fa-solid fa-satellite", topics: 2, hours: 14 },
@@ -77,7 +77,7 @@ const PORTAL_GRADES = [
             { id: "7-unit-4", code: "F.7.4", name: "Işığın Kırılması ve Mercekler", icon: "fa-solid fa-glasses", topics: 3, hours: 16 },
             { id: "7-unit-5", code: "F.7.5", name: "Maddenin Doğasına Yolculuk", icon: "fa-solid fa-atom", topics: 4, hours: 22 },
             { id: "7-unit-6", code: "F.7.6", name: "Elektriklenme", icon: "fa-solid fa-bolt", topics: 2, hours: 14 },
-            { id: "7-unit-7", code: "F.7.7", name: "Sürdürülebilir Yaşam ve Geri Dönüşüm", icon: "fa-solid fa-recycle", topics: 2, hours: 12 }
+            { id: "7-unit-7", code: "F.7.7", name: "Sürdürülebilir Yaşam ve Enerji", icon: "fa-solid fa-solar-panel", topics: 2, hours: 12 }
         ]
     },
     {
@@ -987,9 +987,9 @@ function getGradeSubSectionsData(gradeNumber) {
     const isLGS = gNum === 8;
 
     const unitTitles = {
-        5: ["Güneş, Dünya ve Ay", "Canlılar Dünyası", "Kuvvetin Ölçülmesi", "Madde ve Değişim", "Işığın Yayılması", "İnsan ve Çevre", "Elektrik Devreleri"],
-        6: ["Güneş Sistemi ve Tutulmalar", "Vücudumuzdaki Sistemler", "Kuvvet ve Hareket", "Madde ve Isı", "Ses ve Özellikleri", "Sistemler ve Sağlığı", "Elektriğin İletimi"],
-        7: ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
+        5: ["Gökyüzündeki Komşularımız ve Biz", "Kuvveti Tanıyalım", "Canlıların Yapısına Yolculuk", "Işığın Dünyası", "Maddenin Doğası", "Yaşamımızdaki Elektrik", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
+        6: ["Güneş Sistemi ve Tutulmalar", "Kuvvetin Etkisinde Hareket", "Canlılarda Sistemler", "Işığın Yansıması ve Renkler", "Maddenin Ayırt Edici Özellikleri", "Elektriğin İletimi ve Direnç", "Sürdürülebilir Yaşam ve Etkileşim"],
+        7: ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Enerji"],
         8: ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç (Katı-Sıvı-Gaz)", "Madde ve Endüstri", "Basit Makineler", "Enerji Dönüşümleri", "Elektrik Yükleri"]
     }[gNum] || ["1. Ünite", "2. Ünite", "3. Ünite", "4. Ünite", "5. Ünite", "6. Ünite", "7. Ünite"];
 
@@ -1092,7 +1092,7 @@ const ENRICHED_GRADE_CONTENT = {
     "5": {
         unitSummaries: [
             {
-                unit: "1. Ünite: Güneş, Dünya ve Ay",
+                unit: "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
                 highlights: [
                     "☀️ **Güneş:** Orta büyüklükte bir yıldızdır, katmanlardan oluşur (Çekirdek, Işık küre, Renk küre, Taç küre). Yüzeyinde daha soğuk bölgeler olan 'Güneş Lekeleri' bulunur. Kendi ekseni etrafında saat yönünün tersine döner.",
                     "🌕 **Ay:** Dünya'nın tek doğal uydusudur. Atmosferi yok denecek kadar incedir (bu yüzden rüzgar, yağmur olmaz; gece-gündüz sıcaklık farkı çok fazladır; kraterler bozulmaz).",
@@ -1101,20 +1101,20 @@ const ENRICHED_GRADE_CONTENT = {
                 ]
             },
             {
-                unit: "2. Ünite: Canlılar Dünyası",
+                unit: "2. Ünite: Kuvveti Tanıyalım",
+                highlights: [
+                    "⚖️ **Dinamometre:** Kuvveti ölçen alettir. Birimi Newton'dur (N). İçindeki yayın esneklik özelliğinden yararlanılır. Kalın yaylar büyük kuvvetleri, ince yaylar hassas küçük kuvvetleri ölçer.",
+                    "🛑 **Sürtünme Kuvveti:** Hareketi engelleyen veya zorlaştıran, daima hareket yönüne zıt kuvvettir. Pürüzlü yüzeylerde sürtünme fazla, kaygan yüzeylerde azdır.",
+                    "💨 **Hava ve Su Direnci:** Havanın ve suyun cisimlerin hareketine karşı gösterdiği sürtünme kuvvetidir. Uçakların ve gemilerin burunlarının 'V' şeklinde (aerodinamik) yapılması direnci azaltır."
+                ]
+            },
+            {
+                unit: "3. Ünite: Canlıların Yapısına Yolculuk",
                 highlights: [
                     "🦠 **Mikroskobik Canlılar:** Yalnızca mikroskopla görülebilen canlılardır (Bakteriler, Amip, Öglena, Paramesyum). Yararlı bakteriler (yoğurt, peynir, sirke yapımı), zararlı bakteriler (hastalık yapıcılar) vardır.",
                     "🍄 **Mantarlar:** Bitki DEĞİLDİR (kendi besinini üretemez, klorofili yoktur). Şapkalı mantarlar, Küf mantarları (besinleri çürütür, penisilin ilacı üretilir), Maya mantarları (hamurun kabarması), Parazit mantarlar (pamukçuk, saçkıran).",
                     "🌱 **Bitkiler:** 1. *Çiçeksiz Bitkiler* (Karayosunu, Eğrelti otu, Atkuyruğu), 2. *Çiçekli Bitkiler* (Kök, Gövde, Yaprak, Çiçek). Yaprakta fotosentez ve terleme gerçekleşir.",
                     "🐾 **Hayvanlar:** 1. *Omurgasızlar* (Sünger, Salyangoz, Solucan, Böcekler, Yengeç), 2. *Omurgalılar* (Balıklar, Kurbağalar, Sürüngenler, Kuşlar, Memeliler). Yarasa ve Balina memelidir!"
-                ]
-            },
-            {
-                unit: "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
-                highlights: [
-                    "⚖️ **Dinamometre:** Kuvveti ölçen alettir. Birimi Newton'dur (N). İçindeki yayın esneklik özelliğinden yararlanılır. Kalın yaylar büyük kuvvetleri, ince yaylar hassas küçük kuvvetleri ölçer.",
-                    "🛑 **Sürtünme Kuvveti:** Hareketi engelleyen veya zorlaştıran, daima hareket yönüne zıt kuvvettir. Pürüzlü yüzeylerde sürtünme fazla, kaygan yüzeylerde azdır.",
-                    "💨 **Hava ve Su Direnci:** Havanın ve suyun cisimlerin hareketine karşı gösterdiği sürtünme kuvvetidir. Uçakların ve gemilerin burunlarının 'V' şeklinde (aerodinamik) yapılması direnci azaltır."
                 ]
             }
         ]
@@ -1132,7 +1132,16 @@ const ENRICHED_GRADE_CONTENT = {
                 ]
             },
             {
-                unit: "2. Ünite: Vücudumuzdaki Sistemler",
+                unit: "2. Ünite: Kuvvetin Etkisinde Hareket",
+                highlights: [
+                    "🏹 **Bileşke Kuvvet (Net Kuvvet - R):** İki veya daha fazla kuvvetin bir cisme yaptığı etkiyi tek başına yapan kuvvettir. Aynı yönlü kuvvetler toplanır ($R = F_1 + F_2$), zıt yönlü kuvvetler çıkarılır ($R = |F_1 - F_2|$).",
+                    "⚖️ **Dengelenmiş Kuvvetler ($R = 0\\text{ N}$):** Cisim duruyorsa durmaya devam eder; hareket halindeyse sabit süratle hareketini sürdürür (Eylemsizlik prensibi).",
+                    "⚡ **Dengelenmemiş Kuvvetler ($R \\neq 0\\text{ N}$):** Cisim bileşke kuvvet yönünde ivmelenir; yani hızlanır, yavaşlar veya yön değiştirir.",
+                    "🧭 **Kuvvetin Özellikleri:** Uygulama noktası, doğrultusu, yönü ve büyüklüğü (şiddeti) olmak üzere 4 temel özelliği vardır. Dinamometre ile ölçülür."
+                ]
+            },
+            {
+                unit: "3. Ünite: Canlılarda Sistemler",
                 highlights: [
                     "🦴 **Destek ve Hareket:** Kemikler (Uzun, Kısa, Yassı), Eklemler (Oynar, Yarı oynar, Oynamaz), Kaslar (Çizgili/İskelet, Düz, Kalp kası).",
                     "🍔 **Sindirim Sistemi:** Ağız (tükürük ile karbonhidrat) ➔ Mide (mide özsuyu ile protein) ➔ İnce Bağırsak (pankreas özsuyu ile yağ, protein, karbonhidrat sindirimi tamamlanır ve villuslarla emilim olur). Karaciğer 'safra' salgısıyla yağların mekanik sindirimini sağlar.",

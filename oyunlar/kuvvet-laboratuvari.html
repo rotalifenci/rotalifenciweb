@@ -408,23 +408,79 @@
                     Kutuya Doğuya 15 N (F₁), Batıya 9 N (F₂) uygulanıyor. Bileşke kuvvetin büyüklüğünü yaz, yönünü seç ve hareketi başlat!
                 </div>
 
-                <!-- Büyüklük (R) Girişi + Pardus Dokunmatik [-] [+] Stepper Butonları -->
-                <div class="bg-slate-950/70 p-1.5 sm:p-2 rounded-xl border border-cyan-500/30 flex items-center justify-between gap-2 shrink-0">
+                <!-- Büyüklük (R) Girişi + Pardus Dokunmatik [-] [+] Stepper ve Rakam Seçim Tetikleyicisi -->
+                <div class="bg-slate-950/70 p-1.5 sm:p-2 rounded-xl border border-cyan-500/30 flex items-center justify-between gap-1.5 shrink-0">
                     <span class="text-[11px] sm:text-xs font-black text-cyan-300 flex items-center gap-1 shrink-0">
                         <i class="fa-solid fa-arrow-down-1-9"></i> Büyüklük:
                     </span>
-                    <div class="flex items-center gap-1.5 flex-1 justify-center">
-                        <button type="button" onclick="stepM1Magnitude(-1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 font-mono font-black text-base flex items-center justify-center cursor-pointer active:scale-90 select-none" title="1 N Azalt">
+                    <div class="flex items-center gap-1 sm:gap-1.5 flex-1 justify-center">
+                        <button type="button" onclick="stepM1Magnitude(-1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 font-mono font-black text-base flex items-center justify-center cursor-pointer active:scale-90 select-none" title="1 N Azalt">
                             −
                         </button>
                         <input type="number" id="m1-input-net" min="0" max="60" placeholder="0" 
-                            class="w-16 sm:w-20 py-1 text-center text-base sm:text-lg font-mono font-black rounded-lg bg-slate-900 border-2 border-cyan-500/50 text-cyan-300 focus:outline-none focus:border-cyan-300 focus:ring-1 focus:ring-cyan-400/40"
+                            class="w-14 sm:w-20 py-1 text-center text-base sm:text-lg font-mono font-black rounded-lg bg-slate-900 border-2 border-cyan-500/50 text-cyan-300 focus:outline-none focus:border-cyan-300 focus:ring-1 focus:ring-cyan-400/40 cursor-pointer"
+                            onclick="toggleM1Numpad(true)"
+                            onfocus="toggleM1Numpad(true)"
                             oninput="onM1NetInputChange(this.value)"
-                            onkeydown="if(event.key==='Enter') submitM1AnswerAndPlay()">
-                        <button type="button" onclick="stepM1Magnitude(1)" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 font-mono font-black text-base flex items-center justify-center cursor-pointer active:scale-90 select-none" title="1 N Artır">
+                            onkeydown="if(event.key==='Enter') submitM1AnswerAndPlay()"
+                            title="Rakam seçmek için tıkla">
+                        <button type="button" onclick="stepM1Magnitude(1)" class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 font-mono font-black text-base flex items-center justify-center cursor-pointer active:scale-90 select-none" title="1 N Artır">
                             +
                         </button>
+                        <button type="button" onclick="toggleM1Numpad()" class="px-1.5 sm:px-2 py-1 rounded-lg bg-cyan-950/80 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-[10px] font-bold flex items-center gap-1 cursor-pointer active:scale-90 select-none" title="Dokunmatik Rakam Tuşlarını Aç / Kapat">
+                            <i class="fa-solid fa-calculator"></i>
+                        </button>
                         <span class="font-mono font-black text-xs text-cyan-400 shrink-0">N</span>
+                    </div>
+                </div>
+
+                <!-- 🔢 DOKUNMATİK RAKAM SEÇİM ALANI (Tıklanınca Açılır, Tek Tıkla Seçim veya Numpad Tuşları) -->
+                <div id="m1-numpad-container" class="hidden flex-col gap-1 p-1.5 sm:p-2 bg-slate-950/95 border border-cyan-400/50 rounded-xl shadow-2xl backdrop-blur-md shrink-0 transition-all">
+                    <div class="flex items-center justify-between text-[10px] font-bold text-cyan-300 border-b border-cyan-900/60 pb-0.5">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-hand-pointer text-cyan-400"></i> Rakam Seç:</span>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="setM1DirectNumber(0)" class="px-1.5 py-0.2 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-[9px] font-mono font-bold cursor-pointer">0 (Denge)</button>
+                            <button type="button" onclick="toggleM1Numpad(false)" class="text-slate-400 hover:text-white px-1 py-0.2 rounded hover:bg-slate-800 cursor-pointer text-xs" title="Kapat">✕</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Hızlı Sık Kullanılan Kuvvet Rakamları Şeridi -->
+                    <div class="flex items-center gap-1 overflow-x-auto pb-0.5 scrollbar-thin">
+                        <button type="button" onclick="setM1DirectNumber(1)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">1</button>
+                        <button type="button" onclick="setM1DirectNumber(2)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">2</button>
+                        <button type="button" onclick="setM1DirectNumber(3)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">3</button>
+                        <button type="button" onclick="setM1DirectNumber(4)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">4</button>
+                        <button type="button" onclick="setM1DirectNumber(5)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">5</button>
+                        <button type="button" onclick="setM1DirectNumber(6)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">6</button>
+                        <button type="button" onclick="setM1DirectNumber(7)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">7</button>
+                        <button type="button" onclick="setM1DirectNumber(8)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">8</button>
+                        <button type="button" onclick="setM1DirectNumber(9)" class="w-7 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">9</button>
+                        <button type="button" onclick="setM1DirectNumber(10)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">10</button>
+                        <button type="button" onclick="setM1DirectNumber(12)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">12</button>
+                        <button type="button" onclick="setM1DirectNumber(14)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">14</button>
+                        <button type="button" onclick="setM1DirectNumber(15)" class="px-1.5 h-6 rounded bg-cyan-700 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">15</button>
+                        <button type="button" onclick="setM1DirectNumber(16)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">16</button>
+                        <button type="button" onclick="setM1DirectNumber(18)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">18</button>
+                        <button type="button" onclick="setM1DirectNumber(20)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">20</button>
+                        <button type="button" onclick="setM1DirectNumber(24)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">24</button>
+                        <button type="button" onclick="setM1DirectNumber(30)" class="px-1.5 h-6 rounded bg-slate-800 hover:bg-cyan-600 text-white text-[11px] font-mono font-bold shrink-0 flex items-center justify-center cursor-pointer">30</button>
+                    </div>
+
+                    <!-- Dokunmatik Numpad Rakam Tuşları (1-0 ve Sil Tuşları) -->
+                    <div class="grid grid-cols-6 gap-1">
+                        <button type="button" onclick="appendM1Digit('1')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">1</button>
+                        <button type="button" onclick="appendM1Digit('2')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">2</button>
+                        <button type="button" onclick="appendM1Digit('3')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">3</button>
+                        <button type="button" onclick="appendM1Digit('4')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">4</button>
+                        <button type="button" onclick="appendM1Digit('5')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">5</button>
+                        <button type="button" onclick="backspaceM1Digit()" class="py-1 rounded bg-rose-950/70 hover:bg-rose-900 text-rose-300 font-mono font-bold text-xs border border-rose-800 active:scale-95 cursor-pointer" title="Son Rakamı Sil">⌫</button>
+
+                        <button type="button" onclick="appendM1Digit('6')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">6</button>
+                        <button type="button" onclick="appendM1Digit('7')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">7</button>
+                        <button type="button" onclick="appendM1Digit('8')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">8</button>
+                        <button type="button" onclick="appendM1Digit('9')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">9</button>
+                        <button type="button" onclick="appendM1Digit('0')" class="py-1 rounded bg-slate-800 hover:bg-slate-700 text-white font-mono font-bold text-xs border border-slate-700 active:scale-95 cursor-pointer">0</button>
+                        <button type="button" onclick="clearM1Digits()" class="py-1 rounded bg-amber-950/70 hover:bg-amber-900 text-amber-300 font-mono font-bold text-xs border border-amber-800 active:scale-95 cursor-pointer" title="Temizle">C</button>
                     </div>
                 </div>
 
@@ -1106,11 +1162,11 @@
         function createFallbackControls(cam, dom) {
             let isDragging = false;
             let prevX = 0, prevY = 0;
-            let theta = 0, phi = 0.35, radius = 13.5;
+            let theta = 0, phi = 0.28, radius = 8.5;
 
             function updatePos() {
                 cam.position.x = radius * Math.sin(theta) * Math.cos(phi);
-                cam.position.y = Math.max(1.5, radius * Math.sin(phi) + 1.2);
+                cam.position.y = Math.max(1.4, radius * Math.sin(phi) + 1.2);
                 cam.position.z = radius * Math.cos(theta) * Math.cos(phi);
                 cam.lookAt(0, 1.2, 0);
             }
@@ -1154,9 +1210,9 @@
             const w = container ? (container.clientWidth || window.innerWidth) : window.innerWidth;
             const h = container ? (container.clientHeight || 300) : 300;
 
-            // Kamera
+            // Kamera — Yakınlaştırılmış ve Net Bakış Açısı
             camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
-            camera.position.set(0, 4.8, 12.5);
+            camera.position.set(0, 3.2, 8.2);
 
             // Renderer
             renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -1849,6 +1905,7 @@
             const input = document.getElementById('m1-input-net');
             if (input) input.value = '';
             LAB.m1SelectedDir = null;
+            toggleM1Numpad(false);
             ['dogu', 'bati', 'kuzey', 'guney', 'dengede'].forEach(d => {
                 const btn = document.getElementById(`btn-dir-${d}`);
                 if (btn) btn.className = 'dir-choice-btn py-1.5 px-1 min-h-[44px] rounded-xl text-[11px] font-black bg-slate-800 text-slate-300 hover:text-white border border-slate-700 hover:border-cyan-400 transition-all text-center flex flex-col items-center justify-center cursor-pointer';
@@ -2231,12 +2288,12 @@
             if (moduleIndex === 2) {
                 mainBoxMesh.visible = false;
                 window.tugGroup.visible = true;
-                camera.position.set(0, 4.2, 14);
+                camera.position.set(0, 3.8, 11.5);
                 controls.target.set(0, 1.0, 0);
             } else {
                 mainBoxMesh.visible = true;
                 window.tugGroup.visible = false;
-                camera.position.set(0, 4.8, 12.5);
+                camera.position.set(0, 3.2, 8.2);
                 controls.target.set(0, 1.2, 0);
             }
 
@@ -2865,6 +2922,76 @@ Türkiye Yüzyılı Maarif Modeli Kuvvet ve Hareket konusundaki gayretini tebrik
             val = Math.max(0, Math.min(60, val + delta));
             input.value = val;
             onM1NetInputChange(val);
+        }
+
+        // 🔢 Dokunmatik Rakam Seçim Paneli Fonksiyonları (Akıllı Tahta & Mobil)
+        function toggleM1Numpad(forceState) {
+            const pad = document.getElementById('m1-numpad-container');
+            if (!pad) return;
+            if (typeof forceState === 'boolean') {
+                if (forceState) {
+                    pad.classList.remove('hidden');
+                    pad.classList.add('flex');
+                } else {
+                    pad.classList.add('hidden');
+                    pad.classList.remove('flex');
+                }
+            } else {
+                pad.classList.toggle('hidden');
+                pad.classList.toggle('flex');
+            }
+        }
+
+        function setM1DirectNumber(num) {
+            const input = document.getElementById('m1-input-net');
+            if (!input) return;
+            input.value = num;
+            onM1NetInputChange(num);
+            if (num === 0) {
+                selectM1Direction('dengede');
+            }
+        }
+
+        function appendM1Digit(digit) {
+            const input = document.getElementById('m1-input-net');
+            if (!input) return;
+            let current = String(input.value || '').trim();
+            if (current === '0' || current === '') {
+                current = String(digit);
+            } else {
+                if (current.length >= 2) return; // 0-60 aralığı için en fazla 2 basamak
+                current += String(digit);
+            }
+            let val = parseInt(current, 10);
+            if (isNaN(val)) val = 0;
+            if (val > 60) val = 60;
+            input.value = val;
+            onM1NetInputChange(val);
+            if (val === 0) {
+                selectM1Direction('dengede');
+            }
+        }
+
+        function backspaceM1Digit() {
+            const input = document.getElementById('m1-input-net');
+            if (!input) return;
+            let current = String(input.value || '').trim();
+            if (current.length <= 1) {
+                input.value = '';
+                onM1NetInputChange('');
+            } else {
+                current = current.slice(0, -1);
+                let val = parseInt(current, 10);
+                input.value = isNaN(val) ? '' : val;
+                onM1NetInputChange(input.value);
+            }
+        }
+
+        function clearM1Digits() {
+            const input = document.getElementById('m1-input-net');
+            if (!input) return;
+            input.value = '';
+            onM1NetInputChange('');
         }
 
         function toggleFullscreen() {

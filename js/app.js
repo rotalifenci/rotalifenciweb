@@ -4332,25 +4332,25 @@ function renderGradeDersNotuAccordion(grade, subData) {
     // Laboratuvar & Deneyler (Sabit/Hardcoded varsayılan öğeler kaldırıldı; yalnızca merkezi veritabanındaki içerikler listelenir)
     const labItems = [];
 
-    // Resmi MEB 7 Ünitesi
+    // Resmi MEB Türkiye Yüzyılı Maarif Modeli 7 Ünitesi
     const unitTitlesMap = {
         "5": [
-            "1. Ünite: Güneş, Dünya ve Ay",
-            "2. Ünite: Canlılar Dünyası",
-            "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
-            "4. Ünite: Madde ve Değişim",
-            "5. Ünite: Işığın Yayılması",
-            "6. Ünite: İnsan ve Çevre",
-            "7. Ünite: Elektrik Devre Elemanları"
+            "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+            "2. Ünite: Kuvveti Tanıyalım",
+            "3. Ünite: Canlıların Yapısına Yolculuk",
+            "4. Ünite: Işığın Dünyası",
+            "5. Ünite: Maddenin Doğası",
+            "6. Ünite: Yaşamımızdaki Elektrik",
+            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
         ],
         "6": [
             "1. Ünite: Güneş Sistemi ve Tutulmalar",
-            "2. Ünite: Vücudumuzdaki Sistemler",
-            "3. Ünite: Kuvvet ve Hareket",
-            "4. Ünite: Madde ve Isı",
-            "5. Ünite: Ses ve Özellikleri",
-            "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
-            "7. Ünite: Elektriğin İletimi"
+            "2. Ünite: Kuvvetin Etkisinde Hareket",
+            "3. Ünite: Canlılarda Sistemler",
+            "4. Ünite: Işığın Yansıması ve Renkler",
+            "5. Ünite: Maddenin Ayırt Edici Özellikleri",
+            "6. Ünite: Elektriğin İletimi ve Direnç",
+            "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
         ],
         "7": [
             "1. Ünite: Uzay Çağı",
@@ -4359,7 +4359,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
             "4. Ünite: Işığın Kırılması ve Mercekler",
             "5. Ünite: Maddenin Doğasına Yolculuk",
             "6. Ünite: Elektriklenme",
-            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
+            "7. Ünite: Sürdürülebilir Yaşam ve Enerji"
         ],
         "8": [
             "1. Ünite: Mevsimler ve İklim",
@@ -4787,25 +4787,25 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const customList = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
 
-    // Resmi MEB 7 Ünitesi
+    // Resmi MEB Türkiye Yüzyılı Maarif Modeli 7 Ünitesi
     const unitTitlesMap = {
         "5": [
-            "1. Ünite: Güneş, Dünya ve Ay",
-            "2. Ünite: Canlılar Dünyası",
-            "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
-            "4. Ünite: Madde ve Değişim",
-            "5. Ünite: Işığın Yayılması",
-            "6. Ünite: İnsan ve Çevre",
-            "7. Ünite: Elektrik Devre Elemanları"
+            "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+            "2. Ünite: Kuvveti Tanıyalım",
+            "3. Ünite: Canlıların Yapısına Yolculuk",
+            "4. Ünite: Işığın Dünyası",
+            "5. Ünite: Maddenin Doğası",
+            "6. Ünite: Yaşamımızdaki Elektrik",
+            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
         ],
         "6": [
             "1. Ünite: Güneş Sistemi ve Tutulmalar",
-            "2. Ünite: Vücudumuzdaki Sistemler",
-            "3. Ünite: Kuvvet ve Hareket",
-            "4. Ünite: Madde ve Isı",
-            "5. Ünite: Ses ve Özellikleri",
-            "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
-            "7. Ünite: Elektriğin İletimi"
+            "2. Ünite: Kuvvetin Etkisinde Hareket",
+            "3. Ünite: Canlılarda Sistemler",
+            "4. Ünite: Işığın Yansıması ve Renkler",
+            "5. Ünite: Maddenin Ayırt Edici Özellikleri",
+            "6. Ünite: Elektriğin İletimi ve Direnç",
+            "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
         ],
         "7": [
             "1. Ünite: Uzay Çağı",
@@ -4814,7 +4814,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             "4. Ünite: Işığın Kırılması ve Mercekler",
             "5. Ünite: Maddenin Doğasına Yolculuk",
             "6. Ünite: Elektriklenme",
-            "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
+            "7. Ünite: Sürdürülebilir Yaşam ve Enerji"
         ],
         "8": [
             "1. Ünite: Mevsimler ve İklim",
@@ -10084,22 +10084,22 @@ const ADMIN_CONFIG = {
 
 const GRADE_UNITS_MAP = {
     "5": [
-        "1. Ünite: Güneş, Dünya ve Ay",
-        "2. Ünite: Canlılar Dünyası",
-        "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
-        "4. Ünite: Madde ve Değişim",
-        "5. Ünite: Işığın Yayılması",
-        "6. Ünite: İnsan ve Çevre",
-        "7. Ünite: Elektrik Devre Elemanları"
+        "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+        "2. Ünite: Kuvveti Tanıyalım",
+        "3. Ünite: Canlıların Yapısına Yolculuk",
+        "4. Ünite: Işığın Dünyası",
+        "5. Ünite: Maddenin Doğası",
+        "6. Ünite: Yaşamımızdaki Elektrik",
+        "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
     ],
     "6": [
         "1. Ünite: Güneş Sistemi ve Tutulmalar",
-        "2. Ünite: Vücudumuzdaki Sistemler",
-        "3. Ünite: Kuvvet ve Hareket",
-        "4. Ünite: Madde ve Isı",
-        "5. Ünite: Ses ve Özellikleri",
-        "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
-        "7. Ünite: Elektriğin İletimi"
+        "2. Ünite: Kuvvetin Etkisinde Hareket",
+        "3. Ünite: Canlılarda Sistemler",
+        "4. Ünite: Işığın Yansıması ve Renkler",
+        "5. Ünite: Maddenin Ayırt Edici Özellikleri",
+        "6. Ünite: Elektriğin İletimi ve Direnç",
+        "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
     ],
     "7": [
         "1. Ünite: Uzay Çağı",
@@ -10108,7 +10108,7 @@ const GRADE_UNITS_MAP = {
         "4. Ünite: Işığın Kırılması ve Mercekler",
         "5. Ünite: Maddenin Doğasına Yolculuk",
         "6. Ünite: Elektriklenme",
-        "7. Ünite: Sürdürülebilir Yaşam ve Geri Dönüşüm"
+        "7. Ünite: Sürdürülebilir Yaşam ve Enerji"
     ],
     "8": [
         "1. Ünite: Mevsimler ve İklim",
@@ -13026,9 +13026,9 @@ function getPresentationSlidesForMaterial(item) {
     if (uMatch && uMatch[1]) unitNum = uMatch[1];
 
     const unitTitlesMap = {
-        "5": ["Güneş, Dünya ve Ay", "Canlılar Dünyası", "Kuvvetin Ölçülmesi ve Sürtünme", "Madde ve Değişim", "Işığın Yayılması", "İnsan ve Çevre", "Elektrik Devre Elemanları"],
-        "6": ["Güneş Sistemi ve Tutulmalar", "Vücudumuzdaki Sistemler", "Kuvvet ve Hareket", "Madde ve Isı", "Ses ve Özellikleri", "Sistemler ve Sağlığı", "Elektriğin İletimi"],
-        "7": ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
+        "5": ["Gökyüzündeki Komşularımız ve Biz", "Kuvveti Tanıyalım", "Canlıların Yapısına Yolculuk", "Işığın Dünyası", "Maddenin Doğası", "Yaşamımızdaki Elektrik", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
+        "6": ["Güneş Sistemi ve Tutulmalar", "Kuvvetin Etkisinde Hareket", "Canlılarda Sistemler", "Işığın Yansıması ve Renkler", "Maddenin Ayırt Edici Özellikleri", "Elektriğin İletimi ve Direnç", "Sürdürülebilir Yaşam ve Etkileşim"],
+        "7": ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Enerji"],
         "8": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç (Katı, Sıvı, Gaz)", "Madde ve Endüstri", "Basit Makineler", "Canlılar ve Enerji İlişkileri", "Elektrik Yükleri ve Elektrik Enerjisi"]
     };
     const defaultUnitName = (unitTitlesMap[grade] && unitTitlesMap[grade][parseInt(unitNum)-1]) || "Fen Bilimleri";
