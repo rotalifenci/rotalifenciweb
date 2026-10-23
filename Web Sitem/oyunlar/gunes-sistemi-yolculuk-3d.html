@@ -816,9 +816,9 @@
                 orbitalPeriod: "224,7 Dünya günü",
                 distanceKm: "108,2 milyon km (0,72 AU)",
                 lightTime: "6,0 dakika",
-                tiltDeg: 177.3,
+                tiltDeg: 2.64,
                 tempAvg: "465°C (En Sıcak!)",
-                retrograde: true, // Saat yönünde döner!
+                retrograde: true, // Sadece Venüs saat yönünde döner!
                 fact: "Güneş Sistemi'nin EN SICAK gezegenidir (~465°C). Kalın karbondioksit atmosferi devasa bir sera etkisi yaratır. Halk arasında 'Çoban Yıldızı' olarak bilinir. Diğer gezegenlerin aksine KENDİ EKSENİNDE TERS (DOĞUDAN BATIYA, SAAT YÖNÜNDE) DÖNER! Doğal uydusu ve halkası yoktur."
             },
             {
@@ -1625,7 +1625,7 @@
         function resetPlanetsToCircularOrbits() {
             planetGroups.forEach(p => {
                 p.pivot.position.set(0, 0, 0);
-                p.mesh.position.set(p.cinematicRadius, 0, 0);
+                p.mesh.position.set(Math.cos(p.currentAngle) * p.cinematicRadius, 0, -Math.sin(p.currentAngle) * p.cinematicRadius);
                 p.orbitLine.visible = isOrbitsVisible;
             });
         }
@@ -1822,11 +1822,17 @@
                 }
 
                 planetGroups.forEach((p, index) => {
+                    // Kendi ekseni etrafında dönme (Self-rotation):
+                    // Bütün gök cisimleri SAAT YÖNÜNÜN TERSİNE (pozitif), SADECE Venüs SAAT YÖNÜNDE (negatif) döner!
                     let rotSpeed = 0.02;
-                    if (p.data.id === 'jupiter') rotSpeed = 0.045;
-                    if (p.data.id === 'saturn') rotSpeed = 0.04;
-                    if (p.data.id === 'venus') rotSpeed = -0.004;
-                    if (p.data.id === 'mercury') rotSpeed = 0.005;
+                    if (p.data.id === 'mercury') rotSpeed = 0.008;
+                    else if (p.data.id === 'venus') rotSpeed = -0.015; // SADECE VENÜS: Saat yönünde (doğudan batıya ters) döner!
+                    else if (p.data.id === 'earth') rotSpeed = 0.022;
+                    else if (p.data.id === 'mars') rotSpeed = 0.020;
+                    else if (p.data.id === 'jupiter') rotSpeed = 0.045;
+                    else if (p.data.id === 'saturn') rotSpeed = 0.040;
+                    else if (p.data.id === 'uranus') rotSpeed = 0.025;
+                    else if (p.data.id === 'neptune') rotSpeed = 0.024;
 
                     p.mesh.rotation.y += rotSpeed * scaledDt * 60;
                     if (p.cloudMesh) p.cloudMesh.rotation.y += (rotSpeed * 1.15) * scaledDt * 60;
@@ -1835,11 +1841,13 @@
                                        [2, 3, 5, 9, 10].includes(currentSceneIndex);
 
                     if (shouldOrbit) {
+                        // Güneş etrafında dolanma (Orbiting):
+                        // Tüm gezegenler Güneş etrafında SAAT YÖNÜNÜN TERSİNE (batıdan doğuya) dolanır!
                         const orbitalSpeeds = [0.035, 0.024, 0.018, 0.012, 0.006, 0.004, 0.002, 0.0012];
                         p.currentAngle += orbitalSpeeds[index] * scaledDt * 60;
                         const r = p.cinematicRadius;
                         p.mesh.position.x = Math.cos(p.currentAngle) * r;
-                        p.mesh.position.z = Math.sin(p.currentAngle) * r;
+                        p.mesh.position.z = -Math.sin(p.currentAngle) * r;
                     }
                 });
 
