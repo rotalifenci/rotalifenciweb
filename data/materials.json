@@ -2669,30 +2669,6 @@
     "cover": "assets/ders-kitabi-5.jpg"
   },
   {
-    "id": "mat-1789315860991",
-    "grade": "5",
-    "category": "ders-notu",
-    "title": "5.Sınıf İşlenecek Konular",
-    "unit": "Ders Kitabı & Ünite PDF'leri",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "5.Sınıf İşlenecek Konular.jpg",
-    "fileUrl": "assets/5-sinif-islenecek-konular.jpg",
-    "format": "GÖRSEL",
-    "hasBlob": true,
-    "tags": [
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-09-27T17:06:04.560626+00:00",
-    "imageUrl": "assets/5-sinif-islenecek-konular.jpg",
-    "updatedAt": "2026-09-30T19:00:07.321+00:00",
-    "targetSection": "kitap",
-    "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
-    "isCloud": true,
-    "cover": "assets/5-sinif-islenecek-konular.jpg"
-  },
-  {
     "id": "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
     "grade": "5",
     "category": "ders-notu",
@@ -2718,6 +2694,30 @@
     "updatedAt": "2026-09-30T19:00:07.555+00:00",
     "isCloud": true,
     "cover": "assets/ilk-ders-notu.jpg"
+  },
+  {
+    "id": "mat-1789315860991",
+    "grade": "5",
+    "category": "ders-notu",
+    "title": "5.Sınıf İşlenecek Konular",
+    "unit": "Ders Kitabı & Ünite PDF'leri",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "5.Sınıf İşlenecek Konular.jpg",
+    "fileUrl": "assets/5-sinif-islenecek-konular.jpg",
+    "format": "GÖRSEL",
+    "hasBlob": true,
+    "tags": [
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T17:06:04.560626+00:00",
+    "imageUrl": "assets/5-sinif-islenecek-konular.jpg",
+    "updatedAt": "2026-09-30T19:00:07.321+00:00",
+    "targetSection": "kitap",
+    "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
+    "isCloud": true,
+    "cover": "assets/5-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-1789503112888",
