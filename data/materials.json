@@ -52,38 +52,6 @@
     "updatedAt": "2026-10-24T16:59:26.107Z"
   },
   {
-    "id": "mat-7-2-sunum-kuvvet-ve-enerji-3d",
-    "grade": "7",
-    "category": "ders-notu",
-    "targetSection": "2",
-    "title": "7. Sınıf 2. Ünite: Kuvvet ve Enerjiyi Keşfedelim (3D Akıllı Tahta & PDF Sunumu)",
-    "unit": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
-    "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu 48 slaytlık, fiziksel iş analizi, 20+ günlük yaşam örneği, enerji çeşitleri, korunum modelleri, interaktif LGS soruları ve PDF çıktı destekli akıllı tahta sunumu.",
-    "fileName": "7-sinif-2-unite-kuvvet-ve-enerji.html",
-    "fileUrl": "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html",
-    "imageUrl": "assets/kuvvet-laboratuvari-kapak.svg",
-    "kapakResmi": "assets/kuvvet-laboratuvari-kapak.svg",
-    "cover": "assets/kuvvet-laboratuvari-kapak.svg",
-    "format": "İNTERAKTİF SUNUM",
-    "hasBlob": false,
-    "tags": [
-      "7. sınıf",
-      "kuvvet ve enerji",
-      "iş",
-      "kinetik enerji",
-      "potansiyel enerji",
-      "enerji korunumu",
-      "maarif modeli",
-      "akıllı tahta",
-      "sunum",
-      "rotalı fenci"
-    ],
-    "visibility": "public",
-    "downloadCount": "48 Slayt",
-    "createdAt": "2026-10-24T16:21:48.359Z",
-    "updatedAt": "2026-10-24T16:21:48.359Z"
-  },
-  {
     "id": "mat-test-5-1-1792854826132",
     "grade": "5",
     "category": "soru-bankasi",
