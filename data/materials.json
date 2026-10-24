@@ -2541,11 +2541,11 @@
     "title": "7.Sınıf İşlenecek Konular",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "7.Sınıf İşlenecek Konular.jpg",
-    "fileUrl": "assets/7-sinif-islenecek-konular.jpg",
-    "imageUrl": "assets/7-sinif-islenecek-konular.jpg",
-    "kapakResmi": "assets/7-sinif-islenecek-konular.jpg",
-    "format": "GÖRSEL",
+    "fileName": "gsda.png",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879216634_gsda.png",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879212995_mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879212995_mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab_cover.jpg",
+    "format": "PNG",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -2556,9 +2556,9 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.642913+00:00",
-    "updatedAt": "2026-09-30T19:00:06.219+00:00",
+    "updatedAt": "2026-10-24T22:00:18.771Z",
     "isCloud": true,
-    "cover": "assets/7-sinif-islenecek-konular.jpg"
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879212995_mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab_cover.jpg"
   },
   {
     "id": "book-8",
@@ -2813,11 +2813,11 @@
     "title": "6.Sınıf İşlenecek Konular",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "sea.png",
-    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879099993_sea.png",
-    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879096785_mat-6-islenecek-konular_cover.jpg",
-    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879096785_mat-6-islenecek-konular_cover.jpg",
-    "format": "PNG",
+    "fileName": "6.Sınıf İşlenecek Konular.jpg",
+    "fileUrl": "assets/6-sinif-islenecek-konular.jpg",
+    "imageUrl": "assets/6-sinif-islenecek-konular.jpg",
+    "kapakResmi": "assets/6-sinif-islenecek-konular.jpg",
+    "format": "GÖRSEL",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -2828,9 +2828,9 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.000+00:00",
-    "updatedAt": "2026-10-24T21:58:21.612Z",
+    "updatedAt": "2026-09-30T19:00:08.500+00:00",
     "isCloud": true,
-    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879096785_mat-6-islenecek-konular_cover.jpg"
+    "cover": "assets/6-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
@@ -3172,5 +3172,36 @@
     "downloadCount": "📝 1 Soru",
     "createdAt": "2026-10-24T21:52:22.589Z",
     "updatedAt": "2026-10-24T21:52:22.589Z"
+  },
+  {
+    "id": "mat-test-5-1-1792878823122",
+    "grade": "5",
+    "category": "soru-bankasi",
+    "targetSection": "1",
+    "title": "Açık Uçlu Test Kontrolü 2",
+    "unit": "1. Ünite",
+    "desc": "5. Sınıf Fen Bilimleri 1. Ünite için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "fileName": "5-sinif-1-unite-acik-uclu-test-kontrolu-2.html",
+    "fileUrl": "testler/5-sinif-1-unite-acik-uclu-test-kontrolu-2.html",
+    "imageUrl": "assets/test-kapak-5.svg",
+    "kapakResmi": "assets/test-kapak-5.svg",
+    "cover": "assets/test-kapak-5.svg",
+    "format": "YAPRAK TEST",
+    "hasBlob": false,
+    "tags": [
+      "5. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 1 Soru",
+    "createdAt": "2026-10-24T21:53:43.122Z",
+    "updatedAt": "2026-10-24T21:53:43.122Z"
   }
 ]
