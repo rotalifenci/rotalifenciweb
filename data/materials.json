@@ -3110,5 +3110,36 @@
     "createdAt": "2026-10-24T16:01:53.769Z",
     "updatedAt": "2026-10-24T16:40:49.982Z",
     "cover": "assets/materials/1792860032246_1een5_rotali_fenci_sunum_6_sinif_2_unite_cover.jpg"
+  },
+  {
+    "id": "mat-test-5-1-1792874860859",
+    "grade": "5",
+    "category": "soru-bankasi",
+    "targetSection": "1",
+    "title": "5. Sınıf Test Yayını Deneme",
+    "unit": "1. Ünite: Güneş, Dünya ve Ay",
+    "desc": "MEB uyumlu yaprak test",
+    "fileName": "5-sinif-1-unite-test-yayini-deneme.html",
+    "fileUrl": "testler/5-sinif-1-unite-test-yayini-deneme.html",
+    "imageUrl": "assets/test-kapak-5.svg",
+    "kapakResmi": "assets/test-kapak-5.svg",
+    "cover": "assets/test-kapak-5.svg",
+    "format": "YAPRAK TEST",
+    "hasBlob": false,
+    "tags": [
+      "5. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 1 Soru",
+    "createdAt": "2026-10-24T20:47:40.860Z",
+    "updatedAt": "2026-10-24T20:47:40.862Z"
   }
 ]
