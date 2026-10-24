@@ -52,6 +52,32 @@
     "updatedAt": "2026-10-24T16:59:26.107Z"
   },
   {
+    "id": "mat-96a2408f-7294-4b5a-a3e0-7b81a4337015",
+    "grade": "5",
+    "category": "ders-notu",
+    "targetSection": "2",
+    "title": "2. ÜNİTE: KUVVETİ TANIYALIM",
+    "unit": "2. ÜNİTE: KUVVETİ TANIYALIM",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Rotali_Fenci_Sunum_Modu_5_Sinif_2_Unite.pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite.pdf",
+    "imageUrl": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
+    "kapakResmi": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
+    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-10-24T17:52:37.640Z",
+    "updatedAt": "2026-10-24T18:14:29.338Z"
+  },
+  {
     "id": "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "grade": "7",
     "category": "ders-notu",

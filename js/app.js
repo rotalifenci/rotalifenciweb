@@ -1140,10 +1140,10 @@ function saveCustomMaterialsSafe(list) {
             if (copy.fileUrl && copy.fileUrl.startsWith("data:") && copy.fileUrl.length > 60000) {
                 copy.fileUrl = "";
             }
-            if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 60000) {
+            if (copy.imageUrl && copy.imageUrl.startsWith("data:") && copy.imageUrl.length > 400000) {
                 copy.imageUrl = "";
             }
-            if (copy.kapakResmi && copy.kapakResmi.startsWith("data:") && copy.kapakResmi.length > 60000) {
+            if (copy.kapakResmi && copy.kapakResmi.startsWith("data:") && copy.kapakResmi.length > 400000) {
                 copy.kapakResmi = copy.imageUrl && !copy.imageUrl.startsWith("data:") ? copy.imageUrl : "";
             }
             return copy;
@@ -1733,7 +1733,7 @@ function resolveMaterialCover(item) {
     // 🌟 PDF Materyallerinde 1. Sayfa Kapağını Her Zaman Sentetik SVG'nin Önüne Al
     if (rawFile && (rawFile.toLowerCase().endsWith(".pdf") || rawFile.includes(".pdf") || format.includes("pdf"))) {
         for (const candidate of [item.cover, item.kapakResmi, item.imageUrl]) {
-            if (candidate && typeof candidate === "string" && !candidate.startsWith("data:image/svg") && (candidate.endsWith(".jpg") || candidate.endsWith(".png") || candidate.endsWith(".webp") || candidate.includes("_cover.jpg"))) {
+            if (candidate && typeof candidate === "string" && !candidate.startsWith("data:image/svg") && (candidate.startsWith("data:image/") || candidate.startsWith("http") || candidate.endsWith(".jpg") || candidate.endsWith(".png") || candidate.endsWith(".webp") || candidate.includes("_cover.jpg"))) {
                 return candidate;
             }
         }
@@ -17874,6 +17874,34 @@ async function handleAdvMaterialSubmit(e) {
         let customList = getCustomMaterialsList();
 
         const materialId = editingMaterialId || generateUUID("mat-");
+        // Eger kapak bir DataURL (Base64) ise, kalici bir dosya olarak GitHub/Vercel Storage'a yukle
+        if (chosenCover && chosenCover.startsWith("data:image/") && !chosenCover.startsWith("data:image/svg")) {
+            try {
+                const syncApiUrl = (typeof window !== "undefined" && window.location && typeof window.location.hostname === "string" && window.location.hostname.includes("vercel.app")) 
+                    ? "/api/sync" 
+                    : "https://rotalifenci.vercel.app/api/sync";
+                
+                const upRes = await fetch(syncApiUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        action: "upload_file",
+                        folder: "materials",
+                        fileName: `${materialId}_cover.jpg`,
+                        base64Data: chosenCover
+                    })
+                });
+                if (upRes.ok) {
+                    const upData = await upRes.json();
+                    if (upData && upData.publicUrl) {
+                        chosenCover = upData.publicUrl;
+                        console.log("✔ Kapak görseli kalıcı GitHub CDN deposuna yüklendi:", chosenCover);
+                    }
+                }
+            } catch(coverUpErr) {
+                console.warn("Cover image upload warning:", coverUpErr);
+            }
+        }
         let fileFormat = "PDF";
         let finalFileName = `${title}.pdf`;
         let externalUrl = linkVal || "";
