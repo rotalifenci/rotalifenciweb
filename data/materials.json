@@ -1,5 +1,30 @@
 [
   {
+    "id": "mat-3a14e0b7-7a37-40fd-b791-541992b466f8",
+    "grade": "5",
+    "category": "ders-notu",
+    "targetSection": "1",
+    "title": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+    "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Rotali_Fenci_5_Sinif_1_Unite.pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite.pdf",
+    "imageUrl": "",
+    "kapakResmi": "",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-10-24T16:59:26.107Z",
+    "updatedAt": "2026-10-24T16:59:26.107Z"
+  },
+  {
     "id": "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "grade": "7",
     "category": "ders-notu",
