@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>5. Sınıf Açık Uçlu Sınav Denemesi | Rotalı Fenci</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --correct-bg: #ecfdf5;
+      --correct-border: #10b981;
+      --wrong-bg: #fef2f2;
+      --wrong-border: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 14px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px 16px;
+      min-height: 100vh;
+    }
+
+    .test-wrapper {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+
+    /* Üst Aksiyon / Kontrol Barı */
+    .top-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 14px 20px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      margin-bottom: 20px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .top-actions-bar * {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 7px 14px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      transition: all 0.2s;
+    }
+
+    .nav-btn:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    .action-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-outline {
+      background: #ffffff;
+      color: #334155;
+      border: 1.5px solid #cbd5e1;
+    }
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    .btn-success {
+      background: #10b981;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+    }
+    .btn-success:hover {
+      background: #059669;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: #4f46e5;
+      color: #ffffff;
+      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    }
+    .btn-primary:hover {
+      background: #4338ca;
+      transform: translateY(-1px);
+    }
+
+    /* Yaprak Test Kağıdı */
+    .sheet-paper {
+      background: #ffffff;
+      border-radius: 6px;
+      border: 1.5px solid #000000;
+      padding: 28px 32px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      position: relative;
+    }
+
+    /* MEB Sınav Başlığı */
+    .sheet-header {
+      border: 1.5px solid #000000;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      background: #ffffff;
+    }
+
+    .sheet-header-top {
+      text-align: center;
+      border-bottom: 1.5px solid #000000;
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+
+    .ministry-title {
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #000000;
+      margin-bottom: 2px;
+    }
+
+    .main-test-title {
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      color: #000000;
+    }
+
+    .student-info-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 10px;
+      font-size: 11.5px;
+      border-bottom: 1px dashed #000000;
+      padding-bottom: 6px;
+      margin-bottom: 6px;
+    }
+
+    .sheet-meta-footer {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: bold;
+      color: #334155;
+    }
+
+    /* Soru Blokları */
+    .questions-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .question-block {
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 14px 18px;
+      background: #ffffff;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+
+    .question-block:hover {
+      border-color: #94a3b8;
+    }
+
+    .q-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .q-badge {
+      display: inline-block;
+      font-weight: 900;
+      font-size: 14.5px;
+      color: #000000;
+      border-bottom: 2px solid #000000;
+      padding-bottom: 1px;
+    }
+
+    .q-diff-tag {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+    .q-diff-kolay { background: #dcfce7; color: #15803d; }
+    .q-diff-orta { background: #e0f2fe; color: #0369a1; }
+    .q-diff-zor { background: #fee2e2; color: #b91c1c; }
+
+    /* Görsel Kutusu */
+    .question-visual-box {
+      margin: 10px auto 14px auto;
+      max-width: 520px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 8px;
+    }
+
+    .question-visual-box svg {
+      width: 100%;
+      height: auto;
+      max-height: 220px;
+      display: block;
+    }
+
+    .q-text {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: #000000;
+      margin-bottom: 12px;
+      line-height: 1.55;
+    }
+
+    .q-text strong {
+      font-weight: 900;
+      text-decoration: underline;
+    }
+
+    /* Şıklar */
+    .options-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .opt-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #ffffff;
+      font-size: 13px;
+    }
+
+    .opt-label:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .opt-label input[type="radio"] {
+      display: none;
+    }
+
+    .opt-circle {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 1.5px solid #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11.5px;
+      font-weight: 900;
+      color: #000000;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+
+    .opt-label.selected {
+      background: #f1f5f9;
+      border-color: #475569;
+    }
+
+    .opt-label.selected .opt-circle {
+      background: #0f172a;
+      color: #ffffff;
+    }
+
+    .opt-label.is-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct-border) !important;
+      font-weight: bold;
+    }
+
+    .opt-label.is-correct .opt-circle {
+      background: #10b981 !important;
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+    }
+
+    .opt-label.is-wrong-selected {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+    }
+
+    .opt-label.is-wrong-selected .opt-circle {
+      background: #ef4444 !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
+    }
+
+    /* Çözüm Kutusu */
+    .solution-box {
+      margin-top: 12px;
+      padding: 10px 14px;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 0 6px 6px 0;
+      font-size: 12.5px;
+      color: #1e3a8a;
+    }
+
+    .sol-title {
+      font-weight: 800;
+      margin-bottom: 2px;
+    }
+
+    /* Cevap Anahtarı Şeridi */
+    .answer-key-section {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 2px dashed #000000;
+      page-break-inside: avoid;
+    }
+
+    .ak-title {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 10px;
+    }
+
+    .ak-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+    }
+
+    .ak-cell {
+      border: 1px solid #000000;
+      display: flex;
+      flex-direction: column;
+      width: 32px;
+      text-align: center;
+    }
+
+    .ak-q {
+      background: #f1f5f9;
+      font-size: 10px;
+      font-weight: bold;
+      border-bottom: 1px solid #000000;
+      padding: 1px 0;
+    }
+
+    .ak-a {
+      font-size: 12px;
+      font-weight: 900;
+      padding: 2px 0;
+    }
+
+    /* Sayfa Alt Bilgisi */
+    .sheet-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 24px;
+      padding-top: 8px;
+      border-top: 1px solid #cbd5e1;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .sheet-footer strong {
+      color: #000000;
+    }
+
+    /* Sonuç Kartı */
+    .result-card {
+      background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%);
+      color: #ffffff;
+      padding: 24px;
+      border-radius: var(--radius);
+      margin-top: 24px;
+      text-align: center;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .result-card * {
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .score-badge {
+      font-size: 40px;
+      font-weight: 900;
+      color: #fbbf24;
+      margin: 8px 0;
+    }
+
+    /* Yazdırma ve PDF (@media print) Stilleri */
+    @page {
+      size: A4 portrait;
+      margin: 10mm 15mm;
+    }
+
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+
+      .no-print {
+        display: none !important;
+      }
+
+      .test-wrapper {
+        max-width: 100% !important;
+        margin: 0 !important;
+      }
+
+      .sheet-paper {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+
+      .question-block {
+        break-inside: avoid !important;
+        page-break-inside: avoid !important;
+        border: 1px solid #cbd5e1 !important;
+        margin-bottom: 12px !important;
+      }
+
+      .opt-label {
+        break-inside: avoid !important;
+      }
+
+      .solution-box {
+        break-inside: avoid !important;
+      }
+
+      .answer-key-section {
+        display: block !important;
+        break-inside: avoid !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="test-wrapper">
+    
+    <!-- Üst Kontrol Barı -->
+    <div class="top-actions-bar no-print">
+      <div class="nav-links">
+        <a href="https://rotalifenci.vercel.app/" class="nav-btn">
+          <i class="fa-solid fa-house"></i> Rotalı Fenci Portalı
+        </a>
+        <a href="https://rotalifenci.vercel.app/#grade/grade-5/soru-bankasi" class="nav-btn">
+          <span>📚</span> 5. Sınıf Soru Bankası
+        </a>
+      </div>
+
+      <div class="action-group">
+        <button type="button" id="toggleTeacherModeBtn" class="btn btn-outline" title="Öğretmen Modu: Tüm şıkları ve ayrıntılı çözümleri anında gösterir">
+          <i class="fa-solid fa-eye"></i> <span>Öğretmen Modu</span>
+        </button>
+        <button type="button" id="finishTestBtn" class="btn btn-success" title="İşaretlediğiniz şıkları kontrol edip puanınızı hesaplar">
+          <i class="fa-solid fa-circle-check"></i> <span>Testi Bitir & Puanla</span>
+        </button>
+        <button type="button" onclick="window.print()" class="btn btn-primary" title="A4 formatında yazdır veya PDF olarak kaydet">
+          <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Yaprak Test Kağıdı -->
+    <div class="sheet-paper" id="testSheet">
+      
+      <!-- MEB Resmi Sınav Başlığı -->
+      <div class="sheet-header">
+        <div class="sheet-header-top">
+          <div class="ministry-title">T.C. MİLLİ EĞİTİM BAKANLIĞI</div>
+          <div class="main-test-title">5. SINIF AÇIK UÇLU SINAV DENEMESI</div>
+        </div>
+
+        <div class="student-info-grid">
+          <div><strong>Adı Soyadı:</strong> ........................................................</div>
+          <div><strong>Sınıf / Şube:</strong> 5 / .........</div>
+          <div><strong>Tarih:</strong> ..... / ..... / 2026</div>
+          <div><strong>Puan:</strong> <span id="headerScoreBox">...............</span></div>
+        </div>
+
+        <div class="sheet-meta-footer">
+          <span><strong>Ünite:</strong> 1. Ünite: Güneş, Dünya ve Ay</span>
+          <span><strong>Soru Sayısı:</strong> 1 Soru</span>
+          <span><strong>Süre:</strong> 10 Dakika</span>
+        </div>
+      </div>
+
+      <!-- Sorular Listesi -->
+      <div class="questions-list">
+        
+      <div class="question-block" data-qid="1" data-correct="KÜREYE BENZER.">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 1</span>
+          
+        </div>
+        
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş&#039;in geometrik şekli hangi üç boyutlu cisimle benzerdir? Nedenini açıklayınız.</div>
+          <div class="options-group">
+            
+        <label class="opt-label" data-opt="A">
+          <input type="radio" name="q1" value="A">
+          <span class="opt-circle">A</span>
+          <span class="opt-text"></span>
+        </label>
+        <label class="opt-label" data-opt="B">
+          <input type="radio" name="q1" value="B">
+          <span class="opt-circle">B</span>
+          <span class="opt-text"></span>
+        </label>
+        <label class="opt-label" data-opt="C">
+          <input type="radio" name="q1" value="C">
+          <span class="opt-circle">C</span>
+          <span class="opt-text"></span>
+        </label>
+        <label class="opt-label" data-opt="D">
+          <input type="radio" name="q1" value="D">
+          <span class="opt-circle">D</span>
+          <span class="opt-text"></span>
+        </label>
+          </div>
+        </div>
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Çözüm ve Açıklama:</div>
+          <div class="sol-text"><strong>Doğru Seçenek: [KÜREYE BENZER.]</strong> — Güneş devasa kütleçekimi etkisiyle hidrojen ve helyum gazlarının her yönden merkeze çekilmesiyle küresel bir geometri kazanmıştır.</div>
+        </div>
+      </div>
+      </div>
+
+      <!-- Cevap ve Kodlama Anahtarı (Son Kısım) -->
+      <div class="answer-key-section" id="answerKeySection" style="display: none;">
+        <div class="ak-title">🎯 CEVAP VE KODLAMA ANAHTARI</div>
+        <div class="ak-grid">
+          
+      <div class="ak-cell">
+        <span class="ak-q">1</span>
+        <span class="ak-a">KÜREYE BENZER.</span>
+      </div>
+        </div>
+      </div>
+
+      <!-- Sayfa Alt Bilgisi -->
+      <div class="sheet-footer">
+        <div><strong>ROTALI FENCİ</strong> — Dijital Fen Bilimleri Eğitim Portalı</div>
+        <div>rotalifenci.vercel.app</div>
+      </div>
+
+    </div>
+
+    <!-- Sonuç Değerlendirme Kartı (Test Tamamlandığında Çıkar) -->
+    <div class="result-card no-print" id="resultCard">
+      <div style="font-size: 14px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Sınav Tamamlandı</div>
+      <div class="score-badge" id="scoreDisplay">0 Puan</div>
+      <p id="scoreDetails" style="font-size: 15px; color: #cbd5e1; margin-bottom: 16px;"></p>
+      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+        <button type="button" onclick="location.reload()" class="btn btn-outline" style="background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2);">
+          <i class="fa-solid fa-rotate-right"></i> Testi Tekrar Çöz
+        </button>
+        <button type="button" onclick="window.print()" class="btn btn-primary">
+          <i class="fa-solid fa-print"></i> Testi Yazdır / PDF Al
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      let isTeacherMode = false;
+      const totalQuestions = 1;
+      const testSheet = document.getElementById('testSheet');
+      const toggleTeacherModeBtn = document.getElementById('toggleTeacherModeBtn');
+      const finishTestBtn = document.getElementById('finishTestBtn');
+      const answerKeySection = document.getElementById('answerKeySection');
+      const resultCard = document.getElementById('resultCard');
+      const scoreDisplay = document.getElementById('scoreDisplay');
+      const scoreDetails = document.getElementById('scoreDetails');
+      const headerScoreBox = document.getElementById('headerScoreBox');
+
+      // Şık Seçimi (Öğrenci Tıklaması)
+      document.querySelectorAll('.opt-label').forEach(label => {
+        label.addEventListener('click', function(e) {
+          if (isTeacherMode) return;
+          const block = this.closest('.question-block');
+          block.querySelectorAll('.opt-label').forEach(l => l.classList.remove('selected'));
+          this.classList.add('selected');
+          const radio = this.querySelector('input[type="radio"]');
+          if (radio) radio.checked = true;
+        });
+      });
+
+      // Öğretmen Modu Aç/Kapat
+      if (toggleTeacherModeBtn) {
+        toggleTeacherModeBtn.addEventListener('click', () => {
+          isTeacherMode = !isTeacherMode;
+          if (isTeacherMode) {
+            answerKeySection.style.display = 'block';
+            document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'block');
+            document.querySelectorAll('.question-block').forEach(qb => {
+              const correctOpt = qb.getAttribute('data-correct');
+              const targetLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
+              if (targetLabel) targetLabel.classList.add('is-correct');
+            });
+            toggleTeacherModeBtn.innerHTML = '<i class="fa-solid fa-lock"></i> <span>Öğretmen Modunu Kapat</span>';
+            toggleTeacherModeBtn.classList.add('btn-primary');
+            toggleTeacherModeBtn.classList.remove('btn-outline');
+          } else {
+            answerKeySection.style.display = 'none';
+            document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'none');
+            document.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
+            toggleTeacherModeBtn.innerHTML = '<i class="fa-solid fa-eye"></i> <span>Öğretmen Modu</span>';
+            toggleTeacherModeBtn.classList.add('btn-outline');
+            toggleTeacherModeBtn.classList.remove('btn-primary');
+          }
+        });
+      }
+
+      // Testi Bitir & Puanla
+      if (finishTestBtn) {
+        finishTestBtn.addEventListener('click', () => {
+          let correctCount = 0;
+          let answeredCount = 0;
+
+          document.querySelectorAll('.question-block').forEach(qb => {
+            const correctOpt = qb.getAttribute('data-correct');
+            const selectedLabel = qb.querySelector('.opt-label.selected');
+            
+            qb.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
+
+            if (selectedLabel) {
+              answeredCount++;
+              const userOpt = selectedLabel.getAttribute('data-opt');
+              if (userOpt === correctOpt) {
+                correctCount++;
+                selectedLabel.classList.add('is-correct');
+              } else {
+                selectedLabel.classList.add('is-wrong-selected');
+                const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
+                if (correctLabel) correctLabel.classList.add('is-correct');
+              }
+            } else {
+              const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
+              if (correctLabel) correctLabel.classList.add('is-correct');
+            }
+
+            const solBox = qb.querySelector('.solution-box');
+            if (solBox) solBox.style.display = 'block';
+          });
+
+          answerKeySection.style.display = 'block';
+
+          const score = Math.round((correctCount / totalQuestions) * 100);
+          scoreDisplay.textContent = score + ' Puan';
+          const emptyCount = totalQuestions - answeredCount;
+          const wrongCount = answeredCount - correctCount;
+          scoreDetails.textContent = totalQuestions + ' sorudan ' + correctCount + ' doğru, ' + wrongCount + ' yanlış, ' + emptyCount + ' boş.';
+          headerScoreBox.textContent = score + ' / 100';
+
+          resultCard.style.display = 'block';
+          resultCard.scrollIntoView({ behavior: 'smooth' });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
