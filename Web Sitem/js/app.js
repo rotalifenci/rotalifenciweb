@@ -31,7 +31,7 @@ let ROTALI_MATERIALS_CACHE = null;
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
 const PROTECTED_MATERIAL_IDS = new Set([
     "mat-5-1-sim-dunyanin-5-katmani", "mat-5-1-oyun-gunesi-kesfediyorum-3d", "mat-5-1-oyun-ayin-evreleri-3d", "mat-5-1-oyun-kozmik-kasif-3d", "mat-5-1-oyun-kozmik-kosu-3d",
-     "mat-6-2-sim-kuvvet-laboratuvari", "mat-7-2-sim-is-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
+     "mat-6-2-sim-kuvvet-laboratuvari", "mat-7-1-sim-yildiz-laboratuvari", "mat-7-2-sim-is-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-uzay-ekspresi",
@@ -1843,6 +1843,10 @@ function getMaterialActionUI(item, fallbackCat = "") {
     );
 
     // 0. İş Laboratuvarı & Kuvvet Laboratuvarı 3D Simülasyon Butonları
+    const isYildizLab = title.includes("yıldız laboratuvarı") || title.includes("yildiz laboratuvari") || file.includes("yildiz-laboratuvari") || url.includes("yildiz-laboratuvari") || (item && item.id === "mat-7-1-sim-yildiz-laboratuvari");
+    if (isYildizLab) {
+        return { text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-star", bg: "bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:to-purple-700 shadow-indigo-500/30" };
+    }
     const isIsLab = title.includes("iş laboratuvarı") || title.includes("is laboratuvari") || file.includes("is-laboratuvari") || url.includes("is-laboratuvari") || (item && item.id === "mat-7-2-sim-is-laboratuvari");
     if (isIsLab) {
         return { text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-cube", bg: "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-700 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/30" };
@@ -4963,6 +4967,17 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "7": {
             "1": [
                 {
+                    id: "mat-7-1-sim-yildiz-laboratuvari",
+                    title: "Yıldız Laboratuvarı – Yıldızların Yaşam Döngüsü ve Uzay Simülatörü 3D",
+                    icon: "fa-solid fa-star",
+                    desc: "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D uzay laboratuvarı! Yıldızların yaşam döngüsü, Renk-Sıcaklık ilişkisi, bulutsular, takımyıldızları ve Kutup Yıldızı bulucu.",
+                    type: "3D Uzay Laboratuvarı",
+                    format: "3D SİMÜLASYON",
+                    badge: "🌟 1. Ünite Başyapıtı",
+                    fileUrl: "oyunlar/yildiz-laboratuvari.html",
+                    kapakResmi: "assets/yildiz-laboratuvari-kapak.svg"
+                },
+                {
                     id: "builtin-oyun-7-uzaydan-kacis",
                     title: "7. Sınıf Uzaydan Kaçış: Gizemli İstasyon (3D)",
                     icon: "fa-solid fa-satellite",
@@ -5208,6 +5223,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             const isKuvvetLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("kuvvet-laboratuvari")) ||
                                                 (item.title && (item.title.toLowerCase().includes("kuvvet laboratuvarı") || item.title.toLowerCase().includes("kuvvet laboratuvari"))) ||
                                                 (item.id && String(item.id).includes("kuvvet-laboratuvari"));
+                                            const isYildizLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("yildiz-laboratuvari")) ||
+                                                (item.title && (item.title.toLowerCase().includes("yıldız laboratuvarı") || item.title.toLowerCase().includes("yildiz laboratuvari"))) ||
+                                                (item.id && String(item.id).includes("yildiz-laboratuvari"));
                                             const isIsLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("is-laboratuvari")) ||
                                                 (item.title && (item.title.toLowerCase().includes("iş laboratuvarı") || item.title.toLowerCase().includes("is laboratuvari") || item.title.toLowerCase().includes("iş var mı") || item.title.toLowerCase().includes("is var mi"))) ||
                                                 (item.id && String(item.id).includes("is-laboratuvari"));
@@ -5252,6 +5270,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 actionCall = `openInteractiveGameModal('oyun-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi')`;
                                             } else if (isKuvvetLaboratuvariItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/kuvvet-laboratuvari.html', 'Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!')`;
+                                            } else if (isYildizLaboratuvariItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/yildiz-laboratuvari.html', 'Yıldız Laboratuvarı – Yıldızların Yaşam Döngüsü ve Uzay Simülatörü 3D')`;
                                             } else if (isIsLaboratuvariItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/is-laboratuvari.html', 'İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli 3D Deney)')`;
                                             } else if (isGunesSistemiYolculukItem) {
@@ -5279,6 +5299,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 shadow-amber-500/30", text: "Trene Bin (3D)", icon: "fa-solid fa-train-subway" };
                                             } else if (isKuvvetLaboratuvariItem) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-600 hover:to-blue-700 shadow-cyan-500/30", text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-atom" };
+                                            } else if (isYildizLaboratuvariItem) {
+                                                itemActionUI = { bg: "bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-600 hover:from-indigo-600 hover:to-purple-700 shadow-indigo-500/30", text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-star" };
                                             } else if (isIsLaboratuvariItem) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-700 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/30", text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-cube" };
                                             } else if (isGunesSistemiYolculukItem) {
@@ -15299,6 +15321,40 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
         return;
     }
 
+    // 🌟 7. Sınıf Yıldız Laboratuvarı – Yıldızların Yaşam Döngüsü ve Uzay Simülatörü 3D
+    if (str.includes("yildiz-laboratuvari") || str.includes("yıldız laboratuvarı") || str.includes("yildiz laboratuvari") || titleStr.includes("yıldız laboratuvarı") || titleStr.includes("yildiz laboratuvari") || resolvedKey === "mat-7-1-sim-yildiz-laboratuvari" || resolvedKey === "yildiz-laboratuvari") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-indigo-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-star"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-amber-300">🌟 Yıldız Laboratuvarı – Yıldızların Yaşam Döngüsü ve Uzay Simülatörü</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 7. Sınıf 1. Ünite: Uzay Çağı • Maarif Modeli</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/yildiz-laboratuvari.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-indigo-500 hover:text-white text-slate-200 rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/yildiz-laboratuvari.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
     // 🧪 7. Sınıf İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli 3D Deney)
     if (str.includes("is-laboratuvari") || str.includes("iş laboratuvarı") || str.includes("is laboratuvari") || str.includes("iş var mı") || str.includes("is var mi") || titleStr.includes("iş laboratuvarı") || titleStr.includes("is laboratuvari") || resolvedKey === "mat-7-2-sim-is-laboratuvari" || resolvedKey === "is-laboratuvari") {
         modal.innerHTML = `
@@ -15926,6 +15982,10 @@ let currentSimulationState = {
 };
 
 function openInteractiveSimulationModal(targetUrl, title = "Fen Laboratuvarı Simülasyonu", grade = "5", id = "") {
+    if (targetUrl && (targetUrl.includes("yildiz-laboratuvari") || title.includes("Yıldız Laboratuvarı") || title.includes("Yıldızların Yaşam"))) {
+        openInteractiveGameModal("oyunlar/yildiz-laboratuvari.html", "Yıldız Laboratuvarı – Yıldızların Yaşam Döngüsü ve Uzay Simülatörü 3D");
+        return;
+    }
     if (targetUrl && (targetUrl.includes("is-laboratuvari") || title.includes("İş Laboratuvarı") || title.includes("İş Var mı"))) {
         openInteractiveGameModal("oyunlar/is-laboratuvari.html", "İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli 3D Deney)");
         return;

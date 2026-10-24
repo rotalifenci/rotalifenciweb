@@ -45,6 +45,7 @@ jsFiles.forEach(file => {
 // HTML dosyalarındaki <script> blokları
 const htmlFiles = [
     'index.html',
+    'oyunlar/yildiz-laboratuvari.html',
     'oyunlar/is-laboratuvari.html',
     'oyunlar/kuvvet-laboratuvari.html',
     'oyunlar/gunes-sistemi-yolculuk-3d.html',
@@ -180,6 +181,7 @@ console.log('\n--- 4. OYUN & SİMÜLASYON DİSPATCH KONTROLÜ ---');
 
 const criticalSims = [
     { id: 'mat-6-2-sim-kuvvet-laboratuvari', name: 'Kuvvet Laboratuvarı (6. Sınıf)' },
+    { id: 'mat-7-1-sim-yildiz-laboratuvari', name: 'Yıldız Laboratuvarı (7. Sınıf)' },
     { id: 'mat-7-2-sim-is-laboratuvari', name: 'İş Laboratuvarı (7. Sınıf)' },
     { id: 'mat-6-1-oyun-gunes-sistemi-yolculuk-3d', name: 'Güneş Sisteminde Yolculuk (6. Sınıf)' },
     { id: 'mat-apollo11-aya-inis-3d', name: 'Ay\'a İniş 3D (5. Sınıf)' }
