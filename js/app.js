@@ -1,3 +1,26 @@
+// 🖼️ Materyal Kapak Görselini Tam Ekran Yatay Görüntüleyici
+function openMaterialCoverModal(itemId) {
+    let cover = "assets/kapak-5.jpg";
+    let title = "Materyal Kapağı";
+    if (typeof getCustomMaterialsList === "function") {
+        const customList = getCustomMaterialsList();
+        const found = customList.find(m => m && m.id === itemId);
+        if (found) {
+            cover = (typeof resolveMaterialCover === "function" ? resolveMaterialCover(found) : "") || found.cover || found.kapakResmi || found.imageUrl || cover;
+            title = found.title || title;
+        }
+    }
+    if (itemId && itemId.startsWith("book-")) {
+        const g = itemId.replace("book-", "");
+        cover = "assets/kapak-" + g + ".jpg";
+        title = g + ". Sınıf Fen Bilimleri MEB Ders Kitabı";
+    }
+    if (typeof openInPageDocumentModal === "function") {
+        openInPageDocumentModal(cover, title, title + ".jpg", true);
+    }
+}
+window.openMaterialCoverModal = openMaterialCoverModal;
+
 
 // 🌟 GÜVENLİ VE BENZERSİZ KİMLİK (UUID v4) MOTORU
 function generateUUID(prefix = "mat-") {
@@ -1993,13 +2016,17 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                 </div>
 
                                 <!-- Başlık -->
-                                <h4 class="text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
-                                    ${item.title}
+                                <h4 class="uppercase tracking-tight text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
+                                    ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                 </h4>
 
                                 <!-- Görsel: Mobilde taşmayı engelleyen 'aspect-ratio' kullanımı -->
-                                <div class="relative w-full aspect-[4/3] max-h-56 sm:max-h-64 bg-slate-100 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/60 flex items-center justify-center cursor-pointer" onclick="openOrDownloadMaterial('${item.id}')">
-                                    <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="w-full h-full object-contain p-2" loading="lazy" />
+                                <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openMaterialCoverModal('${item.id}')" title="Kapağı Tam Ekran Yatay Görüntüle">
+                                    <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2.5">
+                                                            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-expand text-[10px]"></i> Tam Ekran Gör</span>
+                                                            <span class="text-[10px] font-bold text-slate-300 drop-shadow">Yatay Kapak</span>
+                                                        </div>
                                 </div>
 
                                 <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
@@ -2628,9 +2655,9 @@ function renderHomeRecentMaterialsSection() {
                             </div>
 
                             <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
-                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2">${item.title}</h4>
+                            <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2 uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h4>
                             <!-- Görsel Kapak Kutusu -->
-                            <div class="mat-preview-box relative w-full h-52 sm:h-60 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
+                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
                                 <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                 <div class="absolute bottom-2.5 right-2.5">
                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -2792,12 +2819,12 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                         <div class="inline-block px-2.5 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider mb-2">
                                             ${item.format || 'FEN MATERYALİ'}
                                         </div>
-                                        <h3 class="text-base font-black text-slate-900 leading-snug group-hover:text-red-600 transition-colors mb-2 line-clamp-2">
-                                            ${item.title}
+                                        <h3 class="text-base font-black text-slate-900 leading-snug group-hover:text-red-600 transition-colors mb-2 line-clamp-2 uppercase tracking-tight">
+                                            ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                         </h3>
 
                                         <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
-                                        <div class="mat-preview-box relative w-full h-64 sm:h-72 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
+                                        <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
                                             <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             <div class="absolute bottom-2.5 right-2.5">
                                                 <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-red-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -4531,11 +4558,15 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             </span>
                                             <span class="text-[11px] font-bold text-slate-400">${badgeSub}</span>
                                         </div>
-                                        <h4 class="text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
-                                            ${item.title}
+                                        <h4 class="uppercase tracking-tight text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
+                                            ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                         </h4>
-                                        <div class="relative w-full aspect-[4/3] max-h-56 bg-slate-100 rounded-xl overflow-hidden mb-3 border border-slate-200 flex items-center justify-center cursor-pointer" onclick="${openFunc}">
-                                            <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-full h-full object-contain p-2" loading="lazy" />
+                                        <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-xl overflow-hidden mb-3 border border-slate-800 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openMaterialCoverModal('${item.id}')" title="Kapağı Tam Ekran Yatay Görüntüle">
+                                            <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2.5">
+                                                <span class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-expand text-[10px]"></i> Tam Ekran Gör</span>
+                                                <span class="text-[10px] font-bold text-slate-300 drop-shadow">Yatay Kapak</span>
+                                            </div>
                                         </div>
                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
                                             ${item.desc || (isMainBook ? 'Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.' : 'Ders kitabı eki ve bölüm dokümanı.')}
@@ -4651,13 +4682,17 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         </div>
 
                                                         <!-- Başlık -->
-                                                        <h4 class="text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
-                                                            ${item.title}
+                                                        <h4 class="uppercase tracking-tight text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
+                                                            ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                                         </h4>
 
                                                         <!-- Görsel: Mobilde taşmayı engelleyen 'aspect-ratio' kullanımı -->
-                                                        <div class="relative w-full aspect-[4/3] max-h-56 sm:max-h-64 bg-slate-100 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/60 flex items-center justify-center cursor-pointer" onclick="openOrDownloadMaterial('${item.id}')">
-                                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full object-contain p-2" loading="lazy" />
+                                                        <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openMaterialCoverModal('${item.id}')" title="Kapağı Tam Ekran Yatay Görüntüle">
+                                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2.5">
+                                                            <span class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-expand text-[10px]"></i> Tam Ekran Gör</span>
+                                                            <span class="text-[10px] font-bold text-slate-300 drop-shadow">Yatay Kapak</span>
+                                                        </div>
                                                         </div>
 
                                                         <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
@@ -4746,9 +4781,9 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || item.badge || 'Deney Föyü'}</span>
                                                 <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'İnteraktif'}</span>
                                             </div>
-                                            <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors">${item.title}</h5>
+                                            <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h5>
                                             <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Materyali Açar) -->
-                                            <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')">
+                                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')">
                                                 <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                 <div class="absolute bottom-2.5 right-2.5">
                                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -5327,11 +5362,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                         </span>
                                                         <span class="text-[11px] font-bold text-slate-400">${isCustom ? 'Özel İçerik' : 'MEB 2026'}</span>
                                                     </div>
-                                                    <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors">
-                                                        ${item.title}
+                                                    <h5 class="text-sm font-black text-slate-900 mb-1.5 leading-snug group-hover:${cfg.colorText} transition-colors uppercase tracking-tight">
+                                                        ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                                     </h5>
                                                     <!-- Görsel Kapak Kutusu -->
-                                                    <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${actionCall}">
+                                                    <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group-hover:border-red-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="${actionCall}">
                                                         <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                         <div class="absolute bottom-2.5 right-2.5">
                                                             <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -5444,7 +5479,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-fuchsia-50 text-fuchsia-700 border border-fuchsia-200">${item.format || 'Eğitsel Oyun'}</span>
                                                 <span class="text-[11px] font-bold text-slate-400">Özel Oyun</span>
                                             </div>
-                                            <h5 class="text-sm font-black text-slate-900 mb-1.5 group-hover:text-fuchsia-700 transition-colors">${item.title}</h5>
+                                            <h5 class="text-sm font-black text-slate-900 mb-1.5 group-hover:text-fuchsia-700 transition-colors uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h5>
                                             <div class="mat-preview-box relative w-full h-48 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'egitsel-oyunlar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')">
                                                 <img src="${coverImg}" alt="${item.title}" onerror="this.src='rotali-fenci-logo.png'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
@@ -5501,9 +5536,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 <span class="px-2.5 py-0.5 rounded-md text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">${item.format || 'ÖZEL FÖY'}</span>
                                                 <span class="text-[11px] font-bold text-slate-400">Yüklendi</span>
                                             </div>
-                                            <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors">${item.title}</h5>
+                                            <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h5>
                                             <!-- Görsel Kapak Kutusu -->
-                                            <div class="mat-preview-box relative w-full h-56 sm:h-64 bg-gradient-to-b from-slate-100 to-slate-200/90 p-2.5 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}', '${String(item.format || '').replace(/'/g, "\\'")}')">
+                                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group-hover:border-emerald-500/40 cursor-pointer shadow-inner flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}', '${String(item.format || '').replace(/'/g, "\\'")}')">
                                                 <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-auto h-full max-h-full object-contain rounded-xl shadow-md border border-slate-300/60 transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                 <div class="absolute bottom-2.5 right-2.5">
                                                     <span class="px-2.5 py-1 bg-slate-900/85 hover:bg-emerald-600 text-white text-[10px] font-black uppercase rounded-lg shadow-md backdrop-blur-sm transition-colors flex items-center gap-1.5">
@@ -7677,7 +7712,7 @@ function renderProjectsPage(container) {
                                 </div>
 
                                 <!-- Görsel Önizleme / Tıklanabilir Kart -->
-                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-emerald-400 cursor-pointer shadow-inner">
+                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[16/9] group-hover:border-emerald-400 cursor-pointer shadow-inner">
                                     <img :src="act.image" :alt="act.title" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy">
                                     <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
                                         <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
@@ -7688,7 +7723,7 @@ function renderProjectsPage(container) {
                                 </div>
 
                                 <!-- Başlık & Alt Başlık -->
-                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-emerald-700 transition-colors mb-1.5 leading-snug uppercase tracking-tight" x-text="act.title ? act.title.toLocaleUpperCase('tr-TR') : ''"></h3>
                                 <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
 
                                 <!-- Fen & Algoritma Kazanımı -->
@@ -7779,7 +7814,7 @@ function renderProjectsPage(container) {
                                 </div>
 
                                 <!-- Görsel Önizleme / Tıklanabilir Kart -->
-                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-blue-400 cursor-pointer shadow-inner">
+                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[16/9] group-hover:border-blue-400 cursor-pointer shadow-inner">
                                     <img :src="act.image" :alt="act.title" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy">
                                     <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
                                         <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
@@ -7790,7 +7825,7 @@ function renderProjectsPage(container) {
                                 </div>
 
                                 <!-- Başlık & Alt Başlık -->
-                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-blue-700 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-blue-700 transition-colors mb-1.5 leading-snug uppercase tracking-tight" x-text="act.title ? act.title.toLocaleUpperCase('tr-TR') : ''"></h3>
                                 <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
 
                                 <!-- Fen & Algoritma Kazanımı -->
@@ -7881,7 +7916,7 @@ function renderProjectsPage(container) {
                                 </div>
 
                                 <!-- Görsel Önizleme / Tıklanabilir Kart -->
-                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[4/3] group-hover:border-purple-400 cursor-pointer shadow-inner">
+                                <div @click="openCodeWeekModal(act)" class="relative rounded-2xl overflow-hidden mb-4 bg-slate-950 border border-slate-200/80 aspect-[16/9] group-hover:border-purple-400 cursor-pointer shadow-inner">
                                     <img :src="act.image" :alt="act.title" class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105" loading="lazy">
                                     <div class="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-2xs">
                                         <span class="px-3.5 py-2 rounded-xl bg-white text-slate-950 font-black text-xs shadow-lg flex items-center gap-2">
@@ -7892,7 +7927,7 @@ function renderProjectsPage(container) {
                                 </div>
 
                                 <!-- Başlık & Alt Başlık -->
-                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-purple-700 transition-colors mb-1.5 leading-snug" x-text="act.title"></h3>
+                                <h3 class="text-base sm:text-lg font-black text-slate-900 group-hover:text-purple-700 transition-colors mb-1.5 leading-snug uppercase tracking-tight" x-text="act.title ? act.title.toLocaleUpperCase('tr-TR') : ''"></h3>
                                 <p class="text-xs font-semibold text-slate-500 mb-3" x-text="act.subtitle"></p>
 
                                 <!-- Fen & Algoritma Kazanımı -->
@@ -11666,7 +11701,7 @@ async function openDigitalBookModal(options = {}) {
                     <i class="fa-solid fa-book-open"></i>
                 </div>
                 <div class="min-w-0">
-                    <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[120px] sm:max-w-xs md:max-w-md text-white">${bookTitle}</h3>
+                    <h3 id="book-modal-title" class="text-xs sm:text-sm font-black truncate max-w-[120px] sm:max-w-xs md:max-w-md text-white uppercase tracking-wide">${String(bookTitle || '').toLocaleUpperCase('tr-TR')}</h3>
                     <div class="flex items-center gap-1.5 text-[10px] text-slate-400 font-bold">
                         <span class="px-1.5 py-0.2 rounded bg-slate-800 text-red-400 border border-slate-700">${grade}. SINIF MEB</span>
                         <span id="book-modal-status" class="text-slate-400 hidden sm:inline">Dikey Akış Açılıyor...</span>
@@ -14675,7 +14710,7 @@ function openInPageDocumentModal(docUrl, docTitle = "Ders Dokümanı", fileName 
                             <i class="fa-solid fa-image"></i>
                         </span>
                         <div class="min-w-0">
-                            <h3 class="text-xs sm:text-sm font-black truncate max-w-[160px] sm:max-w-md">${docTitle}</h3>
+                            <h3 class="text-xs sm:text-sm font-black truncate max-w-[160px] sm:max-w-md uppercase tracking-wide">${String(docTitle || '').toLocaleUpperCase('tr-TR')}</h3>
                         </div>
                     </div>
 
