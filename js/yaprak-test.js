@@ -1350,6 +1350,12 @@ document.addEventListener('DOMContentLoaded', () => {
               localMats.unshift(data.material);
             }
             localStorage.setItem('rotali_custom_materials', JSON.stringify(localMats));
+            if (data.htmlContent) {
+              localStorage.setItem('rotali_test_html_' + data.material.id, data.htmlContent);
+              if (data.material.fileName) {
+                localStorage.setItem('rotali_test_html_' + data.material.fileName, data.htmlContent);
+              }
+            }
           } catch (e) {}
         }
 
@@ -1362,7 +1368,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const targetTab = data.category === 'denemeler' ? 'denemeler' : 'soru-bankasi';
         viewInWebsiteBtn.href = `index.html#grade-${data.grade || '5'}/${targetTab}`;
         
-        let directUrl = '/' + data.fileUrl;
+        let directUrl = '/api/test-viewer?file=' + encodeURIComponent(data.material ? data.material.fileName : data.fileUrl.split('/').pop());
         if (data.htmlContent) {
           try {
             const blob = new Blob([data.htmlContent], { type: 'text/html;charset=utf-8' });
