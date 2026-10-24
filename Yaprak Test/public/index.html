@@ -172,6 +172,11 @@
               <button type="button" class="btn-quick-page" data-pages="6" onclick="setTargetPages(6)">6S</button>
             </div>
 
+            <!-- 🚀 Web Siteme Otomatik Ekle Butonu -->
+            <button type="button" id="publishToWebBtn" class="btn btn-publish-web btn-sm" title="Hazırlanan testi Rotalı Fenci web sitesine otomatik ekle ve yayınla">
+              <span class="icon">🚀</span> Web Siteme Ekle
+            </button>
+
             <!-- Bilgisayara Kaydetme Butonları -->
             <button type="button" id="downloadPdfBtn" class="btn btn-download-pdf btn-sm" title="PDF olarak doğrudan bilgisayara indir">
               <span class="icon">📥</span> PDF İndir
@@ -245,6 +250,111 @@
 
       </section>
     </main>
+  </div>
+
+  <!-- Web Sitesine Yayınlama Modalı -->
+  <div class="modal-overlay" id="publishModal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-icon">🚀</span>
+          <div>
+            <h3>Web Siteme Otomatik Ekle</h3>
+            <p>Rotalı Fenci Portalında İlgili Sınıf ve Üniteye Yayınla</p>
+          </div>
+        </div>
+        <button type="button" class="modal-close-btn" id="closePublishModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Form Adımı -->
+        <div id="publishFormStep">
+          <div class="form-group">
+            <label for="pubTitle">Test Başlığı</label>
+            <input type="text" id="pubTitle" class="form-control" placeholder="Örn: 5. Sınıf 1. Ünite Güneş, Dünya ve Ay Yaprak Testi">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="pubGrade">Sınıf Seviyesi</label>
+              <select id="pubGrade" class="form-control">
+                <option value="5">5. Sınıf</option>
+                <option value="6">6. Sınıf</option>
+                <option value="7">7. Sınıf</option>
+                <option value="8">8. Sınıf (LGS)</option>
+              </select>
+            </div>
+            <div class="form-group flex-1">
+              <label for="pubCategory">Hedef Bölüm</label>
+              <select id="pubCategory" class="form-control">
+                <option value="soru-bankasi" selected>📚 Soru Bankası & Yaprak Testler</option>
+                <option value="denemeler">🎯 Ünite Deneme Sınavları</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="pubUnit">Ünite Adı</label>
+              <input type="text" id="pubUnit" class="form-control" readonly style="background: #f8fafc;">
+            </div>
+            <div class="form-group flex-1">
+              <label for="pubSection">Ünite Numarası</label>
+              <input type="number" id="pubSection" class="form-control" min="1" max="7" value="1">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="pubDesc">Kısa Açıklama</label>
+            <textarea id="pubDesc" class="form-control" rows="2" placeholder="Test açıklaması..."></textarea>
+          </div>
+
+          <div class="publish-features-info">
+            <div class="feat-badge">✓ İnteraktif Web Çözümü</div>
+            <div class="feat-badge">✓ MEB A4 Yazdırılabilir PDF</div>
+            <div class="feat-badge">✓ Öğretmen Modu & Çözümler</div>
+            <div class="feat-badge">✓ Mobil & Akıllı Tahta Uyumlu</div>
+          </div>
+
+          <div class="form-checkbox-row">
+            <label class="checkbox-label">
+              <input type="checkbox" id="pubAutoDeploy" checked>
+              <span>Otomatik Olarak Canlıya Gönder (GitHub & Vercel Yayını)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Yükleniyor Adımı -->
+        <div id="publishLoadingStep" style="display: none; text-align: center; padding: 30px 10px;">
+          <div class="spinner" style="margin: 0 auto 16px auto;"></div>
+          <h4>Web Sitenize Ekleniyor...</h4>
+          <p style="font-size: 13px; color: #64748b; margin-top: 6px;">İnteraktif test sayfası üretiliyor, materyal veritabanına işleniyor ve bulut sunucusu ile eşitleniyor.</p>
+        </div>
+
+        <!-- Başarı Adımı -->
+        <div id="publishSuccessStep" style="display: none; text-align: center; padding: 20px 10px;">
+          <div class="success-icon-badge">🎉</div>
+          <h3 style="color: #0f172a; font-size: 19px; font-weight: 800; margin-bottom: 6px;">Test Başarıyla Web Sitenize Eklendi!</h3>
+          <p id="publishSuccessText" style="font-size: 14px; color: #475569; margin-bottom: 20px;"></p>
+
+          <div class="publish-success-actions">
+            <a href="#" id="viewInWebsiteBtn" target="_blank" class="btn btn-success" style="font-size: 13.5px; padding: 10px 18px;">
+              🌐 Web Sitedeki Bölümü Aç
+            </a>
+            <a href="#" id="viewDirectTestBtn" target="_blank" class="btn btn-primary" style="font-size: 13.5px; padding: 10px 18px;">
+              📄 Testi Canlı Görüntüle
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer" id="publishModalFooter">
+        <button type="button" class="btn btn-secondary" id="cancelPublishBtn">İptal</button>
+        <button type="button" class="btn btn-publish-confirm" id="confirmPublishBtn">
+          <span>🚀</span> Web Siteme Ekle ve Yayınla
+        </button>
+      </div>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>

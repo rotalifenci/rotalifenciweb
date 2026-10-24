@@ -13824,6 +13824,20 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         return;
     }
 
+    // 📝 1.7 🌟 İNTERAKTİF YAPRAK TESTLER & KAZANIM DEĞERLENDİRME SINAVLARI
+    const isInteractiveTest = (
+        targetUrl.includes("testler/") ||
+        checkFormat.includes("YAPRAK TEST") ||
+        checkFormat.includes("İNTERAKTİF TEST") ||
+        checkCat === "yaprak-test" ||
+        ((checkCat === "soru-bankasi" || checkCat === "denemeler") && (checkFile.endsWith(".html") || targetUrl.endsWith(".html")))
+    );
+
+    if (isInteractiveTest && targetUrl && targetUrl !== "#") {
+        openInteractiveGameModal(targetUrl, title || (found && found.title) || "İnteraktif Yaprak Test");
+        return;
+    }
+
     // 🚀 1.8 🌟 İNTERAKTİF HTML5 AKILLI TAHTA SUNUMLARI (3D Sinematik Sunum)
     const isHtmlPresentation = (
         targetUrl.includes("sunumlar/") ||

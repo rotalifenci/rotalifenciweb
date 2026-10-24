@@ -1184,5 +1184,147 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // ==========================================================================
+  // 🚀 WEB SİTESİNE OTOMATİK YAYINLAMA MODALI VE ENTEGRASYONU
+  // ==========================================================================
+  const publishToWebBtn = document.getElementById('publishToWebBtn');
+  const publishModal = document.getElementById('publishModal');
+  const closePublishModalBtn = document.getElementById('closePublishModalBtn');
+  const cancelPublishBtn = document.getElementById('cancelPublishBtn');
+  const confirmPublishBtn = document.getElementById('confirmPublishBtn');
+
+  const publishFormStep = document.getElementById('publishFormStep');
+  const publishLoadingStep = document.getElementById('publishLoadingStep');
+  const publishSuccessStep = document.getElementById('publishSuccessStep');
+  const publishModalFooter = document.getElementById('publishModalFooter');
+
+  const pubTitle = document.getElementById('pubTitle');
+  const pubGrade = document.getElementById('pubGrade');
+  const pubCategory = document.getElementById('pubCategory');
+  const pubUnit = document.getElementById('pubUnit');
+  const pubSection = document.getElementById('pubSection');
+  const pubDesc = document.getElementById('pubDesc');
+  const pubAutoDeploy = document.getElementById('pubAutoDeploy');
+  const publishSuccessText = document.getElementById('publishSuccessText');
+  const viewInWebsiteBtn = document.getElementById('viewInWebsiteBtn');
+  const viewDirectTestBtn = document.getElementById('viewDirectTestBtn');
+
+  function openPublishModal() {
+    if (!currentQuestions || currentQuestions.length === 0) {
+      alert("Lütfen önce soru üretiniz.");
+      return;
+    }
+
+    const curGrade = currentMeta.grade || gradeInput.value || "5";
+    const curUnitObj = (curriculumData && curriculumData.units && curriculumData.units[selectedUnitIndex]) ? curriculumData.units[selectedUnitIndex] : null;
+    const curUnitName = currentMeta.learning_area || (curUnitObj ? curUnitObj.name : "1. Ünite: Güneş, Dünya ve Ay");
+    const curSectionNum = (selectedUnitIndex + 1) || 1;
+
+    // Alanları doldur
+    pubGrade.value = curGrade;
+    pubCategory.value = "soru-bankasi";
+    pubUnit.value = curUnitName;
+    pubSection.value = curSectionNum;
+
+    const unitShortName = curUnitName.replace(/^[0-9]+\.\s*Ünite:\s*/i, '');
+    pubTitle.value = `${curGrade}. Sınıf ${curSectionNum}. Ünite: ${unitShortName} Yaprak Testi`;
+    pubDesc.value = `${curGrade}. Sınıf Fen Bilimleri ${curUnitName} için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.`;
+
+    // Arayüz adımlarını sıfırla
+    publishFormStep.style.display = 'block';
+    publishLoadingStep.style.display = 'none';
+    publishSuccessStep.style.display = 'none';
+    publishModalFooter.style.display = 'flex';
+    confirmPublishBtn.disabled = false;
+    confirmPublishBtn.innerHTML = '<span>🚀</span> Web Siteme Ekle ve Yayınla';
+
+    publishModal.style.display = 'flex';
+  }
+
+  function closePublishModal() {
+    publishModal.style.display = 'none';
+  }
+
+  if (publishToWebBtn) {
+    publishToWebBtn.addEventListener('click', openPublishModal);
+  }
+  if (closePublishModalBtn) {
+    closePublishModalBtn.addEventListener('click', closePublishModal);
+  }
+  if (cancelPublishBtn) {
+    cancelPublishBtn.addEventListener('click', closePublishModal);
+  }
+  if (publishModal) {
+    publishModal.addEventListener('click', (e) => {
+      if (e.target === publishModal) closePublishModal();
+    });
+  }
+
+  // Sınıf seçimi değiştiğinde başlığı otomatik güncelle
+  if (pubGrade) {
+    pubGrade.addEventListener('change', () => {
+      const g = pubGrade.value;
+      const s = pubSection.value;
+      const u = pubUnit.value.replace(/^[0-9]+\.\s*Ünite:\s*/i, '');
+      pubTitle.value = `${g}. Sınıf ${s}. Ünite: ${u} Yaprak Testi`;
+    });
+  }
+
+  // Yayınlama Onayı
+  if (confirmPublishBtn) {
+    confirmPublishBtn.addEventListener('click', async () => {
+      const payload = {
+        questions: currentQuestions,
+        grade: pubGrade.value,
+        unit: pubUnit.value,
+        targetSection: pubSection.value,
+        category: pubCategory.value,
+        title: pubTitle.value.trim() || `${pubGrade.value}. Sınıf Yaprak Testi`,
+        desc: pubDesc.value.trim(),
+        subject: currentMeta.subject || "Fen Bilimleri",
+        autoDeploy: pubAutoDeploy ? pubAutoDeploy.checked : false
+      };
+
+      try {
+        publishFormStep.style.display = 'none';
+        publishLoadingStep.style.display = 'block';
+        publishModalFooter.style.display = 'none';
+
+        const res = await fetch('/api/publish-test', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.error || 'Yayınlama başarısız oldu.');
+        }
+
+        const data = await res.json();
+
+        // Başarı Ekranını Göster
+        publishLoadingStep.style.display = 'none';
+        publishSuccessStep.style.display = 'block';
+
+        const catName = data.category === 'denemeler' ? 'Ünite Denemeleri' : 'Soru Bankası & Testler';
+        publishSuccessText.innerHTML = `<strong>"${escapeHtml(data.title)}"</strong> başarıyla Rotalı Fenci web sitenize eklendi.<br><br>
+          <span style="display:inline-block; padding: 4px 10px; background:#e0f2fe; color:#0369a1; border-radius:8px; font-weight:700; font-size:12.5px;">
+            📍 Konum: ${data.grade}. Sınıf &gt; ${catName} &gt; ${escapeHtml(data.unit)}
+          </span>`;
+
+        viewInWebsiteBtn.href = data.webSectionUrl;
+        viewDirectTestBtn.href = '/' + data.fileUrl;
+
+      } catch (err) {
+        console.error('Yayınlama hatası:', err);
+        alert(`Hata: ${err.message}`);
+        publishFormStep.style.display = 'block';
+        publishLoadingStep.style.display = 'none';
+        publishModalFooter.style.display = 'flex';
+      }
+    });
+  }
+
   loadCurriculum();
 });

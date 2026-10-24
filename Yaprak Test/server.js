@@ -1104,6 +1104,57 @@ app.post('/api/export-docx', async (req, res) => {
   }
 });
 
+const { publishTestToWebsite } = require('./publish-service');
+
+// 🌐 Web Sitesine Otomatik Yayınlama Endpoint'i
+app.post('/api/publish-test', async (req, res) => {
+  try {
+    const { questions, grade, unit, targetSection, category, title, desc, subject, autoDeploy } = req.body;
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: "Yayınlanacak soru listesi eksik." });
+    }
+
+    const result = await publishTestToWebsite({
+      questions,
+      grade,
+      unit,
+      targetSection,
+      category,
+      title,
+      desc,
+      subject,
+      autoDeploy
+    });
+
+    res.json(result);
+  } catch (error) {
+    console.error("Test yayınlama hatası:", error);
+    res.status(500).json({ error: "Test web sitesine yayınlanamadı.", details: error.message });
+  }
+});
+
+// 🚀 Web Sitesini Canlıya Gönderme (GitHub + Vercel Deploy)
+app.post('/api/deploy-website', (req, res) => {
+  try {
+    const { message } = req.body || {};
+    const { execFile } = require('child_process');
+    const yayinlaScript = path.resolve(__dirname, '..', 'Web Sitem', 'scripts', 'yayinla.js');
+    if (!fs.existsSync(yayinlaScript)) {
+      return res.status(404).json({ error: "yayinla.js bulunamadı." });
+    }
+    const commitMsg = message || "feat: publish updated tests from yaprak-test portal";
+    execFile("node", [yayinlaScript, commitMsg], { cwd: path.resolve(__dirname, '..', 'Web Sitem') }, (error, stdout, stderr) => {
+      if (error) {
+        console.warn("Deploy exec uyarısı:", error.message);
+        return res.json({ success: true, warning: error.message, output: stdout || stderr });
+      }
+      res.json({ success: true, output: stdout });
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Yayınlama hatası", details: error.message });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`====================================================`);
   console.log(`Yaprak Test Soru Üretim Sunucusu Başlatıldı!`);
