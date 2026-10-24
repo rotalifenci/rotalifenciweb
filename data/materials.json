@@ -1262,32 +1262,6 @@
     "updatedAt": "2026-10-19T00:00:00.000Z"
   },
   {
-    "id": "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
-    "grade": "7",
-    "category": "ders-notu",
-    "targetSection": "2",
-    "title": "7. Sınıf 2. Ünite: KUVVET VE ENERJİYİ KEŞFEDELİM",
-    "unit": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "Kuvvet_ve_Enerjinin_Görünmez_Dünyası.pdf",
-    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas_.pdf",
-    "imageUrl": "assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas__cover.jpg",
-    "kapakResmi": "assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas__cover.jpg",
-    "format": "PDF",
-    "hasBlob": false,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-10-24T15:00:10.086Z",
-    "updatedAt": "2026-10-24T15:00:10.087Z",
-    "cover": "assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas__cover.jpg"
-  },
-  {
     "id": "mat-c5435b10-1eed-4dd5-8884-975ddf940b7a",
     "grade": "projeler",
     "category": "projeler",
