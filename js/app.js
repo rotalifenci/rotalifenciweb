@@ -1663,6 +1663,9 @@ async function extractCoverFromPdfSource(source) {
 
 function resolveMaterialCover(item) {
     if (!item) return "assets/kapak-5.jpg";
+    if (typeof window !== "undefined" && window._pdfThumbCache && item.id && window._pdfThumbCache[item.id]) {
+        return window._pdfThumbCache[item.id];
+    }
     const rawImg = (item.kapakResmi || item.imageUrl || item.cover || "").trim();
     const rawFile = (item.fileUrl || "").trim();
     const title = (item.title || "").toLowerCase();
@@ -4562,7 +4565,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                         </h4>
                                         <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-xl overflow-hidden mb-3 border border-slate-800 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openMaterialCoverModal('${item.id}')" title="Kapağı Tam Ekran Yatay Görüntüle">
-                                            <img src="${cover}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                            <img src="${cover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                                             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2.5">
                                                 <span class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-expand text-[10px]"></i> Tam Ekran Gör</span>
                                                 <span class="text-[10px] font-bold text-slate-300 drop-shadow">Yatay Kapak</span>
@@ -4688,7 +4691,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
 
                                                         <!-- Görsel: Mobilde taşmayı engelleyen 'aspect-ratio' kullanımı -->
                                                         <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-950 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-800 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openMaterialCoverModal('${item.id}')" title="Kapağı Tam Ekran Yatay Görüntüle">
-                                                            <img src="${resolveMaterialCover(item)}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full w-full h-full object-contain group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                                                         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end justify-between p-2.5">
                                                             <span class="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase flex items-center gap-1.5 shadow-md"><i class="fa-solid fa-expand text-[10px]"></i> Tam Ekran Gör</span>
                                                             <span class="text-[10px] font-bold text-slate-300 drop-shadow">Yatay Kapak</span>
@@ -17751,12 +17754,23 @@ async function handleAdvMaterialSubmit(e) {
         if (ytM && ytM[1]) chosenCover = `https://img.youtube.com/vi/${ytM[1]}/hqdefault.jpg`;
     }
 
-    // Eğer kapak seçilmediyse veya otomatik çıkarım henüz tamamlanmadıysa şimdi tamamla
-    if (!chosenCover && currentUploadedFile) {
+    // Eğer kapak seçilmediyse veya otomatik çıkarım henüz tamamlanmadıysa (veya SVG placeholder ise) PDF 1. sayfayı zorla
+    if ((!chosenCover || chosenCover.startsWith("data:image/svg")) && currentUploadedFile) {
         const ext = (currentUploadedFile.name || "").split('.').pop().toLowerCase();
-        try {
-            chosenCover = await autoExtractCoverFromFile(currentUploadedFile, ext);
-        } catch(e) {}
+        if (ext === "pdf" || (currentUploadedFile.type && currentUploadedFile.type.includes("pdf"))) {
+            try {
+                const pdfFirstPage = await extractCoverFromPdfSource(currentUploadedFile);
+                if (pdfFirstPage) {
+                    chosenCover = pdfFirstPage;
+                    currentUploadedCoverDataUrl = pdfFirstPage;
+                }
+            } catch(pErr) {}
+        }
+        if (!chosenCover || chosenCover.startsWith("data:image/svg")) {
+            try {
+                chosenCover = await autoExtractCoverFromFile(currentUploadedFile, ext);
+            } catch(e) {}
+        }
     }
     if (!chosenCover && linkVal && (linkVal.toLowerCase().endsWith(".pdf") || linkVal.includes("/pdf"))) {
         try {
