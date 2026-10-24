@@ -1,44 +1,13 @@
 [
   {
-    "id": "mat-test-5-1-1792875787663",
-    "grade": "5",
-    "category": "soru-bankasi",
-    "targetSection": "1",
-    "title": "5. Sınıf Deneme Testi",
-    "unit": "1. Ünite",
-    "desc": "5. Sınıf Fen Bilimleri 1. Ünite için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-deneme-testi.html",
-    "fileUrl": "testler/5-sinif-1-unite-deneme-testi.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
-    "format": "YAPRAK TEST",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "test / deneme",
-      "yazılıya hazırlık",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 1 Soru",
-    "createdAt": "2026-10-24T21:03:07.668Z",
-    "updatedAt": "2026-10-24T21:03:07.670Z"
-  },
-  {
     "id": "mat-video-5-1-01",
     "grade": "5",
     "category": "videolar",
-    "targetSection": "1",
+    "targetSection": "lab",
     "title": "5.1.1 LABORATUVAR GÜVENLİĞİ",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
+    "unit": "Laboratuvar & Deneyler",
     "desc": "Fen laboratuvarında güvenli deney yapma kuralları ve güvenlik sembollerinin anlamları.",
-    "fileName": "stQr-6J7vBI.mp4",
+    "fileName": "5.1.1 LABORATUVAR GÜVENLİĞİ",
     "fileUrl": "https://www.youtube.com/watch?v=stQr-6J7vBI",
     "imageUrl": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
@@ -56,50 +25,22 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.057Z",
-    "updatedAt": "2026-10-24T20:31:01.057Z"
-  },
-  {
-    "id": "mat-video-5-1-02",
-    "grade": "5",
-    "category": "videolar",
-    "targetSection": "1",
-    "title": "5.1.2 LABORATUVAR GÜVENLİK SEMBOLLERİ OYUNU",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "Laboratuvar güvenlik sembollerini eğlenerek pekiştiren eşleştirme oyunu.",
-    "fileName": "materyal-5-1-02",
-    "fileUrl": "https://wordwall.net/tr/resource/78156302",
-    "imageUrl": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
-    "kapakResmi": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
-    "cover": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
-    "format": "İnteraktif Oyun",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "güneş dünya ve ay",
-      "video",
-      "fen bilimleri",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "▶ İzle",
-    "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
+    "updatedAt": "2026-10-24T21:06:16.888Z"
   },
   {
     "id": "mat-video-5-1-03",
     "grade": "5",
-    "category": "videolar",
+    "category": "egitsel-oyunlar",
     "targetSection": "1",
     "title": "5.1.3 DÜNYA'NIN KATMANLARI (3D ETKİLEŞİMLİ MODEL)",
     "unit": "1. Ünite: Güneş, Dünya ve Ay",
     "desc": "Dünya'nın iç ve dış katmanlarını 360 derece döndürerek inceleyebileceğiniz 3D model.",
-    "fileName": "materyal-5-1-03",
+    "fileName": "5.1.3 DÜNYA'NIN KATMANLARI (3D ETKİLEŞİMLİ MODEL)",
     "fileUrl": "https://sketchfab.com/3d-models/earth-core-44c547c28fbf46f4ab430bf1398f5fdb",
-    "imageUrl": "assets/dunyanin-5-katmani-kapak.svg",
-    "kapakResmi": "assets/dunyanin-5-katmani-kapak.svg",
-    "cover": "assets/dunyanin-5-katmani-kapak.svg",
-    "format": "İnteraktif 3D",
+    "imageUrl": "assets/materials/mat-5-1-sim-dunyanin-5-katmani_cover.jpg",
+    "kapakResmi": "assets/materials/mat-5-1-sim-dunyanin-5-katmani_cover.jpg",
+    "cover": "assets/materials/mat-5-1-sim-dunyanin-5-katmani_cover.jpg",
+    "format": "Web Bağlantısı",
     "hasBlob": false,
     "tags": [
       "5. sınıf",
@@ -112,7 +53,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
+    "updatedAt": "2026-10-24T21:07:04.069Z"
   },
   {
     "id": "mat-video-5-1-04",
@@ -227,34 +168,6 @@
     "updatedAt": "2026-10-24T20:31:01.058Z"
   },
   {
-    "id": "mat-video-5-1-08",
-    "grade": "5",
-    "category": "videolar",
-    "targetSection": "1",
-    "title": "5.1.8 GÜNEŞ, DÜNYA VE AY ÖLÇEK ETKİNLİK KİTAPÇIĞI",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "Güneş, Dünya ve Ay'ın boyut ve mesafe ilişkilerini kavratan etkileşimli dijital kitapçık.",
-    "fileName": "materyal-5-1-08",
-    "fileUrl": "https://online.fliphtml5.com/cizzv/oaia/",
-    "imageUrl": "assets/materials/5-1-videolar_cover.jpg",
-    "kapakResmi": "assets/materials/5-1-videolar_cover.jpg",
-    "cover": "assets/materials/5-1-videolar_cover.jpg",
-    "format": "İnteraktif Kitap",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "güneş dünya ve ay",
-      "video",
-      "fen bilimleri",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "▶ İzle",
-    "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
-  },
-  {
     "id": "mat-video-5-1-09",
     "grade": "5",
     "category": "videolar",
@@ -343,10 +256,10 @@
     "grade": "5",
     "category": "videolar",
     "targetSection": "1",
-    "title": "5.1.12 UZAYDA DÜŞEN ASTRONOT",
+    "title": "5.1.12 AY'DA DÜŞEN ASTRONOT",
     "unit": "1. Ünite: Güneş, Dünya ve Ay",
     "desc": "Yerçekimsiz uzay ortamında astronotların hareket ederken karşılaştığı durumlar.",
-    "fileName": "uqx7_AeI5sQ.mp4",
+    "fileName": "5.1.12 AY'DA DÜŞEN ASTRONOT",
     "fileUrl": "https://www.youtube.com/watch?v=uqx7_AeI5sQ",
     "imageUrl": "https://img.youtube.com/vi/uqx7_AeI5sQ/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/uqx7_AeI5sQ/hqdefault.jpg",
@@ -364,7 +277,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
+    "updatedAt": "2026-10-24T21:07:44.945Z"
   },
   {
     "id": "mat-video-5-1-13",
@@ -510,11 +423,11 @@
     "id": "mat-video-6-1-01",
     "grade": "6",
     "category": "videolar",
-    "targetSection": "1",
+    "targetSection": "lab",
     "title": "6.1.1 LABORATUVAR GÜVENLİĞİ",
-    "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
+    "unit": "Laboratuvar & Deneyler",
     "desc": "Fen bilimleri laboratuvarında uyulması gereken temel güvenlik kuralları ve tehlike sembolleri.",
-    "fileName": "stQr-6J7vBI.mp4",
+    "fileName": "6.1.1 LABORATUVAR GÜVENLİĞİ",
     "fileUrl": "https://www.youtube.com/watch?v=stQr-6J7vBI",
     "imageUrl": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
@@ -532,7 +445,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.056Z",
-    "updatedAt": "2026-10-24T20:31:01.057Z"
+    "updatedAt": "2026-10-24T21:21:54.807Z"
   },
   {
     "id": "mat-video-6-1-02",
@@ -847,10 +760,10 @@
     "grade": "6",
     "category": "videolar",
     "targetSection": "1",
-    "title": "6.1.13 UZAYDA DÜŞEN ASTRONOT",
+    "title": "6.1.13 AY'DA DÜŞEN ASTRONOT",
     "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
     "desc": "Yerçekimsiz ortamda hareket ederken denge kaybı ve uzay yürüyüşünde güvenlik bağları.",
-    "fileName": "uqx7_AeI5sQ.mp4",
+    "fileName": "6.1.13 AY'DA DÜŞEN ASTRONOT",
     "fileUrl": "https://www.youtube.com/watch?v=uqx7_AeI5sQ",
     "imageUrl": "https://img.youtube.com/vi/uqx7_AeI5sQ/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/uqx7_AeI5sQ/hqdefault.jpg",
@@ -868,7 +781,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.057Z",
-    "updatedAt": "2026-10-24T20:31:01.057Z"
+    "updatedAt": "2026-10-24T21:22:16.533Z"
   },
   {
     "id": "mat-video-6-1-14",
@@ -2028,7 +1941,6 @@
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite.pdf",
     "imageUrl": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
     "kapakResmi": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
-    "cover": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
     "format": "PDF",
     "hasBlob": false,
     "tags": [
@@ -2040,7 +1952,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T16:59:26.107Z",
-    "updatedAt": "2026-10-24T16:59:26.107Z"
+    "updatedAt": "2026-10-24T16:59:26.107Z",
+    "cover": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg"
   },
   {
     "id": "mat-96a2408f-7294-4b5a-a3e0-7b81a4337015",
@@ -2054,7 +1967,6 @@
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite.pdf",
     "imageUrl": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
     "kapakResmi": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
-    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
     "format": "PDF",
     "hasBlob": false,
     "tags": [
@@ -2066,69 +1978,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T17:52:37.640Z",
-    "updatedAt": "2026-10-24T18:14:29.338Z"
-  },
-  {
-    "id": "mat-7-2-sunum-kuvvet-ve-enerji-3d",
-    "grade": "7",
-    "category": "ders-notu",
-    "targetSection": "2",
-    "title": "7. Sınıf 2. Ünite: Kuvvet ve Enerjiyi Keşfedelim (3D Akıllı Tahta & PDF Sunumu)",
-    "unit": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
-    "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu 48 slaytlık, fiziksel iş analizi, 20+ günlük yaşam örneği, enerji çeşitleri, korunum modelleri, interaktif LGS soruları ve PDF çıktı destekli akıllı tahta sunumu.",
-    "fileName": "7-sinif-2-unite-kuvvet-ve-enerji.html",
-    "fileUrl": "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html",
-    "imageUrl": "assets/kuvvet-laboratuvari-kapak.svg",
-    "kapakResmi": "assets/kuvvet-laboratuvari-kapak.svg",
-    "cover": "assets/kuvvet-laboratuvari-kapak.svg",
-    "format": "İNTERAKTİF SUNUM",
-    "hasBlob": false,
-    "tags": [
-      "7. sınıf",
-      "kuvvet ve enerji",
-      "iş",
-      "kinetik enerji",
-      "potansiyel enerji",
-      "enerji korunumu",
-      "maarif modeli",
-      "akıllı tahta",
-      "sunum",
-      "rotalı fenci"
-    ],
-    "visibility": "public",
-    "downloadCount": "48 Slayt",
-    "createdAt": "2026-10-24T16:21:48.359Z",
-    "updatedAt": "2026-10-24T16:21:48.359Z"
-  },
-  {
-    "id": "mat-test-5-1-1792854826132",
-    "grade": "5",
-    "category": "soru-bankasi",
-    "targetSection": "1",
-    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi",
-    "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
-    "desc": "MEB Maarif Modeli uyumlu Güneş, Dünya ve Ay'ın şekli, evreleri ve boyutları değerlendirme testi. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "fileUrl": "testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
-    "format": "YAPRAK TEST",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "soru bankası",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 5 Soru",
-    "createdAt": "2026-10-24T15:13:46.132Z",
-    "updatedAt": "2026-10-24T15:13:46.133Z"
+    "updatedAt": "2026-10-24T18:14:29.338Z",
+    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg"
   },
   {
     "id": "mat-7-1-sim-yildiz-laboratuvari",
@@ -2396,7 +2247,8 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Başyapıtı",
     "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-18T00:00:00.000Z"
+    "updatedAt": "2026-10-18T00:00:00.000Z",
+    "cover": "assets/gunesi-kesfediyorum-3d-kapak.svg"
   },
   {
     "id": "mat-5-1-sim-dunyanin-5-katmani",
@@ -2431,7 +2283,8 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Simülasyonu",
     "createdAt": "2026-10-22T20:10:00.000Z",
-    "updatedAt": "2026-10-22T20:10:00.000Z"
+    "updatedAt": "2026-10-22T20:10:00.000Z",
+    "cover": "assets/dunyanin-5-katmani-kapak.svg"
   },
   {
     "id": "mat-5-1-oyun-ayin-evreleri-3d",
@@ -2461,7 +2314,8 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Başyapıtı",
     "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-18T00:00:00.000Z"
+    "updatedAt": "2026-10-18T00:00:00.000Z",
+    "cover": "assets/ayin-evreleri-3d-kapak.svg"
   },
   {
     "id": "mat-5-1-sunum-gunes-dunya-ay",
@@ -2490,7 +2344,8 @@
     "visibility": "public",
     "downloadCount": "Öne Çıkan",
     "createdAt": "2026-10-17T19:40:00.000Z",
-    "updatedAt": "2026-10-17T19:40:00.000Z"
+    "updatedAt": "2026-10-17T19:40:00.000Z",
+    "cover": "assets/sunum-5-1-referans-kapak.jpg"
   },
   {
     "id": "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
@@ -2516,7 +2371,8 @@
     "createdAt": "2026-09-29T05:33:26.954285+00:00",
     "updatedAt": "2026-09-30T19:00:05.031+00:00",
     "isCloud": true,
-    "hasBlob": false
+    "hasBlob": false,
+    "cover": "assets/astronot-kacis-odasi.png"
   },
   {
     "id": "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
@@ -2542,7 +2398,8 @@
     "createdAt": "2026-09-29T05:33:26.873437+00:00",
     "updatedAt": "2026-09-30T19:00:05.201+00:00",
     "isCloud": true,
-    "hasBlob": false
+    "hasBlob": false,
+    "cover": "assets/astronot-kacis-odasi.png"
   },
   {
     "id": "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
@@ -2568,7 +2425,8 @@
     "createdAt": "2026-09-29T05:33:26.784549+00:00",
     "updatedAt": "2026-09-30T19:00:05.288+00:00",
     "isCloud": true,
-    "hasBlob": false
+    "hasBlob": false,
+    "cover": "assets/astronot-kacis-odasi.png"
   },
   {
     "id": "mat-6265279c-943c-41fb-80e8-df15d1b8c589",
@@ -2594,33 +2452,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-28T22:51:51.770687+00:00",
     "updatedAt": "2026-09-30T19:00:05.376+00:00",
-    "isCloud": true
-  },
-  {
-    "id": "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
-    "grade": "5",
-    "category": "ders-notu",
-    "targetSection": "1",
-    "title": "5.1.",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "5.1. Sunum.pptx",
-    "fileUrl": "assets/docs/5-1-sunum.pptx",
-    "imageUrl": "assets/docs/5-1-sunum-kapak.jpg",
-    "kapakResmi": "assets/docs/5-1-sunum-kapak.jpg",
-    "format": "PPTX",
-    "hasBlob": false,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-09-28T22:46:21.041522+00:00",
-    "updatedAt": "2026-09-30T19:00:05.619+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/7-1-sunum-kapak.jpg"
   },
   {
     "id": "mat-d50fcd5d-da6a-4f96-bdfc-eb4edd310215",
@@ -2663,14 +2496,14 @@
     "unit": "Genel",
     "desc": "",
     "fileName": "7. Sınıf Fen Bilimleri MEB Ders Kitabı",
-    "imageUrl": "assets/ders-kitabi-7.jpg",
+    "imageUrl": "assets/kapak-7.jpg",
     "format": "Web Bağlantısı",
     "hasBlob": false,
     "tags": [],
     "visibility": "public",
     "downloadCount": "Yeni",
     "updatedAt": "2026-09-30T19:00:05.881+00:00",
-    "kapakResmi": "assets/ders-kitabi-7.jpg",
+    "kapakResmi": "assets/kapak-7.jpg",
     "isCloud": true
   },
   {
@@ -2697,7 +2530,8 @@
     "createdAt": "2026-09-27T18:55:52.673908+00:00",
     "updatedAt": "2026-09-30T19:00:05.957+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
   },
   {
     "id": "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
@@ -2723,7 +2557,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.642913+00:00",
     "updatedAt": "2026-09-30T19:00:06.219+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/7-sinif-islenecek-konular.jpg"
   },
   {
     "id": "book-8",
@@ -2749,7 +2584,8 @@
     "createdAt": "2026-09-27T17:06:03.823905+00:00",
     "updatedAt": "2026-09-30T19:00:06.523+00:00",
     "kapakResmi": "assets/ders-kitabi-8.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ders-kitabi-8.jpg"
   },
   {
     "id": "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
@@ -2775,7 +2611,8 @@
     "createdAt": "2026-09-27T18:55:52.421855+00:00",
     "updatedAt": "2026-09-30T19:00:06.749+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
   },
   {
     "id": "mat-afa89ec0-6f45-4b55-af70-bbfaa863b877",
@@ -2801,7 +2638,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:05.221518+00:00",
     "updatedAt": "2026-09-30T19:00:07.101+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/6-1-gunes-sistemi-kapak.jpg"
   },
   {
     "id": "book-5",
@@ -2827,30 +2665,8 @@
     "createdAt": "2026-09-27T17:06:02.2003+00:00",
     "updatedAt": "2026-09-30T19:00:07.231+00:00",
     "kapakResmi": "assets/ders-kitabi-5.jpg",
-    "isCloud": true
-  },
-  {
-    "id": "mat-1789315860991",
-    "grade": "5",
-    "category": "ders-notu",
-    "title": "5.Sınıf İşlenecek Konular",
-    "unit": "Ders Kitabı & Ünite PDF'leri",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "5.Sınıf İşlenecek Konular.jpg",
-    "fileUrl": "assets/5-sinif-islenecek-konular.jpg",
-    "format": "GÖRSEL",
-    "hasBlob": true,
-    "tags": [
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-09-27T17:06:04.560626+00:00",
-    "imageUrl": "assets/5-sinif-islenecek-konular.jpg",
-    "updatedAt": "2026-09-30T19:00:07.321+00:00",
-    "targetSection": "kitap",
-    "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ders-kitabi-5.jpg"
   },
   {
     "id": "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
@@ -2876,7 +2692,32 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:01.953396+00:00",
     "updatedAt": "2026-09-30T19:00:07.555+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
+  },
+  {
+    "id": "mat-1789315860991",
+    "grade": "5",
+    "category": "ders-notu",
+    "title": "5.Sınıf İşlenecek Konular",
+    "unit": "Ders Kitabı & Ünite PDF'leri",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "5.Sınıf İşlenecek Konular.jpg",
+    "fileUrl": "assets/5-sinif-islenecek-konular.jpg",
+    "format": "GÖRSEL",
+    "hasBlob": true,
+    "tags": [
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T17:06:04.560626+00:00",
+    "imageUrl": "assets/5-sinif-islenecek-konular.jpg",
+    "updatedAt": "2026-09-30T19:00:07.321+00:00",
+    "targetSection": "kitap",
+    "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
+    "isCloud": true,
+    "cover": "assets/5-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-1789503112888",
@@ -2903,7 +2744,8 @@
     "updatedAt": "17.09.2026",
     "targetSection": "lab",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
   },
   {
     "id": "mat-8-liseye-nasil-gidecegiz",
@@ -2933,35 +2775,8 @@
     "updatedAt": "17.09.2026",
     "targetSection": "1",
     "kapakResmi": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg",
-    "isCloud": true
-  },
-  {
-    "id": "not-7-1",
-    "grade": "7",
-    "category": "ders-notu",
-    "title": "7. Sınıf 1. Ünite Notu",
-    "unit": "1. Ünite: Uzay Çağı",
-    "desc": "7. Sınıf 1. Ünite: Uzay Çağı kapsamlı ders notu ve özet föyü.",
-    "fileName": "7.1. Ders Notu.pdf",
-    "fileUrl": "assets/docs/7-1-ders-notu.pdf",
-    "imageUrl": "assets/materials/7-1-ders-notu_cover.jpg",
-    "format": "PDF",
-    "hasBlob": false,
-    "tags": [
-      "MEB 2026-2027",
-      "7.sınıf",
-      "dersnotu",
-      "fen",
-      "uzay cagi"
-    ],
-    "visibility": "public",
-    "downloadCount": "1.850+",
-    "createdAt": "16.09.2026",
-    "updatedAt": "18.09.2026",
-    "targetSection": "1",
-    "kapakResmi": "assets/materials/7-1-ders-notu_cover.jpg",
     "isCloud": true,
-    "cover": "assets/materials/7-1-ders-notu_cover.jpg"
+    "cover": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg"
   },
   {
     "id": "book-6",
@@ -2987,33 +2802,8 @@
     "createdAt": "2026-09-27T17:06:03.711994+00:00",
     "updatedAt": "2026-09-30T19:00:08.471+00:00",
     "kapakResmi": "assets/ders-kitabi-6.jpg",
-    "isCloud": true
-  },
-  {
-    "id": "mat-6-islenecek-konular",
-    "grade": "6",
-    "category": "ders-notu",
-    "targetSection": "kitap",
-    "title": "6.Sınıf İşlenecek Konular",
-    "unit": "Ders Kitabı & Ünite PDF'leri",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "6.Sınıf İşlenecek Konular.jpg",
-    "fileUrl": "assets/6-sinif-islenecek-konular.jpg",
-    "imageUrl": "assets/6-sinif-islenecek-konular.jpg",
-    "kapakResmi": "assets/6-sinif-islenecek-konular.jpg",
-    "format": "GÖRSEL",
-    "hasBlob": false,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-09-27T18:59:10.000+00:00",
-    "updatedAt": "2026-09-30T19:00:08.500+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ders-kitabi-6.jpg"
   },
   {
     "id": "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
@@ -3039,7 +2829,35 @@
     "createdAt": "2026-09-30T18:59:21.296828+00:00",
     "updatedAt": "2026-09-30T19:00:08.562+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
+  },
+  {
+    "id": "mat-6-islenecek-konular",
+    "grade": "6",
+    "category": "ders-notu",
+    "targetSection": "kitap",
+    "title": "6.Sınıf İşlenecek Konular",
+    "unit": "Ders Kitabı & Ünite PDF'leri",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "6.Sınıf İşlenecek Konular.jpg",
+    "fileUrl": "assets/6-sinif-islenecek-konular.jpg",
+    "imageUrl": "assets/6-sinif-islenecek-konular.jpg",
+    "kapakResmi": "assets/6-sinif-islenecek-konular.jpg",
+    "format": "GÖRSEL",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-27T18:59:10.000+00:00",
+    "updatedAt": "2026-09-30T19:00:08.500+00:00",
+    "isCloud": true,
+    "cover": "assets/6-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-1789641166040",
@@ -3065,7 +2883,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:02.735549+00:00",
     "updatedAt": "2026-09-30T19:00:08.796+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/8-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-1789665265173-g6",
@@ -3091,7 +2910,8 @@
     "createdAt": "2026-09-27T17:06:02.468968+00:00",
     "updatedAt": "2026-09-30T19:00:09.075+00:00",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
   },
   {
     "id": "mat-1789665265173-g7",
@@ -3117,7 +2937,8 @@
     "createdAt": "2026-09-27T17:06:02.38771+00:00",
     "updatedAt": "2026-09-30T19:00:09.231+00:00",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
   },
   {
     "id": "mat-6-oyun-uzay-ekspresi",
@@ -3208,32 +3029,6 @@
     "updatedAt": "2026-10-19T00:00:00.000Z"
   },
   {
-    "id": "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
-    "grade": "7",
-    "category": "ders-notu",
-    "targetSection": "2",
-    "title": "7. Sınıf 2. Ünite: KUVVET VE ENERJİYİ KEŞFEDELİM",
-    "unit": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "Kuvvet_ve_Enerjinin_Görünmez_Dünyası.pdf",
-    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas_.pdf",
-    "imageUrl": "assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas__cover.jpg",
-    "kapakResmi": "assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas__cover.jpg",
-    "format": "PDF",
-    "hasBlob": false,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-10-24T15:00:10.086Z",
-    "updatedAt": "2026-10-24T15:00:10.087Z",
-    "cover": "assets/materials/1792853993852_9ii3n_kuvvet_ve_enerjinin_g_r_nmez_d_nyas__cover.jpg"
-  },
-  {
     "id": "mat-c5435b10-1eed-4dd5-8884-975ddf940b7a",
     "grade": "projeler",
     "category": "projeler",
@@ -3256,37 +3051,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-18T17:09:11.203Z",
-    "updatedAt": "2026-10-18T17:09:11.204Z"
-  },
-  {
-    "id": "mat-test-5-1-1792854064641",
-    "grade": "5",
-    "category": "soru-bankasi",
-    "targetSection": "1",
-    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi",
-    "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
-    "desc": "MEB Maarif Modeli uyumlu Güneş, Dünya ve Ay'ın şekli, evreleri ve boyutları değerlendirme testi. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "fileUrl": "testler/5-sinif-1-unite-5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
-    "format": "YAPRAK TEST",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "soru bankası",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 5 Soru",
-    "createdAt": "2026-10-24T15:01:04.641Z",
-    "updatedAt": "2026-10-24T15:01:04.648Z"
+    "updatedAt": "2026-10-18T17:09:11.204Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792343349599_d6002a6f-9fb9-4326-a287-ab24bb8f0311.png"
   },
   {
     "id": "mat-2603aa9e-0409-4243-a3e1-80eae57fdc7a",
@@ -3313,5 +3079,67 @@
     "createdAt": "2026-10-24T16:01:53.769Z",
     "updatedAt": "2026-10-24T16:40:49.982Z",
     "cover": "assets/materials/1792860032246_1een5_rotali_fenci_sunum_6_sinif_2_unite_cover.jpg"
+  },
+  {
+    "id": "mat-test-5-1-1792877470520",
+    "grade": "5",
+    "category": "soru-bankasi",
+    "targetSection": "1",
+    "title": "5. Sınıf Canlı Test Doğrulama",
+    "unit": "1. Ünite",
+    "desc": "5. Sınıf Fen Bilimleri 1. Ünite için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "fileName": "5-sinif-1-unite-canli-test-dogrulama.html",
+    "fileUrl": "testler/5-sinif-1-unite-canli-test-dogrulama.html",
+    "imageUrl": "assets/test-kapak-5.svg",
+    "kapakResmi": "assets/test-kapak-5.svg",
+    "cover": "assets/test-kapak-5.svg",
+    "format": "YAPRAK TEST",
+    "hasBlob": false,
+    "tags": [
+      "5. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 1 Soru",
+    "createdAt": "2026-10-24T21:31:10.520Z",
+    "updatedAt": "2026-10-24T21:31:10.520Z"
+  },
+  {
+    "id": "mat-test-5-1-1792877778769",
+    "grade": "5",
+    "category": "denemeler",
+    "targetSection": "1",
+    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi",
+    "unit": "1. Ünite: Güneş, Dünya ve Ay",
+    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "fileName": "5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
+    "fileUrl": "testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
+    "imageUrl": "assets/test-kapak-5.svg",
+    "kapakResmi": "assets/test-kapak-5.svg",
+    "cover": "assets/test-kapak-5.svg",
+    "format": "YAPRAK TEST",
+    "hasBlob": false,
+    "tags": [
+      "5. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 30 Soru",
+    "createdAt": "2026-10-24T21:36:18.769Z",
+    "updatedAt": "2026-10-24T21:36:18.769Z"
   }
 ]
