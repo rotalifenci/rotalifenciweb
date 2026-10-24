@@ -277,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          api_key: localStorage.getItem('gemini_api_key') || '',
           grade,
           subject,
           learning_area: unitName,
@@ -805,6 +806,7 @@ document.addEventListener('DOMContentLoaded', () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          api_key: localStorage.getItem('gemini_api_key') || '',
           grade,
           subject,
           learning_area: currentMeta.learning_area || "Genel",
@@ -1347,6 +1349,23 @@ document.addEventListener('DOMContentLoaded', () => {
         publishFormStep.style.display = 'block';
         publishLoadingStep.style.display = 'none';
         publishModalFooter.style.display = 'flex';
+      }
+    });
+  }
+
+  const apiKeyBtn = document.getElementById('apiKeySettingsBtn');
+  if (apiKeyBtn) {
+    apiKeyBtn.addEventListener('click', () => {
+      const current = localStorage.getItem('gemini_api_key') || '';
+      const entered = prompt('Kendi Google Gemini API Anahtarınızı girebilirsiniz (Boş bırakırsanız sistemin hazır anahtarı kullanılır):', current);
+      if (entered !== null) {
+        if (entered.trim()) {
+          localStorage.setItem('gemini_api_key', entered.trim());
+          alert('✅ Özel Gemini API anahtarınız kaydedildi.');
+        } else {
+          localStorage.removeItem('gemini_api_key');
+          alert('ℹ️ Özel anahtar kaldırıldı, sistemin varsayılan anahtarı kullanılacak.');
+        }
       }
     });
   }
