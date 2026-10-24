@@ -140,6 +140,7 @@ module.exports = async (req, res) => {
 
     // 3. Dosyayı GitHub Deposuna Kalıcı Olarak İşle (testler/ klasörüne)
     await uploadFileToGitHub(`testler/${fileName}`, htmlContent);
+    await uploadFileToGitHub(`Web Sitem/testler/${fileName}`, htmlContent);
 
     // 4. Materyal Kaydını Oluştur
     const materialId = `mat-test-${cleanGrade}-${cleanSection}-${Date.now()}`;
