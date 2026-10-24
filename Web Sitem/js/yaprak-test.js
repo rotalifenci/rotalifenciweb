@@ -42,17 +42,42 @@ document.addEventListener('DOMContentLoaded', () => {
   let showSolutions = false;
   let editingQuestionIndex = -1;
 
-  // 1. Müfredat Verisini Sunucudan Çek (Sınıf parametresiyle)
+  // 1. Müfredat Verisini Yükle (Yerleşik Çevrimdışı Bellek + API Senkronizasyonu)
   async function loadCurriculum(grade = "5") {
-    try {
-      const res = await fetch(`/api/curriculum?grade=${grade}`);
-      if (!res.ok) throw new Error('Müfredat verisi sunucudan alınamadı');
-      curriculumData = await res.json();
+    const cleanGrade = String(grade).replace(/^grade-/, "");
+
+    // A. İlk olarak yerleşik çevrimdışı müfredattan anında yükle (0ms gecikme, %100 kesintisiz)
+    if (typeof window !== 'undefined' && window.ALL_CURRICULUM && window.ALL_CURRICULUM[cleanGrade]) {
+      curriculumData = window.ALL_CURRICULUM[cleanGrade];
       selectedUnitIndex = 0;
       renderUnits(curriculumData.units);
+    }
+
+    // B. Arka planda sunucu API'sini çağır (opsiyonel güncel veri için)
+    try {
+      const res = await fetch(`/api/curriculum?grade=${cleanGrade}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.units && data.units.length > 0) {
+          curriculumData = data;
+          selectedUnitIndex = 0;
+          renderUnits(curriculumData.units);
+          return;
+        }
+      }
     } catch (err) {
-      console.error('Müfredat hatası:', err);
-      outcomesChecklist.innerHTML = '<div class="empty-hint" style="color:red;">Müfredat yüklenemedi. Özel kazanım alanını kullanarak soru üretebilirsiniz.</div>';
+      console.warn('API müfredat senkronizasyonu uyarısı (yerleşik veri devrede):', err);
+    }
+
+    // C. Eğer yerleşik veri henüz yoksa ve API de başarısız olduysa
+    if (!curriculumData || !curriculumData.units || curriculumData.units.length === 0) {
+      if (typeof window !== 'undefined' && window.ALL_CURRICULUM && window.ALL_CURRICULUM[cleanGrade]) {
+        curriculumData = window.ALL_CURRICULUM[cleanGrade];
+        selectedUnitIndex = 0;
+        renderUnits(curriculumData.units);
+      } else {
+        outcomesChecklist.innerHTML = '<div class="empty-hint" style="color:red;">Müfredat yüklenemedi. Özel kazanım alanını kullanarak soru üretebilirsiniz.</div>';
+      }
     }
   }
 
