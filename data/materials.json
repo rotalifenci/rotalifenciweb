@@ -1009,34 +1009,6 @@
     "cover": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg"
   },
   {
-    "id": "not-7-1",
-    "grade": "7",
-    "category": "ders-notu",
-    "title": "7. Sınıf 1. Ünite Notu",
-    "unit": "1. Ünite: Uzay Çağı",
-    "desc": "7. Sınıf 1. Ünite: Uzay Çağı kapsamlı ders notu ve özet föyü.",
-    "fileName": "7.1. Ders Notu.pdf",
-    "fileUrl": "assets/docs/7-1-ders-notu.pdf",
-    "imageUrl": "assets/materials/7-1-ders-notu_cover.jpg",
-    "format": "PDF",
-    "hasBlob": false,
-    "tags": [
-      "MEB 2026-2027",
-      "7.sınıf",
-      "dersnotu",
-      "fen",
-      "uzay cagi"
-    ],
-    "visibility": "public",
-    "downloadCount": "1.850+",
-    "createdAt": "16.09.2026",
-    "updatedAt": "18.09.2026",
-    "targetSection": "1",
-    "kapakResmi": "assets/materials/7-1-ders-notu_cover.jpg",
-    "isCloud": true,
-    "cover": "assets/materials/7-1-ders-notu_cover.jpg"
-  },
-  {
     "id": "book-6",
     "grade": "6",
     "category": "ders-notu",
