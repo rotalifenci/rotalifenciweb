@@ -1,6 +1,6 @@
 /**
  * Rotalı Fenci - Yaprak Test & İnteraktif Sınav Oluşturucu Motoru
- * Hem Çoktan Seçmeli hem de Açık Uçlu (Klasik) ve Kısa Cevaplı sınavları destekler.
+ * Hem Çoktan Seçmeli hem de Açık Uçlu (Klasik) ve Kısa Cevaplı sınavları tam ekran MEB formatında destekler.
  * Hem tarayıcıda canlı çözülebilir hem de A4 formatında resmi MEB standartlarında yazdırılabilir/PDF yapılabilir.
  */
 
@@ -29,6 +29,41 @@ function generateSlug(text) {
     .substring(0, 50);
 }
 
+/**
+ * Seçenekleri her türlü veri yapısından (dizi, küçük harf, noktalı anahtar vs.) güvenle A, B, C, D formatına dönüştürür.
+ */
+function normalizeOptions(rawOpts) {
+  if (!rawOpts) return null;
+  const normalized = {};
+
+  if (Array.isArray(rawOpts)) {
+    const keys = ['A', 'B', 'C', 'D'];
+    rawOpts.forEach((val, i) => {
+      if (i < 4 && val !== undefined && val !== null) {
+        normalized[keys[i]] = String(val).trim();
+      }
+    });
+  } else if (typeof rawOpts === 'object') {
+    Object.keys(rawOpts).forEach(k => {
+      const cleanKey = k.toUpperCase().replace(/[^ABCD]/g, '').slice(0, 1);
+      if (['A', 'B', 'C', 'D'].includes(cleanKey)) {
+        normalized[cleanKey] = String(rawOpts[k] || '').trim();
+      }
+    });
+  }
+
+  // En az 2 dolu seçenek olmalı
+  const validKeys = Object.keys(normalized).filter(k => normalized[k].length > 0);
+  if (validKeys.length >= 2) {
+    // Eksik seçenekleri boş kalmayacak şekilde tamamla
+    ['A', 'B', 'C', 'D'].forEach(k => {
+      if (!normalized[k]) normalized[k] = '';
+    });
+    return normalized;
+  }
+  return null;
+}
+
 function buildInteractiveTestHtml({
   title,
   grade = "5",
@@ -44,23 +79,21 @@ function buildInteractiveTestHtml({
   const qCount = questions.length;
   const estimatedTime = Math.max(10, qCount * 3);
 
-  const hasOnlyOpenEnded = questions.every(q => {
-    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
-    return q.type === 'open_ended' || (!hasChoices && q.type !== 'multiple_choice');
-  });
-
-  const mcCount = questions.filter(q => {
-    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
-    return (q.type === 'multiple_choice' || !q.type) && hasChoices;
-  }).length;
+  // Soru tiplerini analiz et
+  let mcCount = 0;
+  let openEndedCount = 0;
 
   // Soruları HTML bloklarına dönüştür
   const questionsHtml = questions.map((q, idx) => {
     const qNum = idx + 1;
-    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
-    const isMultipleChoice = (q.type === 'multiple_choice' || !q.type) && hasChoices;
+    const cleanOpts = normalizeOptions(q.options);
+    const hasChoices = cleanOpts !== null;
+    const isMultipleChoice = (q.type === 'multiple_choice' || (!q.type && hasChoices)) && hasChoices;
     const isShortAnswer = q.type === 'short_answer';
     const isOpenEnded = q.type === 'open_ended' || (!hasChoices && !isShortAnswer);
+
+    if (isMultipleChoice) mcCount++;
+    if (isOpenEnded) openEndedCount++;
 
     const visualBox = q.visual_svg ? `
       <div class="question-visual-box">
@@ -75,7 +108,7 @@ function buildInteractiveTestHtml({
     if (isMultipleChoice) {
       correctAns = (q.correct_answer || 'A').toUpperCase().trim();
       qTypeTag = 'Çoktan Seçmeli';
-      const opts = q.options || { A: '', B: '', C: '', D: '' };
+      const opts = cleanOpts;
       const optionsHtml = ['A', 'B', 'C', 'D'].map(optKey => {
         const optText = opts[optKey] || '';
         return `
@@ -112,14 +145,15 @@ function buildInteractiveTestHtml({
           <div class="sol-text"><strong>Cevap:</strong> ${escapeHtml(correctAns || q.explanation || 'Belirtilmemiş.')}</div>
         </div>`;
     } else {
-      // Açık Uçlu (Klasik)
+      // Açık Uçlu (Klasik) Soru
       correctAns = String(q.correct_answer || '').trim();
       qTypeTag = 'Açık Uçlu';
       answerAreaHtml = `
         <div class="open-ended-answer-area">
           <div class="answer-lines-prompt"><i class="fa-solid fa-pen-nib"></i> <strong>Cevabınızı ve bilimsel gerekçenizi yazınız:</strong></div>
-          <textarea class="student-text-input no-print" rows="3" placeholder="Açık uçlu cevabınızı buraya yazabilirsiniz..."></textarea>
+          <textarea class="student-text-input no-print" rows="4" placeholder="Açık uçlu cevabınızı ve bilimsel gerekçenizi buraya yazabilirsiniz..."></textarea>
           <div class="print-writing-lines only-print">
+            <div class="write-line"></div>
             <div class="write-line"></div>
             <div class="write-line"></div>
             <div class="write-line"></div>
@@ -159,8 +193,9 @@ function buildInteractiveTestHtml({
   // Mini Cevap Anahtarı Hücreleri
   const answerKeyCells = questions.map((q, idx) => {
     const qNum = idx + 1;
-    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
-    const isMultipleChoice = (q.type === 'multiple_choice' || !q.type) && hasChoices;
+    const cleanOpts = normalizeOptions(q.options);
+    const hasChoices = cleanOpts !== null;
+    const isMultipleChoice = (q.type === 'multiple_choice' || (!q.type && hasChoices)) && hasChoices;
     const isShort = q.type === 'short_answer';
 
     let displayAns = '';
@@ -184,7 +219,7 @@ function buildInteractiveTestHtml({
   }).join('');
 
   const targetCategoryHash = category === 'denemeler' ? 'denemeler' : 'soru-bankasi';
-  const targetCategoryName = category === 'denemeler' ? 'Yazılıya Hazırlık' : 'Soru Bankası';
+  const targetCategoryName = category === 'denemeler' ? 'Yazılıya Hazırlık' : 'Test / Deneme';
 
   return `<!DOCTYPE html>
 <html lang="tr">
@@ -211,14 +246,13 @@ function buildInteractiveTestHtml({
       --text: #0f172a;
       --text-muted: #64748b;
       --border: #e2e8f0;
-      --radius: 14px;
+      --radius: 16px;
     }
 
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Times New Roman', Times, serif !important;
     }
 
     body {
@@ -227,10 +261,12 @@ function buildInteractiveTestHtml({
       line-height: 1.6;
       padding: 20px 16px;
       min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
     }
 
     .test-wrapper {
-      max-width: 920px;
+      max-width: 1200px;
+      width: 100%;
       margin: 0 auto;
     }
 
@@ -240,18 +276,13 @@ function buildInteractiveTestHtml({
       justify-content: space-between;
       align-items: center;
       background: #ffffff;
-      padding: 14px 20px;
+      padding: 14px 22px;
       border-radius: var(--radius);
       border: 1.5px solid var(--border);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       box-shadow: 0 4px 14px rgba(0,0,0,0.04);
       flex-wrap: wrap;
       gap: 12px;
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
-    }
-
-    .top-actions-bar * {
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
     .nav-links {
@@ -266,293 +297,387 @@ function buildInteractiveTestHtml({
       gap: 6px;
       text-decoration: none;
       color: #0f172a;
-      font-size: 13px;
-      font-weight: 800;
-      padding: 7px 14px;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 8px 14px;
       border-radius: 10px;
       background: #f1f5f9;
-      border: 1px solid #cbd5e1;
-      transition: all 0.2s;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
 
     .nav-btn:hover {
       background: #e2e8f0;
       color: var(--primary);
-      transform: translateY(-1px);
+    }
+
+    .nav-btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .nav-btn-primary:hover {
+      background: var(--primary-hover);
+      color: #ffffff;
     }
 
     .action-group {
       display: flex;
+      align-items: center;
       gap: 8px;
-      flex-wrap: wrap;
     }
 
-    .btn {
+    .btn-action {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 8px 16px;
+      padding: 8px 14px;
       font-size: 13px;
       font-weight: 800;
       border-radius: 10px;
-      border: none;
+      border: 1px solid transparent;
       cursor: pointer;
-      transition: all 0.2s;
-      text-decoration: none;
+      transition: all 0.2s ease;
     }
 
-    .btn-outline {
-      background: #ffffff;
-      color: #334155;
-      border: 1.5px solid #cbd5e1;
-    }
-    .btn-outline:hover {
+    .btn-print {
       background: #f8fafc;
-      border-color: #94a3b8;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+    .btn-print:hover {
+      background: #f1f5f9;
+      color: #0f172a;
     }
 
-    .btn-success {
+    .btn-fullscreen {
+      background: #fdf4ff;
+      border-color: #f0abfc;
+      color: #a21caf;
+    }
+    .btn-fullscreen:hover {
+      background: #fae8ff;
+    }
+
+    .btn-check-all {
       background: #10b981;
       color: #ffffff;
-      box-shadow: 0 4px 10px rgba(16, 185, 129, 0.25);
+      border-color: #059669;
     }
-    .btn-success:hover {
+    .btn-check-all:hover {
       background: #059669;
-      transform: translateY(-1px);
     }
 
-    .btn-primary {
-      background: #4f46e5;
-      color: #ffffff;
-      box-shadow: 0 4px 10px rgba(79, 70, 229, 0.25);
+    .btn-reset {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #e11d48;
     }
-    .btn-primary:hover {
-      background: #4338ca;
-      transform: translateY(-1px);
+    .btn-reset:hover {
+      background: #ffe4e6;
     }
 
-    /* Yaprak Test Kağıdı */
-    .sheet-paper {
+    /* Resmi MEB Okul Başlığı (A4 Sınav Kâğıdı Formatı) */
+    .exam-header-sheet {
       background: #ffffff;
-      border-radius: 6px;
-      border: 1.5px solid #000000;
-      padding: 28px 32px;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-      position: relative;
+      border: 2px solid #0f172a;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      font-family: 'Times New Roman', Times, serif !important;
     }
 
-    /* MEB Sınav Başlığı */
-    .sheet-header {
-      border: 1.5px solid #000000;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      background: #ffffff;
+    .exam-header-sheet * {
+      font-family: 'Times New Roman', Times, serif !important;
     }
 
-    .sheet-header-top {
+    .meb-title-block {
       text-align: center;
-      border-bottom: 1.5px solid #000000;
-      padding-bottom: 6px;
-      margin-bottom: 8px;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
     }
 
-    .ministry-title {
-      font-size: 11px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
+    .meb-title-block h1 {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
       color: #000000;
+      text-transform: uppercase;
+    }
+
+    .meb-title-block h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
       margin-bottom: 2px;
     }
 
-    .main-test-title {
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: 0.5px;
-      color: #000000;
+    .meb-title-block .exam-title-badge {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      padding: 2px 12px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      margin-top: 4px;
     }
 
     .student-info-grid {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 10px;
-      font-size: 11.5px;
-      border-bottom: 1px dashed #000000;
-      padding-bottom: 6px;
-      margin-bottom: 6px;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px 18px;
+      font-size: 14px;
     }
 
-    .sheet-meta-footer {
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-label {
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .info-line {
+      flex: 1;
+      border-bottom: 1px dotted #475569;
+      height: 18px;
+    }
+
+    /* Canlı Puan & İlerleme Kartı */
+    .live-score-card {
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: #ffffff;
+      padding: 16px 22px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
       display: flex;
       justify-content: space-between;
-      font-size: 11px;
-      font-weight: bold;
-      color: #334155;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+    }
+
+    .score-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .score-val {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .score-lbl {
+      font-size: 11.5px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
     }
 
     /* Soru Blokları */
-    .questions-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-    }
-
     .question-block {
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 14px 18px;
       background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
       position: relative;
-      transition: border-color 0.2s;
+      transition: all 0.2s ease;
     }
 
     .question-block:hover {
-      border-color: #94a3b8;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
     }
 
     .q-top-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 14px;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 10px;
     }
 
     .q-badge {
-      display: inline-block;
-      font-weight: 900;
-      font-size: 14.5px;
-      color: #000000;
-      border-bottom: 2px solid #000000;
-      padding-bottom: 1px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
     .q-type-badge {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 4px;
-      background: #f1f5f9;
-      color: #475569;
-      border: 1px solid #cbd5e1;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #4338ca;
       font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
     .q-diff-tag {
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 800;
-      padding: 2px 8px;
-      border-radius: 4px;
+      padding: 3px 8px;
+      border-radius: 6px;
       text-transform: uppercase;
       font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
     .q-diff-kolay { background: #dcfce7; color: #15803d; }
-    .q-diff-orta { background: #e0f2fe; color: #0369a1; }
+    .q-diff-orta { background: #fef3c7; color: #b45309; }
     .q-diff-zor { background: #fee2e2; color: #b91c1c; }
 
-    /* Görsel Kutusu */
     .question-visual-box {
-      margin: 10px auto 14px auto;
-      max-width: 520px;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 8px;
+      overflow: hidden;
+      max-height: 380px;
     }
 
     .question-visual-box svg {
-      width: 100%;
+      max-width: 100%;
       height: auto;
-      max-height: 220px;
+      max-height: 340px;
       display: block;
     }
 
     .q-text {
-      font-size: 13.5px;
-      font-weight: 600;
-      color: #000000;
-      margin-bottom: 12px;
-      line-height: 1.55;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: #0f172a;
+      margin-bottom: 18px;
+      font-family: 'Times New Roman', Times, serif !important;
+      font-weight: 700;
     }
 
-    .q-text strong {
-      font-weight: 900;
-      text-decoration: underline;
-    }
-
-    /* Çoktan Seçmeli Şıklar */
+    /* Çoktan Seçmeli Seçenek Grupları */
     .options-group {
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .options-group {
+        grid-template-columns: 1fr;
+      }
     }
 
     .opt-label {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 7px 12px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: all 0.15s ease;
-      background: #ffffff;
-      font-size: 13px;
-    }
-
-    .opt-label:hover {
+      gap: 14px;
+      padding: 14px 18px;
       background: #f8fafc;
-      border-color: #cbd5e1;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      font-family: 'Times New Roman', Times, serif !important;
     }
 
     .opt-label input[type="radio"] {
       display: none;
     }
 
+    .opt-label:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateX(3px);
+    }
+
     .opt-circle {
-      width: 22px;
-      height: 22px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
-      border: 1.5px solid #000000;
+      background: #ffffff;
+      border: 2px solid #94a3b8;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11.5px;
-      font-weight: 900;
-      color: #000000;
+      font-weight: 800;
+      font-size: 14px;
+      color: #475569;
       flex-shrink: 0;
-      transition: all 0.15s ease;
+      transition: all 0.2s ease;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
     }
 
-    .opt-label.selected {
-      background: #f1f5f9;
-      border-color: #475569;
-    }
-
-    .opt-label.selected .opt-circle {
-      background: #0f172a;
+    .opt-label input[type="radio"]:checked ~ .opt-circle {
+      background: var(--primary);
+      border-color: var(--primary);
       color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
     }
 
+    .opt-label input[type="radio"]:checked {
+      background: #eef2ff;
+      border-color: var(--primary);
+    }
+
+    .opt-text {
+      font-size: 1.08rem;
+      line-height: 1.5;
+      color: #1e293b;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    /* Doğru / Yanlış Vurguları */
     .opt-label.is-correct {
       background: var(--correct-bg) !important;
       border-color: var(--correct-border) !important;
-      font-weight: bold;
     }
-
     .opt-label.is-correct .opt-circle {
       background: #10b981 !important;
       border-color: #10b981 !important;
       color: #ffffff !important;
     }
 
-    .opt-label.is-wrong-selected {
+    .opt-label.is-wrong {
       background: var(--wrong-bg) !important;
       border-color: var(--wrong-border) !important;
     }
-
-    .opt-label.is-wrong-selected .opt-circle {
+    .opt-label.is-wrong .opt-circle {
       background: #ef4444 !important;
       border-color: #ef4444 !important;
       color: #ffffff !important;
@@ -560,66 +685,77 @@ function buildInteractiveTestHtml({
 
     /* Açık Uçlu Soru Alanı */
     .open-ended-answer-area {
-      margin-top: 10px;
+      margin-top: 14px;
       background: #f8fafc;
       border: 1.5px dashed #cbd5e1;
-      border-radius: 8px;
-      padding: 12px 14px;
+      border-radius: 12px;
+      padding: 16px 18px;
     }
 
     .answer-lines-prompt {
-      font-size: 12.5px;
-      font-weight: 700;
+      font-size: 13.5px;
+      font-weight: 800;
       color: #334155;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
     .student-text-input {
       width: 100%;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 10px 12px;
-      font-size: 13.5px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
       font-family: 'Times New Roman', Times, serif !important;
       resize: vertical;
       outline: none;
       background: #ffffff;
       box-sizing: border-box;
-      line-height: 1.5;
+      line-height: 1.6;
+      transition: all 0.2s ease;
     }
 
     .student-text-input:focus {
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .print-writing-lines {
+      display: none;
     }
 
     /* Kısa Cevaplı Soru Alanı */
     .short-answer-area {
-      margin-top: 10px;
+      margin-top: 14px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       background: #f8fafc;
-      border: 1px dashed #cbd5e1;
-      border-radius: 6px;
-      padding: 8px 12px;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 16px;
     }
 
     .short-ans-label {
-      font-size: 13px;
+      font-size: 14px;
       color: #334155;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .student-short-input {
       flex: 1;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
-      padding: 7px 10px;
-      font-size: 13.5px;
-      font-family: 'Times New Roman', Times, serif !important;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 14.5px;
       outline: none;
-      box-sizing: border-box;
       background: #ffffff;
+      font-family: 'Times New Roman', Times, serif !important;
     }
 
     .student-short-input:focus {
@@ -627,136 +763,110 @@ function buildInteractiveTestHtml({
       box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
     }
 
-    .print-writing-lines {
-      display: none;
+    /* Çözüm ve Açıklama Kutusu */
+    .solution-box {
+      margin-top: 16px;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 14px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sol-title {
+      font-weight: 800;
+      color: #1e40af;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sol-text {
+      color: #1e293b;
+      line-height: 1.6;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    /* Cevap Anahtarı Tablosu */
+    .answer-key-section {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 30px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    }
+
+    .ak-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ak-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 10px;
+    }
+
+    .ak-cell {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      background: #f8fafc;
+    }
+
+    .ak-q {
+      display: block;
+      background: #334155;
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 0;
+    }
+
+    .ak-a {
+      display: block;
+      font-size: 15px;
+      font-weight: 900;
+      color: #0f172a;
+      padding: 6px 0;
     }
 
     .only-print {
       display: none !important;
     }
 
-    /* Çözüm Kutusu */
-    .solution-box {
-      margin-top: 12px;
-      padding: 10px 14px;
-      background: #eff6ff;
-      border-left: 4px solid #3b82f6;
-      border-radius: 0 6px 6px 0;
-      font-size: 12.5px;
-      color: #1e3a8a;
-    }
-
-    .sol-title {
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-
-    .sol-text {
-      line-height: 1.55;
-    }
-
-    /* Cevap Anahtarı Şeridi */
-    .answer-key-section {
-      margin-top: 24px;
-      padding-top: 16px;
-      border-top: 2px dashed #000000;
-      page-break-inside: avoid;
-    }
-
-    .ak-title {
-      text-align: center;
-      font-size: 12px;
-      font-weight: 900;
-      letter-spacing: 1px;
-      margin-bottom: 10px;
-    }
-
-    .ak-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      justify-content: center;
-    }
-
-    .ak-cell {
-      border: 1px solid #000000;
-      display: flex;
-      flex-direction: column;
-      width: 42px;
-      text-align: center;
-    }
-
-    .ak-q {
-      background: #f1f5f9;
-      font-size: 10px;
-      font-weight: bold;
-      border-bottom: 1px solid #000000;
-      padding: 1px 0;
-    }
-
-    .ak-a {
-      font-size: 12px;
-      font-weight: 900;
-      padding: 3px 0;
-      min-height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Sayfa Alt Bilgisi */
-    .sheet-footer {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-top: 24px;
-      padding-top: 8px;
-      border-top: 1px solid #cbd5e1;
-      font-size: 11px;
-      color: #64748b;
-    }
-
-    .sheet-footer strong {
-      color: #000000;
-    }
-
-    /* Sonuç Kartı */
-    .result-card {
-      background: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%);
-      color: #ffffff;
-      padding: 24px;
-      border-radius: var(--radius);
-      margin-top: 24px;
-      text-align: center;
-      display: none;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
-    }
-
-    .result-card * {
-      font-family: 'Plus Jakarta Sans', sans-serif !important;
-    }
-
-    .score-badge {
-      font-size: 36px;
-      font-weight: 900;
-      color: #fbbf24;
-      margin: 8px 0;
-    }
-
-    /* Yazdırma ve PDF (@media print) Stilleri */
-    @page {
-      size: A4 portrait;
-      margin: 10mm 15mm;
-    }
-
+    /* @media print MEB Resmi A4 Yazdırma Stilleri */
     @media print {
       body {
         background: #ffffff !important;
+        color: #000000 !important;
         padding: 0 !important;
+        font-family: 'Times New Roman', Times, serif !important;
+        font-size: 11pt !important;
       }
 
-      .no-print {
+      * {
+        font-family: 'Times New Roman', Times, serif !important;
+      }
+
+      .no-print,
+      .top-actions-bar,
+      .live-score-card,
+      .solution-box {
         display: none !important;
       }
 
@@ -766,54 +876,53 @@ function buildInteractiveTestHtml({
 
       .test-wrapper {
         max-width: 100% !important;
+        padding: 0 !important;
         margin: 0 !important;
       }
 
-      .sheet-paper {
-        border: none !important;
+      .exam-header-sheet {
         box-shadow: none !important;
-        padding: 0 !important;
+        border: 2px solid #000000 !important;
+        margin-bottom: 15px !important;
+        padding: 10px 14px !important;
       }
 
       .question-block {
-        break-inside: avoid !important;
+        box-shadow: none !important;
+        border: 1px solid #94a3b8 !important;
+        padding: 12px 14px !important;
+        margin-bottom: 14px !important;
         page-break-inside: avoid !important;
-        border: 1px solid #cbd5e1 !important;
-        margin-bottom: 12px !important;
+      }
+
+      .q-badge {
+        background: #000000 !important;
+        color: #ffffff !important;
       }
 
       .opt-label {
-        break-inside: avoid !important;
-      }
-
-      .solution-box {
-        break-inside: avoid !important;
-      }
-
-      .open-ended-answer-area {
+        border: none !important;
         background: transparent !important;
-        border: 1px solid #000000 !important;
-        padding: 8px 12px !important;
+        padding: 3px 0 !important;
+      }
+
+      .opt-circle {
+        border: 1.5px solid #000000 !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 11px !important;
       }
 
       .print-writing-lines {
-        display: flex !important;
-        flex-direction: column;
-        gap: 20px;
-        margin-top: 18px;
-        padding-bottom: 6px;
+        display: block !important;
+        margin-top: 8px !important;
       }
 
       .write-line {
-        border-bottom: 1px dashed #64748b;
-        height: 1px;
-        width: 100%;
-      }
-
-      .short-answer-area {
-        background: transparent !important;
-        border: none !important;
-        padding: 4px 0 !important;
+        border-bottom: 1px dotted #64748b !important;
+        height: 24px !important;
       }
 
       .print-short-line {
@@ -821,219 +930,262 @@ function buildInteractiveTestHtml({
       }
 
       .answer-key-section {
-        display: block !important;
-        break-inside: avoid !important;
+        box-shadow: none !important;
+        border: 1px solid #000000 !important;
+        page-break-before: auto !important;
       }
     }
   </style>
 </head>
 <body>
+
   <div class="test-wrapper">
-    
-    <!-- Üst Kontrol Barı -->
+
+    <!-- Üst Kontrol & Navigasyon Barı -->
     <div class="top-actions-bar no-print">
       <div class="nav-links">
-        <a href="https://rotalifenci.vercel.app/" class="nav-btn">
-          <i class="fa-solid fa-house"></i> Rotalı Fenci Portalı
+        <a href="/index.html#grade-${grade}/${targetCategoryHash}" class="nav-btn nav-btn-primary">
+          <i class="fa-solid fa-arrow-left"></i> ${targetCategoryName} Listesine Dön
         </a>
-        <a href="https://rotalifenci.vercel.app/#grade/grade-${grade}/${targetCategoryHash}" class="nav-btn">
-          <span>📚</span> ${grade}. Sınıf ${targetCategoryName}
+        <a href="/index.html" class="nav-btn">
+          <i class="fa-solid fa-house"></i> Ana Sayfa
         </a>
       </div>
 
       <div class="action-group">
-        <button type="button" id="toggleTeacherModeBtn" class="btn btn-outline" title="Öğretmen Modu: Tüm şıkları, model cevapları ve ayrıntılı çözümleri anında gösterir">
-          <i class="fa-solid fa-eye"></i> <span>Öğretmen Modu</span>
+        <button type="button" onclick="toggleTestFullscreen()" class="btn-action btn-fullscreen" title="Tam Ekran Moduna Geç (F11)">
+          <i class="fa-solid fa-expand"></i> <span>Tam Ekran</span>
         </button>
-        <button type="button" id="finishTestBtn" class="btn btn-success" title="${hasOnlyOpenEnded ? 'Model çözümleri ve değerlendirme ölçütlerini gösterir' : 'İşaretlediğiniz şıkları kontrol edip puanınızı hesaplar'}">
-          <i class="fa-solid fa-circle-check"></i> <span>${hasOnlyOpenEnded ? 'Model Çözümleri Gör' : 'Testi Bitir & Puanla'}</span>
-        </button>
-        <button type="button" onclick="window.print()" class="btn btn-primary" title="A4 formatında yazdır veya PDF olarak kaydet">
+        <button type="button" onclick="window.print()" class="btn-action btn-print" title="MEB Standartlarında A4 Yazdır veya PDF İndir">
           <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
         </button>
+        ${mcCount > 0 ? `
+        <button type="button" onclick="evaluateAllAnswers()" class="btn-action btn-check-all" id="btnEvaluate">
+          <i class="fa-solid fa-circle-check"></i> <span>Cevapları Kontrol Et</span>
+        </button>
+        ` : ''}
+        <button type="button" onclick="toggleAllSolutions()" class="btn-action btn-print" id="btnToggleSolutions">
+          <i class="fa-solid fa-lightbulb"></i> <span>Çözümleri Göster</span>
+        </button>
+        <button type="button" onclick="resetExam()" class="btn-action btn-reset" title="Sınavı Baştan Başlat">
+          <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
+        </button>
       </div>
     </div>
 
-    <!-- Yaprak Test / Sınav Kağıdı -->
-    <div class="sheet-paper" id="testSheet">
-      
-      <!-- MEB Resmi Sınav Başlığı -->
-      <div class="sheet-header">
-        <div class="sheet-header-top">
-          <div class="ministry-title">T.C. MİLLİ EĞİTİM BAKANLIĞI</div>
-          <div class="main-test-title">${safeTitle.toUpperCase()}</div>
+    <!-- MEB Resmi Sınav Kâğıdı Başlığı -->
+    <div class="exam-header-sheet">
+      <div class="meb-title-block">
+        <h1>T.C. MİLLÎ EĞİTİM BAKANLIĞI</h1>
+        <h2>${grade}. SINIF ${subject.toLocaleUpperCase('tr-TR')} DERSİ KAZANIM DEĞERLENDİRME SINAVI</h2>
+        <div class="exam-title-badge">${safeTitle}</div>
+      </div>
+      <div class="student-info-grid">
+        <div class="info-item">
+          <span class="info-label">Adı Soyadı:</span>
+          <span class="info-line"></span>
         </div>
-
-        <div class="student-info-grid">
-          <div><strong>Adı Soyadı:</strong> ........................................................</div>
-          <div><strong>Sınıf / Şube:</strong> ${grade} / .........</div>
-          <div><strong>Tarih:</strong> ..... / ..... / 2026</div>
-          <div><strong>Puan:</strong> <span id="headerScoreBox">...............</span></div>
+        <div class="info-item">
+          <span class="info-label">Sınıfı / Şubesi:</span>
+          <span class="info-line" style="max-width: 100px;"></span>
         </div>
-
-        <div class="sheet-meta-footer">
-          <span><strong>Ünite:</strong> ${safeUnit}</span>
-          <span><strong>Soru Sayısı:</strong> ${qCount} Soru</span>
-          <span><strong>Süre:</strong> ${estimatedTime} Dakika</span>
+        <div class="info-item">
+          <span class="info-label">Okul Numarası:</span>
+          <span class="info-line" style="max-width: 100px;"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tarih:</span>
+          <span class="info-line" style="max-width: 120px;"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Aldığı Not:</span>
+          <span class="info-line" style="max-width: 80px;"></span>
         </div>
       </div>
-
-      <!-- Sorular Listesi -->
-      <div class="questions-list">
-        ${questionsHtml}
-      </div>
-
-      <!-- Cevap ve Kodlama Anahtarı (Son Kısım) -->
-      <div class="answer-key-section" id="answerKeySection" style="display: none;">
-        <div class="ak-title">🎯 CEVAP VE DEĞERLENDİRME ANAHTARI</div>
-        <div class="ak-grid">
-          ${answerKeyCells}
-        </div>
-        ${!hasOnlyOpenEnded && mcCount < qCount ? `
-          <div style="text-align: center; font-size: 11px; color: #64748b; margin-top: 8px;">
-            * Açık uçlu soruların detaylı değerlendirme ölçütleri ve model cevapları için ilgili soruların altındaki çözüm kutularına bakınız.
-          </div>` : ''}
-      </div>
-
-      <!-- Sayfa Alt Bilgisi -->
-      <div class="sheet-footer">
-        <div><strong>ROTALI FENCİ</strong> — Dijital Fen Bilimleri Eğitim Portalı</div>
-        <div>rotalifenci.vercel.app</div>
-      </div>
-
     </div>
 
-    <!-- Sonuç Değerlendirme Kartı (Test Tamamlandığında Çıkar) -->
-    <div class="result-card no-print" id="resultCard">
-      <div style="font-size: 14px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Sınav Değerlendirmesi</div>
-      <div class="score-badge" id="scoreDisplay">0 Puan</div>
-      <p id="scoreDetails" style="font-size: 14.5px; color: #cbd5e1; margin-bottom: 16px; line-height: 1.5;"></p>
-      <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-        <button type="button" onclick="location.reload()" class="btn btn-outline" style="background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2);">
-          <i class="fa-solid fa-rotate-right"></i> Tekrar Çöz
-        </button>
-        <button type="button" onclick="window.print()" class="btn btn-primary">
-          <i class="fa-solid fa-print"></i> Yazdır / PDF Al
-        </button>
+    <!-- Canlı Skor & İlerleme Paneli (Çoktan seçmeli varsa) -->
+    ${mcCount > 0 ? `
+    <div class="live-score-card no-print">
+      <div class="score-item">
+        <div class="score-icon"><i class="fa-solid fa-list-check"></i></div>
+        <div>
+          <div class="score-val" id="answeredCount">0 / ${mcCount}</div>
+          <div class="score-lbl">Çözülen Soru</div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon" style="background: rgba(16, 185, 129, 0.35);"><i class="fa-solid fa-check"></i></div>
+        <div>
+          <div class="score-val" id="correctCount">0</div>
+          <div class="score-lbl">Doğru</div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon" style="background: rgba(239, 68, 68, 0.35);"><i class="fa-solid fa-xmark"></i></div>
+        <div>
+          <div class="score-val" id="wrongCount">0</div>
+          <div class="score-lbl">Yanlış</div>
+        </div>
+      </div>
+      <div class="score-item">
+        <div class="score-icon" style="background: rgba(245, 158, 11, 0.35);"><i class="fa-solid fa-trophy"></i></div>
+        <div>
+          <div class="score-val" id="totalScore">0 Puan</div>
+          <div class="score-lbl">Başarı Puanı</div>
+        </div>
+      </div>
+    </div>
+    ` : ''}
+
+    <!-- Soru Listesi -->
+    <form id="examForm" onsubmit="return false;">
+      ${questionsHtml}
+    </form>
+
+    <!-- Cevap Anahtarı -->
+    <div class="answer-key-section">
+      <div class="ak-title">
+        <i class="fa-solid fa-key" style="color: var(--primary);"></i>
+        <span>Cevap Anahtarı</span>
+      </div>
+      <div class="ak-grid">
+        ${answerKeyCells}
       </div>
     </div>
 
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      let isTeacherMode = false;
-      const totalQuestions = ${qCount};
-      const totalMcQuestions = ${mcCount};
-      const isOnlyOpenEnded = ${hasOnlyOpenEnded ? 'true' : 'false'};
+    let solutionsVisible = false;
 
-      const testSheet = document.getElementById('testSheet');
-      const toggleTeacherModeBtn = document.getElementById('toggleTeacherModeBtn');
-      const finishTestBtn = document.getElementById('finishTestBtn');
-      const answerKeySection = document.getElementById('answerKeySection');
-      const resultCard = document.getElementById('resultCard');
-      const scoreDisplay = document.getElementById('scoreDisplay');
-      const scoreDetails = document.getElementById('scoreDetails');
-      const headerScoreBox = document.getElementById('headerScoreBox');
-
-      // Şık Seçimi (Öğrenci Tıklaması - Sadece Çoktan Seçmeli Sorularda)
-      document.querySelectorAll('.opt-label').forEach(label => {
-        label.addEventListener('click', function(e) {
-          if (isTeacherMode) return;
-          const block = this.closest('.question-block');
-          block.querySelectorAll('.opt-label').forEach(l => l.classList.remove('selected'));
-          this.classList.add('selected');
-          const radio = this.querySelector('input[type="radio"]');
-          if (radio) radio.checked = true;
+    // Tam Ekran Aç / Kapat
+    function toggleTestFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn('Tam ekran hatası:', err.message);
         });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Seçenek tıklama dinleyicileri
+    document.querySelectorAll('.opt-label').forEach(label => {
+      label.addEventListener('click', function(e) {
+        const block = this.closest('.question-block');
+        if (!block) return;
+        block.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-selected'));
+        this.classList.add('is-selected');
+        updateAnswerProgress();
+      });
+    });
+
+    function updateAnswerProgress() {
+      const mcBlocks = document.querySelectorAll('.question-block[data-type="multiple_choice"]');
+      let answered = 0;
+      mcBlocks.forEach(b => {
+        const checked = b.querySelector('input[type="radio"]:checked');
+        if (checked) answered++;
+      });
+      const answeredEl = document.getElementById('answeredCount');
+      if (answeredEl) answeredEl.innerText = answered + ' / ' + mcBlocks.length;
+    }
+
+    // Cevapları Kontrol Et
+    function evaluateAllAnswers() {
+      const mcBlocks = document.querySelectorAll('.question-block[data-type="multiple_choice"]');
+      let correct = 0;
+      let wrong = 0;
+
+      mcBlocks.forEach(block => {
+        const correctAns = (block.getAttribute('data-correct') || '').toUpperCase().trim();
+        const checked = block.querySelector('input[type="radio"]:checked');
+        const labels = block.querySelectorAll('.opt-label');
+
+        labels.forEach(l => {
+          l.classList.remove('is-correct', 'is-wrong');
+          const opt = l.getAttribute('data-opt');
+          if (opt === correctAns) {
+            l.classList.add('is-correct');
+          }
+        });
+
+        if (checked) {
+          const userVal = checked.value;
+          if (userVal === correctAns) {
+            correct++;
+          } else {
+            wrong++;
+            const userLabel = block.querySelector('.opt-label[data-opt="' + userVal + '"]');
+            if (userLabel) userLabel.classList.add('is-wrong');
+          }
+        }
       });
 
-      // Öğretmen Modu Aç/Kapat
-      if (toggleTeacherModeBtn) {
-        toggleTeacherModeBtn.addEventListener('click', () => {
-          isTeacherMode = !isTeacherMode;
-          if (isTeacherMode) {
-            answerKeySection.style.display = 'block';
-            document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'block');
-            document.querySelectorAll('.question-block').forEach(qb => {
-              if (qb.getAttribute('data-type') === 'multiple_choice') {
-                const correctOpt = qb.getAttribute('data-correct');
-                const targetLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
-                if (targetLabel) targetLabel.classList.add('is-correct');
-              }
-            });
-            toggleTeacherModeBtn.innerHTML = '<i class="fa-solid fa-lock"></i> <span>Öğretmen Modunu Kapat</span>';
-            toggleTeacherModeBtn.classList.add('btn-primary');
-            toggleTeacherModeBtn.classList.remove('btn-outline');
-          } else {
-            answerKeySection.style.display = 'none';
-            document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'none');
-            document.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
-            toggleTeacherModeBtn.innerHTML = '<i class="fa-solid fa-eye"></i> <span>Öğretmen Modu</span>';
-            toggleTeacherModeBtn.classList.add('btn-outline');
-            toggleTeacherModeBtn.classList.remove('btn-primary');
-          }
-        });
+      const totalMC = mcBlocks.length;
+      const score = totalMC > 0 ? Math.round((correct / totalMC) * 100) : 100;
+
+      const cEl = document.getElementById('correctCount');
+      const wEl = document.getElementById('wrongCount');
+      const sEl = document.getElementById('totalScore');
+      if (cEl) cEl.innerText = correct;
+      if (wEl) wEl.innerText = wrong;
+      if (sEl) sEl.innerText = score + ' Puan';
+
+      // Çözümleri otomatik aç
+      showAllSolutions();
+    }
+
+    // Çözümleri Aç / Kapat
+    function toggleAllSolutions() {
+      solutionsVisible = !solutionsVisible;
+      const boxes = document.querySelectorAll('.solution-box');
+      boxes.forEach(b => {
+        b.style.display = solutionsVisible ? 'block' : 'none';
+      });
+      const btn = document.getElementById('btnToggleSolutions');
+      if (btn) {
+        btn.innerHTML = solutionsVisible 
+          ? '<i class="fa-solid fa-eye-slash"></i> <span>Çözümleri Gizle</span>'
+          : '<i class="fa-solid fa-lightbulb"></i> <span>Çözümleri Göster</span>';
       }
+    }
 
-      // Testi Bitir & Değerlendir
-      if (finishTestBtn) {
-        finishTestBtn.addEventListener('click', () => {
-          let mcCorrect = 0;
-          let mcAnswered = 0;
-
-          document.querySelectorAll('.question-block').forEach(qb => {
-            const isMc = qb.getAttribute('data-type') === 'multiple_choice';
-            const solBox = qb.querySelector('.solution-box');
-            if (solBox) solBox.style.display = 'block';
-
-            if (isMc) {
-              const correctOpt = qb.getAttribute('data-correct');
-              const selectedLabel = qb.querySelector('.opt-label.selected');
-              qb.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
-
-              if (selectedLabel) {
-                mcAnswered++;
-                const userOpt = selectedLabel.getAttribute('data-opt');
-                if (userOpt === correctOpt) {
-                  mcCorrect++;
-                  selectedLabel.classList.add('is-correct');
-                } else {
-                  selectedLabel.classList.add('is-wrong-selected');
-                  const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
-                  if (correctLabel) correctLabel.classList.add('is-correct');
-                }
-              } else {
-                const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
-                if (correctLabel) correctLabel.classList.add('is-correct');
-              }
-            }
-          });
-
-          answerKeySection.style.display = 'block';
-
-          if (totalMcQuestions > 0) {
-            const score = Math.round((mcCorrect / totalMcQuestions) * 100);
-            scoreDisplay.textContent = score + ' Puan';
-            headerScoreBox.textContent = score + ' / 100';
-            const wrongCount = mcAnswered - mcCorrect;
-            const emptyCount = totalMcQuestions - mcAnswered;
-            let det = totalMcQuestions + ' çoktan seçmeli sorudan ' + mcCorrect + ' doğru, ' + wrongCount + ' yanlış, ' + emptyCount + ' boş.';
-            if (totalQuestions > totalMcQuestions) {
-              det += ' (' + (totalQuestions - totalMcQuestions) + ' adet açık uçlu soru için model çözümleri inceleyiniz.)';
-            }
-            scoreDetails.textContent = det;
-          } else {
-            scoreDisplay.textContent = 'Sınav Tamamlandı';
-            headerScoreBox.textContent = 'Açık Uçlu';
-            scoreDetails.textContent = 'Açık uçlu sınav tamamlandı. Yazdığınız cevapları yukarıda açılan model cevap ve değerlendirme ölçütleriyle karşılaştırarak kendi değerlendirmenizi yapabilirsiniz.';
-          }
-
-          resultCard.style.display = 'block';
-          resultCard.scrollIntoView({ behavior: 'smooth' });
-        });
+    function showAllSolutions() {
+      solutionsVisible = true;
+      document.querySelectorAll('.solution-box').forEach(b => b.style.display = 'block');
+      const btn = document.getElementById('btnToggleSolutions');
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> <span>Çözümleri Gizle</span>';
       }
-    });
+    }
+
+    // Sınavı Sıfırla
+    function resetExam() {
+      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      document.querySelectorAll('.student-text-input, .student-short-input').forEach(i => i.value = '');
+      document.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-selected', 'is-correct', 'is-wrong'));
+      document.querySelectorAll('.solution-box').forEach(b => b.style.display = 'none');
+      solutionsVisible = false;
+
+      const cEl = document.getElementById('correctCount');
+      const wEl = document.getElementById('wrongCount');
+      const sEl = document.getElementById('totalScore');
+      const aEl = document.getElementById('answeredCount');
+      if (cEl) cEl.innerText = '0';
+      if (wEl) wEl.innerText = '0';
+      if (sEl) sEl.innerText = '0 Puan';
+      const mcCount = document.querySelectorAll('.question-block[data-type="multiple_choice"]').length;
+      if (aEl) aEl.innerText = '0 / ' + mcCount;
+
+      const btn = document.getElementById('btnToggleSolutions');
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> <span>Çözümleri Göster</span>';
+      }
+    }
   </script>
 </body>
 </html>`;
@@ -1041,5 +1193,6 @@ function buildInteractiveTestHtml({
 
 module.exports = {
   buildInteractiveTestHtml,
-  generateSlug
+  generateSlug,
+  normalizeOptions
 };

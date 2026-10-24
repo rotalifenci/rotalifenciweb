@@ -1356,10 +1356,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const catName = data.category === 'denemeler' ? 'Yazılıya Hazırlık' : 'Test / Deneme';
         publishSuccessText.innerHTML = `<strong>"${escapeHtml(data.title)}"</strong> başarıyla Rotalı Fenci web sitenize eklendi.<br><br>
           <span style="display:inline-block; padding: 4px 10px; background:#e0f2fe; color:#0369a1; border-radius:8px; font-weight:700; font-size:12.5px;">
-            📍 Konum: ${data.grade}. Sınıf &gt; ${catName} &gt; ${escapeHtml(data.unit)}
+            📍 Konum: ${data.grade}. Sınıf &gt; Test / Deneme &amp; Yazılıya Hazırlık &gt; ${escapeHtml(data.unit)}
           </span>`;
 
-        viewInWebsiteBtn.href = data.webSectionUrl || `index.html#grade-${data.grade || '5'}`;
+        const targetTab = data.category === 'denemeler' ? 'denemeler' : 'soru-bankasi';
+        viewInWebsiteBtn.href = `index.html#grade-${data.grade || '5'}/${targetTab}`;
         
         let directUrl = '/' + data.fileUrl;
         if (data.htmlContent) {

@@ -6,6 +6,7 @@ const GITHUB_REPO = "rotalifenci/rotalifenciweb";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
 const PERMANENTLY_REMOVED_IDS = new Set([
+    "mat-test-5-1-1792875787663", "mat-test-5-1-1792854826132", "mat-test-5-1-1792854064641",
     "mat-5-unite-bilgi", "mat-1789331179066", "mat-1789331137891", "mat-1789233332632",
     "mat-5-semboller-video", "mat-1789234385646", "mat-1789331480440", "mat-1789233406841",
     "mat-1789233618512", "mat-1789074183232", "mat-1789412649246", "mat-5-lab-guvenlik-gorsel",
