@@ -1,6 +1,19 @@
 const fs = require('fs');
 const path = require('path');
-const { buildInteractiveTestHtml, generateSlug } = require('../scripts/test-generator.js');
+let buildInteractiveTestHtml, generateSlug;
+try {
+  const tg = require('./test-generator.js');
+  buildInteractiveTestHtml = tg.buildInteractiveTestHtml;
+  generateSlug = tg.generateSlug;
+} catch (e1) {
+  try {
+    const tg2 = require('../scripts/test-generator.js');
+    buildInteractiveTestHtml = tg2.buildInteractiveTestHtml;
+    generateSlug = tg2.generateSlug;
+  } catch (e2) {
+    console.error("Test generator require error:", e1.message, e2.message);
+  }
+}
 
 const GITHUB_REPO = "rotalifenci/rotalifenciweb";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");

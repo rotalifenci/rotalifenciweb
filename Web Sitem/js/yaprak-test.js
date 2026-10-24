@@ -1325,7 +1325,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
-          throw new Error(errData.error || 'Yayınlama başarısız oldu.');
+          const errMsg = errData.details ? `${errData.error} (${errData.details})` : (errData.error || 'Yayınlama başarısız oldu.');
+          throw new Error(errMsg);
         }
 
         const data = await res.json();
