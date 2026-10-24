@@ -196,34 +196,6 @@
     "updatedAt": "2026-10-24T20:31:01.058Z"
   },
   {
-    "id": "mat-video-5-1-08",
-    "grade": "5",
-    "category": "videolar",
-    "targetSection": "1",
-    "title": "5.1.8 GÜNEŞ, DÜNYA VE AY ÖLÇEK ETKİNLİK KİTAPÇIĞI",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "Güneş, Dünya ve Ay'ın boyut ve mesafe ilişkilerini kavratan etkileşimli dijital kitapçık.",
-    "fileName": "materyal-5-1-08",
-    "fileUrl": "https://online.fliphtml5.com/cizzv/oaia/",
-    "imageUrl": "assets/materials/5-1-videolar_cover.jpg",
-    "kapakResmi": "assets/materials/5-1-videolar_cover.jpg",
-    "cover": "assets/materials/5-1-videolar_cover.jpg",
-    "format": "İnteraktif Kitap",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "güneş dünya ve ay",
-      "video",
-      "fen bilimleri",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "▶ İzle",
-    "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
-  },
-  {
     "id": "mat-video-5-1-09",
     "grade": "5",
     "category": "videolar",
@@ -312,10 +284,10 @@
     "grade": "5",
     "category": "videolar",
     "targetSection": "1",
-    "title": "5.1.12 UZAYDA DÜŞEN ASTRONOT",
+    "title": "5.1.12 AY'DA DÜŞEN ASTRONOT",
     "unit": "1. Ünite: Güneş, Dünya ve Ay",
     "desc": "Yerçekimsiz uzay ortamında astronotların hareket ederken karşılaştığı durumlar.",
-    "fileName": "uqx7_AeI5sQ.mp4",
+    "fileName": "5.1.12 AY'DA DÜŞEN ASTRONOT",
     "fileUrl": "https://www.youtube.com/watch?v=uqx7_AeI5sQ",
     "imageUrl": "https://img.youtube.com/vi/uqx7_AeI5sQ/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/uqx7_AeI5sQ/hqdefault.jpg",
@@ -333,7 +305,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
+    "updatedAt": "2026-10-24T21:07:44.945Z"
   },
   {
     "id": "mat-video-5-1-13",
