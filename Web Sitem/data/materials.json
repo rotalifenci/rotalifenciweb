@@ -1,5 +1,31 @@
 [
   {
+    "id": "mat-fd3207c6-7641-47f9-be9c-f1e6b852aa43",
+    "grade": "7",
+    "category": "ders-notu",
+    "targetSection": "2",
+    "title": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+    "unit": "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Rotali_Fenci_7_Sinif_Kuvvet_ve_Enerji.pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792863301419_usbzj_rotali_fenci_7_sinif_kuvvet_ve_enerji.pdf",
+    "imageUrl": "assets/materials/1792863301419_usbzj_rotali_fenci_7_sinif_kuvvet_ve_enerji_cover.jpg",
+    "kapakResmi": "assets/materials/1792863301419_usbzj_rotali_fenci_7_sinif_kuvvet_ve_enerji_cover.jpg",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-10-24T17:35:14.000Z",
+    "updatedAt": "2026-10-24T17:35:14.000Z",
+    "cover": "assets/materials/1792863301419_usbzj_rotali_fenci_7_sinif_kuvvet_ve_enerji_cover.jpg"
+  },
+  {
     "id": "mat-3a14e0b7-7a37-40fd-b791-541992b466f8",
     "grade": "5",
     "category": "ders-notu",
