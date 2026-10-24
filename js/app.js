@@ -3154,10 +3154,10 @@ function renderGradesOverview(container) {
                                         <span>🧩</span> <span>Etkinlikler</span>
                                     </a>
                                     <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>📚</span> <span>Soru Bankası</span>
+                                        <span>📚</span> <span>Test / Deneme</span>
                                     </a>
                                     <a href="#grade/${g.id}/denemeler" class="p-2 bg-slate-50 hover:bg-purple-50 hover:text-purple-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>🎯</span> <span>Denemeler</span>
+                                        <span>🎯</span> <span>Yazılıya Hazırlık</span>
                                     </a>
                                     <a href="#grade/${g.id}/egitsel-oyunlar" class="p-2 bg-slate-50 hover:bg-amber-50 hover:text-amber-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎮</span> <span>Eğitsel Oyunlar</span>
@@ -4061,11 +4061,11 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
             desc: "İstasyon etkinlikleri, boşluk doldurma, kavram eşleştirme ve A4 yazdırılabilir çalışma kağıtları."
         },
         "soru-bankasi": {
-            title: `${grade.number}. Sınıf Soru Bankası & Testler`,
+            title: `${grade.number}. Sınıf Test / Deneme`,
             desc: "MEB kazanım değerlendirme testleri, grafik ve tablo yorumlama ağırlıklı beceri temelli sorular."
         },
         "denemeler": {
-            title: `${grade.number}. Sınıf Ünite Denemeleri & Ortak Sınavlar`,
+            title: `${grade.number}. Sınıf Yazılıya Hazırlık`,
             desc: "Süre tutularak uygulanan dönemlik ortak sınav senaryoları ve Türkiye geneli branş denemeleri."
         },
         "egitsel-oyunlar": {
@@ -4203,7 +4203,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                     ${getTabCustomCount('soru-bankasi') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-indigo-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>📚 SORU BANKASI</span>
+                                    <span>📚 TEST / DENEME</span>
                                     ${getTabCustomCount('soru-bankasi') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'soru-bankasi' ? 'bg-indigo-100 text-indigo-800' : 'bg-white/30 text-white'}">${getTabCustomCount('soru-bankasi')}</span>` : ''}
                                 </span>
                             </a>
@@ -4215,7 +4215,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                     ${getTabCustomCount('denemeler') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-purple-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>🎯 DENEMELER</span>
+                                    <span>🎯 YAZILIYA HAZIRLIK</span>
                                     ${getTabCustomCount('denemeler') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'denemeler' ? 'bg-purple-100 text-purple-800' : 'bg-white/30 text-white'}">${getTabCustomCount('denemeler')}</span>` : ''}
                                 </span>
                             </a>
@@ -5045,7 +5045,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'etkinlikler', '${String(item && item.title || '').replace(/'/g, "\\'")}', '${String(item && item.format || 'PDF FÖY').replace(/'/g, "\\'")}')`
         },
         "soru-bankasi": {
-            title: `${grade.number}. Sınıf Soru Bankası & Testler`,
+            title: `${grade.number}. Sınıf Test / Deneme`,
             description: "MEB kazanım değerlendirme testleri, grafik ve tablo yorumlama ağırlıklı beceri temelli sorular.",
             gradient: "from-indigo-600 via-blue-600 to-slate-900",
             icon: "fa-solid fa-book-open-reader",
@@ -5057,7 +5057,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             btnAction: (item) => `openOrDownloadMaterial('${String(item && item.id || '').replace(/'/g, "\\'")}', '${String(item && (item.fileUrl || item.imageUrl) || '#').replace(/'/g, "\\'")}', '${String(item && (item.fileName || item.title) || '').replace(/'/g, "\\'")}', 'soru-bankasi', '${String(item && item.title || '').replace(/'/g, "\\'")}', '${String(item && item.format || 'TEST HAVUZU').replace(/'/g, "\\'")}')`
         },
         "denemeler": {
-            title: `${grade.number}. Sınıf Ünite Denemeleri & Ortak Sınavlar`,
+            title: `${grade.number}. Sınıf Yazılıya Hazırlık`,
             description: "Süre tutularak uygulanan dönemlik ortak sınav senaryoları ve Türkiye geneli branş denemeleri.",
             gradient: "from-purple-600 via-fuchsia-700 to-slate-900",
             icon: "fa-solid fa-bullseye",
@@ -9385,7 +9385,7 @@ function getPortalSearchIndex() {
                     index.push({
                         id: `soru-${gNum}-${idx}`,
                         title: item.title,
-                        category: "Soru Bankası & Test",
+                        category: "Test / Deneme",
                         categoryKey: "soru-bankasi",
                         grade: gradeTitle,
                         gradeNumber: gNum,
@@ -9405,7 +9405,7 @@ function getPortalSearchIndex() {
                     index.push({
                         id: `deneme-${gNum}-${idx}`,
                         title: item.title,
-                        category: "Deneme Sınavı",
+                        category: "Yazılıya Hazırlık",
                         categoryKey: "denemeler",
                         grade: gradeTitle,
                         gradeNumber: gNum,
@@ -16624,8 +16624,8 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 <option value="ders-notu" ${(activeEditCategory === 'ders-notu' || activeEditCategory === 'ders-sunumu') ? 'selected' : ''}>📝 Ders Notu / Sunumu</option>
                                 <option value="videolar" ${activeEditCategory === 'videolar' ? 'selected' : ''}>🎥 Videolar</option>
                                 <option value="etkinlikler" ${activeEditCategory === 'etkinlikler' ? 'selected' : ''}>🧩 Etkinlikler</option>
-                                <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Soru Bankası</option>
-                                <option value="denemeler" ${activeEditCategory === 'denemeler' ? 'selected' : ''}>🎯 Denemeler</option>
+                                <option value="soru-bankasi" ${activeEditCategory === 'soru-bankasi' ? 'selected' : ''}>📚 Test / Deneme</option>
+                                <option value="denemeler" ${activeEditCategory === 'denemeler' ? 'selected' : ''}>🎯 Yazılıya Hazırlık</option>
                                 <option value="egitsel-oyunlar" ${activeEditCategory === 'egitsel-oyunlar' ? 'selected' : ''}>🎮 Eğitsel Oyun/Simülasyon</option>
                                 <option value="lgs" ${activeEditCategory === 'lgs' ? 'selected' : ''}>🎯 LGS Pusulası (8. Sınıf)</option>
                                 <option value="bilim-insanlari" ${activeEditCategory === 'bilim-insanlari' ? 'selected' : ''}>🔭 Bilimin Rotasını Çizenler</option>

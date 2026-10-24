@@ -1307,7 +1307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         publishLoadingStep.style.display = 'none';
         publishSuccessStep.style.display = 'block';
 
-        const catName = data.category === 'denemeler' ? 'Ünite Denemeleri' : 'Soru Bankası & Testler';
+        const catName = data.category === 'denemeler' ? 'Yazılıya Hazırlık' : 'Test / Deneme';
         publishSuccessText.innerHTML = `<strong>"${escapeHtml(data.title)}"</strong> başarıyla Rotalı Fenci web sitenize eklendi.<br><br>
           <span style="display:inline-block; padding: 4px 10px; background:#e0f2fe; color:#0369a1; border-radius:8px; font-weight:700; font-size:12.5px;">
             📍 Konum: ${data.grade}. Sınıf &gt; ${catName} &gt; ${escapeHtml(data.unit)}

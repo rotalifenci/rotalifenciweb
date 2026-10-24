@@ -81,7 +81,7 @@ async function publishTestToWebsite({
       `${cleanGrade}. sınıf`,
       `${cleanSection}. ünite`,
       "yaprak test",
-      "soru bankası",
+      "test / deneme", "yazılıya hazırlık",
       "kazanım testi",
       "deneme",
       "rotalı fenci",
