@@ -1315,5 +1315,30 @@
     "downloadCount": "📝 5 Soru",
     "createdAt": "2026-10-24T15:01:04.641Z",
     "updatedAt": "2026-10-24T15:01:04.648Z"
+  },
+  {
+    "id": "mat-2603aa9e-0409-4243-a3e1-80eae57fdc7a",
+    "grade": "6",
+    "category": "ders-notu",
+    "targetSection": "2",
+    "title": "2. Ünite: Kuvvetin Etkisinde Hareket",
+    "unit": "2. Ünite: Kuvvetin Etkisinde Hareket",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "Rotali_Fenci_Sunum_6_Sinif_2_Unite.pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792860032246_1een5_rotali_fenci_sunum_6_sinif_2_unite.pdf",
+    "imageUrl": "",
+    "kapakResmi": "",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-10-24T16:01:53.769Z",
+    "updatedAt": "2026-10-24T16:40:49.982Z"
   }
 ]
