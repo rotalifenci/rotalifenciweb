@@ -2101,8 +2101,12 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                 </h4>
 
                                 <!-- Görsel: Yatay 16:9 alanı tam kaplayan kapak görseli -->
-                                <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openOrDownloadMaterial('${item.id}')">
-                                    <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group flex items-center justify-center cursor-pointer p-1 sm:p-1.5" onclick="openOrDownloadMaterial('${item.id}')">
+                                    <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                    <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                    <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                    <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                 </div>
 
                                 <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
@@ -2733,8 +2737,12 @@ function renderHomeRecentMaterialsSection() {
                             <div class="text-[11px] font-black text-red-600 mb-1 uppercase tracking-wide truncate">${item.unit || ''}</div>
                             <h4 class="text-base font-black text-slate-900 mb-2 leading-snug group-hover:text-red-600 transition-colors line-clamp-2 uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h4>
                             <!-- Görsel Kapak Kutusu -->
-                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-red-500/40 cursor-pointer flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
-                                <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full object-cover object-top sm:object-center transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-red-500/40 cursor-pointer flex items-center justify-center transition-all p-1 sm:p-1.5" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || 'materyal.pdf').replace(/'/g, "\\'")}', '${item.category || ''}', '${(item.title || '').replace(/'/g, "\\'")}')">
+                                <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
 
@@ -2895,8 +2903,12 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                         </h3>
 
                                         <!-- Görsel Kapak Kutusu (Kullanıcı Talebi: Her içerikte görsel kapak kutusu gösterilir) -->
-                                        <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-red-500/40 cursor-pointer flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
-                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full object-cover object-top sm:object-center transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                        <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-red-500/40 cursor-pointer flex items-center justify-center transition-all p-1 sm:p-1.5" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || resolveMaterialCover(item) || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', '${item.category || ''}', '${item.title.replace(/'/g, "\\'")}')">
+                                            <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                            <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                            <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                         </div>
                                         <p class="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3 mb-4">
                                             ${item.desc || 'MEB müfredatına uygun fen bilimleri materyali.'}
@@ -4627,8 +4639,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                         <h4 class="uppercase tracking-tight text-sm sm:text-base font-black text-slate-900 mb-2 leading-snug break-words">
                                             ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                         </h4>
-                                        <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group flex items-center justify-center cursor-pointer" onclick="${openFunc}">
-                                            <img src="${cover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                        <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group flex items-center justify-center cursor-pointer p-1 sm:p-1.5" onclick="${openFunc}">
+                                            <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                            <img src="${cover}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                            <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                            <img src="${cover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                         </div>
                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
                                             ${item.desc || (isMainBook ? 'Milli Eğitim Bakanlığı tarafından onaylanan güncel müfredat ders kitabı.' : 'Ders kitabı eki ve bölüm dokümanı.')}
@@ -4749,8 +4765,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                         </h4>
 
                                                         <!-- Görsel: Yatay 16:9 alanı tam kaplayan kapak görseli -->
-                                                        <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group flex items-center justify-center cursor-pointer" onclick="openOrDownloadMaterial('${item.id}')">
-                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full object-cover object-top sm:object-center group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                                                        <div class="relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-xl sm:rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group flex items-center justify-center cursor-pointer p-1 sm:p-1.5" onclick="openOrDownloadMaterial('${item.id}')">
+                                                            <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                                            <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                                            <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                                            <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                                         </div>
 
                                                         <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
@@ -4841,8 +4861,12 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             </div>
                                             <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-600 transition-colors uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h5>
                                             <!-- Görsel Kapak Kutusu (Tıklandığında doğrudan Materyali Açar) -->
-                                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-emerald-500/40 cursor-pointer flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')">
-                                                <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-full h-full object-cover object-top sm:object-center transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-emerald-500/40 cursor-pointer flex items-center justify-center transition-all p-1 sm:p-1.5" onclick="openOrDownloadMaterial('${item.id}', '${item.fileUrl || item.imageUrl || '#'}', '${(item.fileName || item.title).replace(/'/g, "\\'")}', 'laboratuvar', '${item.title.replace(/'/g, "\\'")}', '${item.format || ''}')">
+                                                <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                                <img src="${coverImg}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                                <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                                <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                                <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
                                         </div>
@@ -5419,8 +5443,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                         ${String(item.title || '').toLocaleUpperCase('tr-TR')}
                                                     </h5>
                                                     <!-- Görsel Kapak Kutusu -->
-                                                    <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-red-500/40 cursor-pointer flex items-center justify-center transition-all" onclick="${actionCall}">
-                                                        <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="w-full h-full object-cover object-top sm:object-center transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                                    <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-red-500/40 cursor-pointer flex items-center justify-center transition-all p-1 sm:p-1.5" onclick="${actionCall}">
+                                                    <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                                    <img src="${itemCover}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                                    <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                                    <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                     </div>
                                                     <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4 font-medium">
                                                         ${item.desc || cfg.description}
@@ -5586,8 +5614,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             </div>
                                             <h5 class="text-base font-black text-slate-900 mb-1.5 group-hover:text-emerald-700 transition-colors uppercase tracking-tight">${String(item.title || '').toLocaleUpperCase('tr-TR')}</h5>
                                             <!-- Görsel Kapak Kutusu -->
-                                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-emerald-500/40 cursor-pointer flex items-center justify-center transition-all" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}', '${String(item.format || '').replace(/'/g, "\\'")}')">
-                                                <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="w-full h-full object-cover object-top sm:object-center transition-transform duration-300 group-hover:scale-105" loading="lazy">
+                                            <div class="mat-preview-box relative w-full aspect-[16/9] max-h-56 sm:max-h-60 bg-slate-900 rounded-2xl overflow-hidden mb-3 border border-slate-200/80 shadow-inner group-hover:border-emerald-500/40 cursor-pointer flex items-center justify-center transition-all p-1 sm:p-1.5" onclick="openOrDownloadMaterial('${item.id}', '${safeUrl}', '${safeFile}', '${itemCat}', '${safeTitle}', '${String(item.format || '').replace(/'/g, "\\'")}')">
+                                            <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
+                                            <img src="${coverImg}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
+                                            <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                            <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
                                         </div>
