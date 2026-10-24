@@ -3081,37 +3081,6 @@
     "cover": "assets/materials/1792860032246_1een5_rotali_fenci_sunum_6_sinif_2_unite_cover.jpg"
   },
   {
-    "id": "mat-test-5-1-1792877778769",
-    "grade": "5",
-    "category": "denemeler",
-    "targetSection": "1",
-    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "fileUrl": "testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
-    "format": "YAPRAK TEST",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "test / deneme",
-      "yazılıya hazırlık",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 30 Soru",
-    "createdAt": "2026-10-24T21:36:18.769Z",
-    "updatedAt": "2026-10-24T21:36:18.769Z"
-  },
-  {
     "id": "mat-test-5-1-1792878742589",
     "grade": "5",
     "category": "soru-bankasi",
