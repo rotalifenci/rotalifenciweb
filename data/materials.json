@@ -28,34 +28,6 @@
     "updatedAt": "2026-10-24T21:06:16.888Z"
   },
   {
-    "id": "mat-video-5-1-02",
-    "grade": "5",
-    "category": "videolar",
-    "targetSection": "lab",
-    "title": "5.1.2 LABORATUVAR GÜVENLİK SEMBOLLERİ OYUNU",
-    "unit": "Laboratuvar & Deneyler",
-    "desc": "Laboratuvar güvenlik sembollerini eğlenerek pekiştiren eşleştirme oyunu.",
-    "fileName": "5.1.2 LABORATUVAR GÜVENLİK SEMBOLLERİ OYUNU",
-    "fileUrl": "https://wordwall.net/tr/resource/78156302",
-    "imageUrl": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
-    "kapakResmi": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
-    "cover": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
-    "format": "Web Bağlantısı",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "güneş dünya ve ay",
-      "video",
-      "fen bilimleri",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "▶ İzle",
-    "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T21:06:26.627Z"
-  },
-  {
     "id": "mat-video-5-1-03",
     "grade": "5",
     "category": "egitsel-oyunlar",
@@ -451,11 +423,11 @@
     "id": "mat-video-6-1-01",
     "grade": "6",
     "category": "videolar",
-    "targetSection": "1",
+    "targetSection": "lab",
     "title": "6.1.1 LABORATUVAR GÜVENLİĞİ",
-    "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
+    "unit": "Laboratuvar & Deneyler",
     "desc": "Fen bilimleri laboratuvarında uyulması gereken temel güvenlik kuralları ve tehlike sembolleri.",
-    "fileName": "stQr-6J7vBI.mp4",
+    "fileName": "6.1.1 LABORATUVAR GÜVENLİĞİ",
     "fileUrl": "https://www.youtube.com/watch?v=stQr-6J7vBI",
     "imageUrl": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
@@ -473,7 +445,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.056Z",
-    "updatedAt": "2026-10-24T20:31:01.057Z"
+    "updatedAt": "2026-10-24T21:21:54.807Z"
   },
   {
     "id": "mat-video-6-1-02",
