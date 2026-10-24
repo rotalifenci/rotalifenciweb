@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı | Rotalı Fenci</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --primary-light: #eef2ff;
+      --accent: #10b981;
+      --correct-bg: #ecfdf5;
+      --correct-border: #10b981;
+      --wrong-bg: #fef2f2;
+      --wrong-border: #ef4444;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 20px 16px;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+    }
+
+    .test-wrapper {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* Üst Aksiyon / Kontrol Barı */
+    .top-actions-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #ffffff;
+      padding: 14px 22px;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      color: #0f172a;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+    }
+
+    .nav-btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .nav-btn-primary:hover {
+      background: var(--primary-hover);
+      color: #ffffff;
+    }
+
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      border-radius: 10px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .btn-print {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #334155;
+    }
+    .btn-print:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .btn-fullscreen {
+      background: #fdf4ff;
+      border-color: #f0abfc;
+      color: #a21caf;
+    }
+    .btn-fullscreen:hover {
+      background: #fae8ff;
+    }
+
+    .btn-check-all {
+      background: #10b981;
+      color: #ffffff;
+      border-color: #059669;
+    }
+    .btn-check-all:hover {
+      background: #059669;
+    }
+
+    .btn-reset {
+      background: #fff1f2;
+      border-color: #fecdd3;
+      color: #e11d48;
+    }
+    .btn-reset:hover {
+      background: #ffe4e6;
+    }
+
+    /* Resmi MEB Okul Başlığı (A4 Sınav Kâğıdı Formatı) */
+    .exam-header-sheet {
+      background: #ffffff;
+      border: 2px solid #0f172a;
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .exam-header-sheet * {
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .meb-title-block {
+      text-align: center;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 12px;
+      margin-bottom: 14px;
+    }
+
+    .meb-title-block h1 {
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+      color: #000000;
+      text-transform: uppercase;
+    }
+
+    .meb-title-block h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 2px;
+    }
+
+    .meb-title-block .exam-title-badge {
+      display: inline-block;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      padding: 2px 12px;
+      background: #f1f5f9;
+      border-radius: 6px;
+      margin-top: 4px;
+    }
+
+    .student-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px 18px;
+      font-size: 14px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .info-label {
+      font-weight: 700;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+
+    .info-line {
+      flex: 1;
+      border-bottom: 1px dotted #475569;
+      height: 18px;
+    }
+
+    /* Canlı Puan & İlerleme Kartı */
+    .live-score-card {
+      background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+      color: #ffffff;
+      padding: 16px 22px;
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
+    }
+
+    .score-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.18);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .score-val {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.1;
+    }
+
+    .score-lbl {
+      font-size: 11.5px;
+      opacity: 0.9;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+
+    /* Soru Blokları */
+    .question-block {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.03);
+      position: relative;
+      transition: all 0.2s ease;
+    }
+
+    .question-block:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .q-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 10px;
+    }
+
+    .q-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+      padding: 4px 12px;
+      border-radius: 8px;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .q-type-badge {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: #eef2ff;
+      color: #4338ca;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .q-diff-tag {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+    .q-diff-kolay { background: #dcfce7; color: #15803d; }
+    .q-diff-orta { background: #fef3c7; color: #b45309; }
+    .q-diff-zor { background: #fee2e2; color: #b91c1c; }
+
+    .question-visual-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      max-height: 380px;
+    }
+
+    .question-visual-box svg {
+      max-width: 100%;
+      height: auto;
+      max-height: 340px;
+      display: block;
+    }
+
+    .q-text {
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: #0f172a;
+      margin-bottom: 18px;
+      font-family: 'Times New Roman', Times, serif !important;
+      font-weight: 700;
+    }
+
+    /* Çoktan Seçmeli Seçenek Grupları */
+    .options-group {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    @media (min-width: 640px) {
+      .options-group {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .opt-label {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 18px;
+      background: #f8fafc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .opt-label input[type="radio"] {
+      display: none;
+    }
+
+    .opt-label:hover {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      transform: translateX(3px);
+    }
+
+    .opt-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 2px solid #94a3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      color: #475569;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
+    .opt-label input[type="radio"]:checked ~ .opt-circle {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    .opt-label input[type="radio"]:checked {
+      background: #eef2ff;
+      border-color: var(--primary);
+    }
+
+    .opt-text {
+      font-size: 1.08rem;
+      line-height: 1.5;
+      color: #1e293b;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    /* Doğru / Yanlış Vurguları */
+    .opt-label.is-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct-border) !important;
+    }
+    .opt-label.is-correct .opt-circle {
+      background: #10b981 !important;
+      border-color: #10b981 !important;
+      color: #ffffff !important;
+    }
+
+    .opt-label.is-wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong-border) !important;
+    }
+    .opt-label.is-wrong .opt-circle {
+      background: #ef4444 !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
+    }
+
+    /* Açık Uçlu Soru Alanı */
+    .open-ended-answer-area {
+      margin-top: 14px;
+      background: #f8fafc;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+
+    .answer-lines-prompt {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .student-text-input {
+      width: 100%;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 15px;
+      font-family: 'Times New Roman', Times, serif !important;
+      resize: vertical;
+      outline: none;
+      background: #ffffff;
+      box-sizing: border-box;
+      line-height: 1.6;
+      transition: all 0.2s ease;
+    }
+
+    .student-text-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    }
+
+    .print-writing-lines {
+      display: none;
+    }
+
+    /* Kısa Cevaplı Soru Alanı */
+    .short-answer-area {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #f8fafc;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .short-ans-label {
+      font-size: 14px;
+      color: #334155;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .student-short-input {
+      flex: 1;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 14.5px;
+      outline: none;
+      background: #ffffff;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    .student-short-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    /* Çözüm ve Açıklama Kutusu */
+    .solution-box {
+      margin-top: 16px;
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 8px;
+      padding: 14px 18px;
+      font-size: 14px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .sol-title {
+      font-weight: 800;
+      color: #1e40af;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sol-text {
+      color: #1e293b;
+      line-height: 1.6;
+      font-family: 'Times New Roman', Times, serif !important;
+    }
+
+    /* Cevap Anahtarı Tablosu */
+    .answer-key-section {
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-top: 30px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.03);
+    }
+
+    .ak-title {
+      font-size: 16px;
+      font-weight: 900;
+      color: #0f172a;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ak-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 10px;
+    }
+
+    .ak-cell {
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      overflow: hidden;
+      text-align: center;
+      background: #f8fafc;
+    }
+
+    .ak-q {
+      display: block;
+      background: #334155;
+      color: #ffffff;
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 0;
+    }
+
+    .ak-a {
+      display: block;
+      font-size: 15px;
+      font-weight: 900;
+      color: #0f172a;
+      padding: 6px 0;
+    }
+
+    .only-print {
+      display: none !important;
+    }
+
+    /* @media print MEB Resmi A4 Yazdırma Stilleri */
+    @media print {
+      body {
+        background: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        font-family: 'Times New Roman', Times, serif !important;
+        font-size: 11pt !important;
+      }
+
+      * {
+        font-family: 'Times New Roman', Times, serif !important;
+      }
+
+      .no-print,
+      .top-actions-bar,
+      .live-score-card,
+      .solution-box {
+        display: none !important;
+      }
+
+      .only-print {
+        display: block !important;
+      }
+
+      .test-wrapper {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      .exam-header-sheet {
+        box-shadow: none !important;
+        border: 2px solid #000000 !important;
+        margin-bottom: 15px !important;
+        padding: 10px 14px !important;
+      }
+
+      .question-block {
+        box-shadow: none !important;
+        border: 1px solid #94a3b8 !important;
+        padding: 12px 14px !important;
+        margin-bottom: 14px !important;
+        page-break-inside: avoid !important;
+      }
+
+      .q-badge {
+        background: #000000 !important;
+        color: #ffffff !important;
+      }
+
+      .opt-label {
+        border: none !important;
+        background: transparent !important;
+        padding: 3px 0 !important;
+      }
+
+      .opt-circle {
+        border: 1.5px solid #000000 !important;
+        color: #000000 !important;
+        background: #ffffff !important;
+        width: 22px !important;
+        height: 22px !important;
+        font-size: 11px !important;
+      }
+
+      .print-writing-lines {
+        display: block !important;
+        margin-top: 8px !important;
+      }
+
+      .write-line {
+        border-bottom: 1px dotted #64748b !important;
+        height: 24px !important;
+      }
+
+      .print-short-line {
+        display: inline !important;
+      }
+
+      .answer-key-section {
+        box-shadow: none !important;
+        border: 1px solid #000000 !important;
+        page-break-before: auto !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="test-wrapper">
+
+    <!-- Üst Kontrol & Navigasyon Barı -->
+    <div class="top-actions-bar no-print">
+      <div class="nav-links">
+        <a href="/index.html#grade-5/denemeler" class="nav-btn nav-btn-primary">
+          <i class="fa-solid fa-arrow-left"></i> Yazılıya Hazırlık Listesine Dön
+        </a>
+        <a href="/index.html" class="nav-btn">
+          <i class="fa-solid fa-house"></i> Ana Sayfa
+        </a>
+      </div>
+
+      <div class="action-group">
+        <button type="button" onclick="toggleTestFullscreen()" class="btn-action btn-fullscreen" title="Tam Ekran Moduna Geç (F11)">
+          <i class="fa-solid fa-expand"></i> <span>Tam Ekran</span>
+        </button>
+        <button type="button" onclick="window.print()" class="btn-action btn-print" title="MEB Standartlarında A4 Yazdır veya PDF İndir">
+          <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
+        </button>
+        
+        <button type="button" onclick="toggleAllSolutions()" class="btn-action btn-print" id="btnToggleSolutions">
+          <i class="fa-solid fa-lightbulb"></i> <span>Çözümleri Göster</span>
+        </button>
+        <button type="button" onclick="resetExam()" class="btn-action btn-reset" title="Sınavı Baştan Başlat">
+          <i class="fa-solid fa-rotate-left"></i> <span>Sıfırla</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MEB Resmi Sınav Kâğıdı Başlığı -->
+    <div class="exam-header-sheet">
+      <div class="meb-title-block">
+        <h1>T.C. MİLLÎ EĞİTİM BAKANLIĞI</h1>
+        <h2>5. SINIF FEN BİLİMLERİ DERSİ KAZANIM DEĞERLENDİRME SINAVI</h2>
+        <div class="exam-title-badge">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı</div>
+      </div>
+      <div class="student-info-grid">
+        <div class="info-item">
+          <span class="info-label">Adı Soyadı:</span>
+          <span class="info-line"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Sınıfı / Şubesi:</span>
+          <span class="info-line" style="max-width: 100px;"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Okul Numarası:</span>
+          <span class="info-line" style="max-width: 100px;"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Tarih:</span>
+          <span class="info-line" style="max-width: 120px;"></span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Aldığı Not:</span>
+          <span class="info-line" style="max-width: 80px;"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Canlı Skor & İlerleme Paneli (Çoktan seçmeli varsa) -->
+    
+
+    <!-- Soru Listesi -->
+    <form id="examForm" onsubmit="return false;">
+      
+      <div class="question-block" data-qid="1" data-type="short_answer" data-correct="Güneş">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 1</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunLightClip"><circle cx="410" cy="95" r="68"/></clipPath>
+    <clipPath id="moonLightClip"><circle cx="110" cy="95" r="38"/></clipPath>
+    <marker id="arrowLight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="335" y1="80" x2="155" y2="80" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowLight)"/>
+  <line x1="335" y1="95" x2="155" y2="95" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrowLight)"/>
+  <line x1="335" y1="110" x2="155" y2="110" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowLight)"/>
+  <rect x="195" y="83" width="110" height="24" rx="4" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="250" y="99" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="10.5" font-weight="700">IŞIK IŞINLARI</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="72" y="57" width="76" height="76" clip-path="url(#moonLightClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="38" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Işık Kaynağı Değil (Yansıtıcı)</text>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="342" y="27" width="136" height="136" clip-path="url(#sunLightClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="410" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="410" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="410" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Doğal Işık ve Isı Kaynağı</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Gökyüzünde hareketli gibi görünen, ısı ve ışık kaynağımız olan dev kütleli yıldızın adı nedir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Güneş</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="2" data-type="short_answer" data-correct="Ay">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 2</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#e0e0e0" stroke="#999999" stroke-width="3"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="16" text-anchor="middle" fill="#333333">Ay</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Dünya&#039;nın tek doğal uydusu olan gök cismine ne ad verilir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Ay</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="3" data-type="short_answer" data-correct="Küre">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 3</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScaleClip"><circle cx="110" cy="95" r="76"/></clipPath>
+    <clipPath id="earthScaleClip"><circle cx="315" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScaleClip"><circle cx="435" cy="95" r="12"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="190" y1="95" x2="280" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="348" y1="95" x2="418" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="34" y="19" width="152" height="152" clip-path="url(#sunScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="76" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="287" y="67" width="56" height="56" clip-path="url(#earthScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="315" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="423" y="83" width="24" height="24" clip-path="url(#moonScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="435" cy="95" r="12" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Büyük (Yıldız)</text>
+  <text x="315" y="186" text-anchor="middle" fill="#0369a1" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">DÜNYA</text>
+  <text x="315" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Orta Büyüklükte (Gezegen)</text>
+  <text x="435" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="435" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Küçük (Uydu)</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş, Dünya ve Ay&#039;ın üç boyutlu geometrik şekli hangisidir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Küre</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="4" data-type="short_answer" data-correct="Işık">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 4</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunComp2Clip"><circle cx="145" cy="95" r="72"/></clipPath>
+    <clipPath id="moonComp2Clip"><circle cx="375" cy="95" r="46"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="73" y="23" width="144" height="144" clip-path="url(#sunComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="145" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="145" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="145" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="329" y="49" width="92" height="92" clip-path="url(#moonComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="375" cy="95" r="46" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="375" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="375" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş&#039;in etrafa yaydığı enerji türlerinden biri ısı diğeri nedir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Işık</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="5" data-type="short_answer" data-correct="Krater">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 5</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="40" fill="#e0e0e0" stroke="#333" stroke-width="2"/><circle cx="120" cy="80" r="8" fill="#b0b0b0"/><circle cx="160" cy="130" r="10" fill="#b0b0b0"/><text x="150" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333333">Kraterler</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;ın yüzeyinde gök taşlarının çarpması sonucu oluşan çukurlara ne denir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Krater</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="6" data-type="short_answer" data-correct="Güneş">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 6</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScaleClip"><circle cx="110" cy="95" r="76"/></clipPath>
+    <clipPath id="earthScaleClip"><circle cx="315" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScaleClip"><circle cx="435" cy="95" r="12"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="190" y1="95" x2="280" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="348" y1="95" x2="418" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="34" y="19" width="152" height="152" clip-path="url(#sunScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="76" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="287" y="67" width="56" height="56" clip-path="url(#earthScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="315" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="423" y="83" width="24" height="24" clip-path="url(#moonScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="435" cy="95" r="12" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Büyük (Yıldız)</text>
+  <text x="315" y="186" text-anchor="middle" fill="#0369a1" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">DÜNYA</text>
+  <text x="315" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Orta Büyüklükte (Gezegen)</text>
+  <text x="435" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="435" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Küçük (Uydu)</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş ve Ay&#039;ın büyüklükleri karşılaştırıldığında hangisi dünyadan bakıldığında gökyüzünde aynı boyutta gibi görünmesine rağmen gerçekte çok daha büyüktür?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Güneş</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="7" data-type="short_answer" data-correct="Atmosfer">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 7</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-zor">Zor</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><path d="M130,70 Q150,50 170,70" stroke="#333" fill="none" stroke-width="2"/><text x="150" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333333">Atmosfer</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;ın yüzeyinde hava olaylarının görülmemesinin temel sebebi, yok denecek kadar ince olan neye sahip olmasıdır?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Atmosfer</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="8" data-type="short_answer" data-correct="Orta büyüklükte">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 8</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScaleClip"><circle cx="110" cy="95" r="76"/></clipPath>
+    <clipPath id="earthScaleClip"><circle cx="315" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScaleClip"><circle cx="435" cy="95" r="12"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="190" y1="95" x2="280" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="348" y1="95" x2="418" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="34" y="19" width="152" height="152" clip-path="url(#sunScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="76" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="287" y="67" width="56" height="56" clip-path="url(#earthScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="315" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="423" y="83" width="24" height="24" clip-path="url(#moonScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="435" cy="95" r="12" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Büyük (Yıldız)</text>
+  <text x="315" y="186" text-anchor="middle" fill="#0369a1" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">DÜNYA</text>
+  <text x="315" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Orta Büyüklükte (Gezegen)</text>
+  <text x="435" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="435" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Küçük (Uydu)</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş evrendeki diğer yıldızlarla kıyaslandığında boyut olarak hangi grupta yer alır?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Orta büyüklükte</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="9" data-type="short_answer" data-correct="Yansıtır">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 9</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunComp2Clip"><circle cx="145" cy="95" r="72"/></clipPath>
+    <clipPath id="moonComp2Clip"><circle cx="375" cy="95" r="46"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="73" y="23" width="144" height="144" clip-path="url(#sunComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="145" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="145" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="145" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="329" y="49" width="92" height="92" clip-path="url(#moonComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="375" cy="95" r="46" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="375" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="375" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay, Güneş&#039;ten aldığı ışığı ne yapar?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Yansıtır</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="10" data-type="short_answer" data-correct="Katmanlı">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 10</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#ff9900"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#fff">Katmanlı</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş de Dünya gibi iç içe geçmiş ... yapısına sahiptir.</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Katmanlı</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="11" data-type="short_answer" data-correct="Regolit">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 11</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-zor">Zor</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="45" fill="#e0e0e0"/><circle cx="130" cy="80" r="15" fill="#b5b5b5"/><text x="150" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Toz ve Taş</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;ın yüzeyini kaplayan, ayak izlerinin kalmasını sağlayan ince toz tabakasına ne denir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Regolit</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="12" data-type="short_answer" data-correct="Güneş lekesi">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 12</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#ffcc00"/><circle cx="130" cy="90" r="8" fill="#cc9900"/><circle cx="170" cy="110" r="6" fill="#cc9900"/><text x="150" y="170" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Leke</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş&#039;in üzerinde diğer bölgelere göre daha soğuk ve koyu renkli görünen kısımlara ne ad verilir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Güneş lekesi</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="13" data-type="short_answer" data-correct="Küreye">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 13</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Küre</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay, gökyüzünde daire şeklinde görülür; çünkü geometrik şekli ... benzer.</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Küreye</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="14" data-type="short_answer" data-correct="Batıdan doğuya">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 14</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-zor">Zor</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="45" fill="#ffcc00"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Kendi ekseni</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş, kendi ekseni etrafında hangi yöne doğru dönme hareketi yapar?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Batıdan doğuya</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="15" data-type="short_answer" data-correct="Doğal uydu">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 15</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#dddddd"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Doğal Uydu</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Dünya&#039;nın etrafında dolanan gök cismine ne denir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Doğal uydu</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="16" data-type="short_answer" data-correct="Yıldız">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 16</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#ffcc00"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Yıldız</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş bir gezegen midir yoksa bir yıldız mıdır?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Yıldız</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="17" data-type="short_answer" data-correct="Kayaç">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 17</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Kayaç</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;ın yüzeyi çoğunlukla ne tür maddelerle kaplıdır?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Kayaç</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="18" data-type="short_answer" data-correct="Gaz">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 18</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#ff9900"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#fff">Gaz</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş katı mıdır, sıvı mıdır yoksa çoğunlukla gazlardan mı oluşmuştur?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Gaz</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="19" data-type="short_answer" data-correct="Yansıtır">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 19</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunLightClip"><circle cx="410" cy="95" r="68"/></clipPath>
+    <clipPath id="moonLightClip"><circle cx="110" cy="95" r="38"/></clipPath>
+    <marker id="arrowLight" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="335" y1="80" x2="155" y2="80" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowLight)"/>
+  <line x1="335" y1="95" x2="155" y2="95" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrowLight)"/>
+  <line x1="335" y1="110" x2="155" y2="110" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowLight)"/>
+  <rect x="195" y="83" width="110" height="24" rx="4" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="250" y="99" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="10.5" font-weight="700">IŞIK IŞINLARI</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="72" y="57" width="76" height="76" clip-path="url(#moonLightClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="38" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Işık Kaynağı Değil (Yansıtıcı)</text>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="342" y="27" width="136" height="136" clip-path="url(#sunLightClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="410" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="410" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="410" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Doğal Işık ve Isı Kaynağı</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay, bir ayna gibi Güneş&#039;ten aldığı ışığı ... özelliğine sahiptir.</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Yansıtır</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="20" data-type="short_answer" data-correct="Isı kaynağı">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 20</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunComp2Clip"><circle cx="145" cy="95" r="72"/></clipPath>
+    <clipPath id="moonComp2Clip"><circle cx="375" cy="95" r="46"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="73" y="23" width="144" height="144" clip-path="url(#sunComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="145" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="145" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="145" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="329" y="49" width="92" height="92" clip-path="url(#moonComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="375" cy="95" r="46" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="375" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="375" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş&#039;in yüzey sıcaklığı oldukça yüksektir, bu yüzden o bir ... kaynağıdır.</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Isı kaynağı</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="21" data-type="short_answer" data-correct="Atmosferin olmaması">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 21</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-zor">Zor</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Atmosferi yok</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;da gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının nedeni nedir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Atmosferin olmaması</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="22" data-type="short_answer" data-correct="Küre">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 22</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunComp2Clip"><circle cx="145" cy="95" r="72"/></clipPath>
+    <clipPath id="moonComp2Clip"><circle cx="375" cy="95" r="46"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="73" y="23" width="144" height="144" clip-path="url(#sunComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="145" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="145" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="145" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="329" y="49" width="92" height="92" clip-path="url(#moonComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="375" cy="95" r="46" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="375" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="375" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Uzaydan çekilen fotoğraflarda Güneş&#039;in tam olarak hangi geometrik şekle benzediği görülür?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Küre</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="23" data-type="short_answer" data-correct="Ay">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 23</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Ay</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Dünya&#039;ya en yakın gök cismidir ve etrafında dolanır. Bu gök cismi nedir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Ay</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="24" data-type="short_answer" data-correct="Katmanlardan">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 24</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#ff9900"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#fff">Katman</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş&#039;in yapısını incelediğimizde onun da Dünya gibi ... oluştuğunu görürüz.</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Katmanlardan</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="25" data-type="short_answer" data-correct="Buz">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 25</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-zor">Zor</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Su Yok</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;da sıvı halde su bulunmaz, bunun yerine donmuş halde ne bulunur?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Buz</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="26" data-type="short_answer" data-correct="Işık">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 26</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunComp2Clip"><circle cx="145" cy="95" r="72"/></clipPath>
+    <clipPath id="moonComp2Clip"><circle cx="375" cy="95" r="46"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="73" y="23" width="144" height="144" clip-path="url(#sunComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="145" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="145" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="145" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="329" y="49" width="92" height="92" clip-path="url(#moonComp2Clip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="375" cy="95" r="46" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="375" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="375" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Geometrik Şekil: Küre</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş çevresine ışık yaydığı için bir ... kaynağıdır.</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Işık</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="27" data-type="short_answer" data-correct="Küre">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 27</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Küre Şeklinde</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Ay&#039;ın farklı evrelerde görünmesinin temel sebebi onun geometrik şeklinin ne olmasıdır?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Küre</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="28" data-type="short_answer" data-correct="Döner">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 28</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-orta">Orta</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#ffcc00"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Dönme Hareketi</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Güneş kendi ekseni etrafında ne yapar?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Döner</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="29" data-type="short_answer" data-correct="Ay">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 29</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#cccccc"/><text x="150" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" text-anchor="middle" fill="#333">Ay'ın Özelliği</text></svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Canlıların yaşaması için uygun ortamı olmayan, havası ve suyu bulunmayan gök cismidir. Nedir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Ay</div>
+        </div>
+      </div>
+
+      <div class="question-block" data-qid="30" data-type="short_answer" data-correct="Güneş">
+        <div class="q-top-row">
+          <span class="q-badge">Soru 30</span>
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">Kısa Cevaplı</span>
+            <span class="q-diff-tag q-diff-kolay">Kolay</span>
+          </div>
+        </div>
+        
+      <div class="question-visual-box">
+        <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScaleClip"><circle cx="110" cy="95" r="76"/></clipPath>
+    <clipPath id="earthScaleClip"><circle cx="315" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScaleClip"><circle cx="435" cy="95" r="12"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="190" y1="95" x2="280" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="348" y1="95" x2="418" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="34" y="19" width="152" height="152" clip-path="url(#sunScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="76" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="287" y="67" width="56" height="56" clip-path="url(#earthScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="315" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="1.5"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="423" y="83" width="24" height="24" clip-path="url(#moonScaleClip)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="435" cy="95" r="12" fill="none" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="110" y="186" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">GÜNEŞ</text>
+  <text x="110" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Büyük (Yıldız)</text>
+  <text x="315" y="186" text-anchor="middle" fill="#0369a1" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">DÜNYA</text>
+  <text x="315" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">Orta Büyüklükte (Gezegen)</text>
+  <text x="435" y="186" text-anchor="middle" fill="#334155" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="800" letter-spacing="1">AY</text>
+  <text x="435" y="204" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="10" font-weight="600">En Küçük (Uydu)</text>
+</svg>
+      </div>
+        <div class="question-text-and-options">
+          <div class="q-text">Dünya&#039;nın ısı ve ışık kaynağı olan, sistemin merkezine yakın kabul edilen yıldızın adı nedir?</div>
+          
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>
+        </div>
+        
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> Güneş</div>
+        </div>
+      </div>
+    </form>
+
+    <!-- Cevap Anahtarı -->
+    <div class="answer-key-section">
+      <div class="ak-title">
+        <i class="fa-solid fa-key" style="color: var(--primary);"></i>
+        <span>Cevap Anahtarı</span>
+      </div>
+      <div class="ak-grid">
+        
+      <div class="ak-cell">
+        <span class="ak-q">1</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Güneş</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">2</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Ay</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">3</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Küre</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">4</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Işık</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">5</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Krater</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">6</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Güneş</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">7</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">8</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">9</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">10</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">11</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">12</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">13</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Küreye</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">14</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">15</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">16</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Yıldız</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">17</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kayaç</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">18</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Gaz</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">19</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">20</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">21</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">22</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Küre</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">23</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Ay</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">24</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Kısa</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">25</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Buz</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">26</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Işık</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">27</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Küre</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">28</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Döner</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">29</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Ay</span>
+      </div>
+      <div class="ak-cell">
+        <span class="ak-q">30</span>
+        <span class="ak-a" style="font-size:10px; font-weight:700;">Güneş</span>
+      </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    let solutionsVisible = false;
+
+    // Tam Ekran Aç / Kapat
+    function toggleTestFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+          console.warn('Tam ekran hatası:', err.message);
+        });
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    // Seçenek tıklama dinleyicileri
+    document.querySelectorAll('.opt-label').forEach(label => {
+      label.addEventListener('click', function(e) {
+        const block = this.closest('.question-block');
+        if (!block) return;
+        block.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-selected'));
+        this.classList.add('is-selected');
+        updateAnswerProgress();
+      });
+    });
+
+    function updateAnswerProgress() {
+      const mcBlocks = document.querySelectorAll('.question-block[data-type="multiple_choice"]');
+      let answered = 0;
+      mcBlocks.forEach(b => {
+        const checked = b.querySelector('input[type="radio"]:checked');
+        if (checked) answered++;
+      });
+      const answeredEl = document.getElementById('answeredCount');
+      if (answeredEl) answeredEl.innerText = answered + ' / ' + mcBlocks.length;
+    }
+
+    // Cevapları Kontrol Et
+    function evaluateAllAnswers() {
+      const mcBlocks = document.querySelectorAll('.question-block[data-type="multiple_choice"]');
+      let correct = 0;
+      let wrong = 0;
+
+      mcBlocks.forEach(block => {
+        const correctAns = (block.getAttribute('data-correct') || '').toUpperCase().trim();
+        const checked = block.querySelector('input[type="radio"]:checked');
+        const labels = block.querySelectorAll('.opt-label');
+
+        labels.forEach(l => {
+          l.classList.remove('is-correct', 'is-wrong');
+          const opt = l.getAttribute('data-opt');
+          if (opt === correctAns) {
+            l.classList.add('is-correct');
+          }
+        });
+
+        if (checked) {
+          const userVal = checked.value;
+          if (userVal === correctAns) {
+            correct++;
+          } else {
+            wrong++;
+            const userLabel = block.querySelector('.opt-label[data-opt="' + userVal + '"]');
+            if (userLabel) userLabel.classList.add('is-wrong');
+          }
+        }
+      });
+
+      const totalMC = mcBlocks.length;
+      const score = totalMC > 0 ? Math.round((correct / totalMC) * 100) : 100;
+
+      const cEl = document.getElementById('correctCount');
+      const wEl = document.getElementById('wrongCount');
+      const sEl = document.getElementById('totalScore');
+      if (cEl) cEl.innerText = correct;
+      if (wEl) wEl.innerText = wrong;
+      if (sEl) sEl.innerText = score + ' Puan';
+
+      // Çözümleri otomatik aç
+      showAllSolutions();
+    }
+
+    // Çözümleri Aç / Kapat
+    function toggleAllSolutions() {
+      solutionsVisible = !solutionsVisible;
+      const boxes = document.querySelectorAll('.solution-box');
+      boxes.forEach(b => {
+        b.style.display = solutionsVisible ? 'block' : 'none';
+      });
+      const btn = document.getElementById('btnToggleSolutions');
+      if (btn) {
+        btn.innerHTML = solutionsVisible 
+          ? '<i class="fa-solid fa-eye-slash"></i> <span>Çözümleri Gizle</span>'
+          : '<i class="fa-solid fa-lightbulb"></i> <span>Çözümleri Göster</span>';
+      }
+    }
+
+    function showAllSolutions() {
+      solutionsVisible = true;
+      document.querySelectorAll('.solution-box').forEach(b => b.style.display = 'block');
+      const btn = document.getElementById('btnToggleSolutions');
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i> <span>Çözümleri Gizle</span>';
+      }
+    }
+
+    // Sınavı Sıfırla
+    function resetExam() {
+      document.querySelectorAll('input[type="radio"]').forEach(r => r.checked = false);
+      document.querySelectorAll('.student-text-input, .student-short-input').forEach(i => i.value = '');
+      document.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-selected', 'is-correct', 'is-wrong'));
+      document.querySelectorAll('.solution-box').forEach(b => b.style.display = 'none');
+      solutionsVisible = false;
+
+      const cEl = document.getElementById('correctCount');
+      const wEl = document.getElementById('wrongCount');
+      const sEl = document.getElementById('totalScore');
+      const aEl = document.getElementById('answeredCount');
+      if (cEl) cEl.innerText = '0';
+      if (wEl) wEl.innerText = '0';
+      if (sEl) sEl.innerText = '0 Puan';
+      const mcCount = document.querySelectorAll('.question-block[data-type="multiple_choice"]').length;
+      if (aEl) aEl.innerText = '0 / ' + mcCount;
+
+      const btn = document.getElementById('btnToggleSolutions');
+      if (btn) {
+        btn.innerHTML = '<i class="fa-solid fa-lightbulb"></i> <span>Çözümleri Göster</span>';
+      }
+    }
+  </script>
+</body>
+</html>
