@@ -3110,36 +3110,5 @@
     "downloadCount": "📝 1 Soru",
     "createdAt": "2026-10-24T21:52:22.589Z",
     "updatedAt": "2026-10-24T21:52:22.589Z"
-  },
-  {
-    "id": "mat-test-5-1-1792878823122",
-    "grade": "5",
-    "category": "soru-bankasi",
-    "targetSection": "1",
-    "title": "Açık Uçlu Test Kontrolü 2",
-    "unit": "1. Ünite",
-    "desc": "5. Sınıf Fen Bilimleri 1. Ünite için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-acik-uclu-test-kontrolu-2.html",
-    "fileUrl": "testler/5-sinif-1-unite-acik-uclu-test-kontrolu-2.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
-    "format": "YAPRAK TEST",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "test / deneme",
-      "yazılıya hazırlık",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 1 Soru",
-    "createdAt": "2026-10-24T21:53:43.122Z",
-    "updatedAt": "2026-10-24T21:53:43.122Z"
   }
 ]
