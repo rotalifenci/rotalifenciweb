@@ -1,5 +1,817 @@
 [
   {
+    "id": "mat-video-7-1-01",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.1 İLK YAPAY UYDU: SPUTNİK 1",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Dünya'nın ilk yapay uydusu Sputnik 1'in fırlatılması ve uzay çağının başlangıcı.",
+    "fileName": "qki6T2D-EN0.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=qki6T2D-EN0",
+    "imageUrl": "https://img.youtube.com/vi/qki6T2D-EN0/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/qki6T2D-EN0/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/qki6T2D-EN0/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.596Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-02",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.2 YAPAY UYDU YÖRÜNGEYE NASIL YERLEŞİR?",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Yapay uyduların fırlatıldıktan sonra Dünya yörüngesine nasıl oturtulduğu animasyonlu anlatım.",
+    "fileName": "pcN9d1NWVog.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=pcN9d1NWVog",
+    "imageUrl": "https://img.youtube.com/vi/pcN9d1NWVog/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/pcN9d1NWVog/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/pcN9d1NWVog/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-03",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.3 İMECE UYDUSU UZAYA FIRLATILDI",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Türkiye'nin yerli ve millî yüksek çözünürlüklü gözlem uydusu İMECE'nin uzaya fırlatılış anı.",
+    "fileName": "ZpehG5cYe84.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=ZpehG5cYe84",
+    "imageUrl": "https://img.youtube.com/vi/ZpehG5cYe84/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/ZpehG5cYe84/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/ZpehG5cYe84/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-04",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.4 ELON MUSK'IN UZAY ROKETİ İNFİLAK ETTİ",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "SpaceX Starship roketinin test fırlatması sırasında yaşanan patlama anı ve nedenleri.",
+    "fileName": "nZSshr_9mlI.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=nZSshr_9mlI",
+    "imageUrl": "https://img.youtube.com/vi/nZSshr_9mlI/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/nZSshr_9mlI/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/nZSshr_9mlI/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-05",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.5 NASA ROKETİ FIRLATILIRKEN İNFİLAK ETTİ",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "NASA roket fırlatma görevi sırasında meydana gelen teknik arıza ve infilak görüntüleri.",
+    "fileName": "Gsiw1UWnrcg.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=Gsiw1UWnrcg",
+    "imageUrl": "https://img.youtube.com/vi/Gsiw1UWnrcg/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/Gsiw1UWnrcg/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/Gsiw1UWnrcg/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-06",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.6 SPACEX İLK KEZ UZAYA GERİ DÖNÜŞÜMLÜ ROKET FIRLATTI",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "SpaceX Falcon 9 roketinin uzaya gidip tekrar dikey iniş yaparak tarihe geçtiği o tarihi an.",
+    "fileName": "-mHTHhFlqxw.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=-mHTHhFlqxw",
+    "imageUrl": "https://img.youtube.com/vi/-mHTHhFlqxw/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/-mHTHhFlqxw/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/-mHTHhFlqxw/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-07",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.7 UZAY ROKETİ NASIL GİDİP GELİYOR?",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Uzay roketlerinin kalkış, yerçekiminden kurtulma ve atmosfere geri dönüş mekanizmaları.",
+    "fileName": "5TIxBxROXc4.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=5TIxBxROXc4",
+    "imageUrl": "https://img.youtube.com/vi/5TIxBxROXc4/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/5TIxBxROXc4/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/5TIxBxROXc4/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-08",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.8 UZAY SONDASI: MARS 1",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Mars yüzeyini araştıran uzay sondalarının kızıl gezegendeki ilk keşifleri ve verileri.",
+    "fileName": "hdcfwbXEKS0.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=hdcfwbXEKS0",
+    "imageUrl": "https://img.youtube.com/vi/hdcfwbXEKS0/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/hdcfwbXEKS0/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/hdcfwbXEKS0/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-09",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.9 UZAY SONDASI: MARS 2",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Mars atmosferi, jeolojik yapısı ve su izlerini araştıran modern uzay sondası görevleri.",
+    "fileName": "DCcckrKK85Y.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=DCcckrKK85Y",
+    "imageUrl": "https://img.youtube.com/vi/DCcckrKK85Y/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/DCcckrKK85Y/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/DCcckrKK85Y/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-10",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.10 NASA UZAY MEKİĞİ FIRLATMA",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "NASA Space Shuttle uzay mekiğinin dev yakıt tanklarıyla fırlatılışının büyüleyici görüntüleri.",
+    "fileName": "Ew_4R2S0ZQI.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=Ew_4R2S0ZQI",
+    "imageUrl": "https://img.youtube.com/vi/Ew_4R2S0ZQI/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/Ew_4R2S0ZQI/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/Ew_4R2S0ZQI/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-11",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.11 ISS'DE YAŞAMAK (ULUSLARARASI UZAY İSTASYONU)",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Uluslararası Uzay İstasyonu'nda astronotların yerçekimsiz ortamda günlük yaşamı, yemek ve uyku.",
+    "fileName": "VM7iml3Oydo.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=VM7iml3Oydo",
+    "imageUrl": "https://img.youtube.com/vi/VM7iml3Oydo/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/VM7iml3Oydo/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/VM7iml3Oydo/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-12",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.12 UZAY KİRLİLİĞİ 1",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Dünya yörüngesini saran uzay çöpleri, kullanılmayan uydular ve uzay kirliliğinin boyutları.",
+    "fileName": "7dOza8Nip0Q.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=7dOza8Nip0Q",
+    "imageUrl": "https://img.youtube.com/vi/7dOza8Nip0Q/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/7dOza8Nip0Q/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/7dOza8Nip0Q/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-13",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.13 UZAY KİRLİLİĞİ 2",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Uzay kirliliğinin gelecekteki uzay görevleri ve aktif uydular için oluşturduğu büyük tehlikeler.",
+    "fileName": "2fG4m_U3FKU.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=2fG4m_U3FKU",
+    "imageUrl": "https://img.youtube.com/vi/2fG4m_U3FKU/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/2fG4m_U3FKU/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/2fG4m_U3FKU/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-14",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.14 UZAY KİRLİLİĞİ 3",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Uzay çöplerini temizleme projeleri, lazer sistemleri ve yörünge temizleme teknolojileri.",
+    "fileName": "CeBrW2u8zTA.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=CeBrW2u8zTA",
+    "imageUrl": "https://img.youtube.com/vi/CeBrW2u8zTA/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/CeBrW2u8zTA/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/CeBrW2u8zTA/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-15",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.15 UZAY YÜRÜYÜŞÜ (SPACEWALK)",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Astronotların uzay boşluğuna çıkarak ISS dışında gerçekleştirdikleri uzay yürüyüşü ve tamirat.",
+    "fileName": "L35ORWgMEv0.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=L35ORWgMEv0",
+    "imageUrl": "https://img.youtube.com/vi/L35ORWgMEv0/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/L35ORWgMEv0/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/L35ORWgMEv0/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-16",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.16 LAİKA: UZAYA GİDEN İLK DÜNYALI",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Sputnik 2 ile Dünya yörüngesine çıkan ilk canlı olan cesur köpek Laika'nın hüzünlü hikayesi.",
+    "fileName": "7jof89uZAiM.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=7jof89uZAiM",
+    "imageUrl": "https://img.youtube.com/vi/7jof89uZAiM/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/7jof89uZAiM/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/7jof89uZAiM/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-17",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.17 UZAYDAN DÖNEN ASTRONOTUN ZOR ANLARI",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Aylarca yerçekimsiz ortamda kaldıktan sonra Dünya'ya dönen astronotların yerçekimine adaptasyonu.",
+    "fileName": "bUTW0u2mUhg.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=bUTW0u2mUhg",
+    "imageUrl": "https://img.youtube.com/vi/bUTW0u2mUhg/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/bUTW0u2mUhg/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/bUTW0u2mUhg/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-18",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.18 39 KM YÜKSEKTEN ATLAMA (FELIX BAUMGARTNER)",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Stratosferden Dünya'ya serbest düşüş yaparak ses duvarını aşan tarihi Red Bull Stratos atlayışı.",
+    "fileName": "9LwrI5OnJ9U.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=9LwrI5OnJ9U",
+    "imageUrl": "https://img.youtube.com/vi/9LwrI5OnJ9U/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/9LwrI5OnJ9U/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/9LwrI5OnJ9U/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-19",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.19 AY'A GİDİŞ VE DÜNYAYA İNİŞ NASIL OLDU?",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Apollo 11 görevinin Satürn V roketiyle kalkışından Ay'a iniş ve okyanusa dönüş aşamaları.",
+    "fileName": "ftZSH4UHWf0.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=ftZSH4UHWf0",
+    "imageUrl": "https://img.youtube.com/vi/ftZSH4UHWf0/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/ftZSH4UHWf0/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/ftZSH4UHWf0/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-20",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.20 JEFF BEZOS KENDİ ROKETİYLE UZAYA GİTTİ",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Blue Origin New Shepard roketiyle uzayın sınırına yapılan tarihi sivil uzay yolculuğu.",
+    "fileName": "BerKGjnBpJY.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=BerKGjnBpJY",
+    "imageUrl": "https://img.youtube.com/vi/BerKGjnBpJY/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/BerKGjnBpJY/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/BerKGjnBpJY/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-21",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.21 UZAYDA YÜRÜYÜŞ YAPAN İLK SİVİL: JARED ISAACMAN",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Polaris Dawn göreviyle uzay boşluğunda yürüyüş yapan ilk sivil astronotun uzay yürüyüşü anı.",
+    "fileName": "gMROyEZP9_I.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=gMROyEZP9_I",
+    "imageUrl": "https://img.youtube.com/vi/gMROyEZP9_I/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/gMROyEZP9_I/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/gMROyEZP9_I/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-22",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.22 ALPER GEZERAVCI UZAYA ÇIKIŞ",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Türkiye'nin ilk astronotu Alper Gezeravcı'nın Axiom-3 göreviyle uzaya fırlatılma anı.",
+    "fileName": "v0Frrq966tI.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=v0Frrq966tI",
+    "imageUrl": "https://img.youtube.com/vi/v0Frrq966tI/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/v0Frrq966tI/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/v0Frrq966tI/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-23",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.23 ALPER GEZERAVCI UZAYDA 13 DENEY YAPTI!",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Alper Gezeravcı'nın Uluslararası Uzay İstasyonu'nda Türk bilim insanları için yürüttüğü 13 bilimsel deney.",
+    "fileName": "R7yculE_2QQ.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=R7yculE_2QQ",
+    "imageUrl": "https://img.youtube.com/vi/R7yculE_2QQ/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/R7yculE_2QQ/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/R7yculE_2QQ/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-24",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.24 ALPER GEZERAVCI DÜNYAYA BÖYLE DÖNDÜ",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Dragon kapsülünün Dünya atmosferine girişi ve Alper Gezeravcı'nın okyanusa başarılı inişi.",
+    "fileName": "NTJIPebeoOU.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=NTJIPebeoOU",
+    "imageUrl": "https://img.youtube.com/vi/NTJIPebeoOU/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/NTJIPebeoOU/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/NTJIPebeoOU/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-25",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.25 BULUTSULAR (NEBULALAR)",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Yıldızların doğum yeri olan bulutsuların çeşitleri: Karanlık, Gezegenimsi, Parlak ve Salma bulutsuları.",
+    "fileName": "K6BtIRc0P3o.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=K6BtIRc0P3o",
+    "imageUrl": "https://img.youtube.com/vi/K6BtIRc0P3o/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/K6BtIRc0P3o/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/K6BtIRc0P3o/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-26",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.26 EVRENİN DIŞINDA NE VAR? (96 MİLYAR IŞIK YILI)",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Gözlemlenebilir evrenin büyüklüğü, 96 milyar ışık yılı çap ve evrenin ötesi hakkında bilimsel teoriler.",
+    "fileName": "DLcUzPalYQs.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=DLcUzPalYQs",
+    "imageUrl": "https://img.youtube.com/vi/DLcUzPalYQs/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/DLcUzPalYQs/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/DLcUzPalYQs/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-27",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.27 EVRENİN BÜYÜKLÜĞÜ",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Mikro ölçekten galaksilere, süperkümelere kadar evrenin devasa büyüklüğünü gösteren ölçek kıyaslaması.",
+    "fileName": "q7--naaaveM.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=q7--naaaveM",
+    "imageUrl": "https://img.youtube.com/vi/q7--naaaveM/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/q7--naaaveM/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/q7--naaaveM/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
+    "id": "mat-video-7-1-28",
+    "grade": "7",
+    "category": "videolar",
+    "targetSection": "1",
+    "title": "7.1.28 GÜNEŞ SİSTEMİ VE ÖTESİ: ÖDEV VE DEĞERLENDİRME",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "7. Sınıf 1. Ünite Güneş Sistemi ve Ötesi konusu için pekiştirme, ödev ve soru çözümü videosu.",
+    "fileName": "0Q9InQOSJ2M.mp4",
+    "fileUrl": "https://www.youtube.com/watch?v=0Q9InQOSJ2M",
+    "imageUrl": "https://img.youtube.com/vi/0Q9InQOSJ2M/hqdefault.jpg",
+    "kapakResmi": "https://img.youtube.com/vi/0Q9InQOSJ2M/hqdefault.jpg",
+    "cover": "https://img.youtube.com/vi/0Q9InQOSJ2M/hqdefault.jpg",
+    "format": "YouTube Video",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "güneş sistemi ve ötesi",
+      "uzay araştırmaları",
+      "video",
+      "fen bilimleri",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "▶ İzle",
+    "createdAt": "2026-10-24T20:23:17.597Z",
+    "updatedAt": "2026-10-24T20:23:17.597Z"
+  },
+  {
     "id": "mat-fd3207c6-7641-47f9-be9c-f1e6b852aa43",
     "grade": "7",
     "category": "ders-notu",
@@ -37,6 +849,7 @@
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite.pdf",
     "imageUrl": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
     "kapakResmi": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
+    "cover": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
     "format": "PDF",
     "hasBlob": false,
     "tags": [
@@ -48,8 +861,7 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T16:59:26.107Z",
-    "updatedAt": "2026-10-24T16:59:26.107Z",
-    "cover": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg"
+    "updatedAt": "2026-10-24T16:59:26.107Z"
   },
   {
     "id": "mat-96a2408f-7294-4b5a-a3e0-7b81a4337015",
@@ -63,6 +875,7 @@
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite.pdf",
     "imageUrl": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
     "kapakResmi": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
+    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
     "format": "PDF",
     "hasBlob": false,
     "tags": [
@@ -74,8 +887,7 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T17:52:37.640Z",
-    "updatedAt": "2026-10-24T18:14:39.484Z",
-    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg"
+    "updatedAt": "2026-10-24T18:14:29.338Z"
   },
   {
     "id": "mat-test-5-1-1792854826132",
@@ -373,8 +1185,7 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Başyapıtı",
     "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-18T00:00:00.000Z",
-    "cover": "assets/gunesi-kesfediyorum-3d-kapak.svg"
+    "updatedAt": "2026-10-18T00:00:00.000Z"
   },
   {
     "id": "mat-5-1-sim-dunyanin-5-katmani",
@@ -409,8 +1220,7 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Simülasyonu",
     "createdAt": "2026-10-22T20:10:00.000Z",
-    "updatedAt": "2026-10-22T20:10:00.000Z",
-    "cover": "assets/dunyanin-5-katmani-kapak.svg"
+    "updatedAt": "2026-10-22T20:10:00.000Z"
   },
   {
     "id": "mat-5-1-oyun-ayin-evreleri-3d",
@@ -440,8 +1250,7 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Başyapıtı",
     "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-18T00:00:00.000Z",
-    "cover": "assets/ayin-evreleri-3d-kapak.svg"
+    "updatedAt": "2026-10-18T00:00:00.000Z"
   },
   {
     "id": "mat-5-1-sunum-gunes-dunya-ay",
@@ -470,60 +1279,7 @@
     "visibility": "public",
     "downloadCount": "Öne Çıkan",
     "createdAt": "2026-10-17T19:40:00.000Z",
-    "updatedAt": "2026-10-17T19:40:00.000Z",
-    "cover": "assets/sunum-5-1-referans-kapak.jpg"
-  },
-  {
-    "id": "mat-22ad277d-de06-4acb-bafa-ec9acffd1bc0",
-    "grade": "7",
-    "category": "videolar",
-    "targetSection": "1",
-    "title": "Alper Gezeravcı Deneyler",
-    "unit": "1. Ünite: Uzay Çağı",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "Alper Gezeravcı Deneyler",
-    "fileUrl": "https://www.youtube.com/watch?v=R7yculE_2QQ",
-    "imageUrl": "https://img.youtube.com/vi/R7yculE_2QQ/hqdefault.jpg",
-    "kapakResmi": "https://img.youtube.com/vi/R7yculE_2QQ/hqdefault.jpg",
-    "format": "YouTube Video",
-    "hasBlob": false,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-10-15T21:15:19.254Z",
-    "updatedAt": "2026-10-15T21:15:19.254Z",
-    "cover": "https://img.youtube.com/vi/R7yculE_2QQ/hqdefault.jpg"
-  },
-  {
-    "id": "mat-6c7df1c5-3aeb-4728-a5a5-460216a7a75b",
-    "grade": "7",
-    "category": "videolar",
-    "targetSection": "1",
-    "title": "7.1. Videolar",
-    "unit": "1. Ünite: Uzay Çağı",
-    "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "7.1. Videolar.pdf",
-    "fileUrl": "assets/docs/7-1-videolar.pdf",
-    "imageUrl": "assets/materials/7-1-videolar_cover.jpg",
-    "kapakResmi": "assets/materials/7-1-videolar_cover.jpg",
-    "format": "PDF",
-    "hasBlob": true,
-    "tags": [
-      "fenbilimleri",
-      "fen",
-      "ortaokul",
-      "MEB 2026-2027"
-    ],
-    "visibility": "public",
-    "downloadCount": "Yeni",
-    "createdAt": "2026-10-15T21:12:58.834Z",
-    "updatedAt": "2026-10-15T21:12:58.834Z",
-    "cover": "assets/materials/7-1-videolar_cover.jpg"
+    "updatedAt": "2026-10-17T19:40:00.000Z"
   },
   {
     "id": "mat-ad6d04a1-a11b-4cab-8688-21a9208454d1",
@@ -601,8 +1357,7 @@
     "createdAt": "2026-09-29T05:33:26.954285+00:00",
     "updatedAt": "2026-09-30T19:00:05.031+00:00",
     "isCloud": true,
-    "hasBlob": false,
-    "cover": "assets/astronot-kacis-odasi.png"
+    "hasBlob": false
   },
   {
     "id": "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
@@ -628,8 +1383,7 @@
     "createdAt": "2026-09-29T05:33:26.873437+00:00",
     "updatedAt": "2026-09-30T19:00:05.201+00:00",
     "isCloud": true,
-    "hasBlob": false,
-    "cover": "assets/astronot-kacis-odasi.png"
+    "hasBlob": false
   },
   {
     "id": "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
@@ -655,8 +1409,7 @@
     "createdAt": "2026-09-29T05:33:26.784549+00:00",
     "updatedAt": "2026-09-30T19:00:05.288+00:00",
     "isCloud": true,
-    "hasBlob": false,
-    "cover": "assets/astronot-kacis-odasi.png"
+    "hasBlob": false
   },
   {
     "id": "mat-6265279c-943c-41fb-80e8-df15d1b8c589",
@@ -666,11 +1419,11 @@
     "title": "7.1.",
     "unit": "1. Ünite: Uzay Çağı",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "Rotali_Fenci_7_Sinif_1_Unite_Uzay_Cagi.pdf",
-    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792872200541_rl9c9_rotali_fenci_7_sinif_1_unite_uzay_cagi.pdf",
-    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792872199187_mat-6265279c-943c-41fb-80e8-df15d1b8c589_cover.jpg",
-    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792872199187_mat-6265279c-943c-41fb-80e8-df15d1b8c589_cover.jpg",
-    "format": "PDF",
+    "fileName": "7.1..pptx",
+    "fileUrl": "assets/docs/7-1-sunum.pptx",
+    "imageUrl": "assets/docs/7-1-sunum-kapak.jpg",
+    "kapakResmi": "assets/docs/7-1-sunum-kapak.jpg",
+    "format": "PPTX",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -681,9 +1434,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-09-28T22:51:51.770687+00:00",
-    "updatedAt": "2026-10-24T20:03:37.582Z",
-    "isCloud": true,
-    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792872199187_mat-6265279c-943c-41fb-80e8-df15d1b8c589_cover.jpg"
+    "updatedAt": "2026-09-30T19:00:05.376+00:00",
+    "isCloud": true
   },
   {
     "id": "mat-d50fcd5d-da6a-4f96-bdfc-eb4edd310215",
@@ -726,14 +1478,14 @@
     "unit": "Genel",
     "desc": "",
     "fileName": "7. Sınıf Fen Bilimleri MEB Ders Kitabı",
-    "imageUrl": "assets/kapak-7.jpg",
+    "imageUrl": "assets/ders-kitabi-7.jpg",
     "format": "Web Bağlantısı",
     "hasBlob": false,
     "tags": [],
     "visibility": "public",
     "downloadCount": "Yeni",
     "updatedAt": "2026-09-30T19:00:05.881+00:00",
-    "kapakResmi": "assets/kapak-7.jpg",
+    "kapakResmi": "assets/ders-kitabi-7.jpg",
     "isCloud": true
   },
   {
@@ -760,8 +1512,7 @@
     "createdAt": "2026-09-27T18:55:52.673908+00:00",
     "updatedAt": "2026-09-30T19:00:05.957+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true,
-    "cover": "assets/ilk-ders-notu.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
@@ -787,8 +1538,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.642913+00:00",
     "updatedAt": "2026-09-30T19:00:06.219+00:00",
-    "isCloud": true,
-    "cover": "assets/7-sinif-islenecek-konular.jpg"
+    "isCloud": true
   },
   {
     "id": "book-8",
@@ -814,8 +1564,7 @@
     "createdAt": "2026-09-27T17:06:03.823905+00:00",
     "updatedAt": "2026-09-30T19:00:06.523+00:00",
     "kapakResmi": "assets/ders-kitabi-8.jpg",
-    "isCloud": true,
-    "cover": "assets/ders-kitabi-8.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
@@ -841,8 +1590,7 @@
     "createdAt": "2026-09-27T18:55:52.421855+00:00",
     "updatedAt": "2026-09-30T19:00:06.749+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true,
-    "cover": "assets/ilk-ders-notu.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-afa89ec0-6f45-4b55-af70-bbfaa863b877",
@@ -852,11 +1600,11 @@
     "title": "6.1. Güneş Sistemi Keşfi",
     "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "Rotali_Fenci_6_Sinif_1_Unite_Gunes_Sistemi_Tutulmalar.pdf",
-    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792868882852_614j6_rotali_fenci_6_sinif_1_unite_gunes_sistemi_tutulmalar.pdf",
-    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792868881858_mat-afa89ec0-6f45-4b55-af70-bbfaa863b877_cover.jpg",
-    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792868881858_mat-afa89ec0-6f45-4b55-af70-bbfaa863b877_cover.jpg",
-    "format": "PDF",
+    "fileName": "Solar System Exploration.pptx",
+    "fileUrl": "assets/docs/6-1-sunum.pptx",
+    "imageUrl": "assets/docs/6-1-gunes-sistemi-kapak.jpg",
+    "kapakResmi": "assets/docs/6-1-gunes-sistemi-kapak.jpg",
+    "format": "PPTX",
     "hasBlob": true,
     "tags": [
       "fenbilimleri",
@@ -867,9 +1615,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:05.221518+00:00",
-    "updatedAt": "2026-10-24T19:08:15.029Z",
-    "isCloud": true,
-    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792868881858_mat-afa89ec0-6f45-4b55-af70-bbfaa863b877_cover.jpg"
+    "updatedAt": "2026-09-30T19:00:07.101+00:00",
+    "isCloud": true
   },
   {
     "id": "book-5",
@@ -895,8 +1642,7 @@
     "createdAt": "2026-09-27T17:06:02.2003+00:00",
     "updatedAt": "2026-09-30T19:00:07.231+00:00",
     "kapakResmi": "assets/ders-kitabi-5.jpg",
-    "isCloud": true,
-    "cover": "assets/ders-kitabi-5.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-1789315860991",
@@ -919,8 +1665,7 @@
     "updatedAt": "2026-09-30T19:00:07.321+00:00",
     "targetSection": "kitap",
     "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
-    "isCloud": true,
-    "cover": "assets/5-sinif-islenecek-konular.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
@@ -946,8 +1691,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:01.953396+00:00",
     "updatedAt": "2026-09-30T19:00:07.555+00:00",
-    "isCloud": true,
-    "cover": "assets/ilk-ders-notu.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-1789503112888",
@@ -974,8 +1718,7 @@
     "updatedAt": "17.09.2026",
     "targetSection": "lab",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true,
-    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-8-liseye-nasil-gidecegiz",
@@ -1005,8 +1748,7 @@
     "updatedAt": "17.09.2026",
     "targetSection": "1",
     "kapakResmi": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg",
-    "isCloud": true,
-    "cover": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg"
+    "isCloud": true
   },
   {
     "id": "book-6",
@@ -1032,8 +1774,7 @@
     "createdAt": "2026-09-27T17:06:03.711994+00:00",
     "updatedAt": "2026-09-30T19:00:08.471+00:00",
     "kapakResmi": "assets/ders-kitabi-6.jpg",
-    "isCloud": true,
-    "cover": "assets/ders-kitabi-6.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-6-islenecek-konular",
@@ -1059,8 +1800,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.000+00:00",
     "updatedAt": "2026-09-30T19:00:08.500+00:00",
-    "isCloud": true,
-    "cover": "assets/6-sinif-islenecek-konular.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
@@ -1086,8 +1826,7 @@
     "createdAt": "2026-09-30T18:59:21.296828+00:00",
     "updatedAt": "2026-09-30T19:00:08.562+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true,
-    "cover": "assets/ilk-ders-notu.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-1789641166040",
@@ -1113,8 +1852,7 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:02.735549+00:00",
     "updatedAt": "2026-09-30T19:00:08.796+00:00",
-    "isCloud": true,
-    "cover": "assets/8-sinif-islenecek-konular.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-1789665265173-g6",
@@ -1140,8 +1878,7 @@
     "createdAt": "2026-09-27T17:06:02.468968+00:00",
     "updatedAt": "2026-09-30T19:00:09.075+00:00",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true,
-    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-1789665265173-g7",
@@ -1167,8 +1904,7 @@
     "createdAt": "2026-09-27T17:06:02.38771+00:00",
     "updatedAt": "2026-09-30T19:00:09.231+00:00",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true,
-    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
+    "isCloud": true
   },
   {
     "id": "mat-6-oyun-uzay-ekspresi",
@@ -1281,8 +2017,7 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-18T17:09:11.203Z",
-    "updatedAt": "2026-10-18T17:09:11.204Z",
-    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792343349599_d6002a6f-9fb9-4326-a287-ab24bb8f0311.png"
+    "updatedAt": "2026-10-18T17:09:11.204Z"
   },
   {
     "id": "mat-test-5-1-1792854064641",
