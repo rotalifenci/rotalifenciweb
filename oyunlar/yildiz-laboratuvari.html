@@ -233,6 +233,9 @@
                 <a href="is-laboratuvari.html" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1 cursor-pointer" title="7. Sınıf 2. Ünite İş Laboratuvarına Git">
                     <i class="fa-solid fa-cube text-emerald-400"></i> <span class="hidden xl:inline">İş Lab (2. Ünite)</span>
                 </a>
+                <button type="button" onclick="openGalleryModal()" class="px-2.5 py-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs rounded-xl shadow transition-all flex items-center gap-1.5 cursor-pointer" title="NASA / Hubble / JWST 25 Gerçek Teleskop Fotoğrafı Albümü">
+                    <i class="fa-solid fa-camera-retro text-amber-300"></i> <span>Teleskop Albümü</span>
+                </button>
                 <button type="button" onclick="openQuizModal()" class="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all flex items-center gap-1 cursor-pointer" title="10 Soruluk Ölçme Testi">
                     <i class="fa-solid fa-award"></i> <span>Ölçme Testi</span>
                 </button>
@@ -271,9 +274,26 @@
                     <i class="fa-solid fa-arrows-up-down-left-right text-cyan-400"></i> Döndür / Yakınlaştır
                 </div>
 
+                <!-- 📷 Sahne İçi Canlı Gerçek Teleskop Karşılaştırma Kutusu (PiP) -->
+                <div id="scene-pip-box" class="absolute bottom-11 right-2 z-20 w-40 sm:w-52 aspect-[16/9] rounded-xl overflow-hidden border-2 border-indigo-400/90 bg-slate-950 shadow-2xl transition-all duration-300 cursor-pointer group" onclick="openCurrentPipPhoto()" title="Gerçek Fotoğrafı Büyütmek İçin Tıklayın">
+                    <img id="pip-scene-img" src="../assets/space/nebula_orion.jpg" class="w-full h-full object-cover group-hover:scale-105 transition-transform" alt="Gerçek Teleskop Fotoğrafı" />
+                    <div class="absolute inset-x-0 bottom-0 bg-black/85 px-2 py-1 flex items-center justify-between text-[9px] font-bold text-amber-300">
+                        <span id="pip-scene-title" class="truncate max-w-[120px]">Orion Bulutsusu</span>
+                        <span class="text-cyan-300 flex items-center gap-0.5"><i class="fa-solid fa-expand text-[8px]"></i> Büyüt</span>
+                    </div>
+                    <div class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-indigo-950/90 text-[8px] font-black text-indigo-200 border border-indigo-500/40">
+                        🔭 GERÇEK FOTOĞRAF
+                    </div>
+                </div>
+
+                <!-- PiP Aç/Kapat Butonu -->
+                <button type="button" onclick="toggleScenePipPhoto()" id="btn-toggle-pip" class="absolute bottom-2 right-2 z-20 px-2.5 py-1 rounded-xl text-[10px] font-bold bg-slate-900/90 hover:bg-slate-800 text-indigo-300 border border-indigo-500/40 backdrop-blur-md flex items-center gap-1.5 cursor-pointer shadow transition-all active:scale-95">
+                    <i class="fa-solid fa-camera-retro text-amber-400"></i> <span id="text-toggle-pip">Teleskop Fotoğrafını Gizle</span>
+                </button>
+
                 <!-- Sahne İçi Dinamik Bildirim / Bilgi Kutucuğu (Merkez Altı) -->
-                <div id="scene-banner" class="absolute bottom-2 left-2 right-2 pointer-events-none flex justify-center z-10 transition-all duration-300">
-                    <div id="scene-banner-text" class="px-3 py-1 rounded-xl bg-slate-950/90 border border-indigo-500/40 text-[10px] sm:text-xs font-bold text-center text-indigo-200 backdrop-blur-md shadow-lg">
+                <div id="scene-banner" class="absolute bottom-2 left-2 right-2 sm:right-auto sm:left-2 pointer-events-none flex z-10 transition-all duration-300">
+                    <div id="scene-banner-text" class="px-3 py-1 rounded-xl bg-slate-950/90 border border-indigo-500/40 text-[10px] sm:text-xs font-bold text-center text-indigo-200 backdrop-blur-md shadow-lg truncate max-w-md">
                         🔭 Gaz ve toz bulutu kütleçekim kuvvetiyle birleşerek ön yıldızı oluşturur.
                     </div>
                 </div>
@@ -316,10 +336,12 @@
 
                 <!-- Modül 3 için Bulutsu Seçiciler -->
                 <div id="controls-m3" class="w-full hidden items-center justify-between gap-1 overflow-x-auto no-scrollbar">
-                    <button type="button" onclick="selectNebula('orion')" id="btn-neb-orion" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white shrink-0 cursor-pointer">1. Orion (Salma)</button>
-                    <button type="button" onclick="selectNebula('atbasi')" id="btn-neb-atbasi" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">2. Atbaşı (Karanlık)</button>
-                    <button type="button" onclick="selectNebula('halka')" id="btn-neb-halka" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">3. Halka (Gezegenimsi)</button>
-                    <button type="button" onclick="selectNebula('yengec')" id="btn-neb-yengec" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">4. Yengeç (Süpernova)</button>
+                    <button type="button" onclick="selectNebula('orion')" id="btn-neb-orion" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white shrink-0 cursor-pointer">1. Orion</button>
+                    <button type="button" onclick="selectNebula('atbasi')" id="btn-neb-atbasi" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">2. Atbaşı</button>
+                    <button type="button" onclick="selectNebula('halka')" id="btn-neb-halka" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">3. Halka</button>
+                    <button type="button" onclick="selectNebula('yengec')" id="btn-neb-yengec" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">4. Yengeç</button>
+                    <button type="button" onclick="selectNebula('kartal')" id="btn-neb-kartal" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">5. Kartal (Sütunlar)</button>
+                    <button type="button" onclick="selectNebula('kelebek')" id="btn-neb-kelebek" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">6. Kelebek</button>
                 </div>
 
                 <!-- Modül 4 için Takımyıldızı Seçiciler & Kutup Yıldızı Bulucu -->
@@ -371,6 +393,25 @@
                             </button>
                         </div>
 
+                        <!-- 📷 GERÇEK TELESKOP FOTOĞRAFI KARTI (NASA / Hubble / JWST) -->
+                        <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-indigo-500/40 bg-slate-950 group cursor-pointer shadow-lg" onclick="openCurrentStagePhoto()" title="Gerçek Teleskop Fotoğrafını Tam Ekran İncele">
+                            <img id="m1-real-img" src="../assets/space/nebula_orion.jpg" alt="Gerçek Teleskop Görüntüsü" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-between p-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-indigo-600/90 text-white flex items-center gap-1 shadow">
+                                        <i class="fa-solid fa-camera-retro text-amber-300"></i> <span>GERÇEK TELESKOP FOTOĞRAFI</span>
+                                    </span>
+                                    <span class="w-6 h-6 rounded-lg bg-black/60 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span id="m1-real-telescope" class="text-[10px] font-bold text-amber-300 drop-shadow truncate max-w-[70%]">Hubble Uzay Teleskobu</span>
+                                    <span class="text-[9px] font-bold text-indigo-200 bg-indigo-950/80 px-1.5 py-0.5 rounded border border-indigo-500/30">Büyüt 🔍</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Evre Başlığı ve Tanımı -->
                         <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
                             <div class="flex items-center justify-between mb-1">
@@ -417,6 +458,28 @@
                     <!-- MODÜL 2 PANELİ: RENK VE SICAKLIK -->
                     <!-- ============================================== -->
                     <div id="panel-m2" class="space-y-2.5 hidden">
+                        <!-- 📷 GERÇEK YILDIZ TELESKOP FOTOĞRAFI -->
+                        <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-amber-500/40 bg-slate-950 group cursor-pointer shadow-lg" onclick="openPhotoModal(document.getElementById('m2-real-img').src, document.getElementById('m2-real-title').textContent, document.getElementById('m2-real-telescope').textContent, 'Farklı yüzey sıcaklıklarına sahip gerçek yıldızların teleskopik gözlemleri.')" title="Gerçek Teleskop Fotoğrafını Büyüt">
+                            <img id="m2-real-img" src="../assets/space/stage_sun.jpg" alt="Gerçek Yıldız Görüntüsü" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-between p-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-amber-600/90 text-white flex items-center gap-1 shadow">
+                                        <i class="fa-solid fa-sun text-yellow-300"></i> <span>GERÇEK YILDIZ FOTOĞRAFI</span>
+                                    </span>
+                                    <span class="w-6 h-6 rounded-lg bg-black/60 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div id="m2-real-title" class="text-xs font-black text-amber-200">Güneş (Sarı Cüce)</div>
+                                        <div id="m2-real-telescope" class="text-[9px] font-medium text-slate-300">NASA SDO 4K Ultra-HD</div>
+                                    </div>
+                                    <span class="text-[9px] font-bold text-amber-200 bg-amber-950/80 px-1.5 py-0.5 rounded border border-amber-500/30">Büyüt 🔍</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <!-- Kavram Yanılgısı Kutusu -->
                         <div class="bg-rose-950/60 p-2.5 rounded-xl border border-rose-500/40 text-xs text-rose-200">
                             <div class="font-black text-rose-300 mb-0.5 flex items-center gap-1">
@@ -480,6 +543,25 @@
                     <!-- MODÜL 3 PANELİ: BULUTSULAR (NEBULA) -->
                     <!-- ============================================== -->
                     <div id="panel-m3" class="space-y-2.5 hidden">
+                        <!-- 📷 GERÇEK BULUTSU TELESKOP FOTOĞRAFI -->
+                        <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-purple-500/40 bg-slate-950 group cursor-pointer shadow-lg" onclick="openPhotoModal(document.getElementById('m3-real-img').src, document.getElementById('m3-nebula-title').textContent, document.getElementById('m3-real-telescope').textContent, document.getElementById('m3-nebula-desc').textContent)" title="Gerçek Bulutsu Fotoğrafını Büyüt">
+                            <img id="m3-real-img" src="../assets/space/nebula_orion.jpg" alt="Gerçek Bulutsu Görüntüsü" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-between p-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-purple-600/90 text-white flex items-center gap-1 shadow">
+                                        <i class="fa-solid fa-cloud-bolt text-pink-300"></i> <span>GERÇEK BULUTSU (NEBULA) GÖRÜNTÜSÜ</span>
+                                    </span>
+                                    <span class="w-6 h-6 rounded-lg bg-black/60 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span id="m3-real-telescope" class="text-[10px] font-bold text-purple-300 drop-shadow">Hubble Uzay Teleskobu</span>
+                                    <span class="text-[9px] font-bold text-purple-200 bg-purple-950/80 px-1.5 py-0.5 rounded border border-purple-500/30">Büyüt 🔍</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="bg-slate-950/80 p-2.5 rounded-xl border border-purple-500/30">
                             <h3 id="m3-nebula-title" class="text-sm font-black text-purple-300 font-orbitron mb-1">Orion Bulutsusu</h3>
                             <span id="m3-nebula-type" class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-950 text-purple-200 border border-purple-500/40">
@@ -513,6 +595,28 @@
                     <!-- MODÜL 4 PANELİ: TAKIMYILDIZLARI VE POLARIS -->
                     <!-- ============================================== -->
                     <div id="panel-m4" class="space-y-2.5 hidden">
+                        <!-- 📷 GERÇEK GÖKYÜZÜ VE TAKIMYILDIZI FOTOĞRAFI -->
+                        <div class="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-cyan-500/40 bg-slate-950 group cursor-pointer shadow-lg" onclick="openPhotoModal(document.getElementById('m4-real-img').src, document.getElementById('m4-real-title').textContent, document.getElementById('m4-real-telescope').textContent, 'Büyükayı ve gökyüzü dizilimi ile Kutup Yıldızı (Polaris) bulma rehberi.')" title="Gerçek Gökyüzü Fotoğrafını Büyüt">
+                            <img id="m4-real-img" src="../assets/space/const_ursa_major.jpg" alt="Gerçek Gökyüzü Görüntüsü" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent flex flex-col justify-between p-2">
+                                <div class="flex items-center justify-between">
+                                    <span class="px-2 py-0.5 rounded-lg text-[9px] font-black bg-cyan-600/90 text-slate-950 flex items-center gap-1 shadow">
+                                        <i class="fa-solid fa-compass text-slate-950"></i> <span>GERÇEK GECE GÖKYÜZÜ GÖRÜNTÜSÜ</span>
+                                    </span>
+                                    <span class="w-6 h-6 rounded-lg bg-black/60 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <i class="fa-solid fa-expand"></i>
+                                    </span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div id="m4-real-title" class="text-xs font-black text-cyan-200">Büyükayı ve Kutup Yıldızı</div>
+                                        <div id="m4-real-telescope" class="text-[9px] font-medium text-slate-300">Derin Gökyüzü Astrofotografisi</div>
+                                    </div>
+                                    <span class="text-[9px] font-bold text-cyan-200 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-500/30">Büyüt 🔍</span>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="bg-slate-950/80 p-2.5 rounded-xl border border-cyan-500/30">
                             <h3 class="text-sm font-black text-cyan-300 font-orbitron mb-1">Kutup Yıldızı (Polaris) & Büyükayı</h3>
                             <p class="text-xs text-slate-300 leading-relaxed">
@@ -714,6 +818,8 @@
                     color: '#f59e0b',
                     scale: 3.5,
                     meshType: 'cloud',
+                    realImg: '../assets/space/nebula_orion.jpg',
+                    telescope: 'Hubble Uzay Teleskobu - Orion M42 Bulutsusu',
                     desc: 'Uzaydaki devasa gaz (özellikle hidrojen) ve toz bulutları kütleçekimi etkisiyle çökmeye ve ısınmaya başlar. Burası yıldızın doğumevidir.',
                     core: 'Yerçekimsel Yoğunlaşma',
                     temp: '10 - 100 K (-263 °C)',
@@ -728,6 +834,8 @@
                     color: '#ea580c',
                     scale: 2.2,
                     meshType: 'protostar',
+                    realImg: '../assets/space/stage_protostar.jpg',
+                    telescope: 'NASA Spitzer / Hubble - HOPS 383 Ön Yıldızı',
                     desc: 'Gaz bulutunun merkezinde basınç ve sıcaklık milyonlarca dereceye çıkar. Çekirdek parlamaya başlar ama henüz nükleer füzyon tam başlamamıştır.',
                     core: 'Basınçlı Çekirdek',
                     temp: 'Yaklaşık 3.000 K',
@@ -742,6 +850,8 @@
                     color: '#eab308',
                     scale: 1.5,
                     meshType: 'sun_star',
+                    realImg: '../assets/space/stage_sun.jpg',
+                    telescope: 'NASA SDO (Solar Dynamics Observatory) 4K Görüntüsü',
                     desc: 'Yıldızın en uzun ve en kararlı evresidir. Çekirdeğinde sürekli olarak Hidrojen atomları Helyum atomlarına dönüşür (nükleer füzyon). Güneşimiz şu anda bu aşamadadır!',
                     core: 'Hidrojen -> Helyum Füzyonu',
                     temp: '5.800 K (Yüzey), 15 Milyon K (Çekirdek)',
@@ -756,6 +866,8 @@
                     color: '#dc2626',
                     scale: 4.8,
                     meshType: 'red_giant',
+                    realImg: '../assets/space/stage_red_giant.jpg',
+                    telescope: 'Hubble Uzay Teleskobu - Kırmızı Dev Mira',
                     desc: 'Çekirdekteki hidrojen tükenir. Çekirdek büzülürken dış katmanlar yüzlerce kat şişer ve soğur. Yıldız kırmızı-turuncu devasa bir küreye dönüşür. Gelecekte Güneş Kırmızı Dev olduğunda Dünya\'nın yörüngesine kadar genişleyecektir!',
                     core: 'Helyum -> Karbon Füzyonu',
                     temp: '3.000 - 3.500 K (Yüzey Soğur)',
@@ -770,6 +882,8 @@
                     color: '#06b6d4',
                     scale: 3.8,
                     meshType: 'planetary_ring',
+                    realImg: '../assets/space/nebula_helis.jpg',
+                    telescope: 'Hubble Uzay Teleskobu - Helis Bulutsusu (NGC 7293)',
                     desc: 'Kırmızı dev dış gaz katmanlarını uzaya fırlatır. Bu gazlar uzayda parıldayan rengarenk zarif halkalar ve küreler oluşturur. Merkezde ise sıcak çekirdek kalır.',
                     core: 'Çıplaklaşmış Karbon-Oksijen Çekirdek',
                     temp: '100.000 K (Merkez)',
@@ -784,6 +898,8 @@
                     color: '#f8fafc',
                     scale: 0.7,
                     meshType: 'white_dwarf',
+                    realImg: '../assets/space/stage_white_dwarf.jpg',
+                    telescope: 'Hubble Uzay Teleskobu - Sirius B Beyaz Cücesi',
                     desc: 'Yıldızın geriye kalan son derece yoğun ve sıcak çekirdeğidir. Yaklaşık Dünya boyutundadır ama Güneş kütlesindedir (bir çay kaşığı maddesi tonlarca gelir!). Artık nükleer füzyon yapmaz, yavaşça soğur.',
                     core: 'Dejenere Karbon/Oksijen Maddesi',
                     temp: '25.000 K (Beyaz Akkor)',
@@ -800,6 +916,8 @@
                     color: '#6366f1',
                     scale: 4.2,
                     meshType: 'cloud_high',
+                    realImg: '../assets/space/stage_tarantula.jpg',
+                    telescope: 'TRAPPIST / ESO - Tarantula Dev Bulutsusu',
                     desc: 'Güneş\'ten 8-20 kat daha fazla kütleye sahip devasa gaz bulutudur. Muazzam kütleçekimiyle çok daha hızlı ve şiddetle çöker.',
                     core: 'Şiddetli Kütleçekim Çöküşü',
                     temp: '10 - 100 K',
@@ -814,6 +932,8 @@
                     color: '#38bdf8',
                     scale: 2.8,
                     meshType: 'blue_star',
+                    realImg: '../assets/space/stage_blue_star.jpg',
+                    telescope: 'Avrupa Güney Gözlemevi (ESO) - Rigel Mavi Süperdevi',
                     desc: 'Güneş\'ten binlerce kat daha parlak, akkor halinde parlayan dev yıldız. Çekirdeğinde yakıtını öyle çılgınca yakar ki milyonlarca yılda tüketir (Rigel, Spica gibi).',
                     core: 'Hızlı ve Şiddetli Füzyon',
                     temp: '20.000 - 35.000 K (Aşırı Sıcak!)',
@@ -828,6 +948,8 @@
                     color: '#b91c1c',
                     scale: 6.0,
                     meshType: 'red_supergiant',
+                    realImg: '../assets/space/stage_red_supergiant.jpg',
+                    telescope: 'ALMA Milimetre-altı Dizisi & VLT - Betelgeuse',
                     desc: 'Evrendeki en hacimli yıldızlardır (örn: Betelgeuse). O kadar büyüktür ki Güneş\'in yerine konsa Jüpiter\'in yörüngesini dahi içine alırdı! Çekirdeğinde demire kadar ağır elementler üretilir.',
                     core: 'Demire (Fe) Kadar Katmanlı Füzyon',
                     temp: '3.000 K (Yüzey), Milyarlarca K (Merkez)',
@@ -842,6 +964,8 @@
                     color: '#facc15',
                     scale: 5.5,
                     meshType: 'supernova',
+                    realImg: '../assets/space/stage_supernova.jpg',
+                    telescope: 'Hubble Uzay Teleskobu - Süpernova 1987A Kalıntısı',
                     desc: 'Evrenin en görkemli patlaması! Yıldız saniyeler içinde kendi içine çöker ve akıl almaz bir enerjiyle uzaya patlar. Bir galaksideki tüm yıldızların toplamından daha parlak parlar ve altın, platin, uranyum gibi tüm ağır elementleri uzaya saçar!',
                     core: 'Şok Dalgası ve İnfilak',
                     temp: '10 Milyar Kelvin!',
@@ -856,6 +980,8 @@
                     color: '#a855f7',
                     scale: 0.6,
                     meshType: 'pulsar',
+                    realImg: '../assets/space/stage_neutron_star.jpg',
+                    telescope: 'NASA Chandra X-Işını Teleskobu - Yengeç Pulsarı',
                     desc: 'Patlamadan sonra kalan çekirdeğin proton ve elektronlarının birleşerek nötrona dönüştüğü aşırı yoğun küre. Çapı sadece 20 km\'dir ama Güneş kütlesindedir! Kendi etrafında saniyede yüzlerce kez dönerek manyetik ışın fışkırtır.',
                     core: 'Saf Nötron Denizi',
                     temp: '1 Milyon K',
@@ -870,6 +996,8 @@
                     color: '#0f172a',
                     scale: 1.8,
                     meshType: 'black_hole',
+                    realImg: '../assets/space/stage_black_hole.jpg',
+                    telescope: 'Event Horizon Telescope (EHT Tarihi İlk Fotoğraf)',
                     desc: 'Eğer geride kalan çekirdeğin kütlesi Güneş\'in 3 katından fazlaysa hiçbir kuvvet çökmeyi durduramaz. Kütleçekimi o kadar güçlüdür ki ışık dahi kaçamaz! Çevresinde olay ufku ve ışık saçan çekim diski oluşur.',
                     core: 'Tekillik (Sonsuz Yoğunluk)',
                     temp: 'Olay Ufku Çevresi Aşırı Sıcak',
@@ -1099,6 +1227,18 @@
             document.getElementById('m1-hud-size').textContent = data.size;
             document.getElementById('m1-hud-fate').textContent = data.fate;
             document.getElementById('m1-maarif-note').textContent = data.note;
+
+            // 📷 Gerçek Teleskop Fotoğrafını Güncelle
+            if (data.realImg) {
+                const imgEl = document.getElementById('m1-real-img');
+                if (imgEl) imgEl.src = data.realImg;
+                const telEl = document.getElementById('m1-real-telescope');
+                if (telEl) telEl.textContent = data.telescope || 'NASA / Hubble Uzay Teleskobu';
+                const pipImg = document.getElementById('pip-scene-img');
+                if (pipImg) pipImg.src = data.realImg;
+                const pipTitle = document.getElementById('pip-scene-title');
+                if (pipTitle) pipTitle.textContent = data.name;
+            }
 
             renderStagePills();
 
@@ -1424,10 +1564,42 @@
         function setPresetStar(key) {
             const slider = document.getElementById('slider-star-temp');
             let t = 5800;
-            if (key === 'betelgeuse') t = 3500;
-            else if (key === 'gunes') t = 5800;
-            else if (key === 'sirius') t = 9900;
-            else if (key === 'rigel') t = 12000;
+            let img = '../assets/space/stage_sun.jpg';
+            let title = 'Güneş (Sarı Cüce)';
+            let tel = 'NASA SDO 4K Ultra-HD';
+
+            if (key === 'betelgeuse') {
+                t = 3500;
+                img = '../assets/space/star_betelgeuse.jpg';
+                title = 'Betelgeuse (Kırmızı Süperdev)';
+                tel = 'ALMA Milimetre-altı Dizisi & VLT';
+            } else if (key === 'gunes') {
+                t = 5800;
+                img = '../assets/space/stage_sun.jpg';
+                title = 'Güneş (Sarı Cüce)';
+                tel = 'NASA SDO 4K Ultra-HD';
+            } else if (key === 'sirius') {
+                t = 9900;
+                img = '../assets/space/star_sirius.jpg';
+                title = 'Sirius (A-Tipi Beyaz Yıldız)';
+                tel = 'Hubble Uzay Teleskobu WFPC2';
+            } else if (key === 'rigel') {
+                t = 12000;
+                img = '../assets/space/star_rigel.jpg';
+                title = 'Rigel (Mavi Dev)';
+                tel = 'Avrupa Güney Gözlemevi (ESO)';
+            }
+
+            const imgEl = document.getElementById('m2-real-img');
+            if (imgEl) imgEl.src = img;
+            const tEl = document.getElementById('m2-real-title');
+            if (tEl) tEl.textContent = title;
+            const telEl = document.getElementById('m2-real-telescope');
+            if (telEl) telEl.textContent = tel;
+            const pipImg = document.getElementById('pip-scene-img');
+            if (pipImg) pipImg.src = img;
+            const pipTitle = document.getElementById('pip-scene-title');
+            if (pipTitle) pipTitle.textContent = title;
 
             if (slider) slider.value = t;
             onStarTempSlider(t);
@@ -1444,14 +1616,18 @@
                 dist: '1.344 Işık Yılı',
                 kind: 'Gaz İyonlaşması (HII Bölgesi)',
                 color: '#ec4899',
+                realImg: '../assets/space/nebula_orion.jpg',
+                telescope: 'NASA / ESA Hubble Uzay Teleskobu (2006 Büyük Mozaik)',
                 desc: 'Gökyüzündeki en aktif yıldız doğumevidir. İçindeki yüzlerce genç yıldızın morötesi ışığı hidrojen gazını parlatır ve pembe-mor bir ışıma yayar.'
             },
             atbasi: {
-                title: 'Atbaşı Bulutsusu (Horsehead)',
+                title: 'Atbaşı Bulutsusu (Horsehead / Barnard 33)',
                 type: 'Karanlık Bulutsu',
                 dist: '1.375 Işık Yılı',
                 kind: 'Işığı Bloke Eden Toz Bulutu',
                 color: '#475569',
+                realImg: '../assets/space/nebula_atbasi.jpg',
+                telescope: 'Avrupa Güney Gözlemevi (ESO) & Hubble',
                 desc: 'Arkasındaki parlak gaz bulutunun önünde durarak at başı silueti oluşturan yoğun ve soğuk toz bulutudur. İçinde yeni yıldızlar saklıdır.'
             },
             halka: {
@@ -1460,6 +1636,8 @@
                 dist: '2.570 Işık Yılı',
                 kind: 'Ölen Yıldız Kalıntısı',
                 color: '#06b6d4',
+                realImg: '../assets/space/nebula_halka.jpg',
+                telescope: 'Hubble & James Webb Uzay Teleskobu',
                 desc: 'Çalgı takımyıldızında yer alan, ölen orta kütleli bir yıldızın uzaya fırlattığı dairesel gaz tabakasıdır. Merkezindeki beyaz cüce net olarak görülür.'
             },
             yengec: {
@@ -1468,7 +1646,29 @@
                 dist: '6.500 Işık Yılı',
                 kind: 'Pulsar Rüzgârı Bulutsusu',
                 color: '#f59e0b',
+                realImg: '../assets/space/nebula_yengec.jpg',
+                telescope: 'NASA Hubble Uzay Teleskobu WFPC2',
                 desc: 'M.S. 1054 yılında Çinli gökbilimcilerin gündüz bile gördüğü bir süpernova patlamasının kalıntısıdır. Merkezinde saniyede 30 kez dönen bir atarca (pulsar) vardır.'
+            },
+            kartal: {
+                title: 'Kartal Bulutsusu: Yaratılış Sütunları (M16)',
+                type: 'Salma Bulutsusu (Yıldız Doğumevi)',
+                dist: '7.000 Işık Yılı',
+                kind: 'Yıldız Doğum Sütunları',
+                color: '#0284c7',
+                realImg: '../assets/space/nebula_kartal.jpg',
+                telescope: 'NASA Hubble & James Webb Uzay Teleskobu',
+                desc: 'Işık yılları uzunluğundaki devasa gaz ve toz sütunları içinde yeni yıldızların doğduğu, evrenin en meşhur ve ikonik manzarasını oluşturan bulutsudur.'
+            },
+            kelebek: {
+                title: 'Kelebek Bulutsusu (Butterfly / NGC 6302)',
+                type: 'Çift Kutuplu Gezegenimsi Bulutsu',
+                dist: '3.800 Işık Yılı',
+                kind: 'Ölmekte Olan Dev Yıldız',
+                color: '#c084fc',
+                realImg: '../assets/space/nebula_kelebek.jpg',
+                telescope: 'Hubble Uzay Teleskobu Geniş Alan Kamerası 3',
+                desc: 'Merkezinde 200.000 °C sıcaklıktaki beyaz cücenin iki yana kelebek kanatları gibi fırlattığı süpersonik gaz bulutlarıdır.'
             }
         };
 
@@ -1482,7 +1682,7 @@
             const data = NEBULA_DATA[key];
             if (!data) return;
 
-            ['orion', 'atbasi', 'halka', 'yengec'].forEach(k => {
+            ['orion', 'atbasi', 'halka', 'yengec', 'kartal', 'kelebek'].forEach(k => {
                 const b = document.getElementById('btn-neb-' + k);
                 if (b) {
                     b.className = (k === key) 
@@ -1501,6 +1701,18 @@
             document.getElementById('m3-nebula-kind').textContent = data.kind;
             document.getElementById('m3-nebula-desc').textContent = data.desc;
 
+            // 📷 Gerçek Bulutsu Fotoğrafını Güncelle
+            if (data.realImg) {
+                const imgEl = document.getElementById('m3-real-img');
+                if (imgEl) imgEl.src = data.realImg;
+                const telEl = document.getElementById('m3-real-telescope');
+                if (telEl) telEl.textContent = data.telescope || 'Hubble / James Webb';
+                const pipImg = document.getElementById('pip-scene-img');
+                if (pipImg) pipImg.src = data.realImg;
+                const pipTitle = document.getElementById('pip-scene-title');
+                if (pipTitle) pipTitle.textContent = data.title;
+            }
+
             // 3D Model oluştur
             if (key === 'orion') {
                 createNebulaCloudMesh('#ec4899', 4.5);
@@ -1514,6 +1726,12 @@
             } else if (key === 'yengec') {
                 createSupernovaExplosionMesh();
                 camera.position.set(0, 0, 16);
+            } else if (key === 'kartal') {
+                createNebulaCloudMesh('#0284c7', 4.8);
+                camera.position.set(0, 0, 16);
+            } else if (key === 'kelebek') {
+                createPlanetaryNebulaMesh();
+                camera.position.set(0, 0, 15);
             }
 
             SoundEngine.playTone(400, 0.25, 'triangle');
@@ -1856,5 +2074,440 @@
             initThree();
         });
     </script>
+
+    <!-- 🖼️ GERÇEK TELESKOP FOTOĞRAFI TAM EKRAN İNCELEME MODALI (LIGHTBOX) -->
+    <div id="photo-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex flex-col justify-between hidden p-2 sm:p-4">
+        <!-- Üst Bar -->
+        <div class="flex items-center justify-between p-2 border-b border-indigo-500/20 shrink-0">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-xl bg-indigo-600/30 text-indigo-300 border border-indigo-500/40 flex items-center justify-center text-sm font-black">
+                    <i class="fa-solid fa-camera-retro text-amber-300"></i>
+                </span>
+                <div>
+                    <h3 id="photo-modal-title" class="text-sm sm:text-base font-black font-orbitron text-white">Gök Cismi</h3>
+                    <span id="photo-modal-telescope" class="text-[11px] font-bold text-amber-300">Hubble Uzay Teleskobu</span>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="openPhotoOriginal()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer" title="Yeni Sekmede Orijinal Boyutta Aç">
+                    <i class="fa-solid fa-up-right-from-square"></i> <span class="hidden sm:inline">Orijinal Boyut</span>
+                </button>
+                <button type="button" onclick="closePhotoModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-200 border border-slate-700 flex items-center justify-center text-base transition-all cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Görsel Görüntüleme Alanı -->
+        <div class="flex-1 min-h-0 flex items-center justify-center p-2 relative overflow-hidden">
+            <img id="photo-modal-img" src="" alt="Teleskop Fotoğrafı" class="max-w-full max-h-full object-contain rounded-2xl shadow-2xl border border-slate-800 transition-all duration-300" />
+        </div>
+
+        <!-- Alt Bilgi Paneli -->
+        <div class="p-3 bg-slate-900/90 rounded-2xl border border-indigo-500/30 shrink-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <p id="photo-modal-desc" class="text-xs text-slate-300 leading-relaxed max-w-3xl">
+                Açıklama
+            </p>
+            <div class="flex items-center gap-2 shrink-0">
+                <span class="text-[10px] font-bold text-slate-400 bg-slate-950 px-2 py-1 rounded-lg border border-slate-800">
+                    <i class="fa-solid fa-satellite mr-1 text-cyan-400"></i> NASA / ESA / Hubble / JWST
+                </span>
+                <button type="button" onclick="closePhotoModal()" class="px-4 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs transition-all cursor-pointer">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔭 25 GERÇEK TELESKOP FOTOĞRAFI ALBÜMÜ & GALERİSİ -->
+    <div id="gallery-modal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-xl flex flex-col justify-between hidden p-2 sm:p-4">
+        <!-- Galeri Üst Bar -->
+        <div class="flex items-center justify-between p-2 border-b border-indigo-500/20 shrink-0">
+            <div class="flex items-center gap-2">
+                <span class="w-8 h-8 rounded-xl bg-purple-600/30 text-purple-300 border border-purple-500/40 flex items-center justify-center text-sm font-black">
+                    <i class="fa-solid fa-telescope text-pink-300"></i>
+                </span>
+                <div>
+                    <h3 class="text-sm sm:text-base font-black font-orbitron text-white">UZAY TELESKOPLARI ALBÜMÜ</h3>
+                    <span class="text-[11px] font-bold text-slate-400">NASA, Hubble, James Webb ve EHT Gerçek Fotoğrafları (22+ Eser)</span>
+                </div>
+            </div>
+            <button type="button" onclick="closeGalleryModal()" class="w-9 h-9 rounded-xl bg-slate-800 hover:bg-rose-900/60 text-slate-300 hover:text-rose-200 border border-slate-700 flex items-center justify-center text-base transition-all cursor-pointer">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Filtre Sekmeleri -->
+        <div class="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-2 shrink-0 border-b border-slate-800/80">
+            <button type="button" onclick="filterGallery('all')" id="btn-gal-all" class="gal-filter-btn px-3 py-1 rounded-xl text-xs font-black bg-indigo-600 text-white shrink-0 cursor-pointer shadow">Tümü (22+)</button>
+            <button type="button" onclick="filterGallery('cycle')" id="btn-gal-cycle" class="gal-filter-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 hover:text-white shrink-0 cursor-pointer">Yıldız Yaşam Döngüsü</button>
+            <button type="button" onclick="filterGallery('nebulae')" id="btn-gal-nebulae" class="gal-filter-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 hover:text-white shrink-0 cursor-pointer">Bulutsular (Nebulalar)</button>
+            <button type="button" onclick="filterGallery('stars')" id="btn-gal-stars" class="gal-filter-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 hover:text-white shrink-0 cursor-pointer">Yıldızlar & Sıcaklık</button>
+            <button type="button" onclick="filterGallery('constellations')" id="btn-gal-constellations" class="gal-filter-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 hover:text-white shrink-0 cursor-pointer">Takımyıldızları</button>
+        </div>
+
+        <!-- Galeri Izgarası (Grid) -->
+        <div class="flex-1 min-h-0 overflow-y-auto p-2 sm:p-3">
+            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                <!-- Dinamik JavaScript Render -->
+            </div>
+        </div>
+
+        <!-- Galeri Alt Bar -->
+        <div class="p-2.5 bg-slate-900/90 rounded-2xl border border-slate-800 shrink-0 flex items-center justify-between text-xs text-slate-400">
+            <span>Tüm fotoğraflar NASA, ESA, Hubble, JWST ve Event Horizon Telescope kamu malı bilimsel arşivinden derlenmiştir.</span>
+            <button type="button" onclick="closeGalleryModal()" class="px-4 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold transition-all cursor-pointer">
+                Kapat
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // 📷 GERÇEK TELESKOP FOTOĞRAF MOTORU & ALBÜM
+        // =========================================================================
+        const REAL_SPACE_PHOTOS = [
+            {
+                id: 'nebula_orion',
+                title: 'Orion Bulutsusu (M42) - Yıldız Doğumevi',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'NASA / ESA Hubble Uzay Teleskobu (2006 Büyük Mozaik)',
+                desc: 'Dünya\'ya 1.344 ışık yılı mesafede, yüzlerce genç yıldızın ve ön gezegen disklerinin doğduğu gökyüzünün en görkemli yıldız doğumevi.',
+                src: '../assets/space/nebula_orion.jpg'
+            },
+            {
+                id: 'stage_protostar',
+                title: 'Ön Yıldız (Protostar) HOPS 383',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'NASA Spitzer / Hubble Uzay Teleskobu',
+                desc: 'Gaz ve toz kozasından henüz çıkmakta olan, merkezindeki çekirdek basıncıyla parlayan bebek ön yıldız.',
+                src: '../assets/space/stage_protostar.jpg'
+            },
+            {
+                id: 'stage_sun',
+                title: 'Güneşimiz (Sarı Cüce / Orta Kütleli Yıldız)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'NASA SDO (Solar Dynamics Observatory) 4K Ultra-HD',
+                desc: 'Yaklaşık 4.6 milyar yıldır hidrojen yakarak kararlı parlayan, yüzey sıcaklığı 5.800 K olan orta kütleli ana kol yıldızımız.',
+                src: '../assets/space/stage_sun.jpg'
+            },
+            {
+                id: 'stage_red_giant',
+                title: 'Kırmızı Dev Mira (Omicron Ceti)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'Hubble Uzay Teleskobu Morötesi Kamerası',
+                desc: 'Çekirdeğindeki hidrojen tükendiğinde yüzlerce kat şişip soğuyan ve kırmızı renk alan devasa yaşlı yıldız.',
+                src: '../assets/space/stage_red_giant.jpg'
+            },
+            {
+                id: 'nebula_helis',
+                title: 'Helis Bulutsusu (Helix / NGC 7293) - "Tanrı\'nın Gözü"',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'Hubble Uzay Teleskobu & Kitt Peak Gözlemevi',
+                desc: 'Ölen Güneş benzeri bir yıldızın uzaya savurduğu rengarenk gaz küresi (Gezegenimsi Bulutsu). Merkezinde beyaz cüce kalıntısı görünmektedir.',
+                src: '../assets/space/nebula_helis.jpg'
+            },
+            {
+                id: 'stage_white_dwarf',
+                title: 'Sirius B (Beyaz Cüce Çekirdeği)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'Hubble Uzay Teleskobu WFPC2',
+                desc: 'Güneş kütlesinde fakat Dünya büyüklüğünde, nükleer füzyonu bitmiş, trilyonlarca yılda yavaşça soğuyacak son derece yoğun çekirdek kalıntısı.',
+                src: '../assets/space/stage_white_dwarf.jpg'
+            },
+            {
+                id: 'stage_tarantula',
+                title: 'Tarantula Dev Bulutsusu (30 Doradus)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'TRAPPIST / ESO (Avrupa Güney Gözlemevi)',
+                desc: 'Büyükkütleli dev yıldızların doğduğu, bilinen evrenin en büyük ve en fırtınalı devasa moleküler gaz bulutu.',
+                src: '../assets/space/stage_tarantula.jpg'
+            },
+            {
+                id: 'stage_blue_star',
+                title: 'Rigel (Büyük Kütleli Mavi Süperdev)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'Teleskopik Derin Uzay Astrofotografisi',
+                desc: 'Güneş\'ten 21 kat kütleli, 12.000 Kelvin sıcaklıkta akkor halinde mavi parlayan ve yakıtını çılgınca tüketen genç dev yıldız.',
+                src: '../assets/space/stage_blue_star.jpg'
+            },
+            {
+                id: 'stage_red_supergiant',
+                title: 'Betelgeuse (Kırmızı Süperdev)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'ALMA Milimetre-altı Dizisi & VLT (Very Large Telescope)',
+                desc: 'Güneş\'in 1000 katı hacminde, yerine konulsa Jüpiter\'in yörüngesini içine alacak, her an süpernova patlaması beklenen devasa yıldız.',
+                src: '../assets/space/stage_red_supergiant.jpg'
+            },
+            {
+                id: 'stage_supernova',
+                title: 'Süpernova 1987A Patlama Kalıntısı',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'Hubble Uzay Teleskobu (20. Yıl Özel Gözlemi)',
+                desc: 'Büyük kütleli bir yıldızın ölümüyle gerçekleşen evrenin en şiddetli patlaması. Uzaya altın, demir ve platin saçarak parıldayan şok dalgası.',
+                src: '../assets/space/stage_supernova.jpg'
+            },
+            {
+                id: 'stage_neutron_star',
+                title: 'Yengeç Pulsarı (Dönen Nötron Yıldızı)',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'NASA Chandra X-Işını & Hubble Kompoziti',
+                desc: 'Çapı sadece 20 km olan fakat Güneş kütlesine sahip, kendi etrafında saniyede 30 kez dönerek yüksek enerjili fışkırmalar üreten atarca.',
+                src: '../assets/space/stage_neutron_star.jpg'
+            },
+            {
+                id: 'stage_black_hole',
+                title: 'M87* Galaksisi Süperdev Kara Deliği',
+                category: 'cycle',
+                categoryName: 'Yaşam Döngüsü',
+                telescope: 'Event Horizon Telescope (EHT Tarihi İlk Fotoğraf)',
+                desc: 'Işığın dahi kaçamadığı olay ufku ve çevresinde ışık hızına yakın dönen akkor gaz diskiyle insanlık tarihinin çektiği ilk gerçek kara delik görüntüsü!',
+                src: '../assets/space/stage_black_hole.jpg'
+            },
+            {
+                id: 'nebula_atbasi',
+                title: 'Atbaşı Bulutsusu (Barnard 33)',
+                category: 'nebulae',
+                categoryName: 'Bulutsular',
+                telescope: 'ESO & Hubble Uzay Teleskobu',
+                desc: 'Arkasındaki parlayan pembe hidrojen bulutunun önünde at kafası silueti oluşturan soğuk ve yoğun karanlık toz bulutu.',
+                src: '../assets/space/nebula_atbasi.jpg'
+            },
+            {
+                id: 'nebula_halka',
+                title: 'Halka Bulutsusu (Ring Nebula / M57)',
+                category: 'nebulae',
+                categoryName: 'Bulutsular',
+                telescope: 'Hubble & James Webb Uzay Teleskobu',
+                desc: 'Çalgı (Lyra) takımyıldızında yer alan, ömrü tükenen bir yıldızın uzaya fırlattığı dairesel parıldayan gaz halkası.',
+                src: '../assets/space/nebula_halka.jpg'
+            },
+            {
+                id: 'nebula_yengec',
+                title: 'Yengeç Bulutsusu (Crab Nebula / M1)',
+                category: 'nebulae',
+                categoryName: 'Bulutsular',
+                telescope: 'Hubble Uzay Teleskobu 24 Karelik Büyük Mozaik',
+                desc: 'M.S. 1054 yılında Çinli astronomlarca gündüz dahi gözlenen süpernova patlamasının uzayda genişleyen rengarenk gaz filamentleri.',
+                src: '../assets/space/nebula_yengec.jpg'
+            },
+            {
+                id: 'nebula_kartal',
+                title: 'Kartal Bulutsusu: Yaratılış Sütunları (M16)',
+                category: 'nebulae',
+                categoryName: 'Bulutsular',
+                telescope: 'NASA Hubble / James Webb Uzay Teleskobu',
+                desc: 'Işık yılları uzunluğunda devasa hidrojen sütunları. İçinde yeni yıldızların kütleçekimle sıkışıp doğduğu evrenin en ikonik manzarası.',
+                src: '../assets/space/nebula_kartal.jpg'
+            },
+            {
+                id: 'nebula_kelebek',
+                title: 'Kelebek Bulutsusu (NGC 6302)',
+                category: 'nebulae',
+                categoryName: 'Bulutsular',
+                telescope: 'Hubble Uzay Teleskobu WFC3',
+                desc: 'Merkezinde 200.000 Kelvin sıcaklığa sahip can çekişen bir yıldızın iki yana kelebek kanatları gibi fırlattığı 20.000 °C sıcaklıktaki gaz kanatları.',
+                src: '../assets/space/nebula_kelebek.jpg'
+            },
+            {
+                id: 'star_betelgeuse',
+                title: 'Betelgeuse (Kırmızı Süperdev - En Soğuk: 3.500 K)',
+                category: 'stars',
+                categoryName: 'Yıldızlar & Sıcaklık',
+                telescope: 'ALMA Radyo Teleskobu & VLT Gözlemevi',
+                desc: 'Kırmızı renkli yıldızlar gökbilimde en soğuk yüzey sıcaklığına (~3.500 K) sahip yıldızlardır.',
+                src: '../assets/space/star_betelgeuse.jpg'
+            },
+            {
+                id: 'star_sirius',
+                title: 'Sirius A ve Sirius B (Beyaz Yıldız - 9.900 K)',
+                category: 'stars',
+                categoryName: 'Yıldızlar & Sıcaklık',
+                telescope: 'Hubble Uzay Teleskobu & Yer Gözlemevleri',
+                desc: 'Gece gökyüzünün en parlak yıldızı. Beyaz renklidir ve yüzey sıcaklığı yaklaşık 9.900 Kelvindir.',
+                src: '../assets/space/star_sirius.jpg'
+            },
+            {
+                id: 'star_rigel',
+                title: 'Rigel (Mavi Dev - En Sıcak: 12.000+ K)',
+                category: 'stars',
+                categoryName: 'Yıldızlar & Sıcaklık',
+                telescope: 'Avrupa Güney Gözlemevi (ESO)',
+                desc: 'Gökbilimde mavi yıldızlar yüzey sıcaklığı en yüksek (>10.000 K) ve en fazla enerji yayan yıldızlardır.',
+                src: '../assets/space/star_rigel.jpg'
+            },
+            {
+                id: 'star_polaris',
+                title: 'Kutup Yıldızı (Polaris - Kuzey Yıldızı)',
+                category: 'stars',
+                categoryName: 'Yıldızlar & Sıcaklık',
+                telescope: 'Teleskopik Gözlem & Spektroskopi',
+                desc: 'Dünya\'nın dönme ekseni doğrultusunda yer aldığı için gece boyunca yeri değişmeyen, daima tam kuzeyi gösteren meşhur yıldız.',
+                src: '../assets/space/star_polaris.jpg'
+            },
+            {
+                id: 'const_ursa_major',
+                title: 'Büyükayı (Ursa Major) ve Gökyüzü',
+                category: 'constellations',
+                categoryName: 'Takımyıldızları',
+                telescope: 'Geniş Alan Derin Gökyüzü Astrofotografisi',
+                desc: 'Yedi parlak yıldızıyla gökyüzünde cezve/tava şekli oluşturan ve ucundaki iki yıldızın 5 kat uzatılmasıyla Kutup Yıldızı\'nı bulan takımyıldızı.',
+                src: '../assets/space/const_ursa_major.jpg'
+            },
+            {
+                id: 'const_orion',
+                title: 'Avcı (Orion) Takımyıldızı',
+                category: 'constellations',
+                categoryName: 'Takımyıldızları',
+                telescope: 'Geniş Alan Uzay ve Yıldız Atlası Fotoğrafı',
+                desc: 'Avcı\'nın kemerindeki 3 parlak yıldız, kırmızı dev Betelgeuse ve mavi dev Rigel ile kış gökyüzünün en belirgin takımyıldızı.',
+                src: '../assets/space/const_orion.jpg'
+            },
+            {
+                id: 'const_cassiopeia',
+                title: 'Kraliçe (Cassiopeia - "W" Takımyıldızı)',
+                category: 'constellations',
+                categoryName: 'Takımyıldızları',
+                telescope: 'Derin Uzay Gece Gökyüzü Çekimi',
+                desc: 'Gökyüzünde belirgin bir W (veya M) harfi oluşturan, Kutup Yıldızı\'nın karşı tarafında yer alan ünlü takımyıldızı.',
+                src: '../assets/space/const_cassiopeia.jpg'
+            }
+        ];
+
+        let isScenePipOpen = true;
+
+        function toggleScenePipPhoto() {
+            isScenePipOpen = !isScenePipOpen;
+            const pip = document.getElementById('scene-pip-box');
+            const txt = document.getElementById('text-toggle-pip');
+            if (pip) {
+                if (isScenePipOpen) {
+                    pip.classList.remove('hidden');
+                    if (txt) txt.textContent = 'Teleskop Fotoğrafını Gizle';
+                } else {
+                    pip.classList.add('hidden');
+                    if (txt) txt.textContent = 'Gerçek Fotoğrafı Göster';
+                }
+            }
+        }
+
+        function openCurrentStagePhoto() {
+            const branch = STELLAR_EVOLUTION_DATA[currentMassBranch];
+            const data = branch[currentStageIdx];
+            if (data && data.realImg) {
+                openPhotoModal(data.realImg, data.name, data.telescope || 'NASA / Hubble', data.desc);
+            }
+        }
+
+        function openCurrentPipPhoto() {
+            const img = document.getElementById('pip-scene-img');
+            const title = document.getElementById('pip-scene-title');
+            if (img) {
+                openPhotoModal(img.src, title ? title.textContent : 'Gök Cismi', 'NASA / Hubble / JWST', '3D model ile gerçek teleskop gözlemi karşılaştırması.');
+            }
+        }
+
+        function openPhotoModal(src, title, telescope, desc) {
+            const m = document.getElementById('photo-modal');
+            const mImg = document.getElementById('photo-modal-img');
+            const mTitle = document.getElementById('photo-modal-title');
+            const mTel = document.getElementById('photo-modal-telescope');
+            const mDesc = document.getElementById('photo-modal-desc');
+
+            if (mImg) mImg.src = src;
+            if (mTitle) mTitle.textContent = title || 'Gök Cismi';
+            if (mTel) mTel.textContent = telescope || 'NASA Uzay Teleskobu';
+            if (mDesc) mDesc.textContent = desc || 'Detaylı bilimsel açıklama.';
+
+            if (m) {
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+            }
+            SoundEngine.playTone(600, 0.15, 'sine');
+        }
+
+        function closePhotoModal() {
+            const m = document.getElementById('photo-modal');
+            if (m) {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
+        }
+
+        function openPhotoOriginal() {
+            const mImg = document.getElementById('photo-modal-img');
+            if (mImg && mImg.src) {
+                window.open(mImg.src, '_blank');
+            }
+        }
+
+        function openGalleryModal() {
+            const m = document.getElementById('gallery-modal');
+            if (m) {
+                m.classList.remove('hidden');
+                m.classList.add('flex');
+            }
+            filterGallery('all');
+            SoundEngine.playTone(700, 0.2, 'sine');
+        }
+
+        function closeGalleryModal() {
+            const m = document.getElementById('gallery-modal');
+            if (m) {
+                m.classList.add('hidden');
+                m.classList.remove('flex');
+            }
+        }
+
+        function filterGallery(category = 'all') {
+            ['all', 'cycle', 'nebulae', 'stars', 'constellations'].forEach(c => {
+                const btn = document.getElementById('btn-gal-' + c);
+                if (btn) {
+                    btn.className = (c === category)
+                        ? 'gal-filter-btn px-3 py-1 rounded-xl text-xs font-black bg-indigo-600 text-white shrink-0 cursor-pointer shadow'
+                        : 'gal-filter-btn px-3 py-1 rounded-xl text-xs font-bold bg-slate-900 text-slate-300 hover:text-white shrink-0 cursor-pointer';
+                }
+            });
+
+            const grid = document.getElementById('gallery-grid');
+            if (!grid) return;
+
+            const list = (category === 'all') 
+                ? REAL_SPACE_PHOTOS 
+                : REAL_SPACE_PHOTOS.filter(x => x.category === category);
+
+            grid.innerHTML = list.map(item => `
+                <div class="bg-slate-900/90 rounded-2xl overflow-hidden border border-indigo-500/25 hover:border-indigo-400 shadow-lg group cursor-pointer transition-all duration-300 hover:-translate-y-1" onclick="openPhotoModal('${item.src}', '${item.title.replace(/'/g, "\\'")}', '${item.telescope.replace(/'/g, "\\'")}', '${item.desc.replace(/'/g, "\\'")}')">
+                    <div class="relative w-full aspect-[16/9] overflow-hidden bg-slate-950">
+                        <img src="${item.src}" alt="${item.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+                        <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity"></div>
+                        <span class="absolute top-2 left-2 px-2 py-0.5 rounded-lg text-[9px] font-black bg-slate-950/80 text-amber-300 border border-amber-500/30 backdrop-blur-sm">
+                            ${item.categoryName}
+                        </span>
+                        <span class="absolute top-2 right-2 w-7 h-7 rounded-lg bg-indigo-600/80 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                            <i class="fa-solid fa-expand"></i>
+                        </span>
+                    </div>
+                    <div class="p-3">
+                        <h4 class="font-black text-xs text-white group-hover:text-amber-300 transition-colors line-clamp-1 mb-1 font-orbitron">${item.title}</h4>
+                        <div class="text-[10px] font-mono font-bold text-cyan-300 truncate mb-1.5">${item.telescope}</div>
+                        <p class="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">${item.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+
 </body>
 </html>

@@ -116,9 +116,9 @@
     "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu gerçek zamanlı 3D uzay laboratuvarı! Yıldızların yaşam döngüsü (Bulutsu, Kırmızı Dev, Süpernova, Karadelik), Renk-Sıcaklık ilişkisi, 4 bulutsu türü, 3D Takımyıldızları ve Kutup Yıldızı (Polaris) bulucu.",
     "fileName": "yildiz-laboratuvari.html",
     "fileUrl": "oyunlar/yildiz-laboratuvari.html",
-    "imageUrl": "assets/yildiz-laboratuvari-kapak.svg",
-    "kapakResmi": "assets/yildiz-laboratuvari-kapak.svg",
-    "cover": "assets/yildiz-laboratuvari-kapak.svg",
+    "imageUrl": "assets/materials/yildiz-laboratuvari-kapak.jpg",
+    "kapakResmi": "assets/materials/yildiz-laboratuvari-kapak.jpg",
+    "cover": "assets/materials/yildiz-laboratuvari-kapak.jpg",
     "format": "3D SİMÜLASYON",
     "hasBlob": false,
     "tags": [
