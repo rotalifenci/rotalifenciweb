@@ -1,6 +1,7 @@
 /**
  * Rotalı Fenci - Yaprak Test & İnteraktif Sınav Oluşturucu Motoru
- * Hem tarayıcıda canlı çözülebilir hem de A4 formatında resmi MEB standartlarında yazdırılabilir/PDF yapılabilir HTML üretir.
+ * Hem Çoktan Seçmeli hem de Açık Uçlu (Klasik) ve Kısa Cevaplı sınavları destekler.
+ * Hem tarayıcıda canlı çözülebilir hem de A4 formatında resmi MEB standartlarında yazdırılabilir/PDF yapılabilir.
  */
 
 function escapeHtml(str) {
@@ -34,64 +35,156 @@ function buildInteractiveTestHtml({
   unit = "1. Ünite",
   targetSection = "1",
   subject = "Fen Bilimleri",
+  category = "soru-bankasi",
   outcomes = [],
   questions = []
 }) {
-  const safeTitle = escapeHtml(title || `${grade}. Sınıf ${subject} Yaprak Testi`);
+  const safeTitle = escapeHtml(title || `${grade}. Sınıf ${subject} Sınavı`);
   const safeUnit = escapeHtml(unit);
   const qCount = questions.length;
   const estimatedTime = Math.max(10, qCount * 3);
 
+  const hasOnlyOpenEnded = questions.every(q => {
+    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
+    return q.type === 'open_ended' || (!hasChoices && q.type !== 'multiple_choice');
+  });
+
+  const mcCount = questions.filter(q => {
+    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
+    return (q.type === 'multiple_choice' || !q.type) && hasChoices;
+  }).length;
+
   // Soruları HTML bloklarına dönüştür
   const questionsHtml = questions.map((q, idx) => {
     const qNum = idx + 1;
-    const correctAns = (q.correct_answer || 'A').toUpperCase().trim();
+    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
+    const isMultipleChoice = (q.type === 'multiple_choice' || !q.type) && hasChoices;
+    const isShortAnswer = q.type === 'short_answer';
+    const isOpenEnded = q.type === 'open_ended' || (!hasChoices && !isShortAnswer);
+
     const visualBox = q.visual_svg ? `
       <div class="question-visual-box">
         ${q.visual_svg}
       </div>` : '';
 
-    const opts = q.options || { A: '', B: '', C: '', D: '' };
-    const optionsHtml = ['A', 'B', 'C', 'D'].map(optKey => {
-      const optText = opts[optKey] || '';
-      return `
-        <label class="opt-label" data-opt="${optKey}">
-          <input type="radio" name="q${qNum}" value="${optKey}">
-          <span class="opt-circle">${optKey}</span>
-          <span class="opt-text">${escapeHtml(optText)}</span>
-        </label>`;
-    }).join('');
+    let answerAreaHtml = '';
+    let solutionBoxHtml = '';
+    let correctAns = '';
+    let qTypeTag = '';
+
+    if (isMultipleChoice) {
+      correctAns = (q.correct_answer || 'A').toUpperCase().trim();
+      qTypeTag = 'Çoktan Seçmeli';
+      const opts = q.options || { A: '', B: '', C: '', D: '' };
+      const optionsHtml = ['A', 'B', 'C', 'D'].map(optKey => {
+        const optText = opts[optKey] || '';
+        return `
+          <label class="opt-label" data-opt="${optKey}">
+            <input type="radio" name="q${qNum}" value="${optKey}">
+            <span class="opt-circle">${optKey}</span>
+            <span class="opt-text">${escapeHtml(optText)}</span>
+          </label>`;
+      }).join('');
+
+      answerAreaHtml = `
+        <div class="options-group">
+          ${optionsHtml}
+        </div>`;
+
+      solutionBoxHtml = `
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Çözüm ve Açıklama:</div>
+          <div class="sol-text"><strong>Doğru Seçenek: [${correctAns}]</strong> — ${escapeHtml(q.explanation || 'Açıklama belirtilmemiş.')}</div>
+        </div>`;
+    } else if (isShortAnswer) {
+      correctAns = String(q.correct_answer || '').trim();
+      qTypeTag = 'Kısa Cevaplı';
+      answerAreaHtml = `
+        <div class="short-answer-area">
+          <span class="short-ans-label"><i class="fa-solid fa-pen"></i> <strong>Cevap:</strong></span>
+          <input type="text" class="student-short-input no-print" placeholder="Kısa cevabınızı buraya yazınız...">
+          <span class="print-short-line only-print">....................................................................................</span>
+        </div>`;
+
+      solutionBoxHtml = `
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Doğru / Beklenen Cevap:</div>
+          <div class="sol-text"><strong>Cevap:</strong> ${escapeHtml(correctAns || q.explanation || 'Belirtilmemiş.')}</div>
+        </div>`;
+    } else {
+      // Açık Uçlu (Klasik)
+      correctAns = String(q.correct_answer || '').trim();
+      qTypeTag = 'Açık Uçlu';
+      answerAreaHtml = `
+        <div class="open-ended-answer-area">
+          <div class="answer-lines-prompt"><i class="fa-solid fa-pen-nib"></i> <strong>Cevabınızı ve bilimsel gerekçenizi yazınız:</strong></div>
+          <textarea class="student-text-input no-print" rows="3" placeholder="Açık uçlu cevabınızı buraya yazabilirsiniz..."></textarea>
+          <div class="print-writing-lines only-print">
+            <div class="write-line"></div>
+            <div class="write-line"></div>
+            <div class="write-line"></div>
+          </div>
+        </div>`;
+
+      solutionBoxHtml = `
+        <div class="solution-box" style="display: none;">
+          <div class="sol-title">💡 Beklenen Model Cevap & Değerlendirme Ölçütü (Rubrik):</div>
+          <div class="sol-text">
+            ${correctAns ? `<div style="margin-bottom:6px;"><strong>Model Cevap:</strong> ${escapeHtml(correctAns)}</div>` : ''}
+            ${q.explanation ? `<div><strong>Bilimsel Açıklama:</strong> ${escapeHtml(q.explanation)}</div>` : ''}
+          </div>
+        </div>`;
+    }
+
+    const typeDataAttr = isMultipleChoice ? 'multiple_choice' : (isShortAnswer ? 'short_answer' : 'open_ended');
 
     return `
-      <div class="question-block" data-qid="${qNum}" data-correct="${correctAns}">
+      <div class="question-block" data-qid="${qNum}" data-type="${typeDataAttr}" data-correct="${escapeHtml(correctAns)}">
         <div class="q-top-row">
           <span class="q-badge">Soru ${qNum}</span>
-          ${q.difficulty ? `<span class="q-diff-tag q-diff-${q.difficulty.toLowerCase()}">${escapeHtml(q.difficulty)}</span>` : ''}
+          <div style="display:flex; gap:6px; align-items:center;">
+            <span class="q-type-badge">${qTypeTag}</span>
+            ${q.difficulty ? `<span class="q-diff-tag q-diff-${q.difficulty.toLowerCase()}">${escapeHtml(q.difficulty)}</span>` : ''}
+          </div>
         </div>
         ${visualBox}
         <div class="question-text-and-options">
           <div class="q-text">${escapeHtml(q.question || '')}</div>
-          <div class="options-group">
-            ${optionsHtml}
-          </div>
+          ${answerAreaHtml}
         </div>
-        <div class="solution-box" style="display: none;">
-          <div class="sol-title">💡 Çözüm ve Açıklama:</div>
-          <div class="sol-text"><strong>Doğru Seçenek: [${correctAns}]</strong> — ${escapeHtml(q.explanation || 'Açıklama belirtilmemiş.')}</div>
-        </div>
+        ${solutionBoxHtml}
       </div>`;
   }).join('\n');
 
   // Mini Cevap Anahtarı Hücreleri
   const answerKeyCells = questions.map((q, idx) => {
     const qNum = idx + 1;
-    const ans = (q.correct_answer || '-').toUpperCase().trim();
+    const hasChoices = q.options && typeof q.options === 'object' && Object.keys(q.options).length > 0 && (q.options.A || q.options.B || q.options.C || q.options.D);
+    const isMultipleChoice = (q.type === 'multiple_choice' || !q.type) && hasChoices;
+    const isShort = q.type === 'short_answer';
+
+    let displayAns = '';
+    let extraStyle = '';
+    if (isMultipleChoice) {
+      displayAns = (q.correct_answer || '-').toUpperCase().trim();
+    } else if (isShort) {
+      const ca = String(q.correct_answer || '').trim();
+      displayAns = ca.length <= 6 ? ca : 'Kısa';
+      extraStyle = 'font-size:10px; font-weight:700;';
+    } else {
+      displayAns = 'Klasik';
+      extraStyle = 'font-size:9px; font-weight:700; color:#4f46e5;';
+    }
+
     return `
       <div class="ak-cell">
         <span class="ak-q">${qNum}</span>
-        <span class="ak-a">${ans}</span>
+        <span class="ak-a" style="${extraStyle}">${escapeHtml(displayAns)}</span>
       </div>`;
   }).join('');
+
+  const targetCategoryHash = category === 'denemeler' ? 'denemeler' : 'soru-bankasi';
+  const targetCategoryName = category === 'denemeler' ? 'Yazılıya Hazırlık' : 'Soru Bankası';
 
   return `<!DOCTYPE html>
 <html lang="tr">
@@ -332,6 +425,17 @@ function buildInteractiveTestHtml({
       padding-bottom: 1px;
     }
 
+    .q-type-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #cbd5e1;
+      font-family: 'Plus Jakarta Sans', sans-serif !important;
+    }
+
     .q-diff-tag {
       font-size: 10.5px;
       font-weight: 800;
@@ -377,7 +481,7 @@ function buildInteractiveTestHtml({
       text-decoration: underline;
     }
 
-    /* Şıklar */
+    /* Çoktan Seçmeli Şıklar */
     .options-group {
       display: flex;
       flex-direction: column;
@@ -454,6 +558,83 @@ function buildInteractiveTestHtml({
       color: #ffffff !important;
     }
 
+    /* Açık Uçlu Soru Alanı */
+    .open-ended-answer-area {
+      margin-top: 10px;
+      background: #f8fafc;
+      border: 1.5px dashed #cbd5e1;
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .answer-lines-prompt {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: #334155;
+      margin-bottom: 8px;
+    }
+
+    .student-text-input {
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-size: 13.5px;
+      font-family: 'Times New Roman', Times, serif !important;
+      resize: vertical;
+      outline: none;
+      background: #ffffff;
+      box-sizing: border-box;
+      line-height: 1.5;
+    }
+
+    .student-text-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    /* Kısa Cevaplı Soru Alanı */
+    .short-answer-area {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f8fafc;
+      border: 1px dashed #cbd5e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+    }
+
+    .short-ans-label {
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .student-short-input {
+      flex: 1;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font-size: 13.5px;
+      font-family: 'Times New Roman', Times, serif !important;
+      outline: none;
+      box-sizing: border-box;
+      background: #ffffff;
+    }
+
+    .student-short-input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+    }
+
+    .print-writing-lines {
+      display: none;
+    }
+
+    .only-print {
+      display: none !important;
+    }
+
     /* Çözüm Kutusu */
     .solution-box {
       margin-top: 12px;
@@ -467,7 +648,11 @@ function buildInteractiveTestHtml({
 
     .sol-title {
       font-weight: 800;
-      margin-bottom: 2px;
+      margin-bottom: 4px;
+    }
+
+    .sol-text {
+      line-height: 1.55;
     }
 
     /* Cevap Anahtarı Şeridi */
@@ -497,7 +682,7 @@ function buildInteractiveTestHtml({
       border: 1px solid #000000;
       display: flex;
       flex-direction: column;
-      width: 32px;
+      width: 42px;
       text-align: center;
     }
 
@@ -512,7 +697,11 @@ function buildInteractiveTestHtml({
     .ak-a {
       font-size: 12px;
       font-weight: 900;
-      padding: 2px 0;
+      padding: 3px 0;
+      min-height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     /* Sayfa Alt Bilgisi */
@@ -549,7 +738,7 @@ function buildInteractiveTestHtml({
     }
 
     .score-badge {
-      font-size: 40px;
+      font-size: 36px;
       font-weight: 900;
       color: #fbbf24;
       margin: 8px 0;
@@ -569,6 +758,10 @@ function buildInteractiveTestHtml({
 
       .no-print {
         display: none !important;
+      }
+
+      .only-print {
+        display: block !important;
       }
 
       .test-wrapper {
@@ -597,6 +790,36 @@ function buildInteractiveTestHtml({
         break-inside: avoid !important;
       }
 
+      .open-ended-answer-area {
+        background: transparent !important;
+        border: 1px solid #000000 !important;
+        padding: 8px 12px !important;
+      }
+
+      .print-writing-lines {
+        display: flex !important;
+        flex-direction: column;
+        gap: 20px;
+        margin-top: 18px;
+        padding-bottom: 6px;
+      }
+
+      .write-line {
+        border-bottom: 1px dashed #64748b;
+        height: 1px;
+        width: 100%;
+      }
+
+      .short-answer-area {
+        background: transparent !important;
+        border: none !important;
+        padding: 4px 0 !important;
+      }
+
+      .print-short-line {
+        display: inline !important;
+      }
+
       .answer-key-section {
         display: block !important;
         break-inside: avoid !important;
@@ -613,17 +836,17 @@ function buildInteractiveTestHtml({
         <a href="https://rotalifenci.vercel.app/" class="nav-btn">
           <i class="fa-solid fa-house"></i> Rotalı Fenci Portalı
         </a>
-        <a href="https://rotalifenci.vercel.app/#grade/grade-${grade}/soru-bankasi" class="nav-btn">
-          <span>📚</span> ${grade}. Sınıf Soru Bankası
+        <a href="https://rotalifenci.vercel.app/#grade/grade-${grade}/${targetCategoryHash}" class="nav-btn">
+          <span>📚</span> ${grade}. Sınıf ${targetCategoryName}
         </a>
       </div>
 
       <div class="action-group">
-        <button type="button" id="toggleTeacherModeBtn" class="btn btn-outline" title="Öğretmen Modu: Tüm şıkları ve ayrıntılı çözümleri anında gösterir">
+        <button type="button" id="toggleTeacherModeBtn" class="btn btn-outline" title="Öğretmen Modu: Tüm şıkları, model cevapları ve ayrıntılı çözümleri anında gösterir">
           <i class="fa-solid fa-eye"></i> <span>Öğretmen Modu</span>
         </button>
-        <button type="button" id="finishTestBtn" class="btn btn-success" title="İşaretlediğiniz şıkları kontrol edip puanınızı hesaplar">
-          <i class="fa-solid fa-circle-check"></i> <span>Testi Bitir & Puanla</span>
+        <button type="button" id="finishTestBtn" class="btn btn-success" title="${hasOnlyOpenEnded ? 'Model çözümleri ve değerlendirme ölçütlerini gösterir' : 'İşaretlediğiniz şıkları kontrol edip puanınızı hesaplar'}">
+          <i class="fa-solid fa-circle-check"></i> <span>${hasOnlyOpenEnded ? 'Model Çözümleri Gör' : 'Testi Bitir & Puanla'}</span>
         </button>
         <button type="button" onclick="window.print()" class="btn btn-primary" title="A4 formatında yazdır veya PDF olarak kaydet">
           <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
@@ -631,7 +854,7 @@ function buildInteractiveTestHtml({
       </div>
     </div>
 
-    <!-- Yaprak Test Kağıdı -->
+    <!-- Yaprak Test / Sınav Kağıdı -->
     <div class="sheet-paper" id="testSheet">
       
       <!-- MEB Resmi Sınav Başlığı -->
@@ -662,10 +885,14 @@ function buildInteractiveTestHtml({
 
       <!-- Cevap ve Kodlama Anahtarı (Son Kısım) -->
       <div class="answer-key-section" id="answerKeySection" style="display: none;">
-        <div class="ak-title">🎯 CEVAP VE KODLAMA ANAHTARI</div>
+        <div class="ak-title">🎯 CEVAP VE DEĞERLENDİRME ANAHTARI</div>
         <div class="ak-grid">
           ${answerKeyCells}
         </div>
+        ${!hasOnlyOpenEnded && mcCount < qCount ? `
+          <div style="text-align: center; font-size: 11px; color: #64748b; margin-top: 8px;">
+            * Açık uçlu soruların detaylı değerlendirme ölçütleri ve model cevapları için ilgili soruların altındaki çözüm kutularına bakınız.
+          </div>` : ''}
       </div>
 
       <!-- Sayfa Alt Bilgisi -->
@@ -678,15 +905,15 @@ function buildInteractiveTestHtml({
 
     <!-- Sonuç Değerlendirme Kartı (Test Tamamlandığında Çıkar) -->
     <div class="result-card no-print" id="resultCard">
-      <div style="font-size: 14px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Sınav Tamamlandı</div>
+      <div style="font-size: 14px; font-weight: 700; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px;">Sınav Değerlendirmesi</div>
       <div class="score-badge" id="scoreDisplay">0 Puan</div>
-      <p id="scoreDetails" style="font-size: 15px; color: #cbd5e1; margin-bottom: 16px;"></p>
+      <p id="scoreDetails" style="font-size: 14.5px; color: #cbd5e1; margin-bottom: 16px; line-height: 1.5;"></p>
       <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
         <button type="button" onclick="location.reload()" class="btn btn-outline" style="background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2);">
-          <i class="fa-solid fa-rotate-right"></i> Testi Tekrar Çöz
+          <i class="fa-solid fa-rotate-right"></i> Tekrar Çöz
         </button>
         <button type="button" onclick="window.print()" class="btn btn-primary">
-          <i class="fa-solid fa-print"></i> Testi Yazdır / PDF Al
+          <i class="fa-solid fa-print"></i> Yazdır / PDF Al
         </button>
       </div>
     </div>
@@ -697,6 +924,9 @@ function buildInteractiveTestHtml({
     document.addEventListener('DOMContentLoaded', () => {
       let isTeacherMode = false;
       const totalQuestions = ${qCount};
+      const totalMcQuestions = ${mcCount};
+      const isOnlyOpenEnded = ${hasOnlyOpenEnded ? 'true' : 'false'};
+
       const testSheet = document.getElementById('testSheet');
       const toggleTeacherModeBtn = document.getElementById('toggleTeacherModeBtn');
       const finishTestBtn = document.getElementById('finishTestBtn');
@@ -706,7 +936,7 @@ function buildInteractiveTestHtml({
       const scoreDetails = document.getElementById('scoreDetails');
       const headerScoreBox = document.getElementById('headerScoreBox');
 
-      // Şık Seçimi (Öğrenci Tıklaması)
+      // Şık Seçimi (Öğrenci Tıklaması - Sadece Çoktan Seçmeli Sorularda)
       document.querySelectorAll('.opt-label').forEach(label => {
         label.addEventListener('click', function(e) {
           if (isTeacherMode) return;
@@ -726,9 +956,11 @@ function buildInteractiveTestHtml({
             answerKeySection.style.display = 'block';
             document.querySelectorAll('.solution-box').forEach(sb => sb.style.display = 'block');
             document.querySelectorAll('.question-block').forEach(qb => {
-              const correctOpt = qb.getAttribute('data-correct');
-              const targetLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
-              if (targetLabel) targetLabel.classList.add('is-correct');
+              if (qb.getAttribute('data-type') === 'multiple_choice') {
+                const correctOpt = qb.getAttribute('data-correct');
+                const targetLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
+                if (targetLabel) targetLabel.classList.add('is-correct');
+              }
             });
             toggleTeacherModeBtn.innerHTML = '<i class="fa-solid fa-lock"></i> <span>Öğretmen Modunu Kapat</span>';
             toggleTeacherModeBtn.classList.add('btn-primary');
@@ -744,46 +976,58 @@ function buildInteractiveTestHtml({
         });
       }
 
-      // Testi Bitir & Puanla
+      // Testi Bitir & Değerlendir
       if (finishTestBtn) {
         finishTestBtn.addEventListener('click', () => {
-          let correctCount = 0;
-          let answeredCount = 0;
+          let mcCorrect = 0;
+          let mcAnswered = 0;
 
           document.querySelectorAll('.question-block').forEach(qb => {
-            const correctOpt = qb.getAttribute('data-correct');
-            const selectedLabel = qb.querySelector('.opt-label.selected');
-            
-            qb.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
+            const isMc = qb.getAttribute('data-type') === 'multiple_choice';
+            const solBox = qb.querySelector('.solution-box');
+            if (solBox) solBox.style.display = 'block';
 
-            if (selectedLabel) {
-              answeredCount++;
-              const userOpt = selectedLabel.getAttribute('data-opt');
-              if (userOpt === correctOpt) {
-                correctCount++;
-                selectedLabel.classList.add('is-correct');
+            if (isMc) {
+              const correctOpt = qb.getAttribute('data-correct');
+              const selectedLabel = qb.querySelector('.opt-label.selected');
+              qb.querySelectorAll('.opt-label').forEach(l => l.classList.remove('is-correct', 'is-wrong-selected'));
+
+              if (selectedLabel) {
+                mcAnswered++;
+                const userOpt = selectedLabel.getAttribute('data-opt');
+                if (userOpt === correctOpt) {
+                  mcCorrect++;
+                  selectedLabel.classList.add('is-correct');
+                } else {
+                  selectedLabel.classList.add('is-wrong-selected');
+                  const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
+                  if (correctLabel) correctLabel.classList.add('is-correct');
+                }
               } else {
-                selectedLabel.classList.add('is-wrong-selected');
                 const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
                 if (correctLabel) correctLabel.classList.add('is-correct');
               }
-            } else {
-              const correctLabel = qb.querySelector('.opt-label[data-opt="' + correctOpt + '"]');
-              if (correctLabel) correctLabel.classList.add('is-correct');
             }
-
-            const solBox = qb.querySelector('.solution-box');
-            if (solBox) solBox.style.display = 'block';
           });
 
           answerKeySection.style.display = 'block';
 
-          const score = Math.round((correctCount / totalQuestions) * 100);
-          scoreDisplay.textContent = score + ' Puan';
-          const emptyCount = totalQuestions - answeredCount;
-          const wrongCount = answeredCount - correctCount;
-          scoreDetails.textContent = totalQuestions + ' sorudan ' + correctCount + ' doğru, ' + wrongCount + ' yanlış, ' + emptyCount + ' boş.';
-          headerScoreBox.textContent = score + ' / 100';
+          if (totalMcQuestions > 0) {
+            const score = Math.round((mcCorrect / totalMcQuestions) * 100);
+            scoreDisplay.textContent = score + ' Puan';
+            headerScoreBox.textContent = score + ' / 100';
+            const wrongCount = mcAnswered - mcCorrect;
+            const emptyCount = totalMcQuestions - mcAnswered;
+            let det = totalMcQuestions + ' çoktan seçmeli sorudan ' + mcCorrect + ' doğru, ' + wrongCount + ' yanlış, ' + emptyCount + ' boş.';
+            if (totalQuestions > totalMcQuestions) {
+              det += ' (' + (totalQuestions - totalMcQuestions) + ' adet açık uçlu soru için model çözümleri inceleyiniz.)';
+            }
+            scoreDetails.textContent = det;
+          } else {
+            scoreDisplay.textContent = 'Sınav Tamamlandı';
+            headerScoreBox.textContent = 'Açık Uçlu';
+            scoreDetails.textContent = 'Açık uçlu sınav tamamlandı. Yazdığınız cevapları yukarıda açılan model cevap ve değerlendirme ölçütleriyle karşılaştırarak kendi değerlendirmenizi yapabilirsiniz.';
+          }
 
           resultCard.style.display = 'block';
           resultCard.scrollIntoView({ behavior: 'smooth' });

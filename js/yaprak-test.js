@@ -1249,12 +1249,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Alanları doldur
     pubGrade.value = curGrade;
-    pubCategory.value = "soru-bankasi";
+    const qTypeEl = document.getElementById('questionTypeInput');
+    const selectedQType = qTypeEl ? qTypeEl.value : 'multiple_choice';
+    const isOpenEnded = selectedQType === 'open_ended' || (currentQuestions && currentQuestions.every(q => q.type === 'open_ended' || (!q.options || !q.options.A)));
+    const examTypeLabel = isOpenEnded ? "Açık Uçlu Klasik Sınavı" : (selectedQType === 'short_answer' ? "Kısa Cevaplı Test" : "Yaprak Testi");
+    pubCategory.value = isOpenEnded ? "denemeler" : "soru-bankasi";
     pubUnit.value = curUnitName;
     pubSection.value = curSectionNum;
 
     const unitShortName = curUnitName.replace(/^[0-9]+\.\s*Ünite:\s*/i, '');
-    pubTitle.value = `${curGrade}. Sınıf ${curSectionNum}. Ünite: ${unitShortName} Yaprak Testi`;
+    pubTitle.value = `${curGrade}. Sınıf ${curSectionNum}. Ünite: ${unitShortName} ${examTypeLabel}`;
     pubDesc.value = `${curGrade}. Sınıf Fen Bilimleri ${curUnitName} için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.`;
 
     // Arayüz adımlarını sıfırla

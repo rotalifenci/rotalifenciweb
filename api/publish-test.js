@@ -117,6 +117,7 @@ module.exports = async (req, res) => {
       unit: unit,
       targetSection: cleanSection,
       subject: subject,
+      category: finalCategory,
       questions: questions
     });
 
@@ -157,7 +158,7 @@ module.exports = async (req, res) => {
       imageUrl: coverUrl,
       kapakResmi: coverUrl,
       cover: coverUrl,
-      format: "YAPRAK TEST",
+      format: questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A)) ? "AÇIK UÇLU SINAV" : "YAPRAK TEST",
       hasBlob: false,
       tags: [
         `${cleanGrade}. sınıf`,
