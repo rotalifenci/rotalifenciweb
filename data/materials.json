@@ -2867,10 +2867,10 @@
     "title": "8.Sınıf İşlenecek Konular",
     "unit": "Ders Kitabı & Ünite PDF'leri",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "8.Sınıf İşlenecek Konular.png",
-    "fileUrl": "assets/8-sinif-islenecek-konular.jpg",
-    "imageUrl": "assets/8-sinif-islenecek-konular.jpg",
-    "kapakResmi": "assets/8-sinif-islenecek-konular.jpg",
+    "fileName": "gsfda.png",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879816271_gsfda.png",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879813211_mat-1789641166040_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879813211_mat-1789641166040_cover.jpg",
     "format": "PNG",
     "hasBlob": true,
     "tags": [
@@ -2882,9 +2882,9 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:02.735549+00:00",
-    "updatedAt": "2026-09-30T19:00:08.796+00:00",
+    "updatedAt": "2026-10-24T22:10:18.411Z",
     "isCloud": true,
-    "cover": "assets/8-sinif-islenecek-konular.jpg"
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792879813211_mat-1789641166040_cover.jpg"
   },
   {
     "id": "mat-1789665265173-g6",
@@ -3079,36 +3079,5 @@
     "createdAt": "2026-10-24T16:01:53.769Z",
     "updatedAt": "2026-10-24T16:40:49.982Z",
     "cover": "assets/materials/1792860032246_1een5_rotali_fenci_sunum_6_sinif_2_unite_cover.jpg"
-  },
-  {
-    "id": "mat-test-5-1-1792879354768",
-    "grade": "5",
-    "category": "soru-bankasi",
-    "targetSection": "1",
-    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "fileUrl": "testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
-    "format": "YAPRAK TEST",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "test / deneme",
-      "yazılıya hazırlık",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 30 Soru",
-    "createdAt": "2026-10-24T22:02:34.768Z",
-    "updatedAt": "2026-10-24T22:02:34.768Z"
   }
 ]
