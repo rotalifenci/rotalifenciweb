@@ -328,6 +328,9 @@
                     <span class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-slate-950/80 text-cyan-300 border border-cyan-500/30 backdrop-blur-sm">
                         <i class="fa-solid fa-cube mr-1"></i> 3D Simülasyon
                     </span>
+                    <span id="levitation-badge" class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-cyan-950/90 text-cyan-200 border border-cyan-400/60 shadow-[0_0_12px_rgba(6,182,212,0.45)] backdrop-blur-sm hidden animate-pulse">
+                        <i class="fa-solid fa-plane-departure mr-1 text-cyan-300"></i> Havada Serbest Cisim Modu
+                    </span>
                 </div>
 
                 <!-- 🧭 3D Yön Pusulası (Kuzey, Güney, Doğu, Batı Göstergesi) -->
@@ -1079,6 +1082,9 @@
             // Kutu Dinamikleri (2D Düzlemde 3D Fizik Motoru: X Doğu-Batı, Z Kuzey-Güney)
             boxX: 0,
             boxZ: 0,
+            currentBoxY: 0.6,
+            targetBoxY: 0.6,
+            isLevitating: false,
             boxVelocityX: 0,
             boxVelocityZ: 0,
             boxAccel: 0,
@@ -1240,6 +1246,8 @@
         let leftArrowLabel, rightArrowLabel, northArrowLabel, southArrowLabel, netArrowLabel, velocityArrowLabel;
         let tugFigures = [];
         let groundGrid, labBench;
+        let levitationGroup, levitationShadowMesh, levitationRingMesh, levitationInnerRingMesh, levitationBeamMesh;
+        let isUserOrbiting = false;
         let clock = new THREE.Clock();
 
         // 🚀 BAŞLATMA
@@ -1349,6 +1357,14 @@
                 controls = createFallbackControls(camera, renderer.domElement);
             }
 
+            // Kullanıcı döndürme takibi (Serbest bakış ve akıllı tahta dokunma uyumlu)
+            if (renderer && renderer.domElement) {
+                renderer.domElement.addEventListener('pointerdown', () => { isUserOrbiting = true; });
+                window.addEventListener('pointerup', () => {
+                    setTimeout(() => { isUserOrbiting = false; }, 1500);
+                });
+            }
+
             // Işıklandırma — Koyu Tema İçin Parlak ve Canlı Vurgu Işıkları
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.9);
             scene.add(ambientLight);
@@ -1372,8 +1388,9 @@
             // Zemin ve Laboratuvar Masası
             buildLabEnvironment();
 
-            // 3D Kutu ve Halat Modelleri
+            // 3D Kutu, Levitasyon Hologramı ve Halat Modelleri
             buildPhysicsCrate();
+            buildLevitationFX();
             buildTugRope();
 
             // 3D Vektör Okları
@@ -1481,6 +1498,66 @@
             crateGroup.position.set(0, 0.6, 0);
             scene.add(crateGroup);
             mainBoxMesh = crateGroup;
+        }
+
+        // 🛸 HOLOGRAFİK HAVADA DURMA (LEVİTASYON) EFEKTİ & ZEMİN GÖLGESİ
+        function buildLevitationFX() {
+            levitationGroup = new THREE.Group();
+
+            // 1. Zemin Yumuşak Dağınık Gölgesi (Masa Yüzeyinde y = 0.61)
+            const shadowGeo = new THREE.CircleGeometry(1.5, 32);
+            const shadowMat = new THREE.MeshBasicMaterial({
+                color: 0x020617,
+                transparent: true,
+                opacity: 0.55
+            });
+            levitationShadowMesh = new THREE.Mesh(shadowGeo, shadowMat);
+            levitationShadowMesh.rotation.x = -Math.PI / 2;
+            levitationShadowMesh.position.y = 0.61;
+            levitationGroup.add(levitationShadowMesh);
+
+            // 2. Holografik Dış Halka (Neon Camgöbeği)
+            const ringGeo = new THREE.RingGeometry(1.25, 1.48, 48);
+            const ringMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.75,
+                side: THREE.DoubleSide
+            });
+            levitationRingMesh = new THREE.Mesh(ringGeo, ringMat);
+            levitationRingMesh.rotation.x = -Math.PI / 2;
+            levitationRingMesh.position.y = 0.615;
+            levitationGroup.add(levitationRingMesh);
+
+            // 3. Holografik İç Halka (Pulsing Göksel Mavi)
+            const innerRingGeo = new THREE.RingGeometry(0.65, 0.82, 36);
+            const innerRingMat = new THREE.MeshBasicMaterial({
+                color: 0x06b6d4,
+                transparent: true,
+                opacity: 0.65,
+                side: THREE.DoubleSide
+            });
+            levitationInnerRingMesh = new THREE.Mesh(innerRingGeo, innerRingMat);
+            levitationInnerRingMesh.rotation.x = -Math.PI / 2;
+            levitationInnerRingMesh.position.y = 0.618;
+            levitationGroup.add(levitationInnerRingMesh);
+
+            // 4. Holografik Taşıyıcı Işık Sütunu (Hafif Şeffaf Additive Işın)
+            const beamGeo = new THREE.CylinderGeometry(1.05, 1.35, 2.0, 32, 1, true);
+            const beamMat = new THREE.MeshBasicMaterial({
+                color: 0x38bdf8,
+                transparent: true,
+                opacity: 0.12,
+                side: THREE.DoubleSide,
+                blending: THREE.AdditiveBlending,
+                depthWrite: false
+            });
+            levitationBeamMesh = new THREE.Mesh(beamGeo, beamMat);
+            levitationBeamMesh.position.y = 1.6;
+            levitationGroup.add(levitationBeamMesh);
+
+            levitationGroup.visible = false;
+            scene.add(levitationGroup);
         }
 
         // 🪢 3D ÇOCUK VE HALAT ÇEKME KARAKTERLERİ
@@ -1737,7 +1814,7 @@
                 map: createTextCanvasTexture(text, color, bgColor),
                 transparent: true,
                 side: THREE.FrontSide,
-                depthTest: false
+                depthTest: true
             });
             const labelMesh = new THREE.Mesh(labelGeo, labelMat);
             labelMesh.renderOrder = 999;
@@ -1819,6 +1896,23 @@
                 }
             }
 
+            // 🚀 2'DEN FAZLA KUVVET VEYA ÇOK EKSENLİ ETKİDE HAVAYA KALKIŞ (LEVİTASYON) KONTROLÜ
+            const activeCount = (fRight > 0 ? 1 : 0) + (fLeft > 0 ? 1 : 0) + (fNorth > 0 ? 1 : 0) + (fSouth > 0 ? 1 : 0);
+            const isMultiAxis = (fNorth > 0 || fSouth > 0) && (fRight > 0 || fLeft > 0);
+            const hasOpposingZ = (fNorth > 0 && fSouth > 0);
+            
+            LAB.isLevitating = (activeCount > 2) || isMultiAxis || hasOpposingZ;
+            LAB.targetBoxY = (LAB.currentModule === 1 && LAB.isLevitating) ? 2.6 : 0.6;
+
+            const levBadge = document.getElementById('levitation-badge');
+            if (levBadge) {
+                if (LAB.isLevitating && LAB.currentModule === 1) {
+                    levBadge.classList.remove('hidden');
+                } else {
+                    levBadge.classList.add('hidden');
+                }
+            }
+
             const boxPos = mainBoxMesh.position;
 
             // 1. Doğu (Sağ) Yeşil Ok (F₁)
@@ -1834,7 +1928,7 @@
 
                 if (rightArrowLabel) {
                     rightArrowLabel.visible = true;
-                    rightArrowLabel.position.set(boxPos.x + 1.0 + len / 2, boxPos.y + 1.65, boxPos.z);
+                    rightArrowLabel.position.set(boxPos.x + 1.0 + len * 0.75, boxPos.y + 1.05, boxPos.z);
                     rightArrowLabel.material.map = createTextCanvasTexture(`Doğu: ${fRight} N`, '#ffffff', '#047857');
                     rightArrowLabel.material.needsUpdate = true;
                 }
@@ -1856,7 +1950,7 @@
 
                 if (leftArrowLabel) {
                     leftArrowLabel.visible = true;
-                    leftArrowLabel.position.set(boxPos.x - 1.0 - len / 2, boxPos.y + 1.65, boxPos.z);
+                    leftArrowLabel.position.set(boxPos.x - 1.0 - len * 0.75, boxPos.y + 1.05, boxPos.z);
                     leftArrowLabel.material.map = createTextCanvasTexture(`Batı: ${fLeft} N`, '#ffffff', '#b91c1c');
                     leftArrowLabel.material.needsUpdate = true;
                 }
@@ -1878,7 +1972,8 @@
 
                 if (northArrowLabel) {
                     northArrowLabel.visible = true;
-                    northArrowLabel.position.set(boxPos.x, boxPos.y + 1.65, boxPos.z - 0.9 - len / 2);
+                    // Kuzey etiketi okun ucunda ve yüksek konumda (+1.6) -> Asla Güney etiketiyle çakışmaz
+                    northArrowLabel.position.set(boxPos.x, boxPos.y + 1.6, boxPos.z - 0.9 - len * 0.75);
                     northArrowLabel.material.map = createTextCanvasTexture(`Kuzey: ${fNorth} N`, '#ffffff', '#0284c7');
                     northArrowLabel.material.needsUpdate = true;
                 }
@@ -1900,7 +1995,8 @@
 
                 if (southArrowLabel) {
                     southArrowLabel.visible = true;
-                    southArrowLabel.position.set(boxPos.x, boxPos.y + 1.65, boxPos.z + 0.9 + len / 2);
+                    // Güney etiketi okun ucunda ve alçak konumda (+0.35) -> Bakış açısından bağımsız net okunur
+                    southArrowLabel.position.set(boxPos.x, boxPos.y + 0.35, boxPos.z + 0.9 + len * 0.75);
                     southArrowLabel.material.map = createTextCanvasTexture(`Güney: ${fSouth} N`, '#ffffff', '#b45309');
                     southArrowLabel.material.needsUpdate = true;
                 }
@@ -1920,7 +2016,7 @@
             if (netMag > 0 && !hideResultantInM1) {
                 netArrowGroup.visible = true;
                 const len = Math.max(0.7, netMag * scaleFactor);
-                netArrowGroup.position.set(boxPos.x, boxPos.y + 2.3, boxPos.z);
+                netArrowGroup.position.set(boxPos.x, boxPos.y + 2.05, boxPos.z);
                 netArrowGroup.rotation.y = Math.atan2(-netZ, netX);
 
                 netArrowGroup.userData.shaft.scale.set(1, len, 1);
@@ -1941,7 +2037,7 @@
                     netArrowLabel.visible = true;
                     const normX = netX / (netMag || 1);
                     const normZ = netZ / (netMag || 1);
-                    netArrowLabel.position.set(boxPos.x + normX * (len / 2), boxPos.y + 3.0, boxPos.z + normZ * (len / 2));
+                    netArrowLabel.position.set(boxPos.x + normX * (len * 0.65), boxPos.y + 2.85, boxPos.z + normZ * (len * 0.65));
                     netArrowLabel.material.map = createTextCanvasTexture(`R = ${netMag} N ${dirText}`, '#ffffff', '#1d4ed8');
                     netArrowLabel.material.needsUpdate = true;
                 }
@@ -2362,32 +2458,85 @@
                 if (velocityArrowLabel && velocityArrowLabel.visible) velocityArrowLabel.quaternion.copy(camera.quaternion);
             }
 
-            // Modül 1 Fizik İlerlemesi (2D Düzlemde Gerçek 3D Hareket)
-            if (LAB.currentModule === 1 && LAB.isSimPlaying) {
-                const rx = LAB.forceRight - LAB.forceLeft;
-                const rz = (LAB.forceSouth || 0) - (LAB.forceNorth || 0); // +Z Güney, -Z Kuzey
+            // Modül 1 Fizik İlerlemesi ve Havada Durma (Levitasyon)
+            if (LAB.currentModule === 1) {
+                const elapsed = clock.getElapsedTime();
 
-                const accelX = rx / LAB.boxMass;
-                const accelZ = rz / LAB.boxMass;
+                // Kutu dikey konumu (Havada 2.6 veya Masa 0.6 arası yumuşak süzülüş)
+                LAB.currentBoxY = THREE.MathUtils.lerp(LAB.currentBoxY || 0.6, LAB.targetBoxY || 0.6, 0.08);
 
-                LAB.boxVelocityX += accelX * delta;
-                LAB.boxVelocityZ += accelZ * delta;
+                if (LAB.isSimPlaying) {
+                    const rx = LAB.forceRight - LAB.forceLeft;
+                    const rz = (LAB.forceSouth || 0) - (LAB.forceNorth || 0); // +Z Güney, -Z Kuzey
 
-                // Hafif simülasyon direnci (Pistten uçup gitmesini engeller)
-                LAB.boxVelocityX *= 0.985;
-                LAB.boxVelocityZ *= 0.985;
+                    const accelX = rx / LAB.boxMass;
+                    const accelZ = rz / LAB.boxMass;
 
-                LAB.boxX += LAB.boxVelocityX * delta;
-                LAB.boxZ += LAB.boxVelocityZ * delta;
+                    LAB.boxVelocityX += accelX * delta;
+                    LAB.boxVelocityZ += accelZ * delta;
 
-                // Pist sınırları (Masa boyutları: X [-8.5, 8.5], Z [-1.8, 1.8])
-                if (LAB.boxX > 8.5) { LAB.boxX = 8.5; LAB.boxVelocityX = 0; }
-                else if (LAB.boxX < -8.5) { LAB.boxX = -8.5; LAB.boxVelocityX = 0; }
+                    // Hafif simülasyon direnci (Pistten uçup gitmesini engeller)
+                    LAB.boxVelocityX *= 0.985;
+                    LAB.boxVelocityZ *= 0.985;
 
-                if (LAB.boxZ > 1.8) { LAB.boxZ = 1.8; LAB.boxVelocityZ = 0; }
-                else if (LAB.boxZ < -1.8) { LAB.boxZ = -1.8; LAB.boxVelocityZ = 0; }
+                    LAB.boxX += LAB.boxVelocityX * delta;
+                    LAB.boxZ += LAB.boxVelocityZ * delta;
 
-                mainBoxMesh.position.set(LAB.boxX, 0.9, LAB.boxZ);
+                    // Pist sınırları (Masa boyutları: X [-8.5, 8.5], Z [-1.8, 1.8])
+                    if (LAB.boxX > 8.5) { LAB.boxX = 8.5; LAB.boxVelocityX = 0; }
+                    else if (LAB.boxX < -8.5) { LAB.boxX = -8.5; LAB.boxVelocityX = 0; }
+
+                    if (LAB.boxZ > 1.8) { LAB.boxZ = 1.8; LAB.boxVelocityZ = 0; }
+                    else if (LAB.boxZ < -1.8) { LAB.boxZ = -1.8; LAB.boxVelocityZ = 0; }
+                }
+
+                if (mainBoxMesh) {
+                    mainBoxMesh.position.set(LAB.boxX, LAB.currentBoxY, LAB.boxZ);
+                }
+
+                // Holografik Levitasyon Efekti Güncellemesi
+                if (levitationGroup) {
+                    if (LAB.isLevitating) {
+                        levitationGroup.visible = true;
+                        levitationGroup.position.set(LAB.boxX, 0, LAB.boxZ);
+
+                        if (levitationRingMesh) {
+                            levitationRingMesh.rotation.z += 0.015;
+                            levitationRingMesh.material.opacity = 0.65 + Math.sin(elapsed * 4) * 0.2;
+                        }
+                        if (levitationInnerRingMesh) {
+                            levitationInnerRingMesh.rotation.z -= 0.02;
+                            levitationInnerRingMesh.material.opacity = 0.55 + Math.cos(elapsed * 4) * 0.2;
+                        }
+                        if (levitationBeamMesh) {
+                            const beamHeight = Math.max(0.1, LAB.currentBoxY - 0.6);
+                            levitationBeamMesh.scale.set(1, beamHeight / 2.0, 1);
+                            levitationBeamMesh.position.y = 0.6 + beamHeight / 2;
+                            levitationBeamMesh.material.opacity = 0.10 + Math.sin(elapsed * 3) * 0.04;
+                        }
+                        if (levitationShadowMesh) {
+                            const factor = Math.min(1.4, Math.max(0.8, 1.0 + (LAB.currentBoxY - 0.6) * 0.15));
+                            levitationShadowMesh.scale.set(factor, factor, factor);
+                            levitationShadowMesh.material.opacity = Math.max(0.25, 0.55 - (LAB.currentBoxY - 0.6) * 0.1);
+                        }
+                    } else {
+                        levitationGroup.visible = false;
+                    }
+                }
+
+                // Kamera ve Hedef Açısı Geçişi (Havada iken üstten izometrik bakış)
+                if (camera && controls && !isUserOrbiting) {
+                    const targetCamY = LAB.isLevitating ? 6.4 : 3.8;
+                    const targetCamZ = LAB.isLevitating ? 9.8 : 8.8;
+                    const targetLookY = LAB.isLevitating ? (LAB.currentBoxY + 0.8) : 1.2;
+
+                    camera.position.y = THREE.MathUtils.lerp(camera.position.y, targetCamY, 0.05);
+                    camera.position.z = THREE.MathUtils.lerp(camera.position.z, targetCamZ, 0.05);
+                    camera.position.x = THREE.MathUtils.lerp(camera.position.x, LAB.boxX * 0.35, 0.05);
+                    controls.target.y = THREE.MathUtils.lerp(controls.target.y, targetLookY, 0.05);
+                    controls.target.x = THREE.MathUtils.lerp(controls.target.x, LAB.boxX, 0.05);
+                }
+
                 updateArrowVisuals();
             }
 
@@ -2768,7 +2917,7 @@
             LAB.boxAccel = 0;
             LAB.isSimPlaying = false;
             syncPlayButtonsState(false);
-            if (mainBoxMesh) mainBoxMesh.position.set(0, 0.9, 0);
+            if (mainBoxMesh) mainBoxMesh.position.set(0, LAB.currentBoxY || 0.6, 0);
             updateArrowVisuals();
         }
 
