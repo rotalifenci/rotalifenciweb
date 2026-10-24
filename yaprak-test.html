@@ -1,6 +1,20 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+  <!-- 🔒 Yönetici Güvenlik Doğrulaması: Sadece Yetkili Girişine Açık -->
+  <script>
+    (function() {
+      if (localStorage.getItem("rotali_is_admin") !== "true") {
+        var pass = prompt("🔒 Bu sayfa yalnızca yönetici erişimine açıktır. Lütfen yönetici şifresini girin:");
+        if (pass === "Rotali5822.") {
+          localStorage.setItem("rotali_is_admin", "true");
+        } else {
+          alert("Yetkisiz erişim. Ana sayfaya yönlendiriliyorsunuz.");
+          window.location.href = "index.html#home";
+        }
+      }
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yaprak Test & Soru Üretim Portalı (Gemini AI)</title>
