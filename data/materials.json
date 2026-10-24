@@ -3,11 +3,11 @@
     "id": "mat-video-5-1-01",
     "grade": "5",
     "category": "videolar",
-    "targetSection": "1",
+    "targetSection": "lab",
     "title": "5.1.1 LABORATUVAR GÜVENLİĞİ",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
+    "unit": "Laboratuvar & Deneyler",
     "desc": "Fen laboratuvarında güvenli deney yapma kuralları ve güvenlik sembollerinin anlamları.",
-    "fileName": "stQr-6J7vBI.mp4",
+    "fileName": "5.1.1 LABORATUVAR GÜVENLİĞİ",
     "fileUrl": "https://www.youtube.com/watch?v=stQr-6J7vBI",
     "imageUrl": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
     "kapakResmi": "https://img.youtube.com/vi/stQr-6J7vBI/hqdefault.jpg",
@@ -25,7 +25,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.057Z",
-    "updatedAt": "2026-10-24T20:31:01.057Z"
+    "updatedAt": "2026-10-24T21:06:16.888Z"
   },
   {
     "id": "mat-video-5-1-02",
@@ -1997,7 +1997,6 @@
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite.pdf",
     "imageUrl": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
     "kapakResmi": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
-    "cover": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg",
     "format": "PDF",
     "hasBlob": false,
     "tags": [
@@ -2009,7 +2008,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T16:59:26.107Z",
-    "updatedAt": "2026-10-24T16:59:26.107Z"
+    "updatedAt": "2026-10-24T16:59:26.107Z",
+    "cover": "assets/materials/1792861145410_cvlqi_rotali_fenci_5_sinif_1_unite_cover.jpg"
   },
   {
     "id": "mat-96a2408f-7294-4b5a-a3e0-7b81a4337015",
@@ -2023,7 +2023,6 @@
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite.pdf",
     "imageUrl": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
     "kapakResmi": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
-    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg",
     "format": "PDF",
     "hasBlob": false,
     "tags": [
@@ -2035,7 +2034,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T17:52:37.640Z",
-    "updatedAt": "2026-10-24T18:14:29.338Z"
+    "updatedAt": "2026-10-24T18:14:29.338Z",
+    "cover": "assets/materials/1792864339447_xkvsr_rotali_fenci_sunum_modu_5_sinif_2_unite_cover.jpg"
   },
   {
     "id": "mat-7-1-sim-yildiz-laboratuvari",
@@ -2303,7 +2303,8 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Başyapıtı",
     "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-18T00:00:00.000Z"
+    "updatedAt": "2026-10-18T00:00:00.000Z",
+    "cover": "assets/gunesi-kesfediyorum-3d-kapak.svg"
   },
   {
     "id": "mat-5-1-sim-dunyanin-5-katmani",
@@ -2338,7 +2339,8 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Simülasyonu",
     "createdAt": "2026-10-22T20:10:00.000Z",
-    "updatedAt": "2026-10-22T20:10:00.000Z"
+    "updatedAt": "2026-10-22T20:10:00.000Z",
+    "cover": "assets/dunyanin-5-katmani-kapak.svg"
   },
   {
     "id": "mat-5-1-oyun-ayin-evreleri-3d",
@@ -2368,7 +2370,8 @@
     "visibility": "public",
     "downloadCount": "🌟 1. Ünite Başyapıtı",
     "createdAt": "2026-10-18T00:00:00.000Z",
-    "updatedAt": "2026-10-18T00:00:00.000Z"
+    "updatedAt": "2026-10-18T00:00:00.000Z",
+    "cover": "assets/ayin-evreleri-3d-kapak.svg"
   },
   {
     "id": "mat-5-1-sunum-gunes-dunya-ay",
@@ -2397,7 +2400,8 @@
     "visibility": "public",
     "downloadCount": "Öne Çıkan",
     "createdAt": "2026-10-17T19:40:00.000Z",
-    "updatedAt": "2026-10-17T19:40:00.000Z"
+    "updatedAt": "2026-10-17T19:40:00.000Z",
+    "cover": "assets/sunum-5-1-referans-kapak.jpg"
   },
   {
     "id": "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
@@ -2423,7 +2427,8 @@
     "createdAt": "2026-09-29T05:33:26.954285+00:00",
     "updatedAt": "2026-09-30T19:00:05.031+00:00",
     "isCloud": true,
-    "hasBlob": false
+    "hasBlob": false,
+    "cover": "assets/astronot-kacis-odasi.png"
   },
   {
     "id": "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
@@ -2449,7 +2454,8 @@
     "createdAt": "2026-09-29T05:33:26.873437+00:00",
     "updatedAt": "2026-09-30T19:00:05.201+00:00",
     "isCloud": true,
-    "hasBlob": false
+    "hasBlob": false,
+    "cover": "assets/astronot-kacis-odasi.png"
   },
   {
     "id": "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
@@ -2475,7 +2481,8 @@
     "createdAt": "2026-09-29T05:33:26.784549+00:00",
     "updatedAt": "2026-09-30T19:00:05.288+00:00",
     "isCloud": true,
-    "hasBlob": false
+    "hasBlob": false,
+    "cover": "assets/astronot-kacis-odasi.png"
   },
   {
     "id": "mat-6265279c-943c-41fb-80e8-df15d1b8c589",
@@ -2501,7 +2508,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-28T22:51:51.770687+00:00",
     "updatedAt": "2026-09-30T19:00:05.376+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/7-1-sunum-kapak.jpg"
   },
   {
     "id": "mat-d50fcd5d-da6a-4f96-bdfc-eb4edd310215",
@@ -2544,14 +2552,14 @@
     "unit": "Genel",
     "desc": "",
     "fileName": "7. Sınıf Fen Bilimleri MEB Ders Kitabı",
-    "imageUrl": "assets/ders-kitabi-7.jpg",
+    "imageUrl": "assets/kapak-7.jpg",
     "format": "Web Bağlantısı",
     "hasBlob": false,
     "tags": [],
     "visibility": "public",
     "downloadCount": "Yeni",
     "updatedAt": "2026-09-30T19:00:05.881+00:00",
-    "kapakResmi": "assets/ders-kitabi-7.jpg",
+    "kapakResmi": "assets/kapak-7.jpg",
     "isCloud": true
   },
   {
@@ -2578,7 +2586,8 @@
     "createdAt": "2026-09-27T18:55:52.673908+00:00",
     "updatedAt": "2026-09-30T19:00:05.957+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
   },
   {
     "id": "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
@@ -2604,7 +2613,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.642913+00:00",
     "updatedAt": "2026-09-30T19:00:06.219+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/7-sinif-islenecek-konular.jpg"
   },
   {
     "id": "book-8",
@@ -2630,7 +2640,8 @@
     "createdAt": "2026-09-27T17:06:03.823905+00:00",
     "updatedAt": "2026-09-30T19:00:06.523+00:00",
     "kapakResmi": "assets/ders-kitabi-8.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ders-kitabi-8.jpg"
   },
   {
     "id": "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
@@ -2656,7 +2667,8 @@
     "createdAt": "2026-09-27T18:55:52.421855+00:00",
     "updatedAt": "2026-09-30T19:00:06.749+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
   },
   {
     "id": "mat-afa89ec0-6f45-4b55-af70-bbfaa863b877",
@@ -2682,7 +2694,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:05.221518+00:00",
     "updatedAt": "2026-09-30T19:00:07.101+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/6-1-gunes-sistemi-kapak.jpg"
   },
   {
     "id": "book-5",
@@ -2708,7 +2721,8 @@
     "createdAt": "2026-09-27T17:06:02.2003+00:00",
     "updatedAt": "2026-09-30T19:00:07.231+00:00",
     "kapakResmi": "assets/ders-kitabi-5.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ders-kitabi-5.jpg"
   },
   {
     "id": "mat-1789315860991",
@@ -2731,7 +2745,8 @@
     "updatedAt": "2026-09-30T19:00:07.321+00:00",
     "targetSection": "kitap",
     "kapakResmi": "assets/5-sinif-islenecek-konular.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/5-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
@@ -2757,7 +2772,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:01.953396+00:00",
     "updatedAt": "2026-09-30T19:00:07.555+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
   },
   {
     "id": "mat-1789503112888",
@@ -2784,7 +2800,8 @@
     "updatedAt": "17.09.2026",
     "targetSection": "lab",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
   },
   {
     "id": "mat-8-liseye-nasil-gidecegiz",
@@ -2814,7 +2831,8 @@
     "updatedAt": "17.09.2026",
     "targetSection": "1",
     "kapakResmi": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg"
   },
   {
     "id": "book-6",
@@ -2840,7 +2858,8 @@
     "createdAt": "2026-09-27T17:06:03.711994+00:00",
     "updatedAt": "2026-09-30T19:00:08.471+00:00",
     "kapakResmi": "assets/ders-kitabi-6.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ders-kitabi-6.jpg"
   },
   {
     "id": "mat-6-islenecek-konular",
@@ -2866,7 +2885,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T18:59:10.000+00:00",
     "updatedAt": "2026-09-30T19:00:08.500+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/6-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
@@ -2892,7 +2912,8 @@
     "createdAt": "2026-09-30T18:59:21.296828+00:00",
     "updatedAt": "2026-09-30T19:00:08.562+00:00",
     "kapakResmi": "assets/ilk-ders-notu.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/ilk-ders-notu.jpg"
   },
   {
     "id": "mat-1789641166040",
@@ -2918,7 +2939,8 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-27T17:06:02.735549+00:00",
     "updatedAt": "2026-09-30T19:00:08.796+00:00",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/8-sinif-islenecek-konular.jpg"
   },
   {
     "id": "mat-1789665265173-g6",
@@ -2944,7 +2966,8 @@
     "createdAt": "2026-09-27T17:06:02.468968+00:00",
     "updatedAt": "2026-09-30T19:00:09.075+00:00",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
   },
   {
     "id": "mat-1789665265173-g7",
@@ -2970,7 +2993,8 @@
     "createdAt": "2026-09-27T17:06:02.38771+00:00",
     "updatedAt": "2026-09-30T19:00:09.231+00:00",
     "kapakResmi": "assets/docs/guvenlik-sembolleri-kapak.jpg",
-    "isCloud": true
+    "isCloud": true,
+    "cover": "assets/docs/guvenlik-sembolleri-kapak.jpg"
   },
   {
     "id": "mat-6-oyun-uzay-ekspresi",
@@ -3083,7 +3107,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-18T17:09:11.203Z",
-    "updatedAt": "2026-10-18T17:09:11.204Z"
+    "updatedAt": "2026-10-18T17:09:11.204Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792343349599_d6002a6f-9fb9-4326-a287-ab24bb8f0311.png"
   },
   {
     "id": "mat-2603aa9e-0409-4243-a3e1-80eae57fdc7a",
