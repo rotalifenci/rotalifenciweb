@@ -1334,14 +1334,36 @@ document.addEventListener('DOMContentLoaded', () => {
         publishLoadingStep.style.display = 'none';
         publishSuccessStep.style.display = 'block';
 
+        // 🌟 Yerel tarayıcı hafızasına anında kaydet (Kullanıcı sitede anında görebilsin)
+        if (data.material) {
+          try {
+            const localMats = JSON.parse(localStorage.getItem('rotali_custom_materials') || '[]');
+            const existingIdx = localMats.findIndex(m => m.id === data.material.id);
+            if (existingIdx > -1) {
+              localMats[existingIdx] = data.material;
+            } else {
+              localMats.unshift(data.material);
+            }
+            localStorage.setItem('rotali_custom_materials', JSON.stringify(localMats));
+          } catch (e) {}
+        }
+
         const catName = data.category === 'denemeler' ? 'Yazılıya Hazırlık' : 'Test / Deneme';
         publishSuccessText.innerHTML = `<strong>"${escapeHtml(data.title)}"</strong> başarıyla Rotalı Fenci web sitenize eklendi.<br><br>
           <span style="display:inline-block; padding: 4px 10px; background:#e0f2fe; color:#0369a1; border-radius:8px; font-weight:700; font-size:12.5px;">
             📍 Konum: ${data.grade}. Sınıf &gt; ${catName} &gt; ${escapeHtml(data.unit)}
           </span>`;
 
-        viewInWebsiteBtn.href = data.webSectionUrl;
-        viewDirectTestBtn.href = '/' + data.fileUrl;
+        viewInWebsiteBtn.href = data.webSectionUrl || `index.html#grade-${data.grade || '5'}`;
+        
+        let directUrl = '/' + data.fileUrl;
+        if (data.htmlContent) {
+          try {
+            const blob = new Blob([data.htmlContent], { type: 'text/html;charset=utf-8' });
+            directUrl = URL.createObjectURL(blob);
+          } catch (e) {}
+        }
+        viewDirectTestBtn.href = directUrl;
 
       } catch (err) {
         console.error('Yayınlama hatası:', err);

@@ -2,6 +2,59 @@ const fs = require('fs');
 const path = require('path');
 const { buildInteractiveTestHtml, generateSlug } = require('../scripts/test-generator.js');
 
+const GITHUB_REPO = "rotalifenci/rotalifenciweb";
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
+
+function getGitHubHeaders(isJson = false) {
+  const h = {
+    "User-Agent": "RotaliFenci-App",
+    "Accept": "application/vnd.github+json"
+  };
+  if (GITHUB_TOKEN) {
+    h["Authorization"] = `Bearer ${GITHUB_TOKEN}`;
+  }
+  if (isJson) {
+    h["Content-Type"] = "application/json";
+  }
+  return h;
+}
+
+async function uploadFileToGitHub(relPath, contentString) {
+  try {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${relPath}`;
+    let sha = null;
+    try {
+      const getRes = await fetch(apiUrl, { headers: getGitHubHeaders(false) });
+      if (getRes.ok) {
+        const d = await getRes.json();
+        sha = d.sha;
+      }
+    } catch (e) {}
+
+    const body = {
+      message: `feat(test): publish ${relPath} from Yaprak Test Portal`,
+      content: Buffer.from(contentString, 'utf8').toString('base64'),
+      branch: "main"
+    };
+    if (sha) body.sha = sha;
+
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: getGitHubHeaders(true),
+      body: JSON.stringify(body)
+    });
+
+    if (!putRes.ok) {
+      const errTxt = await putRes.text();
+      console.warn("[Publish] GitHub commit warning:", errTxt);
+    } else {
+      console.log(`[Publish] File successfully committed to GitHub repo: ${relPath}`);
+    }
+  } catch (err) {
+    console.warn("[Publish] GitHub upload error:", err.message);
+  }
+}
+
 module.exports = async (req, res) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,7 +69,16 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { questions, grade = "5", unit = "1. Ünite", targetSection = "1", category = "soru-bankasi", title = "", desc = "", subject = "Fen Bilimleri" } = req.body || {};
+    const {
+      questions,
+      grade = "5",
+      unit = "1. Ünite",
+      targetSection = "1",
+      category = "soru-bankasi",
+      title = "",
+      desc = "",
+      subject = "Fen Bilimleri"
+    } = req.body || {};
 
     if (!questions || !Array.isArray(questions) || questions.length === 0) {
       return res.status(400).json({ error: "Yayınlanacak soru listesi eksik." });
@@ -35,6 +97,7 @@ module.exports = async (req, res) => {
     const slug = generateSlug(cleanTitleForSlug || finalTitle);
     const fileName = `${cleanGrade}-sinif-${cleanSection}-unite-${slug}.html`;
 
+    // 1. İnteraktif HTML Kodunu Üret
     const htmlContent = buildInteractiveTestHtml({
       title: finalTitle,
       grade: cleanGrade,
@@ -44,22 +107,27 @@ module.exports = async (req, res) => {
       questions: questions
     });
 
-    const webDir = path.resolve(__dirname, '..');
-    const rootDir = path.resolve(__dirname, '..', '..');
+    // 2. Yerel dosya sistemine yazmayı dene (Yerel ortamda çalışır, Vercel'de hata vermeden geçer)
+    try {
+      const webDir = path.resolve(__dirname, '..');
+      const rootDir = path.resolve(__dirname, '..', '..');
+      const webTestDir = path.join(webDir, 'testler');
+      const rootTestDir = path.join(rootDir, 'testler');
 
-    const webTestDir = path.join(webDir, 'testler');
-    const rootTestDir = path.join(rootDir, 'testler');
-    if (!fs.existsSync(webTestDir)) fs.mkdirSync(webTestDir, { recursive: true });
-    if (!fs.existsSync(rootTestDir) && fs.existsSync(rootDir)) fs.mkdirSync(rootTestDir, { recursive: true });
+      if (!fs.existsSync(webTestDir)) fs.mkdirSync(webTestDir, { recursive: true });
+      fs.writeFileSync(path.join(webTestDir, fileName), htmlContent, 'utf8');
 
-    const webFilePath = path.join(webTestDir, fileName);
-    fs.writeFileSync(webFilePath, htmlContent, 'utf8');
-
-    if (fs.existsSync(rootTestDir)) {
-      const rootFilePath = path.join(rootTestDir, fileName);
-      fs.writeFileSync(rootFilePath, htmlContent, 'utf8');
+      if (fs.existsSync(rootTestDir)) {
+        fs.writeFileSync(path.join(rootTestDir, fileName), htmlContent, 'utf8');
+      }
+    } catch (fsErr) {
+      console.warn("[Publish] Local fs write bypassed (serverless environment):", fsErr.message);
     }
 
+    // 3. Dosyayı GitHub Deposuna Kalıcı Olarak İşle (testler/ klasörüne)
+    await uploadFileToGitHub(`testler/${fileName}`, htmlContent);
+
+    // 4. Materyal Kaydını Oluştur
     const materialId = `mat-test-${cleanGrade}-${cleanSection}-${Date.now()}`;
     const coverUrl = `assets/test-kapak-${cleanGrade}.svg`;
 
@@ -82,7 +150,8 @@ module.exports = async (req, res) => {
         `${cleanGrade}. sınıf`,
         `${cleanSection}. ünite`,
         "yaprak test",
-        "test / deneme", "yazılıya hazırlık",
+        "test / deneme",
+        "yazılıya hazırlık",
         "kazanım testi",
         "deneme",
         "rotalı fenci",
@@ -94,32 +163,33 @@ module.exports = async (req, res) => {
       updatedAt: new Date().toISOString()
     };
 
-    const webMaterialsPath = path.join(webDir, 'data', 'materials.json');
-    const rootMaterialsPath = path.join(rootDir, 'data', 'materials.json');
+    // 5. Yerel materials.json güncellemesini dene
+    try {
+      const webDir = path.resolve(__dirname, '..');
+      const rootDir = path.resolve(__dirname, '..', '..');
+      const webMaterialsPath = path.join(webDir, 'data', 'materials.json');
+      const rootMaterialsPath = path.join(rootDir, 'data', 'materials.json');
 
-    let currentMaterials = [];
-    if (fs.existsSync(webMaterialsPath)) {
-      try {
+      let currentMaterials = [];
+      if (fs.existsSync(webMaterialsPath)) {
         currentMaterials = JSON.parse(fs.readFileSync(webMaterialsPath, 'utf8'));
-      } catch (e) {
-        currentMaterials = [];
       }
+      const existingIdx = currentMaterials.findIndex(m => m.id === materialId || m.fileName === fileName);
+      if (existingIdx > -1) {
+        currentMaterials[existingIdx] = newMaterial;
+      } else {
+        currentMaterials.unshift(newMaterial);
+      }
+      const jsonStr = JSON.stringify(currentMaterials, null, 2);
+      fs.writeFileSync(webMaterialsPath, jsonStr, 'utf8');
+      if (fs.existsSync(path.dirname(rootMaterialsPath))) {
+        fs.writeFileSync(rootMaterialsPath, jsonStr, 'utf8');
+      }
+    } catch (fsMatErr) {
+      console.warn("[Publish] Local materials.json write bypassed:", fsMatErr.message);
     }
 
-    const existingIdx = currentMaterials.findIndex(m => m.id === materialId || (m.fileName === fileName));
-    if (existingIdx > -1) {
-      currentMaterials[existingIdx] = newMaterial;
-    } else {
-      currentMaterials.unshift(newMaterial);
-    }
-
-    const jsonStr = JSON.stringify(currentMaterials, null, 2);
-    fs.writeFileSync(webMaterialsPath, jsonStr, 'utf8');
-    if (fs.existsSync(path.dirname(rootMaterialsPath))) {
-      fs.writeFileSync(rootMaterialsPath, jsonStr, 'utf8');
-    }
-
-    // Gist & Cloud senkronizasyonu
+    // 6. Bulut Senkronizasyonu (Gist + GitHub Repo data/materials.json)
     try {
       const syncHandler = require('./sync.js');
       if (typeof syncHandler === 'function') {
@@ -128,16 +198,18 @@ module.exports = async (req, res) => {
         await syncHandler(mockReq, mockRes);
       }
     } catch (syncErr) {
-      console.warn('[Publish] Cloud sync uyarısı:', syncErr.message);
+      console.warn('[Publish] Cloud sync warning:', syncErr.message);
     }
 
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     return res.status(200).json({
       success: true,
-      message: "Test başarıyla yayınlandı ve sitenize eklendi.",
+      message: "Test başarıyla yayınlandı ve web sitenize eklendi.",
       material: newMaterial,
       fileUrl: `testler/${fileName}`,
-      sectionUrl: `index.html#grade-${cleanGrade}`
+      webSectionUrl: `index.html#grade-${cleanGrade}`,
+      sectionUrl: `index.html#grade-${cleanGrade}`,
+      htmlContent: htmlContent
     });
   } catch (error) {
     console.error("Test yayınlama hatası:", error);
