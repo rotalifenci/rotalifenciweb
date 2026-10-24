@@ -36,7 +36,8 @@ const PERMANENTLY_REMOVED_IDS = new Set([
     "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
     "mat-e072f771-967e-44c8-ad81-3e67f0934514", "mat-23f656d5-1306-4b7f-bb24-d12ccbe1f4bd",
     "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
-    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717"
+    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
+    "mat-6c7df1c5-3aeb-4728-a5a5-460216a7a75b", "mat-22ad277d-de06-4acb-bafa-ec9acffd1bc0"
 ]);
 
 // KESİNLİKLE SİLİNEMEZ KORUMALI MATERYAL KİMLİKLERİ (Öğretmen / Kullanıcı materyalleri)
@@ -46,7 +47,8 @@ const PROTECTED_IDS = new Set([
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-uzay-ekspresi",
-    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
+    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
+    ...Array.from({ length: 28 }, (_, i) => `mat-video-7-1-${String(i + 1).padStart(2, '0')}`)
 ]);
 
 function getGitHubHeaders(isJson = false) {
