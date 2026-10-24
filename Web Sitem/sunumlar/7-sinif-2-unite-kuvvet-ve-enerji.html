@@ -218,29 +218,42 @@
         /* Headers */
         .slide-header {
             display: flex;
-            flex-direction: column;
-            gap: 4px;
-            margin-bottom: 20px;
-            max-width: 1450px;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 22px;
+            max-width: 1550px;
         }
-        .slide-kicker {
+        .slide-banner-pill {
             display: inline-flex;
             align-items: center;
-            gap: 10px;
-            font-size: 19px;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--accent-blue);
+            gap: 14px;
+            background: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+            border: 3.5px solid #0369a1;
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.35), inset 0 2px 4px rgba(255,255,255,0.6);
+            border-radius: 40px;
+            padding: 8px 34px;
+            color: #ffffff;
         }
         .slide-title {
-            font-size: 46px;
+            font-size: 34px;
             font-weight: 900;
-            line-height: 1.15;
-            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0284c7 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: #ffffff;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+        }
+        .slide-kicker {
+            font-size: 16px;
+            font-weight: 800;
+            background: #ffffff;
+            color: #0284c7;
+            padding: 4px 14px;
+            border-radius: 20px;
+            letter-spacing: 1px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+        }
+        .slide-subtitle {
+            display: none;
         }
         .slide-subtitle {
             font-size: 22px;
@@ -581,10 +594,11 @@
     <!-- SLAYT 1 -->
     <div class="slide-container active" id="slide-1">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> TÜRKİYE YÜZYILI MAARİF MODELİ • 7. SINIF FEN BİLİMLERİ</span>
             <h2 class="slide-title">Kuvvet ve Enerjiyi Keşfedelim</h2>
-            <div class="slide-subtitle">Fiziksel İş • Kinetik Enerji • Potansiyel Enerji • Enerji Dönüşümleri ve Korunumu</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;justify-content:center;gap:24px;">
@@ -650,10 +664,11 @@
     <!-- SLAYT 2 -->
     <div class="slide-container " id="slide-2">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ÖĞRENME HARİTASI</span>
             <h2 class="slide-title">3 Büyük İstasyon: Ünite Rotamız</h2>
-            <div class="slide-subtitle">Konuları sırasıyla öğrenerek kuvvet ve enerjinin sırlarını çözeceğiz.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;gap:24px;align-items:stretch;">
@@ -692,10 +707,11 @@
     <!-- SLAYT 3 -->
     <div class="slide-container " id="slide-3">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">GÜNLÜK YAŞAM PARADOKSU</span>
             <h2 class="slide-title">Çok Yoruldum Ama Fiziksel İş Yaptım mı?</h2>
-            <div class="slide-subtitle">Biyolojik yorgunluk ile fiziksel iş kavramı birbirine karıştırılmamalıdır!</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
@@ -748,10 +764,11 @@
     <!-- SLAYT 4 -->
     <div class="slide-container " id="slide-4">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ÖN BİLGİLERİ HATIRLAYALIM</span>
             <h2 class="slide-title">Kuvvet Bize Neyi Hatırlatır?</h2>
-            <div class="slide-subtitle">Kuvvet cisimler üzerinde 4 temel etkiye sahiptir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
@@ -783,10 +800,11 @@
     <!-- SLAYT 5 -->
     <div class="slide-container " id="slide-5">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">1. BÖLÜM: FİZİKSEL ANLAMDA İŞ</span>
             <h2 class="slide-title">Fiziksel İşin 2 Altın Kuralı</h2>
-            <div class="slide-subtitle">Bir kuvvetin iş yapabilmesi için bu iki koşulun AYNI ANDA sağlanması şarttır!</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -840,10 +858,11 @@
     <!-- SLAYT 6 -->
     <div class="slide-container " id="slide-6">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DURUM ANALİZİ 1</span>
             <h2 class="slide-title">Kutu İlerliyor: İŞ YAPILMIŞTIR!</h2>
-            <div class="slide-subtitle">Kuvvet sağa doğru, hareket de sağa doğru (Aynı doğrultuda).</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -891,10 +910,11 @@
     <!-- SLAYT 7 -->
     <div class="slide-container " id="slide-7">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DURUM ANALİZİ 2</span>
             <h2 class="slide-title">Duvar Kımıldamıyor: İŞ YAPILMAMIŞTIR!</h2>
-            <div class="slide-subtitle">Kuvvet uygulanıyor ancak yer değiştirme sıfır olduğu için iş gerçekleşmez.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -938,10 +958,11 @@
     <!-- SLAYT 8 -->
     <div class="slide-container " id="slide-8">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">EN BÜYÜK TUZAK!</span>
             <h2 class="slide-title">Çantayı Taşımak vs. Yerden Kaldırmak</h2>
-            <div class="slide-subtitle">Öğrencilerin LGS ve yazılılarda en çok yanıldığı kritik durum.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
@@ -990,10 +1011,11 @@
     <!-- SLAYT 9 -->
     <div class="slide-container " id="slide-9">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 1</span>
             <h2 class="slide-title">Fiziksel İş Var mı, Yok mu? (Örnek 1–10)</h2>
-            <div class="slide-subtitle">Örnekleri inceleyerek kuvvet ve hareket doğrultularını kontrol edelim.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;overflow-y:auto;">
@@ -1029,10 +1051,11 @@
     <!-- SLAYT 10 -->
     <div class="slide-container " id="slide-10">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 2</span>
             <h2 class="slide-title">Fiziksel İş Var mı, Yok mu? (Örnek 11–20)</h2>
-            <div class="slide-subtitle">Örnekleri inceleyerek kuvvet ve hareket doğrultularını kontrol edelim.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;overflow-y:auto;">
@@ -1068,10 +1091,11 @@
     <!-- SLAYT 11 -->
     <div class="slide-container " id="slide-11">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">İŞİN MATEMATİKSEL MODELİ</span>
             <h2 class="slide-title">İş Formülü ve Birimi: Joule (J)</h2>
-            <div class="slide-subtitle">Yapılan iş, uygulanan kuvvet ve alınan yolun çarpımına eşittir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
@@ -1106,10 +1130,11 @@
     <!-- SLAYT 12 -->
     <div class="slide-container " id="slide-12">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">KONTROLLÜ DENEY 1</span>
             <h2 class="slide-title">Yol Sabitken Kuvvet Artarsa Ne Olur?</h2>
-            <div class="slide-subtitle">Bağımsız değişken: Kuvvet | Kontrol edilen değişken: Yol</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1147,10 +1172,11 @@
     <!-- SLAYT 13 -->
     <div class="slide-container " id="slide-13">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">KONTROLLÜ DENEY 2</span>
             <h2 class="slide-title">Kuvvet Sabitken Alınan Yol Artarsa?</h2>
-            <div class="slide-subtitle">Bağımsız değişken: Alınan yol | Kontrol edilen değişken: Kuvvet</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1188,10 +1214,11 @@
     <!-- SLAYT 14 -->
     <div class="slide-container " id="slide-14">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ÖRNEK SORU VE ÇÖZÜM 1</span>
             <h2 class="slide-title">Adım Adım Problem Çözümü: Koli Kaldırma</h2>
-            <div class="slide-subtitle">Fiziksel iş formülünü sorularda nasıl uygulayacağız?</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
@@ -1219,10 +1246,11 @@
     <!-- SLAYT 15 -->
     <div class="slide-container " id="slide-15">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ÖRNEK SORU VE ÇÖZÜM 2</span>
             <h2 class="slide-title">İş Karşılaştırma Analizi: K, L ve M Cisimleri</h2>
-            <div class="slide-subtitle">Kuvvet ve yolları farklı 3 cismin yaptığı işleri sıralayalım.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
@@ -1249,10 +1277,11 @@
     <!-- SLAYT 16 -->
     <div class="slide-container " id="slide-16">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DİKKAT EDİLECEK NOKTALAR</span>
             <h2 class="slide-title">Fiziksel İş Konusunda 5 Kritik Kavram Yanılgısı</h2>
-            <div class="slide-subtitle">Sınavlarda en çok puan kaybettiren yanılgıları düzeltiyoruz.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto;">
@@ -1280,10 +1309,11 @@
     <!-- SLAYT 17 -->
     <div class="slide-container " id="slide-17">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">İNTERAKTİF SINIF GÖREVİ</span>
             <h2 class="slide-title">İş Dedektifi Sahada! (Tahmin Et & Çöz)</h2>
-            <div class="slide-subtitle">Akıllı tahtada butona tıklayarak fiziksel iş olup olmadığını açığa çıkarın.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
@@ -1335,10 +1365,11 @@
     <!-- SLAYT 18 -->
     <div class="slide-container " id="slide-18">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">1. BÖLÜMÜN BÜYÜK ÖZETİ</span>
             <h2 class="slide-title">Fiziksel İşin Zihin Haritası</h2>
-            <div class="slide-subtitle">1. İstasyonun tüm kilit kavramları tek bir bakışta.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;gap:20px;align-items:stretch;">
@@ -1373,10 +1404,11 @@
     <!-- SLAYT 19 -->
     <div class="slide-container " id="slide-19">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">2. BÖLÜM: ENERJİ ÇEŞİTLERİ</span>
             <h2 class="slide-title">Enerji Nedir? (İş ile Enerjinin Kardeşliği)</h2>
-            <div class="slide-subtitle">Bir sistemin veya cismin iş yapabilme yeteneğine ENERJİ denir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
@@ -1396,10 +1428,11 @@
     <!-- SLAYT 20 -->
     <div class="slide-container " id="slide-20">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">HAREKETİN GÜCÜ</span>
             <h2 class="slide-title">Kinetik Enerji (Kinetik = Hareket)</h2>
-            <div class="slide-subtitle">Cisimlerin süratlerinden (hareketlerinden) dolayı sahip olduğu enerjidir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1430,10 +1463,11 @@
     <!-- SLAYT 21 -->
     <div class="slide-container " id="slide-21">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">KİNETİK ENERJİ NEYE BAĞLIDIR? • 1. FAKTÖR</span>
             <h2 class="slide-title">Kütlenin Kinetik Enerjiye Etkisi</h2>
-            <div class="slide-subtitle">Süratleri eşit cisimlerden kütlesi büyük olanın kinetik enerjisi daha büyüktür.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1459,10 +1493,11 @@
     <!-- SLAYT 22 -->
     <div class="slide-container " id="slide-22">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">KİNETİK ENERJİ NEYE BAĞLIDIR? • 2. FAKTÖR</span>
             <h2 class="slide-title">Süratin Kinetik Enerjiye Etkisi</h2>
-            <div class="slide-subtitle">Kütleleri eşit cisimlerden sürati büyük olanın kinetik enerjisi çok daha büyüktür.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1488,10 +1523,11 @@
     <!-- SLAYT 23 -->
     <div class="slide-container " id="slide-23">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">HAYAT KURTARAN FİZİK</span>
             <h2 class="slide-title">Trafik Güvenliği ve Kinetik Enerji</h2>
-            <div class="slide-subtitle">Neden şehir içi hız sınırı 50 km/sa olarak belirlenmiştir?</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;gap:24px;align-items:stretch;">
@@ -1516,10 +1552,11 @@
     <!-- SLAYT 24 -->
     <div class="slide-container " id="slide-24">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">GİZLİ GÜÇ</span>
             <h2 class="slide-title">Potansiyel Enerjiye Giriş (Depolanmış Enerji)</h2>
-            <div class="slide-subtitle">Cisimlerin konumlarından veya esnekliklerinden dolayı depoladıkları enerjidir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;">
@@ -1547,10 +1584,11 @@
     <!-- SLAYT 25 -->
     <div class="slide-container " id="slide-25">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">YÜKSEKLİĞİN GÜCÜ</span>
             <h2 class="slide-title">Çekim Potansiyel Enerjisi Nedir?</h2>
-            <div class="slide-subtitle">Yer çekimine karşı yukarı kaldırılan her cisim iş yapar ve çekim potansiyel enerjisi depolar.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1591,10 +1629,11 @@
     <!-- SLAYT 26 -->
     <div class="slide-container " id="slide-26">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ÇEKİM POTANSİYEL ENERJİSİ • 1. DEĞİŞKEN</span>
             <h2 class="slide-title">Yüksekliğin Çekim Potansiyel Enerjisine Etkisi</h2>
-            <div class="slide-subtitle">Kütleleri eşit cisimlerden daha yüksekte olanın enerjisi daha büyüktür.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1619,10 +1658,11 @@
     <!-- SLAYT 27 -->
     <div class="slide-container " id="slide-27">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ÇEKİM POTANSİYEL ENERJİSİ • 2. DEĞİŞKEN</span>
             <h2 class="slide-title">Kütlenin Çekim Potansiyel Enerjisine Etkisi</h2>
-            <div class="slide-subtitle">Yükseklikleri eşit cisimlerden kütlesi büyük olanın enerjisi daha büyüktür.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1647,10 +1687,11 @@
     <!-- SLAYT 28 -->
     <div class="slide-container " id="slide-28">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">YAYLARIN VE LASTİKLERİN GÜCÜ</span>
             <h2 class="slide-title">Esneklik Potansiyel Enerjisi</h2>
-            <div class="slide-subtitle">Esnek bir cismi kuvvet uygulayarak gerdiğimizde veya sıkıştırdığımızda enerji depolar.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1692,10 +1733,11 @@
     <!-- SLAYT 29 -->
     <div class="slide-container " id="slide-29">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ESNEKLİK POTANSİYELİ DEĞİŞKENLERİ</span>
             <h2 class="slide-title">Esneklik Enerjisi Neye Bağlıdır?</h2>
-            <div class="slide-subtitle">İki temel faktör depolanan esneklik enerjisini belirler.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;">
@@ -1721,10 +1763,11 @@
     <!-- SLAYT 30 -->
     <div class="slide-container " id="slide-30">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">İKİSİ BİR ARADA</span>
             <h2 class="slide-title">Bir Cisimde İki Enerji Birden Bulunabilir mi?</h2>
-            <div class="slide-subtitle">Cevap: KESİNLİKLE EVET! Mekanik Enerji kavramı burada doğar.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1750,10 +1793,11 @@
     <!-- SLAYT 31 -->
     <div class="slide-container " id="slide-31">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">ENERJİ TÜRLERİ ÖZETİ</span>
             <h2 class="slide-title">3 Enerji Türü Karşılaştırma Matrisi</h2>
-            <div class="slide-subtitle">Tüm enerji türleri, değişkenleri ve günlük yaşam karşılıkları.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;overflow-y:auto;">
@@ -1795,10 +1839,11 @@
     <!-- SLAYT 32 -->
     <div class="slide-container " id="slide-32">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">3. BÖLÜM: DÖNÜŞÜMLER VE KORUNUM</span>
             <h2 class="slide-title">Evrenin Büyük Kanunu: Enerji Korunumu</h2>
-            <div class="slide-subtitle">"Enerji yoktan var edilemez, var olan enerji de asla yok edilemez!"</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
@@ -1820,10 +1865,11 @@
     <!-- SLAYT 33 -->
     <div class="slide-container " id="slide-33">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DÖNÜŞÜM MODELİ 1</span>
             <h2 class="slide-title">Serbest Düşen Cisim (Ağaçtan Düşen Elma)</h2>
-            <div class="slide-subtitle">Ağaç dalından yere düşene kadar enerjinin 3 aşamalı değişimi.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:18px;justify-content:center;">
@@ -1863,10 +1909,11 @@
     <!-- SLAYT 34 -->
     <div class="slide-container " id="slide-34">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DÖNÜŞÜM MODELİ 2</span>
             <h2 class="slide-title">Yukarı Fırlatılan Topun Enerji Dönüşümü</h2>
-            <div class="slide-subtitle">Aşağıdan yukarı atılan bir top tepe noktasına çıkıp tekrar aşağı iner.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -1887,10 +1934,11 @@
     <!-- SLAYT 35 -->
     <div class="slide-container " id="slide-35">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DÖNÜŞÜM MODELİ 3</span>
             <h2 class="slide-title">Parktaki Salıncak (Bitmeyen Salınım)</h2>
-            <div class="slide-subtitle">Salıncak bir o yana bir bu yana giderken enerji sürekli biçim değiştirir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:18px;justify-content:center;">
@@ -1933,10 +1981,11 @@
     <!-- SLAYT 36 -->
     <div class="slide-container " id="slide-36">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DÖNÜŞÜM MODELİ 4</span>
             <h2 class="slide-title">Lunaparktaki Hız Treni (Roller Coaster)</h2>
-            <div class="slide-subtitle">Devasa tepeler, dik inişler ve enerjinin kusursuz dönüşümü.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:18px;justify-content:center;">
@@ -1979,10 +2028,11 @@
     <!-- SLAYT 37 -->
     <div class="slide-container " id="slide-37">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DÖNÜŞÜM MODELİ 5</span>
             <h2 class="slide-title">Ok ve Yay (Esneklik → Kinetik)</h2>
-            <div class="slide-subtitle">Kas gücümüzle yayda biriken potansiyel enerji oka aktarılır.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -2002,10 +2052,11 @@
     <!-- SLAYT 38 -->
     <div class="slide-container " id="slide-38">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">GİZLİ HIRSIZ</span>
             <h2 class="slide-title">Sürtünme Kuvveti ve Isıl Enerji</h2>
-            <div class="slide-subtitle">Salıncak neden bir süre sonra durur? Enerji yok mu oldu?</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
@@ -2025,10 +2076,11 @@
     <!-- SLAYT 39 -->
     <div class="slide-container " id="slide-39">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">FİZİKSEL KIYASLAMA</span>
             <h2 class="slide-title">Sürtünmeli vs. Sürtünmesiz Ortam</h2>
-            <div class="slide-subtitle">Mekanik enerjinin korunumu ortamın sürtünme durumuna bağlıdır.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;">
@@ -2056,10 +2108,11 @@
     <!-- SLAYT 40 -->
     <div class="slide-container " id="slide-40">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">DENEYSEL GÖZLEM</span>
             <h2 class="slide-title">Pürüzlü vs. Pürüzsüz Rampada Kaykay</h2>
-            <div class="slide-subtitle">Farklı yüzeylerin kinetik enerjiyi ısıya dönüştürme hızları.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -2078,10 +2131,11 @@
     <!-- SLAYT 41 -->
     <div class="slide-container " id="slide-41">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">3. BÖLÜMÜN BÜYÜK POSTERİ</span>
             <h2 class="slide-title">Enerji Dönüşüm Çemberi</h2>
-            <div class="slide-subtitle">Doğadaki tüm enerji türleri birbirine dönüşebilir.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;align-items:center;justify-content:center;">
@@ -2102,10 +2156,11 @@
     <!-- SLAYT 42 -->
     <div class="slide-container " id="slide-42">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">4. BÖLÜM: ETKİLEŞİMLİ LGS SORULARI</span>
             <h2 class="slide-title">Akıllı Tahta Sorusu 1: Fiziksel İş Analizi</h2>
-            <div class="slide-subtitle">Doğru şıkka tıklayarak yanıtınızı test edin.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
@@ -2142,10 +2197,11 @@
     <!-- SLAYT 43 -->
     <div class="slide-container " id="slide-43">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">SORU ANALİZİ VE ÇÖZÜM</span>
             <h2 class="slide-title">Soru 1 Çözüm ve Mantık Analizi</h2>
-            <div class="slide-subtitle">Adım adım matematiksel ve kavramsal kontrol.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -2166,10 +2222,11 @@
     <!-- SLAYT 44 -->
     <div class="slide-container " id="slide-44">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">AKILLI TAHTA SORUSU 2</span>
             <h2 class="slide-title">Akıllı Tahta Sorusu 2: Hız Treni ve Enerji Dönüşümü</h2>
-            <div class="slide-subtitle">Sürtünmesiz bir hız treni parkurunda K, L ve M noktaları.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
@@ -2203,10 +2260,11 @@
     <!-- SLAYT 45 -->
     <div class="slide-container " id="slide-45">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">SORU ANALİZİ VE ÇÖZÜM</span>
             <h2 class="slide-title">Soru 2 Çözüm ve Mantık Analizi</h2>
-            <div class="slide-subtitle">Mekanik enerjinin korunumu ilkesini hatırlayalım.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
@@ -2227,10 +2285,11 @@
     <!-- SLAYT 46 -->
     <div class="slide-container " id="slide-46">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">5. BÖLÜM: BÜYÜK ÖZET</span>
             <h2 class="slide-title">6 Altın Kuralda Ünitenin Özeti</h2>
-            <div class="slide-subtitle">2. Ünitenin hafızalara kazınması gereken 6 temel ilkesi.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;">
@@ -2266,10 +2325,11 @@
     <!-- SLAYT 47 -->
     <div class="slide-container " id="slide-47">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">KENDİNİ TEST ET</span>
             <h2 class="slide-title">Öğrenci Öz Değerlendirme Karnesi</h2>
-            <div class="slide-subtitle">Bu ünite bittiğinde neleri başardın? Kutucuklara tıklayarak işaretle!</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center;">
@@ -2296,10 +2356,11 @@
     <!-- SLAYT 48 -->
     <div class="slide-container " id="slide-48">
         <div class="slide-header">
+        <div class="slide-banner-pill">
             <span class="slide-kicker">KAPANIŞ VE TEŞEKKÜR</span>
             <h2 class="slide-title">Tebrikler! Rotamız Fen, Hedefimiz Başarı!</h2>
-            <div class="slide-subtitle">7. Sınıf 2. Ünite Kuvvet ve Enerji konusunu başarıyla tamamladınız.</div>
         </div>
+    </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:24px;">
@@ -2329,7 +2390,7 @@
             <!-- Smartboard Bottom Control Bar -->
             <div class="fixed-nav-bar">
                 <button class="nav-btn" onclick="prevSlide()" title="Önceki Slayt (Sol Ok)"><i class="fa-solid fa-chevron-left"></i></button>
-                <div class="counter-badge" id="slide-counter-badge">1 / 48</div>
+                <div class="counter-badge" id="slide-counter-badge" style="background:#0f172a;color:#38bdf8;border:2px solid #0284c7;border-radius:24px;padding:4px 16px;font-weight:900;">1 / 48</div>
                 <button class="nav-btn primary" onclick="nextSlide()" title="Sonraki Slayt (Sağ Ok veya Boşluk)">
                     <span>İlerle</span>
                     <i class="fa-solid fa-chevron-right"></i>
