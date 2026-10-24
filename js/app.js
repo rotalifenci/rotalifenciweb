@@ -562,9 +562,10 @@ const CloudSyncManager = {
                         if ((m.fileUrl && (m.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || m.fileUrl === "#" || m.fileUrl === "assets/unite-bilgilendirmeleri-gorsel.png" || m.fileUrl === "assets/ilk-ders-notu.png")) && st.fileUrl && st.fileUrl !== "#") {
                             m.fileUrl = st.fileUrl;
                         }
-                        if ((!m.imageUrl || m.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || m.imageUrl === "assets/unite-bilgilendirmeleri-gorsel.png" || m.imageUrl === "assets/ilk-ders-notu.png") && st.imageUrl) {
+                        if ((!m.imageUrl || m.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || m.imageUrl === "assets/unite-bilgilendirmeleri-gorsel.png" || m.imageUrl === "assets/ilk-ders-notu.png" || (m.imageUrl.startsWith("data:image/svg+xml") && st.imageUrl && !st.imageUrl.startsWith("data:image/svg+xml"))) && st.imageUrl) {
                             m.imageUrl = st.imageUrl;
                             m.kapakResmi = st.kapakResmi || st.imageUrl;
+                            m.cover = st.cover || st.imageUrl;
                         }
                         if (st.format === "GÖRSEL") m.format = "GÖRSEL";
                         cloudMap.set(item.id, m);
@@ -595,11 +596,18 @@ const CloudSyncManager = {
                         } else if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
                             merged.fileUrl = localItem.fileUrl;
                         }
-                        if (inCloud.imageUrl && !inCloud.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                        if (inCloud.imageUrl && !inCloud.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && !inCloud.imageUrl.startsWith("data:image/svg+xml")) {
                             merged.imageUrl = inCloud.imageUrl;
                             merged.kapakResmi = inCloud.kapakResmi || inCloud.imageUrl;
-                        } else if (localItem.imageUrl && localItem.imageUrl.startsWith("data:") && (!inCloud.imageUrl || inCloud.imageUrl === "" || inCloud.imageUrl === "#")) {
+                            merged.cover = inCloud.cover || inCloud.imageUrl;
+                        } else if (localItem.imageUrl && !localItem.imageUrl.startsWith("data:image/svg+xml") && (!inCloud.imageUrl || inCloud.imageUrl === "" || inCloud.imageUrl === "#" || inCloud.imageUrl.startsWith("data:image/svg+xml"))) {
                             merged.imageUrl = localItem.imageUrl;
+                            merged.kapakResmi = localItem.kapakResmi || localItem.imageUrl;
+                            merged.cover = localItem.cover || localItem.imageUrl;
+                        } else if (inCloud.imageUrl) {
+                            merged.imageUrl = inCloud.imageUrl;
+                            merged.kapakResmi = inCloud.kapakResmi || inCloud.imageUrl;
+                            merged.cover = inCloud.cover || inCloud.imageUrl;
                         }
                         if (inCloud.format) merged.format = inCloud.format;
                         mergedMap.set(localItem.id, merged);
@@ -612,13 +620,38 @@ const CloudSyncManager = {
 
             const finalMergedList = Array.from(mergedMap.values());
 
-            // Görsel URL referanslarını güvene al (Sadece gerçek görseller atanabilir, dokümanlar asla görsel olamaz)
+            // Görsel URL referanslarını güvene al (PDF ilk sayfa kapaklarını otomatik bağla)
             finalMergedList.forEach(item => {
-                if (item && !item.imageUrl && item.fileUrl) {
-                    const fu = item.fileUrl.toLowerCase();
+                if (!item) return;
+                const fu = (item.fileUrl || "").toLowerCase();
+                const curImg = (item.imageUrl || item.kapakResmi || "").trim();
+                const isSvg = curImg.startsWith("data:image/svg+xml");
+
+                if (fu.endsWith(".pdf") || fu.includes(".pdf")) {
+                    if (item.cover && !item.cover.startsWith("data:image/svg") && (item.cover.endsWith(".jpg") || item.cover.endsWith(".png") || item.cover.endsWith(".webp"))) {
+                        item.imageUrl = item.cover;
+                        item.kapakResmi = item.cover;
+                    } else if (fu.includes("assets/materials/")) {
+                        const coverP = item.fileUrl.replace(/\.pdf(\?.*)?$/i, "_cover.jpg").replace(/.*assets\/materials\//, "assets/materials/");
+                        if (isSvg || !item.imageUrl) {
+                            item.imageUrl = coverP;
+                            item.kapakResmi = coverP;
+                            item.cover = coverP;
+                        }
+                    } else if (fu.includes("assets/docs/")) {
+                        const bName = item.fileUrl.split("/").pop().replace(/\.pdf(\?.*)?$/i, "");
+                        const coverD = `assets/materials/${bName}_cover.jpg`;
+                        if (isSvg || !item.imageUrl) {
+                            item.imageUrl = coverD;
+                            item.kapakResmi = coverD;
+                            item.cover = coverD;
+                        }
+                    }
+                } else if (!item.imageUrl && item.fileUrl) {
                     const isRealImg = fu.startsWith("data:image") || fu.endsWith(".png") || fu.endsWith(".jpg") || fu.endsWith(".jpeg") || fu.endsWith(".webp") || fu.endsWith(".svg") || (fu.startsWith("assets/") && (fu.endsWith(".png") || fu.endsWith(".jpg") || fu.endsWith(".jpeg") || fu.endsWith(".svg")));
                     if (isRealImg) {
                         item.imageUrl = item.fileUrl;
+                        item.kapakResmi = item.fileUrl;
                     }
                 }
             });
@@ -628,8 +661,8 @@ const CloudSyncManager = {
             const prevCount = Array.isArray(ROTALI_MATERIALS_CACHE) ? ROTALI_MATERIALS_CACHE.length : -1;
             const sortedFinal = [...finalMergedList].sort(sortById);
             const sortedPrev = Array.isArray(ROTALI_MATERIALS_CACHE) ? [...ROTALI_MATERIALS_CACHE].sort(sortById) : [];
-            const currentSerialized = JSON.stringify(sortedFinal.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
-            const prevSerialized = JSON.stringify(sortedPrev.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
+            const currentSerialized = JSON.stringify(sortedFinal.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, imageUrl: m.imageUrl ? m.imageUrl.substring(0, 40) : '', fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
+            const prevSerialized = JSON.stringify(sortedPrev.map(m => ({ id: m.id, title: m.title, category: m.category, grade: m.grade, updatedAt: m.updatedAt, imageUrl: m.imageUrl ? m.imageUrl.substring(0, 40) : '', fileUrl: m.fileUrl ? m.fileUrl.substring(0, 30) : '' })));
 
             const hasChanged = currentSerialized !== prevSerialized;
 
@@ -1618,13 +1651,20 @@ async function extractCoverFromPdfSource(source) {
     try {
         let docInit = null;
         if (typeof Blob !== "undefined" && (source instanceof Blob || source instanceof File)) {
-            const arrayBuffer = await source.arrayBuffer();
-            docInit = { data: arrayBuffer };
-        } else if (source instanceof ArrayBuffer || source instanceof Uint8Array) {
+            const buffer = source.arrayBuffer ? await source.arrayBuffer() : await new Promise((res, rej) => {
+                const reader = new FileReader();
+                reader.onload = () => res(reader.result);
+                reader.onerror = rej;
+                reader.readAsArrayBuffer(source);
+            });
+            docInit = { data: new Uint8Array(buffer) };
+        } else if (source instanceof ArrayBuffer) {
+            docInit = { data: new Uint8Array(source) };
+        } else if (source instanceof Uint8Array) {
             docInit = { data: source };
         } else if (typeof source === "string") {
             const trimmed = source.trim();
-            if (trimmed.startsWith("data:application/pdf") || trimmed.startsWith("blob:") || trimmed.startsWith("http")) {
+            if (trimmed.startsWith("data:application/pdf") || trimmed.startsWith("blob:") || trimmed.startsWith("http") || trimmed.startsWith("assets/") || trimmed.startsWith("./") || trimmed.startsWith("/") || trimmed.toLowerCase().includes(".pdf")) {
                 docInit = { url: trimmed };
             } else {
                 return null;
@@ -1636,12 +1676,26 @@ async function extractCoverFromPdfSource(source) {
         docInit.cMapUrl = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/";
         docInit.cMapPacked = true;
 
-        const loadingTask = window.pdfjsLib.getDocument(docInit);
-        const pdf = await loadingTask.promise;
+        let pdf = null;
+        try {
+            const loadingTask = window.pdfjsLib.getDocument(docInit);
+            pdf = await loadingTask.promise;
+        } catch(wErr) {
+            try {
+                const fallbackInit = { ...docInit, disableWorker: true, isEvalSupported: false };
+                const fallbackTask = window.pdfjsLib.getDocument(fallbackInit);
+                pdf = await fallbackTask.promise;
+            } catch(e2) {
+                console.warn("PDF yüklenemedi:", e2);
+                return null;
+            }
+        }
+
+        if (!pdf || pdf.numPages < 1) return null;
         const page = await pdf.getPage(1);
         const origViewport = page.getViewport({ scale: 1.0 });
-        const targetWidth = 600;
-        const scale = Math.min(targetWidth / origViewport.width, 2.0);
+        const targetWidth = 1200; // Kristal netlikte 16:9 yatay kapak
+        const scale = Math.min(Math.max(targetWidth / (origViewport.width || 600), 1.0), 3.0);
         const viewport = page.getViewport({ scale: scale });
 
         const canvas = document.createElement("canvas");
@@ -1652,7 +1706,7 @@ async function extractCoverFromPdfSource(source) {
             ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             await page.render({ canvasContext: ctx, viewport: viewport }).promise;
-            return canvas.toDataURL("image/jpeg", 0.85);
+            return canvas.toDataURL("image/jpeg", 0.88);
         }
         return null;
     } catch (err) {
@@ -1676,6 +1730,22 @@ function resolveMaterialCover(item) {
     const g = String(item.grade || "5").replace(/^grade-/, "").trim();
     const isActualTextbook = (item.targetSection === "kitap" || cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi") || (item.id && String(item.id).startsWith("book-")));
 
+    // 🌟 PDF Materyallerinde 1. Sayfa Kapağını Her Zaman Sentetik SVG'nin Önüne Al
+    if (rawFile && (rawFile.toLowerCase().endsWith(".pdf") || rawFile.includes(".pdf") || format.includes("pdf"))) {
+        for (const candidate of [item.cover, item.kapakResmi, item.imageUrl]) {
+            if (candidate && typeof candidate === "string" && !candidate.startsWith("data:image/svg") && (candidate.endsWith(".jpg") || candidate.endsWith(".png") || candidate.endsWith(".webp") || candidate.includes("_cover.jpg"))) {
+                return candidate;
+            }
+        }
+        if (rawFile.includes("assets/materials/")) {
+            return rawFile.replace(/\.pdf(\?.*)?$/i, "_cover.jpg").replace(/.*assets\/materials\//, "assets/materials/");
+        }
+        if (rawFile.includes("assets/docs/")) {
+            const b = rawFile.split("/").pop().replace(/\.pdf(\?.*)?$/i, "");
+            return `assets/materials/${b}_cover.jpg`;
+        }
+    }
+
     // 1. Doğrudan atanmış geçerli görsel varsa
     if (rawImg && rawImg !== "#" && rawImg !== "null" && !rawImg.includes("cdn.eba.gov.tr") && !rawImg.includes("placeholder")) {
         // Eğer görsel assets/kapak-X.jpg ise ama bu materyal MEB DERS KİTABI DEĞİLSE, ders kitabı kapağını zorlama!
@@ -1683,6 +1753,13 @@ function resolveMaterialCover(item) {
             // Hatalı varsayılan kapak yerine akıllı kapağa devam et
         } else if (rawImg.endsWith(".pptx") || rawImg.endsWith(".ppt") || rawImg.endsWith(".pdf") || rawImg.endsWith(".docx") || rawImg.endsWith(".doc") || rawImg.endsWith(".zip")) {
             // Doküman dosyası asla doğrudan görsel src olarak kullanılamaz!
+        } else if (rawImg.startsWith("data:image/svg+xml")) {
+            if (rawFile && (rawFile.toLowerCase().endsWith(".pdf") || rawFile.includes(".pdf"))) {
+                if (rawFile.includes("assets/materials/")) {
+                    return rawFile.replace(/\.pdf(\?.*)?$/i, "_cover.jpg").replace(/.*assets\/materials\//, "assets/materials/");
+                }
+            }
+            return rawImg;
         } else {
             return rawImg;
         }
@@ -17888,6 +17965,8 @@ async function handleAdvMaterialSubmit(e) {
                     fileName: currentUploadedFile ? finalFileName : (linkVal ? finalFileName : customList[idx].fileName),
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
                     imageUrl: chosenCover || ((customList[idx] && customList[idx].imageUrl && !customList[idx].imageUrl.endsWith(".pptx") && !customList[idx].imageUrl.endsWith(".ppt") && !customList[idx].imageUrl.endsWith(".pdf")) ? customList[idx].imageUrl : "") || ((externalUrl && !externalUrl.startsWith("data:") && (externalUrl.endsWith(".jpg") || externalUrl.endsWith(".png") || externalUrl.endsWith(".webp") || externalUrl.endsWith(".svg"))) ? externalUrl : ""),
+                    kapakResmi: chosenCover || ((customList[idx] && customList[idx].kapakResmi) ? customList[idx].kapakResmi : "") || chosenCover,
+                    cover: chosenCover || ((customList[idx] && customList[idx].cover) ? customList[idx].cover : "") || chosenCover,
                     format: (currentUploadedFile || linkVal) ? fileFormat : customList[idx].format,
                     hasBlob: hasBlob || customList[idx].hasBlob,
                     tags: (currentTagsList && currentTagsList.length > 0) ? [...currentTagsList] : customList[idx].tags,
