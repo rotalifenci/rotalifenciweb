@@ -23,7 +23,7 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-10-24T16:59:26.107Z",
-    "updatedAt": "2026-10-24T17:23:14.300Z"
+    "updatedAt": "2026-10-24T16:59:26.107Z"
   },
   {
     "id": "mat-7-2-sunum-kuvvet-ve-enerji-3d",
@@ -654,6 +654,32 @@
     "downloadCount": "Yeni",
     "createdAt": "2026-09-28T22:51:51.770687+00:00",
     "updatedAt": "2026-09-30T19:00:05.376+00:00",
+    "isCloud": true
+  },
+  {
+    "id": "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
+    "grade": "5",
+    "category": "ders-notu",
+    "targetSection": "1",
+    "title": "5.1.",
+    "unit": "1. Ünite: Güneş, Dünya ve Ay",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "5.1. Sunum.pptx",
+    "fileUrl": "assets/docs/5-1-sunum.pptx",
+    "imageUrl": "assets/docs/5-1-sunum-kapak.jpg",
+    "kapakResmi": "assets/docs/5-1-sunum-kapak.jpg",
+    "format": "PPTX",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-09-28T22:46:21.041522+00:00",
+    "updatedAt": "2026-09-30T19:00:05.619+00:00",
     "isCloud": true
   },
   {
