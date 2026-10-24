@@ -58,17 +58,17 @@
   {
     "id": "mat-video-5-1-03",
     "grade": "5",
-    "category": "videolar",
+    "category": "egitsel-oyunlar",
     "targetSection": "1",
     "title": "5.1.3 DÜNYA'NIN KATMANLARI (3D ETKİLEŞİMLİ MODEL)",
     "unit": "1. Ünite: Güneş, Dünya ve Ay",
     "desc": "Dünya'nın iç ve dış katmanlarını 360 derece döndürerek inceleyebileceğiniz 3D model.",
-    "fileName": "materyal-5-1-03",
+    "fileName": "5.1.3 DÜNYA'NIN KATMANLARI (3D ETKİLEŞİMLİ MODEL)",
     "fileUrl": "https://sketchfab.com/3d-models/earth-core-44c547c28fbf46f4ab430bf1398f5fdb",
     "imageUrl": "assets/materials/mat-5-1-sim-dunyanin-5-katmani_cover.jpg",
     "kapakResmi": "assets/materials/mat-5-1-sim-dunyanin-5-katmani_cover.jpg",
     "cover": "assets/materials/mat-5-1-sim-dunyanin-5-katmani_cover.jpg",
-    "format": "İnteraktif 3D",
+    "format": "Web Bağlantısı",
     "hasBlob": false,
     "tags": [
       "5. sınıf",
@@ -81,7 +81,7 @@
     "visibility": "public",
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.058Z",
-    "updatedAt": "2026-10-24T20:31:01.058Z"
+    "updatedAt": "2026-10-24T21:07:04.069Z"
   },
   {
     "id": "mat-video-5-1-04",
