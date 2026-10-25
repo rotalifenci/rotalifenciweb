@@ -4629,10 +4629,10 @@ function renderGradeDersNotuAccordion(grade, subData) {
         "8": [
             "1. Ünite: Mevsimler ve İklim",
             "2. Ünite: DNA ve Genetik Kod",
-            "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+            "3. Ünite: Basınç",
             "4. Ünite: Madde ve Endüstri",
             "5. Ünite: Basit Makineler",
-            "6. Ünite: Canlılar ve Enerji İlişkileri",
+            "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
             "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
         ]
     };
@@ -5122,10 +5122,10 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
         "8": [
             "1. Ünite: Mevsimler ve İklim",
             "2. Ünite: DNA ve Genetik Kod",
-            "3. Ünite: Basınç (Katı, Sıvı, Gaz)",
+            "3. Ünite: Basınç",
             "4. Ünite: Madde ve Endüstri",
             "5. Ünite: Basit Makineler",
-            "6. Ünite: Canlılar ve Enerji İlişkileri",
+            "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
             "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi"
         ]
     };
@@ -5527,8 +5527,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                         onclick="filterMaterialsBySubtopic('${unitNum}', '${sub.num}', '${grade.number}', '${normSubTab}')"
                                                         data-subtopic="${sub.num}"
                                                         class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs ${isFirstActive ? 'font-black bg-blue-600 text-white shadow-md' : 'font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80'} transition-all flex items-center gap-1.5 shrink-0 cursor-pointer">
-                                                    <span class="w-5 h-5 rounded-lg ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'} font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">${sub.num}</span>
-                                                    <span class="truncate max-w-[210px] sm:max-w-none">${sub.title}</span>
+                                                    <span class="min-w-[26px] px-1.5 h-5 rounded-lg ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'} font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">${sub.code || sub.num}</span>
+                                                    <span class="truncate max-w-[280px] sm:max-w-none">${sub.shortTitle || sub.title}</span>
                                                     ${matchCount > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[10px] ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200'} font-black shadow-2xs">${matchCount}</span>` : ''}
                                                 </button>
                                                 `;
@@ -18611,11 +18611,11 @@ function filterMaterialsBySubtopic(unitNum, subtopicNum, gradeNum, subTab) {
         const countSpan = btn.querySelector('span:last-child');
         if (isMatch) {
             btn.className = "subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 bg-blue-600 text-white shadow-md cursor-pointer";
-            if (numSpan) numSpan.className = "w-5 h-5 rounded-lg bg-white/20 text-white font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs";
+            if (numSpan) numSpan.className = "min-w-[26px] px-1.5 h-5 rounded-lg bg-white/20 text-white font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs";
             if (countSpan && countSpan !== numSpan) countSpan.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-black shadow-2xs";
         } else {
             btn.className = "subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 cursor-pointer hover:border-slate-300";
-            if (numSpan) numSpan.className = "w-5 h-5 rounded-lg bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs";
+            if (numSpan) numSpan.className = "min-w-[26px] px-1.5 h-5 rounded-lg bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs";
             if (countSpan && countSpan !== numSpan) countSpan.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-blue-50 text-blue-700 font-black border border-blue-200 shadow-2xs";
         }
     });
@@ -18709,7 +18709,7 @@ function openQuickMoveModal(materialId) {
             const subtopics = (typeof getUnitSubtopics === "function") ? getUnitSubtopics(g, uNum) : [];
             if (!subtopics || subtopics.length === 0) return '<option value="">-- Tüm Ünite (Alt Başlık Belirtilmedi) --</option>';
             return '<option value="">-- Tüm Ünite (Alt Başlık Belirtilmedi) --</option>' +
-                subtopics.map(s => `<option value="${s.num}" ${String(currentSubtopicNum) === String(s.num) ? 'selected' : ''}>${s.num}. ${s.title}</option>`).join('');
+                subtopics.map(s => `<option value="${s.num}" ${String(currentSubtopicNum) === String(s.num) ? 'selected' : ''}>${s.title}</option>`).join('');
         };
 
         modal.innerHTML = `
@@ -18830,7 +18830,7 @@ function updateQuickMoveSubtopics() {
         subtopicSelect.innerHTML = '<option value="">-- Tüm Ünite (Alt Başlık Yok) --</option>';
     } else {
         subtopicSelect.innerHTML = '<option value="">-- Tüm Ünite (Alt Başlık Belirtilmedi) --</option>' +
-            subtopics.map(s => `<option value="${s.num}">${s.num}. ${s.title}</option>`).join('');
+            subtopics.map(s => `<option value="${s.num}">${s.title}</option>`).join('');
     }
 }
 
