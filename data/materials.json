@@ -1,5 +1,30 @@
 [
   {
+    "id": "mat-22ad5548-cfdf-455c-a532-7c205831cc14",
+    "grade": "8",
+    "category": "ders-notu",
+    "targetSection": "1",
+    "title": "1. Ünite: Mevsimler ve İklim",
+    "unit": "1. Ünite: Mevsimler ve İklim",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "8.1..pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792964078849_lwthq_8.1..pdf",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792964077727_mat-22ad5548-cfdf-455c-a532-7c205831cc14_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792964077727_mat-22ad5548-cfdf-455c-a532-7c205831cc14_cover.jpg",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-10-25T21:34:57.528Z",
+    "updatedAt": "2026-10-25T21:34:57.529Z"
+  },
+  {
     "id": "mat-video-5-1-01",
     "grade": "5",
     "category": "videolar",
@@ -2191,7 +2216,7 @@
     "unit": "1. Ünite: Uzay Çağı – Türkiye ve Uzay Araştırmaları",
     "desc": "2085 yılında Yörünge-7 Uzay İstasyonu'nda kilitli kalan bilim kapılarını uzay teknolojileri bilginle aç! 6 fotogerçekçi 3D kaçış odası, yapay uydular, Mars roverı, dev teleskop, uzay kirliliği alarmı ve Dünya'ya dönüş kapsülü!",
     "fileName": "uzaydan-kacis-3d.html",
-    "fileUrl": "oyunlar/uzaydan-kacis-3d.html",
+    "fileUrl": "oyun-lab-kacis",
     "imageUrl": "assets/uzaydan-kacis-3d-kapak.svg",
     "kapakResmi": "assets/uzaydan-kacis-3d-kapak.svg",
     "cover": "assets/uzaydan-kacis-3d-kapak.svg",
