@@ -1,5 +1,30 @@
 [
   {
+    "id": "mat-c7e631f1-9e20-4cc2-8323-aad13aa28d6b",
+    "grade": "8",
+    "category": "ders-notu",
+    "targetSection": "2",
+    "title": "2. Ünite: DNA ve Genetik Kod",
+    "unit": "2. Ünite: DNA ve Genetik Kod",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "8.2..pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792964271324_jv2yc_8.2..pdf",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792964270030_mat-c7e631f1-9e20-4cc2-8323-aad13aa28d6b_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1792964270030_mat-c7e631f1-9e20-4cc2-8323-aad13aa28d6b_cover.jpg",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-10-25T21:38:12.206Z",
+    "updatedAt": "2026-10-25T21:38:12.206Z"
+  },
+  {
     "id": "mat-22ad5548-cfdf-455c-a532-7c205831cc14",
     "grade": "8",
     "category": "ders-notu",
