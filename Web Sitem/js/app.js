@@ -13604,7 +13604,7 @@ function renderFullScreenPresentationModal() {
 
         bodyHtml = `
             <div class="flex-1 relative w-full h-full flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
-                <button type="button" onclick="changePresentationSlide(-1)" class="fixed left-2 sm:left-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/85 hover:bg-orange-600 text-white border border-slate-700 hover:border-orange-500 flex items-center justify-center text-base sm:text-xl shadow-2xl backdrop-blur-md active:scale-90 transition-all cursor-pointer ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}" title="Önceki Slayt (Sol Ok)">
+                <button type="button" onclick="changePresentationSlide(-1)" class="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-900/90 hover:bg-orange-600 text-white border-2 border-slate-700 hover:border-orange-400 flex items-center justify-center text-xl sm:text-2xl shadow-2xl backdrop-blur-md active:scale-95 transition-all cursor-pointer ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}" title="Önceki Slayt (Sol Ok)">
                     <i class="fa-solid fa-chevron-left"></i>
                 </button>
 
@@ -13612,7 +13612,7 @@ function renderFullScreenPresentationModal() {
                     ${slideInner}
                 </div>
 
-                <button type="button" onclick="changePresentationSlide(1)" class="fixed right-2 sm:right-4 top-1/2 -translate-y-1/2 z-40 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-slate-900/85 hover:bg-orange-600 text-white border border-slate-700 hover:border-orange-500 flex items-center justify-center text-base sm:text-xl shadow-2xl backdrop-blur-md active:scale-90 transition-all cursor-pointer ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}" title="Sonraki Slayt (Sağ Ok)">
+                <button type="button" onclick="changePresentationSlide(1)" class="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-900/90 hover:bg-orange-600 text-white border-2 border-slate-700 hover:border-orange-400 flex items-center justify-center text-xl sm:text-2xl shadow-2xl backdrop-blur-md active:scale-95 transition-all cursor-pointer ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}" title="Sonraki Slayt (Sağ Ok)">
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
             </div>
@@ -13631,36 +13631,35 @@ function renderFullScreenPresentationModal() {
                 </div>
             </div>
 
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                ${isHtmlEmbed ? `
-                    <button type="button" onclick="sendPresentationCommand('prevSlide')" class="p-1.5 sm:px-3 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 cursor-pointer shadow-sm">
-                        <i class="fa-solid fa-chevron-left"></i> <span class="hidden sm:inline">Önceki</span>
-                    </button>
-                    <button type="button" onclick="sendPresentationCommand('toggleDrawer')" class="px-3 py-1 bg-slate-800 text-amber-400 hover:bg-slate-700 font-black text-xs rounded-full border border-slate-700 shadow-inner flex items-center gap-1.5 cursor-pointer" title="Slayt Listesi">
-                        <i class="fa-solid fa-list-ol"></i> <span>41 Slayt</span>
-                    </button>
-                    <button type="button" onclick="sendPresentationCommand('nextSlide')" class="p-1.5 sm:px-3 sm:py-1 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs cursor-pointer shadow-md">
-                        <span class="hidden sm:inline">Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                ` : `
-                    <button type="button" onclick="changePresentationSlide(-1)" class="p-1.5 sm:px-3 sm:py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs border border-slate-700 cursor-pointer ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}">
-                        <i class="fa-solid fa-chevron-left"></i> <span class="hidden sm:inline">Önceki</span>
-                    </button>
-                    <span class="px-3 py-1 bg-slate-800 text-amber-400 font-black text-xs rounded-full border border-slate-700 shadow-inner">
-                        Slayt ${currentSlide} / ${totalSlides}
-                    </span>
-                    <button type="button" onclick="changePresentationSlide(1)" class="p-1.5 sm:px-3 sm:py-1 rounded-xl bg-orange-600 hover:bg-orange-700 text-white font-bold text-xs cursor-pointer ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}">
-                        <span class="hidden sm:inline">Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
-                    </button>
-                `}
-            </div>
-
-            <div class="flex items-center gap-1.5 sm:gap-2">
-                ${isHtmlEmbed ? `
-                    <button type="button" onclick="sendPresentationCommand('toggleDrawer')" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer hidden md:flex" title="Ünite Rotaları">
-                        <i class="fa-solid fa-compass"></i> <span>Ünite Rotaları</span>
-                    </button>
-                ` : (isWebUrl ? `
+            <div class="flex items-center gap-2 sm:gap-3">
+                ${isHtmlEmbed ? `
+                    <button type="button" onclick="sendPresentationCommand('prevSlide')" class="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs sm:text-sm border border-slate-600 hover:border-amber-400 cursor-pointer shadow-md active:scale-95 flex items-center gap-2 transition-all" title="Önceki Slayt (Sol Ok)">
+                        <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i> <span>Önceki</span>
+                    </button>
+                    <button type="button" onclick="sendPresentationCommand('toggleDrawer')" class="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-slate-800/95 text-amber-300 hover:bg-slate-700 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 shadow-inner flex items-center gap-2 cursor-pointer transition-all" title="Bölümleri / Slayt Listesini Göster">
+                        <i class="fa-solid fa-list-ol text-amber-400 text-sm sm:text-base"></i> <span id="presentation-top-counter">${presentationModalState.totalSlides} Slayt</span>
+                    </button>
+                    <button type="button" onclick="sendPresentationCommand('nextSlide')" class="px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-sm cursor-pointer shadow-lg hover:shadow-orange-500/30 active:scale-95 flex items-center gap-2 ring-2 ring-orange-400/30 transition-all" title="Sonraki Slayt (Sağ Ok / Boşluk)">
+                        <span>Sonraki</span> <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
+                    </button>
+                ` : `
+                    <button type="button" onclick="changePresentationSlide(-1)" class="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs sm:text-sm border border-slate-600 hover:border-amber-400 cursor-pointer shadow-md active:scale-95 flex items-center gap-2 transition-all ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}" title="Önceki Slayt">
+                        <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i> <span>Önceki</span>
+                    </button>
+                    <button type="button" onclick="toggleStandardPresentationDrawer()" class="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-slate-800/95 text-amber-300 hover:bg-slate-700 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 shadow-inner flex items-center gap-2 cursor-pointer transition-all" title="Bölümleri / Slayt Listesini Göster">
+                        <i class="fa-solid fa-list-ol text-amber-400 text-sm sm:text-base"></i> <span>Slayt ${currentSlide} / ${totalSlides}</span>
+                    </button>
+                    <button type="button" onclick="changePresentationSlide(1)" class="px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-sm cursor-pointer shadow-lg hover:shadow-orange-500/30 active:scale-95 flex items-center gap-2 ring-2 ring-orange-400/30 transition-all ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}" title="Sonraki Slayt">
+                        <span>Sonraki</span> <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
+                    </button>
+                `}
+            </div>
+
+            <div class="flex items-center gap-2 sm:gap-2.5">
+                <button type="button" onclick="${isHtmlEmbed ? "sendPresentationCommand('toggleDrawer')" : "toggleStandardPresentationDrawer()"}" class="px-3.5 py-2 sm:px-4 sm:py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 flex items-center gap-2 cursor-pointer shadow-sm transition-all" title="Ünite Rotaları ve Bölümleri Göster">
+                    <i class="fa-solid fa-compass text-amber-400 text-sm sm:text-base"></i> <span class="hidden sm:inline">Ünite Rotaları</span>
+                </button>
+                ${isWebUrl ? ` `
                     <button type="button" onclick="togglePresentationViewMode()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer">
                         <i class="fa-solid ${viewMode === 'embed' ? 'fa-table-cells' : 'fa-globe'}"></i>
                         <span class="hidden md:inline">${viewMode === 'embed' ? 'Slayt Modu' : 'Web Önizleme'}</span>
@@ -13720,6 +13719,95 @@ function changePresentationSlide(delta) {
     }
 }
 
+
+function toggleStandardPresentationDrawer() {
+    let drawer = document.getElementById("standard-presentation-drawer");
+    if (!drawer) {
+        drawer = document.createElement("div");
+        drawer.id = "standard-presentation-drawer";
+        drawer.className = "fixed inset-0 z-[10000] bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-4 sm:p-8 animate-in fade-in duration-200";
+        drawer.onclick = function(e) {
+            if (e.target === drawer) toggleStandardPresentationDrawer();
+        };
+        document.body.appendChild(drawer);
+    }
+    
+    if (!drawer.classList.contains("hidden") && drawer.style.display !== "none" && drawer.innerHTML.trim().length > 0) {
+        drawer.style.display = "none";
+        drawer.classList.add("hidden");
+        return;
+    }
+
+    const state = presentationModalState;
+    if (!state || !state.slides || state.slides.length === 0) return;
+
+    const cardsHtml = state.slides.map((s, idx) => {
+        const sNum = idx + 1;
+        const isCurrent = sNum === state.currentSlide;
+        const sTitle = s.title || ("Slayt " + sNum);
+        const sUnit = s.unitName || (state.item && state.item.unit) || "Ders Sunumu";
+        const sBadge = s.badge || ("BÖLÜM " + sNum);
+        return `
+            <div onclick="goToPresentationSlide(${sNum}); toggleStandardPresentationDrawer();" class="p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all flex flex-col justify-between gap-3 ${isCurrent ? 'bg-amber-950/40 border-amber-400 ring-2 ring-amber-400/50 shadow-lg' : 'bg-slate-900/90 border-slate-800 hover:border-orange-500 hover:bg-slate-800'}">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full ${isCurrent ? 'bg-amber-400 text-slate-950' : 'bg-slate-800 text-amber-300'}">SLAYT ${String(sNum).padStart(2, '0')}</span>
+                    <span class="text-[11px] font-bold text-slate-400">${sBadge}</span>
+                </div>
+                <div>
+                    <h4 class="text-sm sm:text-base font-black text-white line-clamp-2">${sTitle}</h4>
+                    <p class="text-xs text-slate-400 mt-1 line-clamp-1">${sUnit}</p>
+                </div>
+                <div class="flex items-center justify-between pt-2 border-t border-slate-800/80 text-xs font-bold ${isCurrent ? 'text-amber-300' : 'text-slate-400'}">
+                    <span>${isCurrent ? '▶ Aktif Slayt' : 'Git'}</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    drawer.innerHTML = `
+        <div class="w-full max-w-4xl max-h-[85vh] bg-slate-900 border border-slate-800 rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200">
+            <div class="p-5 sm:p-6 border-b border-slate-800 flex items-center justify-between bg-slate-950/60">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg font-black border border-amber-400/30">
+                        <i class="fa-solid fa-compass"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base sm:text-lg font-black text-white">Ünite Öğrenme Rotaları & Bölümler</h3>
+                        <p class="text-xs text-slate-400">Toplam ${state.slides.length} Slayt • İstediğiniz bölüme doğrudan tıklayabilirsiniz</p>
+                    </div>
+                </div>
+                <button type="button" onclick="toggleStandardPresentationDrawer()" class="w-9 h-9 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 sm:p-6 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 flex-1">
+                ${cardsHtml}
+            </div>
+        </div>
+    `;
+
+    drawer.style.display = "flex";
+    drawer.classList.remove("hidden");
+}
+
+// Global slide sync listener
+if (typeof window !== 'undefined' && !window._rotaliSlideSyncAttached) {
+    window._rotaliSlideSyncAttached = true;
+    window.addEventListener('message', (e) => {
+        if (e.data && e.data.type === 'ROTALI_SLIDE_UPDATE') {
+            if (typeof presentationModalState !== 'undefined' && presentationModalState) {
+                if (typeof e.data.currentSlide === 'number') presentationModalState.currentSlide = e.data.currentSlide;
+                if (typeof e.data.totalSlides === 'number') presentationModalState.totalSlides = e.data.totalSlides;
+            }
+            const topCounter = document.getElementById('presentation-top-counter');
+            if (topCounter && e.data.currentSlide && e.data.totalSlides) {
+                topCounter.innerText = `Slayt ${e.data.currentSlide} / ${e.data.totalSlides}`;
+            }
+        }
+    });
+}
+
 function goToPresentationSlide(num) {
     if (num >= 1 && num <= presentationModalState.totalSlides) {
         presentationModalState.currentSlide = num;
@@ -13755,7 +13843,9 @@ function togglePresentationNativeFullscreen() {
     }
 }
 
-function closeFullScreenPresentationModal() {
+function closeFullScreenPresentationModal() {
+    const stdDrawer = document.getElementById("standard-presentation-drawer");
+    if (stdDrawer) { stdDrawer.remove(); }
     if (document.fullscreenElement) {
         try { document.exitFullscreen().catch(() => {}); } catch(e) {}
     }
