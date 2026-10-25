@@ -1,5 +1,13 @@
 const fs = require('fs');
 const path = require('path');
+let generateTestCoverSvg;
+try {
+  generateTestCoverSvg = require('./cover-generator.js').generateTestCoverSvg;
+} catch (e1) {
+  try {
+    generateTestCoverSvg = require('../scripts/cover-generator.js').generateTestCoverSvg;
+  } catch (e2) {}
+}
 let buildInteractiveTestHtml, generateSlug;
 try {
   const tg = require('./test-generator.js');
@@ -112,7 +120,7 @@ module.exports = async (req, res) => {
 
     // 1. İnteraktif HTML Kodunu Üret
     const htmlContent = buildInteractiveTestHtml({
-      title: finalTitle,
+      title: displayTitle || finalTitle,
       grade: cleanGrade,
       unit: unit,
       targetSection: cleanSection,
@@ -176,7 +184,7 @@ module.exports = async (req, res) => {
         "meb maarif modeli"
       ],
       visibility: "public",
-      downloadCount: `📝 ${questions.length} Soru`,
+      downloadCount: `📝 ${questions.length} Soru • Test-${testNumber}`,\n      testNumber: testNumber,\n      questionCount: questions.length,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };

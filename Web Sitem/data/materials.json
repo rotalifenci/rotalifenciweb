@@ -4,14 +4,14 @@
     "grade": "5",
     "category": "denemeler",
     "targetSection": "1",
-    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı",
+    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Sınavı - 1 (30 Soru)",
     "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu açık uçlu klasik sınavı. Cevap anahtarlı ve puanlama rubrikli.",
     "fileName": "5-sinif-1-unite-gunes-dunya-ve-ay-acik-uclu-klasik-sinavi.html",
     "fileUrl": "testler/5-sinif-1-unite-gunes-dunya-ve-ay-acik-uclu-klasik-sinavi.html",
-    "imageUrl": "assets/test-kapak-5.svg",
-    "kapakResmi": "assets/test-kapak-5.svg",
-    "cover": "assets/test-kapak-5.svg",
+    "imageUrl": "assets/covers/5-1-yaprak-testi-1.jpg",
+    "kapakResmi": "assets/covers/5-1-yaprak-testi-1.jpg",
+    "cover": "assets/covers/5-1-yaprak-testi-1.jpg",
     "format": "AÇIK UÇLU SINAV",
     "hasBlob": false,
     "tags": [
@@ -29,7 +29,7 @@
       "meb maarif modeli"
     ],
     "visibility": "public",
-    "downloadCount": "📝 30 Soru",
+    "downloadCount": "📝 30 Soru • Test-1",
     "createdAt": "2026-10-24T22:36:31.044Z",
     "updatedAt": "2026-10-24T22:36:31.044Z"
   },

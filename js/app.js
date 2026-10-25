@@ -1716,7 +1716,21 @@ async function extractCoverFromPdfSource(source) {
     }
 }
 
-function resolveMaterialCover(item) {
+function resolveMaterialCover(item) {
+    if (!item) return "assets/kapak-5.jpg";
+
+    const testTitleLower = String(item.title || "").toLowerCase();
+    const testUnitLower = String(item.unit || "").toLowerCase();
+    const testCatLower = String(item.category || "").toLowerCase();
+    const testFmtLower = String(item.format || "").toLowerCase();
+    const testGradeStr = String(item.grade || "5").replace(/^grade-/, "").trim();
+
+    // 🌟 5. Sınıf 1. Ünite Yaprak Test & Açık Uçlu Sınavı Master 3D Kapağı
+    if ((testCatLower === "soru-bankasi" || testCatLower === "denemeler" || testFmtLower.includes("test") || testFmtLower.includes("sınav") || testFmtLower.includes("sinav") || (item.fileUrl && item.fileUrl.includes("testler/")))) {
+        if (testGradeStr === "5" && (item.targetSection === "1" || testUnitLower.includes("güneş") || testUnitLower.includes("gunes") || testTitleLower.includes("güneş") || testTitleLower.includes("gunes"))) {
+            return "assets/covers/5-1-yaprak-testi-1.jpg";
+        }
+    }
     if (!item) return "assets/kapak-5.jpg";
     if (typeof window !== "undefined" && window._pdfThumbCache && item.id && window._pdfThumbCache[item.id]) {
         return window._pdfThumbCache[item.id];
@@ -2106,6 +2120,13 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                     <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                     <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                     <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                     <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                 </div>
@@ -2742,6 +2763,13 @@ function renderHomeRecentMaterialsSection() {
                                 <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                 <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                 <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                 <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                 <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                             </div>
@@ -2908,6 +2936,13 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                             <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                             <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                             <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                             <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                         </div>
@@ -4644,6 +4679,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                             <img src="${cover}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                             <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                             <img src="${cover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                         </div>
@@ -4770,6 +4812,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                             <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                                             <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                                             <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                                             <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                                         </div>
@@ -4866,6 +4915,13 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                                 <img src="${coverImg}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                                 <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                                 <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                                 <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
@@ -5448,6 +5504,13 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                                     <img src="${itemCover}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                                     <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                                     <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                                     <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                     </div>
@@ -5619,6 +5682,13 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             <!-- Ambiyans arka plan (Siyah bar yok, alani tam kaplar) -->
                                             <img src="${coverImg}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
+                                <!-- Soru Sayısı ve Test Numarası Rozeti -->
+                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
+                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
+                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
+                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
+                                    </div>
+                                ` : ''}
                                             <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                             <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>

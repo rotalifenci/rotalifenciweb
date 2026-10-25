@@ -1258,7 +1258,20 @@ document.addEventListener('DOMContentLoaded', () => {
     pubSection.value = curSectionNum;
 
     const unitShortName = curUnitName.replace(/^[0-9]+\.\s*Ünite:\s*/i, '');
-    pubTitle.value = `${curGrade}. Sınıf ${curSectionNum}. Ünite: ${unitShortName} ${examTypeLabel}`;
+    // Kaçıncı test olduğunu otomatik hesapla
+    let nextTestNum = 1;
+    try {
+      const localMats = JSON.parse(localStorage.getItem('rotali_custom_materials') || '[]');
+      const matches = localMats.filter(m => 
+        String(m.grade || '').replace(/[^0-9]/g, '') === String(curGrade) &&
+        String(m.targetSection || '1').replace(/[^0-9]/g, '') === String(curSectionNum) &&
+        (m.category === 'soru-bankasi' || m.category === 'denemeler' || String(m.format || '').includes('TEST') || String(m.format || '').includes('SINAV'))
+      );
+      nextTestNum = matches.length + 1;
+    } catch(e) {}
+
+    const qCount = currentQuestions.length;
+    pubTitle.value = `${curGrade}. Sınıf ${curSectionNum}. Ünite: ${unitShortName} ${examTypeLabel} - ${nextTestNum} (${qCount} Soru)`;
     pubDesc.value = `${curGrade}. Sınıf Fen Bilimleri ${curUnitName} için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.`;
 
     // Arayüz adımlarını sıfırla
