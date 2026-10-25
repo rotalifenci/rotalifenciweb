@@ -1,595 +1,537 @@
-// Rotalı Fenci MEB Maarif Modeli 5, 6, 7 ve 8. Sınıf Fen Bilimleri Müfredat Veritabanı
-// Çevrimdışı ve Sıfır Gecikmeli Doğrudan Erişim
-const ALL_CURRICULUM = {
+/**
+ * Rotalı Fenci - MEB Maarif Modeli Fen Bilimleri Müfredat Veritabanı
+ * 5, 6, 7 ve 8. Sınıf Üniteleri ve Alt Başlıkları (Konu Numaralandırmaları)
+ */
+
+const MEB_CURRICULUM = {
   "5": {
-    "grade": "5",
-    "subject": "Fen Bilimleri",
-    "units": [
+    grade: "5",
+    subject: "Fen Bilimleri",
+    units: [
       {
-        "id": "unit1",
-        "name": "1. Ünite: Güneş, Dünya ve Ay",
-        "icon": "☀️",
-        "outcomes": [
+        id: "unit1",
+        num: 1,
+        name: "1. Ünite: Güneş, Dünya ve Ay",
+        icon: "☀️",
+        gradient: "from-amber-500 via-orange-500 to-red-600",
+        subtopics: [
           {
-            "id": "1.1",
-            "text": "Güneş ve Ay'ın geometrik şeklini ve temel özelliklerini açıklar."
+            num: 1,
+            title: "Güneş'in Yapısı ve Özellikleri",
+            keywords: ["güneş'in yapısı", "güneşin yapısı", "güneş'in özellikleri", "güneşin özellikleri", "güneş nedir", "katman", "fotosfer", "çekirdek", "taç", "leke", "sunspot", "plazma", "sıcaklık", "büyüklük", "5.1.4"]
           },
           {
-            "id": "1.2",
-            "text": "Ay'ın dönme ve dolanma hareketlerini ile ana/ara evrelerini model üzerinde gösterir."
+            num: 2,
+            title: "Ay'ın Yapısı ve Özellikleri",
+            keywords: ["ay'ın yapısı", "ayın yapısı", "ay'ın özellikleri", "ayın özellikleri", "krater", "atmosfer", "toz", "yerçekimi", "apollon", "kayaç", "meteor"]
           },
           {
-            "id": "1.3",
-            "text": "Güneş, Dünya ve Ay'ın birbirlerine göre hareketlerini ve boyut ilişkilerini kavrar."
+            num: 3,
+            title: "Dünya'nın Şekli ve Hareketleri",
+            keywords: ["dünya'nın şekli", "dünyanın şekli", "dünya'nın hareketleri", "dünyanın hareketleri", "dönme", "dolanma", "gece gündüz", "eksen", "yıllık", "24 saat", "365 gün", "5.1.3", "katmanları"]
+          },
+          {
+            num: 4,
+            title: "Ay'ın Hareketleri ve Evreleri",
+            keywords: ["ay'ın hareketleri", "ayın hareketleri", "ay'ın evreleri", "ayın evreleri", "evre", "yeni ay", "ilk dördün", "dolunay", "son dördün", "hilal", "şişkin ay", "döngü", "takvim", "29 gün", "27 gün"]
           }
         ]
       },
       {
-        "id": "unit2",
-        "name": "2. Ünite: Canlılar Dünyası",
-        "icon": "🌱",
-        "outcomes": [
+        id: "unit2",
+        num: 2,
+        name: "2. Ünite: Canlılar Dünyası",
+        icon: "🌱",
+        gradient: "from-emerald-500 via-teal-600 to-green-700",
+        subtopics: [
           {
-            "id": "2.1",
-            "text": "Mikroskobik canlılar, mantarlar, bitkiler ve hayvanlar olmak üzere canlıları benzerlik ve farklılıklarına göre sınıflandırır."
+            num: 1,
+            title: "Canlıların Sınıflandırılması ve Mikroskobik Canlılar",
+            keywords: ["sınıflandırma", "mikroskop", "mikroskobik", "bakteri", "amip", "öglena", "paramesyum"]
           },
           {
-            "id": "2.2",
-            "text": "Mikroskobik canlıların yararlı ve zararlı etkilerini ayırt eder."
+            num: 2,
+            title: "Mantarlar",
+            keywords: ["mantar", "küf", "şapkalı", "maya", "parazit mantar", "mantarlar"]
           },
           {
-            "id": "2.3",
-            "text": "Çiçekli ve çiçeksiz bitkiler ile omurgalı ve omurgasız hayvanları örneklerle açıklar."
+            num: 3,
+            title: "Bitkiler",
+            keywords: ["bitki", "bitkiler", "çiçekli bitki", "çiçeksiz bitki", "kök", "gövde", "yaprak", "çiçek", "fotosentez"]
+          },
+          {
+            num: 4,
+            title: "Hayvanlar",
+            keywords: ["hayvan", "hayvanlar", "omurgalı", "omurgasız", "memeli", "kuş", "sürüngen", "kurbağa", "balık"]
           }
         ]
       },
       {
-        "id": "unit3",
-        "name": "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
-        "icon": "⚙️",
-        "outcomes": [
+        id: "unit3",
+        num: 3,
+        name: "3. Ünite: Kuvvetin Ölçülmesi ve Sürtünme",
+        icon: "⚖️",
+        gradient: "from-blue-500 via-indigo-600 to-cyan-600",
+        subtopics: [
           {
-            "id": "3.1",
-            "text": "Kuvvetin büyüklüğünü dinamometre ile ölçer ve birimini (Newton) ifade eder."
+            num: 1,
+            title: "Kuvvetin Ölçülmesi (Dinamometre)",
+            keywords: ["dinamometre", "kuvvetin ölçülmesi", "newton", "yay", "esneklik", "ölçüm"]
           },
           {
-            "id": "3.2",
-            "text": "Basit bir dinamometre modeli tasarlar."
+            num: 2,
+            title: "Sürtünme Kuvveti (Pürüzlü ve Kaygan Yüzeyler)",
+            keywords: ["sürtünme", "sürtünme kuvveti", "pürüzlü", "kaygan", "yüzey", "hareketi zorlaştıran"]
           },
           {
-            "id": "3.3",
-            "text": "Sürtünme kuvvetinin özelliklerini, günlük yaşamdaki olumlu/olumsuz etkilerini ve sürtünmeyi artırma/azaltma yöntemlerini inceler."
+            num: 3,
+            title: "Hava ve Su Direnci",
+            keywords: ["hava direnci", "su direnci", "paraşüt", "akışkan", "direnç", "aerodinamik"]
           }
         ]
       },
       {
-        "id": "unit4",
-        "name": "4. Ünite: Madde ve Değişim",
-        "icon": "🧪",
-        "outcomes": [
+        id: "unit4",
+        num: 4,
+        name: "4. Ünite: Madde ve Değişim",
+        icon: "🧪",
+        gradient: "from-purple-500 via-indigo-600 to-violet-700",
+        subtopics: [
           {
-            "id": "4.1",
-            "text": "Erime, donma, buharlaşma, yoğuşma, süblimleşme ve kırağılaşma olaylarını açıklar."
+            num: 1,
+            title: "Maddenin Hâl Değişimi",
+            keywords: ["hâl değişimi", "hal değişimi", "erime", "donma", "buharlaşma", "yoğuşma", "kaynama", "süblimleşme", "kırağılaşma"]
           },
           {
-            "id": "4.2",
-            "text": "Erime, donma ve kaynama noktalarının saf maddeler için ayırt edici olduğunu deneylerle gösterir."
+            num: 2,
+            title: "Maddenin Ayırt Edici Özellikleri",
+            keywords: ["ayırt edici", "erime noktası", "donma noktası", "kaynama noktası"]
           },
           {
-            "id": "4.3",
-            "text": "Isı ve sıcaklık kavramları arasındaki farkı açıklar."
+            num: 3,
+            title: "Isı ve Sıcaklık",
+            keywords: ["ısı", "sıcaklık", "termometre", "kalori", "joule", "ısı alışverişi"]
           },
           {
-            "id": "4.4",
-            "text": "Isınma ve soğuma sonucu maddelerde genleşme ve büzülme olaylarını açıklar."
+            num: 4,
+            title: "Isı Maddeleri Etkiler (Genleşme ve Büzülme)",
+            keywords: ["genleşme", "büzülme", "termostat", "gravzant halkası", "hacim artışı"]
           }
         ]
       },
       {
-        "id": "unit5",
-        "name": "5. Ünite: Işığın Yayılması",
-        "icon": "💡",
-        "outcomes": [
+        id: "unit5",
+        num: 5,
+        name: "5. Ünite: Işığın Yayılması",
+        icon: "💡",
+        gradient: "from-amber-400 via-yellow-500 to-orange-500",
+        subtopics: [
           {
-            "id": "5.1",
-            "text": "Işığın doğrusal yayıldığını gösterir."
+            num: 1,
+            title: "Işığın Yayılması",
+            keywords: ["ışığın yayılması", "isigin yayilmasi", "doğrusal", "ışık ışını", "ışık kaynağı"]
           },
           {
-            "id": "5.2",
-            "text": "Düzgün ve dağınık yansımayı karşılaştırır, yansıma kanunlarını uygular."
+            num: 2,
+            title: "Işığın Yansıması",
+            keywords: ["yansıma", "yansima", "düzgün yansıma", "dağınık yansıma", "gelen ışın", "yansıyan ışın", "normal"]
           },
           {
-            "id": "5.3",
-            "text": "Maddeleri saydam, yarı saydam ve opak olarak sınıflandırır."
+            num: 3,
+            title: "Işığın Maddeyle Karşılaşması",
+            keywords: ["saydam", "yarı saydam", "opak", "ışık geçirgenliği"]
           },
           {
-            "id": "5.4",
-            "text": "Tam gölgenin nasıl oluştuğunu ve gölge boyutunun neye göre değiştiğini modeller."
+            num: 4,
+            title: "Tam Gölge",
+            keywords: ["tam gölge", "gölge oluşumu", "gölge boyu", "perde"]
           }
         ]
       },
       {
-        "id": "unit6",
-        "name": "6. Ünite: İnsan ve Çevre",
-        "icon": "🌍",
-        "outcomes": [
+        id: "unit6",
+        num: 6,
+        name: "6. Ünite: İnsan ve Çevre",
+        icon: "🌍",
+        gradient: "from-green-600 via-emerald-600 to-teal-700",
+        subtopics: [
           {
-            "id": "6.1",
-            "text": "Biyoçeşitliliğin önemini ve biyoçeşitliliği tehdit eden faktörleri değerlendirir."
+            num: 1,
+            title: "Biyoçeşitlilik",
+            keywords: ["biyoçeşitlilik", "ekosistem", "nesli tükenen", "endemik", "doğal yaşam"]
           },
           {
-            "id": "6.2",
-            "text": "Çevre kirliliğinin nedenlerini ve çözüm yollarını tartışır."
+            num: 2,
+            title: "İnsan ve Çevre İlişkisi",
+            keywords: ["çevre kirliliği", "hava kirliliği", "su kirliliği", "toprak kirliliği", "geri dönüşüm"]
           },
           {
-            "id": "6.3",
-            "text": "Deprem, heyelan, sel, volkanik patlama ve kasırga gibi yıkıcı doğa olaylarından korunma yöntemlerini açıklar."
+            num: 3,
+            title: "Yıkıcı Doğa Olayları",
+            keywords: ["deprem", "heyelan", "sel", "volkan", "yanardağ", "fırtına", "kasırga", "doğal afet"]
           }
         ]
       },
       {
-        "id": "unit7",
-        "name": "7. Ünite: Elektrik Devre Elemanları",
-        "icon": "⚡",
-        "outcomes": [
+        id: "unit7",
+        num: 7,
+        name: "7. Ünite: Elektrik Devre Elemanları",
+        icon: "⚡",
+        gradient: "from-cyan-500 via-blue-600 to-indigo-700",
+        subtopics: [
           {
-            "id": "7.1",
-            "text": "Basit elektrik devresi elemanlarını (pil, ampul, anahtar, bağlantı kablosu) sembolleriyle çizer ve devre şeması oluşturur."
+            num: 1,
+            title: "Devre Elemanlarının Sembollerle Gösterimi",
+            keywords: ["devre elemanları", "sembol", "pil", "anahtar", "ampul", "bağlantı kablosu", "şema"]
           },
           {
-            "id": "7.2",
-            "text": "Devredeki ampul sayısı ve pil sayısının ampul parlaklığı üzerindeki etkisini bağımsız, bağımlı ve kontrol edilen değişkenler üzerinden test eder."
+            num: 2,
+            title: "Basit Devrede Lamba Parlaklığını Etkileyen Değişkenler",
+            keywords: ["lamba parlaklığı", "ampul parlaklığı", "bağımsız değişken", "bağımlı değişken", "kontrol edilen değişken", "pil sayısı", "ampul sayısı"]
           }
         ]
       }
     ]
   },
   "6": {
-    "grade": "6",
-    "subject": "Fen Bilimleri",
-    "units": [
+    grade: "6",
+    subject: "Fen Bilimleri",
+    units: [
       {
-        "id": "unit1",
-        "name": "1. Ünite: Güneş Sistemi ve Tutulmalar",
-        "icon": "🪐",
-        "outcomes": [
-          {
-            "id": "1.1",
-            "text": "Güneş Sistemi'ndeki gezegenleri birbirleri ile karşılaştırır (Güneş'e yakınlık, büyüklük, karasal/gazsal yapı)."
-          },
-          {
-            "id": "1.2",
-            "text": "Güneş ve Ay tutulmasını temsil eden bir model oluşturur ve açıklar."
-          }
+        id: "unit1",
+        num: 1,
+        name: "1. Ünite: Güneş Sistemi ve Tutulmalar",
+        icon: "🪐",
+        gradient: "from-orange-500 via-amber-600 to-red-600",
+        subtopics: [
+          { num: 1, title: "Güneş Sistemi ve Gezegenler", keywords: ["gezegen", "iç gezegen", "dış gezegen", "merkür", "venüs", "dünya", "mars", "jüpiter", "satürn", "uranüs", "neptün"] },
+          { num: 2, title: "Meteor, Gök Taşı ve Asteroitler", keywords: ["meteorit", "meteor", "gök taşı", "asteroit", "asteroit kuşağı"] },
+          { num: 3, title: "Güneş Tutulması", keywords: ["güneş tutulması", "ay yeni ay", "ışık gölge"] },
+          { num: 4, title: "Ay Tutulması", keywords: ["ay tutulması", "dolunay", "dünya gölgesi"] }
         ]
       },
       {
-        "id": "unit2",
-        "name": "2. Ünite: Vücudumuzdaki Sistemler",
-        "icon": "🫀",
-        "outcomes": [
-          {
-            "id": "2.1",
-            "text": "Destek ve hareket sistemine ait yapı ve organları (kemik, eklem, kas) açıklar."
-          },
-          {
-            "id": "2.2",
-            "text": "Sindirim sistemini oluşturan yapı ve organların görevlerini, mekanik ve kimyasal sindirimi açıklar."
-          },
-          {
-            "id": "2.3",
-            "text": "Dolaşım sistemini (kalp, damarlar, kan, büyük ve küçük kan dolaşımı, kan grupları) açıklar."
-          },
-          {
-            "id": "2.4",
-            "text": "Solunum sistemini oluşturan yapı ve organların görevlerini açıklar."
-          },
-          {
-            "id": "2.5",
-            "text": "Boşaltım sistemini oluşturan yapı ve organların görevlerini açıklar."
-          }
+        id: "unit2",
+        num: 2,
+        name: "2. Ünite: Vücudumuzdaki Sistemler",
+        icon: "🫀",
+        gradient: "from-rose-500 via-red-600 to-pink-600",
+        subtopics: [
+          { num: 1, title: "Destek ve Hareket Sistemi", keywords: ["kemik", "eklem", "kas", "çizgili kas", "düz kas", "kıkırdak"] },
+          { num: 2, title: "Sindirim Sistemi", keywords: ["sindirim", "mekanik sindirim", "kimyasal sindirim", "ağız", "mide", "ince bağırsak", "enzim"] },
+          { num: 3, title: "Dolaşım Sistemi", keywords: ["kalp", "kan", "damar", "büyük dolaşım", "küçük dolaşım", "kan grupları", "alyuvar", "akyuvar"] },
+          { num: 4, title: "Solunum Sistemi", keywords: ["akciğer", "soluk alıp verme", "diyafram", "bronş", "alveol", "oksijen"] },
+          { num: 5, title: "Boşaltım Sistemi", keywords: ["böbrek", "nefron", "üreter", "idrar kesesi", "boşaltım"] }
         ]
       },
       {
-        "id": "unit3",
-        "name": "3. Ünite: Kuvvet ve Hareket",
-        "icon": "🏹",
-        "outcomes": [
-          {
-            "id": "3.1",
-            "text": "Bir cisme etki eden birden fazla kuvveti deneyerek keşfeder (Bileşke kuvvet, dengelenmiş ve dengelenmemiş kuvvetler)."
-          },
-          {
-            "id": "3.2",
-            "text": "Sabit süratli hareketlinin konum-zaman ve sürat-zaman grafiklerini çizer ve yorumlar."
-          }
+        id: "unit3",
+        num: 3,
+        name: "3. Ünite: Kuvvet ve Hareket",
+        icon: "🏎️",
+        gradient: "from-blue-600 via-indigo-600 to-cyan-600",
+        subtopics: [
+          { num: 1, title: "Bileşke Kuvvet (Net Kuvvet)", keywords: ["bileşke kuvvet", "net kuvvet", "dengelenmiş kuvvet", "dengelenmemiş kuvvet"] },
+          { num: 2, title: "Sabit Süratli Hareket", keywords: ["sürat", "yol zaman grafiği", "alınan yol", "geçen zaman"] }
         ]
       },
       {
-        "id": "unit4",
-        "name": "4. Ünite: Madde ve Isı",
-        "icon": "🔥",
-        "outcomes": [
-          {
-            "id": "4.1",
-            "text": "Maddelerin tanecikli, boşluklu ve hareketli yapıda olduğunu açıklar."
-          },
-          {
-            "id": "4.2",
-            "text": "Yoğunluğu tanımlar, saf maddelerin yoğunluğunu hesaplar ve ayırt edici özellik olduğunu kavrar."
-          },
-          {
-            "id": "4.3",
-            "text": "Isı iletimi, ısı yalıtımı ve yalıtım malzemelerinin önemini günlük yaşam örnekleriyle açıklar."
-          },
-          {
-            "id": "4.4",
-            "text": "Katı, sıvı ve gaz yakıtları sınıflandırarak çevreye etkilerini değerlendirir."
-          }
+        id: "unit4",
+        num: 4,
+        name: "4. Ünite: Madde ve Isı",
+        icon: "🔥",
+        gradient: "from-amber-600 via-red-600 to-yellow-600",
+        subtopics: [
+          { num: 1, title: "Maddenin Tanecikli Yapısı", keywords: ["tanecik", "boşluklu yapı", "öteleme", "dönme", "titreşim"] },
+          { num: 2, title: "Yoğunluk", keywords: ["yoğunluk", "özkütle", "kütle hacim grafiği", "d=m/v"] },
+          { num: 3, title: "Isı İletimi ve Yalıtım Malzemeleri", keywords: ["ısı iletkeni", "ısı yalıtkanı", "yalıtım malzemesi", "strafor", "cam yünü"] },
+          { num: 4, title: "Yakıtlar ve Çevreye Etkileri", keywords: ["katı yakıt", "sıvı yakıt", "gaz yakıt", "kömür", "petrol", "soba zehirlenmesi"] }
         ]
       },
       {
-        "id": "unit5",
-        "name": "5. Ünite: Ses ve Özellikleri",
-        "icon": "🔊",
-        "outcomes": [
-          {
-            "id": "5.1",
-            "text": "Sesin farklı ortamlarda (katı, sıvı, gaz) farklı yayıldığını ve farklı duyulduğunu açıklar."
-          },
-          {
-            "id": "5.2",
-            "text": "Sesin süratinin ortamın yoğunluğuna ve sıcaklığına bağlı olduğunu kavrar, ışık süratiyle kıyaslar."
-          },
-          {
-            "id": "5.3",
-            "text": "Sesin maddeyle etkileşimini (yansıma, iletim, soğurulma, yankı) ve ses yalıtımını inceler."
-          }
+        id: "unit5",
+        num: 5,
+        name: "5. Ünite: Ses ve Özellikleri",
+        icon: "📢",
+        gradient: "from-purple-600 via-violet-600 to-indigo-600",
+        subtopics: [
+          { num: 1, title: "Sesin Yayılması", keywords: ["sesin yayılması", "maddesel ortam", "katı sıvı gaz"] },
+          { num: 2, title: "Sesin Farklı Ortamlarda Farklı Duyulması", keywords: ["farklı duyulması", "ses kaynağı"] },
+          { num: 3, title: "Sesin Sürati", keywords: ["sesin sürati", "ışık sürati", "yankı"] },
+          { num: 4, title: "Sesin Maddeyle Etkileşmesi ve Yalıtım", keywords: ["ses yalıtımı", "akustik", "sesin yansıması", "sesin soğrulması"] }
         ]
       },
       {
-        "id": "unit6",
-        "name": "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
-        "icon": "🧠",
-        "outcomes": [
-          {
-            "id": "6.1",
-            "text": "Denetleyici ve düzenleyici sistemleri (sinir sistemi ve iç salgı bezleri) açıklar."
-          },
-          {
-            "id": "6.2",
-            "text": "Duyu organlarının (göz, kulak, burun, dil, deri) yapı ve işleyişini açıklar."
-          },
-          {
-            "id": "6.3",
-            "text": "Sistemlerin sağlığını koruma, organ bağışı ve ilk yardımın önemini değerlendirir."
-          }
+        id: "unit6",
+        num: 6,
+        name: "6. Ünite: Vücudumuzdaki Sistemler ve Sağlığı",
+        icon: "🧠",
+        gradient: "from-pink-600 via-rose-600 to-purple-600",
+        subtopics: [
+          { num: 1, title: "Denetleyici ve Düzenleyici Sistemler", keywords: ["beyin", "beyincik", "omurilik", "omurilik soğanı", "iç salgı bezleri", "refleks", "hipofiz", "tiroit"] },
+          { num: 2, title: "Duyu Organları", keywords: ["göz", "kulak", "burun", "dil", "deri", "görme", "işitme"] },
+          { num: 3, title: "Sistemlerin Sağlığı ve İlk Yardım", keywords: ["sağlık", "organ bağışı", "zararlı alışkanlıklar", "ilk yardım"] }
         ]
       },
       {
-        "id": "unit7",
-        "name": "7. Ünite: Elektriğin İletimi",
-        "icon": "🔌",
-        "outcomes": [
-          {
-            "id": "7.1",
-            "text": "Maddeleri elektriği iletme durumlarına göre iletken ve yalıtkan olarak sınıflandırır."
-          },
-          {
-            "id": "7.2",
-            "text": "Bir iletkenin direncinin bağlı olduğu faktörleri (uzunluk, kesit alanı, iletkenin cinsi) test eder."
-          }
+        id: "unit7",
+        num: 7,
+        name: "7. Ünite: Elektriğin İletimi",
+        icon: "🔌",
+        gradient: "from-cyan-600 via-blue-600 to-teal-600",
+        subtopics: [
+          { num: 1, title: "İletken ve Yalıtkan Maddeler", keywords: ["iletken", "yalıtkan", "elektrik iletimi", "tuzlu su", "bakır"] },
+          { num: 2, title: "Elektriksel Direnç ve Bağlı Olduğu Faktörler", keywords: ["elektriksel direnç", "tel uzunluğu", "tel kesiti", "tel cinsi", "reosta"] }
         ]
       }
     ]
   },
   "7": {
-    "grade": "7",
-    "subject": "Fen Bilimleri",
-    "units": [
+    grade: "7",
+    subject: "Fen Bilimleri",
+    units: [
       {
-        "id": "unit1",
-        "name": "1. Ünite: Güneş Sistemi ve Ötesi",
-        "icon": "🔭",
-        "outcomes": [
-          {
-            "id": "1.1",
-            "text": "Uzay araştırmaları, uzay araçları, yapay uydular ve uzay kirliliğini açıklar."
-          },
-          {
-            "id": "1.2",
-            "text": "Teleskobun yapısını ve gök bilimin gelişimindeki önemini açıklar."
-          },
-          {
-            "id": "1.3",
-            "text": "Yıldız, takımyıldız, galaksi (gök ada), kara delik ve evren kavramlarını açıklar."
-          }
+        id: "unit1",
+        num: 1,
+        name: "1. Ünite: Güneş Sistemi ve Ötesi",
+        icon: "🌌",
+        gradient: "from-indigo-600 via-purple-700 to-slate-900",
+        subtopics: [
+          { num: 1, title: "Uzay Araştırmaları ve Teleskoplar", keywords: ["teleskop", "uzay araştırmaları", "uydu", "rasathane", "uzay kirliliği", "hubble", "james webb"] },
+          { num: 2, title: "Güneş Sistemi Ötesi: Yıldızlar ve Takımyıldızlar", keywords: ["yıldız", "bulutsu", "nebula", "süpernova", "karadelik", "takımyıldız", "büyükayı", "kutup yıldızı"] },
+          { num: 3, title: "Galaksiler (Gök Adalar) ve Evren", keywords: ["galaksi", "samanyolu", "andromeda", "evren", "uzay"] }
         ]
       },
       {
-        "id": "unit2",
-        "name": "2. Ünite: Hücre ve Bölünmeler",
-        "icon": "🔬",
-        "outcomes": [
-          {
-            "id": "2.1",
-            "text": "Hayvan ve bitki hücrelerini temel kısımları ve organelleri açısından karşılaştırır."
-          },
-          {
-            "id": "2.2",
-            "text": "Hücre-doku-organ-sistem-organizma ilişkisini kavrar."
-          },
-          {
-            "id": "2.3",
-            "text": "Mitoz bölünmenin evrelerini ve canlılar için önemini açıklar."
-          },
-          {
-            "id": "2.4",
-            "text": "Mayoz bölünmenin evrelerini, önemini ve mitoz ile arasındaki farkları kavrar."
-          }
+        id: "unit2",
+        num: 2,
+        name: "2. Ünite: Hücre ve Bölünmeler",
+        icon: "🔬",
+        gradient: "from-emerald-600 via-teal-600 to-cyan-700",
+        subtopics: [
+          { num: 1, title: "Hücre ve Organeller", keywords: ["hücre", "çekirdek", "sitoplazma", "hücre zarı", "mitokondri", "kloroplast", "ribozom", "bitki hayvan hücresi"] },
+          { num: 2, title: "Mitoz Bölünme", keywords: ["mitoz", "bölünme", "kromozom", "interfaz", "profaz", "metafaz", "anafaz", "telofaz", "vücut hücresi"] },
+          { num: 3, title: "Mayoz Bölünme", keywords: ["mayoz", "üreme hücresi", "sperm", "yumurta", "parça değişimi", "crossing-over", "çeşitlilik"] }
         ]
       },
       {
-        "id": "unit3",
-        "name": "3. Ünite: Kuvvet ve Enerji",
-        "icon": "🏃‍♂️",
-        "outcomes": [
-          {
-            "id": "3.1",
-            "text": "Kütle ve ağırlık kavramlarını karşılaştırır; yer çekimi kuvvetini açıklar."
-          },
-          {
-            "id": "3.2",
-            "text": "Fiziksel anlamda yapılan işi kuvvet ve alınan yol ilişkisiyle tanımlar."
-          },
-          {
-            "id": "3.3",
-            "text": "Kinetik ve potansiyel (çekim ve esneklik) enerji türlerini açıklar."
-          },
-          {
-            "id": "3.4",
-            "text": "Enerjinin korunduğunu, sürtünme kuvvetinin kinetik enerjiyi ısıya dönüştürdüğünü açıklar."
-          }
+        id: "unit3",
+        num: 3,
+        name: "3. Ünite: Kuvvet ve Enerji",
+        icon: "⚡",
+        gradient: "from-cyan-600 via-blue-700 to-indigo-800",
+        subtopics: [
+          { num: 1, title: "Kütle ve Ağırlık İlişkisi", keywords: ["kütle", "ağırlık", "yerçekimi ivmesi", "dinamometre", "terazi", "ay'da ağırlık"] },
+          { num: 2, title: "Fiziksel Anlamda İş", keywords: ["fiziksel iş", "iş", "w=f.x", "kuvvet doğrultusu"] },
+          { num: 3, title: "Kinetik ve Potansiyel Enerji", keywords: ["kinetik enerji", "potansiyel enerji", "çekim potansiyel", "esneklik potansiyel"] },
+          { num: 4, title: "Enerjinin Korunumu ve Dönüşümü", keywords: ["enerji korunumu", "enerji dönüşümü", "sürtünme kuvveti", "ısıya dönüşüm"] }
         ]
       },
       {
-        "id": "unit4",
-        "name": "4. Ünite: Saf Madde ve Karışımlar",
-        "icon": "⚗️",
-        "outcomes": [
-          {
-            "id": "4.1",
-            "text": "Atomun yapısını, temel parçacıklarını (proton, nötron, elektron) ve molekül kavramını açıklar."
-          },
-          {
-            "id": "4.2",
-            "text": "Element ve bileşik kavramlarını sembol ve formülleriyle açıklar."
-          },
-          {
-            "id": "4.3",
-            "text": "Homojen ve heterojen karışımları ayırt eder; çözünme hızını etkileyen faktörleri test eder."
-          },
-          {
-            "id": "4.4",
-            "text": "Karışımları ayırma yöntemlerini (buharlaştırma, damıtma, yoğunluk farkı, mıknatıs vb.) uygular."
-          }
+        id: "unit4",
+        num: 4,
+        name: "4. Ünite: Saf Madde ve Karışımlar",
+        icon: "⚗️",
+        gradient: "from-purple-600 via-fuchsia-600 to-pink-600",
+        subtopics: [
+          { num: 1, title: "Maddenin Tanecikli Yapısı (Atom ve Molekül)", keywords: ["atom", "proton", "nötron", "elektron", "molekül", "democritus", "dalton", "thomson", "rutherford", "bohr"] },
+          { num: 2, title: "Saf Maddeler: Element ve Bileşikler", keywords: ["element", "bileşik", "sembol", "formül", "h2o", "nacl"] },
+          { num: 3, title: "Karışımlar ve Çözünme", keywords: ["karışım", "homojen", "heterojen", "çözelti", "çözücü", "çözünen", "çözünme hızı"] },
+          { num: 4, title: "Karışımların Ayrılması", keywords: ["buharlaştırma", "damıtma", "yoğunluk farkı", "ayırma hunisi", "süzme", "mıknatıs"] }
         ]
       },
       {
-        "id": "unit5",
-        "name": "5. Ünite: Işığın Madde ile Etkileşimi",
-        "icon": "🌈",
-        "outcomes": [
-          {
-            "id": "5.1",
-            "text": "Işığın soğurulmasını, renklerin oluşumunu ve beyaz ışığın prizmada ayrılmasını açıklar."
-          },
-          {
-            "id": "5.2",
-            "text": "Düzlem, çukur ve tümsek aynalarda görüntü özelliklerini ve kullanım alanlarını açıklar."
-          },
-          {
-            "id": "5.3",
-            "text": "Işığın kırılmasını, ortam yoğunluğu ilişkisini ve merceklerin (ince/kalın kenarlı) özelliklerini kavrar."
-          }
+        id: "unit5",
+        num: 5,
+        name: "5. Ünite: Işığın Madde ile Etkileşimi",
+        icon: "🪞",
+        gradient: "from-amber-500 via-orange-600 to-red-600",
+        subtopics: [
+          { num: 1, title: "Işığın Soğrulması ve Renkler", keywords: ["soğrulma", "renkler", "güneş enerjisi", "beyaz ışık", "prizma"] },
+          { num: 2, title: "Aynalar ve Kullanım Alanları", keywords: ["düz ayna", "çukur ayna", "tümsek ayna", "odak noktası", "görüntü özellikleri"] },
+          { num: 3, title: "Işığın Kırılması ve Mercekler", keywords: ["ışığın kırılması", "mercek", "ince kenarlı", "kalın kenarlı", "kırılma indisi"] }
         ]
       },
       {
-        "id": "unit6",
-        "name": "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
-        "icon": "🦋",
-        "outcomes": [
-          {
-            "id": "6.1",
-            "text": "İnsanda üremeyi sağlayan yapı ve organları, döllenme, embriyo ve bebek gelişimini açıklar."
-          },
-          {
-            "id": "6.2",
-            "text": "Hayvanlarda üreme, büyüme ve başkalaşım süreçlerini (kelebek, kurbağa vb.) açıklar."
-          },
-          {
-            "id": "6.3",
-            "text": "Bitkilerde eşeyli ve eşeysiz üreme, tozlaşma, döllenme ve çimlenme şartlarını açıklar."
-          }
+        id: "unit6",
+        num: 6,
+        name: "6. Ünite: Canlılarda Üreme, Büyüme ve Gelişme",
+        icon: "🐣",
+        gradient: "from-emerald-500 via-green-600 to-teal-600",
+        subtopics: [
+          { num: 1, title: "İnsanda Üreme, Büyüme ve Gelişme", keywords: ["insanda üreme", "döllenme", "zigot", "embriyo", "fetüs", "bebek"] },
+          { num: 2, title: "Hayvanlarda Üreme, Büyüme ve Gelişme", keywords: ["başkalaşım", "kurbağa", "kelebek", "doğurarak", "yumurtayla"] },
+          { num: 3, title: "Bitkilerde Üreme, Büyüme ve Gelişme", keywords: ["tozlaşma", "çimlenme", "tohum", "vejetatif üreme"] }
         ]
       },
       {
-        "id": "unit7",
-        "name": "7. Ünite: Elektrik Devreleri",
-        "icon": "💡",
-        "outcomes": [
-          {
-            "id": "7.1",
-            "text": "Seri ve paralel bağlı ampullerden oluşan devreler kurar; ampul parlaklıklarını karşılaştırır."
-          },
-          {
-            "id": "7.2",
-            "text": "Devredeki elektrik akımını (ampermetre), gerilimi (voltmetre) ve Ohm Kanunu'nu (V=I*R) açıklar."
-          }
+        id: "unit7",
+        num: 7,
+        name: "7. Ünite: Elektrik Devreleri",
+        icon: "🔋",
+        gradient: "from-blue-600 via-indigo-600 to-cyan-600",
+        subtopics: [
+          { num: 1, title: "Seri ve Paralel Bağlama", keywords: ["seri bağlama", "paralel bağlama", "devre", "ampul parlaklığı"] },
+          { num: 2, title: "Akım, Gerilim ve Direnç İlişkisi (Ohm Yasası)", keywords: ["akım", "gerilim", "volt", "amper", "ohm", "ampermetre", "voltmetre", "ohm yasası", "v=i.r"] }
         ]
       }
     ]
   },
   "8": {
-    "grade": "8",
-    "subject": "Fen Bilimleri",
-    "units": [
+    grade: "8",
+    subject: "Fen Bilimleri (LGS)",
+    units: [
       {
-        "id": "unit1",
-        "name": "1. Ünite: Mevsimler ve İklim (LGS)",
-        "icon": "🌦️",
-        "outcomes": [
-          {
-            "id": "1.1",
-            "text": "Dünya'nın eksen eğikliği ve Güneş etrafındaki dolanma hareketine bağlı olarak mevsimlerin oluşumunu açıklar."
-          },
-          {
-            "id": "1.2",
-            "text": "İklim ve hava olayları arasındaki farkları açıklar; küresel iklim değişikliklerinin nedenlerini ve sonuçlarını değerlendirir."
-          }
+        id: "unit1",
+        num: 1,
+        name: "1. Ünite: Mevsimler ve İklim",
+        icon: "🌦️",
+        gradient: "from-amber-500 via-sky-600 to-indigo-700",
+        subtopics: [
+          { num: 1, title: "Mevsimlerin Oluşumu", keywords: ["mevsimlerin oluşumu", "eksen eğikliği", "21 haziran", "21 aralık", "21 mart", "23 eylül", "ekinoks", "gün dönümü", "ışığın geliş açısı"] },
+          { num: 2, title: "İklim ve Hava Hareketleri", keywords: ["iklim", "hava hareketleri", "rüzgâr", "yüksek basınç", "alçak basınç", "nem", "yağış", "sera etkisi", "küresel iklim değişikliği"] }
         ]
       },
       {
-        "id": "unit2",
-        "name": "2. Ünite: DNA ve Genetik Kod (LGS)",
-        "icon": "🧬",
-        "outcomes": [
-          {
-            "id": "2.1",
-            "text": "Nükleotid, gen, DNA ve kromozom kavramlarını basitten karmaşığa sıralar ve DNA'nın yapısını açıklar."
-          },
-          {
-            "id": "2.2",
-            "text": "DNA'nın kendini eşlemesini model üzerinde açıklar."
-          },
-          {
-            "id": "2.3",
-            "text": "Kalıtım ile ilgili kavramları (genotip, fenotip, baskın/çekinik gen) ve tek karakter çaprazlamalarını yapar."
-          },
-          {
-            "id": "2.4",
-            "text": "Mutasyon, modifikasyon, adaptasyon, doğal seçilim ve varyasyon kavramlarını örneklerle açıklar."
-          },
-          {
-            "id": "2.5",
-            "text": "Biyoteknoloji uygulamalarını, insanlık için yararlarını ve risklerini değerlendirir."
-          }
+        id: "unit2",
+        num: 2,
+        name: "2. Ünite: DNA ve Genetik Kod",
+        icon: "🧬",
+        gradient: "from-indigo-600 via-purple-600 to-pink-600",
+        subtopics: [
+          { num: 1, title: "DNA ve Genetik Kod", keywords: ["dna", "nükleotid", "gen", "kromozom", "adenin", "timin", "guanin", "sitozin", "dna eşlenmesi"] },
+          { num: 2, title: "Kalıtım", keywords: ["kalıtım", "mendel", "alel", "genotip", "fenotip", "baskın", "çekinik", "saf döl", "melez döl", "çaprazlama", "akraba evliliği"] },
+          { num: 3, title: "Mutasyon ve Modifikasyon", keywords: ["mutasyon", "modifikasyon", "gen yapısı", "gen işleyişi", "van kedisi", "himalaya tavşanı"] },
+          { num: 4, title: "Adaptasyon (Çevreye Uyum)", keywords: ["adaptasyon", "kamuflaj", "doğal seçilim", "varyasyon"] },
+          { num: 5, title: "Biyoteknoloji ve Genetik Mühendisliği", keywords: ["biyoteknoloji", "genetik mühendisliği", "klonlama", "gen aktarımı", "gen tedavisi", "aşı"] }
         ]
       },
       {
-        "id": "unit3",
-        "name": "3. Ünite: Basınç (LGS)",
-        "icon": "📦",
-        "outcomes": [
-          {
-            "id": "3.1",
-            "text": "Katı basıncını etkileyen değişkenleri (kuvvet/ağırlık ve yüzey alanı) deneylerle keşfeder."
-          },
-          {
-            "id": "3.2",
-            "text": "Sıvı basıncını etkileyen değişkenleri (sıvı derinliği ve yoğunluğu) ve Pascal prensibini açıklar."
-          },
-          {
-            "id": "3.3",
-            "text": "Açık hava (gaz) basıncını ve günlük hayattaki uygulamalarını açıklar."
-          }
+        id: "unit3",
+        num: 3,
+        name: "3. Ünite: Basınç",
+        icon: "🧱",
+        gradient: "from-blue-600 via-teal-600 to-emerald-700",
+        subtopics: [
+          { num: 1, title: "Katı Basıncı", keywords: ["katı basıncı", "yüzey alanı", "ağırlık", "p=g/s", "basınç kuvveti"] },
+          { num: 2, title: "Sıvı Basıncı ve Pascal Prensibi", keywords: ["sıvı basıncı", "derinlik", "sıvı yoğunluğu", "p=h.d.g", "pascal prensibi", "su cenderesi", "hidrolik fren"] },
+          { num: 3, title: "Gaz (Açık Hava) Basıncı", keywords: ["gaz basıncı", "açık hava basıncı", "torriçelli", "barometre", "manometre", "vakum"] }
         ]
       },
       {
-        "id": "unit4",
-        "name": "4. Ünite: Madde ve Endüstri (LGS)",
-        "icon": "🧪",
-        "outcomes": [
-          {
-            "id": "4.1",
-            "text": "Periyodik sistemde grup/periyotları belirler; metaller, ametaller, yarı metaller ve soygazların özelliklerini açıklar."
-          },
-          {
-            "id": "4.2",
-            "text": "Fiziksel ve kimyasal değişimleri ayırt eder."
-          },
-          {
-            "id": "4.3",
-            "text": "Kimyasal tepkimeleri, kütlenin korunumunu ve tepkime denklemlerini yorumlar."
-          },
-          {
-            "id": "4.4",
-            "text": "Asitler ve bazların özelliklerini, pH ölçeğini, belirteçleri ve asit yağmurlarını açıklar."
-          },
-          {
-            "id": "4.5",
-            "text": "Maddenin ısı ile etkileşimini (öz ısı, hâl değiştirme ısısı ve ısınma/soğuma grafikleri) açıklar."
-          },
-          {
-            "id": "4.6",
-            "text": "Türkiye'de kimya endüstrisinin gelişimini değerlendirir."
-          }
+        id: "unit4",
+        num: 4,
+        name: "4. Ünite: Madde ve Endüstri",
+        icon: "🏭",
+        gradient: "from-purple-600 via-red-600 to-amber-600",
+        subtopics: [
+          { num: 1, title: "Periyodik Sistem", keywords: ["periyodik sistem", "grup", "periyot", "metal", "ametal", "yarı metal", "soygaz"] },
+          { num: 2, title: "Fiziksel ve Kimyasal Değişimler", keywords: ["fiziksel değişim", "kimyasal değişim", "renk değişimi", "gaz çıkışı", "çökelek"] },
+          { num: 3, title: "Kimyasal Tepkimeler ve Kütlenin Korunumu", keywords: ["kimyasal tepkime", "girenler", "ürünler", "kütlenin korunumu", "bağ kırılımı", "bağ oluşumu"] },
+          { num: 4, title: "Asitler ve Bazlar", keywords: ["asit", "baz", "ph", "turnusol", "asit yağmurları", "nötralleşme"] },
+          { num: 5, title: "Maddenin Isı ile Etkileşimi", keywords: ["öz ısı", "ısınma eğrisi", "soğuma eğrisi", "erime ısısı", "buharlaşma ısısı"] },
+          { num: 6, title: "Türkiye'de Kimya Endüstrisi", keywords: ["kimya endüstrisi", "ithalat", "ihracat", "petrokimya"] }
         ]
       },
       {
-        "id": "unit5",
-        "name": "5. Ünite: Basit Makineler (LGS)",
-        "icon": "⚙️",
-        "outcomes": [
-          {
-            "id": "5.1",
-            "text": "Basit makinelerin sağladığı avantajları (kuvvet kazancı, yoldan kazanç, iş kolaylığı) açıklar; iş ve enerjiden kazanç olmadığını kavrar."
-          },
-          {
-            "id": "5.2",
-            "text": "Kaldıraç, makara (sabit, hareketli, palanga), eğik düzlem, çıkrık, dişli çark, kasnak ve vida sistemlerini açıklar."
-          }
+        id: "unit5",
+        num: 5,
+        name: "5. Ünite: Basit Makineler",
+        icon: "⚙️",
+        gradient: "from-slate-700 via-zinc-800 to-neutral-900",
+        subtopics: [
+          { num: 1, title: "Basit Makineler ve Makaralar", keywords: ["basit makineler", "kuvvet kazancı", "yoldan kayıp", "sabit makara", "hareketli makara", "palanga"] },
+          { num: 2, title: "Kaldıraçlar", keywords: ["kaldıraç", "destek ortada", "yük ortada", "kuvvet ortada", "kuvvet kolu", "yük kolu"] },
+          { num: 3, title: "Eğik Düzlem, Çıkrık, Vida, Dişli Çark ve Kasnaklar", keywords: ["eğik düzlem", "çıkrık", "vida", "dişli çark", "kasnak"] }
         ]
       },
       {
-        "id": "unit6",
-        "name": "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi (LGS)",
-        "icon": "🌿",
-        "outcomes": [
-          {
-            "id": "6.1",
-            "text": "Besin zinciri, üreticiler, tüketiciler, ayrıştırıcılar ve ekolojik enerji piramidini açıklar."
-          },
-          {
-            "id": "6.2",
-            "text": "Fotosentez ve solunum olaylarını, denklemlerini ve aralarındaki ilişkiyi kavrar."
-          },
-          {
-            "id": "6.3",
-            "text": "Madde döngülerini (su, karbon, oksijen, azot) ve küresel çevre sorunlarını açıklar."
-          },
-          {
-            "id": "6.4",
-            "text": "Sürdürülebilir kalkınma ve ekolojik ayak izinin önemini değerlendirir."
-          }
+        id: "unit6",
+        num: 6,
+        name: "6. Ünite: Enerji Dönüşümleri ve Çevre Bilimi",
+        icon: "🍃",
+        gradient: "from-emerald-600 via-green-600 to-lime-600",
+        subtopics: [
+          { num: 1, title: "Besin Zinciri ve Enerji Akışı", keywords: ["besin zinciri", "ekolojik piramit", "üretici", "tüketici", "ayrıştırıcı", "biyolojik birikim"] },
+          { num: 2, title: "Fotosentez", keywords: ["fotosentez", "klorofil", "glikoz", "oksijen", "karbondioksit", "ışık şiddeti"] },
+          { num: 3, title: "Hücresel Solunum", keywords: ["solunum", "oksijenli solunum", "oksijensiz solunum", "fermantasyon", "atp"] },
+          { num: 4, title: "Madde Döngüleri ve Çevre Sorunları", keywords: ["su döngüsü", "karbon döngüsü", "azot döngüsü", "oksijen döngüsü", "sera gazları", "karbon ayak izi"] },
+          { num: 5, title: "Sürdürülebilir Kalkınma", keywords: ["sürdürülebilir kalkınma", "geri dönüşüm", "tasarruf"] }
         ]
       },
       {
-        "id": "unit7",
-        "name": "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi (LGS)",
-        "icon": "⚡",
-        "outcomes": [
-          {
-            "id": "7.1",
-            "text": "Elektriklenmeyi (sürtünme, dokunma, etki) ve elektroskopun çalışma prensibini açıklar."
-          },
-          {
-            "id": "7.2",
-            "text": "Topraklama olayını ve şimşek/yıldırım gibi doğa olaylarını kavrar."
-          },
-          {
-            "id": "7.3",
-            "text": "Elektrik enerjisinin ısı, ışık ve hareket enerjisine dönüşümünü; sigorta ve elektrik güvenliğini açıklar."
-          }
+        id: "unit7",
+        num: 7,
+        name: "7. Ünite: Elektrik Yükleri ve Elektrik Enerjisi",
+        icon: "⚡",
+        gradient: "from-blue-600 via-cyan-600 to-teal-700",
+        subtopics: [
+          { num: 1, title: "Elektrik Yükleri ve Elektriklenme", keywords: ["elektriklenme", "sürtünme ile elektriklenme", "dokunma ile elektriklenme", "etki ile elektriklenme", "pozitif yük", "negatif yük"] },
+          { num: 2, title: "Elektroskop ve Topraklama", keywords: ["elektroskop", "topraklama", "nötr cisim", "yük dağılımı"] },
+          { num: 3, title: "Elektrik Enerjisinin Dönüşümü", keywords: ["elektrik enerjisinin dönüşümü", "ısı enerjisi", "ışık enerjisi", "hareket enerjisi", "sigorta", "güvenli elektrik"] }
         ]
       }
     ]
   }
 };
 
-if (typeof window !== 'undefined') {
-  window.ALL_CURRICULUM = ALL_CURRICULUM;
+/**
+ * Belirli bir sınıf ve ünite için alt başlıkları döndürür
+ */
+function getUnitSubtopics(gradeNum, unitNum) {
+  const gStr = String(gradeNum).replace(/[^0-9]/g, '');
+  const uNum = parseInt(unitNum, 10);
+  if (MEB_CURRICULUM[gStr] && Array.isArray(MEB_CURRICULUM[gStr].units)) {
+    const unitObj = MEB_CURRICULUM[gStr].units.find(u => u.num === uNum);
+    if (unitObj && Array.isArray(unitObj.subtopics)) {
+      return unitObj.subtopics;
+    }
+  }
+  return [];
 }
-if (typeof module !== 'undefined' && module.exports) {
-  module.exports = ALL_CURRICULUM;
+
+/**
+ * Bir materyalin belirli bir alt başlıkla eşleşip eşleşmediğini kontrol eder
+ */
+function isMaterialMatchingSubtopic(material, subtopic) {
+  if (!material || !subtopic) return false;
+  if (material.subtopicNum && parseInt(material.subtopicNum, 10) === subtopic.num) return true;
+  if (material.subtopicId && material.subtopicId === subtopic.id) return true;
+
+  const titleLower = String(material.title || '').toLowerCase();
+  const descLower = String(material.desc || '').toLowerCase();
+  const tagsStr = Array.isArray(material.tags) ? material.tags.join(' ').toLowerCase() : String(material.tags || '').toLowerCase();
+  const fullText = `${titleLower} ${descLower} ${tagsStr}`;
+
+  // Alt başlık adının doğrudan geçmesi
+  const subTitleClean = subtopic.title.toLowerCase().replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ]/gi, ' ');
+  if (titleLower.includes(subTitleClean) || fullText.includes(subTitleClean)) return true;
+
+  // Anahtar kelime eşleşmesi
+  if (Array.isArray(subtopic.keywords)) {
+    for (const kw of subtopic.keywords) {
+      const kwClean = kw.toLowerCase().trim();
+      if (kwClean.length >= 3 && fullText.includes(kwClean)) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+if (typeof window !== 'undefined') {
+  window.MEB_CURRICULUM = MEB_CURRICULUM;
+  window.ALL_CURRICULUM = MEB_CURRICULUM;
+  window.getUnitSubtopics = getUnitSubtopics;
+  window.isMaterialMatchingSubtopic = isMaterialMatchingSubtopic;
+}
+
+if (typeof module !== 'undefined') {
+  module.exports = {
+    MEB_CURRICULUM,
+    ALL_CURRICULUM: MEB_CURRICULUM,
+    getUnitSubtopics,
+    isMaterialMatchingSubtopic
+  };
 }
