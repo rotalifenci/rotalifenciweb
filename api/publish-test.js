@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+
 let generateTestCoverSvg;
 try {
   generateTestCoverSvg = require('./cover-generator.js').generateTestCoverSvg;
@@ -8,6 +9,7 @@ try {
     generateTestCoverSvg = require('../scripts/cover-generator.js').generateTestCoverSvg;
   } catch (e2) {}
 }
+
 let buildInteractiveTestHtml, generateSlug;
 try {
   const tg = require('./test-generator.js');
@@ -53,7 +55,7 @@ async function uploadFileToGitHub(relPath, contentString) {
     } catch (e) {}
 
     const body = {
-      message: `feat(test): publish ${relPath} from Yaprak Test Portal`,
+      message: `feat(test): publish ${relPath} with 3D cover visual`,
       content: Buffer.from(contentString, 'utf8').toString('base64'),
       branch: "main"
     };
@@ -107,9 +109,37 @@ module.exports = async (req, res) => {
 
     const cleanGrade = String(grade).replace(/^grade-/, '').trim() || "5";
     const cleanSection = String(targetSection).replace(/^unit/i, '').replace(/[^0-9]/g, '') || "1";
-    const finalTitle = title.trim() || `${cleanGrade}. Sınıf ${cleanSection}. Ünite Yaprak Testi (${questions.length} Soru)`;
-    const finalDesc = desc.trim() || `${cleanGrade}. Sınıf ${subject} ${unit} için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.`;
     const finalCategory = category === "denemeler" ? "denemeler" : "soru-bankasi";
+
+    const isOpenEnded = questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A));
+    const testTypeLabel = isOpenEnded ? "AÇIK UÇLU SINAV" : (finalCategory === "denemeler" ? "DENEME SINAVI" : "YAPRAK TESTİ");
+
+    // Kaçıncı test olduğunu hesapla (mevcut materyallerden ve başlıktan)
+    let testNumber = 1;
+    const titleNumMatch = String(title || "").match(/(?:-|Test|Sınav|Sınavı)\s*(\d+)/i);
+    if (titleNumMatch && parseInt(titleNumMatch[1], 10) > 0) {
+      testNumber = parseInt(titleNumMatch[1], 10);
+    } else {
+      try {
+        let currentMaterials = [];
+        const webDir = path.resolve(__dirname, '..');
+        const webMaterialsPath = path.join(webDir, 'data', 'materials.json');
+        if (fs.existsSync(webMaterialsPath)) {
+          currentMaterials = JSON.parse(fs.readFileSync(webMaterialsPath, 'utf8'));
+        }
+        const matches = currentMaterials.filter(m =>
+          String(m.grade || '').replace(/[^0-9]/g, '') === String(cleanGrade) &&
+          String(m.targetSection || '1').replace(/[^0-9]/g, '') === String(cleanSection) &&
+          (m.category === 'soru-bankasi' || m.category === 'denemeler' || String(m.format || '').includes('TEST') || String(m.format || '').includes('SINAV'))
+        );
+        testNumber = matches.length + 1;
+      } catch (e) {
+        testNumber = 1;
+      }
+    }
+
+    const finalTitle = title.trim() || `${cleanGrade}. Sınıf ${cleanSection}. Ünite: ${unit} ${testTypeLabel} - ${testNumber} (${questions.length} Soru)`;
+    const finalDesc = desc.trim() || `${cleanGrade}. Sınıf ${subject} ${unit} için MEB Maarif Modeli uyumlu ${isOpenEnded ? "açık uçlu klasik sınav" : "yaprak test"}. Cevap anahtarlı ve çözümlü.`;
 
     const cleanTitleForSlug = finalTitle
       .replace(new RegExp(`^${cleanGrade}\\.?\\s*Sınıf\\s*`, 'i'), '')
@@ -120,7 +150,7 @@ module.exports = async (req, res) => {
 
     // 1. İnteraktif HTML Kodunu Üret
     const htmlContent = buildInteractiveTestHtml({
-      title: displayTitle || finalTitle,
+      title: finalTitle,
       grade: cleanGrade,
       unit: unit,
       targetSection: cleanSection,
@@ -129,7 +159,7 @@ module.exports = async (req, res) => {
       questions: questions
     });
 
-    // 2. Yerel dosya sistemine yazmayı dene (Yerel ortamda çalışır, Vercel'de hata vermeden geçer)
+    // 2. Yerel dosya sistemine yazmayı dene
     try {
       const webDir = path.resolve(__dirname, '..');
       const rootDir = path.resolve(__dirname, '..', '..');
@@ -150,9 +180,45 @@ module.exports = async (req, res) => {
     await uploadFileToGitHub(`testler/${fileName}`, htmlContent);
     await uploadFileToGitHub(`Web Sitem/testler/${fileName}`, htmlContent);
 
-    // 4. Materyal Kaydını Oluştur
+    // 4. Kapak Görseli Üret ve Ata (16:9 3D Özel Tasarım)
+    let coverUrl = `assets/covers/${cleanGrade}-${cleanSection}-${slug}-kapak.svg`;
+    const masterJpgPath = path.join(__dirname, '..', 'assets', 'covers', '5-1-yaprak-testi-1.jpg');
+
+    if (cleanGrade === "5" && cleanSection === "1" && testNumber === 1 && fs.existsSync(masterJpgPath)) {
+      coverUrl = "assets/covers/5-1-yaprak-testi-1.jpg";
+    } else if (typeof generateTestCoverSvg === 'function') {
+      try {
+        const coverSvg = generateTestCoverSvg({
+          grade: cleanGrade,
+          section: cleanSection,
+          unitName: unit,
+          testType: testTypeLabel,
+          testNumber: testNumber,
+          questionCount: questions.length
+        });
+        const coverFileName = `${cleanGrade}-${cleanSection}-${slug}-kapak.svg`;
+        const webCoversDir = path.join(path.resolve(__dirname, '..'), 'assets', 'covers');
+        const rootCoversDir = path.join(path.resolve(__dirname, '..', '..'), 'assets', 'covers');
+
+        if (!fs.existsSync(webCoversDir)) fs.mkdirSync(webCoversDir, { recursive: true });
+        fs.writeFileSync(path.join(webCoversDir, coverFileName), coverSvg, 'utf8');
+
+        if (fs.existsSync(rootCoversDir)) {
+          if (!fs.existsSync(rootCoversDir)) fs.mkdirSync(rootCoversDir, { recursive: true });
+          fs.writeFileSync(path.join(rootCoversDir, coverFileName), coverSvg, 'utf8');
+        }
+
+        await uploadFileToGitHub(`assets/covers/${coverFileName}`, coverSvg);
+        await uploadFileToGitHub(`Web Sitem/assets/covers/${coverFileName}`, coverSvg);
+        coverUrl = `assets/covers/${coverFileName}`;
+      } catch (covErr) {
+        console.warn("[Publish] Cover generation error:", covErr.message);
+        coverUrl = `assets/test-kapak-${cleanGrade}.svg`;
+      }
+    }
+
+    // 5. Materyal Kaydını Oluştur
     const materialId = `mat-test-${cleanGrade}-${cleanSection}-${Date.now()}`;
-    const coverUrl = `assets/test-kapak-${cleanGrade}.svg`;
 
     const newMaterial = {
       id: materialId,
@@ -167,7 +233,7 @@ module.exports = async (req, res) => {
       imageUrl: coverUrl,
       kapakResmi: coverUrl,
       cover: coverUrl,
-      format: questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A)) ? "AÇIK UÇLU SINAV" : "YAPRAK TEST",
+      format: isOpenEnded ? "AÇIK UÇLU SINAV" : "YAPRAK TEST",
       hasBlob: false,
       tags: [
         `${cleanGrade}. sınıf`,
@@ -184,12 +250,14 @@ module.exports = async (req, res) => {
         "meb maarif modeli"
       ],
       visibility: "public",
-      downloadCount: `📝 ${questions.length} Soru • Test-${testNumber}`,\n      testNumber: testNumber,\n      questionCount: questions.length,
+      downloadCount: `📝 ${questions.length} Soru • Test-${testNumber}`,
+      testNumber: testNumber,
+      questionCount: questions.length,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
 
-    // 5. Yerel materials.json güncellemesini dene
+    // 6. Yerel materials.json güncellemesini dene
     try {
       const webDir = path.resolve(__dirname, '..');
       const rootDir = path.resolve(__dirname, '..', '..');
@@ -215,9 +283,14 @@ module.exports = async (req, res) => {
       console.warn("[Publish] Local materials.json write bypassed:", fsMatErr.message);
     }
 
-    // 6. Bulut Senkronizasyonu (Gist + GitHub Repo data/materials.json)
+    // 7. Bulut Senkronizasyonu (Gist + GitHub Repo data/materials.json)
     try {
-      const syncHandler = require('./sync.js');
+      let syncHandler;
+      try {
+        syncHandler = require('./sync.js');
+      } catch (s1) {
+        syncHandler = require('../api/sync.js');
+      }
       if (typeof syncHandler === 'function') {
         const mockReq = { method: "POST", body: { materials: [newMaterial], replace: false } };
         const mockRes = { headers: {}, statusCode: 200, setHeader() {}, status() { return this; }, json(d) { return d; }, end() { return this; } };
