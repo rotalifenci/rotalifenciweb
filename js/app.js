@@ -5518,27 +5518,18 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                                         <!-- Alt Başlık Butonları (Yatay Kaydırılabilir ve Tıklanabilir) -->
                                         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin subtopic-pill-container" data-unit="${unitNum}">
-                                            <!-- Tüm Konular Butonu -->
-                                            <button type="button" 
-                                                    onclick="filterMaterialsBySubtopic('${unitNum}', 'all', '${grade.number}', '${normSubTab}')"
-                                                    data-subtopic="all"
-                                                    class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 bg-slate-900 text-white shadow-xs cursor-pointer">
-                                                <i class="fa-solid fa-layer-group text-[11px]"></i>
-                                                <span>Tüm Konular</span>
-                                                <span class="ml-0.5 px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-bold">${totalItems.length}</span>
-                                            </button>
-
                                             <!-- Numaralı Alt Başlıklar (Örn: 1. Güneş'in Yapısı ve Özellikleri) -->
-                                            ${subtopics.map(sub => {
+                                            ${subtopics.map((sub, sIdx) => {
                                                 const matchCount = totalItems.filter(item => isMaterialMatchingSubtopic(item, sub)).length;
+                                                const isFirstActive = (sIdx === 0);
                                                 return `
                                                 <button type="button"
                                                         onclick="filterMaterialsBySubtopic('${unitNum}', '${sub.num}', '${grade.number}', '${normSubTab}')"
                                                         data-subtopic="${sub.num}"
-                                                        class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 cursor-pointer hover:border-slate-300">
-                                                    <span class="w-5 h-5 rounded-lg bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">${sub.num}</span>
+                                                        class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs ${isFirstActive ? 'font-black bg-blue-600 text-white shadow-md' : 'font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80'} transition-all flex items-center gap-1.5 shrink-0 cursor-pointer">
+                                                    <span class="w-5 h-5 rounded-lg ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'} font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">${sub.num}</span>
                                                     <span class="truncate max-w-[210px] sm:max-w-none">${sub.title}</span>
-                                                    ${matchCount > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-50 text-blue-700 font-black border border-blue-200 shadow-2xs">${matchCount}</span>` : ''}
+                                                    ${matchCount > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[10px] ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200'} font-black shadow-2xs">${matchCount}</span>` : ''}
                                                 </button>
                                                 `;
                                             }).join('')}
@@ -5660,7 +5651,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const subtopics = (typeof getUnitSubtopics === "function") ? getUnitSubtopics(grade.number, unitNum) : [];
     const matched = subtopics.filter(s => isMaterialMatchingSubtopic(item, s)).map(s => s.num);
     const subtopicsAttr = matched.length > 0 ? matched.join(',') : 'all';
-    return `<div data-unit="${unitNum}" data-subtopics="${subtopicsAttr}" draggable="${isAdmin ? 'true' : 'false'}" ondragstart="handleCardDragStart(event, '${item.id}')" ondragover="handleCardDragOver(event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(event, '${item.id}')" class="unit-material-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group cursor-grab active:cursor-grabbing">`;
+    const firstSubNum = (subtopics.length > 0) ? subtopics[0].num : null;
+    const isInitiallyVisible = (firstSubNum === null) || matched.includes(firstSubNum) || (matched.length === 0);
+    return `<div data-unit="${unitNum}" data-subtopics="${subtopicsAttr}" style="${isInitiallyVisible ? '' : 'display: none;'}" draggable="${isAdmin ? 'true' : 'false'}" ondragstart="handleCardDragStart(event, '${item.id}')" ondragover="handleCardDragOver(event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(event, '${item.id}')" class="unit-material-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group cursor-grab active:cursor-grabbing">`;
 })()}
                                                 <div>
                                                     <div class="flex items-center justify-between gap-2 mb-2">
@@ -18614,10 +18607,16 @@ function filterMaterialsBySubtopic(unitNum, subtopicNum, gradeNum, subTab) {
     const buttons = unitEl.querySelectorAll('.subtopic-filter-btn');
     buttons.forEach(btn => {
         const isMatch = (btn.getAttribute('data-subtopic') === String(subtopicNum));
+        const numSpan = btn.querySelector('span:first-child');
+        const countSpan = btn.querySelector('span:last-child');
         if (isMatch) {
             btn.className = "subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-black transition-all flex items-center gap-1.5 shrink-0 bg-blue-600 text-white shadow-md cursor-pointer";
+            if (numSpan) numSpan.className = "w-5 h-5 rounded-lg bg-white/20 text-white font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs";
+            if (countSpan && countSpan !== numSpan) countSpan.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-black shadow-2xs";
         } else {
             btn.className = "subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 cursor-pointer hover:border-slate-300";
+            if (numSpan) numSpan.className = "w-5 h-5 rounded-lg bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs";
+            if (countSpan && countSpan !== numSpan) countSpan.className = "px-1.5 py-0.2 rounded-full text-[10px] bg-blue-50 text-blue-700 font-black border border-blue-200 shadow-2xs";
         }
     });
 
@@ -18653,10 +18652,7 @@ function filterMaterialsBySubtopic(unitNum, subtopicNum, gradeNum, subTab) {
                 <i class="fa-solid fa-sparkles"></i>
             </div>
             <h5 class="text-xs font-black text-slate-800 mb-1">Bu alt başlığa ait içerikler yakında ekleniyor</h5>
-            <p class="text-[11px] text-slate-500 mb-3 font-medium">Bu konuya özel içerik henüz yüklenmedi. Tüm ünite içeriklerini görmek için yukarıdan 'Tüm Konular'a tıklayabilirsiniz.</p>
-            <button type="button" onclick="filterMaterialsBySubtopic('${unitNum}', 'all', '${gradeNum}', '${subTab}')" class="px-3.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl transition-colors border border-blue-200 inline-flex items-center gap-1.5 cursor-pointer">
-                <i class="fa-solid fa-layer-group text-[10px]"></i> Tüm Konuları Göster
-            </button>
+            <p class="text-[11px] text-slate-500 mb-2 font-medium">Bu alt konuya ait yeni içerikler eklendiğinde burada listelenecektir.</p>
         `;
         emptyState.style.display = '';
     } else if (emptyState) {
