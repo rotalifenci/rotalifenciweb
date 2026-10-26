@@ -17500,10 +17500,25 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
                                 ➕ Listede Yoksa Yeni Başlık Ekle
                             </button>
                         </div>
-                        <select id="adv-unit-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
+                        <select id="adv-unit-select" onchange="handleAdvUnitChange(this.value)" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-red-500 shadow-sm">
                             <!-- JS ile dolar -->
                         </select>
                         <input type="text" id="adv-custom-topic-input" placeholder="Yeni Özel Başlık / Alt Başlık yazın..." class="hidden w-full mt-2 p-2.5 sm:p-3 bg-white border border-red-300 rounded-xl text-xs font-bold text-slate-900 focus:outline-none focus:border-red-500 shadow-sm">
+                    </div>
+
+                    <!-- Ünite Alt Başlığı / Konu Seçimi (MEB Maarif Modeli) -->
+                    <div id="adv-subtopic-wrapper" class="pt-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-xs font-black uppercase text-slate-700 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-blue-600"></span>
+                                <span>Ünite Alt Başlığı / Konu</span>
+                                <span class="text-[10px] text-blue-700 font-bold bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-md">MEB Maarif Modeli</span>
+                            </label>
+                            <span class="text-[10px] text-slate-400 font-medium">İsteğe Bağlı</span>
+                        </div>
+                        <select id="adv-subtopic-select" class="w-full p-2.5 sm:p-3 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none focus:border-blue-500 shadow-sm transition-all">
+                            <option value="">-- Tüm Ünite / Genel (Alt Başlık Belirtilmedi) --</option>
+                        </select>
                     </div>
                 </div>
 
@@ -17686,6 +17701,10 @@ function openMaterialUploadModal(prefillGrade = "8", prefillTab = "ders-notu", e
         }
     }
 
+    // Ünite Alt Başlıklarını Güncelle ve Varsa Seç
+    const initialSubtopicVal = (isEditing && editMaterial) ? (editMaterial.subtopicNum ?? editMaterial.subtopicCode ?? editMaterial.subtopic ?? "") : "";
+    updateCascadingSubtopics(initialSubtopicVal);
+
     renderTagsBadges();
 
     // Düzenlenen materyal bir web/drive/youtube bağlantısıysa otomatik olarak Link sekmesine geç
@@ -17752,10 +17771,18 @@ function updateCascadingUnits(forceGrade) {
         unitSelect.innerHTML = PROJECT_UNITS_LIST.map(u => `<option value="${u}">${u}</option>`).join("");
         if (sectionSelect) sectionSelect.value = "projeler";
         if (categorySelect && categorySelect.value !== "projeler") categorySelect.value = "projeler";
+        updateCascadingSubtopics();
         return;
     }
 
-    const units = GRADE_UNITS_MAP[selectedGrade] || GRADE_UNITS_MAP["8"];
+    let units = [];
+    if (typeof MEB_CURRICULUM !== "undefined" && MEB_CURRICULUM[String(selectedGrade)] && MEB_CURRICULUM[String(selectedGrade)].units) {
+        units = MEB_CURRICULUM[String(selectedGrade)].units.map(u => u.name);
+    } else if (typeof GRADE_UNITS_MAP !== "undefined" && GRADE_UNITS_MAP[selectedGrade]) {
+        units = GRADE_UNITS_MAP[selectedGrade];
+    } else {
+        units = [1,2,3,4,5,6,7].map(n => `${n}. Ünite`);
+    }
 
     unitSelect.innerHTML = `
         <option value="Ders Kitabı">📖 MEB Ders Kitabı & Ünite PDF'leri</option>
@@ -17766,6 +17793,78 @@ function updateCascadingUnits(forceGrade) {
 
     if (sectionSelect) {
         handleTargetSectionChange(sectionSelect.value);
+    } else {
+        updateCascadingSubtopics();
+    }
+}
+
+function handleAdvUnitChange(unitVal) {
+    const secSelect = document.getElementById("adv-section-select");
+    if (unitVal && secSelect) {
+        if (unitVal.includes("Ders Kitabı")) secSelect.value = "kitap";
+        else if (unitVal.includes("Laboratuvar")) secSelect.value = "lab";
+        else if (unitVal.includes("TÜBİTAK") || unitVal.includes("Projeler")) secSelect.value = "projeler";
+        else {
+            const m = unitVal.match(/(\d+)\s*\.\s*ünite/i);
+            if (m && m[1]) secSelect.value = m[1];
+        }
+    }
+    updateCascadingSubtopics();
+}
+
+function updateCascadingSubtopics(preselectedSubtopic) {
+    const subtopicSelect = document.getElementById("adv-subtopic-select");
+    const subtopicWrapper = document.getElementById("adv-subtopic-wrapper");
+    if (!subtopicSelect) return;
+
+    const checkedBoxes = document.querySelectorAll('input[name="adv_grade_checkbox"]:checked');
+    const checkedValues = Array.from(checkedBoxes).map(cb => cb.value);
+    const selectedGrade = checkedValues.length > 0 ? checkedValues[0] : (document.getElementById("adv-grade-select") ? document.getElementById("adv-grade-select").value : "5");
+
+    const sectionSelect = document.getElementById("adv-section-select");
+    const unitSelect = document.getElementById("adv-unit-select");
+
+    let unitNum = null;
+    if (sectionSelect && sectionSelect.value && !isNaN(parseInt(sectionSelect.value, 10))) {
+        unitNum = parseInt(sectionSelect.value, 10);
+    } else if (unitSelect && unitSelect.value) {
+        const m = unitSelect.value.match(/(\d+)\s*\.\s*ünite/i);
+        if (m && m[1]) unitNum = parseInt(m[1], 10);
+    }
+
+    if (!unitNum || isNaN(unitNum) || (sectionSelect && (sectionSelect.value === "kitap" || sectionSelect.value === "lab" || sectionSelect.value === "projeler"))) {
+        subtopicSelect.innerHTML = '<option value="">-- Bu Bölüm İçin Alt Başlık Yok --</option>';
+        if (subtopicWrapper) subtopicWrapper.style.opacity = "0.5";
+        return;
+    }
+
+    if (subtopicWrapper) subtopicWrapper.style.opacity = "1";
+
+    const subtopics = (typeof getUnitSubtopics === "function") ? getUnitSubtopics(selectedGrade, unitNum) : [];
+    let optionsHtml = '<option value="">-- Tüm Ünite / Genel (Alt Başlık Belirtilmedi) --</option>';
+    if (subtopics && subtopics.length > 0) {
+        optionsHtml += subtopics.map(sub => {
+            const label = sub.title || (sub.code ? `${sub.code}. ${sub.shortTitle}` : sub.shortTitle);
+            return `<option value="${sub.num}" data-code="${sub.code || ''}" data-title="${(sub.title || '').replace(/"/g, "&quot;")}">${label}</option>`;
+        }).join('');
+    } else {
+        optionsHtml += '<option value="">-- Alt Başlık Bulunamadı --</option>';
+    }
+
+    subtopicSelect.innerHTML = optionsHtml;
+
+    if (preselectedSubtopic !== undefined && preselectedSubtopic !== null && preselectedSubtopic !== "") {
+        subtopicSelect.value = String(preselectedSubtopic);
+        if (!subtopicSelect.value && subtopics && subtopics.length > 0) {
+            const found = subtopics.find(s => 
+                String(s.code) === String(preselectedSubtopic) || 
+                String(s.num) === String(preselectedSubtopic) || 
+                s.title === preselectedSubtopic || 
+                s.shortTitle === preselectedSubtopic ||
+                (s.title && s.title.includes(String(preselectedSubtopic)))
+            );
+            if (found) subtopicSelect.value = String(found.num);
+        }
     }
 }
 
@@ -17788,11 +17887,19 @@ function handleTargetSectionChange(sec) {
         unitSelect.value = "Laboratuvar";
     } else {
         const idx = parseInt(sec, 10) - 1;
-        const units = GRADE_UNITS_MAP[g] || GRADE_UNITS_MAP["8"];
+        let units = [];
+        if (typeof MEB_CURRICULUM !== "undefined" && MEB_CURRICULUM[String(g)] && MEB_CURRICULUM[String(g)].units) {
+            units = MEB_CURRICULUM[String(g)].units.map(u => u.name);
+        } else if (typeof GRADE_UNITS_MAP !== "undefined" && GRADE_UNITS_MAP[g]) {
+            units = GRADE_UNITS_MAP[g];
+        } else {
+            units = [1,2,3,4,5,6,7].map(n => `${n}. Ünite`);
+        }
         if (units && units[idx]) {
             unitSelect.value = units[idx];
         }
     }
+    updateCascadingSubtopics();
 }
 
 function toggleCustomTopicInput() {
@@ -18285,6 +18392,19 @@ async function handleAdvMaterialSubmit(e) {
         else if (targetSection === "lab") unit = "Laboratuvar & Deneyler";
         else if (targetSection === "projeler" || category === "projeler") unit = (unitSelect && unitSelect.value) ? unitSelect.value : "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri";
     }
+    const subtopicSelect = document.getElementById("adv-subtopic-select");
+    let subtopicNum = null;
+    let subtopicCode = "";
+    let subtopicTitle = "";
+    if (subtopicSelect && subtopicSelect.value) {
+        subtopicNum = parseInt(subtopicSelect.value, 10);
+        const selOpt = subtopicSelect.options[subtopicSelect.selectedIndex];
+        if (selOpt) {
+            subtopicCode = selOpt.getAttribute("data-code") || "";
+            subtopicTitle = selOpt.getAttribute("data-title") || selOpt.text || "";
+        }
+    }
+
     const desc = descInput && descInput.value.trim() ? descInput.value.trim() : "Rotalı Fenci özel eğitim materyali.";
     const linkVal = linkInput ? linkInput.value.trim() : "";
     const visibility = visibilitySelect ? visibilitySelect.value : "public";
@@ -18486,6 +18606,9 @@ async function handleAdvMaterialSubmit(e) {
                     targetSection: targetSection,
                     title: title,
                     unit: unit,
+                    subtopicNum: subtopicNum,
+                    subtopicCode: subtopicCode,
+                    subtopic: subtopicTitle,
                     desc: desc,
                     fileName: currentUploadedFile ? finalFileName : (linkVal ? finalFileName : customList[idx].fileName),
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : customList[idx].fileUrl) || "#",
@@ -18506,6 +18629,9 @@ async function handleAdvMaterialSubmit(e) {
                     targetSection: targetSection,
                     title: title,
                     unit: unit,
+                    subtopicNum: subtopicNum,
+                    subtopicCode: subtopicCode,
+                    subtopic: subtopicTitle,
                     desc: desc,
                     fileName: finalFileName,
                     fileUrl: fileDataUrl || externalUrl || "#",
@@ -18542,6 +18668,9 @@ async function handleAdvMaterialSubmit(e) {
                     targetSection: targetSection,
                     title: title,
                     unit: extraUnit,
+                    subtopicNum: subtopicNum,
+                    subtopicCode: subtopicCode,
+                    subtopic: subtopicTitle,
                     desc: desc,
                     fileName: currentUploadedFile ? finalFileName : (customList[idx] ? customList[idx].fileName : finalFileName),
                     fileUrl: externalUrl || (currentUploadedFile ? fileDataUrl : (customList[idx] ? customList[idx].fileUrl : fileDataUrl)) || "#",
@@ -18587,6 +18716,9 @@ async function handleAdvMaterialSubmit(e) {
                     targetSection: targetSection,
                     title: title,
                     unit: itemUnit,
+                    subtopicNum: subtopicNum,
+                    subtopicCode: subtopicCode,
+                    subtopic: subtopicTitle,
                     desc: desc,
                     fileName: finalFileName,
                     fileUrl: fileDataUrl || externalUrl || "#",
@@ -19066,6 +19198,8 @@ async function handleCardDrop(e, targetId) {
     }
 }
 
+window.updateCascadingSubtopics = updateCascadingSubtopics;
+window.handleAdvUnitChange = handleAdvUnitChange;
 window.openQuickMoveModal = openQuickMoveModal;
 window.updateQuickMoveUnits = updateQuickMoveUnits;
 window.updateQuickMoveSubtopics = updateQuickMoveSubtopics;
