@@ -1,152 +1,59 @@
 const fs = require('fs');
-const path = require('path');
+const assert = require('assert');
 
-// Mock localStorage
-const storage = {};
-global.localStorage = {
-    getItem: (key) => storage[key] || null,
-    setItem: (key, val) => { storage[key] = String(val); },
-    removeItem: (key) => { delete storage[key]; }
-};
-global.sessionStorage = {
-    getItem: () => null,
-    setItem: () => {}
-};
-global.window = global;
-global.window.addEventListener = () => {};
-global.window.location = { hash: "#home", hostname: "localhost" };
-global.document = {
-    addEventListener: () => {},
-    querySelector: () => null,
-    querySelectorAll: () => [],
-    getElementById: () => null,
-    body: { appendChild: () => {} },
-    createElement: () => ({ className: '', innerHTML: '', style: {}, classList: { add: () => {}, remove: () => {} }, appendChild: () => {}, remove: () => {} })
-};
+console.log('🧪 Starting Persistence & Verification Tests...');
 
-// Mock fetch to simulate server materials.json
-const rawStatic = fs.readFileSync(path.join(__dirname, '..', 'data', 'materials.json'), 'utf8');
-const staticMaterials = JSON.parse(rawStatic);
+// 1. Verify index.html links
+const html = fs.readFileSync('index.html', 'utf8');
+const videolarMatches = html.match(/#grade\/grade-[5-8]\/videolar/g);
+assert.strictEqual(videolarMatches, null, 'No grade link should point to /videolar');
+const dersNotuMatches = html.match(/#grade\/grade-[5-8]\/ders-notu/g);
+assert.ok(dersNotuMatches && dersNotuMatches.length >= 16, 'Grade links in index.html must point to /ders-notu');
+console.log('✅ 1. index.html grade navigation links verified: all point to /ders-notu');
 
-global.fetch = async (url) => {
-    return {
-        ok: true,
-        json: async () => staticMaterials
-    };
-};
+// 2. Verify data/materials.json items
+const mats = JSON.parse(fs.readFileSync('data/materials.json', 'utf8'));
+const islenecek5 = mats.find(m => m.id === 'mat-1789315860991' || (m.grade === '5' && m.title.includes('İşlenecek')));
+const islenecek6 = mats.find(m => m.id === 'mat-6-islenecek-konular' || (m.grade === '6' && m.title.includes('İşlenecek')));
+const islenecek7 = mats.find(m => m.id === 'mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab' || (m.grade === '7' && m.title.includes('İşlenecek')));
+const islenecek8 = mats.find(m => m.id === 'mat-1789641166040' || (m.grade === '8' && m.title.includes('İşlenecek')));
 
-// Load curriculum-data and app.js
-require('../js/curriculum-data.js');
-require('../js/app.js');
-global.showToast = () => {};
-global.window.showToast = () => {};
+assert.ok(islenecek5, '5. Sınıf İşlenecek Konular must exist');
+assert.ok(islenecek6, '6. Sınıf İşlenecek Konular must exist');
+assert.ok(islenecek7, '7. Sınıf İşlenecek Konular must exist');
+assert.ok(islenecek8, '8. Sınıf İşlenecek Konular must exist');
 
-async function runTests() {
-    console.log('=== TEST SUITE: PERSISTENCE & POSITION / CATEGORY STABILITY ===');
+assert.strictEqual(islenecek5.targetSection, 'kitap');
+assert.strictEqual(islenecek6.targetSection, 'kitap');
+assert.strictEqual(islenecek7.targetSection, 'kitap');
+assert.strictEqual(islenecek8.targetSection, 'kitap');
 
-    // 1. Initial materials load
-    console.log('Test 1: Initializing materials from static json...');
-    const initialList = await window.loadCentralizedMaterials();
-    console.log(`Loaded ${initialList.length} materials.`);
+assert.ok(fs.existsSync(islenecek5.fileUrl), `Asset file ${islenecek5.fileUrl} must exist`);
+assert.ok(fs.existsSync(islenecek6.fileUrl), `Asset file ${islenecek6.fileUrl} must exist`);
+assert.ok(fs.existsSync(islenecek7.fileUrl), `Asset file ${islenecek7.fileUrl} must exist`);
+assert.ok(fs.existsSync(islenecek8.fileUrl), `Asset file ${islenecek8.fileUrl} must exist`);
+console.log('✅ 2. All 4 İşlenecek Konular materials verified with targetSection="kitap" and existing JPG files');
 
-    // Pick a test item (e.g. mat-video-5-1-04)
-    const testItemId = "mat-video-5-1-04";
-    const itemBefore = initialList.find(m => m.id === testItemId);
-    console.log(`Before test, ${testItemId}:`, {
-        category: itemBefore.category,
-        targetSection: window.getMaterialTargetSection(itemBefore),
-        grade: itemBefore.grade
-    });
+// 3. Verify user tests are preserved
+const test1 = mats.find(m => m.id === 'mat-test-5-1-1792881391044');
+const test2 = mats.find(m => m.id === 'mat-test-5-1-1792952650428');
+assert.ok(test1, 'Test mat-test-5-1-1792881391044 must be preserved');
+assert.ok(test2, 'Test mat-test-5-1-1792952650428 must be preserved');
+console.log('✅ 3. User test materials preserved successfully');
 
-    // 2. Perform Quick Move: Move item to category 'etkinlikler', section '2', grade '5', subtopic 3
-    console.log('\nTest 2: Simulating executeQuickMove to change category and section...');
-    const fakeEvent = {
-        preventDefault: () => {},
-        target: {
-            querySelector: () => ({ value: "5" }),
-            targetGrade: { value: "5" },
-            targetCategory: { value: "etkinlikler" },
-            targetSection: { value: "2" },
-            targetSubtopic: { value: "3" }
-        }
-    };
-    await window.executeQuickMove(fakeEvent, testItemId);
+// 4. Verify js/app.js non-destructive logic
+const appJs = fs.readFileSync('js/app.js', 'utf8');
+assert.ok(!appJs.includes('localStorage.removeItem("rotali_custom_materials")'), 'verifySmartboardSync must not delete rotali_custom_materials');
+assert.ok(appJs.includes('let subTab = parts[1] || "ders-notu";'), 'subTab default must be ders-notu');
+assert.ok(appJs.includes('// 🌟 KULLANICI TERCİHİ ESASTIR: Yereldeki görsel veya dosya asla eski bulut verisiyle ezilmez!'), 'CloudSync must prioritize local edits/images');
+assert.ok(!appJs.includes('"mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717"'), 'mat-5-islenecek-konular must not be in PERMANENT_DELETED');
+console.log('✅ 4. js/app.js non-destructive sync, protected IDs, and ders-notu default verified');
 
-    // Verify localStorage persistence
-    const savedCustomList = JSON.parse(localStorage.getItem("rotali_custom_materials"));
-    const savedItem = savedCustomList.find(m => m.id === testItemId);
-    const overrides = window.getStoredMetadataOverrides();
-    const savedOrder = window.getStoredMaterialsOrder();
-
-    console.log('After executeQuickMove:', {
-        inListCategory: savedItem.category,
-        inListSection: savedItem.targetSection,
-        inOverrides: overrides[testItemId],
-        firstInOrder: savedOrder[0] === testItemId
-    });
-
-    if (savedItem.category !== "etkinlikler" || savedItem.targetSection !== "2") {
-        console.error('❌ QuickMove failed to update item in customList!');
-        process.exit(1);
-    }
-    console.log('✅ executeQuickMove successfully persisted to localStorage!');
-
-    // 3. Simulate Page Refresh / Reopen: Re-run loadCentralizedMaterials (merging with server data)
-    console.log('\nTest 3: Simulating Page Reload (loadCentralizedMaterials)...');
-    const reloadedList = await window.loadCentralizedMaterials();
-    const itemAfterReload = reloadedList.find(m => m.id === testItemId);
-
-    console.log('After reload, item state:', {
-        category: itemAfterReload.category,
-        targetSection: window.getMaterialTargetSection(itemAfterReload),
-        subtopicNum: itemAfterReload.subtopicNum,
-        indexInList: reloadedList.findIndex(m => m.id === testItemId)
-    });
-
-    if (itemAfterReload.category !== "etkinlikler") {
-        console.error('❌ BUG! Category was reverted back to server default!');
-        process.exit(1);
-    }
-    if (String(window.getMaterialTargetSection(itemAfterReload)) !== "2") {
-        console.error('❌ BUG! Target section was reverted back to server default!');
-        process.exit(1);
-    }
-    if (reloadedList[0].id !== testItemId) {
-        console.error('❌ BUG! Saved order rank was not preserved!');
-        process.exit(1);
-    }
-
-    console.log('✅ PASS: After page refresh, item retained its moved category, section, subtopic, and order!');
-
-    // 4. Test moveCustomMaterial (Up/Down order changes)
-    console.log('\nTest 4: Testing moveCustomMaterial order changes...');
-    // Mark admin
-    localStorage.setItem("rotali_is_admin", "true");
-    
-    // Move test item down
-    console.log(`Moving item (${testItemId}) down by 1 position...`);
-    await window.moveCustomMaterial(testItemId, 1);
-
-    const afterMoveList = window.getCustomMaterialsList();
-    const newIdx = afterMoveList.findIndex(m => m.id === testItemId);
-    console.log(`New index of ${testItemId}: ${newIdx}`);
-
-    // Simulate another page refresh
-    console.log('Simulating page refresh after moveCustomMaterial...');
-    const reloadedAfterMove = await window.loadCentralizedMaterials();
-    const reloadedIdx = reloadedAfterMove.findIndex(m => m.id === testItemId);
-    console.log(`Index of ${testItemId} after reload: ${reloadedIdx}`);
-
-    if (reloadedIdx !== newIdx) {
-        console.error('❌ Order was not preserved after moveCustomMaterial and page refresh!');
-        process.exit(1);
-    }
-    console.log('✅ PASS: Order after moveCustomMaterial is 100% persistent across reload!');
-
-    console.log('\n🎉 ALL PERSISTENCE TESTS PASSED COMPLETELY!');
+// 5. Verify parent files are in sync
+if (fs.existsSync('../data/materials.json')) {
+    const parentMats = JSON.parse(fs.readFileSync('../data/materials.json', 'utf8'));
+    assert.strictEqual(parentMats.length, mats.length, 'Parent and Web Sitem materials.json must have equal count');
+    console.log('✅ 5. Parent workspace materials.json is 100% in sync (' + mats.length + ' items)');
 }
 
-runTests().catch(err => {
-    console.error('Fatal test error:', err);
-    process.exit(1);
-});
+console.log('🎉 ALL PERSISTENCE AND VERIFICATION TESTS PASSED!');

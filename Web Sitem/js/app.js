@@ -105,12 +105,16 @@ let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
 const PROTECTED_MATERIAL_IDS = new Set([
+    "mat-1789641166040",
+    "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
+    "mat-5-islenecek-konular",
+    "mat-1789315860991",
     "mat-5-1-sim-dunyanin-5-katmani", "mat-5-1-oyun-gunesi-kesfediyorum-3d", "mat-5-1-oyun-ayin-evreleri-3d", "mat-5-1-oyun-kozmik-kasif-3d", "mat-5-1-oyun-kozmik-kosu-3d",
      "mat-6-2-sim-kuvvet-laboratuvari", "mat-7-1-sim-yildiz-laboratuvari", "mat-7-2-sim-is-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-uzay-ekspresi",
-    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
+    "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
 ]);
 
 const PERMANENT_DELETED_MATERIAL_IDS = [
@@ -146,7 +150,7 @@ const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-92a7c9bd-8043-40d7-8f6c-271610d13bad", "mat-86fc0821-ce8e-494d-8d9e-415e958e6336",
     "mat-e072f771-967e-44c8-ad81-3e67f0934514", "mat-23f656d5-1306-4b7f-bb24-d12ccbe1f4bd",
     "mat-9d8d6d57-f170-4a06-8427-3cbbf267d759",
-    "mat-5-islenecek-konular", "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
+    "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
     "mat-4e34f261-c437-4ec5-98d2-776e49ffac4c",
     "mat-66ecb5d9-e086-4b48-823b-911f27cdbcc1", "mat-04e87bdc-a9ca-49fc-810e-08c53fc4eb81",
     "mat-9717d459-d55c-46aa-8098-ed67611c90f8", "mat-1789665265173-g8"
@@ -159,9 +163,12 @@ function getDeletedMaterialIds() {
         if (!Array.isArray(list)) list = [];
         const set = new Set(list.filter(id => typeof id === "string" && id.trim().length > 0));
         PERMANENT_DELETED_MATERIAL_IDS.forEach(hd => set.add(hd));
+        if (typeof PROTECTED_MATERIAL_IDS !== "undefined") {
+            PROTECTED_MATERIAL_IDS.forEach(prot => set.delete(prot));
+        }
         return Array.from(set);
     } catch(e) {
-        return [...PERMANENT_DELETED_MATERIAL_IDS];
+        return PERMANENT_DELETED_MATERIAL_IDS.filter(id => !(typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id)));
     }
 }
 
@@ -671,18 +678,20 @@ const CloudSyncManager = {
                         } else if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
                             merged.fileUrl = localItem.fileUrl;
                         }
-                        if (inCloud.imageUrl && !inCloud.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && !inCloud.imageUrl.startsWith("data:image/svg+xml")) {
-                            merged.imageUrl = inCloud.imageUrl;
-                            merged.kapakResmi = inCloud.kapakResmi || inCloud.imageUrl;
-                            merged.cover = inCloud.cover || inCloud.imageUrl;
-                        } else if (localItem.imageUrl && !localItem.imageUrl.startsWith("data:image/svg+xml") && (!inCloud.imageUrl || inCloud.imageUrl === "" || inCloud.imageUrl === "#" || inCloud.imageUrl.startsWith("data:image/svg+xml"))) {
+                        // 🌟 KULLANICI TERCİHİ ESASTIR: Yereldeki görsel veya dosya asla eski bulut verisiyle ezilmez!
+                        if (localItem.imageUrl && !localItem.imageUrl.startsWith("data:image/svg+xml") && !localItem.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && localItem.imageUrl !== "#") {
                             merged.imageUrl = localItem.imageUrl;
                             merged.kapakResmi = localItem.kapakResmi || localItem.imageUrl;
                             merged.cover = localItem.cover || localItem.imageUrl;
-                        } else if (inCloud.imageUrl) {
+                        } else if (inCloud.imageUrl && !inCloud.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && !inCloud.imageUrl.startsWith("data:image/svg+xml")) {
                             merged.imageUrl = inCloud.imageUrl;
                             merged.kapakResmi = inCloud.kapakResmi || inCloud.imageUrl;
                             merged.cover = inCloud.cover || inCloud.imageUrl;
+                        }
+                        if (localItem.fileUrl && localItem.fileUrl !== "#" && !localItem.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                            merged.fileUrl = localItem.fileUrl;
+                        } else if (inCloud.fileUrl && !inCloud.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co")) {
+                            merged.fileUrl = inCloud.fileUrl;
                         }
                         if (!localItem.format && inCloud.format) merged.format = inCloud.format;
                     } else {
@@ -1086,22 +1095,42 @@ async function verifySmartboardSync(forceReload = false) {
                 localStorage.setItem("rotali_deleted_materials", JSON.stringify(Array.from(serverDeletedSet)));
             } catch (e) {}
 
-            // Sunucu listesini baz al (Admin ise ve henüz buluta gitmemiş yepyeni bir içerik varsa onu koru)
-            const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
-            const freshList = Array.from(serverMap.values());
-            if (isAdmin && !forceReload) {
-                currentList.forEach(loc => {
-                    if (loc && loc.id && !serverMap.has(loc.id) && !serverDeletedSet.has(loc.id) && loc.isNewLocal) {
-                        freshList.unshift(loc);
+            // 🌟 KULLANICI DEĞİŞİKLİKLERİ VE YEREL VERİLER KORUNUR (Kayıp ve sıfırlanma engellendi!)
+            const combinedSyncMap = new Map();
+            const overridesMap = (typeof getStoredMetadataOverrides === "function") ? getStoredMetadataOverrides() : {};
+
+            // 1. Önce yereldeki tüm kullanıcı materyallerini koru (kullanıcı yerel tercihi esastır)
+            currentList.forEach(loc => {
+                if (!loc || !loc.id || loc.id === "sys-deleted-registry" || serverDeletedSet.has(loc.id)) return;
+                let mItem = { ...loc };
+                if (serverMap.has(loc.id)) {
+                    const srv = serverMap.get(loc.id);
+                    mItem = { ...srv, ...loc };
+                    // Sadece yerelde eksik veya bozuk link varsa sunucudakini kullan
+                    if (srv.fileUrl && !srv.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && (!loc.fileUrl || loc.fileUrl === "#" || loc.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co"))) {
+                        mItem.fileUrl = srv.fileUrl;
                     }
-                });
+                    if (srv.imageUrl && !srv.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && (!loc.imageUrl || loc.imageUrl === "#" || loc.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co"))) {
+                        mItem.imageUrl = srv.imageUrl;
+                        mItem.kapakResmi = srv.kapakResmi || srv.imageUrl;
+                    }
+                }
+                if (overridesMap[loc.id]) {
+                    Object.assign(mItem, overridesMap[loc.id]);
+                }
+                combinedSyncMap.set(loc.id, mItem);
+            });
+
+            // 2. Sunucuda olup yerelde henüz bulunmayan ögeleri ekle
+            for (const [srvId, srvItem] of serverMap.entries()) {
+                if (!combinedSyncMap.has(srvId) && !serverDeletedSet.has(srvId)) {
+                    let item = { ...srvItem };
+                    if (overridesMap[srvId]) Object.assign(item, overridesMap[srvId]);
+                    combinedSyncMap.set(srvId, item);
+                }
             }
 
-            // Eski localStorage verisini sıfırla ve güncel veriyi yaz
-            try {
-                localStorage.removeItem("rotali_custom_materials");
-            } catch (e) {}
-
+            const freshList = Array.from(combinedSyncMap.values());
             APP_MATERIALS_CACHE = freshList;
             ROTALI_MATERIALS_CACHE = freshList;
             window.APP_MATERIALS_CACHE = freshList;
@@ -1849,7 +1878,7 @@ function resolveMaterialCover(item) {
     const cat = (item.category || "").toLowerCase();
     const format = (item.format || "").toLowerCase();
     const g = String(item.grade || "5").replace(/^grade-/, "").trim();
-    const isActualTextbook = (item.targetSection === "kitap" || cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi") || (item.id && String(item.id).startsWith("book-")));
+    const isActualTextbook = (cat === "ders-kitabi" || title.includes("ders kitabı") || title.includes("ders kitabi") || (item.id && String(item.id).startsWith("book-")));
 
     // 🌟 PDF Materyallerinde 1. Sayfa Kapağını Her Zaman Sentetik SVG'nin Önüne Al
     if (rawFile && (rawFile.toLowerCase().endsWith(".pdf") || rawFile.includes(".pdf") || format.includes("pdf"))) {
@@ -1913,6 +1942,8 @@ function resolveMaterialCover(item) {
         return "assets/ilk-ders-notu.jpg";
     }
     if (title === "ünite bilgilendirmeleri" || ((title.includes("işlenecek") || title.includes("islenec")) && !title.includes("slayt") && !title.includes("sunum") && !title.includes("not"))) {
+        if (rawImg && rawImg !== "#" && !rawImg.includes("kapak-") && !rawImg.includes("dlzlpstheykhrfeijiri.supabase.co")) return rawImg;
+        if (rawFile && (rawFile.endsWith(".jpg") || rawFile.endsWith(".png") || rawFile.endsWith(".webp") || rawFile.startsWith("data:image"))) return rawFile;
         return ["5", "6", "7", "8"].includes(g) ? `assets/${g}-sinif-islenecek-konular.jpg` : "assets/5-sinif-islenecek-konular.jpg";
     }
 
@@ -4283,7 +4314,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
     try {
         savedSubTab = localStorage.getItem(subTabKey) || sessionStorage.getItem(subTabKey);
     } catch(e) {}
-    let subTab = parts[1] || savedSubTab || "ders-notu";
+    let subTab = parts[1] || "ders-notu";
     if (subTab === "uniteler") subTab = "ders-notu";
     try {
         localStorage.setItem(subTabKey, subTab);
@@ -11967,7 +11998,7 @@ async function openDigitalBookModal(options = {}) {
     const isImageDoc = reqUrl.match(/\.(png|jpe?g|webp|svg)($|\?)/i) || 
                        reqFile.match(/\.(png|jpe?g|webp|svg)($|\?)/i) || 
                        reqFormat === "GÖRSEL" || reqFormat === "WEB BAĞLANTISI" || 
-                       options.id === "mat-5-islenecek-konular" || options.id === "mat-5-ilk-ders-notu";
+                       options.id === "mat-1789315860991" || options.id === "mat-5-islenecek-konular" || options.id === "mat-5-ilk-ders-notu";
     if (isImageDoc) {
         return openInPageDocumentModal(options.fileUrl || options.cover || options.imageUrl, options.title, options.fileName, true, options.fileUrl, options.cover);
     }
@@ -14557,7 +14588,9 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
 
     if (isInfographicOrUnitChart) {
         let activeImg = coverUrl;
-        if (checkTitle.includes("ilk ders") && (!activeImg || activeImg.includes("ilk-ders-notu.png") || activeImg.includes("assets/kapak-"))) {
+        if (found && (found.imageUrl || found.fileUrl) && !String(found.imageUrl || '').includes("kapak-") && String(found.imageUrl || found.fileUrl) !== "#") {
+            activeImg = found.imageUrl || found.fileUrl;
+        } else if (checkTitle.includes("ilk ders") && (!activeImg || activeImg.includes("ilk-ders-notu.png") || activeImg.includes("assets/kapak-"))) {
             activeImg = "assets/ilk-ders-notu.jpg";
         } else if (coverUrl && coverUrl.startsWith("data:image")) {
             activeImg = coverUrl;
@@ -18378,6 +18411,36 @@ async function handleAdvMaterialSubmit(e) {
                     try {
                         fileDataUrl = await readFileAsDataURL(currentUploadedFile);
                     } catch(err2) {}
+                }
+
+                // 🌟 Kalıcı CDN Deposu (GitHub Repo) Senkronizasyonu: Dosyayı kalıcı depoya yükle
+                if (fileDataUrl && fileDataUrl.startsWith("data:") && currentUploadedFile.size <= 15 * 1024 * 1024) {
+                    try {
+                        const syncApiUrl = (typeof window !== "undefined" && window.location && typeof window.location.hostname === "string" && window.location.hostname.includes("vercel.app")) 
+                            ? "/api/sync" 
+                            : "https://rotalifenci.vercel.app/api/sync";
+                        const fUpRes = await fetch(syncApiUrl, {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                                action: "upload_file",
+                                folder: "materials",
+                                fileName: `${materialId}_${finalFileName}`,
+                                base64Data: fileDataUrl
+                            })
+                        });
+                        if (fUpRes.ok) {
+                            const fUpData = await fUpRes.json();
+                            if (fUpData && fUpData.publicUrl) {
+                                externalUrl = fUpData.publicUrl;
+                                fileDataUrl = fUpData.publicUrl;
+                                hasBlob = false;
+                                console.log("✔ Dosya kalıcı GitHub CDN deposuna yüklendi:", externalUrl);
+                            }
+                        }
+                    } catch(fErr) {
+                        console.warn("GitHub file upload warning:", fErr);
+                    }
                 }
             }
 
