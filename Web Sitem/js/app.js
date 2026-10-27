@@ -50,6 +50,83 @@ window.saveStoredMetadataOverride = saveStoredMetadataOverride;
 window.getStoredMaterialsOrder = getStoredMaterialsOrder;
 window.saveStoredMaterialsOrder = saveStoredMaterialsOrder;
 
+// =============================================================
+// 🔄 SAYFA YENİLE UYARI BİLDİRİMİ (RELOAD PROMPT BANNER)
+// Sayfada herhangi bir değişiklik yapıldığında her zaman ekranda görünür
+// =============================================================
+function triggerHardPageReload() {
+    try {
+        const u = new URL(window.location.href);
+        u.searchParams.set("_rf", Date.now().toString());
+        window.location.replace(u.toString());
+    } catch(e) {
+        window.location.reload();
+    }
+}
+
+function dismissReloadPrompt() {
+    const banner = document.getElementById("rotali-reload-prompt-banner");
+    if (banner) {
+        banner.style.transition = "all 0.25s ease";
+        banner.style.opacity = "0";
+        banner.style.transform = "translate(-50%, 20px)";
+        setTimeout(() => banner.remove(), 250);
+    }
+}
+
+function showReloadPrompt(customMessage) {
+    let banner = document.getElementById("rotali-reload-prompt-banner");
+    if (!banner) {
+        banner = document.createElement("div");
+        banner.id = "rotali-reload-prompt-banner";
+        banner.className = "fixed bottom-20 lg:bottom-6 left-1/2 -translate-x-1/2 z-[999999] max-w-xl w-[94vw] sm:w-auto bg-slate-950/95 backdrop-blur-xl text-white border-2 border-amber-500/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-2xl flex items-center justify-between gap-3 sm:gap-4 ring-4 ring-amber-500/20 transition-all duration-300";
+        document.body.appendChild(banner);
+    }
+
+    const msg = customMessage || "Güncellemelerin ekranda tam ve eksiksiz görünmesi için lütfen sayfayı yenileyiniz.";
+
+    banner.innerHTML = `
+        <div class="flex items-center gap-3 min-w-0">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center text-lg sm:text-xl shrink-0 shadow-inner">
+                <i class="fa-solid fa-arrows-rotate fa-spin"></i>
+            </div>
+            <div class="min-w-0">
+                <div class="text-xs sm:text-sm font-black text-white flex items-center gap-1.5 truncate">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>Değişiklikler Kaydedildi</span>
+                </div>
+                <p class="text-[11px] sm:text-xs text-slate-300 font-medium truncate max-w-[210px] sm:max-w-md">
+                    ${msg}
+                </p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+            <button type="button" onclick="triggerHardPageReload()" class="px-3.5 sm:px-4 py-2 sm:py-2.5 bg-gradient-to-r from-red-600 via-rose-600 to-amber-600 hover:from-red-500 hover:to-amber-500 text-white font-black text-xs uppercase tracking-wider rounded-xl sm:rounded-2xl shadow-lg hover:shadow-red-500/30 transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-rotate-right text-xs"></i>
+                <span>Sayfayı Yenile</span>
+            </button>
+            <button type="button" onclick="dismissReloadPrompt()" class="w-8 h-8 rounded-xl bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white flex items-center justify-center text-xs transition-all cursor-pointer" title="Kapat">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+    `;
+
+    banner.style.display = "flex";
+    banner.style.opacity = "1";
+    banner.style.transform = "translate(-50%, 0)";
+}
+
+window.showReloadPrompt = showReloadPrompt;
+window.triggerHardPageReload = triggerHardPageReload;
+window.dismissReloadPrompt = dismissReloadPrompt;
+
+// Başka bir sekmeden veya pencereden gelen değişiklikleri dinle
+window.addEventListener("storage", function(e) {
+    if (e.key === "rotali_materials_sync_signal" || e.key === "rotali_custom_materials" || e.key === "rotali_materials_order") {
+        showReloadPrompt("Başka bir cihazdan veya sekmeden yeni içerik güncellendi! Lütfen sayfayı yenileyiniz.");
+    }
+});
+
 // 🖼️ Materyal Kapak Görselini Tam Ekran Yatay Görüntüleyici
 function openMaterialCoverModal(itemId) {
     let cover = "assets/kapak-5.jpg";
@@ -11092,6 +11169,9 @@ async function moveCustomMaterial(id, direction) {
 
     saveCustomMaterialsSafe(customList);
     showToast("↕️ Materyalin konumu ve sırası güncellendi.", "success");
+    setTimeout(() => {
+        showReloadPrompt("Materyalin konumu ve sırası güncellendi! Lütfen sayfayı yenileyiniz.");
+    }, 300);
 
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
         await CloudSyncManager.uploadToCloud(customList, true);
@@ -11130,6 +11210,9 @@ function deleteCustomMaterial(id) {
         }
 
         showToast("🗑️ Materyal anında ve kalıcı olarak silindi.", "info");
+        setTimeout(() => {
+            showReloadPrompt("Materyal silindi! Güncel listeyi görüntülemek için lütfen sayfayı yenileyiniz.");
+        }, 300);
 
         if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.deleteMaterial) {
             await CloudSyncManager.deleteMaterial(id, customList);
@@ -15662,6 +15745,9 @@ async function promptVideoUrlForMaterial() {
                 }
                 if (typeof showToast === "function") {
                     showToast("✅ Video bağlantısı başarıyla güncellendi!", "success");
+                    setTimeout(() => {
+                        showReloadPrompt("Video bağlantısı güncellendi! Lütfen sayfayı yenileyiniz.");
+                    }, 300);
                 }
                 openInPageVideoModal(cleanUrl, item.title, false, currentPlayingVideoMaterialId);
             }
@@ -18752,6 +18838,9 @@ async function handleAdvMaterialSubmit(e) {
         const gradesLabel = selectedGrades.map(g => g === "all" ? "Genel" : `${g}. Sınıf`).join(", ");
         showToast(`🎉 "${title}" başarıyla (${gradesLabel}) sınıflarına kaydedildi ve tüm cihazlara yayınlandı!`, "success");
         closeMaterialUploadModal();
+        setTimeout(() => {
+            showReloadPrompt(`"${title}" içeriği kaydedildi! Güncellemelerin eksiksiz görünmesi için lütfen sayfayı yenileyiniz.`);
+        }, 300);
 
         // Sayfayı birincil hedefe yönlendir ve anında yenile
         if (primaryGrade === "all") {
@@ -19100,6 +19189,9 @@ async function executeQuickMove(e, materialId) {
     if (modal) modal.remove();
 
     showToast(`✅ Materyal ${grade}. Sınıf • ${category} (${unitName}) bölümüne kalıcı olarak taşındı!`, "success");
+    setTimeout(() => {
+        showReloadPrompt(`Materyal ${grade}. Sınıf • ${category} bölümüne taşındı! Lütfen sayfayı yenileyiniz.`);
+    }, 300);
 
     // 4. Buluta kalıcı senkronize et
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
@@ -19189,6 +19281,9 @@ async function handleCardDrop(e, targetId) {
     }
 
     showToast("↕️ Materyalin sırası kalıcı olarak kaydedildi.", "success");
+    setTimeout(() => {
+        showReloadPrompt("Materyal sıralaması güncellendi! Sıralamanın kalıcı yansıması için lütfen sayfayı yenileyiniz.");
+    }, 300);
 
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
         await CloudSyncManager.uploadToCloud(customList, true);
