@@ -6,6 +6,16 @@ const GITHUB_REPO = "rotalifenci/rotalifenciweb";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
 const PERMANENTLY_REMOVED_IDS = new Set([
+    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
+    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
+    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
+    "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
+    "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
+    "not-7-1",
+    "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
+    "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
+    "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
+    "mat-0f645c5d-87ef-429b-add1-434b594c3ce6",
     "mat-test-5-1-1792875787663", "mat-test-5-1-1792854826132", "mat-test-5-1-1792854064641",
     "mat-5-unite-bilgi", "mat-1789331179066", "mat-1789331137891", "mat-1789233332632",
     "mat-5-semboller-video", "mat-1789234385646", "mat-1789331480440", "mat-1789233406841",
@@ -53,7 +63,7 @@ const PROTECTED_IDS = new Set([
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-uzay-ekspresi",
-    "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
+    "mat-6-islenecek-konular",
     ...Array.from({ length: 28 }, (_, i) => `mat-video-7-1-${String(i + 1).padStart(2, '0')}`),
     ...Array.from({ length: 24 }, (_, i) => `mat-video-6-1-${String(i + 1).padStart(2, '0')}`),
     ...Array.from({ length: 17 }, (_, i) => `mat-video-5-1-${String(i + 1).padStart(2, '0')}`)

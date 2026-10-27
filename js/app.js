@@ -191,10 +191,19 @@ const PROTECTED_MATERIAL_IDS = new Set([
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-uzay-ekspresi",
-    "mat-5-ilk-ders-notu", "mat-6-islenecek-konular", "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce"
+    "mat-6-islenecek-konular"
 ]);
 
 const PERMANENT_DELETED_MATERIAL_IDS = [
+    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
+    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
+    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
+    "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
+    "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
+    "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
+    "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
+    "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
+    "mat-0f645c5d-87ef-429b-add1-434b594c3ce6",
     "mat-test-5-1-1792875787663", "mat-test-5-1-1792854826132", "mat-test-5-1-1792854064641",
     "mat-5-unite-bilgi", "mat-1789331179066", "mat-1789331137891", "mat-1789233332632",
     "mat-5-semboller-video", "mat-1789234385646", "mat-1789331480440", "mat-1789233406841",
@@ -12827,24 +12836,46 @@ async function tryLoadPdfDocument(id, fileUrl) {
             cMapPacked: true
         };
 
+        let pdf = null;
+        if (typeof pdfData === "string" && pdfData.includes("assets/materials/")) {
+            const relCandidate = pdfData.replace(/.*assets\/materials\//, "assets/materials/");
+            try {
+                const headRes = await fetch(relCandidate, { method: "HEAD" });
+                if (headRes.ok) pdfData = relCandidate;
+            } catch(e) {}
+        }
+
         if (isDataBuffer && pdfData instanceof Uint8Array) {
             loadingTask = window.pdfjsLib.getDocument({
                 data: pdfData,
                 ...cMapOptions
             });
+            pdf = await loadingTask.promise;
         } else if (typeof pdfData === "string") {
-            loadingTask = window.pdfjsLib.getDocument({
-                url: pdfData,
-                rangeChunkSize: 131072, // 128KB parçalar
-                disableAutoFetch: true, // ⚡ 100MB MEB kitaplarının tamamını indirmeyi beklemez, sayfayı 1 saniyede açar!
-                disableStream: false,
-                ...cMapOptions
-            });
+            try {
+                loadingTask = window.pdfjsLib.getDocument({
+                    url: pdfData,
+                    rangeChunkSize: 131072,
+                    disableAutoFetch: false,
+                    disableStream: true,
+                    ...cMapOptions
+                });
+                pdf = await loadingTask.promise;
+            } catch(urlErr) {
+                console.warn("PDF stream açma başarısız, ArrayBuffer ile doğrudan yükleniyor:", urlErr);
+                const fetchRes = await fetch(pdfData, { mode: "cors" });
+                if (!fetchRes.ok) throw new Error("HTTP " + fetchRes.status);
+                const ab = await fetchRes.arrayBuffer();
+                loadingTask = window.pdfjsLib.getDocument({
+                    data: new Uint8Array(ab),
+                    ...cMapOptions
+                });
+                pdf = await loadingTask.promise;
+            }
         } else {
             loadingTask = window.pdfjsLib.getDocument(pdfData);
+            pdf = await loadingTask.promise;
         }
-
-        const pdf = await loadingTask.promise;
         DigitalBookState.pdfDoc = pdf;
         DigitalBookState.mode = "pdf";
         DigitalBookState.totalPages = pdf.numPages;
