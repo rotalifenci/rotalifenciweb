@@ -181,7 +181,33 @@ function readFileAsDataURL(file) {
 let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
+const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261028_0200";
+function ensureMultiDeviceSyncReset() {
+    try {
+        if (typeof localStorage !== "undefined" && localStorage.getItem("rotali_multi_device_sync_v") !== ROTALI_MULTI_DEVICE_SYNC_VERSION) {
+            const raw = localStorage.getItem("rotali_custom_materials");
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (Array.isArray(parsed)) {
+                        const localOnly = parsed.filter(m => m && m.isNewLocal === true);
+                        localStorage.setItem("rotali_custom_materials", JSON.stringify(localOnly));
+                    }
+                } catch (e) {
+                    localStorage.removeItem("rotali_custom_materials");
+                }
+            }
+            localStorage.removeItem("rotali_materials_order");
+            localStorage.removeItem("rotali_materials_metadata_overrides");
+            localStorage.setItem("rotali_multi_device_sync_v", ROTALI_MULTI_DEVICE_SYNC_VERSION);
+        }
+    } catch (e) {}
+}
+ensureMultiDeviceSyncReset();
+
 const PROTECTED_MATERIAL_IDS = new Set([
+    "mat-5-1-sunum-gunes-dunya-ay",
+    "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "mat-1789641166040",
     "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
     "mat-5-islenecek-konular",
@@ -434,10 +460,12 @@ async function loadCentralizedMaterials() {
         if (!localItem || !localItem.id || localItem.id === "sys-deleted-registry" || deletedIds.has(localItem.id)) return;
         
         let mergedItem = { ...localItem };
+        if (serverMap.size > 0 && !serverMap.has(localItem.id) && !localItem.isNewLocal) return;
         if (serverMap.has(localItem.id)) {
             const srv = serverMap.get(localItem.id);
             // Sunucu üzerine yerel veriyi yaz (srv önce, localItem sonra)
-            mergedItem = { ...srv, ...localItem };
+            const isLocalNewer = Boolean(localItem.isNewLocal || (localItem.updatedAt && srv.updatedAt && Date.parse(localItem.updatedAt) > Date.parse(srv.updatedAt)));
+            mergedItem = isLocalNewer ? { ...srv, ...localItem } : { ...localItem, ...srv };
             // Sadece yerelde eksik veya bozuk link varsa sunucudaki sağlam linki al
             if (srv.fileUrl && !srv.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && (!localItem.fileUrl || localItem.fileUrl === "#" || localItem.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co"))) {
                 mergedItem.fileUrl = srv.fileUrl;
@@ -769,7 +797,8 @@ const CloudSyncManager = {
                     if (cloudMap.has(localItem.id)) {
                         const inCloud = cloudMap.get(localItem.id);
                         // inCloud üzerine localItem yazılır (kullanıcı yerel tercihi esastır!)
-                        merged = { ...inCloud, ...localItem };
+                        const isLocalNewer = Boolean(localItem.isNewLocal || (localItem.updatedAt && inCloud.updatedAt && Date.parse(localItem.updatedAt) > Date.parse(inCloud.updatedAt)));
+                        merged = isLocalNewer ? { ...inCloud, ...localItem } : { ...localItem, ...inCloud };
                         if (inCloud.fileUrl && !inCloud.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && (!localItem.fileUrl || localItem.fileUrl === "#" || localItem.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co"))) {
                             merged.fileUrl = inCloud.fileUrl;
                         } else if (localItem.fileUrl && localItem.fileUrl.startsWith("data:") && (!inCloud.fileUrl || inCloud.fileUrl === "" || inCloud.fileUrl === "#")) {
@@ -792,6 +821,7 @@ const CloudSyncManager = {
                         }
                         if (!localItem.format && inCloud.format) merged.format = inCloud.format;
                     } else {
+                        if (!localItem.isNewLocal && cloudMap.size > 0) return;
                         hasNewLocalToUpload = true;
                     }
 
@@ -1199,9 +1229,11 @@ async function verifySmartboardSync(forceReload = false) {
             currentList.forEach(loc => {
                 if (!loc || !loc.id || loc.id === "sys-deleted-registry" || serverDeletedSet.has(loc.id)) return;
                 let mItem = { ...loc };
+                if (serverMap.size > 0 && !serverMap.has(loc.id) && !loc.isNewLocal) return;
                 if (serverMap.has(loc.id)) {
                     const srv = serverMap.get(loc.id);
-                    mItem = { ...srv, ...loc };
+                    const isLocalNewer = Boolean(loc.isNewLocal || (loc.updatedAt && srv.updatedAt && Date.parse(loc.updatedAt) > Date.parse(srv.updatedAt)));
+                    mItem = isLocalNewer ? { ...srv, ...loc } : { ...loc, ...srv };
                     // Sadece yerelde eksik veya bozuk link varsa sunucudakini kullan
                     if (srv.fileUrl && !srv.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") && (!loc.fileUrl || loc.fileUrl === "#" || loc.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co"))) {
                         mItem.fileUrl = srv.fileUrl;
@@ -1259,7 +1291,7 @@ window.updateSmartboardSyncBadge = updateSmartboardSyncBadge;
 // -------------------------------------------------------------
 // 📚 ROTALI FENCİ — ŞEMA VE ÖZEL MATERYAL HAVUZU
 // -------------------------------------------------------------
-const ROTALI_DATA_SCHEMA_VERSION = 20261018_01;
+const ROTALI_DATA_SCHEMA_VERSION = 20261028_02;
 
 function sanitizeMaterialItem(raw) {
     if (!raw || typeof raw !== "object") return null;

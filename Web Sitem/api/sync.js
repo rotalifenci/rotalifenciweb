@@ -1,6 +1,8 @@
 // Vercel Serverless Function: api/sync.js (and /api/save-materials.js)
 // Universal Cloud Sync & Permanent Repo Persistence for Rotalı Fenci (PC, Mobile, Pardus Smartboard)
 
+const fs = require("fs");
+const path = require("path");
 const GIST_ID = "a1bd259d8d4d9e04e93e4e038ef2b0c7";
 const GITHUB_REPO = "rotalifenci/rotalifenciweb";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
@@ -49,6 +51,8 @@ const PERMANENTLY_REMOVED_IDS = new Set([
 // KESİNLİKLE SİLİNEMEZ KORUMALI MATERYAL KİMLİKLERİ (Öğretmen / Kullanıcı materyalleri)
 const PROTECTED_IDS = new Set([
     "mat-1789641166040",
+    "mat-5-1-sunum-gunes-dunya-ay",
+    "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
     "mat-5-islenecek-konular",
     "mat-1789315860991",
@@ -181,7 +185,43 @@ module.exports = async function handler(req, res) {
 
             const deletedIds = (Array.isArray(parsed.deletedIds) ? parsed.deletedIds : []).filter(id => !PROTECTED_IDS.has(id));
             PERMANENTLY_REMOVED_IDS.forEach(pid => { if (!deletedIds.includes(pid) && !PROTECTED_IDS.has(pid)) deletedIds.push(pid); });
-            const cleanMats = (parsed.materials || []).filter(m => (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id));
+            const gistMats = (parsed.materials || []).filter(m => (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id));
+            let repoMats = [];
+            try {
+                const localJsonPath = path.join(process.cwd(), "data", "materials.json");
+                if (fs.existsSync(localJsonPath)) {
+                    repoMats = JSON.parse(fs.readFileSync(localJsonPath, "utf8"));
+                }
+            } catch (fsErr) {}
+            const mergedMap = new Map();
+            if (Array.isArray(repoMats)) {
+                repoMats.forEach(m => {
+                    if (m && m.id && ((!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id))) {
+                        mergedMap.set(m.id, m);
+                    }
+                });
+            }
+            gistMats.forEach(m => {
+                if (m && m.id && ((!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id))) {
+                    const st = mergedMap.get(m.id);
+                    if (st) {
+                        const combined = { ...st, ...m };
+                        if (st.fileUrl && st.fileUrl !== "#" && (!combined.fileUrl || combined.fileUrl === "#" || combined.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || st.fileUrl.includes("sunumlar/"))) {
+                            combined.fileUrl = st.fileUrl;
+                        }
+                        if (st.imageUrl && (!combined.imageUrl || combined.imageUrl === "#" || combined.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || combined.imageUrl.startsWith("data:image/svg+xml"))) {
+                            combined.imageUrl = st.imageUrl;
+                            combined.kapakResmi = st.kapakResmi || st.imageUrl;
+                            combined.cover = st.cover || st.imageUrl;
+                        }
+                        if (st.format === "İNTERAKTİF SUNUM" || st.format === "GÖRSEL") combined.format = st.format;
+                        mergedMap.set(m.id, combined);
+                    } else {
+                        mergedMap.set(m.id, m);
+                    }
+                }
+            });
+            const cleanMats = Array.from(mergedMap.values());
 
             return res.status(200).json({
                 success: true,
