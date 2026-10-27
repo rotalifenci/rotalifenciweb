@@ -1928,6 +1928,280 @@ async function extractCoverFromPdfSource(source) {
     }
 }
 
+
+// 🌟 16:9 Geniş Ekran Çalışma & Test Kapak Jeneratörü (Bölüm Adı ve Test Sayısını Benzersiz Yazar)
+function generateWorkCover16x9(item) {
+    if (!item) item = {};
+    const title = String(item.title || "").trim();
+    const titleL = title.toLowerCase();
+    const fmtL = String(item.format || "").toLowerCase();
+    const catL = String(item.category || "").toLowerCase();
+    const gStr = String(item.grade || "5").replace(/^grade-/, "").trim();
+    const gradeNum = parseInt(gStr, 10) || 5;
+
+    // 1. Bölüm Adı (Section Name) Tespiti
+    let sectionName = "KAZANIM YAPRAK TESTİ";
+    let sectionType = "test";
+    if (titleL.includes("açık uçlu") || titleL.includes("acik uclu") || titleL.includes("klasik") || fmtL.includes("açık uçlu") || fmtL.includes("acik uclu")) {
+        sectionName = "AÇIK UÇLU KLASİK SINAVI";
+        sectionType = "sinav";
+    } else if (titleL.includes("deneme") || fmtL.includes("deneme") || catL === "denemeler") {
+        sectionName = titleL.includes("lgs") ? "LGS DENEME SINAVI" : "GENEL DENEME SINAVI";
+        sectionType = "deneme";
+    } else if (titleL.includes("yazılı") || titleL.includes("yazili") || fmtL.includes("yazılı")) {
+        sectionName = "YAZILIYA HAZIRLIK SINAVI";
+        sectionType = "yazili";
+    } else if (titleL.includes("etkinlik") || fmtL.includes("etkinlik") || catL === "etkinlikler") {
+        sectionName = "KAZANIM ETKİNLİĞİ";
+        sectionType = "etkinlik";
+    } else if (titleL.includes("çalışma") || titleL.includes("calisma") || fmtL.includes("çalışma")) {
+        sectionName = "ÇALIŞMA KAĞIDI";
+        sectionType = "calisma";
+    } else if (fmtL.includes("test") || catL === "soru-bankasi") {
+        sectionName = "KAZANIM YAPRAK TESTİ";
+        sectionType = "test";
+    }
+
+    // 2. Kaçıncı Test / Sınav / Çalışma Sayısı Tespiti
+    let workNum = "1";
+    const numMatch = title.match(/[-–]\s*(\d+)/) || 
+                     title.match(/(?:sınav|sinav|test|deneme|etkinlik|çalışma|calisma)\s*[-–]?\s*(\d+)/i) ||
+                     title.match(/(\d+)\.\s*(?:sınav|sinav|test|deneme|etkinlik|çalışma|calisma)/i);
+    if (numMatch && numMatch[1]) {
+        workNum = numMatch[1];
+    } else if (item.testNumber) {
+        workNum = String(item.testNumber);
+    }
+
+    let workBadgeText = "TEST – " + workNum;
+    if (sectionType === "sinav" || sectionType === "yazili") {
+        workBadgeText = workNum + ". SINAV";
+    } else if (sectionType === "deneme") {
+        workBadgeText = "DENEME – " + workNum;
+    } else if (sectionType === "etkinlik") {
+        workBadgeText = "ETKİNLİK – " + workNum;
+    } else if (sectionType === "calisma") {
+        workBadgeText = "ÇALIŞMA – " + workNum;
+    }
+
+    // 3. Soru Sayısı Tespiti
+    let questionText = "30 ÖZGÜN SORU";
+    const qMatch = title.match(/(\d+)\s*(?:soru|soruluk)/i) || (item.desc && item.desc.match(/(\d+)\s*(?:soru|soruluk)/i));
+    if (qMatch && qMatch[1]) {
+        questionText = qMatch[1] + " ÖZGÜN SORU";
+    } else if (item.questionCount) {
+        questionText = item.questionCount + " ÖZGÜN SORU";
+    } else if (sectionType === "etkinlik" || sectionType === "calisma") {
+        questionText = "UYGULAMALI ETKİNLİK";
+    }
+
+    // 4. Ünite ve Başlık Bilgisi
+    let unitText = String(item.unit || "").trim();
+    if (!unitText || unitText.toLowerCase().includes("ünite")) {
+        const uMatch = title.match(/(\d+)\.\s*ünite[:\s-]*([^–\-(]+)/i);
+        if (uMatch) {
+            unitText = uMatch[1] + ". ÜNİTE: " + uMatch[2].trim().toUpperCase();
+        }
+    }
+    if (!unitText) {
+        unitText = gradeNum + ". SINIF FEN BİLİMLERİ";
+    }
+
+    // 5. Renk Teması (Her test ve çalışma numarasına göre farklılaştırılmış palet)
+    const themes = [
+        { bg1: "#0f172a", bg2: "#1e1b4b", glow: "#38bdf8", accent: "#38bdf8", tagBg: "#0284c7" },
+        { bg1: "#180c2e", bg2: "#311042", glow: "#c084fc", accent: "#e879f9", tagBg: "#9333ea" },
+        { bg1: "#06221d", bg2: "#064e3b", glow: "#34d399", accent: "#10b981", tagBg: "#059669" },
+        { bg1: "#250f08", bg2: "#451a03", glow: "#fbbf24", accent: "#f59e0b", tagBg: "#d97706" },
+        { bg1: "#1e1b4b", bg2: "#2e1065", glow: "#818cf8", accent: "#6366f1", tagBg: "#4f46e5" },
+        { bg1: "#1f0914", bg2: "#4c0519", glow: "#fb7185", accent: "#f43f5e", tagBg: "#e11d48" }
+    ];
+
+    const themeHash = (gradeNum * 3 + (parseInt(workNum, 10) || 1) * 5 + sectionName.length) % themes.length;
+    const theme = themes[themeHash];
+
+    const safeUnit = unitText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const safeSection = sectionName.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const safeBadge = workBadgeText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    const safeQ = questionText.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" width="100%" height="100%">' +
+      '<defs>' +
+        '<radialGradient id="bgGlow_' + gradeNum + '_' + workNum + '" cx="50%" cy="40%" r="65%">' +
+          '<stop offset="0%" stop-color="' + theme.bg2 + '" />' +
+          '<stop offset="60%" stop-color="' + theme.bg1 + '" />' +
+          '<stop offset="100%" stop-color="#030712" />' +
+        '</radialGradient>' +
+        '<linearGradient id="goldTitle_' + gradeNum + '_' + workNum + '" x1="0%" y1="0%" x2="0%" y2="100%">' +
+          '<stop offset="0%" stop-color="#ffffff" />' +
+          '<stop offset="40%" stop-color="#fffbeb" />' +
+          '<stop offset="80%" stop-color="#fef08a" />' +
+          '<stop offset="100%" stop-color="' + theme.accent + '" />' +
+        '</linearGradient>' +
+        '<linearGradient id="badgeGrad_' + gradeNum + '_' + workNum + '" x1="0%" y1="0%" x2="100%" y2="100%">' +
+          '<stop offset="0%" stop-color="' + theme.tagBg + '" />' +
+          '<stop offset="100%" stop-color="' + theme.accent + '" />' +
+        '</linearGradient>' +
+        '<filter id="glowFilt_' + gradeNum + '_' + workNum + '" x="-20%" y="-20%" width="140%" height="140%">' +
+          '<feGaussianBlur stdDeviation="6" result="blur" />' +
+          '<feMerge><feMergeNode /><feMergeNode in="SourceGraphic" /></feMerge>' +
+        '</filter>' +
+        '<clipPath id="frameClip_' + gradeNum + '_' + workNum + '">' +
+          '<rect x="0" y="0" width="960" height="540" rx="20" ry="20" />' +
+        '</clipPath>' +
+      '</defs>' +
+      '<g clip-path="url(#frameClip_' + gradeNum + '_' + workNum + ')">' +
+        '<rect width="960" height="540" fill="url(#bgGlow_' + gradeNum + '_' + workNum + ')" />' +
+        '<circle cx="850" cy="100" r="280" fill="' + theme.glow + '" opacity="0.18" filter="url(#glowFilt_' + gradeNum + '_' + workNum + ')" />' +
+        '<circle cx="120" cy="440" r="240" fill="' + theme.accent + '" opacity="0.15" filter="url(#glowFilt_' + gradeNum + '_' + workNum + ')" />' +
+        '<g fill="#ffffff" opacity="0.6">' +
+          '<circle cx="80" cy="70" r="1.5" /><circle cx="160" cy="110" r="2" opacity="0.8" />' +
+          '<circle cx="310" cy="60" r="1" /><circle cx="480" cy="40" r="2" />' +
+          '<circle cx="650" cy="80" r="1.5" /><circle cx="820" cy="60" r="2" />' +
+          '<circle cx="900" cy="220" r="1.5" /><circle cx="870" cy="420" r="2" />' +
+          '<circle cx="620" cy="500" r="1.5" /><circle cx="280" cy="490" r="2" />' +
+          '<circle cx="100" cy="380" r="1" /><circle cx="70" cy="220" r="2" />' +
+        '</g>' +
+        '<g transform="translate(480, 52)">' +
+          '<rect x="-250" y="-18" width="500" height="36" rx="18" fill="#0f172a" fill-opacity="0.9" stroke="' + theme.glow + '" stroke-width="1.6" />' +
+          '<text x="0" y="5" font-family=\"Inter, sans-serif\" font-size="13" font-weight="900" fill="#f8fafc" letter-spacing="2" text-anchor="middle">' +
+            gradeNum + '. SINIF FEN BİLİMLERİ • MEB 2026' +
+          '</text>' +
+        '</g>' +
+        '<text x="480" y="116" font-family=\"Inter, sans-serif\" font-size="17" font-weight="800" fill="#94a3b8" letter-spacing="2" text-anchor="middle">' +
+          safeUnit +
+        '</text>' +
+        '<g transform="translate(480, 170)">' +
+          '<rect x="-120" y="-20" width="240" height="40" rx="12" fill="url(#badgeGrad_' + gradeNum + '_' + workNum + ')" stroke="#ffffff" stroke-width="1.8" filter="url(#glowFilt_' + gradeNum + '_' + workNum + ')" />' +
+          '<text x="0" y="7" font-family=\"Montserrat, sans-serif\" font-size="18" font-weight="900" fill="#ffffff" letter-spacing="3" text-anchor="middle">' +
+            '⭐ ' + safeBadge + ' ⭐' +
+          '</text>' +
+        '</g>' +
+        '<g filter="url(#glowFilt_' + gradeNum + '_' + workNum + ')">' +
+          '<text x="480" y="255" font-family=\"Montserrat, sans-serif\" font-size="44" font-weight="900" fill="#030712" letter-spacing="1.5" text-anchor="middle">' +
+            safeSection +
+          '</text>' +
+          '<text x="480" y="250" font-family=\"Montserrat, sans-serif\" font-size="44" font-weight="900" fill="url(#goldTitle_' + gradeNum + '_' + workNum + ')" letter-spacing="1.5" text-anchor="middle">' +
+            safeSection +
+          '</text>' +
+        '</g>' +
+        '<text x="480" y="302" font-family=\"Inter, sans-serif\" font-size="20" font-weight="800" fill="' + theme.glow + '" letter-spacing="3" text-anchor="middle">' +
+          safeBadge + ' • CEVAP ANAHTARLI VE ÇÖZÜMLÜ' +
+        '</text>' +
+        '<g transform="translate(480, 368)">' +
+          '<rect x="-340" y="-26" width="680" height="52" rx="14" fill="#0f172a" fill-opacity="0.9" stroke="' + theme.glow + '" stroke-width="1.2" stroke-opacity="0.5" />' +
+          '<g transform="translate(-220, 0)">' +
+            '<rect x="-65" y="-15" width="130" height="30" rx="8" fill="#1e1b4b" stroke="' + theme.accent + '" stroke-width="1" />' +
+            '<text x="0" y="5" font-family=\"Inter, sans-serif\" font-size="12" font-weight="900" fill="' + theme.accent + '" text-anchor="middle">' +
+              '📝 ' + safeQ +
+            '</text>' +
+          '</g>' +
+          '<g transform="translate(0, 0)">' +
+            '<rect x="-75" y="-15" width="150" height="30" rx="8" fill="#1e1b4b" stroke="#fbbf24" stroke-width="1" />' +
+            '<text x="0" y="5" font-family=\"Inter, sans-serif\" font-size="12" font-weight="900" fill="#fbbf24" text-anchor="middle">' +
+              '🎯 KAZANIM UYUMLU' +
+            '</text>' +
+          '</g>' +
+          '<g transform="translate(220, 0)">' +
+            '<rect x="-70" y="-15" width="140" height="30" rx="8" fill="#1e1b4b" stroke="#34d399" stroke-width="1" />' +
+            '<text x="0" y="5" font-family=\"Inter, sans-serif\" font-size="12" font-weight="900" fill="#34d399" text-anchor="middle">' +
+              '✨ MAARİF MODELİ' +
+            '</text>' +
+          '</g>' +
+        '</g>' +
+        '<g transform="translate(0, 470)">' +
+          '<rect width="960" height="70" fill="#030712" fill-opacity="0.92" />' +
+          '<line x1="0" y1="0" x2="960" y2="0" stroke="' + theme.glow + '" stroke-width="2" />' +
+          '<g transform="translate(50, 42)">' +
+            '<circle cx="12" cy="-6" r="12" fill="' + theme.tagBg + '" />' +
+            '<text x="32" y="-1" font-family=\"Montserrat, sans-serif\" font-size="15" font-weight="900" fill="#ffffff" letter-spacing="1.5">ROTALI FENCİ</text>' +
+            '<text x="150" y="-1" font-family=\"Inter, sans-serif\" font-size="11" font-weight="700" fill="#94a3b8">• ÖZGÜN AKADEMİK DERS MATERYALİ</text>' +
+          '</g>' +
+          '<g transform="translate(910, 42)">' +
+            '<rect x="-190" y="-16" width="190" height="30" rx="8" fill="#1e293b" stroke="#334155" stroke-width="1" />' +
+            '<text x="-95" y="4" font-family=\"Inter, sans-serif\" font-size="11" font-weight="800" fill="#f1f5f9" text-anchor="middle">MEB MAARİF MODELİ</text>' +
+          '</g>' +
+        '</g>' +
+        '<rect x="2" y="2" width="956" height="536" rx="18" ry="18" fill="none" stroke="' + theme.glow + '" stroke-width="2.5" stroke-opacity="0.4" />' +
+      '</g>' +
+    '</svg>';
+
+    return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// 🌟 Kart Üzerindeki Rozeti (Bölüm Adı ve Test Sayısı) Dinamik ve Hatasız Üretir
+function getWorkBadgeText(item) {
+    if (!item) return "";
+    const titleL = String(item.title || "").toLowerCase();
+    const fmtL = String(item.format || "").toLowerCase();
+    const catL = String(item.category || "").toLowerCase();
+
+    const isTestOrExam = (item.downloadCount && (item.downloadCount.includes("Soru") || item.downloadCount.includes("Test") || item.downloadCount.includes("Sınav"))) ||
+                         fmtL.includes("yaprak test") || fmtL.includes("açık uçlu") || fmtL.includes("acik uclu") ||
+                         fmtL.includes("deneme") || fmtL.includes("sınav") || fmtL.includes("sinav") ||
+                         catL === "soru-bankasi" || catL === "denemeler" || catL === "etkinlikler";
+
+    if (!isTestOrExam) return "";
+
+    let rawBadge = String(item.downloadCount || "").trim();
+
+    // Numara tespiti
+    let num = "1";
+    const numMatch = (item.title || "").match(/[-–]\s*(\d+)/) || 
+                     (item.title || "").match(/(?:sınav|sinav|test|deneme|etkinlik|çalışma|calisma)\s*[-–]?\s*(\d+)/i) ||
+                     (item.title || "").match(/(\d+)\.\s*(?:sınav|sinav|test|deneme|etkinlik|çalışma|calisma)/i);
+    if (numMatch && numMatch[1]) {
+        num = numMatch[1];
+    } else if (item.testNumber) {
+        num = String(item.testNumber);
+    }
+
+    // Soru sayısı tespiti
+    let qCount = "";
+    const qMatch = (item.title || "").match(/(\d+)\s*(?:soru|soruluk)/i) || (item.desc && item.desc.match(/(\d+)\s*(?:soru|soruluk)/i));
+    if (qMatch && qMatch[1]) {
+        qCount = qMatch[1] + " Soru";
+    } else if (item.questionCount) {
+        qCount = item.questionCount + " Soru";
+    }
+
+    const isOpenEnded = fmtL.includes("açık uçlu") || fmtL.includes("acik uclu") || titleL.includes("açık uçlu") || titleL.includes("acik uclu") || titleL.includes("klasik");
+    const isYaprakTest = fmtL.includes("yaprak test") || titleL.includes("yaprak test");
+    const isDeneme = fmtL.includes("deneme") || titleL.includes("deneme");
+    const isEtkinlik = fmtL.includes("etkinlik") || titleL.includes("etkinlik") || catL === "etkinlikler";
+    const isCalisma = fmtL.includes("çalışma") || titleL.includes("çalışma") || fmtL.includes("calisma");
+
+    if (isOpenEnded) {
+        return "📝 " + (qCount || "30 Soru") + " • Klasik Sınav-" + num;
+    }
+    if (isYaprakTest) {
+        return "📝 " + (qCount || "30 Soru") + " • Test-" + num;
+    }
+    if (isDeneme) {
+        return "🎯 " + (qCount || "20 Soru") + " • Deneme-" + num;
+    }
+    if (isEtkinlik) {
+        return "🧩 Etkinlik-" + num;
+    }
+    if (isCalisma) {
+        return "📄 Çalışma-" + num;
+    }
+
+    if (rawBadge && !rawBadge.includes("Test-1")) {
+        return rawBadge;
+    }
+    return "📝 " + (qCount || "10 Soru") + " • Test-" + num;
+}
+
+function renderWorkBadgeHTML(item) {
+    const text = getWorkBadgeText(item);
+    if (!text) return "";
+    return '<div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">' +
+      '<span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>' +
+      '<span class="tracking-wider uppercase">' + text + '</span>' +
+    '</div>';
+}
+
 function resolveMaterialCover(item) {
     if (!item) return "assets/kapak-5.jpg";
 
@@ -1937,11 +2211,36 @@ function resolveMaterialCover(item) {
     const testFmtLower = String(item.format || "").toLowerCase();
     const testGradeStr = String(item.grade || "5").replace(/^grade-/, "").trim();
 
-    // 🌟 5. Sınıf 1. Ünite Yaprak Test & Açık Uçlu Sınavı Master 3D Kapağı
-    if ((testCatLower === "soru-bankasi" || testCatLower === "denemeler" || testFmtLower.includes("test") || testFmtLower.includes("sınav") || testFmtLower.includes("sinav") || (item.fileUrl && item.fileUrl.includes("testler/")))) {
-        if (testGradeStr === "5" && (item.targetSection === "1" || testUnitLower.includes("güneş") || testUnitLower.includes("gunes") || testTitleLower.includes("güneş") || testTitleLower.includes("gunes"))) {
+    // 🌟 Test ve Sınav Kapaklarını Bölüm Adı ve Sınav/Test Numarasına Göre Ayrıştır (Aynı Kapak Olmasın)
+    const isOpenEnded = testTitleLower.includes("açık uçlu") || testTitleLower.includes("acik uclu") || testTitleLower.includes("klasik") || testFmtLower.includes("açık uçlu") || testFmtLower.includes("acik uclu");
+    const isYaprakTest = testTitleLower.includes("yaprak test") || testFmtLower.includes("yaprak test");
+    const isTestOrExam = (testCatLower === "soru-bankasi" || testCatLower === "denemeler" || testFmtLower.includes("test") || testFmtLower.includes("sınav") || testFmtLower.includes("sinav") || (item.fileUrl && item.fileUrl.includes("testler/")) || isOpenEnded || isYaprakTest);
+
+    if (isTestOrExam) {
+        // 5. Sınıf 1. Ünite Açık Uçlu Klasik Sınavı Master 16:9 Kapağı
+        if (testGradeStr === "5" && (item.targetSection === "1" || testUnitLower.includes("güneş") || testUnitLower.includes("gunes") || testTitleLower.includes("güneş") || testTitleLower.includes("gunes")) && isOpenEnded) {
+            return "assets/covers/5-1-acik-uclu-sinav-1.svg";
+        }
+
+        // 5. Sınıf 1. Ünite Yaprak Testi - 1 Kapağı
+        if (testGradeStr === "5" && (item.targetSection === "1" || testUnitLower.includes("güneş") || testUnitLower.includes("gunes") || testTitleLower.includes("güneş") || testTitleLower.includes("gunes")) && isYaprakTest) {
             return "assets/covers/5-1-yaprak-testi-1.jpg";
         }
+
+        // Eğer atanmış görsel varsa ve hatalı bir yaprak test/açık uçlu eşleşmesi değilse
+        const rawExplicitImg = (item.kapakResmi || item.imageUrl || item.cover || "").trim();
+        if (rawExplicitImg && rawExplicitImg !== "#" && rawExplicitImg !== "null" && !rawExplicitImg.includes("cdn.eba.gov.tr") && !rawExplicitImg.includes("placeholder")) {
+            if (isOpenEnded && rawExplicitImg.includes("yaprak-testi")) {
+                // Açık uçlu sınava yaprak testi kapağı verilmişse geçersiz kıl
+            } else if (isYaprakTest && rawExplicitImg.includes("acik-uclu")) {
+                // Yaprak teste açık uçlu kapağı verilmişse geçersiz kıl
+            } else {
+                return rawExplicitImg;
+            }
+        }
+
+        // Tüm diğer test/sınav/çalışmalarda bölüm adını ve test sayısını benzersiz yazan 16:9 kapak üret
+        return generateWorkCover16x9(item);
     }
     if (!item) return "assets/kapak-5.jpg";
     if (typeof window !== "undefined" && window._pdfThumbCache && item.id && window._pdfThumbCache[item.id]) {
@@ -2335,13 +2634,8 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                     <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                     <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                     <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                 </div>
 
@@ -2981,13 +3275,8 @@ function renderHomeRecentMaterialsSection() {
                                 <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                 <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                 <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                             </div>
                             <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">${(item.desc || '').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}</p>
@@ -3154,13 +3443,8 @@ function renderRecentMaterialsPage(container, filterGrade = "all", filterCat = "
                                             <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                             <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${item.grade || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                         </div>
                                         <p class="text-xs text-slate-600 font-medium leading-relaxed line-clamp-3 mb-4">
@@ -4899,13 +5183,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                             <img src="${cover}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                             <img src="${cover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="this.src='assets/kapak-${grade.number || 5}.jpg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                         </div>
                                         <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2">
@@ -5035,13 +5314,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                             <img src="${resolveMaterialCover(item)}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                                             <img src="${resolveMaterialCover(item)}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || (isSunum ? 'PPTX SUNUM' : 'DOKÜMAN')}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                                         </div>
 
@@ -5141,13 +5415,8 @@ function renderGradeDersNotuAccordion(grade, subData) {
                                                 <img src="${coverImg}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                                 <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                                <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                                 <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed font-medium line-clamp-3">${item.desc || 'Laboratuvar güvenlik işaretleri ve deney kılavuzu.'}</p>
@@ -5779,12 +6048,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     <img src="${itemCover}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                                     <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
+                                ${renderWorkBadgeHTML(item)}
                                                     <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                                     <img src="${itemCover}" data-pdf-item-id="${item.id}" data-pdf-url="${item.fileUrl || ''}" alt="${item.title}" onerror="handleImageCoverError(this, '${(item.title || 'Materyal').replace(/'/g, "\\'")}', '${item.format || 'DOKÜMAN'}', '${(item.unit || '').replace(/'/g, "\\'")}', '${grade.number || 5}', '${(item.fileName || '').replace(/'/g, "\\'")}', '${item.id}')" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                                     </div>
@@ -5963,13 +6227,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             <img src="${coverImg}" alt="" aria-hidden="true" onerror="this.style.display='none'" class="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-70 pointer-events-none select-none" />
                                             <div class="absolute inset-0 bg-slate-950/20 pointer-events-none"></div>
                                 <!-- Soru Sayısı ve Test Numarası Rozeti -->
-                                ${(item.downloadCount && (item.downloadCount.includes('Soru') || item.downloadCount.includes('Test'))) || item.format === 'YAPRAK TEST' || (item.format && item.format.includes('AÇIK UÇLU')) || item.category === 'soru-bankasi' || item.category === 'denemeler' ? `
-                                    <div class="absolute bottom-2.5 right-2.5 z-20 px-3 py-1 rounded-xl bg-slate-950/90 backdrop-blur-md border border-cyan-400/70 text-white font-black text-[11px] shadow-2xl flex items-center gap-1.5 pointer-events-none">
-                                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                                        <span class="tracking-wider uppercase">${item.downloadCount || '📝 10 Soru • Test-1'}</span>
-                                    </div>
-                                ` : ''}
-                                            <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
+                                ${renderWorkBadgeHTML(item)}
+                                                    <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                             <img src="${coverImg}" alt="${item.title}" onerror="this.src='assets/lab-guvenligi.svg'" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy">
                                             </div>
                                             <p class="text-xs text-slate-500 mb-4 leading-relaxed line-clamp-2 font-medium">${item.desc || 'Laboratuvar uygulama föyü ve simülasyonu.'}</p>
