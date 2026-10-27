@@ -12360,6 +12360,10 @@ async function openDigitalBookModal(options = {}) {
 
     const isRealBook = (options.id && String(options.id).startsWith("book-")) || (options.category === "ders-kitabi") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabı") || String(bookTitle).toLocaleLowerCase("tr-TR").includes("ders kitabi");
     const id = options.id || (isRealBook ? `book-${grade}` : "");
+    if (id === "mat-5-1-sunum-gunes-dunya-ay" || id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" || (fileUrl && String(fileUrl).includes("sunumlar/"))) {
+        openFullScreenPresentationModal({ ...options, id, title: bookTitle, grade, fileUrl: fileUrl || (id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" ? "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html" : "sunumlar/5-sinif-1-unite-gunes-dunya-ay.html"), isHtmlEmbed: true });
+        return;
+    }
     const coverUrl = options.cover || options.imageUrl || (["5", "6", "7", "8"].includes(grade) ? `assets/kapak-${grade}.jpg` : "assets/kapak-5.jpg");
 
     // EBA CDN & Google Drive otomatik fallback (5, 6, 7. sınıflar EBA CDN; 8. sınıf resmi MEB Ders Kitabı Google Drive PDF)
@@ -13959,7 +13963,7 @@ async function openFullScreenPresentationModal(item) {
     } else if (item.id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" && (!targetUrl || targetUrl === "#" || (!targetUrl.includes("sunumlar/") && !targetUrl.toLowerCase().endsWith(".pdf") && !targetUrl.toLowerCase().endsWith(".pptx")))) {
         targetUrl = "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html";
     }
-    if (targetUrl && !targetUrl.startsWith("http") && !targetUrl.startsWith("data:") && !targetUrl.startsWith("blob:") && targetUrl !== "#") {
+    if (targetUrl && !targetUrl.includes("sunumlar/") && !targetUrl.endsWith(".html") && !targetUrl.startsWith("http") && !targetUrl.startsWith("data:") && !targetUrl.startsWith("blob:") && targetUrl !== "#") {
         try {
             targetUrl = new URL(targetUrl, window.location.href).href;
         } catch (e) {}
@@ -14033,7 +14037,7 @@ function renderFullScreenPresentationModal() {
     }
 
     const { item, currentSlide, totalSlides, slides, viewMode, solutionRevealed } = presentationModalState;
-    const cur = slides[currentSlide - 1] || slides[0];
+    const cur = (slides && (slides[currentSlide - 1] || slides[0])) || { type: "cover", badge: "DERS SUNUMU", title: (item && item.title) || "Ders Sunumu", subtitle: "", points: [] };
     const isHtmlEmbed = !!(presentationModalState.isHtmlEmbed || (item.rawUrl && item.rawUrl.includes(".html")));
     const isWebUrl = !isHtmlEmbed && item.rawUrl && item.rawUrl.startsWith("http") && (typeof window === "undefined" || !window.location || !window.location.host || !item.rawUrl.includes(window.location.host));
     const googleDocsViewerUrl = isWebUrl ? (item.rawUrl.endsWith(".pptx") ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.rawUrl)}` : `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true`) : "";
@@ -14042,8 +14046,8 @@ function renderFullScreenPresentationModal() {
     let bodyHtml = "";
     if (isHtmlEmbed) {
         bodyHtml = `
-            <div class="flex-1 w-full h-full relative bg-slate-950 flex items-center justify-center p-0 overflow-hidden">
-                <iframe id="presentation-html-frame" src="${item.rawUrl}" class="w-full h-full border-0 bg-black" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+            <div class="flex-1 w-full h-full relative bg-slate-950 flex items-center justify-center p-0 overflow-hidden" style="position:relative; flex:1 1 0%; min-height:0; width:100%; height:100%; background:#02040a; overflow:hidden;">
+                <iframe id="presentation-html-frame" src="${item.rawUrl}${item.rawUrl && !item.rawUrl.includes('?') ? '?v=20261028_0115' : ''}" class="w-full h-full border-0 bg-black" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0; display:block; background:#02040a;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen onload="try { if (this.contentWindow) { this.contentWindow.focus(); if (typeof this.contentWindow.scaleStage === 'function') this.contentWindow.scaleStage(); if (typeof this.contentWindow.handleResize === 'function') this.contentWindow.handleResize(); this.contentWindow.dispatchEvent(new Event('resize')); } } catch(e){}"></iframe>
             </div>
         `;
     } else if (viewMode === "embed" && isWebUrl) {
@@ -14680,6 +14684,34 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 
     // 📚 1. ÖNCELİK: PDF DERS NOTLARI VE SUNUM PDF'LERİ
+    // 🚀 0. ÖNCELİK: İNTERAKTİF HTML5 AKILLI TAHTA SUNUMLARI (3D Sinematik Sunum)
+    const isUploadedCustomPdfOrPpt = targetUrl && (targetUrl.startsWith("assets/materials/") || targetUrl.startsWith("data:application/pdf") || targetUrl.startsWith("blob:")) && (targetUrl.toLowerCase().endsWith(".pdf") || targetUrl.toLowerCase().endsWith(".pptx") || targetUrl.startsWith("data:application/pdf"));
+    if (id === "mat-5-1-sunum-gunes-dunya-ay" && !isUploadedCustomPdfOrPpt) {
+        targetUrl = "sunumlar/5-sinif-1-unite-gunes-dunya-ay.html";
+    } else if (id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" && !isUploadedCustomPdfOrPpt) {
+        targetUrl = "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html";
+    }
+    const isPriorityHtmlPresentation = !isUploadedCustomPdfOrPpt && (
+        (targetUrl && targetUrl.includes("sunumlar/")) ||
+        id === "mat-5-1-sunum-gunes-dunya-ay" ||
+        id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" ||
+        ((checkFormat.includes("İNTERAKTİF SUNUM") || checkFormat.includes("HTML SUNUM") || checkCat === "ders-sunumu") && !(targetUrl && targetUrl.includes("oyunlar/")) && (checkFile.endsWith(".html") || (targetUrl && targetUrl.endsWith(".html"))))
+    );
+    if (isPriorityHtmlPresentation && targetUrl && targetUrl !== "#") {
+        await openFullScreenPresentationModal({
+            id: (found && found.id) || id,
+            title: (found && found.title) || title || "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay (3D Sinematik Akıllı Tahta Sunumu)",
+            fileName: (found && found.fileName) || fileName || "5-sinif-1-unite-gunes-dunya-ay.html",
+            fileUrl: targetUrl,
+            format: "İNTERAKTİF SUNUM",
+            unit: (found && found.unit) || "1. Ünite: Güneş, Dünya ve Ay",
+            grade: gradeStr,
+            cover: coverUrl,
+            isHtmlEmbed: true
+        });
+        return;
+    }
+
     // Başlığında "Sunum" veya "Slayt" geçse bile, formatı PDF veya dosya uzantısı .pdf olan TÜM dokümanlar doğrudan dijital okuyucuda açılır!
     const isPdfFile = checkFormat.includes("PDF") ||
                       checkFile.endsWith(".pdf") ||

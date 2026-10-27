@@ -2604,16 +2604,26 @@
         function scaleStage() {
             const stage = document.getElementById('presentation-stage');
             if (!stage) return;
-            const vw = window.innerWidth;
-            const vh = window.innerHeight;
-            const scale = Math.min(vw / 1920, vh / 1080);
+            const vw = window.innerWidth || document.documentElement.clientWidth || 1280;
+            const vh = window.innerHeight || document.documentElement.clientHeight || 720;
+            if (vw <= 10 || vh <= 10) {
+                setTimeout(scaleStage, 60);
+                return;
+            }
+            const scale = Math.max(0.15, Math.min(vw / 1920, vh / 1080));
             stage.style.transform = `scale(${scale})`;
         }
+        window.scaleStage = scaleStage;
         window.addEventListener('resize', scaleStage);
+        window.addEventListener('load', scaleStage);
         window.addEventListener('DOMContentLoaded', () => {
             scaleStage();
+            setTimeout(scaleStage, 50);
+            setTimeout(scaleStage, 200);
+            setTimeout(scaleStage, 600);
             initStars();
         });
+        scaleStage();
 
         // Web Audio API Sentezleyici
         function getAudioContext() {
@@ -2867,6 +2877,18 @@
             }
             draw();
         }
+        window.nextSlide = nextSlide;
+        window.prevSlide = prevSlide;
+        window.toggleDrawer = toggleDrawer;
+        window.showSlide = showSlide;
+        window.addEventListener('message', (e) => {
+            if (e.data && e.data.type === 'ROTALI_SLIDE_CMD') {
+                if (e.data.command === 'nextSlide') nextSlide();
+                else if (e.data.command === 'prevSlide') prevSlide();
+                else if (e.data.command === 'toggleDrawer') toggleDrawer();
+                else if (e.data.command === 'showSlide') showSlide(e.data.arg);
+            }
+        });
     </script>
 </body>
 </html>

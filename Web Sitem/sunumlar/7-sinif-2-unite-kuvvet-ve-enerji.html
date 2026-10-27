@@ -2722,13 +2722,26 @@
             if (!stage) return;
             const targetW = 1920;
             const targetH = 1080;
-            const winW = window.innerWidth;
-            const winH = window.innerHeight;
-            const scale = Math.min(winW / targetW, winH / targetH);
+            const winW = window.innerWidth || document.documentElement.clientWidth || 1280;
+            const winH = window.innerHeight || document.documentElement.clientHeight || 720;
+            if (winW <= 10 || winH <= 10) {
+                setTimeout(handleResize, 60);
+                return;
+            }
+            const scale = Math.max(0.15, Math.min(winW / targetW, winH / targetH));
             stage.style.transform = "scale(" + scale + ")";
         }
+        window.handleResize = handleResize;
+        window.scaleStage = handleResize;
         window.addEventListener('resize', handleResize);
         window.addEventListener('load', handleResize);
+        window.addEventListener('DOMContentLoaded', () => {
+            handleResize();
+            setTimeout(handleResize, 50);
+            setTimeout(handleResize, 200);
+            setTimeout(handleResize, 600);
+        });
+        handleResize();
 
         // Web Audio Chime
         let audioCtx = null;
