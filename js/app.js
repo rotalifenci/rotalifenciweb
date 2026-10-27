@@ -4611,7 +4611,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                     ${getTabCustomCount('bilim-insanlari') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-amber-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
                                 </div>
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>🔭 BİLİMİN ROTASI</span>
+                                    <span>🔭 BİLİMİN ROTASINI ÇİZENLER</span>
                                     ${getTabCustomCount('bilim-insanlari') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'bilim-insanlari' ? 'bg-amber-100 text-amber-800' : 'bg-white/30 text-white'}">${getTabCustomCount('bilim-insanlari')}</span>` : ''}
                                 </span>
                             </a>
@@ -16063,7 +16063,7 @@ const INTERACTIVE_GAMES_POOL = {
         ]
     },
     "oyun-7-galileo": {
-        title: "🔭 7. Sınıf Bilimin Rotası: Galileo ve Teleskop Keşif Oyunu",
+        title: "🔭 7. Sınıf Bilimin Rotasını Çizenler: Galileo ve Teleskop Keşif Oyunu",
         grade: "7. Sınıf",
         desc: "Galileo ile gökyüzünü tara, teleskop türlerini ve derin uzayı keşfet!",
         questions: [

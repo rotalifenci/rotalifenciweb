@@ -1073,7 +1073,7 @@ function getGradeSubSectionsData(gradeNumber) {
             { id: "oyun-6-cark", title: "6. Sınıf Fen Çarkıfeleği & Terim Yarışması", icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, 6. sınıf fen sorularını bilip puanları topla!", type: "İnteraktif Çark", badge: "Yarışma" }
         ] : gNum === 7 ? [
             { id: "oyun-7-hucre", title: "7. Sınıf Hücre ve Organeller 3D Eşleştirme Oyunu", icon: "fa-solid fa-dna", desc: "Mitokondri, kloroplast, ribozom ve çekirdeği görevleriyle eşleştirerek hücreyi tamamla.", type: "Hücre Simülatörü", badge: "3D Biyoloji" },
-            { id: "oyun-7-galileo", title: "7. Sınıf Bilimin Rotası: Galileo ve Teleskop Keşif Oyunu", icon: "fa-solid fa-user-astronaut", desc: "Galileo ile gökyüzünü tara, Jüpiter uydularını ve Ay kraterlerini keşfet.", type: "Bilim Oyunu", badge: "Astronomi" },
+            { id: "oyun-7-galileo", title: "7. Sınıf Bilimin Rotasını Çizenler: Galileo ve Teleskop Keşif Oyunu", icon: "fa-solid fa-user-astronaut", desc: "Galileo ile gökyüzünü tara, Jüpiter uydularını ve Ay kraterlerini keşfet.", type: "Bilim Oyunu", badge: "Astronomi" },
             { id: "oyun-7-cark", title: "7. Sınıf Fen Çarkıfeleği & Terim Yarışması", icon: "fa-solid fa-dharmachakra", desc: "Çarkı çevir, 7. sınıf fen terimlerini bilip şampiyon ol!", type: "İnteraktif Çark", badge: "Yarışma" }
         ] : [
             { id: "oyun-8-passaparola", title: "8. Sınıf LGS Fen Passaparola Terim Yarışması (A'dan Z'ye)", icon: "fa-solid fa-bullseye", desc: "LGS Fen Bilimleri kavramlarını A'dan Z'ye 24 soruda bil, LGS şampiyonu ol!", type: "LGS Passaparola", badge: "🔥 LGS Özel" },
