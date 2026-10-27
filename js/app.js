@@ -187,27 +187,35 @@ const PROTECTED_MATERIAL_IDS = new Set([
     "mat-5-islenecek-konular",
     "mat-1789315860991",
     "mat-5-1-sim-dunyanin-5-katmani", "mat-5-1-oyun-gunesi-kesfediyorum-3d", "mat-5-1-oyun-ayin-evreleri-3d", "mat-5-1-oyun-kozmik-kasif-3d", "mat-5-1-oyun-kozmik-kosu-3d",
-     "mat-6-2-sim-kuvvet-laboratuvari", "mat-7-1-sim-yildiz-laboratuvari", "mat-7-2-sim-is-laboratuvari", "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
+    "mat-6-2-sim-kuvvet-laboratuvari", "mat-7-1-sim-yildiz-laboratuvari", "mat-7-2-sim-is-laboratuvari", "mat-7-1-oyun-uzaydan-kacis-3d",
+    "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
     "builtin-oyun-6-uzay-ekspresi",
-    "mat-6-islenecek-konular"
+    "mat-6-islenecek-konular",
+    // İlk ders notu (5, 6, 7, 8. Sınıflar)
+    "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
+    "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
+    "mat-0f645c5d-87ef-429b-add1-434b594c3ce6",
+    "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
+    // Laboratuvar Güvenlik Sembolleri Kaçış (5, 6, 7, 8. Sınıflar)
+    "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
+    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
+    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
+    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
+    // Laboratuvar Konu Anlatım Görselleri (5, 6, 7, 8. Sınıflar)
+    "mat-5-lab-semboller-gorsel", "mat-6-lab-semboller-gorsel", "mat-7-lab-semboller-gorsel", "mat-8-lab-semboller-gorsel",
+    "mat-5-lab-malzemeler-gorsel", "mat-6-lab-malzemeler-gorsel", "mat-7-lab-malzemeler-gorsel", "mat-8-lab-malzemeler-gorsel",
+    "mat-5-lab-kurallar-gorsel", "mat-6-lab-kurallar-gorsel", "mat-7-lab-kurallar-gorsel", "mat-8-lab-kurallar-gorsel"
 ]);
 
 const PERMANENT_DELETED_MATERIAL_IDS = [
-    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
-    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
-    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
     "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
     "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
-    "mat-e14e0858-c3cc-4048-a701-4ecc168c05ce",
-    "mat-78acf1fd-5c5c-4d37-8994-40818cdfc18f",
-    "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
-    "mat-0f645c5d-87ef-429b-add1-434b594c3ce6",
     "mat-test-5-1-1792875787663", "mat-test-5-1-1792854826132", "mat-test-5-1-1792854064641",
     "mat-5-unite-bilgi", "mat-1789331179066", "mat-1789331137891", "mat-1789233332632",
     "mat-5-semboller-video", "mat-1789234385646", "mat-1789331480440", "mat-1789233406841",
-    "mat-1789233618512", "mat-1789074183232", "mat-1789412649246", "mat-5-lab-guvenlik-gorsel",
+    "mat-1789233618512", "mat-1789074183232", "mat-1789412649246",
     "mat-1789426038463", "mat-1789495187673", "mat-1789502325405", "mat-1789424515381",
     "mat-1789424685585", "mat-1789494668619", "mat-1789494808381", "mat-1789494840096",
     "mat-1789494872749", "mat-1789494922903", "mat-1789494959416", "mat-1789495047295",
@@ -229,7 +237,7 @@ const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-1789589856366", "mat-d9a27a70-3be2-4b52-8b91-9cb3a60b9593", "mat-1789425983469",
     "mat-fadfd179-2f25-4f73-a961-13c15412e719", "mat-1789641072264", "mat-40370417-37fa-40a3-b7b1-31d5b801b2c4",
     "mat-62cbb7dd-172e-4bff-a28b-9c0c62dcd019", "lab-8-1", "lab-8-2", "mat-5-lab-kacis-gemini",
-    "mat-e817c59c-9d3a-4098-b70f-fd51ff54a523", "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
+    "mat-e817c59c-9d3a-4098-b70f-fd51ff54a523",
     "lab-5-guide", "mat-37e3be89-e0a9-48e8-9d32-2d52c61bb37a", "mat-cd5c84b1-2806-4462-b796-5e1f964f53d0",
     "mat-1789535615671", "lab-5-sim", "mat-2f1d1514-88a0-460f-a856-1d8e19a7310d",
     "mat-b0bf2fd9-7101-4962-b4ff-3c70f0257009", "mat-b30e5f27-431d-408f-8027-509e26e77e1a",
@@ -239,7 +247,8 @@ const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
     "mat-4e34f261-c437-4ec5-98d2-776e49ffac4c",
     "mat-66ecb5d9-e086-4b48-823b-911f27cdbcc1", "mat-04e87bdc-a9ca-49fc-810e-08c53fc4eb81",
-    "mat-9717d459-d55c-46aa-8098-ed67611c90f8", "mat-1789665265173-g8"
+    "mat-9717d459-d55c-46aa-8098-ed67611c90f8", "mat-1789665265173-g8",
+    "builtin-oyun-7-uzaydan-kacis"
 ];
 
 function getDeletedMaterialIds() {
@@ -693,7 +702,9 @@ const CloudSyncManager = {
             });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
             activeDeletedSet.add("mat-5-unite-bilgi");
-            activeDeletedSet.add("mat-5-lab-guvenlik-gorsel");
+            if (typeof PROTECTED_MATERIAL_IDS !== "undefined") {
+                PROTECTED_MATERIAL_IDS.forEach(prot => activeDeletedSet.delete(prot));
+            }
 
             // 2. Cihazdaki yerel materyalleri al ve silinmişleri HEMEN temizle
             let localMaterials = [];
@@ -1102,8 +1113,7 @@ async function verifySmartboardSync(forceReload = false) {
         const serverDeletedSet = new Set([
             ...(typeof getDeletedMaterialIds === "function" ? getDeletedMaterialIds() : []),
             ...apiDeletedIds,
-            "mat-5-unite-bilgi",
-            "mat-5-lab-guvenlik-gorsel"
+            "mat-5-unite-bilgi"
         ].filter(id => !(typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id))));
 
         const serverMap = new Map();
@@ -5652,17 +5662,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     badge: "🌟 1. Ünite Başyapıtı",
                     fileUrl: "oyunlar/yildiz-laboratuvari.html",
                     kapakResmi: "assets/yildiz-laboratuvari-kapak.svg"
-                },
-                {
-                    id: "builtin-oyun-7-uzaydan-kacis",
-                    title: "7. Sınıf Uzaydan Kaçış: Gizemli İstasyon (3D)",
-                    icon: "fa-solid fa-satellite",
-                    desc: "Yörünge-7 İstasyonu'ndaki 6 bilimsel güvenlik kilidini uzay araştırmaları bilginle çöz, Dünya'ya dönüş kapsülüyle eve dön!",
-                    type: "3D Kaçış Odası",
-                    format: "3D KAÇIŞ ODASI",
-                    badge: "🌟 1. Ünite Başyapıt Oyunu",
-                    fileUrl: "oyunlar/uzaydan-kacis-3d.html",
-                    kapakResmi: "assets/uzaydan-kacis-3d-kapak.svg"
                 }
             ],
             "2": [
@@ -6151,12 +6150,13 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <!-- Özel Eklenen Lab Oyunları -->
+                            <!-- Özel Eklenen Lab Oyunları -->
                                 ${customList.filter(m => {
                                     const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
                                     if (gClean !== "all" && gClean !== String(grade.number)) return false;
                                     if (m.id && (m.id === `lab-${grade.number}-guide` || m.id === `lab-${grade.number}-sim`)) return false;
-                                    if (!matchesSubTabCategory(m, "egitsel-oyunlar") && m.category !== "egitsel-oyunlar" && m.category !== "oyunlar") return false;
+                                    const isLabEscapeGame = (m.fileUrl === "oyun-lab-kacis" || String(m.title || "").toLowerCase().includes("kaçış"));
+                                    if (!isLabEscapeGame && !matchesSubTabCategory(m, "egitsel-oyunlar") && m.category !== "egitsel-oyunlar" && m.category !== "oyunlar") return false;
                                     const sec = getMaterialTargetSection(m);
                                     return sec === "lab" || m.category === "laboratuvar";
                                 }).map(item => {
