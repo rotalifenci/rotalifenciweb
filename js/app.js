@@ -13954,6 +13954,11 @@ async function openFullScreenPresentationModal(item) {
     if (!item) return;
 
     let targetUrl = item.fileUrl || item.downloadUrl || item.rawUrl || "";
+    if (item.id === "mat-5-1-sunum-gunes-dunya-ay" && (!targetUrl || targetUrl === "#" || (!targetUrl.includes("sunumlar/") && !targetUrl.toLowerCase().endsWith(".pdf") && !targetUrl.toLowerCase().endsWith(".pptx")))) {
+        targetUrl = "sunumlar/5-sinif-1-unite-gunes-dunya-ay.html";
+    } else if (item.id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" && (!targetUrl || targetUrl === "#" || (!targetUrl.includes("sunumlar/") && !targetUrl.toLowerCase().endsWith(".pdf") && !targetUrl.toLowerCase().endsWith(".pptx")))) {
+        targetUrl = "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html";
+    }
     if (targetUrl && !targetUrl.startsWith("http") && !targetUrl.startsWith("data:") && !targetUrl.startsWith("blob:") && targetUrl !== "#") {
         try {
             targetUrl = new URL(targetUrl, window.location.href).href;
@@ -13990,7 +13995,7 @@ async function openFullScreenPresentationModal(item) {
             rawUrl: targetUrl
         },
         currentSlide: 1,
-        totalSlides: isHtmlEmbed ? 41 : slides.length,
+        totalSlides: isHtmlEmbed ? (fileId === "mat-7-2-sunum-kuvvet-ve-enerji-3d" || targetUrl.includes("7-sinif-2-unite") ? 48 : 41) : slides.length,
         slides: slides,
         viewMode: isHtmlEmbed ? "html" : (isEmbeddablePresentation ? "embed" : "slides"),
         isHtmlEmbed: isHtmlEmbed,
@@ -14029,11 +14034,10 @@ function renderFullScreenPresentationModal() {
 
     const { item, currentSlide, totalSlides, slides, viewMode, solutionRevealed } = presentationModalState;
     const cur = slides[currentSlide - 1] || slides[0];
-    const isWebUrl = item.rawUrl && item.rawUrl.startsWith("http");
+    const isHtmlEmbed = !!(presentationModalState.isHtmlEmbed || (item.rawUrl && item.rawUrl.includes(".html")));
+    const isWebUrl = !isHtmlEmbed && item.rawUrl && item.rawUrl.startsWith("http") && (typeof window === "undefined" || !window.location || !window.location.host || !item.rawUrl.includes(window.location.host));
     const googleDocsViewerUrl = isWebUrl ? (item.rawUrl.endsWith(".pptx") ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.rawUrl)}` : `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true`) : "";
     const hasDownload = item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "";
-
-    const isHtmlEmbed = !!(presentationModalState.isHtmlEmbed || (item.rawUrl && item.rawUrl.includes(".html")));
 
     let bodyHtml = "";
     if (isHtmlEmbed) {
@@ -14235,8 +14239,12 @@ function renderFullScreenPresentationModal() {
                 <button type="button" onclick="${isHtmlEmbed ? "sendPresentationCommand('toggleDrawer')" : "toggleStandardPresentationDrawer()"}" class="px-3.5 py-2 sm:px-4 sm:py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 flex items-center gap-2 cursor-pointer shadow-sm transition-all" title="Ünite Rotaları ve Bölümleri Göster">
                     <i class="fa-solid fa-compass text-amber-400 text-sm sm:text-base"></i> <span class="hidden sm:inline">Ünite Rotaları</span>
                 </button>
-                ${isWebUrl ? `
-                    <button type="button" onclick="togglePresentationViewMode()"${p1}` : ''}
+                ${isWebUrl && !isHtmlEmbed ? `
+                    <button type="button" onclick="togglePresentationViewMode()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid ${viewMode === 'embed' ? 'fa-table-cells' : 'fa-globe'}"></i>
+                        <span class="hidden md:inline">${viewMode === 'embed' ? 'Slayt Modu' : 'Web Önizleme'}</span>
+                    </button>
+                ` : ''}
 
                 ${hasDownload && !isHtmlEmbed ? `
                     <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer" title="Sunumu İndir / Cihazda Aç">
@@ -14259,7 +14267,7 @@ function renderFullScreenPresentationModal() {
         <div class="px-3 sm:px-6 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 shrink-0 z-50">
             <div class="flex items-center gap-2">
                 <span class="text-amber-400 font-bold flex items-center gap-1.5">
-                    <i class="fa-solid fa-chalkboard-user"></i> ${isHtmlEmbed ? '5. Sınıf • 1. Ünite: Güneş, Dünya ve Ay (3D Sinematik Sunum)' : 'Akıllı Tahta Sunum Modu'}
+                    <i class="fa-solid fa-chalkboard-user"></i> ${isHtmlEmbed ? (item.title || 'Akıllı Tahta Sunum Modu') : 'Akıllı Tahta Sunum Modu'}
                 </span>
                 <span class="hidden lg:inline text-slate-600">|</span>
                 <span class="hidden lg:inline text-[11px] text-slate-400">
@@ -14708,9 +14716,15 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     }
 
     // 🚀 1.8 🌟 İNTERAKTİF HTML5 AKILLI TAHTA SUNUMLARI (3D Sinematik Sunum)
+    if (id === "mat-5-1-sunum-gunes-dunya-ay" && (!targetUrl || targetUrl === "#" || (!targetUrl.includes("sunumlar/") && !targetUrl.toLowerCase().endsWith(".pdf") && !targetUrl.toLowerCase().endsWith(".pptx")))) {
+        targetUrl = "sunumlar/5-sinif-1-unite-gunes-dunya-ay.html";
+    } else if (id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" && (!targetUrl || targetUrl === "#" || (!targetUrl.includes("sunumlar/") && !targetUrl.toLowerCase().endsWith(".pdf") && !targetUrl.toLowerCase().endsWith(".pptx")))) {
+        targetUrl = "sunumlar/7-sinif-2-unite-kuvvet-ve-enerji.html";
+    }
     const isHtmlPresentation = (
         targetUrl.includes("sunumlar/") ||
         id === "mat-5-1-sunum-gunes-dunya-ay" ||
+        id === "mat-7-2-sunum-kuvvet-ve-enerji-3d" ||
         ((checkFormat.includes("İNTERAKTİF SUNUM") || checkFormat.includes("HTML SUNUM") || checkCat === "ders-sunumu") && !targetUrl.includes("oyunlar/") && (checkFile.endsWith(".html") || targetUrl.endsWith(".html")))
     );
 
@@ -18899,7 +18913,7 @@ async function handleAdvMaterialSubmit(e) {
                     const compressed = await compressImageIfNeeded(currentUploadedFile);
                     if (compressed) {
                         fileDataUrl = compressed;
-                    } else if (currentUploadedFile.size <= 10 * 1024 * 1024) {
+                    } else if (currentUploadedFile.size <= 45 * 1024 * 1024) {
                         fileDataUrl = await readFileAsDataURL(currentUploadedFile);
                     }
                 } catch(e) {
@@ -18910,7 +18924,7 @@ async function handleAdvMaterialSubmit(e) {
                 }
 
                 // 🌟 Kalıcı CDN Deposu (GitHub Repo) Senkronizasyonu: Dosyayı kalıcı depoya yükle
-                if (fileDataUrl && fileDataUrl.startsWith("data:") && currentUploadedFile.size <= 15 * 1024 * 1024) {
+                if (fileDataUrl && fileDataUrl.startsWith("data:") && currentUploadedFile.size <= 45 * 1024 * 1024) {
                     try {
                         const syncApiUrl = (typeof window !== "undefined" && window.location && typeof window.location.hostname === "string" && window.location.hostname.includes("vercel.app")) 
                             ? "/api/sync" 
