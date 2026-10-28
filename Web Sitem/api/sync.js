@@ -8,6 +8,14 @@ const GITHUB_REPO = "rotalifenci/rotalifenciweb";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
 const PERMANENTLY_REMOVED_IDS = new Set([
+    "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
+    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
+    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
+    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
+    "mat-5-lab-kurallar-gorsel",
+    "mat-6-lab-kurallar-gorsel",
+    "mat-7-lab-kurallar-gorsel",
+    "mat-8-lab-kurallar-gorsel",
     "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
     "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
     "not-7-1",
@@ -69,14 +77,9 @@ const PROTECTED_IDS = new Set([
     "mat-0f645c5d-87ef-429b-add1-434b594c3ce6",
     "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
     // Laboratuvar Güvenlik Sembolleri Kaçış (5, 6, 7, 8. Sınıflar)
-    "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
-    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
-    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
-    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
     // Laboratuvar Konu Anlatım Görselleri (5, 6, 7, 8. Sınıflar)
     "mat-5-lab-semboller-gorsel", "mat-6-lab-semboller-gorsel", "mat-7-lab-semboller-gorsel", "mat-8-lab-semboller-gorsel",
     "mat-5-lab-malzemeler-gorsel", "mat-6-lab-malzemeler-gorsel", "mat-7-lab-malzemeler-gorsel", "mat-8-lab-malzemeler-gorsel",
-    "mat-5-lab-kurallar-gorsel", "mat-6-lab-kurallar-gorsel", "mat-7-lab-kurallar-gorsel", "mat-8-lab-kurallar-gorsel",
     ...Array.from({ length: 28 }, (_, i) => `mat-video-7-1-${String(i + 1).padStart(2, '0')}`),
     ...Array.from({ length: 24 }, (_, i) => `mat-video-6-1-${String(i + 1).padStart(2, '0')}`),
     ...Array.from({ length: 17 }, (_, i) => `mat-video-5-1-${String(i + 1).padStart(2, '0')}`)
