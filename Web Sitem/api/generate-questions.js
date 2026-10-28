@@ -1,5 +1,7 @@
 // Vercel Serverless Function: POST /api/generate-questions
 const CANDIDATE_MODELS = [
+  "gemini-2.5-flash",
+  "gemini-2.0-flash",
   "gemini-3.5-flash-lite",
   "gemini-3.8-flash",
   "gemini-3.1-flash-lite",
@@ -168,15 +170,19 @@ module.exports = async (req, res) => {
       selected_outcomes = [],
       question_count = 5,
       difficulty = "Karma (Dengeli)",
-      question_type = "multiple_choice"
+      question_type = "multiple_choice",
+      source_files = [],
+      source_text = ""
     } = req.body || {};
 
     const outcomesList = Array.isArray(selected_outcomes) && selected_outcomes.length > 0
       ? selected_outcomes
       : (req.body && req.body.learning_outcome ? [req.body.learning_outcome] : []);
 
-    if (outcomesList.length === 0) {
-      return res.status(400).json({ error: "Lütfen en az bir öğrenme çıktısı seçiniz veya belirtiniz." });
+    const hasSourceFiles = (Array.isArray(source_files) && source_files.length > 0) || Boolean(source_text && String(source_text).trim());
+
+    if (outcomesList.length === 0 && !hasSourceFiles) {
+      return res.status(400).json({ error: "Lütfen en az bir öğrenme çıktısı seçiniz veya kaynak dosya yükleyiniz." });
     }
 
     const FALLBACK_KEY = Buffer.from("QVEuQWI4Uk42SVV1RzRyV25fS2VHb1VCcWxNR1UtVGpvdjZvTVdNYmN2eGt1OFNrSm1UZnc=", "base64").toString("utf8");
@@ -188,7 +194,35 @@ module.exports = async (req, res) => {
       return res.status(500).json({ error: "GEMINI_API_KEY ortam değişkeni tanımlanmamış." });
     }
 
-    const outcomesText = outcomesList.map((o, idx) => `${idx + 1}. ${o}`).join('\n');
+    const outcomesText = outcomesList.length > 0
+      ? outcomesList.map((o, idx) => `${idx + 1}. ${o}`).join('\n')
+      : "Yüklenen kaynak dosyadaki konu ve kazanımları esas al.";
+
+    // Kaynak dosyalardan çıkarılan metinleri birleştir
+    let combinedSourceText = String(source_text || "").trim();
+    const inlineParts = [];
+
+    if (Array.isArray(source_files)) {
+      source_files.forEach((sf, i) => {
+        if (!sf) return;
+        if (sf.extractedText && String(sf.extractedText).trim()) {
+          combinedSourceText += `\n\n--- KAYNAK DOSYA ${i + 1}: ${sf.name || 'Belge'} ---\n${String(sf.extractedText).trim().slice(0, 18000)}`;
+        }
+        if (sf.base64Data && sf.mimeType && (sf.mimeType.startsWith("image/") || sf.mimeType === "application/pdf")) {
+          const cleanBase64 = String(sf.base64Data).includes(",")
+            ? String(sf.base64Data).split(",")[1]
+            : String(sf.base64Data);
+          if (cleanBase64 && cleanBase64.length < 8 * 1024 * 1024) {
+            inlineParts.push({
+              inlineData: {
+                mimeType: sf.mimeType,
+                data: cleanBase64
+              }
+            });
+          }
+        }
+      });
+    }
 
     let typeSpecificInstructions = "";
     if (question_type === "short_answer") {
@@ -209,11 +243,19 @@ module.exports = async (req, res) => {
 - "type" alanına "multiple_choice" yaz.`;
     }
 
+    const sourceInstructionBlock = (combinedSourceText || inlineParts.length > 0)
+      ? `\nKAYNAK DOSYA VE OCR TALİMATI:
+- Kullanıcı soru üretimi için kaynak dosya/görsel yüklemiştir.
+- Eklenen görsellerdeki (OCR ile metin, tablo, deney şeması) ve belgelerdeki bilgileri dikkatlice oku ve analiz et.
+- Soruları doğrudan bu kaynak içerikteki bilimsel bilgiler, kavramlar ve kazanımlar üzerinden özgünleştirerek hazırla.\n${combinedSourceText ? `\nKAYNAK METİN İÇERİĞİ:\n${combinedSourceText}\n` : ''}`
+      : "";
+
     const systemPrompt = `Sen Milli Eğitim Bakanlığı (MEB) müfredatına ve yeni nesil soru yazım standartlarına tam hakim, uzman bir ${grade}. Sınıf ${subject} soru yazarısın.
 GÖREVİN:
-Verilen sınıf seviyesi (${grade}. Sınıf), ders (${subject}), seçilen öğrenme çıktıları ve İSTENEN SORU TÜRÜNE UYGUN, görsel ve pedagojik kalitede sorular üretmek.
+Verilen sınıf seviyesi (${grade}. Sınıf), ders (${subject}), seçilen öğrenme çıktıları, varsa yüklenen kaynak dosyalar ve İSTENEN SORU TÜRÜNE UYGUN, görsel ve pedagojik kalitede sorular üretmek.
 
 ${typeSpecificInstructions}
+${sourceInstructionBlock}
 
 GÖRSEL KURALLARI:
 - Her soru için "visual_svg" alanında soruya ait bilimsel şekli veya deney düzeneğini gösteren GEÇERLİ bir inline SVG kodu üret.
@@ -260,6 +302,11 @@ SADECE geçerli JSON dizisi döndür.`;
     let responseText = null;
     let lastError = null;
 
+    const requestParts = [
+      { text: `${systemPrompt}\n\n${userPrompt}` },
+      ...inlineParts
+    ];
+
     for (const modelName of CANDIDATE_MODELS) {
       try {
         const url = `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${apiKey}`;
@@ -270,7 +317,7 @@ SADECE geçerli JSON dizisi döndür.`;
             contents: [
               {
                 role: 'user',
-                parts: [{ text: `${systemPrompt}\n\n${userPrompt}` }]
+                parts: requestParts
               }
             ],
             generationConfig: {
@@ -329,7 +376,7 @@ SADECE geçerli JSON dizisi döndür.`;
         D: cleanTurkishAndLatex(q.options?.D || "")
       } : {},
       correct_answer: cleanTurkishAndLatex((q.correct_answer || "").trim()),
-      learning_outcome: q.learning_outcome || outcomesList[0],
+      learning_outcome: q.learning_outcome || outcomesList[0] || "Kaynak Belge Kazanımı",
       difficulty: q.difficulty || difficulty,
       explanation: cleanTurkishAndLatex(q.explanation || "")
     }));
