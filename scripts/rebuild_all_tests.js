@@ -1,0 +1,1367 @@
+const fs = require('fs');
+const path = require('path');
+
+function unescapeHtml(str) {
+  if (!str) return '';
+  return str
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'");
+}
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function parseQuestionsFromHtml(html) {
+  const parts = html.split('<div class="question-block"');
+  const questions = [];
+
+  for (let i = 1; i < parts.length; i++) {
+    const part = parts[i];
+    const attrEnd = part.indexOf('>');
+    const attrStr = part.substring(0, attrEnd);
+    const innerHtml = part.substring(attrEnd + 1);
+
+    const qidMatch = attrStr.match(/data-qid="([^"]*)"/);
+    const typeMatch = attrStr.match(/data-type="([^"]*)"/);
+    const correctMatch = attrStr.match(/data-correct="([^"]*)"/);
+    const explMatch = attrStr.match(/data-explanation="([^"]*)"/);
+
+    const qid = qidMatch ? qidMatch[1] : (questions.length + 1);
+    const type = typeMatch ? typeMatch[1] : 'multiple_choice';
+    const correct = correctMatch ? unescapeHtml(correctMatch[1]) : '';
+    const explanation = explMatch ? unescapeHtml(explMatch[1]) : '';
+
+    // Visual SVG
+    let visualSvg = '';
+    const visualMatch = innerHtml.match(/<div class="question-visual-box">([\s\S]*?)<\/div>/);
+    if (visualMatch) {
+      visualSvg = visualMatch[1].trim();
+    }
+
+    // Question text
+    let questionText = '';
+    const textMatch = innerHtml.match(/<div class="q-text">([\s\S]*?)<\/div>/);
+    if (textMatch) {
+      questionText = unescapeHtml(textMatch[1].trim());
+    }
+
+    // Options if multiple choice
+    let options = null;
+    if (type === 'multiple_choice') {
+      options = {};
+      const optRegex = /<label class="opt-label"[^>]*data-opt="([ABCD])"[^>]*>[\s\S]*?<span class="opt-text">([\s\S]*?)<\/span>/g;
+      let optMatch;
+      while ((optMatch = optRegex.exec(innerHtml)) !== null) {
+        options[optMatch[1]] = unescapeHtml(optMatch[2].trim());
+      }
+      if (Object.keys(options).length === 0) {
+        const altOptRegex = /<span class="opt-circle">([ABCD])<\/span>\s*<span class="opt-text">([\s\S]*?)<\/span>/g;
+        while ((optMatch = altOptRegex.exec(innerHtml)) !== null) {
+          options[optMatch[1]] = unescapeHtml(optMatch[2].trim());
+        }
+      }
+    }
+
+    questions.push({
+      id: parseInt(qid, 10) || (questions.length + 1),
+      type: type,
+      question: questionText,
+      options: options,
+      correct_answer: correct,
+      explanation: explanation,
+      visual_svg: visualSvg
+    });
+  }
+
+  return questions;
+}
+
+function buildLightSpaceTestHtml({
+  title,
+  grade = "5",
+  unit = "1. Ünite: Güneş, Dünya ve Ay",
+  subject = "Fen Bilimleri",
+  questions = []
+}) {
+  const safeTitle = escapeHtml(title || `${grade}. Sınıf ${subject} Yazılıya Hazırlık Sınavı`);
+  const safeUnit = escapeHtml(unit);
+  const qCount = questions.length;
+
+  const slidesHtml = questions.map((q, idx) => {
+    const qNum = idx + 1;
+    const isMultipleChoice = q.options && Object.keys(q.options).length > 0 && q.options.A;
+    const isShortAnswer = q.type === 'short_answer';
+    const isOpenEnded = q.type === 'open_ended' || (!isMultipleChoice && !isShortAnswer);
+
+    let answerAreaHtml = '';
+    let correctAns = String(q.correct_answer || '').trim();
+
+    if (isMultipleChoice) {
+      const opts = q.options;
+      const letters = ['A', 'B', 'C', 'D'];
+      const optColors = ['neon-blue', 'neon-purple', 'neon-orange', 'neon-emerald'];
+      answerAreaHtml = `
+        <div class="slide-options-grid">
+          ${letters.map((let, oIdx) => `
+            <div class="slide-opt-card ${optColors[oIdx % optColors.length]}" data-qid="${qNum}" data-opt="${let}" onclick="selectSlideOption(${qNum}, '${let}')">
+              <span class="slide-opt-letter">${let}</span>
+              <span class="slide-opt-text">${escapeHtml(opts[let] || '')}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (isShortAnswer) {
+      answerAreaHtml = `
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-${qNum}" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(${qNum}, this.value)">
+        </div>
+      `;
+    } else {
+      answerAreaHtml = `
+        <div class="slide-open-ended-box">
+          <span class="slide-input-label">✍️ Bilimsel Cevabınız ve Gerekçeniz:</span>
+          <textarea class="slide-open-textarea" id="input-q-${qNum}" rows="3" placeholder="Açık uçlu cevabınızı buraya yazınız..." oninput="recordAnswer(${qNum}, this.value)"></textarea>
+        </div>
+      `;
+    }
+
+    const visualHtml = (q.visual_svg && q.visual_svg.trim()) ? q.visual_svg : `
+      <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
+        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru ${qNum}</text>
+      </svg>
+    `;
+
+    return `
+      <section class="yp-space-slide-section" id="yp-space-slide-${idx}" data-slide-index="${idx}">
+        <div class="yp-space-slide-grid">
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <div class="yp-space-col-left">
+            <div class="yp-slide-category">
+              <span>✦</span>
+              <span>🚀 ${escapeHtml(grade)}. SINIF • ${safeUnit}</span>
+            </div>
+            <h2 class="yp-slide-main-title">${safeTitle} — Soru ${qNum}</h2>
+            <p class="yp-slide-subtitle">${escapeHtml(q.learning_outcome || 'MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu')}</p>
+            
+            <div class="yp-neon-cards-stack">
+              <div class="yp-neon-card neon-blue">
+                <strong>Soru ${qNum}:</strong> ${escapeHtml(q.question || '')}
+              </div>
+              ${answerAreaHtml}
+            </div>
+
+            <div class="yp-golden-rule-box" id="golden-box-${qNum}">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: ${escapeHtml(correctAns)} — ${escapeHtml(q.explanation || 'Kavramları analiz ederek bilimsel çıkarım yapınız.')}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-space-visual-frame">
+              ${visualHtml}
+            </div>
+          </div>
+        </div>
+      </section>
+    `;
+  }).join('\n');
+
+  const drawerItemsHtml = questions.map((q, idx) => {
+    return `<button type="button" class="yp-route-item ${idx === 0 ? 'active' : ''}" onclick="goToSlide(${idx})">${idx + 1}. Soru</button>`;
+  }).join('');
+
+  return `<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${safeTitle} - Rotalı Fenci</title>
+  <link rel="icon" type="image/jpeg" href="/assets/rotali-fenci-logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    /* ========================================================
+       ☀️ AÇIK RENK (LIGHT THEME) 3D SİNEMATİK GÖRÜNTÜLEYİCİ
+       ======================================================== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f4f9 0%, #e2e8f0 45%, #f8fafc 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-border: #38bdf8;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --primary-blue: #0284c7;
+      --golden-bg: #eff6ff;
+      --golden-border: #2563eb;
+      --golden-text: #1e3a8a;
+      --visual-bg: #ffffff;
+      --visual-border: #cbd5e1;
+      --topbar-bg: rgba(255, 255, 255, 0.95);
+      --bottombar-bg: rgba(255, 255, 255, 0.95);
+    }
+
+    body.theme-dark {
+      --bg-gradient: radial-gradient(ellipse at 50% 15%, #0b1536 0%, #050a18 55%, #02040a 100%);
+      --card-bg: rgba(6, 12, 30, 0.78);
+      --card-border: rgba(56, 189, 248, 0.35);
+      --text-main: #ffffff;
+      --text-muted: #cbd5e1;
+      --primary-blue: #38bdf8;
+      --golden-bg: linear-gradient(135deg, #0c2461 0%, #1e3799 100%);
+      --golden-border: #facc15;
+      --golden-text: #ffffff;
+      --visual-bg: radial-gradient(circle at center, rgba(15, 23, 42, 0.95) 0%, rgba(5, 10, 24, 0.98) 100%);
+      --visual-border: rgba(56, 189, 248, 0.45);
+      --topbar-bg: rgba(5, 10, 24, 0.88);
+      --bottombar-bg: rgba(7, 13, 30, 0.94);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Plus Jakarta Sans', system-ui, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      overflow-x: hidden;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Yıldız ve Işıltı Katmanı */
+    .space-stars-layer {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        radial-gradient(1.8px 1.8px at 30px 40px, rgba(2, 132, 199, 0.45), transparent),
+        radial-gradient(1.2px 1.2px at 90px 130px, rgba(99, 102, 241, 0.45), transparent),
+        radial-gradient(2.2px 2.2px at 200px 70px, rgba(245, 158, 11, 0.4), transparent),
+        radial-gradient(1.4px 1.4px at 320px 220px, rgba(2, 132, 199, 0.35), transparent),
+        radial-gradient(1.8px 1.8px at 430px 105px, rgba(168, 85, 247, 0.4), transparent),
+        radial-gradient(1.2px 1.2px at 550px 170px, rgba(2, 132, 199, 0.4), transparent);
+      background-size: 580px 280px;
+      opacity: 0.65;
+      z-index: 0;
+    }
+
+    .space-nebula-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at 15% 25%, rgba(56, 189, 248, 0.18) 0%, transparent 55%),
+        radial-gradient(circle at 85% 65%, rgba(99, 102, 241, 0.15) 0%, transparent 55%),
+        radial-gradient(circle at 50% 85%, rgba(245, 158, 11, 0.12) 0%, transparent 50%);
+      z-index: 0;
+    }
+
+    /* Üst Kontrol Çubuğu */
+    .space-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 28px;
+      background: var(--topbar-bg);
+      backdrop-filter: blur(16px);
+      border-bottom: 1.5px solid #cbd5e1;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
+      flex-shrink: 0;
+    }
+
+    .topbar-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid #e11d48;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .brand-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .brand-text {
+      font-weight: 900;
+      font-size: 14px;
+      letter-spacing: -0.2px;
+      color: #1e1b4b;
+    }
+    body.theme-dark .brand-text { color: #ffffff; }
+
+    .space-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #0369a1;
+      border: 1px solid #bae6fd;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    body.theme-dark .space-badge {
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .doc-main-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 340px;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topbar-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid #cbd5e1;
+      background: #ffffff;
+      color: #1e293b;
+      transition: all 0.2s ease;
+    }
+    body.theme-dark .topbar-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border-color: rgba(148, 163, 184, 0.3);
+      color: #f1f5f9;
+    }
+    .topbar-btn:hover {
+      border-color: #0284c7;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+
+    .topbar-btn.btn-finish-test {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: #ffffff;
+      border: none;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .topbar-btn.btn-finish-test:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+      transform: translateY(-1px);
+    }
+
+    /* Dikey Kaydırma Akış Alanı */
+    .yp-space-scroll-stream {
+      position: relative;
+      z-index: 10;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+      padding: 32px 28px 140px 28px;
+      max-width: 1440px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Slayt Bölümü */
+    .yp-space-slide-section {
+      min-height: calc(100vh - 160px);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      scroll-margin-top: 80px;
+      padding: 24px;
+      background: var(--card-bg);
+      border-radius: 28px;
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    body.theme-dark .yp-space-slide-section {
+      border-color: rgba(56, 189, 248, 0.25);
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    /* İki Sütunlu Grid */
+    .yp-space-slide-grid {
+      display: grid;
+      grid-template-columns: 56% 42%;
+      gap: 32px;
+      align-items: center;
+    }
+
+    /* Sol Sütun */
+    .yp-space-col-left {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .yp-slide-category {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--primary-blue);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .yp-slide-main-title {
+      font-family: 'Outfit', 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 26px;
+      font-weight: 900;
+      line-height: 1.25;
+      color: var(--text-main);
+      letter-spacing: -0.5px;
+    }
+
+    .yp-slide-subtitle {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    /* Soru Kartı & Seçenekler */
+    .yp-neon-cards-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .yp-neon-card {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 16px;
+      padding: 18px 22px;
+      font-size: 16px;
+      line-height: 1.6;
+      color: var(--text-main);
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+      transition: all 0.2s ease;
+    }
+    body.theme-dark .yp-neon-card {
+      background: rgba(10, 18, 42, 0.85);
+      color: #f8fafc;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .yp-neon-card.neon-blue {
+      border-left: 6px solid #0284c7;
+      box-shadow: 0 4px 20px rgba(2, 132, 199, 0.08);
+    }
+    body.theme-dark .yp-neon-card.neon-blue {
+      border-left-color: #38bdf8;
+      box-shadow: 0 0 20px rgba(56, 189, 248, 0.2);
+    }
+
+    .slide-options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .slide-opt-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+    body.theme-dark .slide-opt-card {
+      background: rgba(15, 23, 42, 0.75);
+      border-color: rgba(148, 163, 184, 0.3);
+      color: #f8fafc;
+    }
+
+    .slide-opt-card:hover {
+      border-color: var(--primary-blue);
+      transform: translateX(4px);
+      box-shadow: 0 4px 14px rgba(2, 132, 199, 0.15);
+    }
+
+    .slide-opt-card.is-selected {
+      border-color: #2563eb !important;
+      background: #eff6ff !important;
+      box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25) !important;
+    }
+    body.theme-dark .slide-opt-card.is-selected {
+      background: rgba(37, 99, 235, 0.3) !important;
+      border-color: #60a5fa !important;
+    }
+
+    .slide-opt-letter {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #1e293b;
+      font-weight: 900;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      border: 1.5px solid #cbd5e1;
+      transition: all 0.2s ease;
+    }
+    body.theme-dark .slide-opt-letter {
+      background: rgba(30, 41, 59, 0.8);
+      color: #ffffff;
+      border-color: rgba(148, 163, 184, 0.4);
+    }
+
+    .slide-opt-card.is-selected .slide-opt-letter {
+      background: #2563eb;
+      color: #ffffff;
+      border-color: #2563eb;
+    }
+
+    .slide-opt-text { flex: 1; }
+
+    /* Kısa Cevap / Açık Uçlu Giriş Alanları */
+    .slide-short-answer-box, .slide-open-ended-box {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 14px;
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    body.theme-dark .slide-short-answer-box,
+    body.theme-dark .slide-open-ended-box {
+      background: rgba(15, 23, 42, 0.75);
+      border-color: rgba(148, 163, 184, 0.3);
+    }
+
+    .slide-input-label {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #0369a1;
+    }
+    body.theme-dark .slide-input-label { color: #38bdf8; }
+
+    .slide-short-input, .slide-open-textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: #0f172a;
+      background: #f8fafc;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    body.theme-dark .slide-short-input,
+    body.theme-dark .slide-open-textarea {
+      background: rgba(30, 41, 59, 0.7);
+      border-color: rgba(148, 163, 184, 0.4);
+      color: #ffffff;
+    }
+
+    .slide-short-input:focus, .slide-open-textarea:focus {
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 12px rgba(2, 132, 199, 0.2);
+    }
+
+    /* Altın Kural / İpucu Kutusu */
+    .yp-golden-rule-box {
+      margin-top: 8px;
+      background: var(--golden-bg);
+      border: 1.5px solid #bfdbfe;
+      border-left: 6px solid var(--golden-border);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.08);
+    }
+
+    .yp-golden-rule-icon {
+      font-size: 24px;
+      line-height: 1;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 6px rgba(37, 99, 235, 0.3));
+    }
+
+    .yp-golden-rule-content {
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--golden-text);
+      font-weight: 600;
+    }
+
+    .yp-golden-rule-content strong {
+      color: #1d4ed8;
+      font-weight: 900;
+      display: block;
+      margin-bottom: 4px;
+      letter-spacing: 0.5px;
+      font-size: 13.5px;
+    }
+    body.theme-dark .yp-golden-rule-content strong { color: #fde047; }
+
+    /* Sağ Sütun Görsel Çerçevesi */
+    .yp-space-col-right {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .yp-space-visual-frame {
+      width: 100%;
+      min-height: 320px;
+      max-height: 500px;
+      border-radius: 22px;
+      overflow: hidden;
+      background: var(--visual-bg);
+      border: 2px solid var(--visual-border);
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    .yp-space-visual-frame img,
+    .yp-space-visual-frame svg {
+      max-width: 100%;
+      max-height: 440px;
+      width: auto;
+      height: auto;
+      border-radius: 14px;
+      object-fit: contain;
+    }
+
+    /* Sol Alt Köşe Filigran (@rotalifenci) */
+    .yp-space-watermark {
+      position: fixed;
+      left: 22px;
+      bottom: 20px;
+      z-index: 30;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      background: #ffffff;
+      border: 1.5px solid #e11d48;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(225, 29, 72, 0.15);
+      transition: all 0.2s ease;
+    }
+    body.theme-dark .yp-space-watermark {
+      background: rgba(5, 10, 24, 0.9);
+      color: #ffffff;
+    }
+
+    .yp-space-watermark svg { color: #e11d48; }
+
+    /* Sabit Alt Kontrol Çubuğu */
+    .yp-space-bottom-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 16px;
+      transform: translateX(-50%);
+      z-index: 30;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 18px;
+      border-radius: 999px;
+      background: var(--bottombar-bg);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid #cbd5e1;
+      box-shadow: 0 14px 40px rgba(15, 23, 42, 0.12), 0 0 24px rgba(56, 189, 248, 0.18);
+    }
+    body.theme-dark .yp-space-bottom-bar {
+      border-color: rgba(56, 189, 248, 0.35);
+    }
+
+    .yp-bar-btn {
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: none;
+      white-space: nowrap;
+    }
+
+    .yp-bar-prev {
+      background: #0f172a;
+      color: #ffffff;
+    }
+    .yp-bar-prev:hover { background: #334155; transform: translateY(-1px); }
+
+    .yp-bar-next {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #ffffff;
+      box-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+    .yp-bar-next:hover {
+      background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+      box-shadow: 0 0 24px rgba(249, 115, 22, 0.55);
+      transform: translateY(-1px);
+    }
+
+    .yp-bar-counter {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 900;
+      color: #854d0e;
+      background: #fef08a;
+      border: 1px solid #fde047;
+      padding: 6px 14px;
+      border-radius: 999px;
+      min-width: 64px;
+      text-align: center;
+    }
+    body.theme-dark .yp-bar-counter {
+      background: rgba(250, 204, 21, 0.2);
+      color: #facc15;
+    }
+
+    .yp-bar-divider {
+      width: 1px;
+      height: 24px;
+      background: #cbd5e1;
+      margin: 0 2px;
+    }
+
+    .yp-bar-routes {
+      background: #f1f5f9;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      font-weight: 800;
+    }
+    body.theme-dark .yp-bar-routes {
+      background: rgba(14, 165, 233, 0.2);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.4);
+    }
+
+    .yp-bar-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    body.theme-dark .yp-bar-icon-btn {
+      background: rgba(30, 41, 59, 0.85);
+      border-color: rgba(148, 163, 184, 0.3);
+      color: #f8fafc;
+    }
+
+    .yp-bar-icon-btn:hover {
+      background: #e0f2fe;
+      border-color: #38bdf8;
+      color: #0284c7;
+      transform: translateY(-1px);
+    }
+
+    /* Ünite Rotaları / Soru Listesi Çekmecesi */
+    .yp-space-routes-drawer {
+      position: fixed;
+      right: 24px;
+      bottom: 76px;
+      width: 320px;
+      max-height: 65vh;
+      z-index: 35;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(20px);
+      border: 1.5px solid #cbd5e1;
+      border-radius: 18px;
+      box-shadow: 0 20px 50px rgba(15, 23, 42, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    body.theme-dark .yp-space-routes-drawer {
+      background: rgba(7, 13, 30, 0.96);
+      border-color: rgba(56, 189, 248, 0.45);
+    }
+
+    .yp-space-routes-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .yp-space-routes-header h4 {
+      margin: 0;
+      font-size: 14px;
+      color: #0284c7;
+      font-weight: 800;
+    }
+
+    .yp-space-routes-header button {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .yp-space-routes-list {
+      padding: 10px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .yp-route-item {
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    body.theme-dark .yp-route-item {
+      background: rgba(15, 23, 42, 0.75);
+      border-color: rgba(148, 163, 184, 0.2);
+      color: #e2e8f0;
+    }
+
+    .yp-route-item:hover, .yp-route-item.active {
+      border-color: #0284c7;
+      background: #e0f2fe;
+      color: #0369a1;
+    }
+
+    /* Sonuç Karnesi Modalı */
+    .result-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .result-modal-card {
+      background: #ffffff;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 100%;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3);
+    }
+    .result-modal-header {
+      background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
+      color: #ffffff;
+      padding: 24px;
+      text-align: center;
+    }
+    .result-modal-body {
+      padding: 24px;
+    }
+    .result-score-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: #e0f2fe;
+      color: #0284c7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 900;
+      margin: 0 auto 16px;
+    }
+    .result-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .result-stat-box {
+      padding: 12px;
+      border-radius: 12px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+    }
+    .result-stat-num { font-size: 20px; font-weight: 900; }
+    .result-stat-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; }
+    .result-modal-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .btn-modal {
+      flex: 1;
+      padding: 12px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      border: none;
+      text-align: center;
+    }
+
+    @media (max-width: 960px) {
+      .yp-space-slide-grid { grid-template-columns: 1fr; gap: 20px; }
+      .yp-space-scroll-stream { padding: 18px 14px 120px 14px; }
+      .yp-space-bottom-bar { max-width: 95vw; overflow-x: auto; padding: 7px 12px; }
+      .doc-main-title { display: none; }
+    }
+
+    /* MEB Resmi A4 Yazdırma */
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; }
+      .space-topbar, .yp-space-bottom-bar, .yp-space-watermark, .yp-space-routes-drawer, .space-stars-layer, .space-nebula-glow, .result-modal-overlay { display: none !important; }
+      .yp-space-scroll-stream { padding: 0 !important; gap: 24px !important; }
+      .yp-space-slide-section {
+        min-height: auto !important;
+        background: #ffffff !important;
+        border: 1px solid #cbd5e1 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid !important;
+        margin-bottom: 20px !important;
+        padding: 20px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="space-stars-layer"></div>
+  <div class="space-nebula-glow"></div>
+
+  <!-- Üst Kontrol Çubuğu -->
+  <header class="space-topbar">
+    <div class="topbar-left">
+      <a href="/" class="brand-link" title="Rotalı Fenci Ana Sayfa">
+        <div class="brand-avatar">
+          <img src="/assets/rotali-fenci-logo.jpg" onerror="this.src='../assets/rotali-fenci-logo.jpg'" alt="Logo">
+        </div>
+        <span class="brand-text">ROTALI FENCİ</span>
+      </a>
+      <span class="space-badge">☀️ YAZILIYA HAZIRLIK • 2 SÜTUNLU SLAYT</span>
+      <span class="doc-main-title">${safeTitle}</span>
+    </div>
+
+    <div class="topbar-right">
+      <button type="button" class="topbar-btn" onclick="toggleSpaceViewerTheme()" title="Açık / Koyu Tema">
+        <span id="themeIcon">🌙</span> <span id="themeLabel">Koyu Mod</span>
+      </button>
+      <button type="button" class="topbar-btn" onclick="toggleAllGoldenRules()" id="btnToggleAllAnswers" title="Cevapları ve Çözümleri Aç / Kapat">
+        <i class="fa-solid fa-lightbulb"></i> <span id="lblSolutions">Çözümleri Gizle</span>
+      </button>
+      <button type="button" class="topbar-btn" onclick="window.print()" title="A4 MEB Formatında Yazdır veya PDF İndir">
+        <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
+      </button>
+      <button type="button" class="topbar-btn btn-finish-test" onclick="finishAndEvaluateExam()" title="Sınavı Tamamla ve Sonuç Karnesini Gör">
+        <i class="fa-solid fa-flag-checkered"></i> <span>Testi Bitir</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Dikey Kaydırma & Dokunmatik Slayt Akış Alanı -->
+  <main class="yp-space-scroll-stream" id="spaceScrollStream">
+    ${slidesHtml}
+  </main>
+
+  <!-- Sol Alt Filigran -->
+  <a href="https://instagram.com/rotalifenci" target="_blank" rel="noopener" class="yp-space-watermark" title="@rotalifenci Instagram">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+    <span>@rotalifenci</span>
+  </a>
+
+  <!-- Sabit Alt Kontrol Çubuğu -->
+  <nav class="yp-space-bottom-bar" aria-label="Soru Kontrolleri">
+    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
+      ‹ Önceki
+    </button>
+
+    <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">
+      1 / ${qCount}
+    </div>
+
+    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
+      Sonraki &gt;
+    </button>
+
+    <div class="yp-bar-divider"></div>
+
+    <button type="button" class="yp-bar-btn yp-bar-routes" onclick="toggleRoutesDrawer()" title="Soru Rotaları Menüsü">
+      🧭 Soru Rotaları
+    </button>
+
+    <button type="button" class="yp-bar-icon-btn" onclick="toggleSpeechQuestion()" id="btnSpeech" title="Sesli Soru Okuma">
+      🔊
+    </button>
+
+    <button type="button" class="yp-bar-icon-btn" onclick="toggleFullscreen()" title="Tam Ekran (F11)">
+      ⛶
+    </button>
+
+    <button type="button" class="yp-bar-icon-btn" onclick="window.print()" title="Yazdır">
+      🖨️
+    </button>
+  </nav>
+
+  <!-- Soru Rotaları Menüsü Çekmecesi -->
+  <div class="yp-space-routes-drawer" id="routesDrawer" style="display: none;">
+    <div class="yp-space-routes-header">
+      <h4>🧭 Soru Listesi &amp; Rotalar</h4>
+      <button type="button" onclick="toggleRoutesDrawer()">✕</button>
+    </div>
+    <div class="yp-space-routes-list" id="routesList">
+      ${drawerItemsHtml}
+    </div>
+  </div>
+
+  <!-- Sonuç Karnesi Modalı -->
+  <div class="result-modal-overlay" id="resultModal" style="display: none;">
+    <div class="result-modal-card">
+      <div class="result-modal-header">
+        <h2 style="font-size:22px; font-weight:900; margin-bottom:4px;">🎯 Sınav Değerlendirme Karnesi</h2>
+        <div style="font-size:13px; opacity:0.9;">${safeTitle}</div>
+      </div>
+      <div class="result-modal-body">
+        <div class="result-score-circle" id="modalScoreVal">100</div>
+        <div class="result-stats-row">
+          <div class="result-stat-box" style="border-color:#a7f3d0;">
+            <div class="result-stat-num" id="modalCorrectCount" style="color:#10b981;">0</div>
+            <div class="result-stat-lbl">Doğru</div>
+          </div>
+          <div class="result-stat-box" style="border-color:#fecaca;">
+            <div class="result-stat-num" id="modalWrongCount" style="color:#ef4444;">0</div>
+            <div class="result-stat-lbl">Yanlış</div>
+          </div>
+          <div class="result-stat-box" style="border-color:#fde68a;">
+            <div class="result-stat-num" id="modalEmptyCount" style="color:#f59e0b;">0</div>
+            <div class="result-stat-lbl">Boş</div>
+          </div>
+        </div>
+        <div class="result-modal-actions">
+          <button type="button" class="btn-modal" style="background:#f1f5f9; color:#334155;" onclick="closeResultModal()">İncelemeye Devam Et</button>
+          <button type="button" class="btn-modal" style="background:#0284c7; color:#ffffff;" onclick="window.print()">Yazdır / PDF Al</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const totalQuestions = ${qCount};
+    let activeSlideIdx = 0;
+    const studentAnswers = {};
+    const correctAnswers = ${JSON.stringify(questions.map((q, i) => ({ id: i + 1, type: q.type || (q.options && q.options.A ? 'multiple_choice' : 'short_answer'), correct: String(q.correct_answer || '').trim() })))};
+    let solutionsVisible = true;
+
+    // Slayt Navigasyonu
+    function updateCounter(idx) {
+      activeSlideIdx = Math.max(0, Math.min(totalQuestions - 1, idx));
+      const counterEl = document.getElementById('slideCounter');
+      if (counterEl) counterEl.textContent = (activeSlideIdx + 1) + ' / ' + totalQuestions;
+      document.querySelectorAll('.yp-route-item').forEach((b, i) => {
+        b.classList.toggle('active', i === activeSlideIdx);
+      });
+    }
+
+    function goToSlide(idx) {
+      const target = document.getElementById('yp-space-slide-' + idx);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        updateCounter(idx);
+      }
+      const drawer = document.getElementById('routesDrawer');
+      if (drawer) drawer.style.display = 'none';
+    }
+
+    function nextSlide() {
+      if (activeSlideIdx < totalQuestions - 1) {
+        goToSlide(activeSlideIdx + 1);
+      }
+    }
+
+    function prevSlide() {
+      if (activeSlideIdx > 0) {
+        goToSlide(activeSlideIdx - 1);
+      }
+    }
+
+    // Scroll Observer ile Otomatik Sayaç Takibi
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const idx = parseInt(entry.target.dataset.slideIndex, 10);
+          if (!isNaN(idx)) updateCounter(idx);
+        }
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('.yp-space-slide-section').forEach(sec => observer.observe(sec));
+
+    // Klavye Yön Tuşları Desteği
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        prevSlide();
+      }
+    });
+
+    // Çoktan Seçmeli Seçenek Seçimi
+    function selectSlideOption(qNum, optLetter) {
+      studentAnswers[qNum] = optLetter;
+      const cards = document.querySelectorAll('.slide-opt-card[data-qid="' + qNum + '"]');
+      cards.forEach(c => {
+        c.classList.toggle('is-selected', c.getAttribute('data-opt') === optLetter);
+      });
+    }
+
+    function recordAnswer(qNum, val) {
+      studentAnswers[qNum] = String(val).trim();
+    }
+
+    // Çözümleri Aç / Kapat
+    function toggleAllGoldenRules() {
+      solutionsVisible = !solutionsVisible;
+      document.querySelectorAll('.yp-golden-rule-box').forEach(box => {
+        box.style.display = solutionsVisible ? 'flex' : 'none';
+      });
+      const lbl = document.getElementById('lblSolutions');
+      if (lbl) lbl.textContent = solutionsVisible ? 'Çözümleri Gizle' : 'Çözümleri Göster';
+    }
+
+    // Tema Değiştirme (Açık / Koyu)
+    function toggleSpaceViewerTheme() {
+      const isDark = document.body.classList.toggle('theme-dark');
+      const icon = document.getElementById('themeIcon');
+      const label = document.getElementById('themeLabel');
+      if (icon) icon.textContent = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? 'Açık Mod' : 'Koyu Mod';
+      try { localStorage.setItem('rotali_viewer_theme', isDark ? 'dark' : 'light'); } catch(e) {}
+    }
+
+    try {
+      if (localStorage.getItem('rotali_viewer_theme') === 'dark') {
+        document.body.classList.add('theme-dark');
+        const icon = document.getElementById('themeIcon');
+        const label = document.getElementById('themeLabel');
+        if (icon) icon.textContent = '☀️';
+        if (label) label.textContent = 'Açık Mod';
+      }
+    } catch(e) {}
+
+    // Çekmeceyi Aç / Kapat
+    function toggleRoutesDrawer() {
+      const drawer = document.getElementById('routesDrawer');
+      if (!drawer) return;
+      drawer.style.display = (drawer.style.display === 'none' || !drawer.style.display) ? 'flex' : 'none';
+    }
+
+    // Tam Ekran
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+      } else {
+        document.exitFullscreen().catch(() => {});
+      }
+    }
+
+    // Sesli Okuma (Web Speech API)
+    function toggleSpeechQuestion() {
+      if (!('speechSynthesis' in window)) {
+        alert('Tarayıcınız sesli okumayı desteklemiyor.');
+        return;
+      }
+      if (window.speechSynthesis.speaking) {
+        window.speechSynthesis.cancel();
+        return;
+      }
+      const activeSlide = document.getElementById('yp-space-slide-' + activeSlideIdx);
+      if (!activeSlide) return;
+      const textToRead = activeSlide.querySelector('.yp-neon-card')?.innerText || '';
+      const utter = new SpeechSynthesisUtterance(textToRead);
+      utter.lang = 'tr-TR';
+      utter.rate = 0.95;
+      window.speechSynthesis.speak(utter);
+    }
+
+    // Sınavı Tamamla ve Değerlendir
+    function finishAndEvaluateExam() {
+      let correct = 0;
+      let wrong = 0;
+      let empty = 0;
+
+      correctAnswers.forEach(ca => {
+        const studentAns = studentAnswers[ca.id];
+        if (!studentAns || studentAns === '') {
+          empty++;
+        } else if (ca.type === 'multiple_choice') {
+          if (studentAns.toUpperCase() === ca.correct.toUpperCase()) correct++;
+          else wrong++;
+        } else {
+          // Kısa cevap karşılaştırma
+          const cleanStudent = studentAns.toLowerCase().replace(/[^a-z0-9çğıöşü]/gi, '');
+          const cleanCorrect = ca.correct.toLowerCase().replace(/[^a-z0-9çğıöşü]/gi, '');
+          if (cleanStudent === cleanCorrect || cleanStudent.includes(cleanCorrect) || cleanCorrect.includes(cleanStudent)) {
+            correct++;
+          } else {
+            wrong++;
+          }
+        }
+      });
+
+      const score = Math.round((correct / totalQuestions) * 100);
+      document.getElementById('modalScoreVal').textContent = score + ' Puan';
+      document.getElementById('modalCorrectCount').textContent = correct;
+      document.getElementById('modalWrongCount').textContent = wrong;
+      document.getElementById('modalEmptyCount').textContent = empty;
+      document.getElementById('resultModal').style.display = 'flex';
+    }
+
+    function closeResultModal() {
+      document.getElementById('resultModal').style.display = 'none';
+    }
+  </script>
+</body>
+</html>`;
+}
+
+// Rebuild the 4 test files
+const testConfigs = [
+  {
+    file: 'testler/5-sinif-1-unite-test-no-1-kisa-cevapli-bosluk-doldurma.html',
+    title: 'Test No: 1 - Kısa Cevaplı / Boşluk Doldurma',
+    grade: '5',
+    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    subject: 'Fen Bilimleri'
+  },
+  {
+    file: 'testler/5-sinif-1-unite-gunes-dunya-ve-ay-acik-uclu-klasik-sinavi-1-30-sor.html',
+    title: '5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru)',
+    grade: '5',
+    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    subject: 'Fen Bilimleri'
+  },
+  {
+    file: 'testler/5-sinif-1-unite-gunes-dunya-ve-ay-acik-uclu-klasik-sinavi.html',
+    title: '5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Sınavı - 1 (30 Soru)',
+    grade: '5',
+    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    subject: 'Fen Bilimleri'
+  },
+  {
+    file: 'testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html',
+    title: '5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1',
+    grade: '5',
+    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    subject: 'Fen Bilimleri'
+  }
+];
+
+testConfigs.forEach(cfg => {
+  if (fs.existsSync(cfg.file)) {
+    const rawHtml = fs.readFileSync(cfg.file, 'utf8');
+    const questions = parseQuestionsFromHtml(rawHtml);
+    console.log(`Rebuilding ${cfg.file} with ${questions.length} questions...`);
+
+    const newHtml = buildLightSpaceTestHtml({
+      title: cfg.title,
+      grade: cfg.grade,
+      unit: cfg.unit,
+      subject: cfg.subject,
+      questions: questions
+    });
+
+    fs.writeFileSync(cfg.file, newHtml, 'utf8');
+    console.log(`✅ Successfully saved ${cfg.file}`);
+  } else {
+    console.warn(`File not found: ${cfg.file}`);
+  }
+});
