@@ -2743,11 +2743,11 @@
   {
     "id": "mat-8-liseye-nasil-gidecegiz",
     "grade": "8",
-    "category": "videolar",
+    "category": "lgs",
     "title": "Liseye Nasıl Gideceğiz?",
     "unit": "LGS Rehberlik & Tercih",
     "desc": "8. Sınıf LGS ve liselere geçiş sistemi bilgilendirme ve motivasyon videosu.",
-    "fileName": "Liseye Nasıl Gideceğiz.mp4",
+    "fileName": "Liseye Nasıl Gideceğiz?",
     "fileUrl": "https://www.youtube.com/watch?v=5F2v_25gqj8",
     "imageUrl": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg",
     "format": "YouTube Video",
@@ -2765,11 +2765,14 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "15.09.2026",
-    "updatedAt": "17.09.2026",
+    "updatedAt": "2026-10-28T17:08:28.567Z",
     "targetSection": "1",
     "kapakResmi": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg",
     "isCloud": true,
-    "cover": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg"
+    "cover": "assets/docs/liseye-nasil-gidecegiz-kapak.jpg",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": ""
   },
   {
     "id": "book-6",
