@@ -299,7 +299,7 @@
                                 <h2 class="text-xs font-extrabold text-slate-800 uppercase tracking-tight leading-none">
                                     Dünya'dan Görünüm
                                 </h2>
-                                <span class="text-[8px] text-slate-400 font-bold block mt-0.5 leading-none">Canlı Teleskopik Gözlem</span>
+                                <span class="text-[8px] text-slate-400 font-bold block mt-0.5 leading-none">Canlı Teleskopik Gözlem • Gerçek Ay Fotoğrafı</span>
                             </div>
                         </div>
                         <span id="phase-type-badge" class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[9px] font-black uppercase tracking-wider">
@@ -319,9 +319,9 @@
                 </div>
 
                 <!-- Mobilde Yatay Kompakt Düzen / Masaüstünde Dikey Düzen -->
-                <div class="flex flex-row lg:flex-col gap-2 sm:gap-2.5 items-center lg:items-stretch my-0.5">
+                <div class="flex flex-row lg:flex-col flex-1 min-h-0 gap-2 sm:gap-2.5 items-center lg:items-stretch my-0.5">
                     <!-- 3D Earth View Telescope Sphere Viewport: Mobilde Kompakt 88px, Masaüstünde Geniş -->
-                    <div class="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-full lg:aspect-square lg:max-h-[150px] xl:max-h-[185px] mx-auto rounded-xl lg:rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center shrink-0">
+                    <div class="relative w-24 h-24 sm:w-28 sm:h-28 lg:w-full lg:h-auto lg:flex-1 lg:min-h-[200px] mx-auto rounded-xl lg:rounded-2xl bg-slate-950 border-2 border-slate-800 shadow-inner overflow-hidden flex items-center justify-center shrink-0">
                         <!-- Canlı 3D Telescope Canvas -->
                         <canvas id="telescope-canvas" class="w-full h-full block"></canvas>
                         
@@ -337,7 +337,7 @@
                     </div>
 
                     <!-- Mobilde Yan Bilgi Kolonu (Evre Adı, İstatistikler & Özet) -->
-                    <div class="flex-1 min-w-0 flex flex-col justify-center">
+                    <div class="flex-1 lg:flex-none min-w-0 flex flex-col justify-center">
                         <!-- Mobilde Evre Başlığı -->
                         <div class="lg:hidden mb-1">
                             <div class="flex items-center gap-1.5">
@@ -1211,38 +1211,7 @@
             // ==========================================
             // B. TELESKOPİK SAHNE (EARTH VIEW TELESCOPE)
             // ==========================================
-            const teleCanvas = document.getElementById('telescope-canvas');
-            telescopeScene = new THREE.Scene();
-            telescopeScene.background = new THREE.Color(0x020617);
-
-            const tw = teleCanvas.parentElement.clientWidth;
-            const th = teleCanvas.parentElement.clientHeight;
-
-            telescopeCamera = new THREE.PerspectiveCamera(40, tw / th, 0.1, 100);
-            telescopeCamera.position.set(0, 0, 4.5);
-            telescopeCamera.lookAt(0, 0, 0);
-
-            telescopeRenderer = new THREE.WebGLRenderer({ canvas: teleCanvas, antialias: true });
-            telescopeRenderer.setSize(tw, th);
-            telescopeRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-
-            // Teleskop Işığı (Açıya göre dinamik döner)
-            telescopeLight = new THREE.DirectionalLight(0xfff6e5, 3.2);
-            telescopeLight.position.set(-10, 0, 2);
-            telescopeScene.add(telescopeLight);
-
-            const teleAmbient = new THREE.AmbientLight(0x111827, 0.15); // Kül Işığı (Earthshine etkisi)
-            telescopeScene.add(teleAmbient);
-
-            // Teleskoptaki 3D Ay Küresi
-            const teleMoonGeo = new THREE.SphereGeometry(1.4, 64, 64);
-            const teleMoonMat = new THREE.MeshStandardMaterial({
-                map: generateProceduralMoonTexture(),
-                roughness: 0.88,
-                metalness: 0.02
-            });
-            telescopeMoonMesh = new THREE.Mesh(teleMoonGeo, teleMoonMat);
-            telescopeScene.add(telescopeMoonMesh);
+            initPhotoTelescope();
 
             // Resize Dinleyicisi
             window.addEventListener('resize', onWindowResize);
@@ -1253,6 +1222,103 @@
 
             // Başlangıç kamera kadrajını tam ayarla
             updateCameraView();
+        }
+
+
+        // -----------------------------------------------------------------
+        // GERÇEK AY FOTOĞRAFI İLE EVRE ÇİZİCİ (NASA LRO fotoğrafı + terminatör maskesi)
+        // -----------------------------------------------------------------
+        let moonPhotoImg = null, moonPhotoReady = false, teleCtx = null;
+        function initPhotoTelescope() {
+            const c = document.getElementById('telescope-canvas');
+            if (!c) return;
+            teleCtx = c.getContext('2d');
+            moonPhotoImg = new Image();
+            moonPhotoImg.onload = () => { moonPhotoReady = true; drawTelescopeMoon(); };
+            moonPhotoImg.src = '../images/moon.jpg';
+            resizeTelescopeCanvas();
+        }
+        function resizeTelescopeCanvas() {
+            const c = document.getElementById('telescope-canvas');
+            if (!c || !c.parentElement) return;
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            const w = c.parentElement.clientWidth, hh = c.parentElement.clientHeight;
+            if (w <= 0 || hh <= 0) return;
+            c.width = Math.round(w * dpr);
+            c.height = Math.round(hh * dpr);
+            drawTelescopeMoon();
+        }
+        function drawTelescopeMoon() {
+            const c = document.getElementById('telescope-canvas');
+            if (!c || !teleCtx) return;
+            const W = c.width, H = c.height;
+            teleCtx.clearRect(0, 0, W, H);
+            teleCtx.fillStyle = '#020617';
+            teleCtx.fillRect(0, 0, W, H);
+            // Yıldızlar
+            teleCtx.fillStyle = 'rgba(255,255,255,0.55)';
+            for (let i = 0; i < 40; i++) {
+                const sx = (Math.sin(i * 12.9898) * 43758.5453 % 1 + 1) % 1;
+                const sy = (Math.sin(i * 78.233) * 12345.6789 % 1 + 1) % 1;
+                teleCtx.fillRect(sx * W, sy * H, 1.4, 1.4);
+            }
+            if (!moonPhotoReady) return;
+
+            const R = Math.min(W, H) * 0.47;   // Ay, kutuyu neredeyse tamamen kaplar
+            const cx = W / 2, cy = H / 2;
+            // Fotoğraftaki Ay diski: merkez ~(512,510), yarıçap ~455 (1024px kare)
+            const sR = 458, sCx = 512, sCy = 510;
+            const drawPhoto = (alpha, dim) => {
+                teleCtx.save();
+                teleCtx.beginPath();
+                teleCtx.arc(cx, cy, R, 0, Math.PI * 2);
+                teleCtx.clip();
+                teleCtx.globalAlpha = alpha;
+                teleCtx.filter = dim ? 'brightness(0.16) contrast(0.9)' : 'brightness(1.08) contrast(1.05)';
+                teleCtx.drawImage(moonPhotoImg, sCx - sR, sCy - sR, sR * 2, sR * 2, cx - R, cy - R, R * 2, R * 2);
+                teleCtx.restore();
+            };
+            // 1) Kül ışığı (Dünya'dan yansıyan zayıf ışık): tüm disk çok loş
+            drawPhoto(1, true);
+
+            // 2) Aydınlık kısım: terminatör maskesi ile parlak fotoğraf
+            const th = appState.currentAngleRad;
+            const waning = th > Math.PI;
+            const t = waning ? (Math.PI * 2 - th) : th;       // [0, PI]
+            const xm = R * Math.cos(t);                       // terminatör orta noktası
+            if (t < Math.PI - 0.005 && t > 0.005 || t >= Math.PI - 0.005) {
+                teleCtx.save();
+                teleCtx.translate(cx, cy);
+                if (waning) teleCtx.scale(-1, 1);
+                teleCtx.translate(-cx, -cy);
+                teleCtx.beginPath();
+                teleCtx.arc(cx, cy, R, -Math.PI / 2, Math.PI / 2, false);          // sağ limb
+                const a = Math.abs(xm);
+                teleCtx.ellipse(cx, cy, Math.max(a, 0.01), R, 0, Math.PI / 2, -Math.PI / 2, xm > 0);
+                teleCtx.closePath();
+                teleCtx.clip();
+                // Clip uygulandı; ayna dönüşümünü fotoğrafın doğru yönde çizilmesi için geri al
+                teleCtx.setTransform(1, 0, 0, 1, 0, 0);
+                if (waning) {
+                    // Maske aynalandı; fotoğrafı da aynı maske içinde normal yönde çiz
+                }
+                teleCtx.save();
+                teleCtx.beginPath();
+                teleCtx.arc(cx, cy, R, 0, Math.PI * 2);
+                teleCtx.clip();
+                teleCtx.filter = 'brightness(1.1) contrast(1.06)';
+                teleCtx.drawImage(moonPhotoImg, sCx - sR, sCy - sR, sR * 2, sR * 2, cx - R, cy - R, R * 2, R * 2);
+                teleCtx.restore();
+                teleCtx.restore();
+            }
+            // Yumuşak dış parıltı
+            const glow = teleCtx.createRadialGradient(cx, cy, R * 0.98, cx, cy, R * 1.12);
+            glow.addColorStop(0, 'rgba(180,200,255,0.10)');
+            glow.addColorStop(1, 'rgba(180,200,255,0)');
+            teleCtx.fillStyle = glow;
+            teleCtx.beginPath();
+            teleCtx.arc(cx, cy, R * 1.12, 0, Math.PI * 2);
+            teleCtx.fill();
         }
 
         function updateCameraView() {
@@ -1290,6 +1356,7 @@
 
         function onWindowResize() {
             updateCameraView();
+            resizeTelescopeCanvas();
 
             const teleCanvas = document.getElementById('telescope-canvas');
             if (teleCanvas && teleCanvas.parentElement && telescopeRenderer && telescopeCamera) {
@@ -1442,6 +1509,8 @@
                 const lightZ = -Math.cos(appState.currentAngleRad) * 12;
                 telescopeLight.position.set(lightX, 0, lightZ);
             }
+
+            drawTelescopeMoon();
 
             // 3. UI Değerlerini ve Metinlerini Güncelle
             updateUI(syncSlider);
