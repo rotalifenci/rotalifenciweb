@@ -182,13 +182,134 @@ document.addEventListener('DOMContentLoaded', () => {
     return text.trim();
   }
 
-  function prepareSvgForDisplay(svgStr) {
-    if (!svgStr) return '';
+    function prepareSvgForDisplay(svgStr, question = '', options = {}, correctAnswer = '') {
+    if (!svgStr || typeof svgStr !== 'string' || !svgStr.includes('<svg')) return '';
     let out = svgStr;
+
+    // 1. Cevap sızıntılarını ve ipuçlarını temizle
+    const qNorm = String(question || '').toLowerCase();
+    const cNorm = String(correctAnswer || '').toLowerCase();
+
+    const bannedKeywords = [
+      'küre', 'kuresel', 'yıldız', 'yildiz', 'ışık kaynağı değil', 'isik kaynagi degil',
+      'ışık kaynağı', 'isik kaynagi', 'doğal ışık ve ısı kaynağı', 'doğal uydu', 'dogal uydu',
+      'geometrik şekil', 'en büyük', 'en kücük', 'orta büyüklükte', 'krater', 'kraterler',
+      'kratersiz', 'atmosfer yok', 'su yok', 'toz tabakası', 'regolit', 'gaz küresi'
+    ];
+
+    if (cNorm && cNorm.length >= 2) {
+      bannedKeywords.push(cNorm);
+      cNorm.split(' ').forEach(w => { if (w.length >= 3) bannedKeywords.push(w); });
+    }
+
+    const asksNameOrClass = /(ad[ıi]\s+(nedir|hangisidir)|hangisidir|hangi\s+(g[öo]k\s+cismi|y[ıi]ld[ıi]z|gezegen|uydu|evre|katman)|nas[ıi]l\s+adland[ıi]r[ıi]l[ıi]r|s[ıi]n[ıi]f[ıi]na\s+girer|ne\s+ad\s+verilir|nedir\s*\?)/i.test(question || '');
+
+    if (asksNameOrClass) {
+      bannedKeywords.push('güneş', 'gunes', 'dünya', 'dunya', 'ay');
+    }
+
+    out = out.replace(/<text([^>]*)>([\s\S]*?)<\/text>/gi, (m, attrs, inner) => {
+      const rawClean = inner.replace(/<[^>]+>/g, '').trim();
+      const inNorm = rawClean.toLowerCase();
+
+      if (/^[><=≥≤]+$/.test(rawClean.trim()) || rawClean.trim() === '&gt;' || rawClean.trim() === '&lt;') {
+        return '<text' + attrs + '>?</text>';
+      }
+
+      if (qNorm.includes('geometrik') && inNorm.includes('kure')) {
+        return '<text' + attrs + '>?</text>';
+      }
+
+      for (const kw of bannedKeywords) {
+        if (!kw) continue;
+        if (inNorm === kw || inNorm.includes(kw) || (kw.length >= 4 && kw.includes(inNorm))) {
+          return '<text' + attrs + '>?</text>';
+        }
+      }
+
+      return m;
+    });
+
+    // 2. Yalnızca soruyla ilgili gök cismi gösterilsin (Güneş soruluyorsa Ay eklenmesin)
+    const mentionsSunOnly = (qNorm.includes('güneş') || qNorm.includes('gunes') || cNorm.includes('güneş')) && !qNorm.includes('ay') && !qNorm.includes('dünya') && !qNorm.includes('karşılaştır');
+    const mentionsMoonOnly = (qNorm.includes('ay') || cNorm.includes('ay')) && !qNorm.includes('güneş') && !qNorm.includes('dünya') && !qNorm.includes('karşılaştır');
+
+    if (mentionsSunOnly && out.includes('/images/moon.jpg')) {
+      const clipId = 'sunCleanClip_' + Math.random().toString(36).slice(2, 7);
+      out = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="70"/></clipPath>
+    <radialGradient id="${clipId}_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="90" fill="url(#${clipId}_glow)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Güneş'}</text>
+</svg>`;
+    } else if (mentionsMoonOnly && out.includes('/images/sun.jpg')) {
+      const clipId = 'moonCleanClip_' + Math.random().toString(36).slice(2, 7);
+      out = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Ay'}</text>
+</svg>`;
+    }
+
+    // 3. Basit vektör daireleri gerçek uzay fotoğraflarıyla donat
+    if (!out.includes('<image')) {
+      if ((qNorm.includes('güneş') || qNorm.includes('gunes')) && !qNorm.includes('ay')) {
+        const clipId = 'sunAutoClip_' + Math.random().toString(36).slice(2, 7);
+        out = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="70"/></clipPath>
+    <radialGradient id="${clipId}_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="90" fill="url(#${clipId}_glow)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Güneş'}</text>
+</svg>`;
+      } else if (qNorm.includes('ay') && !qNorm.includes('güneş')) {
+        const clipId = 'moonAutoClip_' + Math.random().toString(36).slice(2, 7);
+        out = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Ay'}</text>
+</svg>`;
+      } else if (qNorm.includes('dünya') && !qNorm.includes('güneş') && !qNorm.includes('ay')) {
+        const clipId = 'earthAutoClip_' + Math.random().toString(36).slice(2, 7);
+        out = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="192" y="27" width="136" height="136" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Dünya'}</text>
+</svg>`;
+      }
+    }
+
     if (!out.includes('xmlns:xlink')) {
       out = out.replace('<svg', '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
     }
-    out = out.replace(/font-family=["'][^"']*["']/gi, 'font-family="\'Times New Roman\', Times, serif"');
+    out = out.replace(/font-family=["'][^"']*["']/gi, 'font-family="'Times New Roman', Times, serif"');
     out = out.replace(/fill=["']#(070a12|090d16|0b0f19|000000|0f172a|030712|1e1b4b|1e293b|000)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
     out = out.replace(/fill=["']black["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
     out = out.replace(/fill=["']rgba?\(\s*0\s*,\s*0\s*,\s*0[^)]*\)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
@@ -997,7 +1118,7 @@ document.addEventListener('DOMContentLoaded', () => {
           `;
         } else {
           const visualBoxHtml = q.visual_svg && q.visual_svg.trim() 
-            ? `<div class="question-visual-box">${prepareSvgForDisplay(q.visual_svg)}</div>` 
+            ? `<div class="question-visual-box">${prepareSvgForDisplay(q.visual_svg, q.question, q.options, q.correct_answer)}</div>` 
             : '';
 
           let gridHtml = '';

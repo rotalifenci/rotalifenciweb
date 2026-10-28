@@ -62,39 +62,149 @@ function sanitizeToWhiteBackground(svgContent) {
   return cleaned;
 }
 
-// Soruya ait görseli güvenle döndürür:
-//  - Sabit/hazır (soruyla ilgisiz) görseller KULLANILMAZ; yalnızca yapay zekânın bu soru için ürettiği SVG kullanılır.
-//  - Görsel cevabı ifşa ediyorsa (doğru cevap etiketi / cevabın fotoğrafı) maskelenir ya da kaldırılır.
-function enhanceCelestialVisual(visual_svg, question, options = {}, correctLetter = '') {
+// Soruya ait görseli güvenle zenginleştirir ve cevap sızıntılarını 100% temizler:
+// 1. Görselde KESİNLİKLE hiçbir sorunun cevabı, kavram adı veya ipucu yazmaz.
+// 2. Yalnızca soru ile ilgili gök cismi gösterilir (Güneş soruluyorsa Ay eklenmez).
+// 3. Basit vektör daireler yerine NASA yüksek çözünürlüklü gerçek fotoğrafları kullanılır.
+function enhanceCelestialVisual(visual_svg, question, options = {}, correctLetterOrText = '') {
   if (!visual_svg || typeof visual_svg !== 'string' || !visual_svg.includes('<svg')) return '';
-
-  const correctText = correctLetter && options ? String(options[correctLetter] || '') : '';
-  const correctNorm = normTr(correctText);
-  const asksIdentification = /(ad[ıi]\s+nedir|ad[ıi]\s+hangisidir|hangisidir|hangi\s+(g[öo]k\s+cismi|evre|kat|y[üu]zey)|nas[ıi]l\s+adland[ıi]r[ıi]l[ıi]r|nedir\s*\?)/i.test(question || '');
 
   let svg = visual_svg;
 
-  // 1) Cevap etiketini görselde gizle
+  // Doğru cevabı ve soru metnini analiz et
+  let correctText = '';
+  if (options && correctLetterOrText && options[correctLetterOrText]) {
+    correctText = String(options[correctLetterOrText] || '');
+  } else if (correctLetterOrText) {
+    correctText = String(correctLetterOrText || '');
+  }
+  const correctNorm = normTr(correctText);
+  const qNorm = normTr(question);
+
+  // Soru gök cisminin adını veya sınıfını mı soruyor? ("... gök cisminin adı nedir?", "... sınıfına girer?")
+  const asksNameOrClass = /(ad[ıi]\s+(nedir|hangisidir)|hangisidir|hangi\s+(g[öo]k\s+cismi|y[ıi]ld[ıi]z|gezegen|uydu|evre|katman)|nas[ıi]l\s+adland[ıi]r[ıi]l[ıi]r|s[ıi]n[ıi]f[ıi]na\s+girer|ne\s+ad\s+verilir|nedir\s*\?)/i.test(question || '');
+
+  // Soru geometrik şekli mi soruyor?
+  const asksShape = /(geometrik\s+sekil|sekli\s+nedir|hangi\s+sekil|sekli\s+hangi)/i.test(qNorm);
+
+  // Asla görselde yer almaması gereken cevap sızıntısı kelimeleri
+  const bannedKeywords = [
+    'küre', 'kuresel', 'yıldız', 'yildiz', 'ışık kaynağı değil', 'isik kaynagi degil',
+    'ışık kaynağı', 'isik kaynagi', 'doğal ışık ve ısı kaynağı', 'doğal uydu', 'dogal uydu',
+    'geometrik şekil', 'en büyük', 'en kücük', 'orta büyüklükte', 'krater', 'kraterler',
+    'kratersiz', 'atmosfer yok', 'su yok', 'toz tabakası', 'regolit', 'gaz küresi'
+  ];
+
   if (correctNorm && correctNorm.length >= 2) {
-    svg = svg.replace(/<text([^>]*)>([\s\S]*?)<\/text>/gi, (m, attrs, inner) => {
-      const innerNorm = normTr(inner);
-      if (innerNorm && (innerNorm === correctNorm || innerNorm.includes(correctNorm) || (innerNorm.length >= 3 && correctNorm.includes(innerNorm)))) {
-        return '<text' + attrs + '>?</text>';
-      }
-      return m;
+    bannedKeywords.push(correctNorm);
+    correctNorm.split(' ').forEach(w => {
+      if (w.length >= 3) bannedKeywords.push(w);
     });
   }
 
-  // 2) "... nedir?" tipi tanıma sorularında cevabın fotoğrafı görselde varsa görseli kaldır (ifşa olmasın)
-  if (asksIdentification && correctNorm) {
-    const imageMap = [
-      { key: 'güneş', file: 'sun' }, { key: 'dünya', file: 'earth' }, { key: 'ay', file: 'moon' }
-    ];
-    for (const it of imageMap) {
-      const answerMatches = correctNorm === it.key || correctNorm.split(' ').includes(it.key);
-      if (answerMatches && new RegExp('/images/' + it.file + '\\.jpg', 'i').test(svg)) {
-        return '';
+  // Eğer soru adı/türü soruyorsa gök cisimlerinin adları da etikette YER ALAMAZ!
+  if (asksNameOrClass) {
+    bannedKeywords.push('güneş', 'gunes', 'dünya', 'dunya', 'ay');
+  }
+
+  // 1) SVG içindeki metin etiketlerini kontrol et; cevap sızdıranları veya karşılaştırma işaretlerini '?' yap
+  svg = svg.replace(/<text([^>]*)>([\s\S]*?)<\/text>/gi, (m, attrs, inner) => {
+    const rawClean = inner.replace(/<[^>]+>/g, '').trim();
+    const inNorm = normTr(rawClean);
+
+    // Tek başına karşılaştırma operatörleri (>, <, >=, <=) cevap sızdırdığı için '?' yapılır
+    if (/^[><=≥≤]+$/.test(rawClean.trim()) || rawClean.trim() === '&gt;' || rawClean.trim() === '&lt;') {
+      return '<text' + attrs + '>?</text>';
+    }
+
+    if (asksShape && inNorm.includes('kure')) {
+      return '<text' + attrs + '>?</text>';
+    }
+
+    for (const kw of bannedKeywords) {
+      if (!kw) continue;
+      if (inNorm === kw || inNorm.includes(kw) || (kw.length >= 4 && kw.includes(inNorm))) {
+        return '<text' + attrs + '>?</text>';
       }
+    }
+
+    return m;
+  });
+
+  // 2) SADECE SORULAN GÖK CİSMİ GÖSTERİLMELİDİR
+  // Soru yalnızca Güneş'i soruyorsa ve görselde hem Ay hem Güneş varsa, sadece Güneş gösterilsin
+  const mentionsSunOnly = (qNorm.includes('gunes') || correctNorm.includes('gunes')) && !qNorm.includes('ay') && !qNorm.includes('dunya') && !qNorm.includes('karsilastir');
+  const mentionsMoonOnly = (qNorm.includes('ay') || correctNorm.includes('ay')) && !qNorm.includes('gunes') && !qNorm.includes('dunya') && !qNorm.includes('karsilastir');
+
+  if (mentionsSunOnly && svg.includes('/images/moon.jpg')) {
+    const clipId = 'sunCleanClip_' + Math.random().toString(36).slice(2, 7);
+    svg = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="70"/></clipPath>
+    <radialGradient id="${clipId}_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="90" fill="url(#${clipId}_glow)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Güneş'}</text>
+</svg>`;
+  } else if (mentionsMoonOnly && svg.includes('/images/sun.jpg')) {
+    const clipId = 'moonCleanClip_' + Math.random().toString(36).slice(2, 7);
+    svg = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Ay'}</text>
+</svg>`;
+  }
+
+  // 3) GERÇEK FOTOĞRAF KULLANIMI: Eğer SVG'de <image> etiketi yoksa ve düz renkli vektör çemberler çizilmişse gerçek fotoğraflarla donat
+  if (!svg.includes('<image')) {
+    if (qNorm.includes('gunes') && !qNorm.includes('ay')) {
+      const clipId = 'sunAutoClip_' + Math.random().toString(36).slice(2, 7);
+      svg = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="70"/></clipPath>
+    <radialGradient id="${clipId}_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="90" fill="url(#${clipId}_glow)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Güneş'}</text>
+</svg>`;
+    } else if (qNorm.includes('ay') && !qNorm.includes('gunes')) {
+      const clipId = 'moonAutoClip_' + Math.random().toString(36).slice(2, 7);
+      svg = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Ay'}</text>
+</svg>`;
+    } else if (qNorm.includes('dunya') && !qNorm.includes('gunes') && !qNorm.includes('ay')) {
+      const clipId = 'earthAutoClip_' + Math.random().toString(36).slice(2, 7);
+      svg = `<svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="${clipId}"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="192" y="27" width="136" height="136" clip-path="url(#${clipId})" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">${asksNameOrClass ? '?' : 'Dünya'}</text>
+</svg>`;
     }
   }
 
@@ -209,14 +319,27 @@ Verilen sınıf seviyesi (${grade}. Sınıf), ders (${subject}), seçilen öğre
 ${typeSpecificInstructions}
 ${sourceInstructionBlock}
 
-GÖRSEL KURALLARI (ÇOK ÖNEMLİ):
-- "visual_svg" yalnızca o sorunun çözümü için GEREKLİ olan bilimsel şekli/deney düzeneğini göstermelidir. Soruyla ilgisi olmayan hiçbir cisim, etiket veya süs öğesi çizilmeyecektir.
-- Görsel soruyu CEVAPLAMAMALIDIR: Soru bir şeyin adını, türünü veya evresini soruyorsa (örn. "... gök cisminin adı nedir?") görselde doğru cevabın ADI yazılmayacak, doğru cevabın GERÇEK FOTOĞRAFI (/images/sun.jpg vb.) kullanılmayacak, o öğe yalnızca nötr bir şekil ve "?" işareti ile gösterilecektir.
-- Soruda sorulmayan başka gök cisimlerini/nesneleri (ör. soru yalnızca Güneş'i soruyorsa Ay'ı) görsele KOYMA. Seçeneklerde yer alan cevapları görselde etiketleme.
-- Görselin her etiketi bilimsel olarak doğru olmalı, soru metniyle çelişmemeli, soru kökünün cevabını vermemelidir.
-- Soru görsel gerektirmiyorsa "visual_svg" alanını boş string ("") bırak. Anlamsız/genel/dekoratif görsel ÜRETME.
-- Arka plan mutlaka SAF BEYAZ (#ffffff) veya şeffaf olmalıdır. Siyah veya koyu zemin KESİNLİKLE YASAKTIR.
-- Gerekirse Güneş, Dünya, Ay için /images/sun.jpg, /images/earth.jpg, /images/moon.jpg dokuları yalnızca soruda cevap olarak İSTENMEYEN cisimler için kullanılabilir.
+GÖRSEL KURALLARI (HAYATİ ÖNEMDE KESİN KURALLAR):
+1. KESİNLİKLE VE ASLA CEVABI GÖRSELE YAZMA (SIFIR İPUCU KURALI):
+   - Soru neyi soruyorsa (kavram adı, geometrik şekil, cisim adı, evre, büyüklük sıralaması, özellik vb.) görselde o cevabı veya ipucunu KESİNLİKLE YAZMA!
+   - Örneğin:
+     - Soru geometrik şekli soruyorsa görsele "Küre" KESİNLİKLE YAZILAMAZ!
+     - Soru gök cisminin sınıfını soruyorsa görsele "Yıldız" KESİNLİKLE YAZILAMAZ!
+     - Soru ışık kaynağı olup olmamasını soruyorsa görsele "Işık Kaynağı Değil" KESİNLİKLE YAZILAMAZ!
+     - Soru büyüklük karşılaştırmasını soruyorsa araya büyüktür/küçüktür ('>', '<') işareti KESİNLİKLE KONULAMAZ! Araya sadece '?' veya nötr çizgiler konulur.
+     - Soru gök cisminin adını soruyorsa ("Görseldeki dev kütleli gök cisminin adı nedir?") görselin altına o cismin adı (Güneş, Ay vb.) YAZILAMAZ! Sadece '?' veya 'X' yazılır.
+
+2. SADECE VE SADECE SORUYLA İLGİLİ GÖK CİSMİNİ / NESNEYİ GÖSTER:
+   - Soru yalnızca Güneş'i soruyorsa görsele ASLA Ay veya Dünya ekleme! Sadece Güneş gösterilmelidir.
+   - Soru yalnızca Ay'ın yapısını soruyorsa gereksiz yere Güneş çizme! Sadece Ay gösterilmelidir.
+
+3. GERÇEK UZAY FOTOĞRAFLARI KULLANILACAKTIR:
+   - Basit, düz renkli sarı/mavi/gri çizim daireler (<circle fill="#f59e0b"> vb.) KESİNLİKLE KULLANILMAYACAKTIR.
+   - Güneş, Dünya veya Ay görseli gerektiğinde NASA'nın gerçek fotoğraflarını dairesel clipPath ile içeren SVG <image> kullanılacaktır:
+     - Güneş: <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" ... clip-path="url(#...)" preserveAspectRatio="xMidYMid slice"/>
+     - Dünya: <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" ... clip-path="url(#...)" preserveAspectRatio="xMidYMid slice"/>
+     - Ay: <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" ... clip-path="url(#...)" preserveAspectRatio="xMidYMid slice"/>
+   - Arka plan mutlaka SAF BEYAZ (#ffffff), yazılar koyu (#0f172a), font "'Times New Roman', Times, serif" olmalıdır.
 
 SORU KALİTE KURALLARI:
 - Her sorunun TEK ve bilimsel olarak kesin doğru cevabı olmalı; "correct_answer" mutlaka "A", "B", "C" veya "D" harfi olmalı ve seçeneklerle birebir tutarlı olmalıdır.
