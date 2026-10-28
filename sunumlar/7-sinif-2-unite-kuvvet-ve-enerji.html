@@ -568,11 +568,244 @@
                 padding: 40px !important;
             }
         }
+    
+        /* === 3D SİNEMATİK DERİN UZAY KARANLIK MOD & DİKEY AKIŞ (LONG-SCROLL) === */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #02040a !important;
+            color: #f8fafc !important;
+            user-select: none;
+        }
+        #stage-viewport {
+            width: 100vw !important;
+            height: 100vh !important;
+            display: block !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y pinch-zoom !important;
+            background: radial-gradient(circle at 50% 20%, #0b152b 0%, #050914 60%, #02040a 100%) !important;
+            padding: 28px 28px 120px 28px !important;
+        }
+        #stars-canvas {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            z-index: 1 !important;
+        }
+        .progress-bar-container {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 6px !important;
+            background: rgba(255, 255, 255, 0.08) !important;
+            z-index: 120 !important;
+        }
+        .branding-top-right {
+            position: fixed !important;
+            top: 18px !important;
+            right: 28px !important;
+            z-index: 110 !important;
+        }
+        .branding-bottom-left {
+            position: fixed !important;
+            bottom: 18px !important;
+            left: 24px !important;
+            z-index: 115 !important;
+            background: rgba(8, 14, 30, 0.92) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.45) !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(56, 189, 248, 0.2) !important;
+        }
+        .insta-handle {
+            color: #fce7f3 !important;
+        }
+        .fixed-nav-bar {
+            position: fixed !important;
+            bottom: 16px !important;
+            right: 24px !important;
+            z-index: 115 !important;
+            background: rgba(7, 12, 26, 0.95) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(56, 189, 248, 0.15) !important;
+            padding: 8px 16px !important;
+            gap: 10px !important;
+            border-radius: 44px !important;
+        }
+        .nav-btn {
+            height: 48px !important;
+            min-width: 48px !important;
+            width: auto !important;
+            padding: 0 16px !important;
+            font-size: 17px !important;
+            font-weight: 800 !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            border: 1.5px solid rgba(148, 163, 184, 0.28) !important;
+            color: #f8fafc !important;
+            border-radius: 28px !important;
+            gap: 8px !important;
+        }
+        .nav-btn.icon-only {
+            padding: 0 !important;
+            width: 48px !important;
+        }
+        .nav-btn.primary {
+            background: linear-gradient(135deg, #ff7a00 0%, #f97316 50%, #ea580c 100%) !important;
+            border-color: #fdba74 !important;
+            color: #ffffff !important;
+            padding: 0 22px !important;
+            box-shadow: 0 0 22px rgba(249, 115, 22, 0.55) !important;
+        }
+        .nav-btn-rotalar {
+            background: rgba(30, 41, 59, 0.95) !important;
+            border-color: #f59e0b !important;
+            color: #fde047 !important;
+        }
+        .counter-badge {
+            color: #facc15 !important;
+            font-size: 20px !important;
+            font-weight: 900 !important;
+            min-width: 78px !important;
+            text-shadow: 0 0 12px rgba(250, 204, 21, 0.4) !important;
+        }
+        #presentation-stage {
+            width: 100% !important;
+            max-width: 1680px !important;
+            height: auto !important;
+            margin: 0 auto !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+            transform: none !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 42px !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        .slide-container {
+            display: flex !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: min(86vh, 900px) !important;
+            aspect-ratio: 16 / 9;
+            padding: 38px 52px 42px 52px !important;
+            background: radial-gradient(circle at 50% 20%, rgba(15, 23, 42, 0.92) 0%, rgba(6, 10, 24, 0.96) 68%, rgba(2, 4, 12, 0.98) 100%) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.25) !important;
+            border-radius: 30px !important;
+            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.08) !important;
+            scroll-margin-top: 24px !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        .slide-container.active {
+            border-color: rgba(56, 189, 248, 0.65) !important;
+            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.92), 0 0 42px rgba(56, 189, 248, 0.22) !important;
+        }
+        .slide-banner-pill {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 6px !important;
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        .slide-kicker {
+            background: transparent !important;
+            color: #38bdf8 !important;
+            text-shadow: 0 0 14px rgba(56, 189, 248, 0.5) !important;
+            font-size: 17px !important;
+            font-weight: 800 !important;
+            letter-spacing: 2px !important;
+            padding: 0 !important;
+            box-shadow: none !important;
+        }
+        .slide-title {
+            color: #ffffff !important;
+            font-size: 40px !important;
+            font-weight: 900 !important;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7) !important;
+        }
+        .info-card, .interactive-quiz-card {
+            background: rgba(7, 12, 28, 0.84) !important;
+            backdrop-filter: blur(20px) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.45) !important;
+            box-shadow: 0 0 26px rgba(56, 189, 248, 0.16), inset 0 0 14px rgba(56, 189, 248, 0.05) !important;
+            color: #f8fafc !important;
+            border-radius: 22px !important;
+        }
+        .info-card.glow-red {
+            border-color: rgba(248, 113, 113, 0.65) !important;
+            box-shadow: 0 0 26px rgba(248, 113, 113, 0.2) !important;
+        }
+        .info-card.glow-green {
+            border-color: rgba(74, 222, 128, 0.65) !important;
+            box-shadow: 0 0 26px rgba(74, 222, 128, 0.2) !important;
+        }
+        .info-card.glow-amber {
+            border-color: rgba(251, 146, 60, 0.65) !important;
+            box-shadow: 0 0 26px rgba(251, 146, 60, 0.2) !important;
+        }
+        .info-card.glow-purple {
+            border-color: rgba(192, 132, 252, 0.65) !important;
+            box-shadow: 0 0 26px rgba(192, 132, 252, 0.2) !important;
+        }
+        .visual-frame {
+            background: rgba(8, 14, 30, 0.75) !important;
+            border: 2px solid rgba(56, 189, 248, 0.45) !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 0 0 30px rgba(56, 189, 248, 0.15) !important;
+            border-radius: 24px !important;
+        }
+        .sci-table th {
+            background: #0b2247 !important;
+            color: #38bdf8 !important;
+            border-color: rgba(56, 189, 248, 0.35) !important;
+        }
+        .sci-table td {
+            background: rgba(15, 23, 42, 0.85) !important;
+            color: #f1f5f9 !important;
+            border-color: rgba(56, 189, 248, 0.22) !important;
+        }
+        .sci-table tr:nth-child(even) td {
+            background: rgba(10, 18, 36, 0.92) !important;
+        }
+        .drawer-box {
+            background: #0b1120 !important;
+            border-color: rgba(56, 189, 248, 0.35) !important;
+        }
+        .drawer-header h3, .drawer-title {
+            color: #ffffff !important;
+        }
+        .drawer-card {
+            background: rgba(30, 41, 59, 0.75) !important;
+            border-color: rgba(255, 255, 255, 0.12) !important;
+        }
+        .drawer-card.current {
+            background: rgba(2, 132, 199, 0.35) !important;
+            border-color: #38bdf8 !important;
+        }
+        @media (max-width: 1100px) {
+            #stage-viewport { padding: 16px 12px 110px 12px !important; }
+            .slide-container { aspect-ratio: auto !important; min-height: auto !important; padding: 24px 20px !important; }
+            .slide-body { flex-direction: column !important; }
+            .slide-title { font-size: 28px !important; }
+            .branding-bottom-left { bottom: 78px !important; left: 12px !important; }
+            .fixed-nav-bar { left: 12px !important; right: 12px !important; bottom: 10px !important; justify-content: center !important; flex-wrap: wrap !important; }
+        }
+    
     </style>
 </head>
 <body>
     <div id="stage-viewport">
         <div id="presentation-stage">
+            <canvas id="stars-canvas"></canvas>
             <!-- Top Progress Bar -->
             <div class="progress-bar-container">
                 <div id="slide-progress-bar"></div>
@@ -603,28 +836,28 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;justify-content:center;gap:24px;">
                 <div class="info-card glow-blue" style="padding:32px;">
-                    <div style="font-size:30px;font-weight:900;color:#1e3a8a;margin-bottom:12px;">
+                    <div style="font-size:30px;font-weight:900;color:#38bdf8;margin-bottom:12px;">
                         🎯 2. Ünite Keşif Yolculuğu Başlıyor!
                     </div>
-                    <p style="font-size:24px;line-height:1.6;color:#334155;">
+                    <p style="font-size:24px;line-height:1.6;color:#e2e8f0;">
                         Günlük hayatta "çok iş yaptım" derken gerçekten fiziksel anlamda bir iş başarmış mıyızdır? 
                         Enerji nasıl saklanır, nasıl hareketin gücüne dönüşür ve neden asla yok olmaz? 
                         Hepsini adım adım, eğlenceli ve bilimsel deneylerle keşfedeceğiz!
                     </p>
                 </div>
                 <div style="display:flex;gap:20px;">
-                    <div style="background:#e0f2fe;border:2px solid #0284c7;border-radius:18px;padding:16px 24px;display:flex;align-items:center;gap:14px;flex:1;">
+                    <div style="background:rgba(12, 20, 44, 0.88);border:2px solid #0284c7;border-radius:18px;padding:16px 24px;display:flex;align-items:center;gap:14px;flex:1;">
                         <i class="fa-solid fa-graduation-cap" style="font-size:36px;color:#0284c7;"></i>
                         <div>
-                            <div style="font-size:18px;font-weight:800;color:#0284c7;">MEB MAARİF MODELİ</div>
-                            <div style="font-size:16px;color:#475569;">2026–2027 Müfredatına %100 Uyumlu</div>
+                            <div style="font-size:18px;font-weight:800;color:#38bdf8;">MEB MAARİF MODELİ</div>
+                            <div style="font-size:16px;color:#f1f5f9;">2026–2027 Müfredatına %100 Uyumlu</div>
                         </div>
                     </div>
-                    <div style="background:#fef3c7;border:2px solid #f59e0b;border-radius:18px;padding:16px 24px;display:flex;align-items:center;gap:14px;flex:1;">
+                    <div style="background:rgba(12, 20, 44, 0.88);border:2px solid #f59e0b;border-radius:18px;padding:16px 24px;display:flex;align-items:center;gap:14px;flex:1;">
                         <i class="fa-solid fa-chalkboard-user" style="font-size:36px;color:#f59e0b;"></i>
                         <div>
-                            <div style="font-size:18px;font-weight:800;color:#b45309;">AKILLI TAHTA SÜRÜMÜ</div>
-                            <div style="font-size:16px;color:#475569;">Dokunmatik & PDF Export Desteği</div>
+                            <div style="font-size:18px;font-weight:800;color:#fbbf24;">AKILLI TAHTA SÜRÜMÜ</div>
+                            <div style="font-size:16px;color:#f1f5f9;">Dokunmatik & PDF Export Desteği</div>
                         </div>
                     </div>
                 </div>
@@ -665,7 +898,7 @@
     <div class="slide-container " id="slide-2">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ÖĞRENME HARİTASI</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ÖĞRENME HARİTASI</span>
             <h2 class="slide-title">3 Büyük İstasyon: Ünite Rotamız</h2>
         </div>
     </div>
@@ -675,29 +908,29 @@
                 <div class="info-card glow-blue" style="flex:1;justify-content:space-between;">
                     <div>
                         <div style="font-size:40px;margin-bottom:8px;">🧱</div>
-                        <div style="font-size:16px;font-weight:800;color:#0284c7;">1. İSTASYON</div>
-                        <h4 style="font-size:26px;font-weight:900;color:#0f172a;margin:8px 0;">Fiziksel Anlamda İş</h4>
-                        <p style="font-size:20px;line-height:1.5;color:#475569;">Kuvvet ne zaman iş yapar? 2 altın kural, W = F · x formülü ve günlük hayattan 20 sürpriz örnek.</p>
+                        <div style="font-size:16px;font-weight:800;color:#38bdf8;">1. İSTASYON</div>
+                        <h4 style="font-size:26px;font-weight:900;color:#e2e8f0;margin:8px 0;">Fiziksel Anlamda İş</h4>
+                        <p style="font-size:20px;line-height:1.5;color:#e2e8f0;">Kuvvet ne zaman iş yapar? 2 altın kural, W = F · x formülü ve günlük hayattan 20 sürpriz örnek.</p>
                     </div>
-                    <div style="background:#e0f2fe;padding:10px 16px;border-radius:12px;font-weight:800;color:#0369a1;font-size:17px;">Slayt 5 – 18</div>
+                    <div style="background:rgba(12, 20, 44, 0.88);padding:10px 16px;border-radius:12px;font-weight:800;color:#38bdf8;font-size:17px;">Slayt 5 – 18</div>
                 </div>
                 <div class="info-card glow-amber" style="flex:1;justify-content:space-between;">
                     <div>
                         <div style="font-size:40px;margin-bottom:8px;">⚡</div>
-                        <div style="font-size:16px;font-weight:800;color:#d97706;">2. İSTASYON</div>
-                        <h4 style="font-size:26px;font-weight:900;color:#0f172a;margin:8px 0;">Enerji Çeşitleri</h4>
-                        <p style="font-size:20px;line-height:1.5;color:#475569;">Hareketin gücü: Kinetik Enerji. Konum ve esnekliğin gizli deposu: Çekim ve Esneklik Potansiyeli.</p>
+                        <div style="font-size:16px;font-weight:800;color:#fbbf24;">2. İSTASYON</div>
+                        <h4 style="font-size:26px;font-weight:900;color:#e2e8f0;margin:8px 0;">Enerji Çeşitleri</h4>
+                        <p style="font-size:20px;line-height:1.5;color:#e2e8f0;">Hareketin gücü: Kinetik Enerji. Konum ve esnekliğin gizli deposu: Çekim ve Esneklik Potansiyeli.</p>
                     </div>
-                    <div style="background:#fef3c7;padding:10px 16px;border-radius:12px;font-weight:800;color:#92400e;font-size:17px;">Slayt 19 – 31</div>
+                    <div style="background:rgba(12, 20, 44, 0.88);padding:10px 16px;border-radius:12px;font-weight:800;color:#fbbf24;font-size:17px;">Slayt 19 – 31</div>
                 </div>
                 <div class="info-card glow-green" style="flex:1;justify-content:space-between;">
                     <div>
                         <div style="font-size:40px;margin-bottom:8px;">🔄</div>
-                        <div style="font-size:16px;font-weight:800;color:#16a34a;">3. İSTASYON</div>
-                        <h4 style="font-size:26px;font-weight:900;color:#0f172a;margin:8px 0;">Dönüşüm ve Korunum</h4>
-                        <p style="font-size:20px;line-height:1.5;color:#475569;">Enerjinin büyük dansı! Hız treni, salıncak, serbest düşen elma ve sürtünmenin ısıya etkisi.</p>
+                        <div style="font-size:16px;font-weight:800;color:#4ade80;">3. İSTASYON</div>
+                        <h4 style="font-size:26px;font-weight:900;color:#e2e8f0;margin:8px 0;">Dönüşüm ve Korunum</h4>
+                        <p style="font-size:20px;line-height:1.5;color:#e2e8f0;">Enerjinin büyük dansı! Hız treni, salıncak, serbest düşen elma ve sürtünmenin ısıya etkisi.</p>
                     </div>
-                    <div style="background:#dcfce7;padding:10px 16px;border-radius:12px;font-weight:800;color:#166534;font-size:17px;">Slayt 32 – 48</div>
+                    <div style="background:rgba(12, 20, 44, 0.88);padding:10px 16px;border-radius:12px;font-weight:800;color:#4ade80;font-size:17px;">Slayt 32 – 48</div>
                 </div>
             </div>
         
@@ -708,7 +941,7 @@
     <div class="slide-container " id="slide-3">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">GÜNLÜK YAŞAM PARADOKSU</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> GÜNLÜK YAŞAM PARADOKSU</span>
             <h2 class="slide-title">Çok Yoruldum Ama Fiziksel İş Yaptım mı?</h2>
         </div>
     </div>
@@ -716,20 +949,20 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
                 <div class="info-card" style="border-left:8px solid #ef4444;padding:24px;">
-                    <div style="font-size:26px;font-weight:800;color:#0f172a;">🤔 Soru: Saatlerce Duvarı İten Biri İş Yapar mı?</div>
-                    <p style="font-size:22px;line-height:1.5;color:#334155;margin-top:8px;">
+                    <div style="font-size:26px;font-weight:800;color:#f1f5f9;">🤔 Soru: Saatlerce Duvarı İten Biri İş Yapar mı?</div>
+                    <p style="font-size:22px;line-height:1.5;color:#e2e8f0;margin-top:8px;">
                         Ağır bir beton duvarı var gücüyle iten ve kan ter içinde kalan bir kişi biyolojik olarak çok enerji harcar ve aşırı yorulur. 
                         <strong>Ancak duvar 1 milimetre bile oynamadığı için fizik bilimine göre yapılan iş SIFIRDIR!</strong>
                     </p>
                 </div>
                 <div style="display:flex;gap:20px;flex:1;">
                     <div class="info-card glow-green" style="flex:1;">
-                        <h4 style="font-size:22px;font-weight:900;color:#15803d;margin-bottom:8px;">✅ FİZİKSEL İŞ VAR</h4>
-                        <p style="font-size:19px;color:#475569;">Koliyi iterek odada yerini değiştiren çocuk. (Kuvvet var, yol var!)</p>
+                        <h4 style="font-size:22px;font-weight:900;color:#4ade80;margin-bottom:8px;">✅ FİZİKSEL İŞ VAR</h4>
+                        <p style="font-size:19px;color:#e2e8f0;">Koliyi iterek odada yerini değiştiren çocuk. (Kuvvet var, yol var!)</p>
                     </div>
                     <div class="info-card glow-red" style="flex:1;">
-                        <h4 style="font-size:22px;font-weight:900;color:#b91c1c;margin-bottom:8px;">❌ FİZİKSEL İŞ YOK</h4>
-                        <p style="font-size:19px;color:#475569;">Kıpırdamayan duvarı iten veya elindeki ağır çantayla duran çocuk.</p>
+                        <h4 style="font-size:22px;font-weight:900;color:#f87171;margin-bottom:8px;">❌ FİZİKSEL İŞ YOK</h4>
+                        <p style="font-size:19px;color:#e2e8f0;">Kıpırdamayan duvarı iten veya elindeki ağır çantayla duran çocuk.</p>
                     </div>
                 </div>
             </div>
@@ -765,7 +998,7 @@
     <div class="slide-container " id="slide-4">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ÖN BİLGİLERİ HATIRLAYALIM</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ÖN BİLGİLERİ HATIRLAYALIM</span>
             <h2 class="slide-title">Kuvvet Bize Neyi Hatırlatır?</h2>
         </div>
     </div>
@@ -774,23 +1007,23 @@
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;">
                 <div class="info-card glow-blue">
                     <div style="font-size:32px;">⚽</div>
-                    <h4 style="font-size:24px;font-weight:800;color:#1e3a8a;margin:8px 0;">1. Harekete Geçirme</h4>
-                    <p style="font-size:20px;color:#475569;">Duran bir futbol topuna ayakla vurulduğunda top hızlanarak yol alır.</p>
+                    <h4 style="font-size:24px;font-weight:800;color:#38bdf8;margin:8px 0;">1. Harekete Geçirme</h4>
+                    <p style="font-size:20px;color:#e2e8f0;">Duran bir futbol topuna ayakla vurulduğunda top hızlanarak yol alır.</p>
                 </div>
                 <div class="info-card glow-red">
                     <div style="font-size:32px;">🛑</div>
-                    <h4 style="font-size:24px;font-weight:800;color:#991b1b;margin:8px 0;">2. Yavaşlatma / Durdurma</h4>
-                    <p style="font-size:20px;color:#475569;">Gelen topu yakalayan kaleci veya frene basıldığında duran bisiklet.</p>
+                    <h4 style="font-size:24px;font-weight:800;color:#f87171;margin:8px 0;">2. Yavaşlatma / Durdurma</h4>
+                    <p style="font-size:20px;color:#e2e8f0;">Gelen topu yakalayan kaleci veya frene basıldığında duran bisiklet.</p>
                 </div>
                 <div class="info-card glow-amber">
                     <div style="font-size:32px;">🏸</div>
-                    <h4 style="font-size:24px;font-weight:800;color:#92400e;margin:8px 0;">3. Yön Değiştirme</h4>
-                    <p style="font-size:20px;color:#475569;">Raketle karşılanan tenis topunun geliş yönünün tersine fırlatılması.</p>
+                    <h4 style="font-size:24px;font-weight:800;color:#fbbf24;margin:8px 0;">3. Yön Değiştirme</h4>
+                    <p style="font-size:20px;color:#e2e8f0;">Raketle karşılanan tenis topunun geliş yönünün tersine fırlatılması.</p>
                 </div>
                 <div class="info-card glow-purple">
                     <div style="font-size:32px;">🧽</div>
                     <h4 style="font-size:24px;font-weight:800;color:#6b21a8;margin:8px 0;">4. Şekil Değiştirme</h4>
-                    <p style="font-size:20px;color:#475569;">Süngeri sıkmak, oyun hamurunu yoğurmak veya yayı gerip bükmek.</p>
+                    <p style="font-size:20px;color:#e2e8f0;">Süngeri sıkmak, oyun hamurunu yoğurmak veya yayı gerip bükmek.</p>
                 </div>
             </div>
         
@@ -801,7 +1034,7 @@
     <div class="slide-container " id="slide-5">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">1. BÖLÜM: FİZİKSEL ANLAMDA İŞ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 1. BÖLÜM: FİZİKSEL ANLAMDA İŞ</span>
             <h2 class="slide-title">Fiziksel İşin 2 Altın Kuralı</h2>
         </div>
     </div>
@@ -811,16 +1044,16 @@
                 <div class="info-card glow-blue" style="padding:26px;">
                     <div style="display:flex;align-items:center;gap:16px;">
                         <span style="background:#0284c7;color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;">1</span>
-                        <div style="font-size:26px;font-weight:900;color:#0f172a;">KUVVET ŞARTI</div>
+                        <div style="font-size:26px;font-weight:900;color:#f1f5f9;">KUVVET ŞARTI</div>
                     </div>
-                    <p style="font-size:22px;color:#334155;margin-top:10px;">Cisme mutlaka sıfırdan farklı net bir <strong>Kuvvet (F)</strong> uygulanmalıdır.</p>
+                    <p style="font-size:22px;color:#e2e8f0;margin-top:10px;">Cisme mutlaka sıfırdan farklı net bir <strong>Kuvvet (F)</strong> uygulanmalıdır.</p>
                 </div>
                 <div class="info-card glow-green" style="padding:26px;">
                     <div style="display:flex;align-items:center;gap:16px;">
                         <span style="background:#10b981;color:#fff;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;">2</span>
-                        <div style="font-size:26px;font-weight:900;color:#0f172a;">DOĞRULTU ŞARTI</div>
+                        <div style="font-size:26px;font-weight:900;color:#f1f5f9;">DOĞRULTU ŞARTI</div>
                     </div>
-                    <p style="font-size:22px;color:#334155;margin-top:10px;">Cisim, uygulanan <strong>KUVVET İLE AYNI DOĞRULTUDA</strong> yer değiştirmelidir (Δx).</p>
+                    <p style="font-size:22px;color:#e2e8f0;margin-top:10px;">Cisim, uygulanan <strong>KUVVET İLE AYNI DOĞRULTUDA</strong> yer değiştirmelidir (Δx).</p>
                 </div>
             </div>
             <div class="visual-frame" style="flex:1;">
@@ -859,7 +1092,7 @@
     <div class="slide-container " id="slide-6">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DURUM ANALİZİ 1</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DURUM ANALİZİ 1</span>
             <h2 class="slide-title">Kutu İlerliyor: İŞ YAPILMIŞTIR!</h2>
         </div>
     </div>
@@ -867,7 +1100,7 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-green">
-                    <h3 style="font-size:30px;font-weight:900;color:#15803d;">✅ FİZİKSEL ANLAMDA İŞ VAR</h3>
+                    <h3 style="font-size:30px;font-weight:900;color:#4ade80;">✅ FİZİKSEL ANLAMDA İŞ VAR</h3>
                     <ul class="bullet-list" style="margin-top:16px;">
                         <li class="bullet-item"><i class="fa-solid fa-circle-check text-green-600 bullet-icon"></i> <div><strong>Uygulanan Kuvvet:</strong> Sağa doğru (F = 30 N)</div></li>
                         <li class="bullet-item"><i class="fa-solid fa-circle-check text-green-600 bullet-icon"></i> <div><strong>Yer Değiştirme:</strong> Sağa doğru (Δx = 5 m)</div></li>
@@ -911,7 +1144,7 @@
     <div class="slide-container " id="slide-7">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DURUM ANALİZİ 2</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DURUM ANALİZİ 2</span>
             <h2 class="slide-title">Duvar Kımıldamıyor: İŞ YAPILMAMIŞTIR!</h2>
         </div>
     </div>
@@ -919,7 +1152,7 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-red">
-                    <h3 style="font-size:30px;font-weight:900;color:#b91c1c;">❌ FİZİKSEL ANLAMDA İŞ SIFIRDIR</h3>
+                    <h3 style="font-size:30px;font-weight:900;color:#f87171;">❌ FİZİKSEL ANLAMDA İŞ SIFIRDIR</h3>
                     <ul class="bullet-list" style="margin-top:16px;">
                         <li class="bullet-item"><i class="fa-solid fa-circle-xmark text-red-600 bullet-icon"></i> <div><strong>Uygulanan Kuvvet:</strong> F = 100 N (Büyük bir kuvvet)</div></li>
                         <li class="bullet-item"><i class="fa-solid fa-circle-xmark text-red-600 bullet-icon"></i> <div><strong>Yer Değiştirme:</strong> Δx = 0 m (Hiç hareket yok)</div></li>
@@ -959,7 +1192,7 @@
     <div class="slide-container " id="slide-8">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">EN BÜYÜK TUZAK!</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> EN BÜYÜK TUZAK!</span>
             <h2 class="slide-title">Çantayı Taşımak vs. Yerden Kaldırmak</h2>
         </div>
     </div>
@@ -967,7 +1200,7 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
                 <div class="info-card" style="padding:22px;">
-                    <div style="font-size:22px;color:#0f172a;line-height:1.5;">
+                    <div style="font-size:22px;color:#f1f5f9;line-height:1.5;">
                         🔹 <strong>Kaldırırken:</strong> Çantayı yukarı çekersiniz (F ↑), çanta yukarı yükselir (Δx ↑). <strong>İŞ VARDIR!</strong><br>
                         🔹 <strong>Düz Yolda Taşırken:</strong> Çantayı düşmesin diye yukarı tutarsınız (F ↑), ancak yatayda yürürsünüz (Δx →). Kuvvet ile hareket birbirine <strong>DİK (90°)</strong> olduğu için taşıma kuvveti fiziksel iş yapmaz!
                     </div>
@@ -1012,7 +1245,7 @@
     <div class="slide-container " id="slide-9">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 1</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 1</span>
             <h2 class="slide-title">Fiziksel İş Var mı, Yok mu? (Örnek 1–10)</h2>
         </div>
     </div>
@@ -1052,7 +1285,7 @@
     <div class="slide-container " id="slide-10">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 2</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 2</span>
             <h2 class="slide-title">Fiziksel İş Var mı, Yok mu? (Örnek 11–20)</h2>
         </div>
     </div>
@@ -1092,7 +1325,7 @@
     <div class="slide-container " id="slide-11">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">İŞİN MATEMATİKSEL MODELİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> İŞİN MATEMATİKSEL MODELİ</span>
             <h2 class="slide-title">İş Formülü ve Birimi: Joule (J)</h2>
         </div>
     </div>
@@ -1100,26 +1333,26 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
                 <div class="info-card glow-blue" style="text-align:center;padding:36px;">
-                    <div style="font-size:24px;font-weight:800;color:#0284c7;letter-spacing:2px;">İŞİN MATEMATİKSEL İFADESİ</div>
-                    <div style="font-size:56px;font-weight:900;color:#0f172a;margin:16px 0;">
+                    <div style="font-size:24px;font-weight:800;color:#38bdf8;letter-spacing:2px;">İŞİN MATEMATİKSEL İFADESİ</div>
+                    <div style="font-size:56px;font-weight:900;color:#f1f5f9;margin:16px 0;">
                         W = F × Δx
                     </div>
-                    <div style="font-size:28px;font-weight:700;color:#334155;">
-                        <span style="color:#0284c7;">Joule (J)</span> = <span style="color:#ef4444;">Newton (N)</span> × <span style="color:#10b981;">Metre (m)</span>
+                    <div style="font-size:28px;font-weight:700;color:#f1f5f9;">
+                        <span style="color:#38bdf8;">Joule (J)</span> = <span style="color:#ef4444;">Newton (N)</span> × <span style="color:#10b981;">Metre (m)</span>
                     </div>
                 </div>
                 <div style="display:flex;gap:20px;">
                     <div class="info-card" style="flex:1;padding:20px;">
-                        <div style="font-weight:800;font-size:20px;color:#0284c7;">W (Work):</div>
-                        <div style="font-size:18px;color:#475569;">Yapılan iş miktarını gösterir. Birimi Joule'dür (J).</div>
+                        <div style="font-weight:800;font-size:20px;color:#38bdf8;">W (Work):</div>
+                        <div style="font-size:18px;color:#f1f5f9;">Yapılan iş miktarını gösterir. Birimi Joule'dür (J).</div>
                     </div>
                     <div class="info-card" style="flex:1;padding:20px;">
                         <div style="font-weight:800;font-size:20px;color:#ef4444;">F (Force):</div>
-                        <div style="font-size:18px;color:#475569;">Cisme uygulanan net kuvvet. Birimi Newton'dur (N).</div>
+                        <div style="font-size:18px;color:#f1f5f9;">Cisme uygulanan net kuvvet. Birimi Newton'dur (N).</div>
                     </div>
                     <div class="info-card" style="flex:1;padding:20px;">
                         <div style="font-weight:800;font-size:20px;color:#10b981;">Δx (Distance):</div>
-                        <div style="font-size:18px;color:#475569;">Kuvvet doğrultusunda alınan yol. Birimi Metre'dir (m).</div>
+                        <div style="font-size:18px;color:#f1f5f9;">Kuvvet doğrultusunda alınan yol. Birimi Metre'dir (m).</div>
                     </div>
                 </div>
             </div>
@@ -1131,7 +1364,7 @@
     <div class="slide-container " id="slide-12">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">KONTROLLÜ DENEY 1</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> KONTROLLÜ DENEY 1</span>
             <h2 class="slide-title">Yol Sabitken Kuvvet Artarsa Ne Olur?</h2>
         </div>
     </div>
@@ -1139,22 +1372,22 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:24px;font-weight:800;color:#0284c7;">Deney Senaryosu (x = 4 metre sabit)</h4>
-                    <div style="margin-top:14px;font-size:22px;color:#1e293b;line-height:1.6;">
+                    <h4 style="font-size:24px;font-weight:800;color:#38bdf8;">Deney Senaryosu (x = 4 metre sabit)</h4>
+                    <div style="margin-top:14px;font-size:22px;color:#f1f5f9;line-height:1.6;">
                         🔹 <strong>Ali:</strong> 10 N kuvvetle 4 metre itti $\rightarrow$ $W = 10 \times 4 = $ <strong>40 Joule</strong><br>
                         🔹 <strong>Veli:</strong> 30 N kuvvetle 4 metre itti $\rightarrow$ $W = 30 \times 4 = $ <strong>120 Joule</strong>
                     </div>
                 </div>
                 <div class="info-card glow-green">
-                    <h4 style="font-size:22px;font-weight:900;color:#15803d;">💡 Bilimsel Çıkarım:</h4>
-                    <p style="font-size:20px;color:#334155;margin-top:6px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#4ade80;">💡 Bilimsel Çıkarım:</h4>
+                    <p style="font-size:20px;color:#e2e8f0;margin-top:6px;">
                         Alınan yol sabit tutulduğunda, uygulanan <strong>kuvvet arttıkça yapılan fiziksel iş doğru orantılı olarak artar!</strong>
                     </p>
                 </div>
             </div>
             <div class="visual-frame" style="flex:1;">
                 <div style="text-align:center;width:100%;">
-                    <div style="font-size:18px;font-weight:800;color:#475569;margin-bottom:20px;">Yapılan İş Grafiği</div>
+                    <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:20px;">Yapılan İş Grafiği</div>
                     <div style="display:flex;align-items:flex-end;justify-content:center;gap:40px;height:240px;border-bottom:3px solid #64748b;padding-bottom:10px;">
                         <div style="width:80px;height:80px;background:#0284c7;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;">40 J</div>
                         <div style="width:80px;height:240px;background:#10b981;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;">120 J</div>
@@ -1173,7 +1406,7 @@
     <div class="slide-container " id="slide-13">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">KONTROLLÜ DENEY 2</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> KONTROLLÜ DENEY 2</span>
             <h2 class="slide-title">Kuvvet Sabitken Alınan Yol Artarsa?</h2>
         </div>
     </div>
@@ -1181,22 +1414,22 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-amber">
-                    <h4 style="font-size:24px;font-weight:800;color:#b45309;">Deney Senaryosu (F = 20 N sabit)</h4>
-                    <div style="margin-top:14px;font-size:22px;color:#1e293b;line-height:1.6;">
+                    <h4 style="font-size:24px;font-weight:800;color:#fbbf24;">Deney Senaryosu (F = 20 N sabit)</h4>
+                    <div style="margin-top:14px;font-size:22px;color:#f1f5f9;line-height:1.6;">
                         🔹 <strong>Zeynep:</strong> 20 N kuvvetle 2 metre itti $\rightarrow$ $W = 20 \times 2 = $ <strong>40 Joule</strong><br>
                         🔹 <strong>Elif:</strong> 20 N kuvvetle 6 metre itti $\rightarrow$ $W = 20 \times 6 = $ <strong>120 Joule</strong>
                     </div>
                 </div>
                 <div class="info-card glow-green">
-                    <h4 style="font-size:22px;font-weight:900;color:#15803d;">💡 Bilimsel Çıkarım:</h4>
-                    <p style="font-size:20px;color:#334155;margin-top:6px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#4ade80;">💡 Bilimsel Çıkarım:</h4>
+                    <p style="font-size:20px;color:#e2e8f0;margin-top:6px;">
                         Uygulanan kuvvet sabit tutulduğunda, <strong>yer değiştirme miktarı arttıkça yapılan fiziksel iş doğru orantılı olarak artar!</strong>
                     </p>
                 </div>
             </div>
             <div class="visual-frame" style="flex:1;">
                 <div style="text-align:center;width:100%;">
-                    <div style="font-size:18px;font-weight:800;color:#475569;margin-bottom:20px;">Yapılan İş Grafiği</div>
+                    <div style="font-size:18px;font-weight:800;color:#f1f5f9;margin-bottom:20px;">Yapılan İş Grafiği</div>
                     <div style="display:flex;align-items:flex-end;justify-content:center;gap:40px;height:240px;border-bottom:3px solid #64748b;padding-bottom:10px;">
                         <div style="width:80px;height:80px;background:#f59e0b;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;">40 J</div>
                         <div style="width:80px;height:240px;background:#10b981;border-radius:12px 12px 0 0;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;">120 J</div>
@@ -1215,7 +1448,7 @@
     <div class="slide-container " id="slide-14">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ÖRNEK SORU VE ÇÖZÜM 1</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ÖRNEK SORU VE ÇÖZÜM 1</span>
             <h2 class="slide-title">Adım Adım Problem Çözümü: Koli Kaldırma</h2>
         </div>
     </div>
@@ -1223,19 +1456,19 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
                 <div class="info-card" style="border-left:8px solid #0284c7;padding:24px;">
-                    <div style="font-size:24px;font-weight:900;color:#0f172a;">SORU:</div>
-                    <p style="font-size:22px;color:#334155;margin-top:6px;">
+                    <div style="font-size:24px;font-weight:900;color:#f1f5f9;">SORU:</div>
+                    <p style="font-size:22px;color:#e2e8f0;margin-top:6px;">
                         Selim, yerde duran <strong>50 N</strong> ağırlığındaki kolisini <strong>1.5 metre</strong> yükseklikteki masanın üzerine kaldırmıştır. 
                         Selim'in yer çekimine karşı yaptığı fiziksel iş kaç Joule'dür?
                     </p>
                 </div>
                 <div class="info-card glow-green" style="padding:24px;">
-                    <h4 style="font-size:24px;font-weight:900;color:#15803d;margin-bottom:14px;">ÇÖZÜM ADIMLARI:</h4>
-                    <div style="font-size:22px;line-height:1.7;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#4ade80;margin-bottom:14px;">ÇÖZÜM ADIMLARI:</h4>
+                    <div style="font-size:22px;line-height:1.7;color:#f1f5f9;">
                         1. <strong>Verilenler:</strong> Kuvvet $F = 50\text{ N}$, Alınan Yol $\Delta x = 1.5\text{ m}$<br>
                         2. <strong>İstenen:</strong> Yapılan İş ($W = ?$)<br>
                         3. <strong>Formül:</strong> $W = F \times \Delta x$<br>
-                        4. <strong>Hesaplama:</strong> $W = 50 \times 1.5 = $ <span style="font-size:28px;font-weight:900;color:#0284c7;">75 Joule</span>
+                        4. <strong>Hesaplama:</strong> $W = 50 \times 1.5 = $ <span style="font-size:28px;font-weight:900;color:#38bdf8;">75 Joule</span>
                     </div>
                 </div>
             </div>
@@ -1247,7 +1480,7 @@
     <div class="slide-container " id="slide-15">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ÖRNEK SORU VE ÇÖZÜM 2</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ÖRNEK SORU VE ÇÖZÜM 2</span>
             <h2 class="slide-title">İş Karşılaştırma Analizi: K, L ve M Cisimleri</h2>
         </div>
     </div>
@@ -1255,19 +1488,19 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:24px;font-weight:800;color:#1e3a8a;">Sürtünmesiz Ortamdaki Değerler:</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:800;color:#38bdf8;">Sürtünmesiz Ortamdaki Değerler:</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🔹 <strong>K Cismi:</strong> $F = 20\text{ N}$, $\Delta x = 5\text{ m} \rightarrow W_K = 20 \times 5 = $ <strong>100 Joule</strong><br>
                         🔹 <strong>L Cismi:</strong> $F = 40\text{ N}$, $\Delta x = 2\text{ m} \rightarrow W_L = 40 \times 2 = $ <strong>80 Joule</strong><br>
                         🔹 <strong>M Cismi:</strong> $F = 15\text{ N}$, $\Delta x = 8\text{ m} \rightarrow W_M = 15 \times 8 = $ <strong>120 Joule</strong>
                     </div>
                 </div>
                 <div class="info-card glow-green" style="text-align:center;padding:26px;">
-                    <div style="font-size:20px;font-weight:800;color:#15803d;">BÜYÜKLÜK SIRALAMASI:</div>
-                    <div style="font-size:44px;font-weight:900;color:#0f172a;margin-top:8px;">
+                    <div style="font-size:20px;font-weight:800;color:#4ade80;">BÜYÜKLÜK SIRALAMASI:</div>
+                    <div style="font-size:44px;font-weight:900;color:#f1f5f9;margin-top:8px;">
                         W<sub>M</sub> (120 J) > W<sub>K</sub> (100 J) > W<sub>L</sub> (80 J)
                     </div>
-                    <div style="font-size:18px;color:#475569;margin-top:6px;">En büyük kuvvet uygulanan L cismi, en az yolu aldığı için en az işi yapmıştır!</div>
+                    <div style="font-size:18px;color:#f1f5f9;margin-top:6px;">En büyük kuvvet uygulanan L cismi, en az yolu aldığı için en az işi yapmıştır!</div>
                 </div>
             </div>
         
@@ -1278,7 +1511,7 @@
     <div class="slide-container " id="slide-16">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DİKKAT EDİLECEK NOKTALAR</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DİKKAT EDİLECEK NOKTALAR</span>
             <h2 class="slide-title">Fiziksel İş Konusunda 5 Kritik Kavram Yanılgısı</h2>
         </div>
     </div>
@@ -1286,19 +1519,19 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto;">
                 <div class="info-card" style="padding:16px 20px;border-left:6px solid #ef4444;">
-                    <div style="font-size:19px;color:#b91c1c;font-weight:800;">❌ YANILGI: "Ağır yükü sabit tutup beklerken çok yoruluyorum, çok iş yaptım."</div>
+                    <div style="font-size:19px;color:#f87171;font-weight:800;">❌ YANILGI: "Ağır yükü sabit tutup beklerken çok yoruluyorum, çok iş yaptım."</div>
                     <div style="font-size:18px;color:#047857;font-weight:700;margin-top:4px;">✅ DOĞRUSU: Cisim hareket etmediği için fiziksel iş SIFIRDIR.</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;border-left:6px solid #ef4444;">
-                    <div style="font-size:19px;color:#b91c1c;font-weight:800;">❌ YANILGI: "Büyük kuvvet uygulanan her durumda mutlaka iş yapılır."</div>
+                    <div style="font-size:19px;color:#f87171;font-weight:800;">❌ YANILGI: "Büyük kuvvet uygulanan her durumda mutlaka iş yapılır."</div>
                     <div style="font-size:18px;color:#047857;font-weight:700;margin-top:4px;">✅ DOĞRUSU: Kuvvet ne kadar devasa olursa olsun yol yoksa iş sıfırdır.</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;border-left:6px solid #ef4444;">
-                    <div style="font-size:19px;color:#b91c1c;font-weight:800;">❌ YANILGI: "Merdiven çıkarken çantayı taşımak iş sayılmaz."</div>
+                    <div style="font-size:19px;color:#f87171;font-weight:800;">❌ YANILGI: "Merdiven çıkarken çantayı taşımak iş sayılmaz."</div>
                     <div style="font-size:18px;color:#047857;font-weight:700;margin-top:4px;">✅ DOĞRUSU: Düşeyde yukarı çıkıldığı için yer çekimine karşı iş yapılır.</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;border-left:6px solid #ef4444;">
-                    <div style="font-size:19px;color:#b91c1c;font-weight:800;">❌ YANILGI: "Kuvvet ile hareket zıt yönlü olursa iş olmaz."</div>
+                    <div style="font-size:19px;color:#f87171;font-weight:800;">❌ YANILGI: "Kuvvet ile hareket zıt yönlü olursa iş olmaz."</div>
                     <div style="font-size:18px;color:#047857;font-weight:700;margin-top:4px;">✅ DOĞRUSU: Sürtünme kuvveti harekete zıttır ve negatif iş yapar.</div>
                 </div>
             </div>
@@ -1310,7 +1543,7 @@
     <div class="slide-container " id="slide-17">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">İNTERAKTİF SINIF GÖREVİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> İNTERAKTİF SINIF GÖREVİ</span>
             <h2 class="slide-title">İş Dedektifi Sahada! (Tahmin Et & Çöz)</h2>
         </div>
     </div>
@@ -1319,8 +1552,8 @@
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:20px;">
                 <div class="info-card detective-card" style="justify-content:space-between;">
                     <div>
-                        <div style="font-size:22px;font-weight:800;color:#0f172a;">A) Rafta duran porselen vazo</div>
-                        <p style="font-size:18px;color:#475569;margin-top:6px;">Vazo masanın veya rafın üzerinde hareketsizce bekliyor.</p>
+                        <div style="font-size:22px;font-weight:800;color:#f1f5f9;">A) Rafta duran porselen vazo</div>
+                        <p style="font-size:18px;color:#e2e8f0;margin-top:6px;">Vazo masanın veya rafın üzerinde hareketsizce bekliyor.</p>
                     </div>
                     <div>
                         <button class="nav-btn primary" style="width:100%;height:44px;font-size:17px;" onclick="revealDetective(this, false, 'Vazo hareketsiz olduğu için yer değiştirme sıfırdır.')">Cevabı Göster</button>
@@ -1329,8 +1562,8 @@
                 </div>
                 <div class="info-card detective-card" style="justify-content:space-between;">
                     <div>
-                        <div style="font-size:22px;font-weight:800;color:#0f172a;">B) Buzda patinaj yapan kamyon</div>
-                        <p style="font-size:18px;color:#475569;margin-top:6px;">Tekerlekler dönüyor fakat buz yüzünden araba 1 cm bile ilerlemiyor.</p>
+                        <div style="font-size:22px;font-weight:800;color:#f1f5f9;">B) Buzda patinaj yapan kamyon</div>
+                        <p style="font-size:18px;color:#e2e8f0;margin-top:6px;">Tekerlekler dönüyor fakat buz yüzünden araba 1 cm bile ilerlemiyor.</p>
                     </div>
                     <div>
                         <button class="nav-btn primary" style="width:100%;height:44px;font-size:17px;" onclick="revealDetective(this, false, 'Araba yer değiştirmediği için motor arabaya iş yaptıramaz.')">Cevabı Göster</button>
@@ -1339,8 +1572,8 @@
                 </div>
                 <div class="info-card detective-card" style="justify-content:space-between;">
                     <div>
-                        <div style="font-size:22px;font-weight:800;color:#0f172a;">C) Paraşütle yere inen komando</div>
-                        <p style="font-size:18px;color:#475569;margin-top:6px;">Paraşütçü gökyüzünden yere doğru sabit süratle süzülüyor.</p>
+                        <div style="font-size:22px;font-weight:800;color:#f1f5f9;">C) Paraşütle yere inen komando</div>
+                        <p style="font-size:18px;color:#e2e8f0;margin-top:6px;">Paraşütçü gökyüzünden yere doğru sabit süratle süzülüyor.</p>
                     </div>
                     <div>
                         <button class="nav-btn primary" style="width:100%;height:44px;font-size:17px;" onclick="revealDetective(this, true, 'Yer çekimi kuvveti aşağı yönde iş yapar!')">Cevabı Göster</button>
@@ -1349,8 +1582,8 @@
                 </div>
                 <div class="info-card detective-card" style="justify-content:space-between;">
                     <div>
-                        <div style="font-size:22px;font-weight:800;color:#0f172a;">D) Zımbaya basıp kağıdı delmek</div>
-                        <p style="font-size:18px;color:#475569;margin-top:6px;">Elimizle zımbaya aşağı doğru basıyoruz ve zımba teli kağıdı delip bükülüyor.</p>
+                        <div style="font-size:22px;font-weight:800;color:#f1f5f9;">D) Zımbaya basıp kağıdı delmek</div>
+                        <p style="font-size:18px;color:#e2e8f0;margin-top:6px;">Elimizle zımbaya aşağı doğru basıyoruz ve zımba teli kağıdı delip bükülüyor.</p>
                     </div>
                     <div>
                         <button class="nav-btn primary" style="width:100%;height:44px;font-size:17px;" onclick="revealDetective(this, true, 'Kuvvet yönünde zımba basılır ve tel ötelenir.')">Cevabı Göster</button>
@@ -1366,7 +1599,7 @@
     <div class="slide-container " id="slide-18">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">1. BÖLÜMÜN BÜYÜK ÖZETİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 1. BÖLÜMÜN BÜYÜK ÖZETİ</span>
             <h2 class="slide-title">Fiziksel İşin Zihin Haritası</h2>
         </div>
     </div>
@@ -1374,14 +1607,14 @@
             
             <div style="flex:1;display:flex;gap:20px;align-items:stretch;">
                 <div class="info-card glow-blue" style="flex:1;">
-                    <h4 style="font-size:22px;font-weight:900;color:#0284c7;">📌 2 TEMEL ŞART</h4>
+                    <h4 style="font-size:22px;font-weight:900;color:#38bdf8;">📌 2 TEMEL ŞART</h4>
                     <ul class="bullet-list" style="margin-top:12px;font-size:19px;">
                         <li>Kuvvet (F) sıfırdan farklı olacak.</li>
                         <li>Cisim bu kuvvet doğrultusunda yer değiştirecek (Δx).</li>
                     </ul>
                 </div>
                 <div class="info-card glow-amber" style="flex:1;">
-                    <h4 style="font-size:22px;font-weight:900;color:#b45309;">📐 FORMÜL & BİRİM</h4>
+                    <h4 style="font-size:22px;font-weight:900;color:#fbbf24;">📐 FORMÜL & BİRİM</h4>
                     <ul class="bullet-list" style="margin-top:12px;font-size:19px;">
                         <li><strong>W = F × Δx</strong></li>
                         <li>Birim: <strong>Joule (J)</strong></li>
@@ -1389,7 +1622,7 @@
                     </ul>
                 </div>
                 <div class="info-card glow-red" style="flex:1;">
-                    <h4 style="font-size:22px;font-weight:900;color:#b91c1c;">🚫 İŞ OLMAYANLAR</h4>
+                    <h4 style="font-size:22px;font-weight:900;color:#f87171;">🚫 İŞ OLMAYANLAR</h4>
                     <ul class="bullet-list" style="margin-top:12px;font-size:19px;">
                         <li>Duvarda bekleyen/iten (Δx=0)</li>
                         <li>Düz yolda çanta taşıyan (Dik açı 90°)</li>
@@ -1405,7 +1638,7 @@
     <div class="slide-container " id="slide-19">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">2. BÖLÜM: ENERJİ ÇEŞİTLERİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 2. BÖLÜM: ENERJİ ÇEŞİTLERİ</span>
             <h2 class="slide-title">Enerji Nedir? (İş ile Enerjinin Kardeşliği)</h2>
         </div>
     </div>
@@ -1413,11 +1646,11 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
                 <div class="info-card glow-blue" style="padding:32px;">
-                    <div style="font-size:28px;font-weight:900;color:#1e3a8a;">⚡ İŞ VE ENERJİ AYNI PARANIN İKİ YÜZÜDÜR!</div>
-                    <p style="font-size:24px;line-height:1.6;color:#334155;margin-top:14px;">
+                    <div style="font-size:28px;font-weight:900;color:#38bdf8;">⚡ İŞ VE ENERJİ AYNI PARANIN İKİ YÜZÜDÜR!</div>
+                    <p style="font-size:24px;line-height:1.6;color:#e2e8f0;margin-top:14px;">
                         Bir cisme kuvvet uygulayıp iş yaptığınızda, harcadığınız güç boşa gitmez; o cisme <strong>enerji kazandırır!</strong><br>
                         Enerjiye sahip cisimler de başka cisimler üzerinde <strong>iş yapabilir.</strong><br>
-                        Bu yüzden hem işin hem de enerjinin birimi aynıdır: <span style="font-size:32px;font-weight:900;color:#0284c7;">Joule (J)</span>
+                        Bu yüzden hem işin hem de enerjinin birimi aynıdır: <span style="font-size:32px;font-weight:900;color:#38bdf8;">Joule (J)</span>
                     </p>
                 </div>
             </div>
@@ -1429,7 +1662,7 @@
     <div class="slide-container " id="slide-20">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">HAREKETİN GÜCÜ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> HAREKETİN GÜCÜ</span>
             <h2 class="slide-title">Kinetik Enerji (Kinetik = Hareket)</h2>
         </div>
     </div>
@@ -1437,7 +1670,7 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:26px;font-weight:900;color:#0284c7;">🚀 Hareketi Olan Her Şey Kinetik Enerjiye Sahiptir!</h4>
+                    <h4 style="font-size:26px;font-weight:900;color:#38bdf8;">🚀 Hareketi Olan Her Şey Kinetik Enerjiye Sahiptir!</h4>
                     <ul class="bullet-list" style="margin-top:14px;">
                         <li class="bullet-item"><i class="fa-solid fa-car text-blue-600 bullet-icon"></i> <div>Otoyolda hızla giden otomobil</div></li>
                         <li class="bullet-item"><i class="fa-solid fa-water text-cyan-600 bullet-icon"></i> <div>Çağlayandan dökülen nehir suyu</div></li>
@@ -1445,15 +1678,15 @@
                         <li class="bullet-item"><i class="fa-solid fa-futbol text-emerald-600 bullet-icon"></i> <div>Havada uçuşan futbol topu</div></li>
                     </ul>
                 </div>
-                <div class="info-card" style="background:#fee2e2;border:1.5px solid #ef4444;padding:18px;">
-                    <strong style="color:#b91c1c;font-size:20px;">⚠️ ALTIN KURAL:</strong>
-                    <span style="color:#1e293b;font-size:19px;"> Durgun (sürati sıfır) olan hiçbir cismin kinetik enerjisi yoktur!</span>
+                <div class="info-card" style="background:rgba(12, 20, 44, 0.88);border:1.5px solid #ef4444;padding:18px;">
+                    <strong style="color:#f87171;font-size:20px;">⚠️ ALTIN KURAL:</strong>
+                    <span style="color:#e2e8f0;font-size:19px;"> Durgun (sürati sıfır) olan hiçbir cismin kinetik enerjisi yoktur!</span>
                 </div>
             </div>
             <div class="visual-frame" style="flex:1;">
                 <div style="text-align:center;">
                     <i class="fa-solid fa-gauge-high" style="font-size:110px;color:#0284c7;margin-bottom:16px;"></i>
-                    <div style="font-size:24px;font-weight:900;color:#0f172a;">Sürat Varsa Kinetik Enerji Vardır!</div>
+                    <div style="font-size:24px;font-weight:900;color:#f1f5f9;">Sürat Varsa Kinetik Enerji Vardır!</div>
                 </div>
             </div>
         
@@ -1464,7 +1697,7 @@
     <div class="slide-container " id="slide-21">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">KİNETİK ENERJİ NEYE BAĞLIDIR? • 1. FAKTÖR</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> KİNETİK ENERJİ NEYE BAĞLIDIR? • 1. FAKTÖR</span>
             <h2 class="slide-title">Kütlenin Kinetik Enerjiye Etkisi</h2>
         </div>
     </div>
@@ -1472,15 +1705,15 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:24px;font-weight:900;color:#1e3a8a;">Deney Modeli (Aynı Sürat: 50 km/sa)</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#38bdf8;">Deney Modeli (Aynı Sürat: 50 km/sa)</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🚗 <strong>Kırmızı Otomobil:</strong> Kütle = 1000 kg | Sürat = 50 km/sa $\rightarrow$ <strong>Normal Kinetik Enerji</strong><br>
                         🚛 <strong>Ağır Kamyon:</strong> Kütle = 6000 kg | Sürat = 50 km/sa $\rightarrow$ <strong>6 Kat Daha Büyük Kinetik Enerji!</strong>
                     </div>
                 </div>
                 <div class="info-card glow-green">
-                    <h4 style="font-size:22px;font-weight:900;color:#15803d;">💡 Çıkarım:</h4>
-                    <p style="font-size:20px;color:#334155;margin-top:6px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#4ade80;">💡 Çıkarım:</h4>
+                    <p style="font-size:20px;color:#e2e8f0;margin-top:6px;">
                         Aynı süratle giden iki araçtan ağır olan bir engele çarptığında çok daha büyük tahribat yapar. 
                         Çünkü kütlesi fazla olanın kinetik enerjisi fazladır ($E_k \propto m$).
                     </p>
@@ -1494,7 +1727,7 @@
     <div class="slide-container " id="slide-22">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">KİNETİK ENERJİ NEYE BAĞLIDIR? • 2. FAKTÖR</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> KİNETİK ENERJİ NEYE BAĞLIDIR? • 2. FAKTÖR</span>
             <h2 class="slide-title">Süratin Kinetik Enerjiye Etkisi</h2>
         </div>
     </div>
@@ -1502,15 +1735,15 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-amber">
-                    <h4 style="font-size:24px;font-weight:900;color:#b45309;">Özdeş Bisikletliler (m = 70 kg)</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#fbbf24;">Özdeş Bisikletliler (m = 70 kg)</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🚴‍♂️ <strong>1. Bisikletli:</strong> Sürat = 10 km/sa $\rightarrow$ Kinetik Enerji = <strong>E</strong><br>
                         🚴‍♂️ <strong>2. Bisikletli:</strong> Sürat = 30 km/sa (3 kat hızlı) $\rightarrow$ Kinetik Enerji = <strong>9E!</strong>
                     </div>
                 </div>
                 <div class="info-card glow-purple">
                     <h4 style="font-size:22px;font-weight:900;color:#6b21a8;">⚡ BİLİMSEL İPUCU:</h4>
-                    <p style="font-size:20px;color:#334155;margin-top:6px;">
+                    <p style="font-size:20px;color:#e2e8f0;margin-top:6px;">
                         Kinetik enerji süratin <strong>karesiyle</strong> doğru orantılıdır ($E_k \propto v^2$). 
                         Sürat 2 katına çıkarsa enerji 4 katına, sürat 3 katına çıkarsa enerji 9 katına fırlar!
                     </p>
@@ -1524,7 +1757,7 @@
     <div class="slide-container " id="slide-23">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">HAYAT KURTARAN FİZİK</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> HAYAT KURTARAN FİZİK</span>
             <h2 class="slide-title">Trafik Güvenliği ve Kinetik Enerji</h2>
         </div>
     </div>
@@ -1532,8 +1765,8 @@
             
             <div style="flex:1;display:flex;gap:24px;align-items:stretch;">
                 <div class="info-card glow-red" style="flex:1.2;justify-content:center;">
-                    <h4 style="font-size:26px;font-weight:900;color:#b91c1c;">Hız 2 Katına Çıkınca Enerji 4 Katına Çıkar!</h4>
-                    <p style="font-size:21px;line-height:1.6;color:#334155;margin-top:14px;">
+                    <h4 style="font-size:26px;font-weight:900;color:#f87171;">Hız 2 Katına Çıkınca Enerji 4 Katına Çıkar!</h4>
+                    <p style="font-size:21px;line-height:1.6;color:#e2e8f0;margin-top:14px;">
                         50 km/sa hızla giden bir aracın kinetik enerjisi E ise, hız 100 km/sa yapıldığında kinetik enerji 2E değil, tam <strong>4E</strong> olur!<br><br>
                         Bu nedenle fren mesafesi ve çarpışma anındaki yıkım gücü 4 katına çıkar. Trafik kuralları fizik yasalarının bir sonucudur!
                     </p>
@@ -1541,7 +1774,7 @@
                 <div class="visual-frame" style="flex:0.8;">
                     <div style="text-align:center;">
                         <i class="fa-solid fa-triangle-exclamation" style="font-size:90px;color:#ef4444;margin-bottom:14px;"></i>
-                        <div style="font-size:22px;font-weight:900;color:#0f172a;">Aşırı Hız = Katlanan Kinetik Enerji</div>
+                        <div style="font-size:22px;font-weight:900;color:#f1f5f9;">Aşırı Hız = Katlanan Kinetik Enerji</div>
                     </div>
                 </div>
             </div>
@@ -1553,7 +1786,7 @@
     <div class="slide-container " id="slide-24">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">GİZLİ GÜÇ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> GİZLİ GÜÇ</span>
             <h2 class="slide-title">Potansiyel Enerjiye Giriş (Depolanmış Enerji)</h2>
         </div>
     </div>
@@ -1562,16 +1795,16 @@
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;">
                 <div class="info-card glow-blue">
                     <div style="font-size:36px;margin-bottom:8px;">⛰️</div>
-                    <h4 style="font-size:26px;font-weight:900;color:#0284c7;">1. Çekim Potansiyel Enerjisi</h4>
-                    <p style="font-size:21px;line-height:1.5;color:#475569;margin-top:10px;">
+                    <h4 style="font-size:26px;font-weight:900;color:#38bdf8;">1. Çekim Potansiyel Enerjisi</h4>
+                    <p style="font-size:21px;line-height:1.5;color:#e2e8f0;margin-top:10px;">
                         Cisimlerin bulundukları <strong>yükseklikten</strong> dolayı yer çekimine karşı depoladıkları enerjidir.<br>
                         (Baraj suyu, daldaki elma, raftaki kitap)
                     </p>
                 </div>
                 <div class="info-card glow-amber">
                     <div style="font-size:36px;margin-bottom:8px;">🏹</div>
-                    <h4 style="font-size:26px;font-weight:900;color:#d97706;">2. Esneklik Potansiyel Enerjisi</h4>
-                    <p style="font-size:21px;line-height:1.5;color:#475569;margin-top:10px;">
+                    <h4 style="font-size:26px;font-weight:900;color:#fbbf24;">2. Esneklik Potansiyel Enerjisi</h4>
+                    <p style="font-size:21px;line-height:1.5;color:#e2e8f0;margin-top:10px;">
                         Esnek cisimlerin <strong>gerilmesi veya sıkıştırılması</strong> sonucu depoladığı enerjidir.<br>
                         (Gerilmiş ok yayı, sıkışmış yay, trambolin)
                     </p>
@@ -1585,7 +1818,7 @@
     <div class="slide-container " id="slide-25">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">YÜKSEKLİĞİN GÜCÜ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> YÜKSEKLİĞİN GÜCÜ</span>
             <h2 class="slide-title">Çekim Potansiyel Enerjisi Nedir?</h2>
         </div>
     </div>
@@ -1593,7 +1826,7 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:24px;font-weight:900;color:#1e3a8a;">Canlı Günlük Yaşam Örnekleri:</h4>
+                    <h4 style="font-size:24px;font-weight:900;color:#38bdf8;">Canlı Günlük Yaşam Örnekleri:</h4>
                     <ul class="bullet-list" style="margin-top:12px;">
                         <li class="bullet-item"><i class="fa-solid fa-dam text-blue-600 bullet-icon"></i> <div>Baraj göletinde yüksekte biriktirilen sular</div></li>
                         <li class="bullet-item"><i class="fa-solid fa-apple-whole text-red-600 bullet-icon"></i> <div>Ağacın en üst dalındaki olgun elma</div></li>
@@ -1630,7 +1863,7 @@
     <div class="slide-container " id="slide-26">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ÇEKİM POTANSİYEL ENERJİSİ • 1. DEĞİŞKEN</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ÇEKİM POTANSİYEL ENERJİSİ • 1. DEĞİŞKEN</span>
             <h2 class="slide-title">Yüksekliğin Çekim Potansiyel Enerjisine Etkisi</h2>
         </div>
     </div>
@@ -1638,15 +1871,15 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:24px;font-weight:900;color:#0284c7;">Kum Havuzu Deneyi (Özdeş 2 kg Tuğlalar)</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#38bdf8;">Kum Havuzu Deneyi (Özdeş 2 kg Tuğlalar)</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🧱 <strong>1. Tuğla:</strong> 1 metre yükseklikten kuma bırakılıyor $\rightarrow$ <strong>Sığ bir çukur açar</strong><br>
                         🧱 <strong>2. Tuğla:</strong> 4 metre yükseklikten kuma bırakılıyor $\rightarrow$ <strong>Çok derin bir çukur açar!</strong>
                     </div>
                 </div>
                 <div class="info-card glow-green">
-                    <h4 style="font-size:22px;font-weight:900;color:#15803d;">💡 Çıkarım:</h4>
-                    <p style="font-size:20px;color:#334155;margin-top:6px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#4ade80;">💡 Çıkarım:</h4>
+                    <p style="font-size:20px;color:#e2e8f0;margin-top:6px;">
                         Kütle sabitken cismin bulunduğu <strong>yükseklik arttıkça çekim potansiyel enerjisi doğru orantılı olarak artar!</strong> ($E_p \propto h$)
                     </p>
                 </div>
@@ -1659,7 +1892,7 @@
     <div class="slide-container " id="slide-27">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ÇEKİM POTANSİYEL ENERJİSİ • 2. DEĞİŞKEN</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ÇEKİM POTANSİYEL ENERJİSİ • 2. DEĞİŞKEN</span>
             <h2 class="slide-title">Kütlenin Çekim Potansiyel Enerjisine Etkisi</h2>
         </div>
     </div>
@@ -1667,15 +1900,15 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-amber">
-                    <h4 style="font-size:24px;font-weight:900;color:#b45309;">Aynı Yükseklik Deneyi (h = 2 metre)</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#fbbf24;">Aynı Yükseklik Deneyi (h = 2 metre)</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🎾 <strong>Tenis Topu (60 gram):</strong> 2 metreden bırakıldığında az etki yapar.<br>
                         💣 <strong>Demir Gülle (5 kg):</strong> 2 metreden bırakıldığında zemini sarsar ve derin iz bırakır!
                     </div>
                 </div>
                 <div class="info-card glow-purple">
                     <h4 style="font-size:22px;font-weight:900;color:#6b21a8;">📐 FORMÜL VİTRİNİ:</h4>
-                    <p style="font-size:24px;font-weight:800;color:#0f172a;margin-top:6px;">
+                    <p style="font-size:24px;font-weight:800;color:#e2e8f0;margin-top:6px;">
                         E<sub>p (çekim)</sub> = m · g · h  (Kütle × Yer Çekimi İvmesi × Yükseklik)
                     </p>
                 </div>
@@ -1688,7 +1921,7 @@
     <div class="slide-container " id="slide-28">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">YAYLARIN VE LASTİKLERİN GÜCÜ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> YAYLARIN VE LASTİKLERİN GÜCÜ</span>
             <h2 class="slide-title">Esneklik Potansiyel Enerjisi</h2>
         </div>
     </div>
@@ -1696,7 +1929,7 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-amber">
-                    <h4 style="font-size:24px;font-weight:900;color:#b45309;">Esnek Cisimler Nelerdir?</h4>
+                    <h4 style="font-size:24px;font-weight:900;color:#fbbf24;">Esnek Cisimler Nelerdir?</h4>
                     <ul class="bullet-list" style="margin-top:12px;">
                         <li class="bullet-item"><i class="fa-solid fa-ring text-amber-600 bullet-icon"></i> <div>Çelik helezon yaylar (tükenmez kalem, yatak, tren amortisörü)</div></li>
                         <li class="bullet-item"><i class="fa-solid fa-bandage text-emerald-600 bullet-icon"></i> <div>Lastik paket bandı ve sapan lastiği</div></li>
@@ -1734,7 +1967,7 @@
     <div class="slide-container " id="slide-29">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ESNEKLİK POTANSİYELİ DEĞİŞKENLERİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ESNEKLİK POTANSİYELİ DEĞİŞKENLERİ</span>
             <h2 class="slide-title">Esneklik Enerjisi Neye Bağlıdır?</h2>
         </div>
     </div>
@@ -1743,15 +1976,15 @@
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;">
                 <div class="info-card glow-blue">
                     <div style="font-size:36px;margin-bottom:8px;">📏</div>
-                    <h4 style="font-size:24px;font-weight:900;color:#0284c7;">1. Sıkışma / Gerilme Miktarı (x)</h4>
-                    <p style="font-size:20px;line-height:1.5;color:#475569;margin-top:10px;">
+                    <h4 style="font-size:24px;font-weight:900;color:#38bdf8;">1. Sıkışma / Gerilme Miktarı (x)</h4>
+                    <p style="font-size:20px;line-height:1.5;color:#e2e8f0;margin-top:10px;">
                         Yayı 2 cm sıkıştırmak az enerji depolarken, 10 cm sıkıştırmak kat kat fazla enerji depolar!
                     </p>
                 </div>
                 <div class="info-card glow-amber">
                     <div style="font-size:36px;margin-bottom:8px;">🔩</div>
-                    <h4 style="font-size:24px;font-weight:900;color:#d97706;">2. Yayın Cinsi ve Kalınlığı (k)</h4>
-                    <p style="font-size:20px;line-height:1.5;color:#475569;margin-top:10px;">
+                    <h4 style="font-size:24px;font-weight:900;color:#fbbf24;">2. Yayın Cinsi ve Kalınlığı (k)</h4>
+                    <p style="font-size:20px;line-height:1.5;color:#e2e8f0;margin-top:10px;">
                         İnce tükenmez kalem yayı ile tren amortisöründeki kalın çelik yay aynı miktarda sıkıştırılsa bile, <strong>sert ve kalın yay çok daha devasa enerji depolar!</strong>
                     </p>
                 </div>
@@ -1764,7 +1997,7 @@
     <div class="slide-container " id="slide-30">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">İKİSİ BİR ARADA</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> İKİSİ BİR ARADA</span>
             <h2 class="slide-title">Bir Cisimde İki Enerji Birden Bulunabilir mi?</h2>
         </div>
     </div>
@@ -1772,18 +2005,18 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue" style="padding:28px;">
-                    <div style="font-size:26px;font-weight:900;color:#1e3a8a;">✈️ Örnek: Havada Uçan Yolcu Uçağı</div>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
-                        🔹 10.000 metre yükseklikte olduğu için $\rightarrow$ <strong style="color:#0284c7;">Çekim Potansiyel Enerjisi VAR!</strong><br>
+                    <div style="font-size:26px;font-weight:900;color:#38bdf8;">✈️ Örnek: Havada Uçan Yolcu Uçağı</div>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
+                        🔹 10.000 metre yükseklikte olduğu için $\rightarrow$ <strong style="color:#38bdf8;">Çekim Potansiyel Enerjisi VAR!</strong><br>
                         🔹 850 km/sa hızla uçtuğu için $\rightarrow$ <strong style="color:#10b981;">Kinetik Enerjisi VAR!</strong>
                     </div>
                 </div>
                 <div class="info-card glow-purple" style="text-align:center;padding:26px;">
                     <div style="font-size:20px;font-weight:800;color:#6b21a8;">MEKANİK ENERJİ TANIMI:</div>
-                    <div style="font-size:42px;font-weight:900;color:#0f172a;margin-top:8px;">
+                    <div style="font-size:42px;font-weight:900;color:#f1f5f9;margin-top:8px;">
                         E<sub>Mekanik</sub> = E<sub>Kinetik</sub> + E<sub>Potansiyel</sub>
                     </div>
-                    <div style="font-size:18px;color:#475569;margin-top:6px;">Bir cismin kinetik ve potansiyel enerjilerinin toplamına Mekanik Enerji denir.</div>
+                    <div style="font-size:18px;color:#f1f5f9;margin-top:6px;">Bir cismin kinetik ve potansiyel enerjilerinin toplamına Mekanik Enerji denir.</div>
                 </div>
             </div>
         
@@ -1794,7 +2027,7 @@
     <div class="slide-container " id="slide-31">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">ENERJİ TÜRLERİ ÖZETİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> ENERJİ TÜRLERİ ÖZETİ</span>
             <h2 class="slide-title">3 Enerji Türü Karşılaştırma Matrisi</h2>
         </div>
     </div>
@@ -1812,7 +2045,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong style="color:#0284c7;">Kinetik Enerji</strong></td>
+                            <td><strong style="color:#38bdf8;">Kinetik Enerji</strong></td>
                             <td>Kütle (m) ve Sürat (v)</td>
                             <td>Kütle arttıkça artar, sürat arttıkça karesiyle artar</td>
                             <td>Hızla giden tren, koşan çocuk</td>
@@ -1840,7 +2073,7 @@
     <div class="slide-container " id="slide-32">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">3. BÖLÜM: DÖNÜŞÜMLER VE KORUNUM</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 3. BÖLÜM: DÖNÜŞÜMLER VE KORUNUM</span>
             <h2 class="slide-title">Evrenin Büyük Kanunu: Enerji Korunumu</h2>
         </div>
     </div>
@@ -1848,11 +2081,11 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
                 <div class="info-card glow-blue" style="text-align:center;padding:36px;">
-                    <div style="font-size:24px;font-weight:800;color:#0284c7;">TERMODİNAMİK YASASI</div>
-                    <div style="font-size:44px;font-weight:900;color:#0f172a;margin:16px 0;">
+                    <div style="font-size:24px;font-weight:800;color:#38bdf8;">TERMODİNAMİK YASASI</div>
+                    <div style="font-size:44px;font-weight:900;color:#f1f5f9;margin:16px 0;">
                         Enerji Asla Yok Olmaz, Sadece Kılık Değiştirir!
                     </div>
-                    <p style="font-size:22px;line-height:1.6;color:#334155;">
+                    <p style="font-size:22px;line-height:1.6;color:#e2e8f0;">
                         Potansiyel enerji kinetiğe, kinetik enerji potansiyele, sürtünmeyle ısıya ve sese dönüşebilir.<br>
                         Fakat sürtünmesiz kapalı bir sistemde <strong>TOPLAM ENERJİ DAİMA SABİT KALIR!</strong>
                     </p>
@@ -1866,7 +2099,7 @@
     <div class="slide-container " id="slide-33">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DÖNÜŞÜM MODELİ 1</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DÖNÜŞÜM MODELİ 1</span>
             <h2 class="slide-title">Serbest Düşen Cisim (Ağaçtan Düşen Elma)</h2>
         </div>
     </div>
@@ -1874,8 +2107,8 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:18px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:22px;font-weight:900;color:#1e3a8a;">3 Aşamalı Yolculuk:</h4>
-                    <div style="font-size:20px;line-height:1.6;color:#1e293b;margin-top:10px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#38bdf8;">3 Aşamalı Yolculuk:</h4>
+                    <div style="font-size:20px;line-height:1.6;color:#f1f5f9;margin-top:10px;">
                         1. <strong>Dalda Dururken:</strong> Yükseklik maksimum $\rightarrow$ $E_p$ MAKSİMUM, $E_k = 0$<br>
                         2. <strong>Düşme Anında:</strong> Yükseklik azalır, hız artar $\rightarrow$ <strong>Potansiyel azalır, Kinetik artar!</strong><br>
                         3. <strong>Yere Çarparken:</strong> Yükseklik sıfır, hız maksimum $\rightarrow$ $E_p = 0$, $E_k$ MAKSİMUM!
@@ -1910,7 +2143,7 @@
     <div class="slide-container " id="slide-34">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DÖNÜŞÜM MODELİ 2</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DÖNÜŞÜM MODELİ 2</span>
             <h2 class="slide-title">Yukarı Fırlatılan Topun Enerji Dönüşümü</h2>
         </div>
     </div>
@@ -1918,8 +2151,8 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-green">
-                    <h4 style="font-size:24px;font-weight:900;color:#15803d;">Topun Yolculuğu:</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#4ade80;">Topun Yolculuğu:</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🏀 <strong>Elden Çıkış Anı:</strong> Hız en yüksek $\rightarrow$ Kinetik Enerji MAKSİMUM.<br>
                         🏀 <strong>Yukarı Çıkarken:</strong> Yavaşlar ve yükselir $\rightarrow$ <strong>Kinetik Enerji Çekim Potansiyeline dönüşür!</strong><br>
                         🏀 <strong>En Tepe Nokta:</strong> Anlık olarak durur ($v=0$) $\rightarrow$ Kinetik Enerji = 0, Potansiyel MAKSİMUM!<br>
@@ -1935,7 +2168,7 @@
     <div class="slide-container " id="slide-35">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DÖNÜŞÜM MODELİ 3</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DÖNÜŞÜM MODELİ 3</span>
             <h2 class="slide-title">Parktaki Salıncak (Bitmeyen Salınım)</h2>
         </div>
     </div>
@@ -1943,8 +2176,8 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:18px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:22px;font-weight:900;color:#1e3a8a;">A, B ve C Noktaları:</h4>
-                    <div style="font-size:20px;line-height:1.6;color:#1e293b;margin-top:8px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#38bdf8;">A, B ve C Noktaları:</h4>
+                    <div style="font-size:20px;line-height:1.6;color:#f1f5f9;margin-top:8px;">
                         🔹 <strong>A ve C Noktaları (En Yüksek Yerler):</strong> Salıncak bir anlığına durur. $E_k = 0$, <strong>Çekim Potansiyel MAKSİMUM.</strong><br>
                         🔹 <strong>B Noktası (En Alt Orta Yer):</strong> Salıncağın rüzgar gibi en hızlı geçtiği yer! $E_p$ minimum, <strong>Kinetik Enerji MAKSİMUM!</strong>
                     </div>
@@ -1982,7 +2215,7 @@
     <div class="slide-container " id="slide-36">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DÖNÜŞÜM MODELİ 4</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DÖNÜŞÜM MODELİ 4</span>
             <h2 class="slide-title">Lunaparktaki Hız Treni (Roller Coaster)</h2>
         </div>
     </div>
@@ -1990,8 +2223,8 @@
             
             <div style="flex:1.2;display:flex;flex-direction:column;gap:18px;justify-content:center;">
                 <div class="info-card glow-amber">
-                    <h4 style="font-size:22px;font-weight:900;color:#b45309;">Neden Sonraki Tepeler İlkinden Alçaktır?</h4>
-                    <p style="font-size:20px;line-height:1.5;color:#334155;margin-top:8px;">
+                    <h4 style="font-size:22px;font-weight:900;color:#fbbf24;">Neden Sonraki Tepeler İlkinden Alçaktır?</h4>
+                    <p style="font-size:20px;line-height:1.5;color:#e2e8f0;margin-top:8px;">
                         Tren 1. dev tepeden aşağı inerken potansiyel enerjisi kinetiğe dönüşür ve muazzam bir hız kazanır.<br>
                         Ancak raylardaki sürtünme ve hava direnci yüzünden enerjinin bir kısmı <strong>ısıya ve sese</strong> dönüşür. 
                         Bu yüzden tren sürtünmesiz ortamdaki gibi ilk tepe kadar yükselemez!
@@ -2029,7 +2262,7 @@
     <div class="slide-container " id="slide-37">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DÖNÜŞÜM MODELİ 5</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DÖNÜŞÜM MODELİ 5</span>
             <h2 class="slide-title">Ok ve Yay (Esneklik → Kinetik)</h2>
         </div>
     </div>
@@ -2037,8 +2270,8 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-green" style="padding:28px;">
-                    <div style="font-size:26px;font-weight:900;color:#15803d;">🏹 Aşamalar:</div>
-                    <div style="font-size:22px;line-height:1.7;color:#1e293b;margin-top:12px;">
+                    <div style="font-size:26px;font-weight:900;color:#4ade80;">🏹 Aşamalar:</div>
+                    <div style="font-size:22px;line-height:1.7;color:#f1f5f9;margin-top:12px;">
                         1. <strong>Yayın Çekilmesi:</strong> Kaslarımız iş yapar ve yayda <strong>Esneklik Potansiyel Enerjisi</strong> depolanır.<br>
                         2. <strong>Kirişin Bırakılması:</strong> Depolanan esneklik enerjisi bir anda oka devredilir.<br>
                         3. <strong>Okun Uçuşu:</strong> Yaydaki potansiyel enerji tamamen okun <strong>Kinetik Enerjisine</strong> dönüşür ve ok hedefe uçar!
@@ -2053,7 +2286,7 @@
     <div class="slide-container " id="slide-38">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">GİZLİ HIRSIZ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> GİZLİ HIRSIZ</span>
             <h2 class="slide-title">Sürtünme Kuvveti ve Isıl Enerji</h2>
         </div>
     </div>
@@ -2061,8 +2294,8 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:24px;justify-content:center;">
                 <div class="info-card glow-red" style="padding:32px;">
-                    <div style="font-size:28px;font-weight:900;color:#b91c1c;">HAYIR, ENERJİ ASLA YOK OLMADI!</div>
-                    <p style="font-size:22px;line-height:1.6;color:#334155;margin-top:14px;">
+                    <div style="font-size:28px;font-weight:900;color:#f87171;">HAYIR, ENERJİ ASLA YOK OLMADI!</div>
+                    <p style="font-size:22px;line-height:1.6;color:#e2e8f0;margin-top:14px;">
                         Salıncak sallanırken hava molekülleriyle çarpışır (hava direnci) ve zincir demirlerinde sürtünme oluşur.<br>
                         Mekanik enerjinin bir kısmı her salınımda <strong>ISI ve SES enerjisine</strong> dönüşerek çevreye yayılır.<br>
                         💡 <strong>Kanıt:</strong> Avuç içlerinizi birbirine hızlıca sürtün; ellerinizin hemen ısındığını fark edeceksiniz!
@@ -2077,7 +2310,7 @@
     <div class="slide-container " id="slide-39">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">FİZİKSEL KIYASLAMA</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> FİZİKSEL KIYASLAMA</span>
             <h2 class="slide-title">Sürtünmeli vs. Sürtünmesiz Ortam</h2>
         </div>
     </div>
@@ -2085,16 +2318,16 @@
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:stretch;">
                 <div class="info-card glow-green">
-                    <h4 style="font-size:24px;font-weight:900;color:#15803d;">İdeal (Sürtünmesiz) Ortam</h4>
-                    <p style="font-size:20px;line-height:1.5;color:#475569;margin-top:10px;">
+                    <h4 style="font-size:24px;font-weight:900;color:#4ade80;">İdeal (Sürtünmesiz) Ortam</h4>
+                    <p style="font-size:20px;line-height:1.5;color:#e2e8f0;margin-top:10px;">
                         🔹 Isıya enerji kaybı olmaz.<br>
                         🔹 Mekanik Enerji daima SABİTTİR.<br>
                         🔹 Cisim sonsuza kadar salınımına devam eder.
                     </p>
                 </div>
                 <div class="info-card glow-amber">
-                    <h4 style="font-size:24px;font-weight:900;color:#b45309;">Gerçek (Sürtünmeli) Ortam</h4>
-                    <p style="font-size:20px;line-height:1.5;color:#475569;margin-top:10px;">
+                    <h4 style="font-size:24px;font-weight:900;color:#fbbf24;">Gerçek (Sürtünmeli) Ortam</h4>
+                    <p style="font-size:20px;line-height:1.5;color:#e2e8f0;margin-top:10px;">
                         🔹 Sürtünme mekanik enerjiyi azaltır.<br>
                         🔹 Azalan mekanik enerji = Isı Enerjisi.<br>
                         🔹 Toplam enerji yine korunur!
@@ -2109,7 +2342,7 @@
     <div class="slide-container " id="slide-40">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">DENEYSEL GÖZLEM</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> DENEYSEL GÖZLEM</span>
             <h2 class="slide-title">Pürüzlü vs. Pürüzsüz Rampada Kaykay</h2>
         </div>
     </div>
@@ -2117,8 +2350,8 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-blue">
-                    <h4 style="font-size:24px;font-weight:900;color:#0284c7;">Aynı Rampadan Bırakılan Oyuncak Araba:</h4>
-                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#1e293b;">
+                    <h4 style="font-size:24px;font-weight:900;color:#38bdf8;">Aynı Rampadan Bırakılan Oyuncak Araba:</h4>
+                    <div style="margin-top:14px;font-size:22px;line-height:1.6;color:#f1f5f9;">
                         🧊 <strong>Buz / Cam Zemin:</strong> Çok pürüzsüzdür $\rightarrow$ Sürtünme çok azdır $\rightarrow$ Araba metrelerce uzağa gider.<br>
                         🧶 <strong>Halı / Zımpara Zemin:</strong> Çok pürüzlüdür $\rightarrow$ Sürtünme çok fazladır $\rightarrow$ Kinetik enerji hemen ısıya dönüşür ve araba hemen durur!
                     </div>
@@ -2132,7 +2365,7 @@
     <div class="slide-container " id="slide-41">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">3. BÖLÜMÜN BÜYÜK POSTERİ</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 3. BÖLÜMÜN BÜYÜK POSTERİ</span>
             <h2 class="slide-title">Enerji Dönüşüm Çemberi</h2>
         </div>
     </div>
@@ -2141,7 +2374,7 @@
             <div style="flex:1;display:flex;align-items:center;justify-content:center;">
                 <div class="info-card glow-purple" style="max-width:900px;text-align:center;padding:36px;">
                     <div style="font-size:32px;font-weight:900;color:#6b21a8;margin-bottom:18px;">🔄 ENERJİ ASLA KAYBOLMAZ!</div>
-                    <div style="font-size:24px;line-height:1.8;color:#1e293b;">
+                    <div style="font-size:24px;line-height:1.8;color:#f1f5f9;">
                         Güneş Işığı $\rightarrow$ Bitkide Kimyasal Enerji (Besin)<br>
                         Besin $\rightarrow$ İnsanda Kas Enerjisi (İş Yapabilme)<br>
                         Kas Enerjisi $\rightarrow$ Kinetik Enerji (Koşma)<br>
@@ -2157,14 +2390,14 @@
     <div class="slide-container " id="slide-42">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">4. BÖLÜM: ETKİLEŞİMLİ LGS SORULARI</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 4. BÖLÜM: ETKİLEŞİMLİ LGS SORULARI</span>
             <h2 class="slide-title">Akıllı Tahta Sorusu 1: Fiziksel İş Analizi</h2>
         </div>
     </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
-                <div class="info-card" style="padding:20px;font-size:22px;color:#0f172a;line-height:1.5;">
+                <div class="info-card" style="padding:20px;font-size:22px;color:#f1f5f9;line-height:1.5;">
                     <strong>SORU:</strong> Fen bilimleri dersinde hazırlanan düzeneklerde sürtünmesiz yatay zemindeki özdeş kolilere uygulanan kuvvetler ve aldıkları yollar şöyledir:<br>
                     • 1. Koliye 20 N kuvvet uygulanmış, 4 metre yol aldırmıştır.<br>
                     • 2. Koliye 10 N kuvvet uygulanmış, 8 metre yol aldırmıştır.<br>
@@ -2198,7 +2431,7 @@
     <div class="slide-container " id="slide-43">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">SORU ANALİZİ VE ÇÖZÜM</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> SORU ANALİZİ VE ÇÖZÜM</span>
             <h2 class="slide-title">Soru 1 Çözüm ve Mantık Analizi</h2>
         </div>
     </div>
@@ -2206,10 +2439,10 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-green" style="padding:28px;">
-                    <h4 style="font-size:26px;font-weight:900;color:#15803d;">Doğru Cevap: B Şıkkı</h4>
-                    <div style="font-size:22px;line-height:1.7;color:#1e293b;margin-top:14px;">
-                        1. Koli: $W_1 = F_1 \times x_1 = 20\text{ N} \times 4\text{ m} = $ <strong style="color:#0284c7;">80 Joule</strong><br>
-                        2. Koli: $W_2 = F_2 \times x_2 = 10\text{ N} \times 8\text{ m} = $ <strong style="color:#0284c7;">80 Joule</strong><br>
+                    <h4 style="font-size:26px;font-weight:900;color:#4ade80;">Doğru Cevap: B Şıkkı</h4>
+                    <div style="font-size:22px;line-height:1.7;color:#f1f5f9;margin-top:14px;">
+                        1. Koli: $W_1 = F_1 \times x_1 = 20\text{ N} \times 4\text{ m} = $ <strong style="color:#38bdf8;">80 Joule</strong><br>
+                        2. Koli: $W_2 = F_2 \times x_2 = 10\text{ N} \times 8\text{ m} = $ <strong style="color:#38bdf8;">80 Joule</strong><br>
                         3. Koli: $W_3 = F_3 \times x_3 = 50\text{ N} \times 0\text{ m} = $ <strong style="color:#ef4444;">0 Joule</strong> (Yol yok!)<br><br>
                         Dolayısıyla <strong>W₁ = W₂ (80 J) > W₃ (0 J)</strong> sonucu çıkar.
                     </div>
@@ -2223,14 +2456,14 @@
     <div class="slide-container " id="slide-44">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">AKILLI TAHTA SORUSU 2</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> AKILLI TAHTA SORUSU 2</span>
             <h2 class="slide-title">Akıllı Tahta Sorusu 2: Hız Treni ve Enerji Dönüşümü</h2>
         </div>
     </div>
         <div class="slide-body">
             
             <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
-                <div class="info-card" style="padding:20px;font-size:22px;color:#0f172a;line-height:1.5;">
+                <div class="info-card" style="padding:20px;font-size:22px;color:#f1f5f9;line-height:1.5;">
                     <strong>SORU:</strong> Sürtünmelerin ihmal edildiği bir lunapark hız treninde, tren en yüksek tepe olan K noktasından ilk hızsız harekete başlamış, en alt çukur olan L noktasından geçip tekrar M tepesine tırmanmıştır.<br>
                     Buna göre aşağıdaki yargılardan hangisi <strong>kesinlikle doğrudur?</strong>
                 </div>
@@ -2261,7 +2494,7 @@
     <div class="slide-container " id="slide-45">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">SORU ANALİZİ VE ÇÖZÜM</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> SORU ANALİZİ VE ÇÖZÜM</span>
             <h2 class="slide-title">Soru 2 Çözüm ve Mantık Analizi</h2>
         </div>
     </div>
@@ -2269,8 +2502,8 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:20px;justify-content:center;">
                 <div class="info-card glow-green" style="padding:28px;">
-                    <h4 style="font-size:26px;font-weight:900;color:#15803d;">Doğru Cevap: B Şıkkı</h4>
-                    <div style="font-size:22px;line-height:1.7;color:#1e293b;margin-top:14px;">
+                    <h4 style="font-size:26px;font-weight:900;color:#4ade80;">Doğru Cevap: B Şıkkı</h4>
+                    <div style="font-size:22px;line-height:1.7;color:#f1f5f9;margin-top:14px;">
                         🔹 Sürtünmeler ihmal edildiğinde sistem dışarıya ısı veya ses şeklinde enerji kaybetmez.<br>
                         🔹 Bu nedenle $E_{\text{Mekanik}} = E_{\text{Kinetik}} + E_{\text{Potansiyel}} = $ <strong>SABİTTİR</strong>.<br>
                         🔹 K noktasında enerji potansiyel olarak depolanmış, L'de kinetiğe dönüşmüş, M'de tekrar paylaşılmıştır. 
@@ -2286,7 +2519,7 @@
     <div class="slide-container " id="slide-46">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">5. BÖLÜM: BÜYÜK ÖZET</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> 5. BÖLÜM: BÜYÜK ÖZET</span>
             <h2 class="slide-title">6 Altın Kuralda Ünitenin Özeti</h2>
         </div>
     </div>
@@ -2294,28 +2527,28 @@
             
             <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;gap:18px;">
                 <div class="info-card" style="padding:16px 20px;">
-                    <strong style="color:#0284c7;font-size:18px;">1. İŞ ŞARTI:</strong>
-                    <div style="font-size:17px;color:#334155;margin-top:4px;">Cisim uygulanan kuvvet doğrultusunda yol almalıdır (W = F · x).</div>
+                    <strong style="color:#38bdf8;font-size:18px;">1. İŞ ŞARTI:</strong>
+                    <div style="font-size:17px;color:#f1f5f9;margin-top:4px;">Cisim uygulanan kuvvet doğrultusunda yol almalıdır (W = F · x).</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;">
                     <strong style="color:#ef4444;font-size:18px;">2. İŞ OLMAYAN DURUMLAR:</strong>
-                    <div style="font-size:17px;color:#334155;margin-top:4px;">Hareket yoksa veya kuvvet harekete dik ise iş SIFIRDIR.</div>
+                    <div style="font-size:17px;color:#f1f5f9;margin-top:4px;">Hareket yoksa veya kuvvet harekete dik ise iş SIFIRDIR.</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;">
                     <strong style="color:#10b981;font-size:18px;">3. KİNETİK ENERJİ:</strong>
-                    <div style="font-size:17px;color:#334155;margin-top:4px;">Kütle ve sürate bağlıdır; süratin karesiyle katlanarak artar.</div>
+                    <div style="font-size:17px;color:#f1f5f9;margin-top:4px;">Kütle ve sürate bağlıdır; süratin karesiyle katlanarak artar.</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;">
                     <strong style="color:#f59e0b;font-size:18px;">4. ÇEKİM POTANSİYELİ:</strong>
-                    <div style="font-size:17px;color:#334155;margin-top:4px;">Yükseklik ve kütle arttıkça artar (m · g · h).</div>
+                    <div style="font-size:17px;color:#f1f5f9;margin-top:4px;">Yükseklik ve kütle arttıkça artar (m · g · h).</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;">
                     <strong style="color:#8b5cf6;font-size:18px;">5. ESNEKLİK ENERJİSİ:</strong>
-                    <div style="font-size:17px;color:#334155;margin-top:4px;">Yaydaki sıkışma miktarı ve yayın sertliği ile artar.</div>
+                    <div style="font-size:17px;color:#f1f5f9;margin-top:4px;">Yaydaki sıkışma miktarı ve yayın sertliği ile artar.</div>
                 </div>
                 <div class="info-card" style="padding:16px 20px;">
-                    <strong style="color:#0f172a;font-size:18px;">6. ENERJİ KORUNUMU:</strong>
-                    <div style="font-size:17px;color:#334155;margin-top:4px;">Enerji yok olmaz; sürtünme onu ısıya ve sese dönüştürür.</div>
+                    <strong style="color:#e2e8f0;font-size:18px;">6. ENERJİ KORUNUMU:</strong>
+                    <div style="font-size:17px;color:#f1f5f9;margin-top:4px;">Enerji yok olmaz; sürtünme onu ısıya ve sese dönüştürür.</div>
                 </div>
             </div>
         
@@ -2326,7 +2559,7 @@
     <div class="slide-container " id="slide-47">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">KENDİNİ TEST ET</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> KENDİNİ TEST ET</span>
             <h2 class="slide-title">Öğrenci Öz Değerlendirme Karnesi</h2>
         </div>
     </div>
@@ -2334,19 +2567,19 @@
             
             <div style="flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center;">
                 <div class="info-card" style="padding:16px 22px;cursor:pointer;" onclick="this.classList.toggle('glow-green')">
-                    <div style="font-size:20px;font-weight:800;color:#0f172a;">☑️ 1. Fiziksel anlamda işin şartlarını ve W = F · x formülünü biliyorum.</div>
+                    <div style="font-size:20px;font-weight:800;color:#f1f5f9;">☑️ 1. Fiziksel anlamda işin şartlarını ve W = F · x formülünü biliyorum.</div>
                 </div>
                 <div class="info-card" style="padding:16px 22px;cursor:pointer;" onclick="this.classList.toggle('glow-green')">
-                    <div style="font-size:20px;font-weight:800;color:#0f172a;">☑️ 2. Günlük yaşam örneklerinde iş yapılıp yapılmadığını gerekçesiyle açıklayabiliyorum.</div>
+                    <div style="font-size:20px;font-weight:800;color:#f1f5f9;">☑️ 2. Günlük yaşam örneklerinde iş yapılıp yapılmadığını gerekçesiyle açıklayabiliyorum.</div>
                 </div>
                 <div class="info-card" style="padding:16px 22px;cursor:pointer;" onclick="this.classList.toggle('glow-green')">
-                    <div style="font-size:20px;font-weight:800;color:#0f172a;">☑️ 3. Kinetik ve potansiyel enerjinin hangi değişkenlere bağlı olduğunu biliyorum.</div>
+                    <div style="font-size:20px;font-weight:800;color:#f1f5f9;">☑️ 3. Kinetik ve potansiyel enerjinin hangi değişkenlere bağlı olduğunu biliyorum.</div>
                 </div>
                 <div class="info-card" style="padding:16px 22px;cursor:pointer;" onclick="this.classList.toggle('glow-green')">
-                    <div style="font-size:20px;font-weight:800;color:#0f172a;">☑️ 4. Hız treni ve salıncaktaki enerji dönüşümlerini aşamalı olarak anlatabiliyorum.</div>
+                    <div style="font-size:20px;font-weight:800;color:#f1f5f9;">☑️ 4. Hız treni ve salıncaktaki enerji dönüşümlerini aşamalı olarak anlatabiliyorum.</div>
                 </div>
                 <div class="info-card" style="padding:16px 22px;cursor:pointer;" onclick="this.classList.toggle('glow-green')">
-                    <div style="font-size:20px;font-weight:800;color:#0f172a;">☑️ 5. Sürtünme kuvvetinin mekanik enerjiyi ısıya çevirdiğini kavradım.</div>
+                    <div style="font-size:20px;font-weight:800;color:#f1f5f9;">☑️ 5. Sürtünme kuvvetinin mekanik enerjiyi ısıya çevirdiğini kavradım.</div>
                 </div>
             </div>
         
@@ -2357,7 +2590,7 @@
     <div class="slide-container " id="slide-48">
         <div class="slide-header">
         <div class="slide-banner-pill">
-            <span class="slide-kicker">KAPANIŞ VE TEŞEKKÜR</span>
+            <span class="slide-kicker"><i class="fa-solid fa-bolt"></i> KAPANIŞ VE TEŞEKKÜR</span>
             <h2 class="slide-title">Tebrikler! Rotamız Fen, Hedefimiz Başarı!</h2>
         </div>
     </div>
@@ -2368,13 +2601,13 @@
                 <div style="font-size:46px;font-weight:900;background:linear-gradient(135deg, #0284c7, #1e3a8a);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
                     ROTAMIZ FEN!
                 </div>
-                <p style="font-size:24px;color:#475569;max-width:850px;line-height:1.6;">
+                <p style="font-size:24px;color:#e2e8f0;max-width:850px;line-height:1.6;">
                     Fen bilimlerinde başarının doğru rotası! Daha fazla yaprak test, interaktif deney ve konu sunumu için web sitemizi ziyaret etmeyi unutmayın.
                 </p>
                 <div style="display:flex;gap:30px;margin-top:10px;">
-                    <div style="background:#e0f2fe;border:2px solid #0284c7;border-radius:20px;padding:16px 28px;display:flex;align-items:center;gap:12px;">
+                    <div style="background:rgba(12, 20, 44, 0.88);border:2px solid #0284c7;border-radius:20px;padding:16px 28px;display:flex;align-items:center;gap:12px;">
                         <i class="fa-solid fa-globe" style="font-size:28px;color:#0284c7;"></i>
-                        <span style="font-size:22px;font-weight:800;color:#0369a1;">rotalifenci.vercel.app</span>
+                        <span style="font-size:22px;font-weight:800;color:#38bdf8;">rotalifenci.vercel.app</span>
                     </div>
                     <div style="background:#fce7f3;border:2px solid #ec4899;border-radius:20px;padding:16px 28px;display:flex;align-items:center;gap:12px;">
                         <i class="fa-brands fa-instagram" style="font-size:28px;color:#db2777;"></i>
@@ -2389,363 +2622,53 @@
 
             <!-- Smartboard Bottom Control Bar -->
             <div class="fixed-nav-bar">
-                <button class="nav-btn" onclick="prevSlide()" title="Önceki Slayt (Sol Ok)">
+                <button class="nav-btn" onclick="prevSlide()" title="Önceki Slayt (Sol/Yukarı Ok)">
                     <i class="fa-solid fa-chevron-left"></i> <span>Önceki</span>
                 </button>
-                <div class="counter-badge" id="slide-counter-badge" style="background:#0f172a;color:#fef08a;border:2px solid #0284c7;border-radius:24px;padding:4px 16px;font-weight:900;">1 / 48</div>
-                <button class="nav-btn primary" onclick="nextSlide()" title="Sonraki Slayt (Sağ Ok veya Boşluk)">
-                    <span>Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
+                <span id="slide-counter-badge" class="counter-badge">1/48</span>
+                <button class="nav-btn primary" onclick="nextSlide()" title="Sonraki Slayt (Sağ/Aşağı Ok)">
+                    <span>Sonraki &gt;</span>
                 </button>
-                <button class="nav-btn nav-btn-rotalar" onclick="toggleDrawer()" title="Bölümler & Ünite Rotaları (M)">
-                    <i class="fa-solid fa-compass"></i> <span>Rotalar</span>
+                <button class="nav-btn nav-btn-rotalar" onclick="toggleDrawer()" title="Ünite Rotaları (M)">
+                    <i class="fa-solid fa-compass"></i> <span>Ünite Rotaları</span>
                 </button>
-                <button class="nav-btn" onclick="window.print()" title="PDF Çıktısı Al / Yazdır"><i class="fa-solid fa-file-pdf"></i></button>
-                <button class="nav-btn" onclick="toggleFullscreen()" title="Tam Ekran (F tuşu)"><i class="fa-solid fa-expand"></i></button>
+                <button class="nav-btn icon-only" onclick="toggleSound()" id="sound-btn" title="Ses Aç/Kapat">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="toggleFullscreen()" title="Tam Ekran (F11)">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="window.print()" title="Sunumu Yazdır">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="savePresentation()" title="Sunumu Kaydet / İndir">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="closePresentation()" title="Sunumu Kapat (ESC)" style="border-color: rgba(244,63,94,0.45) !important; color: #fda4af !important;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-                <button class="nav-btn primary" onclick="nextSlide()" title="Sonraki Slayt (Sağ Ok veya Boşluk)">
-                    <span>Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
-                </button>
-                <button class="nav-btn nav-btn-rotalar" onclick="toggleDrawer()" title="Bölümler & Ünite Rotaları (M)">
-                    <i class="fa-solid fa-compass"></i> <span>Rotalar</span>
-                </button>
-                <button class="nav-btn" onclick="window.print()" title="PDF Çıktısı Al / Yazdır"><i class="fa-solid fa-file-pdf"></i></button>
-                <button class="nav-btn" onclick="toggleFullscreen()" title="Tam Ekran (F tuşu)"><i class="fa-solid fa-expand"></i></button>
-            </div>
-
-            <!-- Slide Drawer / Table of Contents Modal -->
-            <div id="drawer-modal" onclick="if(event.target===this) toggleDrawer()">
-                <div class="drawer-box">
-                    <div class="drawer-header">
-                        <h3><i class="fa-solid fa-compass" style="color: #0284c7;"></i> Slayt İndeksi • Kuvvet ve Enerjiyi Keşfedelim</h3>
-                        <button class="drawer-close-btn" onclick="toggleDrawer()"><i class="fa-solid fa-xmark"></i></button>
-                    </div>
-                    <div class="drawer-grid" id="drawer-slide-list">
-                        
-        <div class="drawer-card current" onclick="showSlide(1); toggleDrawer();">
-            <div class="drawer-num">SLAYT 1</div>
-            <div class="drawer-title">Kuvvet ve Enerjiyi Keşfedelim</div>
-            <div class="drawer-kicker"> TÜRKİYE YÜZYILI MAARİF MODELİ • 7. SINIF FEN BİLİMLERİ</div>
         </div>
-    
-        <div class="drawer-card " onclick="showSlide(2); toggleDrawer();">
-            <div class="drawer-num">SLAYT 2</div>
-            <div class="drawer-title">3 Büyük İstasyon: Ünite Rotamız</div>
-            <div class="drawer-kicker">ÖĞRENME HARİTASI</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(3); toggleDrawer();">
-            <div class="drawer-num">SLAYT 3</div>
-            <div class="drawer-title">Çok Yoruldum Ama Fiziksel İş Yaptım mı?</div>
-            <div class="drawer-kicker">GÜNLÜK YAŞAM PARADOKSU</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(4); toggleDrawer();">
-            <div class="drawer-num">SLAYT 4</div>
-            <div class="drawer-title">Kuvvet Bize Neyi Hatırlatır?</div>
-            <div class="drawer-kicker">ÖN BİLGİLERİ HATIRLAYALIM</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(5); toggleDrawer();">
-            <div class="drawer-num">SLAYT 5</div>
-            <div class="drawer-title">Fiziksel İşin 2 Altın Kuralı</div>
-            <div class="drawer-kicker">1. BÖLÜM: FİZİKSEL ANLAMDA İŞ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(6); toggleDrawer();">
-            <div class="drawer-num">SLAYT 6</div>
-            <div class="drawer-title">Kutu İlerliyor: İŞ YAPILMIŞTIR!</div>
-            <div class="drawer-kicker">DURUM ANALİZİ 1</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(7); toggleDrawer();">
-            <div class="drawer-num">SLAYT 7</div>
-            <div class="drawer-title">Duvar Kımıldamıyor: İŞ YAPILMAMIŞTIR!</div>
-            <div class="drawer-kicker">DURUM ANALİZİ 2</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(8); toggleDrawer();">
-            <div class="drawer-num">SLAYT 8</div>
-            <div class="drawer-title">Çantayı Taşımak vs. Yerden Kaldırmak</div>
-            <div class="drawer-kicker">EN BÜYÜK TUZAK!</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(9); toggleDrawer();">
-            <div class="drawer-num">SLAYT 9</div>
-            <div class="drawer-title">Fiziksel İş Var mı, Yok mu? (Örnek 1–10)</div>
-            <div class="drawer-kicker">20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 1</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(10); toggleDrawer();">
-            <div class="drawer-num">SLAYT 10</div>
-            <div class="drawer-title">Fiziksel İş Var mı, Yok mu? (Örnek 11–20)</div>
-            <div class="drawer-kicker">20 GÜNLÜK YAŞAM ÖRNEĞİ • BÖLÜM 2</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(11); toggleDrawer();">
-            <div class="drawer-num">SLAYT 11</div>
-            <div class="drawer-title">İş Formülü ve Birimi: Joule (J)</div>
-            <div class="drawer-kicker">İŞİN MATEMATİKSEL MODELİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(12); toggleDrawer();">
-            <div class="drawer-num">SLAYT 12</div>
-            <div class="drawer-title">Yol Sabitken Kuvvet Artarsa Ne Olur?</div>
-            <div class="drawer-kicker">KONTROLLÜ DENEY 1</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(13); toggleDrawer();">
-            <div class="drawer-num">SLAYT 13</div>
-            <div class="drawer-title">Kuvvet Sabitken Alınan Yol Artarsa?</div>
-            <div class="drawer-kicker">KONTROLLÜ DENEY 2</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(14); toggleDrawer();">
-            <div class="drawer-num">SLAYT 14</div>
-            <div class="drawer-title">Adım Adım Problem Çözümü: Koli Kaldırma</div>
-            <div class="drawer-kicker">ÖRNEK SORU VE ÇÖZÜM 1</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(15); toggleDrawer();">
-            <div class="drawer-num">SLAYT 15</div>
-            <div class="drawer-title">İş Karşılaştırma Analizi: K, L ve M Cisimleri</div>
-            <div class="drawer-kicker">ÖRNEK SORU VE ÇÖZÜM 2</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(16); toggleDrawer();">
-            <div class="drawer-num">SLAYT 16</div>
-            <div class="drawer-title">Fiziksel İş Konusunda 5 Kritik Kavram Yanılgısı</div>
-            <div class="drawer-kicker">DİKKAT EDİLECEK NOKTALAR</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(17); toggleDrawer();">
-            <div class="drawer-num">SLAYT 17</div>
-            <div class="drawer-title">İş Dedektifi Sahada! (Tahmin Et & Çöz)</div>
-            <div class="drawer-kicker">İNTERAKTİF SINIF GÖREVİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(18); toggleDrawer();">
-            <div class="drawer-num">SLAYT 18</div>
-            <div class="drawer-title">Fiziksel İşin Zihin Haritası</div>
-            <div class="drawer-kicker">1. BÖLÜMÜN BÜYÜK ÖZETİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(19); toggleDrawer();">
-            <div class="drawer-num">SLAYT 19</div>
-            <div class="drawer-title">Enerji Nedir? (İş ile Enerjinin Kardeşliği)</div>
-            <div class="drawer-kicker">2. BÖLÜM: ENERJİ ÇEŞİTLERİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(20); toggleDrawer();">
-            <div class="drawer-num">SLAYT 20</div>
-            <div class="drawer-title">Kinetik Enerji (Kinetik = Hareket)</div>
-            <div class="drawer-kicker">HAREKETİN GÜCÜ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(21); toggleDrawer();">
-            <div class="drawer-num">SLAYT 21</div>
-            <div class="drawer-title">Kütlenin Kinetik Enerjiye Etkisi</div>
-            <div class="drawer-kicker">KİNETİK ENERJİ NEYE BAĞLIDIR? • 1. FAKTÖR</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(22); toggleDrawer();">
-            <div class="drawer-num">SLAYT 22</div>
-            <div class="drawer-title">Süratin Kinetik Enerjiye Etkisi</div>
-            <div class="drawer-kicker">KİNETİK ENERJİ NEYE BAĞLIDIR? • 2. FAKTÖR</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(23); toggleDrawer();">
-            <div class="drawer-num">SLAYT 23</div>
-            <div class="drawer-title">Trafik Güvenliği ve Kinetik Enerji</div>
-            <div class="drawer-kicker">HAYAT KURTARAN FİZİK</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(24); toggleDrawer();">
-            <div class="drawer-num">SLAYT 24</div>
-            <div class="drawer-title">Potansiyel Enerjiye Giriş (Depolanmış Enerji)</div>
-            <div class="drawer-kicker">GİZLİ GÜÇ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(25); toggleDrawer();">
-            <div class="drawer-num">SLAYT 25</div>
-            <div class="drawer-title">Çekim Potansiyel Enerjisi Nedir?</div>
-            <div class="drawer-kicker">YÜKSEKLİĞİN GÜCÜ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(26); toggleDrawer();">
-            <div class="drawer-num">SLAYT 26</div>
-            <div class="drawer-title">Yüksekliğin Çekim Potansiyel Enerjisine Etkisi</div>
-            <div class="drawer-kicker">ÇEKİM POTANSİYEL ENERJİSİ • 1. DEĞİŞKEN</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(27); toggleDrawer();">
-            <div class="drawer-num">SLAYT 27</div>
-            <div class="drawer-title">Kütlenin Çekim Potansiyel Enerjisine Etkisi</div>
-            <div class="drawer-kicker">ÇEKİM POTANSİYEL ENERJİSİ • 2. DEĞİŞKEN</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(28); toggleDrawer();">
-            <div class="drawer-num">SLAYT 28</div>
-            <div class="drawer-title">Esneklik Potansiyel Enerjisi</div>
-            <div class="drawer-kicker">YAYLARIN VE LASTİKLERİN GÜCÜ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(29); toggleDrawer();">
-            <div class="drawer-num">SLAYT 29</div>
-            <div class="drawer-title">Esneklik Enerjisi Neye Bağlıdır?</div>
-            <div class="drawer-kicker">ESNEKLİK POTANSİYELİ DEĞİŞKENLERİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(30); toggleDrawer();">
-            <div class="drawer-num">SLAYT 30</div>
-            <div class="drawer-title">Bir Cisimde İki Enerji Birden Bulunabilir mi?</div>
-            <div class="drawer-kicker">İKİSİ BİR ARADA</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(31); toggleDrawer();">
-            <div class="drawer-num">SLAYT 31</div>
-            <div class="drawer-title">3 Enerji Türü Karşılaştırma Matrisi</div>
-            <div class="drawer-kicker">ENERJİ TÜRLERİ ÖZETİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(32); toggleDrawer();">
-            <div class="drawer-num">SLAYT 32</div>
-            <div class="drawer-title">Evrenin Büyük Kanunu: Enerji Korunumu</div>
-            <div class="drawer-kicker">3. BÖLÜM: DÖNÜŞÜMLER VE KORUNUM</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(33); toggleDrawer();">
-            <div class="drawer-num">SLAYT 33</div>
-            <div class="drawer-title">Serbest Düşen Cisim (Ağaçtan Düşen Elma)</div>
-            <div class="drawer-kicker">DÖNÜŞÜM MODELİ 1</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(34); toggleDrawer();">
-            <div class="drawer-num">SLAYT 34</div>
-            <div class="drawer-title">Yukarı Fırlatılan Topun Enerji Dönüşümü</div>
-            <div class="drawer-kicker">DÖNÜŞÜM MODELİ 2</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(35); toggleDrawer();">
-            <div class="drawer-num">SLAYT 35</div>
-            <div class="drawer-title">Parktaki Salıncak (Bitmeyen Salınım)</div>
-            <div class="drawer-kicker">DÖNÜŞÜM MODELİ 3</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(36); toggleDrawer();">
-            <div class="drawer-num">SLAYT 36</div>
-            <div class="drawer-title">Lunaparktaki Hız Treni (Roller Coaster)</div>
-            <div class="drawer-kicker">DÖNÜŞÜM MODELİ 4</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(37); toggleDrawer();">
-            <div class="drawer-num">SLAYT 37</div>
-            <div class="drawer-title">Ok ve Yay (Esneklik → Kinetik)</div>
-            <div class="drawer-kicker">DÖNÜŞÜM MODELİ 5</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(38); toggleDrawer();">
-            <div class="drawer-num">SLAYT 38</div>
-            <div class="drawer-title">Sürtünme Kuvveti ve Isıl Enerji</div>
-            <div class="drawer-kicker">GİZLİ HIRSIZ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(39); toggleDrawer();">
-            <div class="drawer-num">SLAYT 39</div>
-            <div class="drawer-title">Sürtünmeli vs. Sürtünmesiz Ortam</div>
-            <div class="drawer-kicker">FİZİKSEL KIYASLAMA</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(40); toggleDrawer();">
-            <div class="drawer-num">SLAYT 40</div>
-            <div class="drawer-title">Pürüzlü vs. Pürüzsüz Rampada Kaykay</div>
-            <div class="drawer-kicker">DENEYSEL GÖZLEM</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(41); toggleDrawer();">
-            <div class="drawer-num">SLAYT 41</div>
-            <div class="drawer-title">Enerji Dönüşüm Çemberi</div>
-            <div class="drawer-kicker">3. BÖLÜMÜN BÜYÜK POSTERİ</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(42); toggleDrawer();">
-            <div class="drawer-num">SLAYT 42</div>
-            <div class="drawer-title">Akıllı Tahta Sorusu 1: Fiziksel İş Analizi</div>
-            <div class="drawer-kicker">4. BÖLÜM: ETKİLEŞİMLİ LGS SORULARI</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(43); toggleDrawer();">
-            <div class="drawer-num">SLAYT 43</div>
-            <div class="drawer-title">Soru 1 Çözüm ve Mantık Analizi</div>
-            <div class="drawer-kicker">SORU ANALİZİ VE ÇÖZÜM</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(44); toggleDrawer();">
-            <div class="drawer-num">SLAYT 44</div>
-            <div class="drawer-title">Akıllı Tahta Sorusu 2: Hız Treni ve Enerji Dönüşümü</div>
-            <div class="drawer-kicker">AKILLI TAHTA SORUSU 2</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(45); toggleDrawer();">
-            <div class="drawer-num">SLAYT 45</div>
-            <div class="drawer-title">Soru 2 Çözüm ve Mantık Analizi</div>
-            <div class="drawer-kicker">SORU ANALİZİ VE ÇÖZÜM</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(46); toggleDrawer();">
-            <div class="drawer-num">SLAYT 46</div>
-            <div class="drawer-title">6 Altın Kuralda Ünitenin Özeti</div>
-            <div class="drawer-kicker">5. BÖLÜM: BÜYÜK ÖZET</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(47); toggleDrawer();">
-            <div class="drawer-num">SLAYT 47</div>
-            <div class="drawer-title">Öğrenci Öz Değerlendirme Karnesi</div>
-            <div class="drawer-kicker">KENDİNİ TEST ET</div>
-        </div>
-    
-        <div class="drawer-card " onclick="showSlide(48); toggleDrawer();">
-            <div class="drawer-num">SLAYT 48</div>
-            <div class="drawer-title">Tebrikler! Rotamız Fen, Hedefimiz Başarı!</div>
-            <div class="drawer-kicker">KAPANIŞ VE TEŞEKKÜR</div>
-        </div>
-    
-                    </div>
+    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Scaling & Responsive Engine
-        function handleResize() {
-            const stage = document.getElementById('presentation-stage');
-            if (!stage) return;
-            const targetW = 1920;
-            const targetH = 1080;
-            const winW = window.innerWidth || document.documentElement.clientWidth || 1280;
-            const winH = window.innerHeight || document.documentElement.clientHeight || 720;
-            if (winW <= 10 || winH <= 10) {
-                setTimeout(handleResize, 60);
-                return;
-            }
-            const scale = Math.max(0.15, Math.min(winW / targetW, winH / targetH));
-            stage.style.transform = "scale(" + scale + ")";
-        }
+        let currentSlide = 1;
+        const totalSlides = 48;
+        let soundEnabled = true;
+        let audioCtx = null;
+        let isProgrammaticScroll = false;
+        let scrollTimer = null;
+
+        function handleResize() {}
         window.handleResize = handleResize;
         window.scaleStage = handleResize;
-        window.addEventListener('resize', handleResize);
-        window.addEventListener('load', handleResize);
-        window.addEventListener('DOMContentLoaded', () => {
-            handleResize();
-            setTimeout(handleResize, 50);
-            setTimeout(handleResize, 200);
-            setTimeout(handleResize, 600);
-        });
-        handleResize();
 
-        // Web Audio Chime
-        let audioCtx = null;
         function playChime(isSuccess = true) {
+            if (!soundEnabled) return;
             try {
                 if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if (audioCtx.state === 'suspended') audioCtx.resume();
@@ -2756,9 +2679,9 @@
                 gain.connect(audioCtx.destination);
                 if (isSuccess) {
                     osc.type = 'sine';
-                    osc.frequency.setValueAtTime(587.33, now); // D5
-                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.15); // A5
-                    gain.gain.setValueAtTime(0.15, now);
+                    osc.frequency.setValueAtTime(587.33, now);
+                    osc.frequency.exponentialRampToValueAtTime(880, now + 0.15);
+                    gain.gain.setValueAtTime(0.12, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
                     osc.start(now);
                     osc.stop(now + 0.35);
@@ -2766,7 +2689,7 @@
                     osc.type = 'triangle';
                     osc.frequency.setValueAtTime(320, now);
                     osc.frequency.exponentialRampToValueAtTime(220, now + 0.2);
-                    gain.gain.setValueAtTime(0.2, now);
+                    gain.gain.setValueAtTime(0.15, now);
                     gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
                     osc.start(now);
                     osc.stop(now + 0.35);
@@ -2774,53 +2697,96 @@
             } catch (e) {}
         }
 
-        // Slide State
-        let currentSlide = 1;
-        const totalSlides = 48;
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            const btn = document.getElementById('sound-btn');
+            if (btn) {
+                btn.innerHTML = soundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark" style="color:#ef4444;"></i>';
+            }
+        }
 
-        function showSlide(n) {
-            if (n < 1 || n > totalSlides) return;
-            const prevEl = document.getElementById('slide-' + currentSlide);
-            if (prevEl) prevEl.classList.remove('active');
-
+        function updateSlideIndicators(n) {
             currentSlide = n;
-            const nextEl = document.getElementById('slide-' + currentSlide);
-            if (nextEl) nextEl.classList.add('active');
-
-            // Update badge
+            document.querySelectorAll('.slide-container').forEach((s, idx) => {
+                s.classList.toggle('active', idx + 1 === n);
+            });
             const badge = document.getElementById('slide-counter-badge');
-            if (badge) badge.innerText = currentSlide + ' / ' + totalSlides;
+            if (badge) badge.innerText = currentSlide + '/' + totalSlides;
 
-            // Update progress bar
             const pb = document.getElementById('slide-progress-bar');
             if (pb) pb.style.width = ((currentSlide / totalSlides) * 100) + '%';
 
-            // Update drawer current
             document.querySelectorAll('.drawer-card').forEach((card, idx) => {
-                if (idx + 1 === currentSlide) card.classList.add('current');
-                else card.classList.remove('current');
+                card.classList.toggle('current', idx + 1 === currentSlide);
             });
+
+            try {
+                if (window.parent && window.parent !== window) {
+                    window.parent.postMessage({
+                        type: 'ROTALI_SLIDE_UPDATE',
+                        currentSlide: n,
+                        totalSlides: totalSlides
+                    }, '*');
+                }
+            } catch (err) {}
+        }
+
+        function showSlide(n, smooth = true) {
+            if (n < 1) n = 1;
+            if (n > totalSlides) n = totalSlides;
+            updateSlideIndicators(n);
+
+            const nextEl = document.getElementById('slide-' + n);
+            if (nextEl) {
+                isProgrammaticScroll = true;
+                if (scrollTimer) clearTimeout(scrollTimer);
+                nextEl.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+                scrollTimer = setTimeout(() => { isProgrammaticScroll = false; }, 650);
+            }
         }
 
         function nextSlide() {
             if (currentSlide < totalSlides) {
-                showSlide(currentSlide + 1);
+                showSlide(currentSlide + 1, true);
                 playChime(true);
             }
         }
 
         function prevSlide() {
             if (currentSlide > 1) {
-                showSlide(currentSlide - 1);
+                showSlide(currentSlide - 1, true);
             }
         }
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {});
+                document.documentElement.requestFullscreen().catch(() => {});
             } else {
                 if (document.exitFullscreen) document.exitFullscreen();
             }
+        }
+
+        function savePresentation() {
+            try {
+                const a = document.createElement('a');
+                a.href = window.location.href.split('?')[0];
+                a.download = '7-Sinif-2-Unite-Kuvvet-ve-Enerji-Sunumu.html';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (e) {
+                window.print();
+            }
+        }
+
+        function closePresentation() {
+            try {
+                if (window.parent && window.parent !== window && typeof window.parent.closeFullScreenPresentationModal === 'function') {
+                    window.parent.closeFullScreenPresentationModal();
+                    return;
+                }
+            } catch (e) {}
+            if (window.history.length > 1) window.history.back();
         }
 
         function toggleDrawer() {
@@ -2828,32 +2794,100 @@
             if (drawer) drawer.classList.toggle('open');
         }
 
-        // Quiz Handling
         function answerQuiz(el, isCorrect, explanation) {
             if (el.classList.contains('answered')) return;
             el.classList.add('answered');
             playChime(isCorrect);
-            if (isCorrect) el.classList.add('correct');
-            else el.classList.add('wrong');
+            el.classList.add(isCorrect ? 'correct' : 'wrong');
 
             const feedback = el.querySelector('.quiz-feedback');
             if (feedback) {
-                feedback.innerHTML = '<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid ' + (isCorrect ? 'fa-circle-check text-green-600' : 'fa-circle-xmark text-red-600') + '" style="font-size:22px;"></i><div><strong>' + (isCorrect ? 'TEBRİKLER! DOĞRU CEVAP' : 'DİKKAT! TEKRAR İNCELEYELİM') + '</strong>: ' + explanation + '</div></div>';
+                feedback.innerHTML = '<div style="display:flex;align-items:center;gap:10px;"><i class="fa-solid ' + (isCorrect ? 'fa-circle-check text-green-400' : 'fa-circle-xmark text-red-400') + '" style="font-size:22px;"></i><div><strong>' + (isCorrect ? 'TEBRİKLER! DOĞRU CEVAP' : 'DİKKAT! TEKRAR İNCELEYELİM') + '</strong>: ' + explanation + '</div></div>';
                 feedback.className = 'quiz-feedback show ' + (isCorrect ? 'fb-correct' : 'fb-wrong');
             }
         }
 
-        // Interactive Detective Toggle
         function revealDetective(btn, isWork, reason) {
             const parent = btn.closest('.detective-card');
             const resultBox = parent.querySelector('.detective-result');
             resultBox.style.display = 'block';
-            resultBox.innerHTML = '<div style="margin-top:12px;padding:12px;border-radius:12px;background:' + (isWork ? '#dcfce7' : '#fee2e2') + ';border:1.5px solid ' + (isWork ? '#10b981' : '#ef4444') + ';"><div style="font-weight:800;color:' + (isWork ? '#15803d' : '#991b1b') + ';font-size:18px;">' + (isWork ? '✅ FİZİKSEL ANLAMDA İŞ VARDIR!' : '❌ FİZİKSEL ANLAMDA İŞ YOKTUR!') + '</div><div style="font-size:16px;color:#1e293b;margin-top:4px;">' + reason + '</div></div>';
+            resultBox.innerHTML = '<div style="margin-top:12px;padding:12px;border-radius:12px;background:' + (isWork ? 'rgba(20,83,45,0.6)' : 'rgba(127,29,29,0.6)') + ';border:1.5px solid ' + (isWork ? '#10b981' : '#ef4444') + ';"><div style="font-weight:800;color:' + (isWork ? '#4ade80' : '#f87171') + ';font-size:18px;">' + (isWork ? '✅ FİZİKSEL ANLAMDA İŞ VARDIR!' : '❌ FİZİKSEL ANLAMDA İŞ YOKTUR!') + '</div><div style="font-size:16px;color:#f1f5f9;margin-top:4px;">' + reason + '</div></div>';
             btn.style.display = 'none';
             playChime(isWork);
         }
 
-        // Keyboard Navigation
+        function initScrollSpy() {
+            const viewport = document.getElementById('stage-viewport');
+            if (!viewport) return;
+            let ticking = false;
+            viewport.addEventListener('scroll', () => {
+                if (isProgrammaticScroll || ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const slides = document.querySelectorAll('.slide-container');
+                    const vpRect = viewport.getBoundingClientRect();
+                    const centerLine = vpRect.top + vpRect.height * 0.38;
+                    let bestIdx = currentSlide;
+                    let minDist = Infinity;
+                    slides.forEach((s, idx) => {
+                        const r = s.getBoundingClientRect();
+                        if (r.top <= centerLine && r.bottom >= centerLine) {
+                            bestIdx = idx + 1;
+                            minDist = 0;
+                        } else {
+                            const d = Math.abs(r.top - vpRect.top);
+                            if (d < minDist) {
+                                minDist = d;
+                                bestIdx = idx + 1;
+                            }
+                        }
+                    });
+                    if (bestIdx !== currentSlide) {
+                        updateSlideIndicators(bestIdx);
+                    }
+                    ticking = false;
+                });
+            }, { passive: true });
+        }
+
+        function initStars() {
+            const canvas = document.getElementById('stars-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            let w = canvas.width = window.innerWidth || 1920;
+            let h = canvas.height = window.innerHeight || 1080;
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth || 1920;
+                h = canvas.height = window.innerHeight || 1080;
+            });
+            const stars = Array.from({length: 190}, () => ({
+                x: Math.random() * w,
+                y: Math.random() * h,
+                r: Math.random() * 1.8 + 0.4,
+                alpha: Math.random() * 0.8 + 0.2,
+                speed: Math.random() * 0.018 + 0.004
+            }));
+            function draw() {
+                ctx.clearRect(0, 0, w, h);
+                for (let s of stars) {
+                    s.alpha += s.speed;
+                    if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, s.alpha)})`;
+                    ctx.fill();
+                }
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initStars();
+            initScrollSpy();
+            updateSlideIndicators(1);
+        });
+
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
                 e.preventDefault();
@@ -2867,42 +2901,29 @@
                 toggleDrawer();
             } else if (e.key === 'Escape') {
                 const drawer = document.getElementById('drawer-modal');
-                if (drawer && drawer.classList.contains('open')) drawer.classList.remove('open');
+                if (drawer && drawer.classList.contains('open')) {
+                    drawer.classList.remove('open');
+                } else {
+                    closePresentation();
+                }
             }
         });
 
-        // Touch Swipe
-        let touchStartX = 0;
-        let touchStartY = 0;
-        window.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        }, {passive: true});
-        window.addEventListener('touchend', (e) => {
-            const diffX = e.changedTouches[0].screenX - touchStartX;
-            const diffY = e.changedTouches[0].screenY - touchStartY;
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
-                if (diffX < 0) nextSlide();
-                else prevSlide();
-            }
-        }, {passive: true});
-    
-        // Dış Pencere (Parent Frame) İletişimi
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'ROTALI_SLIDE_CMD') {
                 if (e.data.command === 'nextSlide') nextSlide();
                 else if (e.data.command === 'prevSlide') prevSlide();
                 else if (e.data.command === 'toggleDrawer') toggleDrawer();
-                else if (e.data.command === 'showSlide' && typeof e.data.arg === 'number') showSlide(e.data.arg);
+                else if (e.data.command === 'showSlide') showSlide(Number(e.data.arg) || 1, true);
             }
         });
 
-        // Global functions for parent window direct call
         window.nextSlide = nextSlide;
         window.prevSlide = prevSlide;
         window.toggleDrawer = toggleDrawer;
         window.showSlide = showSlide;
-    
-</script>
+        window.savePresentation = savePresentation;
+        window.closePresentation = closePresentation;
+    </script>
 </body>
 </html>

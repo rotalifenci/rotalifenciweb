@@ -618,6 +618,224 @@
                 box-sizing: border-box !important;
             }
         }
+    
+        /* === 3D SİNEMATİK DERİN UZAY DİKEY AKIŞ (LONG-SCROLL) GÖRÜNTÜLEYİCİ === */
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #02040a !important;
+            user-select: none;
+        }
+        #stage-viewport {
+            width: 100vw !important;
+            height: 100vh !important;
+            display: block !important;
+            overflow-y: auto !important;
+            overflow-x: hidden !important;
+            scroll-behavior: smooth !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-y pinch-zoom !important;
+            background: radial-gradient(circle at 50% 20%, #0b152b 0%, #050914 60%, #02040a 100%) !important;
+            padding: 28px 28px 120px 28px !important;
+        }
+        #stars-canvas {
+            position: fixed !important;
+            inset: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            pointer-events: none !important;
+            z-index: 1 !important;
+        }
+        .progress-bar-container {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 6px !important;
+            z-index: 120 !important;
+        }
+        .branding-top-right {
+            position: fixed !important;
+            top: 18px !important;
+            right: 28px !important;
+            z-index: 110 !important;
+        }
+        .branding-bottom-left {
+            position: fixed !important;
+            bottom: 18px !important;
+            left: 24px !important;
+            z-index: 115 !important;
+            background: rgba(8, 14, 30, 0.92) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.45) !important;
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.7), 0 0 18px rgba(56, 189, 248, 0.2) !important;
+        }
+        .fixed-nav-bar {
+            position: fixed !important;
+            bottom: 16px !important;
+            right: 24px !important;
+            z-index: 115 !important;
+            background: rgba(7, 12, 26, 0.95) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.35) !important;
+            box-shadow: 0 16px 45px rgba(0, 0, 0, 0.85), 0 0 25px rgba(56, 189, 248, 0.15) !important;
+            padding: 8px 16px !important;
+            gap: 10px !important;
+        }
+        .nav-btn {
+            height: 48px !important;
+            min-width: 48px !important;
+            padding: 0 16px !important;
+            font-size: 17px !important;
+            background: rgba(15, 23, 42, 0.95) !important;
+            border: 1.5px solid rgba(148, 163, 184, 0.28) !important;
+            color: #f8fafc !important;
+        }
+        .nav-btn.icon-only {
+            padding: 0 !important;
+            width: 48px !important;
+        }
+        .nav-btn.primary {
+            background: linear-gradient(135deg, #ff7a00 0%, #f97316 50%, #ea580c 100%) !important;
+            border-color: #fdba74 !important;
+            color: #ffffff !important;
+            padding: 0 22px !important;
+            box-shadow: 0 0 22px rgba(249, 115, 22, 0.55) !important;
+        }
+        .counter-badge {
+            color: #facc15 !important;
+            font-size: 20px !important;
+            font-weight: 900 !important;
+            min-width: 78px !important;
+            text-shadow: 0 0 12px rgba(250, 204, 21, 0.4) !important;
+        }
+        #presentation-stage {
+            width: 100% !important;
+            max-width: 1680px !important;
+            height: auto !important;
+            margin: 0 auto !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            overflow: visible !important;
+            transform: none !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 42px !important;
+            position: relative !important;
+            z-index: 10 !important;
+        }
+        .slide-container {
+            display: flex !important;
+            width: 100% !important;
+            height: auto !important;
+            min-height: min(86vh, 900px) !important;
+            aspect-ratio: 16 / 9;
+            padding: 38px 52px 42px 52px !important;
+            background: radial-gradient(circle at 50% 20%, rgba(15, 23, 42, 0.9) 0%, rgba(6, 10, 24, 0.95) 68%, rgba(2, 4, 12, 0.98) 100%) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.25) !important;
+            border-radius: 30px !important;
+            box-shadow: 0 25px 65px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.08) !important;
+            scroll-margin-top: 24px !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+        }
+        .slide-container.active {
+            border-color: rgba(56, 189, 248, 0.65) !important;
+            box-shadow: 0 25px 75px rgba(0, 0, 0, 0.92), 0 0 42px rgba(56, 189, 248, 0.22) !important;
+        }
+        .slide-kicker {
+            color: #38bdf8 !important;
+            text-shadow: 0 0 14px rgba(56, 189, 248, 0.5) !important;
+            font-size: 17px !important;
+            font-weight: 800 !important;
+            letter-spacing: 2px !important;
+        }
+        .slide-title {
+            color: #ffffff !important;
+            font-size: 42px !important;
+            font-weight: 900 !important;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.7) !important;
+        }
+        .slide-subtitle {
+            color: #cbd5e1 !important;
+            font-size: 20px !important;
+            font-weight: 500 !important;
+        }
+        .info-card {
+            background: rgba(7, 12, 28, 0.82) !important;
+            backdrop-filter: blur(20px) !important;
+            -webkit-backdrop-filter: blur(20px) !important;
+            border-radius: 22px !important;
+        }
+        .glow-cyan {
+            border: 1.5px solid rgba(34, 211, 238, 0.65) !important;
+            box-shadow: 0 0 26px rgba(34, 211, 238, 0.2), inset 0 0 14px rgba(34, 211, 238, 0.06) !important;
+        }
+        .glow-blue {
+            border: 1.5px solid rgba(56, 189, 248, 0.65) !important;
+            box-shadow: 0 0 26px rgba(56, 189, 248, 0.2), inset 0 0 14px rgba(56, 189, 248, 0.06) !important;
+        }
+        .glow-purple {
+            border: 1.5px solid rgba(192, 132, 252, 0.65) !important;
+            box-shadow: 0 0 26px rgba(192, 132, 252, 0.2), inset 0 0 14px rgba(192, 132, 252, 0.06) !important;
+        }
+        .glow-gold, .glow-orange, .glow-yellow {
+            border: 1.5px solid rgba(251, 146, 60, 0.68) !important;
+            box-shadow: 0 0 26px rgba(251, 146, 60, 0.2), inset 0 0 14px rgba(251, 146, 60, 0.06) !important;
+        }
+        .glow-green {
+            border: 1.5px solid rgba(74, 222, 128, 0.65) !important;
+            box-shadow: 0 0 26px rgba(74, 222, 128, 0.2), inset 0 0 14px rgba(74, 222, 128, 0.06) !important;
+        }
+        .glow-red {
+            border: 1.5px solid rgba(248, 113, 113, 0.65) !important;
+            box-shadow: 0 0 26px rgba(248, 113, 113, 0.2), inset 0 0 14px rgba(248, 113, 113, 0.06) !important;
+        }
+        /* Özel Vurgu Alanı (Altın Kural) */
+        .callout-box, .callout-box.tip, .callout-box.remember, .callout-box.warning, .callout-box.attention {
+            background: linear-gradient(90deg, #0b2247 0%, #133366 100%) !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.55) !important;
+            border-left: 6px solid #38bdf8 !important;
+            color: #f8fafc !important;
+            border-radius: 18px !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.6), 0 0 22px rgba(56, 189, 248, 0.2) !important;
+        }
+        .visual-frame {
+            border-radius: 24px !important;
+            overflow: hidden !important;
+        }
+        .visual-frame img {
+            border-radius: 22px !important;
+        }
+        @media (max-width: 1100px) {
+            #stage-viewport {
+                padding: 16px 12px 110px 12px !important;
+            }
+            .slide-container {
+                aspect-ratio: auto !important;
+                min-height: auto !important;
+                padding: 24px 20px !important;
+            }
+            .slide-body {
+                flex-direction: column !important;
+            }
+            .slide-title {
+                font-size: 28px !important;
+            }
+            .branding-bottom-left {
+                bottom: 78px !important;
+                left: 12px !important;
+                padding: 6px 14px !important;
+            }
+            .fixed-nav-bar {
+                left: 12px !important;
+                right: 12px !important;
+                bottom: 10px !important;
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+            }
+        }
+    
     </style>
 </head>
 <body>
@@ -833,17 +1051,6 @@
         </div>
         
             <div class="slide-body" style="gap: 28px;">
-                <!-- Sol: 3D Katman Kesit Modeli -->
-                <div class="visual-panel" style="flex: 1.15; position: relative;">
-                    <div class="visual-frame" style="border: 2px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 40px rgba(245, 158, 11, 0.3); border-radius: 24px; overflow: hidden; height: 100%;">
-                        <img src="../assets/slides/slide_7_sun_layers.jpg" alt="Güneş Katmanları 3D Kesit Modeli" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(10,15,30,0.92); border: 2px solid #ef4444; border-radius: 14px; padding: 6px 14px; box-shadow: 0 0 20px rgba(239,68,68,0.5); font-size: 16px; font-weight: 800; color: #fff;">
-                            <span style="color: #ef4444;">●</span> ÇEKİRDEK: <span style="color: #fef08a;">15 MİLYON °C</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Sağ: 4 Katmanın Özellikleri -->
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 12px;">
                     <div class="info-card glow-red" style="padding: 12px 18px;">
                         <div style="font-size: 20px; font-weight: 800; color: #f87171; margin-bottom: 4px;"><i class="fa-solid fa-fire-burner mr-2"></i> 1. ÇEKİRDEK (MERKEZ) — 15 MİLYON °C</div>
@@ -863,6 +1070,19 @@
                     <div class="info-card glow-purple" style="padding: 12px 18px;">
                         <div style="font-size: 20px; font-weight: 800; color: #c084fc; margin-bottom: 4px;"><i class="fa-solid fa-crown mr-2"></i> 4. TAÇ KÜRE (KORONA) — 1.000.000 °C</div>
                         <p style="font-size: 17px; color: #f1f5f9; line-height: 1.35;">En dıştaki dev gaz halesidir. Tam Güneş tutulması anında çıplak gözle muhteşem beyaz bir taç gibi ışıldar.</p>
+                    </div>
+                
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>ALTIN KURAL (İÇTEN DIŞA KATMANLAR):</strong> Çekirdek ➔ Işık Küre (Fotosfer) ➔ Renk Küre (Kromosfer) ➔ Taç Küre (Korona)</div>
+                    </div>
+                </div>
+                <div class="visual-panel" style="flex: 1.15; position: relative;">
+                    <div class="visual-frame" style="border: 2px solid rgba(245, 158, 11, 0.6); box-shadow: 0 0 40px rgba(245, 158, 11, 0.3); border-radius: 24px; overflow: hidden; height: 100%;">
+                        <img src="../assets/slides/slide_7_sun_layers.jpg" alt="Güneş Katmanları 3D Kesit Modeli" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; bottom: 20px; left: 20px; background: rgba(10,15,30,0.92); border: 2px solid #ef4444; border-radius: 14px; padding: 6px 14px; box-shadow: 0 0 20px rgba(239,68,68,0.5); font-size: 16px; font-weight: 800; color: #fff;">
+                            <span style="color: #ef4444;">●</span> ÇEKİRDEK: <span style="color: #fef08a;">15 MİLYON °C</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -919,16 +1139,23 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-red">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(239,68,68,0.2); color: #ef4444;"><i class="fa-solid fa-temperature-arrow-up"></i></div>
-                            <div class="card-title">Sıcaklık Karşılaştırması</div>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-sun text-amber-400"></i></span>
+                            <div><strong>Yüzey Sıcaklığı (Işık Küre):</strong> Yaklaşık <span class="highlight-gold">5.500 °C - 6.000 °C</span></div>
                         </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-sun text-amber-400"></i> <span><strong>Yüzey Sıcaklığı (Işık Küre):</strong> Yaklaşık <span class="highlight-gold">5.500 °C - 6.000 °C</span></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-volcano text-red-400"></i> <span><strong>Merkez (Çekirdek) Sıcaklığı:</strong> Yaklaşık <span class="highlight-red">15 MİLYON °C (15.000.000 °C)</span></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-crown text-purple-400"></i> <span><strong>Taç Küre (Dış Atmosfer):</strong> Yaklaşık <span class="highlight-cyan">1.000.000 °C'den fazla</span></span></li>
-                        </ul>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-volcano text-red-400"></i></span>
+                            <div><strong>Merkez (Çekirdek) Sıcaklığı:</strong> Yaklaşık <span class="highlight-red">15 MİLYON °C (15.000.000 °C)</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-crown text-purple-400"></i></span>
+                            <div><strong>Taç Küre (Dış Atmosfer):</strong> Yaklaşık <span class="highlight-cyan">1.000.000 °C'den fazla</span></div>
+                        </div>
                     </div>
                     <div class="callout-box warning">
                         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -954,13 +1181,29 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-ruler-horizontal text-amber-400"></i> <span><strong>Güneş'in Çapı:</strong> Yaklaşık <span class="highlight-gold">1.392.000 km</span></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-ruler-horizontal text-blue-400"></i> <span><strong>Dünya'nın Çapı:</strong> Yaklaşık <span class="highlight-cyan">12.742 km</span></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-calculator text-green-400"></i> <span>Güneş'in çapı, Dünya'nın çapının yaklaşık <span class="highlight-gold">109 KATIDIR!</span></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-boxes-stacked text-purple-400"></i> <span>İç hacim olarak Güneş'in içine yaklaşık <span class="highlight-cyan">1 MİLYON 300 BİN (1.300.000) TANE DÜNYA</span> sığabilir!</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-ruler-horizontal text-amber-400"></i></span>
+                            <div><strong>Güneş'in Çapı:</strong> Yaklaşık <span class="highlight-gold">1.392.000 km</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-ruler-horizontal text-blue-400"></i></span>
+                            <div><strong>Dünya'nın Çapı:</strong> Yaklaşık <span class="highlight-cyan">12.742 km</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-calculator text-green-400"></i></span>
+                            <div>Güneş'in çapı, Dünya'nın çapının yaklaşık <span class="highlight-gold">109 KATIDIR!</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-blue" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-boxes-stacked text-purple-400"></i></span>
+                            <div>İç hacim olarak Güneş'in içine yaklaşık <span class="highlight-cyan">1 MİLYON 300 BİN (1.300.000) TANE DÜNYA</span> sığabilir!</div>
+                        </div>
                     </div>
                     <div class="scale-bar-container">
                         <div class="scale-bar-item">
@@ -996,13 +1239,29 @@
         
             <div class="slide-body">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-circle-question text-blue-400"></i> <span>Güneş, Dünya'dan 1.3 milyon kat büyük olmasına rağmen gökyüzünde neden küçük bir tabak gibi görünür?</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-route text-amber-400"></i> <span><strong>Cevap: UZAKLIK!</strong> Güneş ile Dünya arasındaki mesafe ortalama yaklaşık <span class="highlight-gold">150 MİLYON KİLOMETREDİR!</span></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-glasses text-cyan-400"></i> <span>Cisimler bizden uzaklaştıkça gözümüze gelen ışık açısı küçülür ve cisim olduğundan çok daha ufak algılanır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-bolt text-yellow-300"></i> <span>Işık hızı saniyede 300.000 km olmasına rağmen, Güneş ışığının Dünya'ya ulaşması yaklaşık <strong>8 DAKİKA 20 SANİYE</strong> sürer!</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-circle-question text-blue-400"></i></span>
+                            <div>Güneş, Dünya'dan 1.3 milyon kat büyük olmasına rağmen gökyüzünde neden küçük bir tabak gibi görünür?</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-route text-amber-400"></i></span>
+                            <div><strong>Cevap: UZAKLIK!</strong> Güneş ile Dünya arasındaki mesafe ortalama yaklaşık <span class="highlight-gold">150 MİLYON KİLOMETREDİR!</span></div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-glasses text-cyan-400"></i></span>
+                            <div>Cisimler bizden uzaklaştıkça gözümüze gelen ışık açısı küçülür ve cisim olduğundan çok daha ufak algılanır.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-blue" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-bolt text-yellow-300"></i></span>
+                            <div>Işık hızı saniyede 300.000 km olmasına rağmen, Güneş ışığının Dünya'ya ulaşması yaklaşık <strong>8 DAKİKA 20 SANİYE</strong> sürer!</div>
+                        </div>
                     </div>
                     <div class="callout-box tip">
                         <i class="fa-solid fa-plane"></i>
@@ -1068,15 +1327,6 @@
         
             <div class="slide-body" style="flex-direction: column; gap: 14px;">
                 <div style="display: flex; gap: 28px; flex: 1; min-height: 0;">
-                    <!-- Sol: 3D Güneş Yüzeyi & Güneş Lekesi Görseli -->
-                    <div style="flex: 1.15; position: relative; border-radius: 24px; overflow: hidden; border: 2px solid rgba(249, 115, 22, 0.6); box-shadow: 0 0 40px rgba(249, 115, 22, 0.25); background: #000;">
-                        <img src="../assets/slides/slide_13_sunspots.jpg" alt="Güneş Lekeleri Yakın Plan" style="width: 100%; height: 100%; object-fit: cover;">
-                        <div style="position: absolute; top: 45%; left: 30%; background: rgba(10,15,30,0.92); border: 2px solid #22d3ee; border-radius: 14px; padding: 6px 14px; box-shadow: 0 0 20px #22d3ee; font-size: 16px; font-weight: 800;">
-                            <span style="color: #ef4444;">●</span> GÜNEŞ LEKESİ <span style="color: #fef08a;">(~3.500 °C)</span>
-                        </div>
-                    </div>
-
-                    <!-- Sağ: 3 Büyük Neon Bilgi Kartı -->
                     <div style="flex: 1.1; display: flex; flex-direction: column; gap: 14px;">
                         <div class="info-card glow-cyan" style="padding: 16px 20px;">
                             <div style="font-size: 22px; font-weight: 800; color: #22d3ee; margin-bottom: 4px;"><i class="fa-solid fa-circle-dot mr-2"></i> GÜNEŞ LEKELERİ NEDİR?</div>
@@ -1094,6 +1344,12 @@
                                 <img src="../assets/slides/slide_13_galileo.jpg" alt="Galileo Teleskop" style="width: 110px; height: 110px; object-fit: cover; border-radius: 14px; border: 2px solid #c084fc;">
                                 <p style="font-size: 18px; color: #f1f5f9; line-height: 1.35;">Galileo, 1610'lu yıllarda teleskopla lekelerin hep aynı yöne kaydığını gözlemleyerek <strong>Güneş'in kendi ekseni etrafında döndüğünü</strong> tarihte ilk kez kanıtlamıştır!</p>
                             </div>
+                        </div>
+                    </div>
+                    <div style="flex: 1.15; position: relative; border-radius: 24px; overflow: hidden; border: 2px solid rgba(249, 115, 22, 0.6); box-shadow: 0 0 40px rgba(249, 115, 22, 0.25); background: #000;">
+                        <img src="../assets/slides/slide_13_sunspots.jpg" alt="Güneş Lekeleri Yakın Plan" style="width: 100%; height: 100%; object-fit: cover;">
+                        <div style="position: absolute; top: 45%; left: 30%; background: rgba(10,15,30,0.92); border: 2px solid #22d3ee; border-radius: 14px; padding: 6px 14px; box-shadow: 0 0 20px #22d3ee; font-size: 16px; font-weight: 800;">
+                            <span style="color: #ef4444;">●</span> GÜNEŞ LEKESİ <span style="color: #fef08a;">(~3.500 °C)</span>
                         </div>
                     </div>
                 </div>
@@ -1169,13 +1425,29 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-red">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-ban text-red-400"></i> <span>Güneş'e <strong>ÇIPLAK GÖZLE DOĞRUDAN BAKILMAZ!</strong> Göz merceğimiz ışınları retinaya odaklar ve kalıcı körlüğe yol açabilir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i> <span>Teleskop, dürbün, büyüteç veya fotoğraf makinesiyle <strong>FİLTRESİZ ASLA BAKILMAZ!</strong> Mercekler Güneş ışığını toplayarak saniyeler içinde gözü yakar!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-xmark text-red-400"></i> <span>Normal güneş gözlükleri, isli cam, röntgen filmi veya siyah poşetler <strong>GÜVENLİ DEĞİLDİR!</strong> Zararlı UV ışınlarını geçirirler.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-shield-halved text-green-400"></i> <span><strong>GÜVENLİ YÖNTEM:</strong> Yalnızca sertifikalı özel Güneş gözlem filtreleri (ISO 12312-2) veya Güneş tutulma gözlükleri kullanılmalıdır.</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-ban text-red-400"></i></span>
+                            <div>Güneş'e <strong>ÇIPLAK GÖZLE DOĞRUDAN BAKILMAZ!</strong> Göz merceğimiz ışınları retinaya odaklar ve kalıcı körlüğe yol açabilir.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-triangle-exclamation text-amber-400"></i></span>
+                            <div>Teleskop, dürbün, büyüteç veya fotoğraf makinesiyle <strong>FİLTRESİZ ASLA BAKILMAZ!</strong> Mercekler Güneş ışığını toplayarak saniyeler içinde gözü yakar!</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-xmark text-red-400"></i></span>
+                            <div>Normal güneş gözlükleri, isli cam, röntgen filmi veya siyah poşetler <strong>GÜVENLİ DEĞİLDİR!</strong> Zararlı UV ışınlarını geçirirler.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-blue" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-shield-halved text-green-400"></i></span>
+                            <div><strong>GÜVENLİ YÖNTEM:</strong> Yalnızca sertifikalı özel Güneş gözlem filtreleri (ISO 12312-2) veya Güneş tutulma gözlükleri kullanılmalıdır.</div>
+                        </div>
                     </div>
                     <div class="callout-box warning">
                         <i class="fa-solid fa-eye-slash"></i>
@@ -1327,14 +1599,40 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-wind text-slate-400"></i> <span>Ay'ın atmosferi <strong>YOK DENECEK KADAR İNCEDİR</strong>. Bu yüzden;</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-cloud-sun-rain text-blue-400"></i> <span>Yağmur, kar, rüzgâr ve fırtına gibi hiçbir <strong>HAVA OLAYI GÖRÜLMEZ</strong>.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-shoe-prints text-amber-400"></i> <span>Rüzgâr olmadığı için Ay'a ayak basan astronotların <strong>AYAK İZLERİ MİLYONLARCA YIL</strong> hiç silinmeden kalacaktır!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-volume-xmark text-red-400"></i> <span>Hava molekülü olmadığı için ses iletilemez; Ay'da <strong>MUTLAK SESSİZLİK</strong> hâkimdir (Astronotlar telsizle konuşur).</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-temperature-full text-red-400"></i> <span>Atmosfer yalıtımı olmadığı için: Gündüz Güneş gören taraf <strong class="highlight-red">+107 °C</strong>, gece karanlıkta kalan taraf <strong class="highlight-cyan">-153 °C</strong>'ye düşer! (Fark: 260 °C!)</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-wind text-slate-400"></i></span>
+                            <div>Ay'ın atmosferi <strong>YOK DENECEK KADAR İNCEDİR</strong>. Bu yüzden;</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-cloud-sun-rain text-blue-400"></i></span>
+                            <div>Yağmur, kar, rüzgâr ve fırtına gibi hiçbir <strong>HAVA OLAYI GÖRÜLMEZ</strong>.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-shoe-prints text-amber-400"></i></span>
+                            <div>Rüzgâr olmadığı için Ay'a ayak basan astronotların <strong>AYAK İZLERİ MİLYONLARCA YIL</strong> hiç silinmeden kalacaktır!</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-blue" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-volume-xmark text-red-400"></i></span>
+                            <div>Hava molekülü olmadığı için ses iletilemez; Ay'da <strong>MUTLAK SESSİZLİK</strong> hâkimdir (Astronotlar telsizle konuşur).</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-green" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-temperature-full text-red-400"></i></span>
+                            <div>Atmosfer yalıtımı olmadığı için: Gündüz Güneş gören taraf <strong class="highlight-red">+107 °C</strong>, gece karanlıkta kalan taraf <strong class="highlight-cyan">-153 °C</strong>'ye düşer! (Fark: 260 °C!)</div>
+                        </div>
+                    </div>
+                
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>ALTIN KURAL:</strong> Ay'da atmosfer yok denecek kadar ince olduğu için hava olayı yaşanmaz, ses yayılmaz ve ayak izleri silinmez!</div>
                     </div>
                 </div>
                 <div class="visual-panel" style="flex: 1.1;">
@@ -1356,14 +1654,40 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-weight-scale text-cyan-400"></i> <span>Ay'ın kütlesi Dünya'dan çok daha küçüktür; bu nedenle çekim kuvveti de azdır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-divide text-amber-400"></i> <span>Ay'daki yer çekimi kuvveti, Dünya'dakinin yaklaşık <span class="highlight-gold">ALTIDA BİRİ (1/6)</span> kadardır!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-person-running text-green-400"></i> <span><strong>Ağırlık Etkisi:</strong> Dünya'da 60 kg ağırlık hisseden bir öğrenci, Ay'daki tartıda sadece <strong>10 kg</strong> hisseder!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-angles-up text-cyan-400"></i> <span>Dünya'da 50 cm zıplayabilen bir sporcu, Ay'da aynı kas gücüyle yaklaşık <strong>3 METRE</strong> yukarı sıçrayabilir!</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-stopwatch text-purple-400"></i> <span>Dünya'da 1 saniyede yere düşen bir taş, Ay'da yer çekimi zayıf olduğu için süzülerek yaklaşık <strong>6 saniyede</strong> düşer.</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-weight-scale text-cyan-400"></i></span>
+                            <div>Ay'ın kütlesi Dünya'dan çok daha küçüktür; bu nedenle çekim kuvveti de azdır.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-divide text-amber-400"></i></span>
+                            <div>Ay'daki yer çekimi kuvveti, Dünya'dakinin yaklaşık <span class="highlight-gold">ALTIDA BİRİ (1/6)</span> kadardır!</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-person-running text-green-400"></i></span>
+                            <div><strong>Ağırlık Etkisi:</strong> Dünya'da 60 kg ağırlık hisseden bir öğrenci, Ay'daki tartıda sadece <strong>10 kg</strong> hisseder!</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-blue" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-angles-up text-cyan-400"></i></span>
+                            <div>Dünya'da 50 cm zıplayabilen bir sporcu, Ay'da aynı kas gücüyle yaklaşık <strong>3 METRE</strong> yukarı sıçrayabilir!</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-green" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-stopwatch text-purple-400"></i></span>
+                            <div>Dünya'da 1 saniyede yere düşen bir taş, Ay'da yer çekimi zayıf olduğu için süzülerek yaklaşık <strong>6 saniyede</strong> düşer.</div>
+                        </div>
+                    </div>
+                
+                    <div class="callout-box tip" style="margin-top: 4px; padding: 12px 18px;">
+                        <i class="fa-solid fa-lightbulb text-yellow-300 text-2xl"></i>
+                        <div style="font-size: 18px;"><strong>ALTIN KURAL:</strong> Kütle hiçbir yerde değişmez; ancak ağırlık (çekim kuvveti) Ay'da Dünya'nın <strong>1/6'sı</strong> kadardır!</div>
                     </div>
                 </div>
                 <div class="visual-panel" style="flex: 1.1;">
@@ -1494,12 +1818,23 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-rotate text-cyan-400"></i> <span><strong>1. Kendi Ekseni Etrafında Dönme:</strong> Ay, kendi ekseni etrafında saat yönünün tersine döner. Bu hareketini yaklaşık <strong>27,3 GÜNDE</strong> tamamlar.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-arrows-spin text-blue-400"></i> <span><strong>2. Dünya Etrafında Dolanma:</strong> Ay, Dünya'nın çevresinde saat yönünün tersine dolanır. Bu dolanmasını da yaklaşık <strong>27,3 GÜNDE</strong> tamamlar.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle-nodes text-amber-400"></i> <span><strong>3. Güneş Etrafında Dolanma:</strong> Ay, Dünya'nın uydusu olduğu için Dünya ile birlikte el ele Güneş'in etrafında dolanır. Bu dolanma <strong>1 YIL (365 gün 6 saat)</strong> sürer.</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-rotate text-cyan-400"></i></span>
+                            <div><strong>1. Kendi Ekseni Etrafında Dönme:</strong> Ay, kendi ekseni etrafında saat yönünün tersine döner. Bu hareketini yaklaşık <strong>27,3 GÜNDE</strong> tamamlar.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-arrows-spin text-blue-400"></i></span>
+                            <div><strong>2. Dünya Etrafında Dolanma:</strong> Ay, Dünya'nın çevresinde saat yönünün tersine dolanır. Bu dolanmasını da yaklaşık <strong>27,3 GÜNDE</strong> tamamlar.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-circle-nodes text-amber-400"></i></span>
+                            <div><strong>3. Güneş Etrafında Dolanma:</strong> Ay, Dünya'nın uydusu olduğu için Dünya ile birlikte el ele Güneş'in etrafında dolanır. Bu dolanma <strong>1 YIL (365 gün 6 saat)</strong> sürer.</div>
+                        </div>
                     </div>
                     <div class="callout-box tip">
                         <i class="fa-solid fa-compass"></i>
@@ -1525,12 +1860,23 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-blue">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-eye text-cyan-400"></i> <span>Dünya'dan gökyüzüne baktığımızda Ay'ın hep AYNI YÜZEYİNİ, aynı krater desenlerini görürüz. Arka tarafını göremeyiz. Neden?</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-equals text-amber-400"></i> <span><strong>BÜYÜK SIR:</strong> Ay'ın kendi ekseni etrafında dönme süresi ile Dünya etrafında dolanma süresi birbirine <strong>EŞİTTİR!</strong> (İkisi de 27 gün 8 saattir).</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-user-group text-green-400"></i> <span>İki süre eşit olduğu için Ay, Dünya etrafında dönerken yüzünü daima Dünya'ya dönük tutar (Senkronize Dönüş).</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-eye text-cyan-400"></i></span>
+                            <div>Dünya'dan gökyüzüne baktığımızda Ay'ın hep AYNI YÜZEYİNİ, aynı krater desenlerini görürüz. Arka tarafını göremeyiz. Neden?</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-equals text-amber-400"></i></span>
+                            <div><strong>BÜYÜK SIR:</strong> Ay'ın kendi ekseni etrafında dönme süresi ile Dünya etrafında dolanma süresi birbirine <strong>EŞİTTİR!</strong> (İkisi de 27 gün 8 saattir).</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-user-group text-green-400"></i></span>
+                            <div>İki süre eşit olduğu için Ay, Dünya etrafında dönerken yüzünü daima Dünya'ya dönük tutar (Senkronize Dönüş).</div>
+                        </div>
                     </div>
                     <div class="callout-box warning">
                         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1556,12 +1902,23 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-gold">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-calendar-day text-blue-400"></i> <span><strong>Dolanma Süresi:</strong> Ay'ın Dünya çevresindeki 1 tam turu <span class="highlight-cyan">27,3 GÜN (27 gün 8 saat)</span> sürer.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-calendar-week text-amber-400"></i> <span><strong>Evre Döngüsü Süresi:</strong> Bir Yeni Ay'dan sonraki Yeni Ay'a kadar geçen süre <span class="highlight-gold">29,5 GÜN (29 gün 12 saat)</span> sürer.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-route text-green-400"></i> <span><strong>Neden 2 Gün Fark Var?:</strong> Çünkü Ay, Dünya etrafında dönerken Dünya da Güneş etrafında ilerler! Ay'ın tekrar Güneş ile aynı hizaya gelip aynı evreyi göstermesi için fazladan 2 gün daha dolanması gerekir.</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-calendar-day text-blue-400"></i></span>
+                            <div><strong>Dolanma Süresi:</strong> Ay'ın Dünya çevresindeki 1 tam turu <span class="highlight-cyan">27,3 GÜN (27 gün 8 saat)</span> sürer.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-calendar-week text-amber-400"></i></span>
+                            <div><strong>Evre Döngüsü Süresi:</strong> Bir Yeni Ay'dan sonraki Yeni Ay'a kadar geçen süre <span class="highlight-gold">29,5 GÜN (29 gün 12 saat)</span> sürer.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-route text-green-400"></i></span>
+                            <div><strong>Neden 2 Gün Fark Var?:</strong> Çünkü Ay, Dünya etrafında dönerken Dünya da Güneş etrafında ilerler! Ay'ın tekrar Güneş ile aynı hizaya gelip aynı evreyi göstermesi için fazladan 2 gün daha dolanması gerekir.</div>
+                        </div>
                     </div>
                     <div class="callout-box tip">
                         <i class="fa-solid fa-moon"></i>
@@ -1587,12 +1944,23 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-circle-nodes text-cyan-400"></i> <span>Ay, Dünya etrafında sürekli dolanır. Bu dolanma sırasında Ay'ın Güneş'e ve Dünya'ya göre uzaydaki <strong>KONUMU SÜREKLİ DEĞİŞİR</strong>.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-sun text-amber-400"></i> <span>Güneş, Ay'ın uzaya bakan yarısını DAİMA aydınlatır. Ancak Dünya'dan baktığımızda bu aydınlık kısmın bazen tamamını, bazen yarısını, bazen bir hilalini, bazen de hiçbir kısmını göremeyiz.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-moon text-blue-300"></i> <span>Ay'ın Dünya'dan gözlemlenen bu farklı aydınlık görünümlerine <strong class="highlight-cyan">AY'IN EVRELERİ</strong> denir.</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-circle-nodes text-cyan-400"></i></span>
+                            <div>Ay, Dünya etrafında sürekli dolanır. Bu dolanma sırasında Ay'ın Güneş'e ve Dünya'ya göre uzaydaki <strong>KONUMU SÜREKLİ DEĞİŞİR</strong>.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-sun text-amber-400"></i></span>
+                            <div>Güneş, Ay'ın uzaya bakan yarısını DAİMA aydınlatır. Ancak Dünya'dan baktığımızda bu aydınlık kısmın bazen tamamını, bazen yarısını, bazen bir hilalini, bazen de hiçbir kısmını göremeyiz.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-moon text-blue-300"></i></span>
+                            <div>Ay'ın Dünya'dan gözlemlenen bu farklı aydınlık görünümlerine <strong class="highlight-cyan">AY'IN EVRELERİ</strong> denir.</div>
+                        </div>
                     </div>
                     <div class="callout-box warning">
                         <i class="fa-solid fa-triangle-exclamation"></i>
@@ -1997,13 +2365,29 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-calendar-days text-cyan-400"></i> <span>Bir Yeni Ay'dan sonraki Yeni Ay'a kadar yaklaşık <strong>29 GÜN 12 SAAT (29,5 Gün)</strong> geçer. Bu süreye <strong class="highlight-cyan">1 AY</strong> denir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-mosque text-emerald-400"></i> <span>Tarih boyunca kullanılan <strong>Hicri Takvim</strong>, doğrudan Ay'ın bu 29,5 günlük evre döngüsüne göre hesaplanmıştır.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-sun text-amber-400"></i> <span><strong>AY GÜNDÜZ DE GÖRÜLÜR!:</strong> Evet! Ay sadece geceleri değil, gündüzleri de sıkça gökyüzünde belirir.</span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-eye text-blue-300"></i> <span>Özellikle <strong>İlk Dördün</strong> öğleden sonra, <strong>Son Dördün</strong> ise sabah saatlerinde mavi gökyüzünde çok net şekilde izlenebilir.</span></li>
-                        </ul>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-calendar-days text-cyan-400"></i></span>
+                            <div>Bir Yeni Ay'dan sonraki Yeni Ay'a kadar yaklaşık <strong>29 GÜN 12 SAAT (29,5 Gün)</strong> geçer. Bu süreye <strong class="highlight-cyan">1 AY</strong> denir.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-mosque text-emerald-400"></i></span>
+                            <div>Tarih boyunca kullanılan <strong>Hicri Takvim</strong>, doğrudan Ay'ın bu 29,5 günlük evre döngüsüne göre hesaplanmıştır.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-sun text-amber-400"></i></span>
+                            <div><strong>AY GÜNDÜZ DE GÖRÜLÜR!:</strong> Evet! Ay sadece geceleri değil, gündüzleri de sıkça gökyüzünde belirir.</div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-blue" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-eye text-blue-300"></i></span>
+                            <div>Özellikle <strong>İlk Dördün</strong> öğleden sonra, <strong>Son Dördün</strong> ise sabah saatlerinde mavi gökyüzünde çok net şekilde izlenebilir.</div>
+                        </div>
                     </div>
                     <div class="callout-box tip">
                         <i class="fa-solid fa-clock"></i>
@@ -2105,16 +2489,23 @@
         
             <div class="slide-body" style="gap: 28px;">
                 <div style="flex: 1.1; display: flex; flex-direction: column; gap: 20px;">
-                    <div class="info-card glow-cyan">
-                        <div class="card-header-bar">
-                            <div class="card-icon" style="background: rgba(6,182,212,0.2); color: #22d3ee;"><i class="fa-solid fa-shapes"></i></div>
-                            <div class="card-title">En Uygun Nesne Eşleştirmeleri</div>
+                    <div class="info-card glow-cyan" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-basketball text-amber-500"></i></span>
+                            <div><strong>1. Model:</strong> Güneş = <strong class="highlight-gold">PİLATES TOPU</strong> | Dünya = <strong class="highlight-cyan">ELMA</strong> | Ay = <strong class="highlight-green">BEZELYE TANESİ</strong></div>
                         </div>
-                        <ul class="bullet-list">
-                            <li class="bullet-item"><i class="fa-solid fa-basketball text-amber-500"></i> <span><strong>1. Model:</strong> Güneş = <strong class="highlight-gold">PİLATES TOPU</strong> | Dünya = <strong class="highlight-cyan">ELMA</strong> | Ay = <strong class="highlight-green">BEZELYE TANESİ</strong></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-circle text-orange-400"></i> <span><strong>2. Model:</strong> Güneş = <strong class="highlight-gold">BASKETBOL TOPU</strong> | Dünya = <strong class="highlight-cyan">NOHUT TANESİ</strong> | Ay = <strong class="highlight-green">TOPLU İĞNE BAŞI</strong></span></li>
-                            <li class="bullet-item"><i class="fa-solid fa-apple-whole text-red-400"></i> <span><strong>3. Model:</strong> Güneş = <strong class="highlight-gold">BÜYÜK KARPUZ</strong> | Dünya = <strong class="highlight-cyan">KİRAZ</strong> | Ay = <strong class="highlight-green">MERCİMEK TANESİ</strong></span></li>
-                        </ul>
+                    </div>
+                    <div class="info-card glow-purple" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-circle text-orange-400"></i></span>
+                            <div><strong>2. Model:</strong> Güneş = <strong class="highlight-gold">BASKETBOL TOPU</strong> | Dünya = <strong class="highlight-cyan">NOHUT TANESİ</strong> | Ay = <strong class="highlight-green">TOPLU İĞNE BAŞI</strong></div>
+                        </div>
+                    </div>
+                    <div class="info-card glow-gold" style="padding: 15px 20px;">
+                        <div style="display: flex; align-items: flex-start; gap: 14px; font-size: 19px; color: #f1f5f9; line-height: 1.45;">
+                            <span style="font-size: 22px; margin-top: 2px; flex-shrink: 0;"><i class="fa-solid fa-apple-whole text-red-400"></i></span>
+                            <div><strong>3. Model:</strong> Güneş = <strong class="highlight-gold">BÜYÜK KARPUZ</strong> | Dünya = <strong class="highlight-cyan">KİRAZ</strong> | Ay = <strong class="highlight-green">MERCİMEK TANESİ</strong></div>
+                        </div>
                     </div>
                     <div class="callout-box warning">
                         <i class="fa-solid fa-ruler-combined"></i>
@@ -2316,21 +2707,33 @@
     </div>
     
 
-            <!-- SABİT AKILLI TAHTA KONTROL ÇUBUĞU (SAĞ ALT) -->
+            <!-- SABİT AKILLI TAHTA KONTROL ÇUBUĞU (ALT SABİT MENÜ) -->
             <div class="fixed-nav-bar">
-                <button class="nav-btn" onclick="prevSlide()" title="Önceki Slayt (Sol Ok)">
+                <button class="nav-btn" onclick="prevSlide()" title="Önceki Slayt (Sol/Yukarı Ok)">
                     <i class="fa-solid fa-chevron-left"></i> <span>Önceki</span>
                 </button>
-                <span id="slide-counter-badge" class="counter-badge">1 / 41</span>
-                <button class="nav-btn primary" onclick="nextSlide()" title="Sonraki Slayt (Sağ Ok / Boşluk)">
-                    <span>Sonraki</span> <i class="fa-solid fa-chevron-right"></i>
+                <span id="slide-counter-badge" class="counter-badge">1/41</span>
+                <button class="nav-btn primary" onclick="nextSlide()" title="Sonraki Slayt (Sağ/Aşağı Ok)">
+                    <span>Sonraki &gt;</span>
                 </button>
-                <button class="nav-btn nav-btn-rotalar" onclick="toggleDrawer()" title="Bölümler & Ünite Rotaları (M)">
-                    <i class="fa-solid fa-compass"></i> <span>Rotalar</span>
+                <button class="nav-btn nav-btn-rotalar" onclick="toggleDrawer()" title="Ünite Rotaları (M)">
+                    <i class="fa-solid fa-compass"></i> <span>Ünite Rotaları</span>
                 </button>
-                <button class="nav-btn" onclick="toggleSound()" id="sound-btn" title="Ses Aç/Kapat"><i class="fa-solid fa-volume-high"></i></button>
-                <button class="nav-btn" onclick="toggleFullscreen()" title="Tam Ekran (F)"><i class="fa-solid fa-expand"></i></button>
-                <button class="nav-btn" onclick="window.print()" title="Sunumu Yazdır / PDF"><i class="fa-solid fa-print"></i></button>
+                <button class="nav-btn icon-only" onclick="toggleSound()" id="sound-btn" title="Ses Aç/Kapat">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="toggleFullscreen()" title="Tam Ekran (F11)">
+                    <i class="fa-solid fa-expand"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="window.print()" title="Sunumu Yazdır">
+                    <i class="fa-solid fa-print"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="savePresentation()" title="Sunumu Kaydet / İndir">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                </button>
+                <button class="nav-btn icon-only" onclick="closePresentation()" title="Sunumu Kapat (ESC)" style="border-color: rgba(244,63,94,0.45) !important; color: #fda4af !important;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
         </div>
     </div>
@@ -2599,33 +3002,12 @@
         const totalSlides = 41;
         let soundEnabled = true;
         let audioCtx = null;
+        let isProgrammaticScroll = false;
+        let scrollTimer = null;
 
-        // 16:9 Ekran Boyutlandırma Motoru (Akıllı Tahta / Pardus Uyumlu)
-        function scaleStage() {
-            const stage = document.getElementById('presentation-stage');
-            if (!stage) return;
-            const vw = window.innerWidth || document.documentElement.clientWidth || 1280;
-            const vh = window.innerHeight || document.documentElement.clientHeight || 720;
-            if (vw <= 10 || vh <= 10) {
-                setTimeout(scaleStage, 60);
-                return;
-            }
-            const scale = Math.max(0.15, Math.min(vw / 1920, vh / 1080));
-            stage.style.transform = `scale(${scale})`;
-        }
+        function scaleStage() {}
         window.scaleStage = scaleStage;
-        window.addEventListener('resize', scaleStage);
-        window.addEventListener('load', scaleStage);
-        window.addEventListener('DOMContentLoaded', () => {
-            scaleStage();
-            setTimeout(scaleStage, 50);
-            setTimeout(scaleStage, 200);
-            setTimeout(scaleStage, 600);
-            initStars();
-        });
-        scaleStage();
 
-        // Web Audio API Sentezleyici
         function getAudioContext() {
             if (!audioCtx) {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2697,21 +3079,21 @@
             }
         }
 
-        // Slayt Değiştirme
-        function showSlide(n) {
-            if (n < 1) n = 1;
-            if (n > totalSlides) n = totalSlides;
+        function updateSlideIndicators(n) {
             currentSlide = n;
-
-            document.querySelectorAll('.slide-container').forEach(s => s.classList.remove('active'));
-            const target = document.getElementById('slide-' + n);
-            if (target) {
-                target.classList.add('active');
-                playWhoosh();
-            }
-
+            document.querySelectorAll('.slide-container').forEach((s, idx) => {
+                s.classList.toggle('active', idx + 1 === n);
+            });
             const badge = document.getElementById('slide-counter-badge');
-            if (badge) badge.innerText = `${n} / ${totalSlides}`;
+            if (badge) badge.innerText = n + '/' + totalSlides;
+
+            const progress = document.getElementById('slide-progress-bar');
+            if (progress) progress.style.width = ((n / totalSlides) * 100) + '%';
+
+            document.querySelectorAll('.drawer-card').forEach((card, idx) => {
+                card.classList.toggle('current', idx + 1 === n);
+            });
+
             try {
                 if (window.parent && window.parent !== window) {
                     window.parent.postMessage({
@@ -2720,52 +3102,73 @@
                         totalSlides: totalSlides
                     }, '*');
                 }
-            } catch(err) {}
+            } catch (err) {}
+        }
 
-            const progress = document.getElementById('slide-progress-bar');
-            if (progress) progress.style.width = `${(n / totalSlides) * 100}%`;
+        function showSlide(n, smooth = true) {
+            if (n < 1) n = 1;
+            if (n > totalSlides) n = totalSlides;
+            updateSlideIndicators(n);
 
-            // Çekmecede aktif slaytı işaretle
-            document.querySelectorAll('.drawer-card').forEach((card, idx) => {
-                card.classList.toggle('current', idx + 1 === n);
-            });
+            const target = document.getElementById('slide-' + n);
+            if (target) {
+                isProgrammaticScroll = true;
+                if (scrollTimer) clearTimeout(scrollTimer);
+                target.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+                playWhoosh();
+                scrollTimer = setTimeout(() => { isProgrammaticScroll = false; }, 650);
+            }
         }
 
         function nextSlide() {
-            if (currentSlide < totalSlides) showSlide(currentSlide + 1);
+            if (currentSlide < totalSlides) showSlide(currentSlide + 1, true);
         }
 
         function prevSlide() {
-            if (currentSlide > 1) showSlide(currentSlide - 1);
+            if (currentSlide > 1) showSlide(currentSlide - 1, true);
         }
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {});
+                document.documentElement.requestFullscreen().catch(() => {});
             } else {
                 if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
-        function toggleDrawer() {
-            const drawer = document.getElementById('drawer-modal');
-            if (drawer) {
-                drawer.classList.toggle('open');
+        function savePresentation() {
+            try {
+                const a = document.createElement('a');
+                a.href = window.location.href.split('?')[0];
+                a.download = '5-Sinif-1-Unite-Gunes-Dunya-Ay-Sunumu.html';
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            } catch (e) {
+                window.print();
             }
         }
 
-        // Test Cevaplama Fonksiyonu
+        function closePresentation() {
+            try {
+                if (window.parent && window.parent !== window && typeof window.parent.closeFullScreenPresentationModal === 'function') {
+                    window.parent.closeFullScreenPresentationModal();
+                    return;
+                }
+            } catch (e) {}
+            if (window.history.length > 1) window.history.back();
+        }
+
+        function toggleDrawer() {
+            const drawer = document.getElementById('drawer-modal');
+            if (drawer) drawer.classList.toggle('open');
+        }
+
         function answerQuiz(el, isCorrect, explanation) {
             if (el.classList.contains('answered')) return;
             el.classList.add('answered');
-
             playChime(isCorrect);
-
-            if (isCorrect) {
-                el.classList.add('correct');
-            } else {
-                el.classList.add('wrong');
-            }
+            el.classList.add(isCorrect ? 'correct' : 'wrong');
 
             const feedbackBox = el.querySelector('.quiz-feedback');
             if (feedbackBox) {
@@ -2781,7 +3184,6 @@
             }
         }
 
-        // Akıllı Tahta Mini Sınav Şıklarını Otomatik Karıştır
         function randomizeSlideQuizOptions() {
             try {
                 const quizGrid = document.querySelector('#slide-39 .interactive-quiz-card')?.parentElement;
@@ -2799,20 +3201,41 @@
                 });
             } catch (err) {}
         }
-        document.addEventListener('DOMContentLoaded', randomizeSlideQuizOptions);
-        window.addEventListener('load', randomizeSlideQuizOptions);
 
-        // Dış Pencere (Parent Frame) İletişimi
-        window.addEventListener('message', (e) => {
-            if (e.data && e.data.type === 'ROTALI_SLIDE_CMD') {
-                if (e.data.command === 'nextSlide') nextSlide();
-                else if (e.data.command === 'prevSlide') prevSlide();
-                else if (e.data.command === 'toggleDrawer') toggleDrawer();
-                else if (e.data.command === 'showSlide' && typeof e.data.arg === 'number') showSlide(e.data.arg);
-            }
-        });
+        function initScrollSpy() {
+            const viewport = document.getElementById('stage-viewport');
+            if (!viewport) return;
+            let ticking = false;
+            viewport.addEventListener('scroll', () => {
+                if (isProgrammaticScroll || ticking) return;
+                ticking = true;
+                requestAnimationFrame(() => {
+                    const slides = document.querySelectorAll('.slide-container');
+                    const vpRect = viewport.getBoundingClientRect();
+                    const centerLine = vpRect.top + vpRect.height * 0.38;
+                    let bestIdx = currentSlide;
+                    let minDist = Infinity;
+                    slides.forEach((s, idx) => {
+                        const r = s.getBoundingClientRect();
+                        if (r.top <= centerLine && r.bottom >= centerLine) {
+                            bestIdx = idx + 1;
+                            minDist = 0;
+                        } else {
+                            const d = Math.abs(r.top - vpRect.top);
+                            if (d < minDist) {
+                                minDist = d;
+                                bestIdx = idx + 1;
+                            }
+                        }
+                    });
+                    if (bestIdx !== currentSlide) {
+                        updateSlideIndicators(bestIdx);
+                    }
+                    ticking = false;
+                });
+            }, { passive: true });
+        }
 
-        // Klavye Kontrolleri
         window.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
                 e.preventDefault();
@@ -2828,40 +3251,28 @@
                 const drawer = document.getElementById('drawer-modal');
                 if (drawer && drawer.classList.contains('open')) {
                     drawer.classList.remove('open');
+                } else {
+                    closePresentation();
                 }
             }
         });
 
-        // Akıllı Tahta Dokunmatik Kaydırma (Swipe)
-        let touchStartX = 0;
-        let touchStartY = 0;
-        window.addEventListener('touchstart', (e) => {
-            touchStartX = e.changedTouches[0].screenX;
-            touchStartY = e.changedTouches[0].screenY;
-        }, {passive: true});
-
-        window.addEventListener('touchend', (e) => {
-            const diffX = e.changedTouches[0].screenX - touchStartX;
-            const diffY = e.changedTouches[0].screenY - touchStartY;
-            if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 60) {
-                if (diffX < 0) nextSlide();
-                else prevSlide();
-            }
-        }, {passive: true});
-
-        // Kozmik Yıldızlar Animasyonu
         function initStars() {
             const canvas = document.getElementById('stars-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            let w = canvas.width = 1920;
-            let h = canvas.height = 1080;
-            const stars = Array.from({length: 180}, () => ({
+            let w = canvas.width = window.innerWidth || 1920;
+            let h = canvas.height = window.innerHeight || 1080;
+            window.addEventListener('resize', () => {
+                w = canvas.width = window.innerWidth || 1920;
+                h = canvas.height = window.innerHeight || 1080;
+            });
+            const stars = Array.from({length: 190}, () => ({
                 x: Math.random() * w,
                 y: Math.random() * h,
                 r: Math.random() * 1.8 + 0.4,
                 alpha: Math.random() * 0.8 + 0.2,
-                speed: Math.random() * 0.02 + 0.005
+                speed: Math.random() * 0.018 + 0.004
             }));
             function draw() {
                 ctx.clearRect(0, 0, w, h);
@@ -2877,16 +3288,26 @@
             }
             draw();
         }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initStars();
+            initScrollSpy();
+            randomizeSlideQuizOptions();
+            updateSlideIndicators(1);
+        });
+
         window.nextSlide = nextSlide;
         window.prevSlide = prevSlide;
         window.toggleDrawer = toggleDrawer;
         window.showSlide = showSlide;
+        window.savePresentation = savePresentation;
+        window.closePresentation = closePresentation;
         window.addEventListener('message', (e) => {
             if (e.data && e.data.type === 'ROTALI_SLIDE_CMD') {
                 if (e.data.command === 'nextSlide') nextSlide();
                 else if (e.data.command === 'prevSlide') prevSlide();
                 else if (e.data.command === 'toggleDrawer') toggleDrawer();
-                else if (e.data.command === 'showSlide') showSlide(e.data.arg);
+                else if (e.data.command === 'showSlide') showSlide(Number(e.data.arg) || 1, true);
             }
         });
     </script>

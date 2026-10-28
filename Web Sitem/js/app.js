@@ -14063,278 +14063,329 @@ function renderFullScreenPresentationModal() {
     if (!modal) {
         modal = document.createElement("div");
         modal.id = "fullscreen-presentation-modal";
-        modal.className = "fixed inset-0 z-[9999] bg-slate-950 text-white flex flex-col justify-between select-none animate-in fade-in duration-200 overflow-hidden w-full max-w-full";
-        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw;";
+        modal.className = "fixed inset-0 z-[9999] text-white flex flex-col justify-between select-none animate-in fade-in duration-200 overflow-hidden w-full max-w-full";
+        modal.style.cssText = "height: 100dvh; height: 100vh; max-height: 100dvh; width: 100vw; max-width: 100vw; background: #02040a;";
         document.body.appendChild(modal);
     }
 
     const { item, currentSlide, totalSlides, slides, viewMode, solutionRevealed } = presentationModalState;
-    const cur = (slides && (slides[currentSlide - 1] || slides[0])) || { type: "cover", badge: "DERS SUNUMU", title: (item && item.title) || "Ders Sunumu", subtitle: "", points: [] };
-    const isHtmlEmbed = !!(presentationModalState.isHtmlEmbed || (item.rawUrl && item.rawUrl.includes(".html")));
-    const isWebUrl = !isHtmlEmbed && item.rawUrl && item.rawUrl.startsWith("http") && (typeof window === "undefined" || !window.location || !window.location.host || !item.rawUrl.includes(window.location.host));
+    const isHtmlEmbed = !!(presentationModalState.isHtmlEmbed || (item && item.rawUrl && item.rawUrl.includes(".html")));
+    const isWebUrl = !isHtmlEmbed && item && item.rawUrl && item.rawUrl.startsWith("http") && (typeof window === "undefined" || !window.location || !window.location.host || !item.rawUrl.includes(window.location.host));
     const googleDocsViewerUrl = isWebUrl ? (item.rawUrl.endsWith(".pptx") ? `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.rawUrl)}` : `https://docs.google.com/viewer?url=${encodeURIComponent(item.rawUrl)}&embedded=true`) : "";
-    const hasDownload = item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "";
+    const hasDownload = item && item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "";
 
-    let bodyHtml = "";
+    // 1. HTML5 3D Sinematik Sunumlar: Tam Ekran (100vw x 100vh), kendi sabit alt çubuğu ve @rotalifenci filigranı ile
     if (isHtmlEmbed) {
-        bodyHtml = `
-            <div class="flex-1 w-full h-full relative bg-slate-950 flex items-center justify-center p-0 overflow-hidden" style="position:relative; flex:1 1 0%; min-height:0; width:100%; height:100%; background:#02040a; overflow:hidden;">
-                <iframe id="presentation-html-frame" src="${item.rawUrl}${item.rawUrl && !item.rawUrl.includes('?') ? '?v=20261028_0115' : ''}" class="w-full h-full border-0 bg-black" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0; display:block; background:#02040a;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen onload="try { if (this.contentWindow) { this.contentWindow.focus(); if (typeof this.contentWindow.scaleStage === 'function') this.contentWindow.scaleStage(); if (typeof this.contentWindow.handleResize === 'function') this.contentWindow.handleResize(); this.contentWindow.dispatchEvent(new Event('resize')); } } catch(e){}"></iframe>
-            </div>
-        `;
-    } else if (viewMode === "embed" && isWebUrl) {
-        bodyHtml = `
-            <div class="flex-1 w-full h-full p-2 bg-slate-950 flex flex-col items-center justify-center">
-                <iframe src="${googleDocsViewerUrl}" class="w-full h-full rounded-2xl border border-slate-800 shadow-2xl bg-white" allow="autoplay; fullscreen; encrypted-media"></iframe>
-            </div>
-        `;
-    } else {
-        let slideInner = "";
-        if (cur.type === "cover") {
-            slideInner = `
-                <div class="flex flex-col items-center justify-center text-center max-w-4xl mx-auto my-auto p-4 sm:p-8 animate-in zoom-in-95 duration-200">
-                    <span class="px-4 py-1.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/40 text-xs sm:text-sm font-black tracking-widest uppercase mb-4 shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-chalkboard-user"></i> ${cur.badge}
-                    </span>
-                    <h1 class="text-3xl sm:text-5xl md:text-6xl font-black text-white leading-tight mb-4 tracking-tight drop-shadow-md">
-                        ${cur.title}
-                    </h1>
-                    <p class="text-base sm:text-xl text-slate-300 font-bold mb-8 max-w-2xl leading-relaxed">
-                        ${cur.subtitle}
-                    </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 w-full text-left mb-8">
-                        ${cur.points.map((pt, i) => `
-                            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-lg backdrop-blur-sm">
-                                <span class="w-6 h-6 rounded-lg bg-orange-600/30 text-orange-400 font-black text-xs flex items-center justify-center mb-2 border border-orange-500/30">${i+1}</span>
-                                <p class="text-xs sm:text-sm font-bold text-slate-200 leading-snug">${pt.replace(/\*\*/g, '')}</p>
-                            </div>
-                        `).join("")}
-                    </div>
-                    <button type="button" onclick="changePresentationSlide(1)" class="px-8 py-4 bg-gradient-to-r from-orange-500 via-amber-500 to-red-600 hover:from-orange-600 hover:to-red-700 text-white font-black text-sm sm:text-base uppercase rounded-2xl shadow-xl shadow-orange-500/30 active:scale-95 transition-all flex items-center gap-3 cursor-pointer">
-                        <span>Dersi Başlat & Sonraki Slayt</span> <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
-            `;
-        } else if (cur.type === "concepts") {
-            slideInner = `
-                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-                            <span class="text-orange-400">${cur.title}</span>
-                        </h2>
-                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
-                    </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        ${cur.items.map((item, i) => `
-                            <div class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-5 shadow-xl hover:border-orange-500/50 transition-all">
-                                <div class="flex items-center gap-2.5 mb-2">
-                                    <span class="w-7 h-7 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center font-black text-xs shadow-md">${i+1}</span>
-                                    <h3 class="text-base sm:text-lg font-black text-amber-300">${item.heading}</h3>
-                                </div>
-                                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">${item.text}</p>
-                            </div>
-                        `).join("")}
-                    </div>
-                </div>
-            `;
-        } else if (cur.type === "focus") {
-            slideInner = `
-                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-                            <span class="text-amber-400">${cur.title}</span>
-                        </h2>
-                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
-                    </div>
-                    <div class="space-y-3 mb-6">
-                        ${cur.highlights.map(h => `
-                            <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 flex items-start gap-3 shadow-md">
-                                <i class="fa-solid fa-circle-check text-emerald-400 text-base mt-1 shrink-0"></i>
-                                <div class="text-xs sm:text-sm text-slate-200 font-semibold leading-relaxed">${h.replace(/\*\*(.*?)\*\*/g, '<strong class="text-amber-300">$1</strong>')}</div>
-                            </div>
-                        `).join("")}
-                    </div>
-                    <div class="bg-gradient-to-r from-amber-500/20 via-orange-500/20 to-red-500/20 border border-amber-500/40 rounded-2xl p-4 shadow-lg flex items-center gap-3">
-                        <i class="fa-solid fa-triangle-exclamation text-amber-400 text-2xl shrink-0"></i>
-                        <p class="text-xs sm:text-sm font-bold text-amber-200">${cur.warning}</p>
-                    </div>
-                </div>
-            `;
-        } else if (cur.type === "experiment") {
-            slideInner = `
-                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-6">
-                        <h2 class="text-2xl sm:text-3xl font-black text-white flex items-center gap-3">
-                            <span class="text-teal-400">${cur.title}</span>
-                        </h2>
-                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
-                    </div>
-                    <div class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 mb-6 shadow-xl">
-                        <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-semibold">${cur.content}</p>
-                    </div>
-                    <h4 class="text-xs sm:text-sm font-black text-teal-400 uppercase tracking-wider mb-3">Sınıf İçi Beyin Fırtınası Soruları:</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        ${cur.questions.map(q => `
-                            <div class="bg-slate-900 border border-teal-500/30 rounded-2xl p-4 shadow-md text-xs sm:text-sm font-bold text-slate-300 leading-snug">
-                                ${q}
-                            </div>
-                        `).join("")}
-                    </div>
-                </div>
-            `;
-        } else if (cur.type === "question") {
-            slideInner = `
-                <div class="w-full max-w-5xl mx-auto my-auto p-4 sm:p-8 animate-in fade-in duration-200">
-                    <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-4">
-                        <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
-                            <span class="text-rose-400">${cur.title}</span>
-                        </h2>
-                        <span class="text-xs font-black text-slate-400 bg-slate-900 px-3 py-1 rounded-xl border border-slate-800">${cur.unitName}</span>
-                    </div>
-                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 mb-4 shadow-xl">
-                        <p class="text-xs sm:text-sm text-slate-300 font-semibold mb-2">${cur.questionText}</p>
-                        <p class="text-sm sm:text-base text-white font-black leading-relaxed">${cur.prompt.replace(/\*\*(.*?)\*\*/g, '<span class="text-amber-300">$1</span>')}</p>
-                    </div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-                        ${cur.options.map(opt => `
-                            <div class="p-3.5 rounded-2xl border transition-all text-xs sm:text-sm font-bold flex items-center gap-3 ${solutionRevealed && opt.key === cur.correctKey ? 'bg-emerald-950/70 border-emerald-500 text-emerald-200 ring-2 ring-emerald-500/50' : 'bg-slate-900/80 border-slate-800 text-slate-300'}">
-                                <span class="w-7 h-7 rounded-xl flex items-center justify-center font-black text-xs shrink-0 ${solutionRevealed && opt.key === cur.correctKey ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-slate-400'}">${opt.key}</span>
-                                <span>${opt.text}</span>
-                            </div>
-                        `).join("")}
-                    </div>
-                    <div class="flex items-center justify-between pt-2">
-                        <button type="button" onclick="togglePresentationSolution()" class="px-5 py-2.5 ${solutionRevealed ? 'bg-slate-800 text-slate-300' : 'bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white'} font-black text-xs uppercase rounded-xl transition-all flex items-center gap-2 shadow-md cursor-pointer active:scale-95">
-                            <i class="fa-solid ${solutionRevealed ? 'fa-eye-slash' : 'fa-lightbulb'}"></i>
-                            <span>${solutionRevealed ? 'Çözümü Gizle' : 'Cevabı & Çözümü Göster'}</span>
-                        </button>
-                        ${solutionRevealed ? `
-                            <div class="text-xs sm:text-sm font-bold text-emerald-300 max-w-xl text-right animate-in fade-in">
-                                ${cur.explanation}
-                            </div>
-                        ` : ''}
-                    </div>
-                </div>
-            `;
-        }
-
-        bodyHtml = `
-            <div class="flex-1 relative w-full h-full flex items-center justify-center p-2 sm:p-6 overflow-y-auto">
-                <button type="button" onclick="changePresentationSlide(-1)" class="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-900/90 hover:bg-orange-600 text-white border-2 border-slate-700 hover:border-orange-400 flex items-center justify-center text-xl sm:text-2xl shadow-2xl backdrop-blur-md active:scale-95 transition-all cursor-pointer ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}" title="Önceki Slayt (Sol Ok)">
-                    <i class="fa-solid fa-chevron-left"></i>
+        modal.innerHTML = `
+            <div class="relative w-full h-full overflow-hidden" style="width:100vw; height:100vh; background:#02040a;">
+                <button type="button" onclick="closeFullScreenPresentationModal()" style="position:fixed; top:16px; left:22px; z-index:150; background:rgba(7,12,26,0.9); border:1.5px solid rgba(56,189,248,0.45); color:#f8fafc; border-radius:999px; padding:8px 16px; font-size:13px; font-weight:800; display:flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 8px 25px rgba(0,0,0,0.75); backdrop-filter:blur(12px);" title="Sunumu Kapat (ESC)">
+                    <i class="fa-solid fa-arrow-left" style="color:#38bdf8;"></i> <span>Kapat</span>
                 </button>
-
-                <div class="w-full max-w-[96vw] max-h-[84vh] aspect-video bg-gradient-to-br from-slate-900 via-indigo-950/70 to-slate-900 rounded-3xl border border-slate-800 shadow-2xl flex flex-col justify-between overflow-hidden relative backdrop-blur-md">
-                    ${slideInner}
-                </div>
-
-                <button type="button" onclick="changePresentationSlide(1)" class="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 z-40 w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-slate-900/90 hover:bg-orange-600 text-white border-2 border-slate-700 hover:border-orange-400 flex items-center justify-center text-xl sm:text-2xl shadow-2xl backdrop-blur-md active:scale-95 transition-all cursor-pointer ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}" title="Sonraki Slayt (Sağ Ok)">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </button>
+                <iframe id="presentation-html-frame" src="${item.rawUrl}${item.rawUrl && !item.rawUrl.includes('?') ? '?v=20261028_2010' : ''}" class="w-full h-full border-0" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0; display:block; background:#02040a;" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen onload="try { if (this.contentWindow) { this.contentWindow.focus(); if (typeof this.contentWindow.scaleStage === 'function') this.contentWindow.scaleStage(); if (typeof this.contentWindow.handleResize === 'function') this.contentWindow.handleResize(); this.contentWindow.dispatchEvent(new Event('resize')); } } catch(e){}"></iframe>
             </div>
         `;
+        modal.classList.remove("hidden");
+        modal.style.display = "flex";
+        return;
     }
 
+    // 2. Harici Office/Google Docs Web Önizleme Modu (İsteğe Bağlı)
+    if (viewMode === "embed" && isWebUrl) {
+        modal.innerHTML = `
+            <div class="relative w-full h-full flex flex-col bg-slate-950" style="width:100vw; height:100vh; background:#02040a;">
+                <div class="px-4 py-2.5 bg-slate-900/95 border-b border-sky-500/30 flex items-center justify-between z-50">
+                    <span class="text-sm font-black text-white truncate">${item.title || 'Ders Sunumu'}</span>
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="togglePresentationViewMode()" class="px-3 py-1.5 bg-sky-500/20 text-sky-300 border border-sky-400/40 rounded-xl text-xs font-black cursor-pointer">
+                            <i class="fa-solid fa-layer-group mr-1"></i> 3D Uzay Moduna Dön
+                        </button>
+                        <button type="button" onclick="closeFullScreenPresentationModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center cursor-pointer">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full p-2">
+                    <iframe src="${googleDocsViewerUrl}" class="w-full h-full rounded-2xl border border-slate-800 bg-white" allow="autoplay; fullscreen; encrypted-media"></iframe>
+                </div>
+            </div>
+        `;
+        modal.classList.remove("hidden");
+        modal.style.display = "flex";
+        return;
+    }
+
+    // 3. 3D Sinematik Derin Uzay Dikey Akış (Vertical Long-Scroll) Görüntüleyici (6 Kurala %100 Uyumlu)
+    const gradeClean = String((item && item.grade) || "5").replace(/^grade-/, "").trim();
+    const visualSrc = (item && (item.cover || item.imageUrl)) || `assets/kapak-${["5","6","7","8"].includes(gradeClean) ? gradeClean : "5"}.jpg`;
+    const neonBorders = [
+        "border: 1.5px solid rgba(34, 211, 238, 0.68); box-shadow: 0 0 26px rgba(34, 211, 238, 0.2), inset 0 0 14px rgba(34, 211, 238, 0.06);",
+        "border: 1.5px solid rgba(192, 132, 252, 0.68); box-shadow: 0 0 26px rgba(192, 132, 252, 0.2), inset 0 0 14px rgba(192, 132, 252, 0.06);",
+        "border: 1.5px solid rgba(251, 146, 60, 0.68); box-shadow: 0 0 26px rgba(251, 146, 60, 0.2), inset 0 0 14px rgba(251, 146, 60, 0.06);",
+        "border: 1.5px solid rgba(74, 222, 128, 0.68); box-shadow: 0 0 26px rgba(74, 222, 128, 0.2), inset 0 0 14px rgba(74, 222, 128, 0.06);"
+    ];
+
+    const allSlidesHtml = (slides || []).map((sl, idx) => {
+        const sNum = idx + 1;
+        const kickerText = sl.badge || sl.unitName || `${gradeClean}. SINIF FEN BİLİMLERİ • BÖLÜM ${sNum}`;
+        const mainTitle = (sl.title || `Bölüm ${sNum}`).replace(/^[📌💡🔬🎯]s*/, "");
+        const subTitle = sl.subtitle || sl.questionText || `${sl.unitName || item.title || 'Fen Bilimleri'} — 16:9 Akıllı Tahta Etkileşimli Ders Akışı`;
+
+        let cardsHtml = "";
+        let goldenRuleText = "";
+
+        if (sl.type === "cover") {
+            cardsHtml = (sl.points || []).map((pt, i) => `
+                <div style="background: rgba(7, 12, 28, 0.84); backdrop-filter: blur(20px); border-radius: 20px; padding: 18px 22px; ${neonBorders[i % neonBorders.length]}">
+                    <div style="display:flex; align-items:flex-start; gap:14px;">
+                        <span style="width:32px; height:32px; border-radius:10px; background:rgba(56,189,248,0.18); border:1px solid rgba(56,189,248,0.45); color:#38bdf8; font-weight:900; font-size:15px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${i + 1}</span>
+                        <div style="color:#f1f5f9; font-size:18px; line-height:1.5; font-weight:600;">${pt.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#38bdf8;">$1</strong>')}</div>
+                    </div>
+                </div>
+            `).join("");
+            goldenRuleText = `<strong>ALTIN KURAL (ÜNİTE ÖZETİ):</strong> Bu ünitedeki temel kavramları günlük yaşam örnekleri ve görsel modellerle ilişkilendirerek inceleyelim.`;
+        } else if (sl.type === "concepts") {
+            cardsHtml = (sl.items || []).map((cItem, i) => `
+                <div style="background: rgba(7, 12, 28, 0.84); backdrop-filter: blur(20px); border-radius: 20px; padding: 18px 22px; ${neonBorders[i % neonBorders.length]}">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:6px;">
+                        <i class="fa-solid fa-atom" style="color:#38bdf8; font-size:20px;"></i>
+                        <h4 style="color:#ffffff; font-size:20px; font-weight:800; margin:0;">${cItem.heading}</h4>
+                    </div>
+                    <p style="color:#e2e8f0; font-size:17px; line-height:1.5; margin:0;">${cItem.text}</p>
+                </div>
+            `).join("");
+            goldenRuleText = `<strong>İPUCU:</strong> Kavramlar arasındaki neden-sonuç ilişkilerini karşılaştırma tabloları üzerinden takip etmek sınav başarısını artırır.`;
+        } else if (sl.type === "focus") {
+            cardsHtml = (sl.highlights || []).map((h, i) => `
+                <div style="background: rgba(7, 12, 28, 0.84); backdrop-filter: blur(20px); border-radius: 20px; padding: 18px 22px; ${neonBorders[i % neonBorders.length]}">
+                    <div style="display:flex; align-items:flex-start; gap:14px;">
+                        <i class="fa-solid fa-circle-check" style="color:#4ade80; font-size:22px; margin-top:3px; flex-shrink:0;"></i>
+                        <div style="color:#f1f5f9; font-size:18px; line-height:1.5;">${h.replace(/\*\*(.*?)\*\*/g, '<strong style="color:#fbbf24;">$1</strong>')}</div>
+                    </div>
+                </div>
+            `).join("");
+            goldenRuleText = `<strong>ALTIN KURAL:</strong> ${sl.warning || 'Deney ve gözlem sorularında bağımsız, bağımlı ve kontrol edilen değişkenleri her zaman ilk adımda belirleyin!'}`;
+        } else if (sl.type === "experiment") {
+            const expCards = [sl.content, ...(sl.questions || [])];
+            cardsHtml = expCards.map((qText, i) => `
+                <div style="background: rgba(7, 12, 28, 0.84); backdrop-filter: blur(20px); border-radius: 20px; padding: 18px 22px; ${neonBorders[i % neonBorders.length]}">
+                    <div style="display:flex; align-items:flex-start; gap:14px;">
+                        <i class="fa-solid ${i === 0 ? 'fa-flask-vial' : 'fa-compass'}" style="color:${i === 0 ? '#38bdf8' : '#c084fc'}; font-size:22px; margin-top:3px; flex-shrink:0;"></i>
+                        <div style="color:#f1f5f9; font-size:18px; line-height:1.5;">${qText}</div>
+                    </div>
+                </div>
+            `).join("");
+            goldenRuleText = `<strong>DENEY İPUCU:</strong> Kontrollü bir deneyde araştırmacının kendi değiştirdiği değişken <strong>bağımsız değişken</strong>, buna bağlı olarak değişen sonuç ise <strong>bağımlı değişken</strong>dir.`;
+        } else if (sl.type === "question") {
+            cardsHtml = `
+                <div style="background: rgba(7, 12, 28, 0.84); backdrop-filter: blur(20px); border-radius: 20px; padding: 18px 22px; ${neonBorders[0]}">
+                    <div style="color:#ffffff; font-size:19px; font-weight:800; line-height:1.5;">${(sl.prompt || '').replace(/\*\*(.*?)\*\*/g, '<span style="color:#fbbf24;">$1</span>')}</div>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr; gap:12px;">
+                    ${(sl.options || []).map((opt, i) => `
+                        <div onclick="togglePresentationSolution()" style="background: ${solutionRevealed && opt.key === sl.correctKey ? 'rgba(6, 78, 59, 0.85)' : 'rgba(7, 12, 28, 0.84)'}; backdrop-filter: blur(20px); border-radius: 18px; padding: 14px 20px; cursor:pointer; display:flex; align-items:center; gap:14px; ${solutionRevealed && opt.key === sl.correctKey ? 'border: 2px solid #34d399; box-shadow: 0 0 25px rgba(52, 211, 153, 0.35);' : neonBorders[(i + 1) % neonBorders.length]}">
+                            <span style="width:34px; height:34px; border-radius:10px; background:${solutionRevealed && opt.key === sl.correctKey ? '#10b981' : 'rgba(30,41,59,0.9)'}; color:#ffffff; font-weight:900; font-size:16px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${opt.key}</span>
+                            <span style="color:#f1f5f9; font-size:17px; font-weight:700;">${opt.text}</span>
+                        </div>
+                    `).join("")}
+                </div>
+            `;
+            goldenRuleText = `<strong>ALTIN KURAL & ÇÖZÜM:</strong> ${sl.explanation || 'Doğru seçeneği görmek için şıklara tıklayabilirsiniz.'}`;
+        }
+
+        return `
+            <section id="std-pres-slide-${sNum}" data-slide="${sNum}" class="std-pres-slide" style="width:100%; max-width:1640px; min-height:min(85vh, 880px); margin:0 auto; padding:38px 48px; border-radius:30px; background:radial-gradient(circle at 50% 20%, rgba(15, 23, 42, 0.92) 0%, rgba(6, 10, 24, 0.96) 68%, rgba(2, 4, 12, 0.98) 100%); border:1.5px solid ${sNum === currentSlide ? 'rgba(56, 189, 248, 0.68)' : 'rgba(56, 189, 248, 0.25)'}; box-shadow:0 25px 65px rgba(0,0,0,0.85), 0 0 32px rgba(56,189,248,0.12); display:flex; flex-direction:column; justify-content:space-between; gap:24px; scroll-margin-top:24px; position:relative; z-index:10;">
+                <!-- 3. Başlık ve Metin Hiyerarşisi -->
+                <div style="border-bottom:1px solid rgba(148,163,184,0.16); padding-bottom:16px;">
+                    <div style="color:#38bdf8; text-shadow:0 0 14px rgba(56,189,248,0.5); font-size:15px; font-weight:800; text-transform:uppercase; letter-spacing:2px; display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                        <i class="fa-solid fa-shuttle-space"></i> <span>${kickerText}</span>
+                    </div>
+                    <h2 style="color:#ffffff; font-size:clamp(26px, 2.8vw, 40px); font-weight:900; line-height:1.18; margin:0 0 6px 0; text-shadow:0 4px 20px rgba(0,0,0,0.7);">${mainTitle}</h2>
+                    <p style="color:#cbd5e1; font-size:clamp(15px, 1.3vw, 19px); font-weight:500; margin:0;">${subTitle}</p>
+                </div>
+
+                <!-- 2. İki Sütunlu Yapı: Sol Sütun (%55) Metin Kartları + Altın Kural | Sağ Sütun (%45) Görsel -->
+                <div class="std-pres-two-col" style="display:flex; gap:32px; flex:1; align-items:stretch; min-height:0;">
+                    <!-- Sol Sütun (%55) -->
+                    <div style="flex:1.22; display:flex; flex-direction:column; justify-content:space-between; gap:14px;">
+                        <div style="display:flex; flex-direction:column; gap:14px;">
+                            ${cardsHtml}
+                        </div>
+
+                        <!-- 5. Özel Vurgu Alanı (Altın Kural) -->
+                        <div style="background:linear-gradient(90deg, #0b2247 0%, #133366 100%); border:1.5px solid rgba(56, 189, 248, 0.55); border-left:6px solid #38bdf8; border-radius:18px; padding:16px 20px; display:flex; align-items:center; gap:16px; box-shadow:0 10px 28px rgba(0,0,0,0.6), 0 0 22px rgba(56,189,248,0.2); margin-top:6px;">
+                            <i class="fa-solid fa-lightbulb" style="color:#fde047; font-size:26px; filter:drop-shadow(0 0 8px rgba(253,224,71,0.6)); flex-shrink:0;"></i>
+                            <div style="color:#f8fafc; font-size:17px; line-height:1.45;">${goldenRuleText}</div>
+                        </div>
+                    </div>
+
+                    <!-- Sağ Sütun (%45) -->
+                    <div style="flex:0.95; display:flex; flex-direction:column;">
+                        <div style="flex:1; background:rgba(8, 14, 30, 0.78); border:2px solid rgba(56, 189, 248, 0.45); border-radius:24px; padding:16px; display:flex; flex-direction:column; align-items:center; justify-content:center; box-shadow:0 20px 50px rgba(0,0,0,0.75), 0 0 30px rgba(56,189,248,0.15); overflow:hidden; position:relative;">
+                            <img src="${visualSrc}" onerror="this.src='assets/kapak-5.jpg'" alt="${mainTitle}" style="width:100%; height:100%; max-height:460px; object-fit:contain; border-radius:18px; filter:drop-shadow(0 12px 28px rgba(0,0,0,0.7));">
+                            <div style="margin-top:12px; padding:6px 16px; border-radius:999px; background:rgba(15,23,42,0.9); border:1px solid rgba(56,189,248,0.35); color:#bae6fd; font-size:13px; font-weight:700; text-align:center;">
+                                <i class="fa-solid fa-sparkles" style="color:#38bdf8; margin-right:6px;"></i> ${sl.unitName || item.title || '3D Sinematik Görsel Model'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `;
+    }).join("");
+
     modal.innerHTML = `
-        <div class="px-3 sm:px-6 py-2.5 bg-slate-900 border-b border-slate-800 flex items-center justify-between shrink-0 gap-2 shadow-xl z-50" style="padding-top: max(8px, env(safe-area-inset-top, 8px));">
-            <div class="flex items-center gap-2 sm:gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-orange-500 to-amber-600 text-white flex items-center justify-center text-sm font-black shadow-md shrink-0">
-                    <i class="fa-solid fa-file-powerpoint"></i>
-                </div>
-                <div class="min-w-0">
-                    <h2 class="text-xs sm:text-sm font-black text-white truncate max-w-[150px] sm:max-w-md">${item.title}</h2>
-                    <span class="text-[10px] text-amber-400 font-bold uppercase tracking-wider hidden sm:inline">16:9 Geniş Ekran • Akıllı Tahta Modu</span>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-2 sm:gap-3">
-                ${isHtmlEmbed ? `
-                    <button type="button" onclick="sendPresentationCommand('prevSlide')" class="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs sm:text-sm border border-slate-600 hover:border-amber-400 cursor-pointer shadow-md active:scale-95 flex items-center gap-2 transition-all" title="Önceki Slayt (Sol Ok)">
-                        <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i> <span>Önceki</span>
-                    </button>
-                    <button type="button" onclick="sendPresentationCommand('toggleDrawer')" class="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-slate-800/95 text-amber-300 hover:bg-slate-700 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 shadow-inner flex items-center gap-2 cursor-pointer transition-all" title="Bölümleri / Slayt Listesini Göster">
-                        <i class="fa-solid fa-list-ol text-amber-400 text-sm sm:text-base"></i> <span id="presentation-top-counter">${presentationModalState.totalSlides} Slayt</span>
-                    </button>
-                    <button type="button" onclick="sendPresentationCommand('nextSlide')" class="px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-sm cursor-pointer shadow-lg hover:shadow-orange-500/30 active:scale-95 flex items-center gap-2 ring-2 ring-orange-400/30 transition-all" title="Sonraki Slayt (Sağ Ok / Boşluk)">
-                        <span>Sonraki</span> <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
-                    </button>
-                ` : `
-                    <button type="button" onclick="changePresentationSlide(-1)" class="px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs sm:text-sm border border-slate-600 hover:border-amber-400 cursor-pointer shadow-md active:scale-95 flex items-center gap-2 transition-all ${currentSlide === 1 ? 'opacity-30 pointer-events-none' : ''}" title="Önceki Slayt">
-                        <i class="fa-solid fa-chevron-left text-sm sm:text-base"></i> <span>Önceki</span>
-                    </button>
-                    <button type="button" onclick="toggleStandardPresentationDrawer()" class="px-3.5 py-2 sm:px-5 sm:py-2.5 bg-slate-800/95 text-amber-300 hover:bg-slate-700 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 shadow-inner flex items-center gap-2 cursor-pointer transition-all" title="Bölümleri / Slayt Listesini Göster">
-                        <i class="fa-solid fa-list-ol text-amber-400 text-sm sm:text-base"></i> <span>Slayt ${currentSlide} / ${totalSlides}</span>
-                    </button>
-                    <button type="button" onclick="changePresentationSlide(1)" class="px-4 py-2 sm:px-6 sm:py-2.5 rounded-2xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs sm:text-sm cursor-pointer shadow-lg hover:shadow-orange-500/30 active:scale-95 flex items-center gap-2 ring-2 ring-orange-400/30 transition-all ${currentSlide === totalSlides ? 'opacity-30 pointer-events-none' : ''}" title="Sonraki Slayt">
-                        <span>Sonraki</span> <i class="fa-solid fa-chevron-right text-sm sm:text-base"></i>
-                    </button>
-                `}
-            </div>
-
-            <div class="flex items-center gap-2 sm:gap-2.5">
-                <button type="button" onclick="${isHtmlEmbed ? "sendPresentationCommand('toggleDrawer')" : "toggleStandardPresentationDrawer()"}" class="px-3.5 py-2 sm:px-4 sm:py-2 bg-slate-800 hover:bg-slate-700 text-amber-300 font-black text-xs sm:text-sm rounded-2xl border border-slate-700 hover:border-amber-400 flex items-center gap-2 cursor-pointer shadow-sm transition-all" title="Ünite Rotaları ve Bölümleri Göster">
-                    <i class="fa-solid fa-compass text-amber-400 text-sm sm:text-base"></i> <span class="hidden sm:inline">Ünite Rotaları</span>
-                </button>
-                ${isWebUrl && !isHtmlEmbed ? `
-                    <button type="button" onclick="togglePresentationViewMode()" class="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-xl border border-slate-700 flex items-center gap-1.5 cursor-pointer">
-                        <i class="fa-solid ${viewMode === 'embed' ? 'fa-table-cells' : 'fa-globe'}"></i>
-                        <span class="hidden md:inline">${viewMode === 'embed' ? 'Slayt Modu' : 'Web Önizleme'}</span>
-                    </button>
-                ` : ''}
-
-                ${hasDownload && !isHtmlEmbed ? `
-                    <button type="button" onclick="triggerDirectDownload('${item.downloadUrl}', '${item.fileName.replace(/'/g, "\\'")}')" class="px-2.5 sm:px-3 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer" title="Sunumu İndir / Cihazda Aç">
-                        <i class="fa-solid fa-download"></i> <span class="hidden md:inline">İndir (PPTX)</span>
-                    </button>
-                ` : ''}
-
-                <button type="button" id="btn-toggle-native-fs" onclick="togglePresentationNativeFullscreen()" class="px-3.5 py-1.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500 text-white font-black text-xs rounded-xl flex items-center gap-1.5 shadow-lg active:scale-95 cursor-pointer" title="Tam Ekran (F11)">
-                    <i class="fa-solid fa-expand text-xs"></i> <span>Tam Ekran</span>
-                </button>
-
-                <button type="button" onclick="closeFullScreenPresentationModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-rose-600 text-white flex items-center justify-center font-black transition-all cursor-pointer shadow-sm" title="Kapat (ESC)">
-                    <i class="fa-solid fa-xmark text-sm"></i>
-                </button>
-            </div>
+        <style>
+            @media (max-width: 1024px) {
+                .std-pres-two-col { flex-direction: column !important; }
+                .std-pres-slide { padding: 22px 18px !important; min-height: auto !important; }
+                #std-pres-bottom-bar { left: 12px !important; right: 12px !important; justify-content: center !important; flex-wrap: wrap !important; }
+                #std-pres-watermark { bottom: 76px !important; left: 12px !important; }
+            }
+        </style>
+        <!-- Üst İlerleme Çubuğu -->
+        <div style="position:fixed; top:0; left:0; width:100vw; height:6px; background:rgba(255,255,255,0.08); z-index:120;">
+            <div id="std-pres-progress-bar" style="height:100%; width:${((currentSlide / Math.max(1, totalSlides)) * 100)}%; background:linear-gradient(90deg, #38bdf8, #f59e0b, #f97316); box-shadow:0 0 12px #38bdf8; transition:width 0.3s ease;"></div>
         </div>
 
-        ${bodyHtml}
+        <!-- Yıldız Parıltılı Derin Uzay Arka Plan Kanvası -->
+        <canvas id="std-pres-stars-canvas" style="position:fixed; inset:0; width:100vw; height:100vh; pointer-events:none; z-index:1;"></canvas>
 
-        <div class="px-3 sm:px-6 py-2 bg-slate-900 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400 shrink-0 z-50">
-            <div class="flex items-center gap-2">
-                <span class="text-amber-400 font-bold flex items-center gap-1.5">
-                    <i class="fa-solid fa-chalkboard-user"></i> ${isHtmlEmbed ? (item.title || 'Akıllı Tahta Sunum Modu') : 'Akıllı Tahta Sunum Modu'}
-                </span>
-                <span class="hidden lg:inline text-slate-600">|</span>
-                <span class="hidden lg:inline text-[11px] text-slate-400">
-                    <i class="fa-regular fa-keyboard mr-1"></i> Yön tuşları veya Space ile slayt geçişi yapabilirsiniz
-                </span>
-            </div>
+        <!-- Sağ Üst Rotalı Fenci Logo -->
+        <div style="position:fixed; top:18px; right:26px; z-index:115; pointer-events:auto;">
+            <img src="assets/rotali-logo-clean.png" onerror="this.src='rotali-fenci-logo.png'" alt="Rotalı Fenci" onclick="toggleStandardPresentationDrawer()" style="height:64px; width:auto; object-fit:contain; cursor:pointer; filter:drop-shadow(0 4px 14px rgba(0,0,0,0.85));">
+        </div>
 
-            <div class="flex items-center gap-2">
-                <button type="button" onclick="togglePresentationNativeFullscreen()" class="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-amber-300 font-bold text-xs rounded-lg border border-slate-700 flex items-center gap-1.5 cursor-pointer">
-                    <i class="fa-solid fa-expand"></i> <span>Tüm Ekranı Aç (F11)</span>
-                </button>
-                <span class="text-emerald-400 font-bold hidden sm:flex items-center gap-1">
-                    <i class="fa-solid fa-circle-check"></i> Akıllı Tahta Uyumlu
-                </span>
-            </div>
+        <!-- Sol Alt Sabit Filigran/Marka (@rotalifenci) -->
+        <div id="std-pres-watermark" style="position:fixed; bottom:18px; left:24px; z-index:115; display:flex; align-items:center; gap:10px; background:rgba(8, 14, 30, 0.92); backdrop-filter:blur(12px); padding:10px 20px; border-radius:40px; border:1.5px solid rgba(56, 189, 248, 0.45); box-shadow:0 8px 28px rgba(0,0,0,0.7), 0 0 18px rgba(56,189,248,0.2);">
+            <i class="fa-brands fa-instagram" style="font-size:22px; background:linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%); -webkit-background-clip:text; -webkit-text-fill-color:transparent;"></i>
+            <span style="font-weight:800; font-size:18px; color:#fce7f3; letter-spacing:0.6px;">@rotalifenci</span>
+        </div>
+
+        <!-- Dikey Akış (Vertical Long-Scroll) Sahnesi -->
+        <div id="std-pres-scroll-viewport" style="width:100vw; height:100vh; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; -webkit-overflow-scrolling:touch; touch-action:pan-y pinch-zoom; background:radial-gradient(circle at 50% 20%, #0b152b 0%, #050914 60%, #02040a 100%); padding:28px 28px 120px 28px; display:flex; flex-direction:column; gap:40px;">
+            ${allSlidesHtml}
+        </div>
+
+        <!-- Sabit (Sticky) Alt Kontrol Çubuğu -->
+        <div id="std-pres-bottom-bar" style="position:fixed; bottom:16px; right:24px; z-index:115; display:flex; align-items:center; gap:10px; background:rgba(7, 12, 26, 0.95); backdrop-filter:blur(16px); padding:8px 16px; border-radius:44px; border:1.5px solid rgba(56, 189, 248, 0.35); box-shadow:0 16px 45px rgba(0,0,0,0.85), 0 0 25px rgba(56,189,248,0.15);">
+            <button type="button" onclick="changePresentationSlide(-1)" style="height:46px; padding:0 16px; border-radius:26px; background:rgba(15, 23, 42, 0.95); border:1.5px solid rgba(148, 163, 184, 0.28); color:#f8fafc; font-weight:800; font-size:16px; display:flex; align-items:center; gap:8px; cursor:pointer;" title="Önceki Slayt">
+                <i class="fa-solid fa-chevron-left"></i> <span>Önceki</span>
+            </button>
+            <span id="std-pres-counter-badge" style="color:#facc15; font-size:19px; font-weight:900; min-width:70px; text-align:center; text-shadow:0 0 12px rgba(250,204,21,0.4);">${currentSlide}/${totalSlides}</span>
+            <button type="button" onclick="changePresentationSlide(1)" style="height:46px; padding:0 20px; border-radius:26px; background:linear-gradient(135deg, #ff7a00 0%, #f97316 50%, #ea580c 100%); border:1.5px solid #fdba74; color:#ffffff; font-weight:800; font-size:16px; display:flex; align-items:center; gap:8px; cursor:pointer; box-shadow:0 0 22px rgba(249,115,22,0.55);" title="Sonraki Slayt">
+                <span>Sonraki &gt;</span>
+            </button>
+            <button type="button" onclick="toggleStandardPresentationDrawer()" style="height:46px; padding:0 16px; border-radius:26px; background:rgba(30, 41, 59, 0.95); border:1.5px solid #f59e0b; color:#fde047; font-weight:800; font-size:16px; display:flex; align-items:center; gap:8px; cursor:pointer;" title="Ünite Rotaları">
+                <i class="fa-solid fa-compass"></i> <span>Ünite Rotaları</span>
+            </button>
+            <button type="button" id="std-pres-sound-btn" onclick="toggleStandardPresentationSound()" style="width:46px; height:46px; border-radius:50%; background:rgba(15, 23, 42, 0.95); border:1.5px solid rgba(148, 163, 184, 0.28); color:#f8fafc; font-size:17px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Ses Aç/Kapat">
+                <i class="fa-solid fa-volume-high"></i>
+            </button>
+            <button type="button" onclick="togglePresentationNativeFullscreen()" style="width:46px; height:46px; border-radius:50%; background:rgba(15, 23, 42, 0.95); border:1.5px solid rgba(148, 163, 184, 0.28); color:#f8fafc; font-size:17px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Tam Ekran (F11)">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+            <button type="button" onclick="window.print()" style="width:46px; height:46px; border-radius:50%; background:rgba(15, 23, 42, 0.95); border:1.5px solid rgba(148, 163, 184, 0.28); color:#f8fafc; font-size:17px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Yazdır">
+                <i class="fa-solid fa-print"></i>
+            </button>
+            <button type="button" onclick="saveStandardPresentation()" style="width:46px; height:46px; border-radius:50%; background:rgba(15, 23, 42, 0.95); border:1.5px solid rgba(148, 163, 184, 0.28); color:#f8fafc; font-size:17px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Kaydet / İndir">
+                <i class="fa-solid fa-floppy-disk"></i>
+            </button>
+            <button type="button" onclick="closeFullScreenPresentationModal()" style="width:46px; height:46px; border-radius:50%; background:rgba(15, 23, 42, 0.95); border:1.5px solid rgba(244, 63, 94, 0.45); color:#fda4af; font-size:17px; display:flex; align-items:center; justify-content:center; cursor:pointer;" title="Kapat (ESC)">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
     `;
+
     modal.classList.remove("hidden");
     modal.style.display = "flex";
+
+    initStandardPresentationStars();
+    initStandardPresentationScrollSpy();
+}
+
+let stdPresSoundEnabled = true;
+function toggleStandardPresentationSound() {
+    stdPresSoundEnabled = !stdPresSoundEnabled;
+    const btn = document.getElementById("std-pres-sound-btn");
+    if (btn) {
+        btn.innerHTML = stdPresSoundEnabled ? '<i class="fa-solid fa-volume-high"></i>' : '<i class="fa-solid fa-volume-xmark" style="color:#ef4444;"></i>';
+    }
+}
+
+function saveStandardPresentation() {
+    const item = presentationModalState && presentationModalState.item;
+    if (item && item.downloadUrl && item.downloadUrl !== "#" && item.downloadUrl !== "") {
+        triggerDirectDownload(item.downloadUrl, item.fileName || "sunum.pptx");
+    } else {
+        window.print();
+    }
+}
+
+function initStandardPresentationStars() {
+    const canvas = document.getElementById("std-pres-stars-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth || 1920;
+    let h = canvas.height = window.innerHeight || 1080;
+    const stars = Array.from({ length: 160 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 1.7 + 0.4,
+        alpha: Math.random() * 0.8 + 0.2,
+        speed: Math.random() * 0.015 + 0.004
+    }));
+    function draw() {
+        if (!document.getElementById("std-pres-stars-canvas")) return;
+        ctx.clearRect(0, 0, w, h);
+        for (const s of stars) {
+            s.alpha += s.speed;
+            if (s.alpha > 1 || s.alpha < 0.2) s.speed = -s.speed;
+            ctx.beginPath();
+            ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 255, 255, ${Math.max(0.1, s.alpha)})`;
+            ctx.fill();
+        }
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+function initStandardPresentationScrollSpy() {
+    const vp = document.getElementById("std-pres-scroll-viewport");
+    if (!vp) return;
+    let ticking = false;
+    vp.addEventListener("scroll", () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(() => {
+            const sections = vp.querySelectorAll(".std-pres-slide");
+            const vpRect = vp.getBoundingClientRect();
+            const centerLine = vpRect.top + vpRect.height * 0.38;
+            let bestSlide = presentationModalState.currentSlide || 1;
+            sections.forEach((sec, idx) => {
+                const r = sec.getBoundingClientRect();
+                if (r.top <= centerLine && r.bottom >= centerLine) {
+                    bestSlide = idx + 1;
+                }
+            });
+            if (bestSlide !== presentationModalState.currentSlide) {
+                presentationModalState.currentSlide = bestSlide;
+                const badge = document.getElementById("std-pres-counter-badge");
+                if (badge) badge.innerText = `${bestSlide}/${presentationModalState.totalSlides}`;
+                const pb = document.getElementById("std-pres-progress-bar");
+                if (pb) pb.style.width = `${((bestSlide / Math.max(1, presentationModalState.totalSlides)) * 100)}%`;
+            }
+            ticking = false;
+        });
+    }, { passive: true });
 }
 
 function changePresentationSlide(delta) {
     if (!presentationModalState.slides || presentationModalState.slides.length === 0) return;
     const next = presentationModalState.currentSlide + delta;
     if (next >= 1 && next <= presentationModalState.totalSlides) {
-        presentationModalState.currentSlide = next;
-        presentationModalState.solutionRevealed = false;
-        renderFullScreenPresentationModal();
+        goToPresentationSlide(next);
     }
 }
-
 
 function toggleStandardPresentationDrawer() {
     let drawer = document.getElementById("standard-presentation-drawer");
@@ -14427,8 +14478,16 @@ if (typeof window !== 'undefined' && !window._rotaliSlideSyncAttached) {
 function goToPresentationSlide(num) {
     if (num >= 1 && num <= presentationModalState.totalSlides) {
         presentationModalState.currentSlide = num;
-        presentationModalState.solutionRevealed = false;
-        renderFullScreenPresentationModal();
+        const targetEl = document.getElementById("std-pres-slide-" + num);
+        if (targetEl) {
+            targetEl.scrollIntoView({ behavior: "smooth", block: "start" });
+            const badge = document.getElementById("std-pres-counter-badge");
+            if (badge) badge.innerText = num + "/" + presentationModalState.totalSlides;
+            const pb = document.getElementById("std-pres-progress-bar");
+            if (pb) pb.style.width = ((num / Math.max(1, presentationModalState.totalSlides)) * 100) + "%";
+        } else {
+            renderFullScreenPresentationModal();
+        }
     }
 }
 
