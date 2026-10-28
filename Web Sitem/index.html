@@ -62,45 +62,20 @@
 
     <!-- Font Awesome & Custom Style -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css?v=20261028_0200">
+    <link rel="stylesheet" href="css/style.css?v=20261028_2055">
     <!-- Alpine.js & Collapse Plugin (Sabit sürüm: tüm cihazlarda aynı Alpine çalışsın) -->
     <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.17.4/dist/cdn.min.js"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.4/dist/cdn.min.js"></script>
 
-    <!-- 🔄 Sürüm Kontrolü: Yeni yayın varsa "Yenile" bandı gösterir (Pardus/Firefox, mobil, PC) -->
     <script>
-        window.ROTALI_BUILD = "20261028_0200";
-        (function () {
-            var shown = false;
-            function showBanner() {
-                if (shown || !document.body) return;
-                shown = true;
-                var bar = document.createElement("div");
-                bar.id = "rf-update-banner";
-                bar.setAttribute("style", "position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2147483647;background:#0f172a;color:#fff;border:1px solid #f59e0b;border-radius:16px;padding:10px 14px;font:700 14px/1.3 system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.4);display:flex;gap:10px;align-items:center;max-width:92vw");
-                bar.innerHTML = '<span>🚀 Sitenin yeni sürümü yayında.</span>' +
-                    '<button type="button" style="background:#dc2626;color:#fff;border:0;border-radius:10px;padding:6px 12px;font-weight:800;cursor:pointer">Yenile</button>' +
-                    '<button type="button" aria-label="Kapat" style="background:transparent;color:#94a3b8;border:0;font-size:18px;cursor:pointer">×</button>';
-                var btns = bar.getElementsByTagName("button");
-                btns[0].onclick = function () {
-                    var u = location.href.split("#");
-                    var base = u[0].replace(/([?&])_rf=[^&]*/g, "$1").replace(/[?&]$/, "");
-                    location.replace(base + (base.indexOf("?") > -1 ? "&" : "?") + "_rf=" + Date.now() + (u[1] ? "#" + u[1] : ""));
-                };
-                btns[1].onclick = function () { bar.parentNode.removeChild(bar); };
-                document.body.appendChild(bar);
+        window.ROTALI_BUILD = "20261028_2055";
+        // Eski önbellekten kalan sürüm uyarı bandı varsa otomatik temizle
+        document.addEventListener("DOMContentLoaded", function () {
+            var oldBanner = document.getElementById("rf-update-banner");
+            if (oldBanner && oldBanner.parentNode) {
+                oldBanner.parentNode.removeChild(oldBanner);
             }
-            function check() {
-                if (!window.fetch) return;
-                fetch("/version.json?t=" + Date.now(), { cache: "no-store" })
-                    .then(function (r) { return r.ok ? r.json() : null; })
-                    .then(function (d) { if (d && d.v && d.v !== window.ROTALI_BUILD) showBanner(); })
-                    .catch(function () {});
-            }
-            window.addEventListener("load", function () { setTimeout(check, 3000); });
-            document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") check(); });
-            setInterval(check, 5 * 60 * 1000);
-        })();
+        });
     </script>
 </head>
 <body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
@@ -366,10 +341,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/cloud-config.js?v=20261028_0200"></script>
-    <script src="js/data.js?v=20261028_0200"></script>
-    <script src="js/curriculum-data.js?v=20261025_2200"></script>
-    <script src="js/app.js?v=20261028_2010"></script>
+    <script src="js/cloud-config.js?v=20261028_2055"></script>
+    <script src="js/data.js?v=20261028_2055"></script>
+    <script src="js/curriculum-data.js?v=20261028_2055"></script>
+    <script src="js/app.js?v=20261028_2055"></script>
     <!-- 🐞 Sabit Hata & Eksik Bildir Butonu (Tüm Sayfalarda Sağ Altta) -->
     <button type="button" onclick="openIssueReportModal()" class="fixed bottom-18 sm:bottom-5 right-3.5 sm:right-5 z-40 px-4 py-2.5 bg-slate-900/90 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-2xl backdrop-blur-md border border-slate-700/80 hover:border-red-500 transition-all flex items-center gap-2 group hover:scale-105 transform cursor-pointer" title="Sayfadaki eksikleri veya açılmayanları bildirin">
         <i class="fa-solid fa-bug text-red-500 group-hover:text-white transition-colors text-sm"></i>
