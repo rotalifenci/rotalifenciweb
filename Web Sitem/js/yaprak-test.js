@@ -68,6 +68,25 @@ document.addEventListener('DOMContentLoaded', () => {
   const ypSpacePrintBtn = document.getElementById('ypSpacePrintBtn');
   const ypSpaceSaveBtn = document.getElementById('ypSpaceSaveBtn');
   const closeYpSpaceViewerBtn = document.getElementById('closeYpSpaceViewerBtn');
+  // 🌓 Açık / Koyu Tema Değiştirme
+  const ypSpaceThemeToggleBtn = document.getElementById('ypSpaceThemeToggleBtn');
+  const ypSpaceThemeText = document.getElementById('ypSpaceThemeText');
+  if (ypSpaceThemeToggleBtn && ypSpaceViewerModal) {
+    ypSpaceThemeToggleBtn.addEventListener('click', () => {
+      const isDark = ypSpaceViewerModal.classList.toggle('theme-dark');
+      if (ypSpaceThemeText) {
+        ypSpaceThemeText.textContent = isDark ? 'Açık Mod' : 'Koyu Mod';
+      }
+      try { localStorage.setItem('rotali_space_viewer_theme', isDark ? 'dark' : 'light'); } catch(e) {}
+    });
+    try {
+      if (localStorage.getItem('rotali_space_viewer_theme') === 'dark') {
+        ypSpaceViewerModal.classList.add('theme-dark');
+        if (ypSpaceThemeText) ypSpaceThemeText.textContent = 'Açık Mod';
+      }
+    } catch(e) {}
+  }
+
   const open3DSpaceViewBtn = document.getElementById('open3DSpaceViewBtn');
   const headerSpaceViewerBtn = document.getElementById('headerSpaceViewerBtn');
   const emptyStateSpaceViewerBtn = document.getElementById('emptyStateSpaceViewerBtn');
