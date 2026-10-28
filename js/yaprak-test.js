@@ -328,7 +328,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!out.includes('xmlns:xlink')) {
       out = out.replace('<svg', '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
     }
-    out = out.replace(/font-family=["'][^"']*["']/gi, 'font-family="'Times New Roman', Times, serif"');
+    out = out.replace(/font-family=["'][^"']*["']/gi, 'font-family="Times New Roman, Times, serif"');
     out = out.replace(/fill=["']#(070a12|090d16|0b0f19|000000|0f172a|030712|1e1b4b|1e293b|000)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
     out = out.replace(/fill=["']black["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
     out = out.replace(/fill=["']rgba?\(\s*0\s*,\s*0\s*,\s*0[^)]*\)["']/gi, 'fill="#ffffff" stroke="#e2e8f0" stroke-width="1"');
