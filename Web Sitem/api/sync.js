@@ -186,9 +186,9 @@ module.exports = async function handler(req, res) {
                 parsed = {};
             }
 
-            const deletedIds = (Array.isArray(parsed.deletedIds) ? parsed.deletedIds : []).filter(id => !PROTECTED_IDS.has(id));
-            PERMANENTLY_REMOVED_IDS.forEach(pid => { if (!deletedIds.includes(pid) && !PROTECTED_IDS.has(pid)) deletedIds.push(pid); });
-            const gistMats = (parsed.materials || []).filter(m => (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id));
+            const deletedIds = (Array.isArray(parsed.deletedIds) ? parsed.deletedIds : []);
+            PERMANENTLY_REMOVED_IDS.forEach(pid => { if (!deletedIds.includes(pid)) deletedIds.push(pid); });
+            const gistMats = (parsed.materials || []).filter(m => (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)));
             let repoMats = [];
             try {
                 const localJsonPath = path.join(process.cwd(), "data", "materials.json");
@@ -199,13 +199,13 @@ module.exports = async function handler(req, res) {
             const mergedMap = new Map();
             if (Array.isArray(repoMats)) {
                 repoMats.forEach(m => {
-                    if (m && m.id && ((!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id))) {
+                    if (m && m.id && (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id))) {
                         mergedMap.set(m.id, m);
                     }
                 });
             }
             gistMats.forEach(m => {
-                if (m && m.id && ((!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)) || PROTECTED_IDS.has(m.id))) {
+                if (m && m.id && (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id))) {
                     const st = mergedMap.get(m.id);
                     if (st) {
                         const combined = { ...st, ...m };
@@ -318,7 +318,8 @@ module.exports = async function handler(req, res) {
                     }
                 } catch(readErr) {}
 
-                const allDelSet = new Set([...currentDels, ...toDelete].filter(id => typeof id === "string" && id.trim().length > 0 && !PROTECTED_IDS.has(id)));
+                toDelete.forEach(id => PROTECTED_IDS.delete(id));
+                const allDelSet = new Set([...currentDels, ...toDelete].filter(id => typeof id === "string" && id.trim().length > 0));
                 PERMANENTLY_REMOVED_IDS.forEach(pid => allDelSet.add(pid));
                 const updatedDels = Array.from(allDelSet);
                 const updatedMats = currentMats.filter(m => m && m.id && !allDelSet.has(m.id));
@@ -388,7 +389,8 @@ module.exports = async function handler(req, res) {
                 }
             } catch(apiReadErr) {}
 
-            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.trim().length > 0 && !PROTECTED_IDS.has(id)));
+            incomingDeletedIds.forEach(id => PROTECTED_IDS.delete(id));
+            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.trim().length > 0));
             PERMANENTLY_REMOVED_IDS.forEach(pid => allDeletedSet.add(pid));
             const allDeletedIds = Array.from(allDeletedSet);
 

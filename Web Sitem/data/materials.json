@@ -2380,35 +2380,6 @@
     "updatedAt": "2026-10-18T00:00:00.000Z"
   },
   {
-    "id": "mat-5-1-sunum-gunes-dunya-ay",
-    "grade": "5",
-    "category": "ders-notu",
-    "targetSection": "1",
-    "title": "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay (3D Sinematik Akıllı Tahta Sunumu)",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "41 slaytlık, etkileşimli, 3D sinematik uzay görselli, interaktif testli ve tam ekran akıllı tahta konu anlatımı sunumu.",
-    "fileName": "5-sinif-1-unite-gunes-dunya-ay.html",
-    "fileUrl": "sunumlar/5-sinif-1-unite-gunes-dunya-ay.html",
-    "imageUrl": "assets/sunum-5-1-referans-kapak.jpg",
-    "kapakResmi": "assets/sunum-5-1-referans-kapak.jpg",
-    "format": "İNTERAKTİF SUNUM",
-    "hasBlob": false,
-    "tags": [
-      "güneş",
-      "dünya",
-      "ay",
-      "evreler",
-      "3d sunum",
-      "akıllı tahta",
-      "5. sınıf",
-      "fen bilimleri"
-    ],
-    "visibility": "public",
-    "downloadCount": "Öne Çıkan",
-    "createdAt": "2026-10-17T19:40:00.000Z",
-    "updatedAt": "2026-10-17T19:40:00.000Z"
-  },
-  {
     "id": "mat-6265279c-943c-41fb-80e8-df15d1b8c589",
     "grade": "7",
     "category": "ders-notu",

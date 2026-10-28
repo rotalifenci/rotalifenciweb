@@ -206,7 +206,6 @@ function ensureMultiDeviceSyncReset() {
 ensureMultiDeviceSyncReset();
 
 const PROTECTED_MATERIAL_IDS = new Set([
-    "mat-5-1-sunum-gunes-dunya-ay",
     "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "mat-1789641166040",
     "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
@@ -236,6 +235,7 @@ const PROTECTED_MATERIAL_IDS = new Set([
 ]);
 
 const PERMANENT_DELETED_MATERIAL_IDS = [
+    "mat-5-1-sunum-gunes-dunya-ay",
     "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
     "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
     "mat-test-5-1-1792875787663", "mat-test-5-1-1792854826132", "mat-test-5-1-1792854064641",
@@ -289,7 +289,7 @@ function getDeletedMaterialIds() {
         }
         return Array.from(set);
     } catch(e) {
-        return PERMANENT_DELETED_MATERIAL_IDS.filter(id => !(typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id)));
+        return PERMANENT_DELETED_MATERIAL_IDS.slice();
     }
 }
 
@@ -531,6 +531,48 @@ async function loadCentralizedMaterials() {
 window.fetchFreshData = fetchFreshData;
 window.loadCentralizedMaterials = loadCentralizedMaterials;
 window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+
+
+// =============================================================
+// ⚡ TÜM CİHAZLAR & SEKMELER ANLIK CANLI SENKRONİZASYON (0ms BroadcastChannel)
+// =============================================================
+let rotaliSyncChannel = null;
+try {
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+        rotaliSyncChannel = new BroadcastChannel("rotali_multi_device_sync_channel");
+        rotaliSyncChannel.onmessage = (event) => {
+            const data = event.data;
+            if (data && data.action) {
+                console.log("⚡ BroadcastChannel anlık senkronizasyon mesajı:", data);
+                if (data.action === "delete" && data.id) {
+                    if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
+                        ROTALI_MATERIALS_CACHE = ROTALI_MATERIALS_CACHE.filter(m => m && m.id !== data.id);
+                    }
+                    if (Array.isArray(APP_MATERIALS_CACHE)) {
+                        APP_MATERIALS_CACHE = APP_MATERIALS_CACHE.filter(m => m && m.id !== data.id);
+                        window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+                    }
+                }
+                if (typeof handleRouteChange === "function") {
+                    handleRouteChange({ preserveScroll: true });
+                }
+            }
+        };
+    }
+} catch(e) {}
+
+function notifyAllTabsAndDevices(payload) {
+    try {
+        if (rotaliSyncChannel) {
+            rotaliSyncChannel.postMessage({ ...payload, timestamp: Date.now() });
+        }
+    } catch(e) {}
+    try {
+        localStorage.setItem("rotali_materials_sync_signal", Date.now().toString());
+        if (typeof notifyAllTabsAndDevices === "function") notifyAllTabsAndDevices({ action: "save" });
+    } catch(e) {}
+}
+window.notifyAllTabsAndDevices = notifyAllTabsAndDevices;
 
 const CloudSyncManager = {
     // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder

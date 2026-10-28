@@ -181,7 +181,7 @@ function readFileAsDataURL(file) {
 let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
-const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261028_2245";
+const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261029_0100";
 function ensureMultiDeviceSyncReset() {
     try {
         if (typeof localStorage !== "undefined" && localStorage.getItem("rotali_multi_device_sync_v") !== ROTALI_MULTI_DEVICE_SYNC_VERSION) {
@@ -206,7 +206,6 @@ function ensureMultiDeviceSyncReset() {
 ensureMultiDeviceSyncReset();
 
 const PROTECTED_MATERIAL_IDS = new Set([
-    "mat-5-1-sunum-gunes-dunya-ay",
     "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "mat-1789641166040",
     "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
@@ -231,6 +230,7 @@ const PROTECTED_MATERIAL_IDS = new Set([
 ]);
 
 const PERMANENT_DELETED_MATERIAL_IDS = [
+    "mat-5-1-sunum-gunes-dunya-ay",
     "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
     "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
     "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
@@ -292,7 +292,7 @@ function getDeletedMaterialIds() {
         }
         return Array.from(set);
     } catch(e) {
-        return PERMANENT_DELETED_MATERIAL_IDS.filter(id => !(typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id)));
+        return PERMANENT_DELETED_MATERIAL_IDS.slice();
     }
 }
 
@@ -534,6 +534,48 @@ async function loadCentralizedMaterials() {
 window.fetchFreshData = fetchFreshData;
 window.loadCentralizedMaterials = loadCentralizedMaterials;
 window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+
+
+// =============================================================
+// ⚡ TÜM CİHAZLAR & SEKMELER ANLIK CANLI SENKRONİZASYON (0ms BroadcastChannel)
+// =============================================================
+let rotaliSyncChannel = null;
+try {
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+        rotaliSyncChannel = new BroadcastChannel("rotali_multi_device_sync_channel");
+        rotaliSyncChannel.onmessage = (event) => {
+            const data = event.data;
+            if (data && data.action) {
+                console.log("⚡ BroadcastChannel anlık senkronizasyon mesajı:", data);
+                if (data.action === "delete" && data.id) {
+                    if (Array.isArray(ROTALI_MATERIALS_CACHE)) {
+                        ROTALI_MATERIALS_CACHE = ROTALI_MATERIALS_CACHE.filter(m => m && m.id !== data.id);
+                    }
+                    if (Array.isArray(APP_MATERIALS_CACHE)) {
+                        APP_MATERIALS_CACHE = APP_MATERIALS_CACHE.filter(m => m && m.id !== data.id);
+                        window.APP_MATERIALS_CACHE = APP_MATERIALS_CACHE;
+                    }
+                }
+                if (typeof handleRouteChange === "function") {
+                    handleRouteChange({ preserveScroll: true });
+                }
+            }
+        };
+    }
+} catch(e) {}
+
+function notifyAllTabsAndDevices(payload) {
+    try {
+        if (rotaliSyncChannel) {
+            rotaliSyncChannel.postMessage({ ...payload, timestamp: Date.now() });
+        }
+    } catch(e) {}
+    try {
+        localStorage.setItem("rotali_materials_sync_signal", Date.now().toString());
+        if (typeof notifyAllTabsAndDevices === "function") notifyAllTabsAndDevices({ action: "save" });
+    } catch(e) {}
+}
+window.notifyAllTabsAndDevices = notifyAllTabsAndDevices;
 
 const CloudSyncManager = {
     // Canlı Vercel API her platformda (Netlify, Localhost, Vercel) anında senkronize eder
