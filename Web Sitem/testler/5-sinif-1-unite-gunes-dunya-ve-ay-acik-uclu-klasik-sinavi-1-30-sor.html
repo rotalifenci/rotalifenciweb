@@ -993,6 +993,28 @@
     }
     /* end mobile */
 
+    /* === TEK SORU SLAYT MODU & TESTİ BİTİR BUTONU === */
+    .yp-space-scroll-stream { padding: 10px 28px 120px 28px !important; gap: 0 !important; }
+    .yp-space-slide-section { display: none; min-height: calc(100vh - 210px); justify-content: flex-start; padding: 20px 24px; }
+    .yp-space-slide-section.is-active { display: flex !important; }
+    .yp-bar-finish {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+      font-weight: 900 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .yp-bar-finish:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+      transform: translateY(-1px);
+    }
+    @media print {
+      .yp-space-slide-section { display: flex !important; page-break-after: always; }
+    }
+
+
     /* === KAPSAYICI VE TAŞMA ENGELLEYİCİ GÜVENLİK KURALLARI === */
     html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 100% !important; }
     .space-topbar { max-width: 100vw !important; box-sizing: border-box !important; }
@@ -1061,7 +1083,7 @@
   <!-- Dikey Kaydırma & Dokunmatik Slayt Akış Alanı -->
   <main class="yp-space-scroll-stream" id="spaceScrollStream">
     
-      <section class="yp-space-slide-section" id="yp-space-slide-0" data-slide-index="0">
+      <section class="yp-space-slide-section is-active" id="yp-space-slide-0" data-slide-index="0" style="display: flex;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1069,9 +1091,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 1</h2>
+            <h2 class="yp-slide-main-title">1. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1095,7 +1117,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-1" name="f1-zljlff" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(1, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-1" name="f1-kt38ng" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(1, this.value)">
         </div>
       
             </div>
@@ -1104,7 +1126,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-1" data-slide-index="1">
+      <section class="yp-space-slide-section " id="yp-space-slide-1" data-slide-index="1" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1112,17 +1134,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 2</h2>
+            <h2 class="yp-slide-main-title">2. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="earthPhoto_1"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="192" y="27" width="136" height="136" clip-path="url(#earthPhoto_1)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#0284c7" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Dünya</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 2:</strong> Dünya&#039;mızın tek doğal uydusu olan gök cismine ne ad verilir?
             </div>
@@ -1144,7 +1160,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-2" name="f2-4x63d8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(2, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-2" name="f2-gfhdao" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(2, this.value)">
         </div>
       
             </div>
@@ -1153,7 +1169,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-2" data-slide-index="2">
+      <section class="yp-space-slide-section " id="yp-space-slide-2" data-slide-index="2" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1161,11 +1177,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 3</h2>
+            <h2 class="yp-slide-main-title">3. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="75" fill="#2277bb"/><text x="260" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" text-anchor="middle" fill="#ffffff">?</text></svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 3:</strong> Üzerinde yaşadığımız, katmanlardan oluşan ve şekli küreye benzeyen gezegenin adı nedir?
             </div>
@@ -1187,7 +1203,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-3" name="f3-jxhxng" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(3, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-3" name="f3-g2br9t" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(3, this.value)">
         </div>
       
             </div>
@@ -1196,7 +1212,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-3" data-slide-index="3">
+      <section class="yp-space-slide-section " id="yp-space-slide-3" data-slide-index="3" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1204,9 +1220,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 4</h2>
+            <h2 class="yp-slide-main-title">4. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1230,7 +1246,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-4" name="f4-otemqp" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(4, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-4" name="f4-2j8fdj" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(4, this.value)">
         </div>
       
             </div>
@@ -1239,7 +1255,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-4" data-slide-index="4">
+      <section class="yp-space-slide-section " id="yp-space-slide-4" data-slide-index="4" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1247,9 +1263,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 5</h2>
+            <h2 class="yp-slide-main-title">5. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1273,7 +1289,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-5" name="f5-3q4ha8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(5, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-5" name="f5-ve8gn9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(5, this.value)">
         </div>
       
             </div>
@@ -1282,7 +1298,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-5" data-slide-index="5">
+      <section class="yp-space-slide-section " id="yp-space-slide-5" data-slide-index="5" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1290,9 +1306,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 6</h2>
+            <h2 class="yp-slide-main-title">6. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1316,7 +1332,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-6" name="f6-ndll76" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(6, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-6" name="f6-5thd6n" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(6, this.value)">
         </div>
       
             </div>
@@ -1325,7 +1341,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-6" data-slide-index="6">
+      <section class="yp-space-slide-section " id="yp-space-slide-6" data-slide-index="6" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1333,17 +1349,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 7</h2>
+            <h2 class="yp-slide-main-title">7. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_4"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_4)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 7:</strong> Ay&#039;ın yüzeyinde gök taşlarının çarpması sonucu oluşan çukurlara ne denir?
             </div>
@@ -1365,7 +1375,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-7" name="f7-580icf" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(7, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-7" name="f7-uflg3l" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(7, this.value)">
         </div>
       
             </div>
@@ -1374,7 +1384,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-7" data-slide-index="7">
+      <section class="yp-space-slide-section " id="yp-space-slide-7" data-slide-index="7" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1382,17 +1392,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 8</h2>
+            <h2 class="yp-slide-main-title">8. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_8"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_8)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 8:</strong> Güneş, gök cismi sınıflandırmalarından hangisine girer?
             </div>
@@ -1414,7 +1418,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-8" name="f8-yd0l2p" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(8, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-8" name="f8-x64xq3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(8, this.value)">
         </div>
       
             </div>
@@ -1423,7 +1427,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-8" data-slide-index="8">
+      <section class="yp-space-slide-section " id="yp-space-slide-8" data-slide-index="8" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1431,17 +1435,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 9</h2>
+            <h2 class="yp-slide-main-title">9. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_9"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_9)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 9:</strong> Ay, bir gezegen etrafında dönen gök cismi olduğu için hangi gruba dahildir?
             </div>
@@ -1463,7 +1461,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-9" name="f9-esvanj" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(9, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-9" name="f9-brms40" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(9, this.value)">
         </div>
       
             </div>
@@ -1472,7 +1470,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-9" data-slide-index="9">
+      <section class="yp-space-slide-section " id="yp-space-slide-9" data-slide-index="9" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1480,17 +1478,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 10</h2>
+            <h2 class="yp-slide-main-title">10. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_10"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_10)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 10:</strong> Güneş&#039;in çapı, Dünya&#039;nın çapından yaklaşık olarak kaç kat daha büyüktür?
             </div>
@@ -1512,7 +1504,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-10" name="f10-d1yvx2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(10, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-10" name="f10-oeiuza" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(10, this.value)">
         </div>
       
             </div>
@@ -1521,7 +1513,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-10" data-slide-index="10">
+      <section class="yp-space-slide-section " id="yp-space-slide-10" data-slide-index="10" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1529,17 +1521,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 11</h2>
+            <h2 class="yp-slide-main-title">11. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_11"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_11)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 11:</strong> Ay&#039;da hava olaylarının görülmemesinin temel sebebi neyin çok ince veya yok olmasıdır?
             </div>
@@ -1561,7 +1547,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-11" name="f11-0zglo9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(11, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-11" name="f11-eus2f5" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(11, this.value)">
         </div>
       
             </div>
@@ -1570,7 +1556,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-11" data-slide-index="11">
+      <section class="yp-space-slide-section " id="yp-space-slide-11" data-slide-index="11" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1578,17 +1564,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 12</h2>
+            <h2 class="yp-slide-main-title">12. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_12"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_12)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 12:</strong> Güneş, Dünya gibi ... yapılı katmanlardan oluşur.
             </div>
@@ -1610,7 +1590,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-12" name="f12-oxbimd" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(12, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-12" name="f12-ut6qyd" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(12, this.value)">
         </div>
       
             </div>
@@ -1619,7 +1599,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-12" data-slide-index="12">
+      <section class="yp-space-slide-section " id="yp-space-slide-12" data-slide-index="12" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1627,17 +1607,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 13</h2>
+            <h2 class="yp-slide-main-title">13. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_13"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_13)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 13:</strong> Güneş kendi etrafında hangi yöne doğru dönme hareketi yapar?
             </div>
@@ -1659,7 +1633,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-13" name="f13-3r5nap" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(13, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-13" name="f13-nd2imq" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(13, this.value)">
         </div>
       
             </div>
@@ -1668,7 +1642,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-13" data-slide-index="13">
+      <section class="yp-space-slide-section " id="yp-space-slide-13" data-slide-index="13" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1676,17 +1650,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 14</h2>
+            <h2 class="yp-slide-main-title">14. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_14"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_14)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 14:</strong> Ay&#039;ın çapı, Dünya&#039;nın çapının yaklaşık olarak kaçta biridir?
             </div>
@@ -1708,7 +1676,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-14" name="f14-03r1f0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(14, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-14" name="f14-n1z467" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(14, this.value)">
         </div>
       
             </div>
@@ -1717,7 +1685,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-14" data-slide-index="14">
+      <section class="yp-space-slide-section " id="yp-space-slide-14" data-slide-index="14" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1725,9 +1693,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 15</h2>
+            <h2 class="yp-slide-main-title">15. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1751,7 +1719,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-15" name="f15-kkmc3b" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(15, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-15" name="f15-aj8plz" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(15, this.value)">
         </div>
       
             </div>
@@ -1760,7 +1728,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-15" data-slide-index="15">
+      <section class="yp-space-slide-section " id="yp-space-slide-15" data-slide-index="15" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1768,17 +1736,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 16</h2>
+            <h2 class="yp-slide-main-title">16. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_15"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_15)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 16:</strong> Ay&#039;ın yüzeyi toz tabakası ve ... ile kaplıdır.
             </div>
@@ -1800,7 +1762,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-16" name="f16-rz61o6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(16, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-16" name="f16-b2akbs" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(16, this.value)">
         </div>
       
             </div>
@@ -1809,7 +1771,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-16" data-slide-index="16">
+      <section class="yp-space-slide-section " id="yp-space-slide-16" data-slide-index="16" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1817,17 +1779,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 17</h2>
+            <h2 class="yp-slide-main-title">17. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_17"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_17)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 17:</strong> Güneş esas olarak hangi maddelerden (gazlardan) oluşan büyük bir ateş topudur?
             </div>
@@ -1849,7 +1805,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-17" name="f17-828447" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(17, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-17" name="f17-ow0597" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(17, this.value)">
         </div>
       
             </div>
@@ -1858,7 +1814,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-17" data-slide-index="17">
+      <section class="yp-space-slide-section " id="yp-space-slide-17" data-slide-index="17" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1866,17 +1822,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 18</h2>
+            <h2 class="yp-slide-main-title">18. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_18"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_18)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 18:</strong> Dünya&#039;nın uzaydan çekilen fotoğraflarında hangi geometrik şekle benzediği açıkça görülür?
             </div>
@@ -1898,7 +1848,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-18" name="f18-sbadkc" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(18, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-18" name="f18-q74c8m" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(18, this.value)">
         </div>
       
             </div>
@@ -1907,7 +1857,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-18" data-slide-index="18">
+      <section class="yp-space-slide-section " id="yp-space-slide-18" data-slide-index="18" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1915,9 +1865,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 19</h2>
+            <h2 class="yp-slide-main-title">19. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1941,7 +1891,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-19" name="f19-6f3jz5" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(19, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-19" name="f19-ac5rg6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(19, this.value)">
         </div>
       
             </div>
@@ -1950,7 +1900,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-19" data-slide-index="19">
+      <section class="yp-space-slide-section " id="yp-space-slide-19" data-slide-index="19" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -1958,9 +1908,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 20</h2>
+            <h2 class="yp-slide-main-title">20. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1984,7 +1934,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-20" name="f20-88jp1m" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(20, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-20" name="f20-gd47u2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(20, this.value)">
         </div>
       
             </div>
@@ -1993,7 +1943,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-20" data-slide-index="20">
+      <section class="yp-space-slide-section " id="yp-space-slide-20" data-slide-index="20" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2001,17 +1951,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 21</h2>
+            <h2 class="yp-slide-main-title">21. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_19"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_19)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 21:</strong> Ay yüzeyinde canlı yaşamını ve hava olaylarını zorlaştıran sıvı durumundaki temel eksiklik nedir?
             </div>
@@ -2033,7 +1977,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-21" name="f21-1xgvrk" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(21, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-21" name="f21-3p9ofm" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(21, this.value)">
         </div>
       
             </div>
@@ -2042,7 +1986,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-21" data-slide-index="21">
+      <section class="yp-space-slide-section " id="yp-space-slide-21" data-slide-index="21" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2050,17 +1994,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 22</h2>
+            <h2 class="yp-slide-main-title">22. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_22"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_22)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 22:</strong> Güneş&#039;in de Dünya gibi iç içe geçmiş farklı ... vardır.
             </div>
@@ -2082,7 +2020,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-22" name="f22-dq2zol" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(22, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-22" name="f22-nqn3lx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(22, this.value)">
         </div>
       
             </div>
@@ -2091,7 +2029,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-22" data-slide-index="22">
+      <section class="yp-space-slide-section " id="yp-space-slide-22" data-slide-index="22" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2099,9 +2037,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 23</h2>
+            <h2 class="yp-slide-main-title">23. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -2125,7 +2063,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-23" name="f23-95vitn" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(23, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-23" name="f23-bi54c9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(23, this.value)">
         </div>
       
             </div>
@@ -2134,7 +2072,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-23" data-slide-index="23">
+      <section class="yp-space-slide-section " id="yp-space-slide-23" data-slide-index="23" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2142,17 +2080,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 24</h2>
+            <h2 class="yp-slide-main-title">24. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_23"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_23)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 24:</strong> Güneş&#039;in merkezi yüzeyine göre çok daha ... dir. Boşluğa ne gelmelidir?
             </div>
@@ -2174,7 +2106,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-24" name="f24-coeu1n" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(24, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-24" name="f24-0jf1kv" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(24, this.value)">
         </div>
       
             </div>
@@ -2183,7 +2115,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-24" data-slide-index="24">
+      <section class="yp-space-slide-section " id="yp-space-slide-24" data-slide-index="24" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2191,17 +2123,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 25</h2>
+            <h2 class="yp-slide-main-title">25. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_25"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_25)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 25:</strong> Ay yüzeyinde kraterlerin yanı sıra devasa çukurlar ve yüksek ... da yer alır.
             </div>
@@ -2223,7 +2149,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-25" name="f25-tacoxo" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(25, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-25" name="f25-kbtuvy" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(25, this.value)">
         </div>
       
             </div>
@@ -2232,7 +2158,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-25" data-slide-index="25">
+      <section class="yp-space-slide-section " id="yp-space-slide-25" data-slide-index="25" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2240,17 +2166,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 26</h2>
+            <h2 class="yp-slide-main-title">26. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_26"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_26)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 26:</strong> Güneş, tıpkı Dünya gibi kendi ekseni etrafında ne yapar?
             </div>
@@ -2272,7 +2192,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-26" name="f26-cr5ebd" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(26, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-26" name="f26-mj4rp1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(26, this.value)">
         </div>
       
             </div>
@@ -2281,7 +2201,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-26" data-slide-index="26">
+      <section class="yp-space-slide-section " id="yp-space-slide-26" data-slide-index="26" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2289,17 +2209,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 27</h2>
+            <h2 class="yp-slide-main-title">27. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_27"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_27)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 27:</strong> Ay&#039;a ilk ayak basan insan kimdir? (Soyadı veya adı yeterlidir)
             </div>
@@ -2321,7 +2235,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-27" name="f27-7zbbwy" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(27, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-27" name="f27-7d2994" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(27, this.value)">
         </div>
       
             </div>
@@ -2330,7 +2244,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-27" data-slide-index="27">
+      <section class="yp-space-slide-section " id="yp-space-slide-27" data-slide-index="27" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2338,17 +2252,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 28</h2>
+            <h2 class="yp-slide-main-title">28. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_28"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_28)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 28:</strong> Dünya&#039;daki yaşamın devam etmesini sağlayan ısı ve ışığı bize ulaştıran gök cismi nedir?
             </div>
@@ -2370,7 +2278,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-28" name="f28-936pon" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(28, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-28" name="f28-ghll22" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(28, this.value)">
         </div>
       
             </div>
@@ -2379,7 +2287,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-28" data-slide-index="28">
+      <section class="yp-space-slide-section " id="yp-space-slide-28" data-slide-index="28" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2387,17 +2295,11 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 29</h2>
+            <h2 class="yp-slide-main-title">29. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_29"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_29)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg></div>
+            
+            
             <div class="yp-neon-card neon-blue yp-question-card">
               <strong>Soru 29:</strong> Ay&#039;ın uzaydan bakıldığında tamamen yuvarlak yani ... şeklinde olduğu görülür.
             </div>
@@ -2419,7 +2321,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-29" name="f29-8dg6w2" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(29, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-29" name="f29-rn8hva" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(29, this.value)">
         </div>
       
             </div>
@@ -2428,7 +2330,7 @@
       </section>
     
 
-      <section class="yp-space-slide-section" id="yp-space-slide-29" data-slide-index="29">
+      <section class="yp-space-slide-section " id="yp-space-slide-29" data-slide-index="29" style="display: none;">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -2436,9 +2338,9 @@
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
-            <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 30</h2>
+            <h2 class="yp-slide-main-title">30. Soru</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
-            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
+            
             
             
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -2462,7 +2364,7 @@
               
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-30" name="f30-4a2kaf" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(30, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-30" name="f30-uy7j5n" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(30, this.value)">
         </div>
       
             </div>
@@ -2490,6 +2392,9 @@
 
 
 
+    <button type="button" class="yp-bar-btn yp-bar-finish" onclick="finishAndEvaluateExam()" title="Testi Bitir ve Otomatik Puanla">
+      🏁 Testi Bitir &amp; Puanla
+    </button>
     <button type="button" class="yp-bar-btn yp-bar-routes" onclick="toggleRoutesDrawer()" title="Soru Rotaları Menüsü">
       🧭 Soru Rotaları
     </button>
@@ -2622,11 +2527,14 @@
     }
 
     function goToSlide(idx) {
-      const target = document.getElementById('yp-space-slide-' + idx);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        updateCounter(idx);
-      }
+      activeSlideIdx = Math.max(0, Math.min(totalQuestions - 1, idx));
+      document.querySelectorAll('.yp-space-slide-section').forEach((sec, i) => {
+        const isCurrent = (i === activeSlideIdx);
+        sec.classList.toggle('is-active', isCurrent);
+        sec.style.display = isCurrent ? 'flex' : 'none';
+      });
+      updateCounter(activeSlideIdx);
+      window.scrollTo({ top: 0, behavior: 'instant' });
       const drawer = document.getElementById('routesDrawer');
       if (drawer) drawer.style.display = 'none';
     }
@@ -2791,6 +2699,10 @@
       document.getElementById('modalCorrectCount').textContent = correct;
       document.getElementById('modalWrongCount').textContent = wrong;
       document.getElementById('modalEmptyCount').textContent = empty;
+      // Otomatik olarak tüm soru çözümlerini aç ve göster
+      document.querySelectorAll('.yp-golden-rule-box').forEach(box => {
+        box.style.display = 'flex';
+      });
       document.getElementById('resultModal').style.display = 'flex';
     }
 

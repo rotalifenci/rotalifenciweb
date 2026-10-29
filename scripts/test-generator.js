@@ -184,11 +184,12 @@ function buildInteractiveTestHtml({
 
     const __svgForShow = (q.visual_svg && q.visual_svg.trim()) ? visualHtml : '';
     const __isPlaceholder = !__svgForShow || (/>\s*Soru\s*\d+\s*<\/text>/.test(__svgForShow) && __svgForShow.length < 700);
-    const visualBlock = __isPlaceholder ? '' : '<div class="yp-space-visual-frame">' + visualHtml + '</div>';
-    const kindLabel = isMultipleChoice ? 'Çoktan Seçmeli' : (isShortAnswer ? 'Kısa Cevaplı / Boşluk Doldurma' : 'Açık Uçlu (Klasik)');
-
+    const isShortOrFill = isShortAnswer || (safeTitle && /kısa cevap|bosluk doldurma|boşluk doldurma/i.test(safeTitle));
+    const hasVisual = !isShortOrFill && (q.visual_svg && q.visual_svg.trim()) && !__isPlaceholder;
+    const visualBlock = hasVisual ? '<div class="yp-space-visual-frame">' + visualHtml + '</div>' : '';
+    
     return `
-      <section class="yp-space-slide-section" id="yp-space-slide-${idx}" data-slide-index="${idx}">
+      <section class="yp-space-slide-section ${idx === 0 ? 'is-active' : ''}" id="yp-space-slide-${idx}" data-slide-index="${idx}" style="${idx === 0 ? 'display: flex;' : 'display: none;'}">
         <div class="yp-space-slide-grid">
           <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
@@ -196,9 +197,9 @@ function buildInteractiveTestHtml({
               <span>✦</span>
               <span>🚀 ${escapeHtml(grade)}. SINIF • ${safeUnit}</span>
             </div>
-            <h2 class="yp-slide-main-title">${safeTitle} — Soru ${qNum}</h2>
+            <h2 class="yp-slide-main-title">${qNum}. Soru</h2>
             <p class="yp-slide-subtitle">${escapeHtml(q.learning_outcome || 'MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu')}</p>
-            <div class="yp-slide-kind">🧩 ${kindLabel}</div>
+            
             
             ${visualBlock}
             <div class="yp-neon-card neon-blue yp-question-card">
@@ -1226,6 +1227,28 @@ function buildInteractiveTestHtml({
     }
     /* end mobile */
 
+    /* === TEK SORU SLAYT MODU & TESTİ BİTİR BUTONU === */
+    .yp-space-scroll-stream { padding: 10px 28px 120px 28px !important; gap: 0 !important; }
+    .yp-space-slide-section { display: none; min-height: calc(100vh - 210px); justify-content: flex-start; padding: 20px 24px; }
+    .yp-space-slide-section.is-active { display: flex !important; }
+    .yp-bar-finish {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+      color: #ffffff !important;
+      box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4) !important;
+      font-weight: 900 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 6px !important;
+    }
+    .yp-bar-finish:hover {
+      background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+      transform: translateY(-1px);
+    }
+    @media print {
+      .yp-space-slide-section { display: flex !important; page-break-after: always; }
+    }
+
+
     /* === KAPSAYICI VE TAŞMA ENGELLEYİCİ GÜVENLİK KURALLARI === */
     html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 100% !important; }
     .space-topbar { max-width: 100vw !important; box-sizing: border-box !important; }
@@ -1314,6 +1337,9 @@ function buildInteractiveTestHtml({
 
 
 
+    <button type="button" class="yp-bar-btn yp-bar-finish" onclick="finishAndEvaluateExam()" title="Testi Bitir ve Otomatik Puanla">
+      🏁 Testi Bitir &amp; Puanla
+    </button>
     <button type="button" class="yp-bar-btn yp-bar-routes" onclick="toggleRoutesDrawer()" title="Soru Rotaları Menüsü">
       🧭 Soru Rotaları
     </button>
@@ -1446,11 +1472,14 @@ function buildInteractiveTestHtml({
     }
 
     function goToSlide(idx) {
-      const target = document.getElementById('yp-space-slide-' + idx);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        updateCounter(idx);
-      }
+      activeSlideIdx = Math.max(0, Math.min(totalQuestions - 1, idx));
+      document.querySelectorAll('.yp-space-slide-section').forEach((sec, i) => {
+        const isCurrent = (i === activeSlideIdx);
+        sec.classList.toggle('is-active', isCurrent);
+        sec.style.display = isCurrent ? 'flex' : 'none';
+      });
+      updateCounter(activeSlideIdx);
+      window.scrollTo({ top: 0, behavior: 'instant' });
       const drawer = document.getElementById('routesDrawer');
       if (drawer) drawer.style.display = 'none';
     }
@@ -1615,6 +1644,10 @@ function buildInteractiveTestHtml({
       document.getElementById('modalCorrectCount').textContent = correct;
       document.getElementById('modalWrongCount').textContent = wrong;
       document.getElementById('modalEmptyCount').textContent = empty;
+      // Otomatik olarak tüm soru çözümlerini aç ve göster
+      document.querySelectorAll('.yp-golden-rule-box').forEach(box => {
+        box.style.display = 'flex';
+      });
       document.getElementById('resultModal').style.display = 'flex';
     }
 
