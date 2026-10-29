@@ -14,6 +14,62 @@
  * - MEB Maarif Modeli A4 yazdırma uyumluluğu
  */
 
+const __fsLogo = require('fs');
+const __pathLogo = require('path');
+
+// Logo her ortamda (Vercel / yerel / dosya) görünsün diye veri URI olarak gömülür
+let LOGO_SRC = '/assets/rotali-fenci-logo.jpg';
+(function loadLogoSrc() {
+  const tries = [
+    () => require('./_logo-data.js'),
+    () => require('../api/_logo-data.js'),
+    () => 'data:image/jpeg;base64,' + __fsLogo.readFileSync(__pathLogo.join(process.cwd(), 'assets', 'rotali-fenci-logo.jpg')).toString('base64'),
+    () => 'data:image/jpeg;base64,' + __fsLogo.readFileSync(__pathLogo.join(__dirname, '..', 'assets', 'rotali-fenci-logo.jpg')).toString('base64')
+  ];
+  for (const t of tries) {
+    try { const v = t(); if (v) { LOGO_SRC = v; return; } } catch (e) {}
+  }
+})();
+
+function foldTr(s) {
+  return String(s || '')
+    .replace(/&[a-z#0-9]+;/gi, ' ')
+    .toLocaleLowerCase('tr-TR')
+    .replace(/ı/g, 'i').replace(/ş/g, 's').replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u').replace(/ö/g, 'o').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9 ]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Şekil/görsel içindeki yazılardan CEVAP sızıntılarını temizler (yerine "?" konur)
+const SVG_BANNED_PHRASES = [
+  'kure', 'kuresel', 'yildiz', 'isik kaynagi', 'isi kaynagi', 'isi ve isik', 'dogal uydu',
+  'geometrik sekil', 'krater', 'atmosfer', 'regolit', 'toz tabakasi', 'gaz kuresi',
+  'katman', 'cap', 'perspektif', 'ay tozu', 'gunes lekesi', 'dogru cevap', 'cevap', 'ipucu'
+];
+function sanitizeVisualSvg(svg, answer) {
+  if (!svg || typeof svg !== 'string') return svg;
+  const a = foldTr(answer);
+  const aWords = a.split(' ').filter(w => w.length >= 3);
+  let out = svg.replace(/<title[^>]*>[\s\S]*?<\/title>/gi, '').replace(/<desc[^>]*>[\s\S]*?<\/desc>/gi, '');
+  out = out.replace(/<text([^>]*)>([\s\S]*?)<\/text>/gi, (m, attrs, inner) => {
+    const raw = inner.replace(/<[^>]+>/g, '').trim();
+    const t = foldTr(raw);
+    if (!t || raw === '?') return m;
+    const words = t.split(' ');
+    let leak = SVG_BANNED_PHRASES.some(k => (k.length <= 3 ? words.includes(k) : t.includes(k)));
+    if (!leak && a.length >= 2) {
+      leak = a.length <= 3 ? words.includes(a) : (t.includes(a) || (t.length >= 4 && a.includes(t)));
+    }
+    if (!leak && aWords.length) {
+      leak = aWords.some(w => words.includes(w) || t.includes(w));
+    }
+    return leak ? '<text' + attrs + '>?</text>' : m;
+  });
+  return out;
+}
+
 function escapeHtml(str) {
   if (!str) return '';
   return String(str)
@@ -107,19 +163,19 @@ function buildInteractiveTestHtml({
       answerAreaHtml = `
         <div class="slide-short-answer-box">
           <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-${qNum}" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(${qNum}, this.value)">
+          <input type="text" class="slide-short-input" id="input-q-${qNum}" name="f${qNum}-${Math.random().toString(36).slice(2, 8)}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(${qNum}, this.value)">
         </div>
       `;
     } else {
       answerAreaHtml = `
         <div class="slide-open-ended-box">
           <span class="slide-input-label">✍️ Bilimsel Cevabınız ve Gerekçeniz:</span>
-          <textarea class="slide-open-textarea" id="input-q-${qNum}" rows="3" placeholder="Açık uçlu cevabınızı buraya yazınız..." oninput="recordAnswer(${qNum}, this.value)"></textarea>
+          <textarea class="slide-open-textarea" id="input-q-${qNum}" name="f${qNum}-${Math.random().toString(36).slice(2, 8)}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" rows="3" placeholder="Açık uçlu cevabınızı buraya yazınız..." oninput="recordAnswer(${qNum}, this.value)"></textarea>
         </div>
       `;
     }
 
-    const visualHtml = (q.visual_svg && q.visual_svg.trim()) ? q.visual_svg : `
+    const visualHtml = (q.visual_svg && q.visual_svg.trim()) ? sanitizeVisualSvg(q.visual_svg, correctAns) : `
       <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
         <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
         <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru ${qNum}</text>
@@ -1068,6 +1124,25 @@ function buildInteractiveTestHtml({
         padding: 20px !important;
       }
     }
+    /* === Büyütülmüş alt çubuk, logo ve Soru Rotaları çekmecesi === */
+    .brand-avatar { width: 46px !important; height: 46px !important; background: #ffffff; }
+    .brand-text { font-size: 16px !important; }
+    .yp-space-bottom-bar { padding: 14px 26px !important; gap: 16px !important; }
+    .yp-bar-btn { font-size: 17px !important; padding: 14px 26px !important; min-height: 52px; }
+    .yp-bar-counter, .yp-bar-timer { font-size: 18px !important; padding: 12px 20px !important; }
+    .yp-bar-icon-btn { width: 52px !important; height: 52px !important; font-size: 22px !important; }
+    .yp-space-routes-drawer { width: min(560px, 94vw) !important; max-height: 80vh !important; bottom: 104px !important; border-radius: 22px !important; }
+    .yp-space-routes-header { padding: 18px 22px !important; }
+    .yp-space-routes-header h4 { font-size: 20px !important; }
+    .yp-space-routes-header button { font-size: 24px !important; }
+    .yp-space-routes-list { display: grid !important; grid-template-columns: repeat(2, 1fr); gap: 12px !important; padding: 18px !important; }
+    .yp-route-item { font-size: 17px !important; padding: 16px 18px !important; font-weight: 800 !important; text-align: left; }
+    @media (max-width: 700px) {
+      .yp-bar-btn { font-size: 14px !important; padding: 10px 14px !important; min-height: 44px; }
+      .yp-bar-counter, .yp-bar-timer { font-size: 14px !important; padding: 8px 12px !important; }
+      .yp-bar-icon-btn { width: 42px !important; height: 42px !important; font-size: 18px !important; }
+      .yp-space-routes-list { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -1079,7 +1154,7 @@ function buildInteractiveTestHtml({
     <div class="topbar-left">
       <a href="/" class="brand-link" title="Rotalı Fenci Ana Sayfa">
         <div class="brand-avatar">
-          <img src="/assets/rotali-fenci-logo.jpg" onerror="this.src='../assets/rotali-fenci-logo.jpg'" alt="Logo">
+          <img src="${LOGO_SRC}" alt="Rotalı Fenci Logo">
         </div>
         <span class="brand-text">ROTALI FENCİ</span>
       </a>
@@ -1094,9 +1169,6 @@ function buildInteractiveTestHtml({
       </div>
       <button type="button" class="topbar-btn" onclick="toggleSpaceViewerTheme()" title="Açık / Koyu Tema">
         <span id="themeIcon">🌙</span> <span id="themeLabel">Koyu Mod</span>
-      </button>
-      <button type="button" class="topbar-btn" onclick="window.print()" title="A4 MEB Formatında Yazdır veya PDF İndir">
-        <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
       </button>
       <button type="button" class="topbar-btn btn-finish-test" onclick="finishAndEvaluateExam()" title="Sınavı Tamamla ve Sonuç Karnesini Gör">
         <i class="fa-solid fa-flag-checkered"></i> <span>Testi Bitir</span>
@@ -1152,9 +1224,6 @@ function buildInteractiveTestHtml({
       ⛶
     </button>
 
-    <button type="button" class="yp-bar-icon-btn" onclick="window.print()" title="Yazdır">
-      🖨️
-    </button>
   </nav>
 
   <!-- Soru Rotaları Menüsü Çekmecesi -->
@@ -1196,7 +1265,6 @@ function buildInteractiveTestHtml({
         </div>
         <div class="result-modal-actions">
           <button type="button" class="btn-modal" style="background:#0284c7; color:#ffffff;" onclick="revealSolutionsAndReview()">💡 Soru Çözümlerini ve Doğru Cevapları İncele</button>
-          <button type="button" class="btn-modal" style="background:#f1f5f9; color:#334155;" onclick="window.print()">🖨️ MEB A4 Formatında Yazdır / PDF Al</button>
           <button type="button" class="btn-modal" style="background:#e2e8f0; color:#475569;" onclick="closeResultModal()">Kapat</button>
         </div>
       </div>
@@ -1329,6 +1397,13 @@ function buildInteractiveTestHtml({
     function recordAnswer(qNum, val) {
       studentAnswers[qNum] = String(val).trim();
     }
+
+    // Daha önce yazılan cevaplar hatırlanmasın / tarayıcı otomatik doldurmasın
+    function clearAllTypedAnswers() {
+      document.querySelectorAll('.slide-short-input, .slide-open-textarea').forEach(function (el) { el.value = ''; });
+    }
+    clearAllTypedAnswers();
+    window.addEventListener('pageshow', clearAllTypedAnswers);
 
     // Sınav Bittiğinde Çözümleri Aç ve İncele
     function revealSolutionsAndReview() {
