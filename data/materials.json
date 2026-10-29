@@ -3325,41 +3325,5 @@
     "downloadCount": "▶ İzle",
     "createdAt": "2026-10-24T20:31:01.058Z",
     "updatedAt": "2026-10-24T20:31:01.058Z"
-  },
-  {
-    "id": "mat-test-5-1-1793308572790",
-    "grade": "5",
-    "category": "denemeler",
-    "targetSection": "1",
-    "title": "Test No: 1 - Kısa Cevaplı / Boşluk Doldurma",
-    "unit": "1. Ünite: Güneş, Dünya ve Ay",
-    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
-    "fileName": "5-sinif-1-unite-test-no-1-kisa-cevapli-bosluk-doldurma.html",
-    "fileUrl": "testler/5-sinif-1-unite-test-no-1-kisa-cevapli-bosluk-doldurma.html",
-    "imageUrl": "assets/covers/5-1-yaprak-testi-1.jpg",
-    "kapakResmi": "assets/covers/5-1-yaprak-testi-1.jpg",
-    "cover": "assets/covers/5-1-yaprak-testi-1.jpg",
-    "format": "AÇIK UÇLU SINAV",
-    "hasBlob": false,
-    "tags": [
-      "5. sınıf",
-      "1. ünite",
-      "yaprak test",
-      "soru-bankasi",
-      "denemeler",
-      "test / deneme",
-      "yazılıya hazırlık",
-      "açık uçlu sınav",
-      "kazanım testi",
-      "deneme",
-      "rotalı fenci",
-      "meb maarif modeli"
-    ],
-    "visibility": "public",
-    "downloadCount": "📝 20 Soru • Test-1",
-    "testNumber": 1,
-    "questionCount": 20,
-    "createdAt": "2026-10-29T21:16:12.790Z",
-    "updatedAt": "2026-10-29T21:16:12.790Z"
   }
 ]
