@@ -1940,7 +1940,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="yp-neon-cards-stack">
               ${cardsHtml}
             </div>
-            <div class="yp-golden-rule-box">
+            <div class="yp-golden-rule-box" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
                 <strong>ALTIN KURAL / İPUCU</strong>

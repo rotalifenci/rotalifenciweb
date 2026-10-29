@@ -181,7 +181,7 @@ function readFileAsDataURL(file) {
 let ROTALI_MATERIALS_CACHE = null;
 
 // 🛡️ KESİNLİKLE SİLİNEMEZ KORUMALI MATERYALLER (Öğretmen İçerikleri & Oyunlar)
-const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261028_0200";
+const ROTALI_MULTI_DEVICE_SYNC_VERSION = "20261029_0100";
 function ensureMultiDeviceSyncReset() {
     try {
         if (typeof localStorage !== "undefined" && localStorage.getItem("rotali_multi_device_sync_v") !== ROTALI_MULTI_DEVICE_SYNC_VERSION) {
@@ -224,18 +224,21 @@ const PROTECTED_MATERIAL_IDS = new Set([
     "mat-0f645c5d-87ef-429b-add1-434b594c3ce6",
     "mat-9190aed7-5c79-40f4-a38e-d9a973532674",
     // Laboratuvar Güvenlik Sembolleri Kaçış (5, 6, 7, 8. Sınıflar)
-    "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
-    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
-    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
-    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
     // Laboratuvar Konu Anlatım Görselleri (5, 6, 7, 8. Sınıflar)
     "mat-5-lab-semboller-gorsel", "mat-6-lab-semboller-gorsel", "mat-7-lab-semboller-gorsel", "mat-8-lab-semboller-gorsel",
     "mat-5-lab-malzemeler-gorsel", "mat-6-lab-malzemeler-gorsel", "mat-7-lab-malzemeler-gorsel", "mat-8-lab-malzemeler-gorsel",
-    "mat-5-lab-kurallar-gorsel", "mat-6-lab-kurallar-gorsel", "mat-7-lab-kurallar-gorsel", "mat-8-lab-kurallar-gorsel"
 ]);
 
 const PERMANENT_DELETED_MATERIAL_IDS = [
     "mat-5-1-sunum-gunes-dunya-ay",
+    "mat-3692e17a-2e22-4dbf-be7e-6ff51bbf2468",
+    "mat-c0cf733a-ff30-471c-85aa-c5f9fa04dc7e",
+    "mat-68987582-a98e-4ff6-af0a-82c58fb1c3db",
+    "mat-03e6dabd-4cd9-4c31-81c0-082704820a38",
+    "mat-5-lab-kurallar-gorsel",
+    "mat-6-lab-kurallar-gorsel",
+    "mat-7-lab-kurallar-gorsel",
+    "mat-8-lab-kurallar-gorsel",
     "mat-5bfb4c34-9aef-43bb-a46e-975d484568f5",
     "mat-a9ba792e-60b6-42e2-8da4-5677237ee5b5",
     "mat-test-5-1-1792875787663", "mat-test-5-1-1792854826132", "mat-test-5-1-1792854064641",
@@ -294,7 +297,8 @@ function getDeletedMaterialIds() {
 }
 
 function addDeletedMaterialId(id) {
-    if (!id || typeof id !== "string" || !id.trim() || (typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id))) return;
+    if (!id || typeof id !== "string" || !id.trim()) return;
+    if (typeof PROTECTED_MATERIAL_IDS !== "undefined") { PROTECTED_MATERIAL_IDS.delete(id); }
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -772,9 +776,7 @@ const CloudSyncManager = {
             });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
             activeDeletedSet.add("mat-5-unite-bilgi");
-            if (typeof PROTECTED_MATERIAL_IDS !== "undefined") {
-                PROTECTED_MATERIAL_IDS.forEach(prot => activeDeletedSet.delete(prot));
-            }
+            // Deletions respected across all devices
 
             // 2. Cihazdaki yerel materyalleri al ve silinmişleri HEMEN temizle
             let localMaterials = [];
@@ -11540,10 +11542,12 @@ function deleteCustomMaterial(id) {
             });
         } catch(domErr) {}
 
+        if (typeof PROTECTED_MATERIAL_IDS !== "undefined") PROTECTED_MATERIAL_IDS.delete(id);
         let customList = getCustomMaterialsList();
         addDeletedMaterialId(id);
         customList = customList.filter(item => item && item.id !== id);
         saveCustomMaterialsSafe(customList);
+        try { localStorage.setItem("rotali_materials_sync_signal", String(Date.now())); } catch(e) {}
 
         if (typeof RotaliDB !== "undefined" && RotaliDB.deleteFile) {
             try {

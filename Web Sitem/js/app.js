@@ -297,7 +297,8 @@ function getDeletedMaterialIds() {
 }
 
 function addDeletedMaterialId(id) {
-    if (!id || typeof id !== "string" || !id.trim() || (typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id))) return;
+    if (!id || typeof id !== "string" || !id.trim()) return;
+    if (typeof PROTECTED_MATERIAL_IDS !== "undefined") { PROTECTED_MATERIAL_IDS.delete(id); }
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -775,9 +776,7 @@ const CloudSyncManager = {
             });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
             activeDeletedSet.add("mat-5-unite-bilgi");
-            if (typeof PROTECTED_MATERIAL_IDS !== "undefined") {
-                PROTECTED_MATERIAL_IDS.forEach(prot => activeDeletedSet.delete(prot));
-            }
+            // Deletions respected across all devices
 
             // 2. Cihazdaki yerel materyalleri al ve silinmişleri HEMEN temizle
             let localMaterials = [];
@@ -11543,10 +11542,12 @@ function deleteCustomMaterial(id) {
             });
         } catch(domErr) {}
 
+        if (typeof PROTECTED_MATERIAL_IDS !== "undefined") PROTECTED_MATERIAL_IDS.delete(id);
         let customList = getCustomMaterialsList();
         addDeletedMaterialId(id);
         customList = customList.filter(item => item && item.id !== id);
         saveCustomMaterialsSafe(customList);
+        try { localStorage.setItem("rotali_materials_sync_signal", String(Date.now())); } catch(e) {}
 
         if (typeof RotaliDB !== "undefined" && RotaliDB.deleteFile) {
             try {

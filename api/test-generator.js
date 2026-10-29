@@ -6,10 +6,11 @@
  * Özellikler:
  * - 2 Sütunlu Sayfa Düzeni (%56 Sol İçerik / %42 Sağ Görsel)
  * - Aydınlık (Light Theme) yüksek kontrastlı, okunaklı tipografi (#0f172a)
- * - İsteğe bağlı Dark Mode uzay teması geçiş butonu
- * - Sabit (Sticky) alt kontrol menüsü: Önceki, Sayfa No, Sonraki, Soru Rotaları, Ses, Tam Ekran, Yazdır
+ * - Sınav esnasında ipucu ve cevaplar KESİNLİKLE GİZLİDİR (display: none)
+ * - Kaç soru varsa o kadar süre veren CANLI KRONOMETRE (Örn: 30 soru = 30 dakika)
+ * - Sınav bitiminde Sonuç Karnesi ve Çözümleri İnceleme desteği
+ * - Sabit (Sticky) alt kontrol menüsü: Önceki, Sayfa No, Kronometre, Sonraki, Soru Rotaları, Ses, Tam Ekran, Yazdır
  * - Sol alt köşede Instagram "@rotalifenci" filigranı
- * - Altın Kural / İpucu ve Doğru Model Cevap kutusu
  * - MEB Maarif Modeli A4 yazdırma uyumluluğu
  */
 
@@ -38,9 +39,6 @@ function generateSlug(text) {
     .substring(0, 50);
 }
 
-/**
- * Seçenekleri her türlü veri yapısından (dizi, küçük harf, noktalı anahtar vs.) güvenle A, B, C, D formatına dönüştürür.
- */
 function normalizeOptions(rawOpts) {
   if (!rawOpts) return null;
   const normalized = {};
@@ -75,10 +73,7 @@ function buildInteractiveTestHtml({
   title,
   grade = "5",
   unit = "1. Ünite: Güneş, Dünya ve Ay",
-  targetSection = "1",
   subject = "Fen Bilimleri",
-  category = "soru-bankasi",
-  outcomes = [],
   questions = []
 }) {
   const safeTitle = escapeHtml(title || `${grade}. Sınıf ${subject} Yazılıya Hazırlık Sınavı`);
@@ -87,17 +82,15 @@ function buildInteractiveTestHtml({
 
   const slidesHtml = questions.map((q, idx) => {
     const qNum = idx + 1;
-    const cleanOpts = normalizeOptions(q.options);
-    const hasChoices = cleanOpts !== null;
-    const isMultipleChoice = (q.type === 'multiple_choice' || (!q.type && hasChoices)) && hasChoices;
+    const isMultipleChoice = q.options && Object.keys(q.options).length > 0 && q.options.A;
     const isShortAnswer = q.type === 'short_answer';
-    const isOpenEnded = q.type === 'open_ended' || (!hasChoices && !isShortAnswer);
+    const isOpenEnded = q.type === 'open_ended' || (!isMultipleChoice && !isShortAnswer);
 
     let answerAreaHtml = '';
     let correctAns = String(q.correct_answer || '').trim();
 
     if (isMultipleChoice) {
-      const opts = cleanOpts;
+      const opts = q.options;
       const letters = ['A', 'B', 'C', 'D'];
       const optColors = ['neon-blue', 'neon-purple', 'neon-orange', 'neon-emerald'];
       answerAreaHtml = `
@@ -136,7 +129,7 @@ function buildInteractiveTestHtml({
     return `
       <section class="yp-space-slide-section" id="yp-space-slide-${idx}" data-slide-index="${idx}">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
@@ -152,10 +145,11 @@ function buildInteractiveTestHtml({
               ${answerAreaHtml}
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-${qNum}">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-${qNum}" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
                 <span>Doğru Cevap: ${escapeHtml(correctAns)} — ${escapeHtml(q.explanation || 'Kavramları analiz ederek bilimsel çıkarım yapınız.')}</span>
               </div>
             </div>
@@ -340,13 +334,56 @@ function buildInteractiveTestHtml({
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 340px;
+      max-width: 300px;
     }
 
     .topbar-right {
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    /* ⏱️ Canlı Kronometre Rozeti */
+    .exam-countdown-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1.5px solid #bfdbfe;
+      font-family: 'Outfit', monospace;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+      transition: all 0.25s ease;
+    }
+    body.theme-dark .exam-countdown-badge {
+      background: rgba(30, 58, 138, 0.4);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
+    .exam-countdown-badge.timer-warning,
+    .yp-bar-timer.timer-warning {
+      background: #fef3c7 !important;
+      color: #92400e !important;
+      border-color: #fcd34d !important;
+    }
+
+    .exam-countdown-badge.timer-urgent,
+    .yp-bar-timer.timer-urgent {
+      background: #fee2e2 !important;
+      color: #991b1b !important;
+      border-color: #f87171 !important;
+      animation: pulseUrgent 1s infinite;
+    }
+
+    @keyframes pulseUrgent {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
     }
 
     .topbar-btn {
@@ -779,6 +816,29 @@ function buildInteractiveTestHtml({
       color: #facc15;
     }
 
+    .yp-bar-timer {
+      font-family: 'Outfit', monospace;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #1e40af;
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      padding: 6px 14px;
+      border-radius: 999px;
+      min-width: 80px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    body.theme-dark .yp-bar-timer {
+      background: rgba(30, 58, 138, 0.4);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
     .yp-bar-divider {
       width: 1px;
       height: 24px;
@@ -949,7 +1009,7 @@ function buildInteractiveTestHtml({
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
     .result-stat-box {
       padding: 12px;
@@ -959,12 +1019,24 @@ function buildInteractiveTestHtml({
     }
     .result-stat-num { font-size: 20px; font-weight: 900; }
     .result-stat-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; }
+    .result-time-row {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 20px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e1;
+    }
     .result-modal-actions {
       display: flex;
+      flex-direction: column;
       gap: 10px;
     }
     .btn-modal {
-      flex: 1;
+      width: 100%;
       padding: 12px;
       border-radius: 12px;
       font-weight: 800;
@@ -1011,16 +1083,17 @@ function buildInteractiveTestHtml({
         </div>
         <span class="brand-text">ROTALI FENCİ</span>
       </a>
-      <span class="space-badge">☀️ YAZILIYA HAZIRLIK • 2 SÜTUNLU SLAYT</span>
+      <span class="space-badge">☀️ YAZILIYA HAZIRLIK</span>
       <span class="doc-main-title">${safeTitle}</span>
     </div>
 
     <div class="topbar-right">
+      <!-- ⏱️ Canlı Sınav Kronometresi (Her soruya 1 dakika) -->
+      <div class="exam-countdown-badge" id="examTimerBadge" title="Kalan Sınav Süresi (Her soru için 1 dakika süre)">
+        ⏱️ <span id="examTimerText">${qCount}:00</span>
+      </div>
       <button type="button" class="topbar-btn" onclick="toggleSpaceViewerTheme()" title="Açık / Koyu Tema">
         <span id="themeIcon">🌙</span> <span id="themeLabel">Koyu Mod</span>
-      </button>
-      <button type="button" class="topbar-btn" onclick="toggleAllGoldenRules()" id="btnToggleAllAnswers" title="Cevapları ve Çözümleri Aç / Kapat">
-        <i class="fa-solid fa-lightbulb"></i> <span id="lblSolutions">Çözümleri Gizle</span>
       </button>
       <button type="button" class="topbar-btn" onclick="window.print()" title="A4 MEB Formatında Yazdır veya PDF İndir">
         <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
@@ -1054,6 +1127,11 @@ function buildInteractiveTestHtml({
 
     <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">
       1 / ${qCount}
+    </div>
+
+    <!-- ⏱️ Canlı Alt Kronometre -->
+    <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
+      ⏱️ <span id="ypBottomTimerText">${qCount}:00</span>
     </div>
 
     <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
@@ -1113,9 +1191,13 @@ function buildInteractiveTestHtml({
             <div class="result-stat-lbl">Boş</div>
           </div>
         </div>
+        <div class="result-time-row">
+          ⏱️ Toplam Geçen Süre: <span id="modalTimeSpent" style="color:#0284c7; font-weight:900;">0 dk 0 sn</span>
+        </div>
         <div class="result-modal-actions">
-          <button type="button" class="btn-modal" style="background:#f1f5f9; color:#334155;" onclick="closeResultModal()">İncelemeye Devam Et</button>
-          <button type="button" class="btn-modal" style="background:#0284c7; color:#ffffff;" onclick="window.print()">Yazdır / PDF Al</button>
+          <button type="button" class="btn-modal" style="background:#0284c7; color:#ffffff;" onclick="revealSolutionsAndReview()">💡 Soru Çözümlerini ve Doğru Cevapları İncele</button>
+          <button type="button" class="btn-modal" style="background:#f1f5f9; color:#334155;" onclick="window.print()">🖨️ MEB A4 Formatında Yazdır / PDF Al</button>
+          <button type="button" class="btn-modal" style="background:#e2e8f0; color:#475569;" onclick="closeResultModal()">Kapat</button>
         </div>
       </div>
     </div>
@@ -1126,7 +1208,58 @@ function buildInteractiveTestHtml({
     let activeSlideIdx = 0;
     const studentAnswers = {};
     const correctAnswers = ${JSON.stringify(questions.map((q, i) => ({ id: i + 1, type: q.type || (q.options && q.options.A ? 'multiple_choice' : 'short_answer'), correct: String(q.correct_answer || '').trim() })))};
-    let solutionsVisible = true;
+
+    // ⏱️ KRONOMETRE MOTORU (Kaç soru varsa o kadar dakika)
+    let remainingSeconds = totalQuestions * 60;
+    let timerInterval = null;
+    let isExamFinished = false;
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function updateTimerDisplay() {
+      const str = formatTime(remainingSeconds);
+      const topEl = document.getElementById('examTimerText');
+      const bottomEl = document.getElementById('ypBottomTimerText');
+      if (topEl) topEl.textContent = str;
+      if (bottomEl) bottomEl.textContent = str;
+
+      const topBadge = document.getElementById('examTimerBadge');
+      const bottomBadge = document.getElementById('ypBottomTimer');
+      if (remainingSeconds <= 60) {
+        if (topBadge) topBadge.className = 'exam-countdown-badge timer-urgent';
+        if (bottomBadge) bottomBadge.className = 'yp-bar-timer timer-urgent';
+      } else if (remainingSeconds <= 300) {
+        if (topBadge) topBadge.className = 'exam-countdown-badge timer-warning';
+        if (bottomBadge) bottomBadge.className = 'yp-bar-timer timer-warning';
+      }
+    }
+
+    function startExamTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        if (isExamFinished) {
+          clearInterval(timerInterval);
+          return;
+        }
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          remainingSeconds = 0;
+          updateTimerDisplay();
+          clearInterval(timerInterval);
+          alert('⏰ Sınav süreniz tamamlandı! Yanıtlarınız otomatik olarak değerlendiriliyor.');
+          finishAndEvaluateExam();
+        } else {
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    startExamTimer();
 
     // Slayt Navigasyonu
     function updateCounter(idx) {
@@ -1197,14 +1330,13 @@ function buildInteractiveTestHtml({
       studentAnswers[qNum] = String(val).trim();
     }
 
-    // Çözümleri Aç / Kapat
-    function toggleAllGoldenRules() {
-      solutionsVisible = !solutionsVisible;
+    // Sınav Bittiğinde Çözümleri Aç ve İncele
+    function revealSolutionsAndReview() {
       document.querySelectorAll('.yp-golden-rule-box').forEach(box => {
-        box.style.display = solutionsVisible ? 'flex' : 'none';
+        box.style.display = 'flex';
       });
-      const lbl = document.getElementById('lblSolutions');
-      if (lbl) lbl.textContent = solutionsVisible ? 'Çözümleri Gizle' : 'Çözümleri Göster';
+      closeResultModal();
+      goToSlide(0);
     }
 
     // Tema Değiştirme (Açık / Koyu)
@@ -1264,6 +1396,16 @@ function buildInteractiveTestHtml({
 
     // Sınavı Tamamla ve Değerlendir
     function finishAndEvaluateExam() {
+      isExamFinished = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      const timeSpentSec = (totalQuestions * 60) - remainingSeconds;
+      const spentMin = Math.floor(timeSpentSec / 60);
+      const spentSec = timeSpentSec % 60;
+      const timeSpentStr = spentMin + ' dk ' + spentSec + ' sn';
+      const timeSpentEl = document.getElementById('modalTimeSpent');
+      if (timeSpentEl) timeSpentEl.textContent = timeSpentStr;
+
       let correct = 0;
       let wrong = 0;
       let empty = 0;
@@ -1276,7 +1418,6 @@ function buildInteractiveTestHtml({
           if (studentAns.toUpperCase() === ca.correct.toUpperCase()) correct++;
           else wrong++;
         } else {
-          // Kısa cevap karşılaştırma
           const cleanStudent = studentAns.toLowerCase().replace(/[^a-z0-9çğıöşü]/gi, '');
           const cleanCorrect = ca.correct.toLowerCase().replace(/[^a-z0-9çğıöşü]/gi, '');
           if (cleanStudent === cleanCorrect || cleanStudent.includes(cleanCorrect) || cleanCorrect.includes(cleanStudent)) {

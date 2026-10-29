@@ -53,13 +53,13 @@ const PERMANENTLY_REMOVED_IDS = new Set([
     "mat-5-ilk-ders-notu", "mat-5af99640-7aaf-423f-9643-0e157023d717",
     "mat-6c7df1c5-3aeb-4728-a5a5-460216a7a75b", "mat-22ad277d-de06-4acb-bafa-ec9acffd1bc0",
     "mat-ad6d04a1-a11b-4cab-8688-21a9208454d1", "mat-282f1e12-d542-4793-ab82-9e09ce502b0b",
-    "builtin-oyun-7-uzaydan-kacis"
+    "builtin-oyun-7-uzaydan-kacis",
+    "mat-5-1-sunum-gunes-dunya-ay"
 ]);
 
 // KESİNLİKLE SİLİNEMEZ KORUMALI MATERYAL KİMLİKLERİ (Öğretmen / Kullanıcı materyalleri)
 const PROTECTED_IDS = new Set([
     "mat-1789641166040",
-    "mat-5-1-sunum-gunes-dunya-ay",
     "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
     "mat-5-islenecek-konular",
@@ -155,7 +155,7 @@ module.exports = async function handler(req, res) {
                         return res.status(200).json({
                             success: true,
                             updatedAt: rawData.updatedAt || new Date().toISOString(),
-                            deletedIds: deletedIds.filter(id => !PROTECTED_IDS.has(id)),
+                            deletedIds: deletedIds,
                             materials: cleanMats
                         });
                     }

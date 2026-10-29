@@ -162,13 +162,56 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 340px;
+      max-width: 300px;
     }
 
     .topbar-right {
       display: flex;
       align-items: center;
       gap: 10px;
+    }
+
+    /* ⏱️ Canlı Kronometre Rozeti */
+    .exam-countdown-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 800;
+      background: #eff6ff;
+      color: #1e40af;
+      border: 1.5px solid #bfdbfe;
+      font-family: 'Outfit', monospace;
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.1);
+      transition: all 0.25s ease;
+    }
+    body.theme-dark .exam-countdown-badge {
+      background: rgba(30, 58, 138, 0.4);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
+    .exam-countdown-badge.timer-warning,
+    .yp-bar-timer.timer-warning {
+      background: #fef3c7 !important;
+      color: #92400e !important;
+      border-color: #fcd34d !important;
+    }
+
+    .exam-countdown-badge.timer-urgent,
+    .yp-bar-timer.timer-urgent {
+      background: #fee2e2 !important;
+      color: #991b1b !important;
+      border-color: #f87171 !important;
+      animation: pulseUrgent 1s infinite;
+    }
+
+    @keyframes pulseUrgent {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.05); opacity: 0.85; }
     }
 
     .topbar-btn {
@@ -601,6 +644,29 @@
       color: #facc15;
     }
 
+    .yp-bar-timer {
+      font-family: 'Outfit', monospace;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: #1e40af;
+      background: #eff6ff;
+      border: 1.5px solid #bfdbfe;
+      padding: 6px 14px;
+      border-radius: 999px;
+      min-width: 80px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+    body.theme-dark .yp-bar-timer {
+      background: rgba(30, 58, 138, 0.4);
+      color: #93c5fd;
+      border-color: rgba(96, 165, 250, 0.4);
+    }
+
     .yp-bar-divider {
       width: 1px;
       height: 24px;
@@ -771,7 +837,7 @@
       grid-template-columns: repeat(3, 1fr);
       gap: 10px;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 14px;
     }
     .result-stat-box {
       padding: 12px;
@@ -781,12 +847,24 @@
     }
     .result-stat-num { font-size: 20px; font-weight: 900; }
     .result-stat-lbl { font-size: 11px; font-weight: 700; text-transform: uppercase; color: #64748b; }
+    .result-time-row {
+      text-align: center;
+      font-size: 14px;
+      font-weight: 700;
+      color: #475569;
+      margin-bottom: 20px;
+      background: #f8fafc;
+      padding: 8px;
+      border-radius: 10px;
+      border: 1px dashed #cbd5e1;
+    }
     .result-modal-actions {
       display: flex;
+      flex-direction: column;
       gap: 10px;
     }
     .btn-modal {
-      flex: 1;
+      width: 100%;
       padding: 12px;
       border-radius: 12px;
       font-weight: 800;
@@ -833,16 +911,17 @@
         </div>
         <span class="brand-text">ROTALI FENCİ</span>
       </a>
-      <span class="space-badge">☀️ YAZILIYA HAZIRLIK • 2 SÜTUNLU SLAYT</span>
+      <span class="space-badge">☀️ YAZILIYA HAZIRLIK</span>
       <span class="doc-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma</span>
     </div>
 
     <div class="topbar-right">
+      <!-- ⏱️ Canlı Sınav Kronometresi (Her soruya 1 dakika) -->
+      <div class="exam-countdown-badge" id="examTimerBadge" title="Kalan Sınav Süresi (Her soru için 1 dakika süre)">
+        ⏱️ <span id="examTimerText">30:00</span>
+      </div>
       <button type="button" class="topbar-btn" onclick="toggleSpaceViewerTheme()" title="Açık / Koyu Tema">
         <span id="themeIcon">🌙</span> <span id="themeLabel">Koyu Mod</span>
-      </button>
-      <button type="button" class="topbar-btn" onclick="toggleAllGoldenRules()" id="btnToggleAllAnswers" title="Cevapları ve Çözümleri Aç / Kapat">
-        <i class="fa-solid fa-lightbulb"></i> <span id="lblSolutions">Çözümleri Gizle</span>
       </button>
       <button type="button" class="topbar-btn" onclick="window.print()" title="A4 MEB Formatında Yazdır veya PDF İndir">
         <i class="fa-solid fa-print"></i> <span>Yazdır / PDF</span>
@@ -858,18 +937,19 @@
     
       <section class="yp-space-slide-section" id="yp-space-slide-0" data-slide-index="0">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 1</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 1:</strong> Isı ve ışık kaynağımız olan, Dünya&#039;ya en yakın yıldızın adı nedir?
+                <strong>Soru 1:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Gökyüzünde hareketli gibi görünen, ısı ve ışık kaynağımız olan dev kütleli gök cisminin adı nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -879,11 +959,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-1">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-1" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Güneş — Güneş, etrafına ısı ve ışık yayan, Dünya&#039;ya en yakın olan orta büyüklükte bir yıldızdır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Güneş — Güneş, Dünya&#039;mızın ısı ve ışık kaynağı olan, orta büyüklükte bir yıldızdır.</span>
               </div>
             </div>
           </div>
@@ -891,7 +972,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="#f39c12" /><text x="100" y="110" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="40" fill="#fff" text-anchor="middle">?</text></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_1"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_1" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_1)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_1)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_1)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg>
             </div>
           </div>
         </div>
@@ -900,18 +995,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-1" data-slide-index="1">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 2</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 2:</strong> Dünya&#039;mızın tek doğal uydusu olan gök cismidir. Yüzeyinde kraterler bulunur. Bu gök cisminin adı nedir?
+                <strong>Soru 2:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Dünya&#039;mızın tek doğal uydusu olan gök cisminin adı nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -921,11 +1017,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-2">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-2" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Ay — Dünya&#039;nın tek doğal uydusu Ay&#039;dır ve yüzeyinde taş ile toz tabakası ile kraterler yer alır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Ay — Ay, Dünya&#039;nın tek doğal uydusudur ve ona en yakın gök cismidir.</span>
               </div>
             </div>
           </div>
@@ -933,7 +1030,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#bdc3c7" /><text x="100" y="110" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="40" fill="#333" text-anchor="middle">?</text></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_2"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_2)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg>
             </div>
           </div>
         </div>
@@ -942,18 +1048,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-2" data-slide-index="2">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 3</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 3:</strong> Güneş, Dünya ve Ay&#039;ın genel olarak sahip olduğu geometrik şekil hangi, topa benzer şekle denir?
+                <strong>Soru 3:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş ve Ay&#039;ın genel geometrik şekli hangi ifadeyle açıklanır?
               </div>
               
         <div class="slide-short-answer-box">
@@ -963,11 +1070,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-3">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-3" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Küre — Güneş, Dünya ve Ay küre şeklindedir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Küre — Güneş, Dünya ve Ay küresel bir şekle sahiptir.</span>
               </div>
             </div>
           </div>
@@ -975,7 +1083,22 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="none" stroke="#333" stroke-width="4" /><circle cx="100" cy="100" r="30" fill="#f1c40f" /><text x="100" y="110" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="24" fill="#333" text-anchor="middle">?</text></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="clip1_3"><circle cx="150" cy="95" r="68"/></clipPath>
+    <clipPath id="clip2_3"><circle cx="370" cy="95" r="35"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="82" y="27" width="136" height="136" clip-path="url(#clip1_3)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="150" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="150" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+  
+  <text x="260" y="103" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="24" font-weight="700">?</text>
+
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="335" y="60" width="70" height="70" clip-path="url(#clip2_3)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="370" cy="95" r="35" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="370" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -984,18 +1107,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-3" data-slide-index="3">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 4</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 4:</strong> Güneş, kendi ekseni etrafında hangi yöne doğru dönme hareketi yapar?
+                <strong>Soru 4:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş, Ay&#039;a göre Dünya&#039;ya daha uzakta olmasına rağmen neden gökyüzünde Ay ile aynı büyüklükteymiş gibi görünür?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1005,11 +1129,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-4">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-4" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Batıdan doğuya — Güneş kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru gerçekleştirir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Çok büyük olması — Güneş Ay&#039;dan çok daha büyüktür ancak çok uzakta olduğu için gökyüzünde benzer boyutta görünür.</span>
               </div>
             </div>
           </div>
@@ -1017,7 +1142,25 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#e67e22" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScale_4"><circle cx="110" cy="95" r="72"/></clipPath>
+    <clipPath id="earthScale_4"><circle cx="310" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScale_4"><circle cx="430" cy="95" r="14"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="185" y1="95" x2="278" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="342" y1="95" x2="412" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="38" y="23" width="144" height="144" clip-path="url(#sunScale_4)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="110" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Güneş</text>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="282" y="67" width="56" height="56" clip-path="url(#earthScale_4)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="310" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="310" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Dünya</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="416" y="81" width="28" height="28" clip-path="url(#moonScale_4)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="430" cy="95" r="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="430" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1026,18 +1169,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-4" data-slide-index="4">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 5</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 5:</strong> Ay, gökyüzünde büyük görünmesine rağmen neden Güneş&#039;ten çok daha küçük durmaz da Güneş ile hemen hemen aynı boyutta görünür?
+                <strong>Soru 5:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;ın yüzeyinde gök taşlarının çarpması sonucu oluşan çukurlara ne ad verilir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1047,11 +1191,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-5">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-5" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Dünya&#039;ya yakın olması — Ay, Dünya&#039;ya Güneş&#039;ten çok daha yakın olduğu için gökyüzünde Güneş ile hemen hemen aynı büyüklükte görünür.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Krater — Ay yüzeyindeki çukurlara krater denir.</span>
               </div>
             </div>
           </div>
@@ -1059,7 +1204,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="75" fill="#95a5a6" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_5"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_5)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay Yüzeyi</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1068,18 +1222,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-5" data-slide-index="5">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 6</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 6:</strong> Güneş&#039;in katmanları arasında en dışta yer alan, sıcaklığın en yüksek olduğu küresel yapının merkezindeki kısma ne ad verilir?
+                <strong>Soru 6:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş, gök cismi sınıflandırmalarından hangisine girer?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1089,11 +1244,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-6">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-6" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Çekirdek — Güneş&#039;in merkezinde çok yüksek sıcaklığa sahip olan kısım çekirdektir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Yıldız — Güneş orta büyüklükte bir yıldızdır.</span>
               </div>
             </div>
           </div>
@@ -1101,7 +1257,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#f39c12" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_6"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_6" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_6)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_6)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_6)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1110,18 +1280,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-6" data-slide-index="6">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 7</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 7:</strong> Ay&#039;ın yüzeyinde göktaşlarının çarpması sonucu oluşan çukurlara ne denir?
+                <strong>Soru 7:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay, Güneş&#039;ten aldığı ışığı yansıtır ancak kendi başına bir ... kaynağı değildir. Cümlesindeki boşluğa ne yazılmalıdır?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1131,11 +1302,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-7">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-7" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Krater — Ay yüzeyindeki çukurlara krater adı verilir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Işık — Ay bir ışık kaynağı değildir, sadece Güneş ışığını yansıtır.</span>
               </div>
             </div>
           </div>
@@ -1143,7 +1315,27 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#7f8c8d" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunRef_7"><circle cx="410" cy="95" r="65"/></clipPath>
+    <clipPath id="moonRef_7"><circle cx="110" cy="95" r="40"/></clipPath>
+    <marker id="arrowRef_7" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="340" y1="85" x2="155" y2="85" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowRef_7)"/>
+  <line x1="340" y1="95" x2="155" y2="95" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrowRef_7)"/>
+  <line x1="340" y1="105" x2="155" y2="105" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowRef_7)"/>
+  <rect x="200" y="83" width="100" height="24" rx="4" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="250" y="99" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="11" font-weight="700">IŞIK IŞINLARI</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="70" y="55" width="80" height="80" clip-path="url(#moonRef_7)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="40" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="110" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13" font-weight="700">Ay</text>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="345" y="30" width="130" height="130" clip-path="url(#sunRef_7)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="410" cy="95" r="65" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="410" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1152,18 +1344,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-7" data-slide-index="7">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 8</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 8:</strong> Ay, üzerine düşen Güneş ışınlarını yansıttığı için gökyüzünde ne olarak adlandırılır? (Isı ve ışık kaynağı değildir.)
+                <strong>Soru 8:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş&#039;in yapısında çoğunlukla hangi gazlar bulunur?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1173,11 +1366,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-8">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-8" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Ayna — Ay kendi başına ışık üretmez, Güneş&#039;ten aldığı ışığı yansıttığı için dev bir aynaya benzetilebilir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Hidrojen ve Helyum — Güneş temel olarak hidrojen ve helyum gazlarından oluşan sıcak bir gaz küresidir.</span>
               </div>
             </div>
           </div>
@@ -1185,7 +1379,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect x="50" y="80" width="100" height="40" fill="#34495e" /><text x="100" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#fff" text-anchor="middle">Işık Kaynağı</text></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_8"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_8" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_8)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_8)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_8)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1194,18 +1402,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-8" data-slide-index="8">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 9</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 9:</strong> Güneş&#039;in büyüklüğünü Dünya ile karşılaştırdığımızda, Güneş&#039;in içine yaklaşık kaç tane Dünya sığabileceği tahmin edilir?
+                <strong>Soru 9:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;da hava olaylarının (yağmur, rüzgar vb.) görülmemesinin temel sebebi nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1215,11 +1424,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-9">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-9" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: 1 milyon — Güneş oldukça büyük bir yıldızdır ve içine yaklaşık 1 milyon Dünya sığabilir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Atmosferin olmaması — Ay&#039;ın atmosferi çok ince olduğundan hava olayları gerçekleşmez.</span>
               </div>
             </div>
           </div>
@@ -1227,7 +1437,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="60" fill="#e74c3c" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_9"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_9)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1236,18 +1455,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-9" data-slide-index="9">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 10</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 10:</strong> Ay&#039;ın atmosferi yok denecek kadar azdır. Bu durum Ay&#039;da hangi olayın görülmemesine (örneğin rüzgar, yağmur gibi) neden olur?
+                <strong>Soru 10:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş&#039;in Dünya gibi katmanlardan oluşan yapısı vardır. Güneş&#039;in dış yüzeyinin sıcaklığı yaklaşık kaç derece civarındadır?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1257,11 +1477,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-10">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-10" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Hava olayları — Atmosferin olmaması nedeniyle Ay&#039;da hava olayları (yağmur, rüzgar vb.) gerçekleşmez.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: 6000 — Güneş&#039;in yüzey sıcaklığı yaklaşık 6000 santigrat derecedir.</span>
               </div>
             </div>
           </div>
@@ -1269,7 +1490,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#bdc3c7" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_10"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_10" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_10)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_10)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_10)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1278,18 +1513,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-10" data-slide-index="10">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 11</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 11:</strong> Güneş&#039;in yapısında diğer gazların yanı sıra en çok hangi hafif gaz bulunur?
+                <strong>Soru 11:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;ın yüzeyini kaplayan, ayak izlerinin kalmasını sağlayan gevşek toz tabakasına ne denir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1299,11 +1535,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-11">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-11" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Hidrojen — Güneş&#039;in büyük bir kısmı hidrojen ve helyum gazlarından oluşur, en çok bulunan hidrojen gazıdır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Regolit — Ay toprağı veya tozu regolit olarak adlandırılır.</span>
               </div>
             </div>
           </div>
@@ -1311,7 +1548,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="#f1c40f" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_11"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_11)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1320,18 +1566,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-11" data-slide-index="11">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 12</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 12:</strong> Ay&#039;da yürüyen astronotların ayak izlerinin uzun süre bozulmadan kalmasının temel sebebi nedir?
+                <strong>Soru 12:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş üzerinde bulunan, diğer bölgelere göre daha soğuk ve karanlık görünen alanlara ne denir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1341,11 +1588,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-12">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-12" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Atmosferin olmaması — Atmosfer ve hava olayı (rüzgar, yağmur) olmadığı için Ay&#039;daki izler silinmez.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Güneş lekesi — Güneş lekeleri, Güneş&#039;in yüzeyindeki daha soğuk bölgelerdir.</span>
               </div>
             </div>
           </div>
@@ -1353,7 +1601,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#95a5a6" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_12"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_12" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_12)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_12)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_12)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1362,18 +1624,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-12" data-slide-index="12">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 13</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 13:</strong> Güneş yüzeyinde diğer bölgelere göre daha soğuk ve bu nedenle karanlık görünen alanlara ne denir?
+                <strong>Soru 13:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;ın dünyadan bakıldığında farklı şekillerde görünmesinin sebebi dönme ve dolanma hareketleridir ancak temel geometrik şekli değişmez ve ... şeklindedir.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1383,11 +1646,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-13">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-13" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Güneş lekesi — Güneş lekeleri, Güneş&#039;in yüzeyindeki daha soğuk ve koyu renkli bölgelerdir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Küre — Ay&#039;ın şekli küreseldir.</span>
               </div>
             </div>
           </div>
@@ -1395,7 +1659,22 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="65" fill="#f39c12" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="clip1_13"><circle cx="150" cy="95" r="68"/></clipPath>
+    <clipPath id="clip2_13"><circle cx="370" cy="95" r="35"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="82" y="27" width="136" height="136" clip-path="url(#clip1_13)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="150" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="150" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+  
+  <text x="260" y="103" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="24" font-weight="700">?</text>
+
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="335" y="60" width="70" height="70" clip-path="url(#clip2_13)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="370" cy="95" r="35" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="370" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1404,18 +1683,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-13" data-slide-index="13">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 14</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 14:</strong> Ay&#039;ın dünya etrafındaki dolanım süresi ile kendi ekseni etrafındaki dönme süresi birbirine nedir?
+                <strong>Soru 14:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Boyut olarak Güneş, Dünya ve Ay karşılaştırıldığında en büyüğü hangisidir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1425,11 +1705,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-14">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-14" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Eşittir — Ay&#039;ın dönme ve dolanım süreleri eşit olduğu için biz Dünya&#039;dan hep Ay&#039;ın aynı yüzünü görürüz.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Güneş — Güneş aralarındaki en büyük gök cismidir.</span>
               </div>
             </div>
           </div>
@@ -1437,7 +1718,25 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#ecf0f1" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScale_14"><circle cx="110" cy="95" r="72"/></clipPath>
+    <clipPath id="earthScale_14"><circle cx="310" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScale_14"><circle cx="430" cy="95" r="14"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="185" y1="95" x2="278" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="342" y1="95" x2="412" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="38" y="23" width="144" height="144" clip-path="url(#sunScale_14)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="110" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">I</text>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="282" y="67" width="56" height="56" clip-path="url(#earthScale_14)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="310" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="310" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">II</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="416" y="81" width="28" height="28" clip-path="url(#moonScale_14)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="430" cy="95" r="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="430" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">III</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1446,18 +1745,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-14" data-slide-index="14">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 15</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 15:</strong> Güneş, kendi ekseni etrafındaki dönme hareketini yaklaşık kaç günde tamamlar?
+                <strong>Soru 15:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay, bir ayna gibi üzerine düşen Güneş ışınlarını ne yapar?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1467,11 +1767,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-15">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-15" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: 25 gün — Güneş katı değil gaz halinde olduğu için ekvatorda ve kutuplarda farklı hızlarda dönse de genel olarak bir turunu 25 günde tamamlar.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Yansıtır — Ay, Güneş&#039;ten aldığı ışığı yansıtarak dünyadan görünür hale gelir.</span>
               </div>
             </div>
           </div>
@@ -1479,7 +1780,27 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="60" fill="#3498db" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunRef_15"><circle cx="410" cy="95" r="65"/></clipPath>
+    <clipPath id="moonRef_15"><circle cx="110" cy="95" r="40"/></clipPath>
+    <marker id="arrowRef_15" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#d97706"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="340" y1="85" x2="155" y2="85" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowRef_15)"/>
+  <line x1="340" y1="95" x2="155" y2="95" stroke="#d97706" stroke-width="2.5" marker-end="url(#arrowRef_15)"/>
+  <line x1="340" y1="105" x2="155" y2="105" stroke="#f59e0b" stroke-width="2" stroke-dasharray="6,4" marker-end="url(#arrowRef_15)"/>
+  <rect x="200" y="83" width="100" height="24" rx="4" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="250" y="99" text-anchor="middle" fill="#b45309" font-family="'Times New Roman', Times, serif" font-size="11" font-weight="700">IŞIK IŞINLARI</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="70" y="55" width="80" height="80" clip-path="url(#moonRef_15)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="40" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="110" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13" font-weight="700">Ay</text>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="345" y="30" width="130" height="130" clip-path="url(#sunRef_15)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="410" cy="95" r="65" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="410" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1488,18 +1809,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-15" data-slide-index="15">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 16</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 16:</strong> Ay&#039;ın yüzeyinde taş ve toz tabakasıyla kaplı düzlükler vardır. Bu bölgelere ne ad verilir?
+                <strong>Soru 16:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş evrendeki diğer yıldızlarla karşılaştırıldığında hangi boyuttadır?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1509,11 +1831,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-16">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-16" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Ay denizi — Ay&#039;ın yüzeyindeki koyu renkli düzlükler &#039;Ay denizi&#039; olarak adlandırılır ancak içinde su yoktur.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Orta büyüklükte — Güneş evrendeki devasa yıldızlara göre orta büyüklüktedir.</span>
               </div>
             </div>
           </div>
@@ -1521,7 +1844,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#bdc3c7" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_16"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_16" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_16)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_16)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_16)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1530,18 +1867,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-16" data-slide-index="16">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 17</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 17:</strong> Güneş bir yıldız mıdır, yoksa bir gezegen mi?
+                <strong>Soru 17:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Dünya&#039;nın çevresinde dolanan doğal gök cisminin bilimsel adı nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1551,11 +1889,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-17">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-17" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Yıldız — Güneş orta büyüklükte bir yıldızdır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Doğal uydu — Ay, Dünya&#039;nın tek doğal uydusudur.</span>
               </div>
             </div>
           </div>
@@ -1563,7 +1902,22 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="#f39c12" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="clip1_17"><circle cx="150" cy="95" r="45"/></clipPath>
+    <clipPath id="clip2_17"><circle cx="370" cy="95" r="35"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="105" y="50" width="90" height="90" clip-path="url(#clip1_17)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="150" cy="95" r="45" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="150" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Dünya</text>
+  
+  <text x="260" y="103" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="24" font-weight="700">?</text>
+
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="335" y="60" width="70" height="70" clip-path="url(#clip2_17)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="370" cy="95" r="35" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="370" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1572,18 +1926,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-17" data-slide-index="17">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 18</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 18:</strong> Ay, kendi ekseni etrafında dönme hareketi yaparken aynı zamanda hangi gök cismimin etrafında dolanma hareketi yapar?
+                <strong>Soru 18:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş etrafa ne yayarak dünyada yaşamın var olmasını sağlar?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1593,11 +1948,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-18">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-18" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Dünya — Ay, Dünya&#039;nın etrafında dolanma hareketi yapar.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Isı ve ışık — Güneş ısı ve ışık kaynağıdır.</span>
               </div>
             </div>
           </div>
@@ -1605,7 +1961,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#95a5a6" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_18"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_18" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_18)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_18)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_18)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1614,18 +1984,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-18" data-slide-index="18">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 19</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 19:</strong> Güneş&#039;in sıcaklığı yüzeyinde yaklaşık 6000 derece iken, merkezinde (çekirdeğinde) kaç derece civarındadır?
+                <strong>Soru 19:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;da gece ile gündüz arasındaki sıcaklık farkının çok fazla olmasının nedeni nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1635,11 +2006,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-19">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-19" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: 15 milyon derece — Güneş&#039;in çekirdek sıcaklığı yaklaşık 15 milyon santigrat derecedir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Atmosferin çok ince olması — Atmosfer ısıyı dengede tutmadığı için Ay&#039;da sıcaklık farkı aşırıdır.</span>
               </div>
             </div>
           </div>
@@ -1647,7 +2019,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="#e67e22" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_19"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_19)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1656,18 +2037,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-19" data-slide-index="19">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 20</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 20:</strong> Ay&#039;ın Dünya&#039;dan bakıldığında hep aynı yüzünün görülmesinin nedeni, dönme ve dolanım sürelerinin birbirine ne olmasıdır?
+                <strong>Soru 20:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Eski zamanlarda insanların aksine günümüzde Güneş, Dünya ve Ay&#039;ın düz değil ... şeklinde olduğunu biliyoruz.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1677,11 +2059,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-20">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-20" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Eşit — Dönme ve dolanım süreleri eşit olduğu için Ay&#039;ın hep aynı yüzü görünür.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Küre — Gök cisimleri küresel şekle sahiptir.</span>
               </div>
             </div>
           </div>
@@ -1689,7 +2072,25 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#bdc3c7" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScale_20"><circle cx="110" cy="95" r="72"/></clipPath>
+    <clipPath id="earthScale_20"><circle cx="310" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScale_20"><circle cx="430" cy="95" r="14"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="185" y1="95" x2="278" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="342" y1="95" x2="412" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="38" y="23" width="144" height="144" clip-path="url(#sunScale_20)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="110" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Güneş</text>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="282" y="67" width="56" height="56" clip-path="url(#earthScale_20)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="310" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="310" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Dünya</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="416" y="81" width="28" height="28" clip-path="url(#moonScale_20)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="430" cy="95" r="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="430" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1698,18 +2099,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-20" data-slide-index="20">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 21</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 21:</strong> Güneş mi daha büyüktür, yoksa Ay mı?
+                <strong>Soru 21:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;ın gökyüzünde büyük görünmesinin temel sebebi nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1719,11 +2121,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-21">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-21" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Güneş — Güneş, Ay&#039;dan kat kat büyüktür.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Dünya&#039;ya yakın olması — Ay, Dünya&#039;ya en yakın gök cismi olduğu için büyük görünür.</span>
               </div>
             </div>
           </div>
@@ -1731,7 +2134,22 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#f1c40f" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="clip1_21"><circle cx="150" cy="95" r="45"/></clipPath>
+    <clipPath id="clip2_21"><circle cx="370" cy="95" r="35"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="105" y="50" width="90" height="90" clip-path="url(#clip1_21)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="150" cy="95" r="45" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="150" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Dünya</text>
+  
+  <text x="260" y="103" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="24" font-weight="700">?</text>
+
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="335" y="60" width="70" height="70" clip-path="url(#clip2_21)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="370" cy="95" r="35" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="370" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1740,18 +2158,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-21" data-slide-index="21">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 22</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 22:</strong> Ay, yüzeyinde hava katmanı (atmosfer) bulunmadığı için geceleri çok soğuk, gündüzleri ise çok ne olur?
+                <strong>Soru 22:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş sabit durmaz, kendi etrafında ... hareketi yapar.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1761,11 +2180,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-22">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-22" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Sıcak — Atmosferin ısıyı dengeleyici etkisi olmadığından Ay&#039;da gece ile gündüz arasındaki sıcaklık farkı aşırı fazladır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Dönme — Güneş kendi ekseni etrafında dönme hareketi yapar.</span>
               </div>
             </div>
           </div>
@@ -1773,7 +2193,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#7f8c8d" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_22"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_22" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_22)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_22)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_22)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1782,18 +2216,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-22" data-slide-index="22">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 23</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 23:</strong> Güneş&#039;in yapısında hidrojen gazının yanı sıra en çok bulunan ikinci gaz hangisidir?
+                <strong>Soru 23:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay yüzeyinde canlı yaşamının olmamasının sebeplerinden biri de sıvı halde ... bulunmamasıdır.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1803,11 +2238,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-23">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-23" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Helyum — Güneş büyük oranda hidrojen ve helyum gazlarından oluşur.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Su — Ay&#039;da sıvı su bulunmaz.</span>
               </div>
             </div>
           </div>
@@ -1815,7 +2251,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="75" fill="#f39c12" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_23"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_23)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1824,18 +2269,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-23" data-slide-index="23">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 24</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 24:</strong> Ay, Dünya etrafındaki dolanımını yaklaşık kaç günde tamamlar?
+                <strong>Soru 24:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş Dünya&#039;nın hem ışık hem de ... kaynağıdır.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1845,11 +2291,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-24">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-24" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: 29 gün — Ay&#039;ın Dünya etrafındaki dolanım süresi yaklaşık 29,5 gündür (genel kabul 29 veya 30 gün).</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Isı — Güneş ısı ve ışık kaynağıdır.</span>
               </div>
             </div>
           </div>
@@ -1857,7 +2304,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="65" fill="#bdc3c7" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_24"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_24" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_24)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_24)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_24)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1866,18 +2327,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-24" data-slide-index="24">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 25</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 25:</strong> Güneş, katı bir yapıda mıdır yoksa gaz bulutu şeklinde midir?
+                <strong>Soru 25:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay&#039;ın yüzeyi toz tabakası ile birlikte çoğunlukla ne tür materyallerden oluşur?
               </div>
               
         <div class="slide-short-answer-box">
@@ -1887,11 +2349,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-25">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-25" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Gaz — Güneş gaz halindedir, katı bir yüzeyi yoktur.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Taş ve kayalar — Ay yüzeyi taş, kaya ve tozdan oluşur.</span>
               </div>
             </div>
           </div>
@@ -1899,7 +2362,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.0rg/2000/svg"><circle cx="100" cy="100" r="80" fill="#f39c12" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_25"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_25)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1908,18 +2380,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-25" data-slide-index="25">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 26</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 26:</strong> Ay&#039;ın yüzeyinde yürüyen ilk insan hangi ülkenin uzay aracıyla gitmiştir?
+                <strong>Soru 26:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş katı bir yapıda değil, sıcak ... küresi şeklindedir.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1929,11 +2402,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-26">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-26" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Amerika — Neil Armstrong Ay&#039;a ayak basan ilk insan olup ABD (Amerika) uzay programıyla gitmiştir.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Gaz — Güneş bir gaz küresidir.</span>
               </div>
             </div>
           </div>
@@ -1941,7 +2415,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#95a5a6" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_26"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_26" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_26)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_26)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_26)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1950,18 +2438,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-26" data-slide-index="26">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 27</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 27:</strong> Güneş&#039;in Dünya&#039;mıza uzaklığı yaklaşık kaç kilometre olarak bilinir? (150 milyon km)
+                <strong>Soru 27:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Dünya&#039;ya en yakın gök cismi olan Ay, aynı zamanda bizim ... uydumuzdur.
               </div>
               
         <div class="slide-short-answer-box">
@@ -1971,11 +2460,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-27">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-27" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: 150 milyon — Güneş ile Dünya arasında yaklaşık 150 milyon kilometre mesafe vardır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Doğal — Ay doğal uydumuzdur.</span>
               </div>
             </div>
           </div>
@@ -1983,7 +2473,22 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#f1c40f" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="clip1_27"><circle cx="150" cy="95" r="45"/></clipPath>
+    <clipPath id="clip2_27"><circle cx="370" cy="95" r="35"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="105" y="50" width="90" height="90" clip-path="url(#clip1_27)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="150" cy="95" r="45" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="150" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Dünya</text>
+  
+  <text x="260" y="103" text-anchor="middle" fill="#64748b" font-family="'Times New Roman', Times, serif" font-size="24" font-weight="700">?</text>
+
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="335" y="60" width="70" height="70" clip-path="url(#clip2_27)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="370" cy="95" r="35" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="370" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -1992,18 +2497,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-27" data-slide-index="27">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 28</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 28:</strong> Ay kendi başına ışık üretir mi, yoksa yansıtıcı mıdır?
+                <strong>Soru 28:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Güneş bir gezegen değil, bir ... gök cismi sınıfındadır.
               </div>
               
         <div class="slide-short-answer-box">
@@ -2013,11 +2519,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-28">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-28" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Yansıtıcı — Ay bir ışık kaynağı değildir, Güneş&#039;ten aldığı ışığı yansıtır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Yıldız — Güneş bir yıldızdır.</span>
               </div>
             </div>
           </div>
@@ -2025,7 +2532,21 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#bdc3c7" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunClip_28"><circle cx="260" cy="95" r="68"/></clipPath>
+      <radialGradient id="sunGlow_28" cx="50%" cy="50%" r="50%">
+        <stop offset="65%" stop-color="#f59e0b" stop-opacity="0.3"/>
+        <stop offset="100%" stop-color="#f59e0b" stop-opacity="0"/>
+      </radialGradient>
+      <circle cx="260" cy="95" r="88" fill="url(#sunGlow_28)"/>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <circle cx="260" cy="95" r="88" fill="url(#sunGlow_28)"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="192" y="27" width="136" height="136" clip-path="url(#sunClip_28)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg>
             </div>
           </div>
         </div>
@@ -2034,18 +2555,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-28" data-slide-index="28">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 29</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 29:</strong> Güneş&#039;in katmanları arasında en dışta yer alan sıcak tabakaya ne ad verilir?
+                <strong>Soru 29:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Ay yüzeyindeki büyük çukurlara verilen bilimsel ad nedir?
               </div>
               
         <div class="slide-short-answer-box">
@@ -2055,11 +2577,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-29">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-29" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Taç küre — Güneş&#039;in en dıştaki atmosfer tabakası taç küre (korona) olarak adlandırılır.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Krater — Krater, Ay yüzeyindeki çukurlardır.</span>
               </div>
             </div>
           </div>
@@ -2067,7 +2590,16 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="80" fill="#f39c12" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonClip_29"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonClip_29)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay Yüzeyi</text>
+</svg>
             </div>
           </div>
         </div>
@@ -2076,18 +2608,19 @@
 
       <section class="yp-space-slide-section" id="yp-space-slide-29" data-slide-index="29">
         <div class="yp-space-slide-grid">
-          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Altın Kural -->
+          <!-- Sol Sütun (%56 Genişlik): Metin, Soru Kartı, Şıklar/Cevap, Gizli Altın Kural -->
           <div class="yp-space-col-left">
             <div class="yp-slide-category">
               <span>✦</span>
               <span>🚀 5. SINIF • 1. Ünite: Güneş, Dünya ve Ay</span>
             </div>
             <h2 class="yp-slide-main-title">Test No: 1 - Kısa Cevaplı / Boşluk Doldurma — Soru 30</h2>
-            <p class="yp-slide-subtitle">Güneş ve Ay&#039;ın geometrik şeklini ve temel özelliklerini açıklar.</p>
+            <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
             
             <div class="yp-neon-cards-stack">
               <div class="yp-neon-card neon-blue">
-                <strong>Soru 30:</strong> Ay&#039;ın kütlesi ve çekim kuvveti, Dünya&#039;nınkinden daha mı büyük yoksa daha mı küçüktür?
+                <strong>Soru 30:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
+                 Uzaydan çekilen fotoğraflarda Güneş, Dünya ve Ay&#039;ın üç boyutlu ve ... şeklinde olduğu net olarak görülür.
               </div>
               
         <div class="slide-short-answer-box">
@@ -2097,11 +2630,12 @@
       
             </div>
 
-            <div class="yp-golden-rule-box" id="golden-box-30">
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-30" style="display: none;">
               <div class="yp-golden-rule-icon">💡</div>
               <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: Küçüktür — Ay, Dünya&#039;dan küçük olduğu için çekim kuvveti de Dünya&#039;nın çekim kuvvetinden küçüktür.</span>
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: Küre — Tüm bu gök cisimleri küresel şekle sahiptir.</span>
               </div>
             </div>
           </div>
@@ -2109,7 +2643,25 @@
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
             <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="70" fill="#bdc3c7" /></svg>
+              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="sunScale_30"><circle cx="110" cy="95" r="72"/></clipPath>
+    <clipPath id="earthScale_30"><circle cx="310" cy="95" r="28"/></clipPath>
+    <clipPath id="moonScale_30"><circle cx="430" cy="95" r="14"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <line x1="185" y1="95" x2="278" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <line x1="342" y1="95" x2="412" y2="95" stroke="#cbd5e1" stroke-dasharray="4,4" stroke-width="1.5"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="38" y="23" width="144" height="144" clip-path="url(#sunScale_30)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="110" cy="95" r="72" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="110" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Güneş</text>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="282" y="67" width="56" height="56" clip-path="url(#earthScale_30)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="310" cy="95" r="28" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="310" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Dünya</text>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="416" y="81" width="28" height="28" clip-path="url(#moonScale_30)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="430" cy="95" r="14" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="430" y="188" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="13.5" font-weight="700">Ay</text>
+</svg>
             </div>
           </div>
         </div>
@@ -2135,6 +2687,11 @@
 
     <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">
       1 / 30
+    </div>
+
+    <!-- ⏱️ Canlı Alt Kronometre -->
+    <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
+      ⏱️ <span id="ypBottomTimerText">30:00</span>
     </div>
 
     <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
@@ -2194,9 +2751,13 @@
             <div class="result-stat-lbl">Boş</div>
           </div>
         </div>
+        <div class="result-time-row">
+          ⏱️ Toplam Geçen Süre: <span id="modalTimeSpent" style="color:#0284c7; font-weight:900;">0 dk 0 sn</span>
+        </div>
         <div class="result-modal-actions">
-          <button type="button" class="btn-modal" style="background:#f1f5f9; color:#334155;" onclick="closeResultModal()">İncelemeye Devam Et</button>
-          <button type="button" class="btn-modal" style="background:#0284c7; color:#ffffff;" onclick="window.print()">Yazdır / PDF Al</button>
+          <button type="button" class="btn-modal" style="background:#0284c7; color:#ffffff;" onclick="revealSolutionsAndReview()">💡 Soru Çözümlerini ve Doğru Cevapları İncele</button>
+          <button type="button" class="btn-modal" style="background:#f1f5f9; color:#334155;" onclick="window.print()">🖨️ MEB A4 Formatında Yazdır / PDF Al</button>
+          <button type="button" class="btn-modal" style="background:#e2e8f0; color:#475569;" onclick="closeResultModal()">Kapat</button>
         </div>
       </div>
     </div>
@@ -2206,8 +2767,59 @@
     const totalQuestions = 30;
     let activeSlideIdx = 0;
     const studentAnswers = {};
-    const correctAnswers = [{"id":1,"type":"short_answer","correct":"Güneş"},{"id":2,"type":"short_answer","correct":"Ay"},{"id":3,"type":"short_answer","correct":"Küre"},{"id":4,"type":"short_answer","correct":"Batıdan doğuya"},{"id":5,"type":"short_answer","correct":"Dünya'ya yakın olması"},{"id":6,"type":"short_answer","correct":"Çekirdek"},{"id":7,"type":"short_answer","correct":"Krater"},{"id":8,"type":"short_answer","correct":"Ayna"},{"id":9,"type":"short_answer","correct":"1 milyon"},{"id":10,"type":"short_answer","correct":"Hava olayları"},{"id":11,"type":"short_answer","correct":"Hidrojen"},{"id":12,"type":"short_answer","correct":"Atmosferin olmaması"},{"id":13,"type":"short_answer","correct":"Güneş lekesi"},{"id":14,"type":"short_answer","correct":"Eşittir"},{"id":15,"type":"short_answer","correct":"25 gün"},{"id":16,"type":"short_answer","correct":"Ay denizi"},{"id":17,"type":"short_answer","correct":"Yıldız"},{"id":18,"type":"short_answer","correct":"Dünya"},{"id":19,"type":"short_answer","correct":"15 milyon derece"},{"id":20,"type":"short_answer","correct":"Eşit"},{"id":21,"type":"short_answer","correct":"Güneş"},{"id":22,"type":"short_answer","correct":"Sıcak"},{"id":23,"type":"short_answer","correct":"Helyum"},{"id":24,"type":"short_answer","correct":"29 gün"},{"id":25,"type":"short_answer","correct":"Gaz"},{"id":26,"type":"short_answer","correct":"Amerika"},{"id":27,"type":"short_answer","correct":"150 milyon"},{"id":28,"type":"short_answer","correct":"Yansıtıcı"},{"id":29,"type":"short_answer","correct":"Taç küre"},{"id":30,"type":"short_answer","correct":"Küçüktür"}];
-    let solutionsVisible = true;
+    const correctAnswers = [{"id":1,"type":"short_answer","correct":"Güneş"},{"id":2,"type":"short_answer","correct":"Ay"},{"id":3,"type":"short_answer","correct":"Küre"},{"id":4,"type":"short_answer","correct":"Çok büyük olması"},{"id":5,"type":"short_answer","correct":"Krater"},{"id":6,"type":"short_answer","correct":"Yıldız"},{"id":7,"type":"short_answer","correct":"Işık"},{"id":8,"type":"short_answer","correct":"Hidrojen ve Helyum"},{"id":9,"type":"short_answer","correct":"Atmosferin olmaması"},{"id":10,"type":"short_answer","correct":"6000"},{"id":11,"type":"short_answer","correct":"Regolit"},{"id":12,"type":"short_answer","correct":"Güneş lekesi"},{"id":13,"type":"short_answer","correct":"Küre"},{"id":14,"type":"short_answer","correct":"Güneş"},{"id":15,"type":"short_answer","correct":"Yansıtır"},{"id":16,"type":"short_answer","correct":"Orta büyüklükte"},{"id":17,"type":"short_answer","correct":"Doğal uydu"},{"id":18,"type":"short_answer","correct":"Isı ve ışık"},{"id":19,"type":"short_answer","correct":"Atmosferin çok ince olması"},{"id":20,"type":"short_answer","correct":"Küre"},{"id":21,"type":"short_answer","correct":"Dünya'ya yakın olması"},{"id":22,"type":"short_answer","correct":"Dönme"},{"id":23,"type":"short_answer","correct":"Su"},{"id":24,"type":"short_answer","correct":"Isı"},{"id":25,"type":"short_answer","correct":"Taş ve kayalar"},{"id":26,"type":"short_answer","correct":"Gaz"},{"id":27,"type":"short_answer","correct":"Doğal"},{"id":28,"type":"short_answer","correct":"Yıldız"},{"id":29,"type":"short_answer","correct":"Krater"},{"id":30,"type":"short_answer","correct":"Küre"}];
+
+    // ⏱️ KRONOMETRE MOTORU (Kaç soru varsa o kadar dakika)
+    let remainingSeconds = totalQuestions * 60;
+    let timerInterval = null;
+    let isExamFinished = false;
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    }
+
+    function updateTimerDisplay() {
+      const str = formatTime(remainingSeconds);
+      const topEl = document.getElementById('examTimerText');
+      const bottomEl = document.getElementById('ypBottomTimerText');
+      if (topEl) topEl.textContent = str;
+      if (bottomEl) bottomEl.textContent = str;
+
+      const topBadge = document.getElementById('examTimerBadge');
+      const bottomBadge = document.getElementById('ypBottomTimer');
+      if (remainingSeconds <= 60) {
+        if (topBadge) topBadge.className = 'exam-countdown-badge timer-urgent';
+        if (bottomBadge) bottomBadge.className = 'yp-bar-timer timer-urgent';
+      } else if (remainingSeconds <= 300) {
+        if (topBadge) topBadge.className = 'exam-countdown-badge timer-warning';
+        if (bottomBadge) bottomBadge.className = 'yp-bar-timer timer-warning';
+      }
+    }
+
+    function startExamTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        if (isExamFinished) {
+          clearInterval(timerInterval);
+          return;
+        }
+        remainingSeconds--;
+        if (remainingSeconds <= 0) {
+          remainingSeconds = 0;
+          updateTimerDisplay();
+          clearInterval(timerInterval);
+          alert('⏰ Sınav süreniz tamamlandı! Yanıtlarınız otomatik olarak değerlendiriliyor.');
+          finishAndEvaluateExam();
+        } else {
+          updateTimerDisplay();
+        }
+      }, 1000);
+    }
+
+    startExamTimer();
 
     // Slayt Navigasyonu
     function updateCounter(idx) {
@@ -2278,14 +2890,13 @@
       studentAnswers[qNum] = String(val).trim();
     }
 
-    // Çözümleri Aç / Kapat
-    function toggleAllGoldenRules() {
-      solutionsVisible = !solutionsVisible;
+    // Sınav Bittiğinde Çözümleri Aç ve İncele
+    function revealSolutionsAndReview() {
       document.querySelectorAll('.yp-golden-rule-box').forEach(box => {
-        box.style.display = solutionsVisible ? 'flex' : 'none';
+        box.style.display = 'flex';
       });
-      const lbl = document.getElementById('lblSolutions');
-      if (lbl) lbl.textContent = solutionsVisible ? 'Çözümleri Gizle' : 'Çözümleri Göster';
+      closeResultModal();
+      goToSlide(0);
     }
 
     // Tema Değiştirme (Açık / Koyu)
@@ -2345,6 +2956,16 @@
 
     // Sınavı Tamamla ve Değerlendir
     function finishAndEvaluateExam() {
+      isExamFinished = true;
+      if (timerInterval) clearInterval(timerInterval);
+
+      const timeSpentSec = (totalQuestions * 60) - remainingSeconds;
+      const spentMin = Math.floor(timeSpentSec / 60);
+      const spentSec = timeSpentSec % 60;
+      const timeSpentStr = spentMin + ' dk ' + spentSec + ' sn';
+      const timeSpentEl = document.getElementById('modalTimeSpent');
+      if (timeSpentEl) timeSpentEl.textContent = timeSpentStr;
+
       let correct = 0;
       let wrong = 0;
       let empty = 0;
@@ -2357,7 +2978,6 @@
           if (studentAns.toUpperCase() === ca.correct.toUpperCase()) correct++;
           else wrong++;
         } else {
-          // Kısa cevap karşılaştırma
           const cleanStudent = studentAns.toLowerCase().replace(/[^a-z0-9çğıöşü]/gi, '');
           const cleanCorrect = ca.correct.toLowerCase().replace(/[^a-z0-9çğıöşü]/gi, '');
           if (cleanStudent === cleanCorrect || cleanStudent.includes(cleanCorrect) || cleanCorrect.includes(cleanStudent)) {
