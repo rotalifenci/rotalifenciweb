@@ -1,0 +1,1881 @@
+const fs = require('fs');
+const path = require('path');
+const vm = require('vm');
+
+console.log('Building oyunlar/yildiz-laboratuvari.html...');
+
+const html = `<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950 select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Yıldız Laboratuvarı – Yıldızların Yaşam Döngüsü ve Uzay Simülatörü 3D | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lab: {
+                            bg: '#020617',
+                            card: '#090d1f',
+                            border: '#1e293b',
+                            cyan: '#06b6d4',
+                            sky: '#38bdf8',
+                            blue: '#3b82f6',
+                            purple: '#a855f7',
+                            pink: '#ec4899',
+                            amber: '#f59e0b',
+                            rose: '#f43f5e'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Three.js & OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100vw;
+            height: 100dvh;
+            max-height: 100dvh;
+            overflow: hidden;
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* Özel Kaydırıcı (Slider) Tasarımı */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+            cursor: pointer;
+            height: 24px;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            height: 10px;
+            border-radius: 9999px;
+            background: linear-gradient(90deg, #ef4444, #f59e0b, #ffffff, #38bdf8, #6366f1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 24px;
+            width: 24px;
+            border-radius: 50%;
+            background: #ffffff;
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -7px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.9), 0 0 0 2px #38bdf8;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.2);
+        }
+
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d1f;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #06b6d4;
+        }
+
+        .hud-glass {
+            background: rgba(10, 15, 35, 0.88);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.25);
+            box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes pulse-halo {
+            0%, 100% { transform: scale(1); opacity: 0.85; }
+            50% { transform: scale(1.05); opacity: 1; }
+        }
+        .anim-halo {
+            animation: pulse-halo 3s infinite ease-in-out;
+        }
+
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-full bg-[#020617] text-slate-100 overflow-hidden font-sans">
+
+    <!-- 🔝 ÜST BAR (RESPONSIVE HEADER - MOBİL & PARDUS AKILLI TAHTA UYUMLU) -->
+    <header class="w-full shrink-0 z-30 bg-slate-900/95 backdrop-blur-md border-b border-indigo-500/30 text-white shadow-md select-none px-2 sm:px-3 py-1 sm:py-1.5">
+        
+        <!-- Mobil Görünüm: İki Kompakt Satır (< 768px) -->
+        <div class="flex flex-col md:hidden gap-1">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-1.5 min-w-0">
+                    <a href="../index.html" class="w-7 h-7 rounded-lg bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-sm shrink-0" title="Ana Sayfaya Dön">
+                        <i class="fa-solid fa-star text-xs"></i>
+                    </a>
+                    <span class="text-xs font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-sky-200 to-purple-300 tracking-wider truncate">
+                        YILDIZ LABORATUVARI
+                    </span>
+                    <span class="text-[8px] font-bold px-1.5 py-0.2 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shrink-0">
+                        7. SINIF
+                    </span>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                    <button type="button" onclick="openQuizModal()" class="px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-[10px] rounded-lg shadow flex items-center gap-1 cursor-pointer">
+                        <i class="fa-solid fa-award"></i> <span>Test</span>
+                    </button>
+                    <button type="button" onclick="toggleAudio()" class="p-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 text-[10px] cursor-pointer" title="Sesi Aç / Kapat">
+                        <i class="fa-solid fa-volume-high" id="audio-icon-mobile"></i>
+                    </button>
+                    <button type="button" onclick="toggleFullscreen()" class="p-1 bg-slate-800 text-slate-300 rounded-lg border border-slate-700 text-[10px] cursor-pointer" title="Tam Ekran">
+                        <i class="fa-solid fa-expand" id="fullscreen-icon-mobile"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Modül Butonları Mobil Şerit -->
+            <nav class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5" id="mobile-nav-bar">
+                <button type="button" onclick="switchLabModule(1)" id="btn-m1-mob" class="nav-btn-mob px-2.5 py-1 rounded-lg font-black text-[11px] whitespace-nowrap shrink-0 bg-indigo-600 text-white border border-indigo-500 shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-timeline"></i> <span>1. Yaşam Döngüsü</span>
+                </button>
+                <button type="button" onclick="switchLabModule(2)" id="btn-m2-mob" class="nav-btn-mob px-2.5 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1">
+                    <i class="fa-solid fa-temperature-half text-amber-400"></i> <span>2. Renk & Sıcaklık</span>
+                </button>
+                <button type="button" onclick="switchLabModule(3)" id="btn-m3-mob" class="nav-btn-mob px-2.5 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1">
+                    <i class="fa-solid fa-cloud-bolt text-purple-400"></i> <span>3. Bulutsular</span>
+                </button>
+                <button type="button" onclick="switchLabModule(4)" id="btn-m4-mob" class="nav-btn-mob px-2.5 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1">
+                    <i class="fa-solid fa-compass text-cyan-400"></i> <span>4. Takımyıldızları</span>
+                </button>
+                <a href="is-laboratuvari.html" class="px-2 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-emerald-300 border border-slate-700 flex items-center gap-1">
+                    <i class="fa-solid fa-cube text-emerald-400"></i> <span>İş Lab (2. Ünite)</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Masaüstü & Akıllı Tahta Görünüm: Tek Zarif Satır (>= 768px) -->
+        <div class="hidden md:flex items-center justify-between gap-2 max-w-7xl mx-auto">
+            <!-- Logo & Başlık -->
+            <div class="flex items-center gap-2 min-w-0">
+                <a href="../index.html" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 active:scale-95 transition-all shrink-0" title="Ana Sayfaya Dön">
+                    <i class="fa-solid fa-star text-base"></i>
+                </a>
+                <div class="truncate">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm lg:text-base font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-sky-200 to-purple-300">
+                            YILDIZ LABORATUVARI
+                        </span>
+                        <span class="px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 font-mono font-black text-[10px]">
+                            7. SINIF • UZAY ÇAĞI
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modül Butonları (Masaüstü & Akıllı Tahta) -->
+            <nav class="flex items-center gap-1.5" id="desktop-nav-bar">
+                <button type="button" onclick="switchLabModule(1)" id="btn-m1-dt" class="nav-btn-dt px-3 py-1 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 bg-indigo-600 text-white border border-indigo-500 shadow-sm cursor-pointer active:scale-95">
+                    <i class="fa-solid fa-timeline"></i> <span>1. Yaşam Döngüsü</span>
+                </button>
+                <button type="button" onclick="switchLabModule(2)" id="btn-m2-dt" class="nav-btn-dt px-3 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer active:scale-95">
+                    <i class="fa-solid fa-temperature-half text-amber-400"></i> <span>2. Renk & Sıcaklık</span>
+                </button>
+                <button type="button" onclick="switchLabModule(3)" id="btn-m3-dt" class="nav-btn-dt px-3 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer active:scale-95">
+                    <i class="fa-solid fa-cloud-bolt text-purple-400"></i> <span>3. Bulutsular</span>
+                </button>
+                <button type="button" onclick="switchLabModule(4)" id="btn-m4-dt" class="nav-btn-dt px-3 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer active:scale-95">
+                    <i class="fa-solid fa-compass text-cyan-400"></i> <span>4. Takımyıldızları</span>
+                </button>
+            </nav>
+
+            <!-- Sağ Hızlı Butonlar -->
+            <div class="flex items-center gap-1.5 shrink-0">
+                <a href="is-laboratuvari.html" class="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 font-bold text-xs rounded-xl transition-all flex items-center gap-1 cursor-pointer" title="7. Sınıf 2. Ünite İş Laboratuvarına Git">
+                    <i class="fa-solid fa-cube text-emerald-400"></i> <span class="hidden xl:inline">İş Lab (2. Ünite)</span>
+                </a>
+                <button type="button" onclick="openQuizModal()" class="px-2.5 py-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-400 hover:to-orange-500 text-slate-950 font-black text-xs rounded-xl shadow transition-all flex items-center gap-1 cursor-pointer" title="10 Soruluk Ölçme Testi">
+                    <i class="fa-solid fa-award"></i> <span>Ölçme Testi</span>
+                </button>
+                <button type="button" onclick="toggleAudio()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all cursor-pointer" title="Sesi Aç / Kapat">
+                    <i class="fa-solid fa-volume-high" id="audio-icon"></i>
+                </button>
+                <button type="button" onclick="toggleFullscreen()" class="w-8 h-8 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 flex items-center justify-center text-xs transition-all cursor-pointer" title="Tam Ekran">
+                    <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 🌟 ANA ÇALIŞMA ALANI (Split-Screen on Desktop/Pardus, Smooth Mobile Layout) -->
+    <main class="flex-1 min-h-0 w-full overflow-y-auto lg:overflow-hidden p-1.5 sm:p-2 lg:p-2.5 flex flex-col lg:grid lg:grid-cols-12 gap-1.5 sm:gap-2 lg:gap-3">
+        
+        <!-- ⬅️ SOL / ORTA: 3D WebGL Uzay Sahnesi (%60-%65) -->
+        <section class="flex flex-col w-full shrink-0 lg:shrink lg:min-h-0 lg:h-full lg:col-span-7 xl:col-span-8 gap-1.5 sm:gap-2">
+            
+            <!-- 3D Canvas Konteyneri -->
+            <div class="relative w-full h-[220px] sm:h-[260px] lg:h-auto lg:flex-1 min-h-[210px] lg:min-h-0 rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 shadow-2xl shrink-0 lg:shrink">
+                <div id="webgl-container" class="w-full h-full"></div>
+
+                <!-- Sol Üst: Sahne Rozetleri -->
+                <div class="absolute top-2 left-2 pointer-events-none flex flex-wrap items-center gap-1.5 z-10">
+                    <span id="scene-module-badge" class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-slate-950/85 text-amber-300 border border-amber-500/30 backdrop-blur-sm shadow">
+                        <i class="fa-solid fa-sparkles mr-1"></i> 1. Yaşam Döngüsü
+                    </span>
+                    <span id="scene-status-badge" class="px-2 py-0.5 rounded-lg text-[9px] sm:text-[10px] font-black bg-slate-950/85 text-cyan-300 border border-cyan-500/30 backdrop-blur-sm shadow">
+                        Aşama: Bulutsu (Nebula)
+                    </span>
+                </div>
+
+                <!-- Sağ Üst: Kamera / 3D İpucu -->
+                <div class="absolute top-2 right-2 pointer-events-none hidden sm:flex items-center gap-1 bg-slate-950/80 text-slate-400 border border-slate-800 rounded-xl px-2 py-0.5 text-[9px] font-mono z-10 backdrop-blur-sm">
+                    <i class="fa-solid fa-arrows-up-down-left-right text-cyan-400"></i> Döndür / Yakınlaştır
+                </div>
+
+                <!-- Sahne İçi Dinamik Bildirim / Bilgi Kutucuğu (Merkez Altı) -->
+                <div id="scene-banner" class="absolute bottom-2 left-2 right-2 pointer-events-none flex justify-center z-10 transition-all duration-300">
+                    <div id="scene-banner-text" class="px-3 py-1 rounded-xl bg-slate-950/90 border border-indigo-500/40 text-[10px] sm:text-xs font-bold text-center text-indigo-200 backdrop-blur-md shadow-lg">
+                        🔭 Gaz ve toz bulutu kütleçekim kuvvetiyle birleşerek ön yıldızı oluşturur.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sahne Altı Hızlı Kontrol Paneli -->
+            <div id="sub-scene-controls" class="p-1.5 sm:p-2 rounded-xl bg-slate-900/80 border border-slate-800 flex items-center justify-between gap-1.5 shrink-0 text-xs">
+                <!-- Modül 1 için İlerleme Çubuğu ve Butonlar -->
+                <div id="controls-m1" class="w-full flex items-center justify-between gap-2">
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button type="button" onclick="stepStellarTimeline(-1)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95" title="Önceki Evre">
+                            <i class="fa-solid fa-backward-step"></i> <span class="hidden sm:inline">Önceki</span>
+                        </button>
+                        <button type="button" onclick="toggleStellarAutoPlay()" id="btn-m1-play" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow">
+                            <i class="fa-solid fa-play" id="icon-m1-play"></i> <span id="text-m1-play">Otomatik İlerle</span>
+                        </button>
+                        <button type="button" onclick="stepStellarTimeline(1)" class="px-2.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-1 cursor-pointer active:scale-95" title="Sonraki Evre">
+                            <span class="hidden sm:inline">Sonraki</span> <i class="fa-solid fa-forward-step"></i>
+                        </button>
+                    </div>
+
+                    <!-- Evre Adım Rozetleri -->
+                    <div class="flex items-center gap-1 overflow-x-auto no-scrollbar py-0.5 flex-1 justify-center" id="m1-stage-pills">
+                        <!-- JS ile dinamik evre butonları -->
+                    </div>
+
+                    <button type="button" onclick="resetCurrentModule()" class="p-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-all cursor-pointer" title="Evreyi Başa Sar">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+
+                <!-- Modül 2 için Sıcaklık Sürgüsü -->
+                <div id="controls-m2" class="w-full hidden items-center justify-between gap-2">
+                    <span class="font-bold text-amber-300 text-xs shrink-0 flex items-center gap-1">
+                        <i class="fa-solid fa-fire"></i> Yüzey Sıcaklığı:
+                    </span>
+                    <input type="range" id="slider-star-temp" min="2500" max="35000" step="500" value="5800" class="flex-1" oninput="onStarTempSlider(this.value)">
+                    <span id="label-star-temp" class="font-mono font-black text-xs sm:text-sm text-yellow-300 min-w-[65px] text-right">5.800 K</span>
+                </div>
+
+                <!-- Modül 3 için Bulutsu Seçiciler -->
+                <div id="controls-m3" class="w-full hidden items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+                    <button type="button" onclick="selectNebula('orion')" id="btn-neb-orion" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white shrink-0 cursor-pointer">1. Orion (Salma)</button>
+                    <button type="button" onclick="selectNebula('atbasi')" id="btn-neb-atbasi" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">2. Atbaşı (Karanlık)</button>
+                    <button type="button" onclick="selectNebula('halka')" id="btn-neb-halka" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">3. Halka (Gezegenimsi)</button>
+                    <button type="button" onclick="selectNebula('yengec')" id="btn-neb-yengec" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer">4. Yengeç (Süpernova)</button>
+                </div>
+
+                <!-- Modül 4 için Takımyıldızı Seçiciler & Kutup Yıldızı Bulucu -->
+                <div id="controls-m4" class="w-full hidden items-center justify-between gap-1 overflow-x-auto no-scrollbar">
+                    <button type="button" onclick="togglePolarisFinder()" id="btn-polaris-finder" class="px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shrink-0 cursor-pointer flex items-center gap-1 shadow">
+                        <i class="fa-solid fa-compass"></i> <span>Kutup Yıldızı'nı Bul (5 Kat Kuralı)</span>
+                    </button>
+                    <button type="button" onclick="toggleConstellationLines()" id="btn-const-lines" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-cyan-300 border border-cyan-500/30 shrink-0 cursor-pointer">
+                        Çizgileri Gizle/Göster
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ➡️ SAĞ PANEL: İnteraktif Bilgi, Karşılaştırma ve Laboratuvar Masası (%35-%40) -->
+        <section class="w-full shrink-0 lg:shrink lg:flex-1 lg:min-h-0 lg:col-span-5 xl:col-span-4 flex flex-col justify-between bg-slate-900/90 backdrop-blur-md border border-indigo-500/30 rounded-2xl p-2.5 sm:p-3 shadow-xl">
+            
+            <div class="flex flex-col h-full min-h-0 justify-between gap-2">
+                
+                <!-- Başlık ve Modül Etiketi -->
+                <div class="flex items-center justify-between pb-1.5 border-b border-indigo-500/20 shrink-0">
+                    <div class="flex items-center gap-1.5">
+                        <span id="panel-icon-box" class="w-6 h-6 rounded-lg bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs font-black">
+                            <i class="fa-solid fa-atom"></i>
+                        </span>
+                        <h2 id="panel-title" class="font-black text-xs sm:text-sm text-white truncate">
+                            Yıldızların Yaşam Döngüsü
+                        </h2>
+                    </div>
+                    <span id="panel-badge-category" class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-indigo-950 text-indigo-300 border border-indigo-500/30">
+                        7. Sınıf Maarif
+                    </span>
+                </div>
+
+                <!-- 📜 DİNAMİK MODÜL İÇERİK ALANI (Scrollable) -->
+                <div class="flex-1 min-h-0 overflow-y-auto space-y-2.5 pr-0.5" id="dynamic-module-content">
+                    
+                    <!-- ============================================== -->
+                    <!-- MODÜL 1 PANELİ: YAŞAM DÖNGÜSÜ DETAYLARI -->
+                    <!-- ============================================== -->
+                    <div id="panel-m1" class="space-y-2.5">
+                        <!-- Kütle Seçici Sekmeleri -->
+                        <div class="grid grid-cols-2 gap-1.5 p-1 bg-slate-950 rounded-xl border border-slate-800">
+                            <button type="button" onclick="selectStellarMassBranch('low')" id="btn-branch-low" class="py-1.5 px-2 rounded-lg font-black text-xs transition-all flex items-center justify-center gap-1 bg-amber-500 text-slate-950 shadow cursor-pointer">
+                                <span>🟡</span> <span>Küçük Kütleli (Güneş)</span>
+                            </button>
+                            <button type="button" onclick="selectStellarMassBranch('high')" id="btn-branch-high" class="py-1.5 px-2 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-1 bg-slate-900 text-slate-300 hover:text-white cursor-pointer">
+                                <span>🔵</span> <span>Büyük Kütleli (Dev)</span>
+                            </button>
+                        </div>
+
+                        <!-- Evre Başlığı ve Tanımı -->
+                        <div class="bg-slate-950/80 p-2.5 rounded-xl border border-slate-800">
+                            <div class="flex items-center justify-between mb-1">
+                                <h3 id="m1-stage-title" class="text-sm font-black text-amber-300 font-orbitron">Bulutsu (Nebula)</h3>
+                                <span id="m1-stage-duration" class="text-[10px] font-mono text-slate-400">Başlangıç</span>
+                            </div>
+                            <p id="m1-stage-desc" class="text-xs text-slate-300 leading-relaxed">
+                                Yıldızların doğum yeridir. Kütleçekim kuvvetiyle bir araya gelen gaz ve toz bulutları ısınarak yoğunlaşır ve yeni yıldızların çekirdeğini meydana getirir.
+                            </p>
+                        </div>
+
+                        <!-- Fiziksel Değerler Tablosu (Canlı HUD) -->
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800/80 flex flex-col">
+                                <span class="text-[9px] text-slate-400 font-semibold">Çekirdek Durumu</span>
+                                <span id="m1-hud-core" class="text-xs font-mono font-black text-cyan-300">Yerçekimsel Çöküş</span>
+                            </div>
+                            <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800/80 flex flex-col">
+                                <span class="text-[9px] text-slate-400 font-semibold">Yüzey Sıcaklığı</span>
+                                <span id="m1-hud-temp" class="text-xs font-mono font-black text-amber-300">10 - 100 K (-263 °C)</span>
+                            </div>
+                            <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800/80 flex flex-col">
+                                <span class="text-[9px] text-slate-400 font-semibold">Yarıçap / Boyut</span>
+                                <span id="m1-hud-size" class="text-xs font-mono font-black text-emerald-300">Işık Yıllarınca Geniş</span>
+                            </div>
+                            <div class="bg-slate-950/70 p-2 rounded-xl border border-slate-800/80 flex flex-col">
+                                <span class="text-[9px] text-slate-400 font-semibold">Nihai Gelecek</span>
+                                <span id="m1-hud-fate" class="text-xs font-mono font-black text-purple-300">Ön Yıldız Oluşumu</span>
+                            </div>
+                        </div>
+
+                        <!-- Maarif Modeli Öğretmen Notu -->
+                        <div class="bg-indigo-950/40 p-2.5 rounded-xl border border-indigo-500/30 text-xs text-indigo-200">
+                            <div class="font-bold text-amber-300 mb-0.5 flex items-center gap-1">
+                                <i class="fa-solid fa-lightbulb"></i> Maarif Modeli Kritik Not:
+                            </div>
+                            <span id="m1-maarif-note">
+                                Yıldızların yaşam döngüsü doğrudan kütlelerine bağlıdır. Güneş gibi küçük kütleli yıldızlar Beyaz Cüce olarak sonlanırken; büyük kütleli yıldızlar Süpernova patlamasıyla Nötron Yıldızı veya Kara Deliğe dönüşür.
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- MODÜL 2 PANELİ: RENK VE SICAKLIK -->
+                    <!-- ============================================== -->
+                    <div id="panel-m2" class="space-y-2.5 hidden">
+                        <!-- Kavram Yanılgısı Kutusu -->
+                        <div class="bg-rose-950/60 p-2.5 rounded-xl border border-rose-500/40 text-xs text-rose-200">
+                            <div class="font-black text-rose-300 mb-0.5 flex items-center gap-1">
+                                <i class="fa-solid fa-triangle-exclamation"></i> En Çok Yapılan Hata:
+                            </div>
+                            Günlük yaşamda kırmızı "sıcak", mavi "soğuk" kabul edilir. Ancak gökbilimde <strong>MAVİ YILDIZLAR EN SICAK</strong>, <strong>KIRMIZI YILDIZLAR EN SOĞUK</strong> yıldızlardır!
+                        </div>
+
+                        <!-- Gerçek Yıldız Örnekleri Butonları -->
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wide">Gerçek Yıldızları İncele:</span>
+                            <div class="grid grid-cols-2 gap-1.5">
+                                <button type="button" onclick="setPresetStar('betelgeuse')" class="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-red-500/50 text-left transition-all cursor-pointer">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-black text-red-400 text-xs">Betelgeuse</span>
+                                        <span class="text-[9px] font-mono text-red-300">~3.500 K</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">Kırmızı Süperdev (Soğuk)</span>
+                                </button>
+                                <button type="button" onclick="setPresetStar('gunes')" class="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-yellow-500/50 text-left transition-all cursor-pointer">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-black text-yellow-400 text-xs">Güneş</span>
+                                        <span class="text-[9px] font-mono text-yellow-300">~5.800 K</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">Sarı Cüce (Orta Sıcak)</span>
+                                </button>
+                                <button type="button" onclick="setPresetStar('sirius')" class="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-300 text-left transition-all cursor-pointer">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-black text-slate-100 text-xs">Sirius</span>
+                                        <span class="text-[9px] font-mono text-slate-300">~9.900 K</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">Beyaz Yıldız (Çok Sıcak)</span>
+                                </button>
+                                <button type="button" onclick="setPresetStar('rigel')" class="p-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-cyan-400 text-left transition-all cursor-pointer">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-black text-cyan-300 text-xs">Rigel</span>
+                                        <span class="text-[9px] font-mono text-cyan-200">~12.000 K</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">Mavi Dev (En Sıcak!)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Sıcaklık Skalası Açıklaması -->
+                        <div class="bg-slate-950/90 p-2.5 rounded-xl border border-slate-800 text-xs space-y-1.5">
+                            <div class="flex items-center justify-between font-bold">
+                                <span class="text-slate-300">Renk Sınıfı:</span>
+                                <span id="m2-color-class" class="font-black text-yellow-400 font-mono">Sarı (G-Tipi)</span>
+                            </div>
+                            <div class="flex items-center justify-between font-bold">
+                                <span class="text-slate-300">Işıma Enerjisi:</span>
+                                <span id="m2-radiation-power" class="text-cyan-300 font-mono">Orta Düzey Radyasyon</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 leading-snug pt-1 border-t border-slate-800" id="m2-summary-text">
+                                Yıldızın sıcaklığı arttıkça yaydığı ışık dalga boyu kısalır ve kırmızıdan maviye doğru kayar.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- MODÜL 3 PANELİ: BULUTSULAR (NEBULA) -->
+                    <!-- ============================================== -->
+                    <div id="panel-m3" class="space-y-2.5 hidden">
+                        <div class="bg-slate-950/80 p-2.5 rounded-xl border border-purple-500/30">
+                            <h3 id="m3-nebula-title" class="text-sm font-black text-purple-300 font-orbitron mb-1">Orion Bulutsusu</h3>
+                            <span id="m3-nebula-type" class="px-2 py-0.5 rounded text-[9px] font-black bg-purple-950 text-purple-200 border border-purple-500/40">
+                                Parlak Salma Bulutsusu
+                            </span>
+                            <p id="m3-nebula-desc" class="text-xs text-slate-300 leading-relaxed mt-2">
+                                Dünya'ya yaklaşık 1.344 ışık yılı uzaklıktadır. Çıplak gözle dahi Avcı takımyıldızında seçilebilen en ünlü yıldız doğumevidir.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-1.5">
+                            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                                <span class="text-[9px] text-slate-400">Dünya'ya Uzaklık</span>
+                                <div id="m3-nebula-dist" class="text-xs font-mono font-bold text-cyan-300">1.344 Işık Yılı</div>
+                            </div>
+                            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                                <span class="text-[9px] text-slate-400">Bulutsu Türü</span>
+                                <div id="m3-nebula-kind" class="text-xs font-mono font-bold text-pink-300">Yıldız Doğumevi</div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-950/90 p-2 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1">
+                            <span class="font-bold text-amber-300">Biliyor muydunuz?</span>
+                            <p class="text-[11px] text-slate-400 leading-snug">
+                                Işık yılı bir zaman birimi değil, ışığın boşlukta 1 yılda kat ettiği yaklaşık 9,5 trilyon kilometrelik <strong>MESAFE BİRİMİDİR</strong>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- ============================================== -->
+                    <!-- MODÜL 4 PANELİ: TAKIMYILDIZLARI VE POLARIS -->
+                    <!-- ============================================== -->
+                    <div id="panel-m4" class="space-y-2.5 hidden">
+                        <div class="bg-slate-950/80 p-2.5 rounded-xl border border-cyan-500/30">
+                            <h3 class="text-sm font-black text-cyan-300 font-orbitron mb-1">Kutup Yıldızı (Polaris) & Büyükayı</h3>
+                            <p class="text-xs text-slate-300 leading-relaxed">
+                                Gökyüzüne baktığımızda bir arada görünen yıldız gruplarına <strong>Takımyıldızı</strong> denir. Takımyıldızları eski çağlardan beri yön bulma ve takvim yapmada kullanılmıştır.
+                            </p>
+                        </div>
+
+                        <!-- 5 Kat Kuralı Rehberi -->
+                        <div class="bg-cyan-950/40 p-2.5 rounded-xl border border-cyan-500/40 text-xs text-cyan-100 space-y-1">
+                            <div class="font-black text-cyan-300 flex items-center gap-1.5">
+                                <i class="fa-solid fa-compass"></i> Kutup Yıldızı Nasıl Bulunur? (5 Kat Kuralı):
+                            </div>
+                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-slate-300 pt-1">
+                                <li>Önce cezveye benzeyen <strong>Büyükayı</strong> takımyıldızını bul.</li>
+                                <li>Cezvenin dış kenarındaki iki yıldız (Merak ve Dubhe) arasındaki mesafeyi ölç.</li>
+                                <li>Bu mesafeyi ağız yönünde tam <strong>5 KAT</strong> uzat!</li>
+                                <li>Ulaştığın parlak yıldız <strong>Kutup Yıldızı'dır (Polaris)</strong> ve daima <strong>TAM KUZEYİ</strong> gösterir!</li>
+                            </ol>
+                        </div>
+
+                        <!-- Önemli Takımyıldızları Listesi -->
+                        <div class="grid grid-cols-2 gap-1.5 text-xs">
+                            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                                <span class="font-bold text-amber-300">Büyükayı (Ursa Major)</span>
+                                <p class="text-[10px] text-slate-400">Yön bulmada anahtar takımyıldız.</p>
+                            </div>
+                            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                                <span class="font-bold text-cyan-300">Küçükayı (Ursa Minor)</span>
+                                <p class="text-[10px] text-slate-400">Kuyruğunda Kutup Yıldızı yer alır.</p>
+                            </div>
+                            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                                <span class="font-bold text-indigo-300">Avcı (Orion)</span>
+                                <p class="text-[10px] text-slate-400">Avcının kemeri ve kılıcıyla ünlü kış takımyıldızı.</p>
+                            </div>
+                            <div class="bg-slate-950 p-2 rounded-xl border border-slate-800">
+                                <span class="font-bold text-pink-300">Kraliçe (Kassiopeia)</span>
+                                <p class="text-[10px] text-slate-400">'W' harfi şeklindeki 5 parlak yıldız.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Alt Hızlı Eylem Butonu -->
+                <div class="pt-2 border-t border-slate-800 shrink-0">
+                    <button type="button" onclick="openQuizModal()" class="w-full py-2 px-3 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs sm:text-sm uppercase tracking-wide rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-award"></i> <span>10 Soruluk Yıldızlar Testine Başla</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ========================================================================= -->
+    <!-- 🎓 MODAL: 10 SORULUK ÖLÇME VE DEĞERLENDİRME TESTİ -->
+    <!-- ========================================================================= -->
+    <div id="modal-quiz" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 transition-all duration-300 hidden opacity-0">
+        <div class="bg-slate-900 border-2 border-amber-400/80 rounded-3xl p-4 sm:p-5 max-w-xl w-full shadow-2xl text-white max-h-[92dvh] max-h-[92vh] flex flex-col justify-between" id="modal-quiz-box">
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2 sm:pb-3 shrink-0">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-600 text-slate-950 font-black flex items-center justify-center text-sm shadow">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </span>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-black font-orbitron text-amber-300">YILDIZLAR VE UZAY ÇAĞI TESTİ</h3>
+                        <span class="text-[10px] text-slate-400">7. Sınıf 1. Ünite Maarif Modeli Ölçme & Değerlendirme</span>
+                    </div>
+                </div>
+                <button type="button" onclick="closeQuizModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-600 text-slate-400 hover:text-white flex items-center justify-center text-xs transition-colors cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Soru Alanı -->
+            <div class="py-3 flex-1 overflow-y-auto space-y-3">
+                <div class="flex items-center justify-between text-xs font-bold text-slate-400 border-b border-slate-800 pb-1">
+                    <span id="quiz-question-counter">Soru 1 / 10</span>
+                    <span id="quiz-score-badge" class="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 font-mono">Puan: 0 / 100</span>
+                </div>
+                
+                <h4 id="quiz-question-text" class="text-xs sm:text-sm font-bold text-white leading-relaxed">
+                    Soru yükleniyor...
+                </h4>
+
+                <div class="space-y-1.5" id="quiz-options-container">
+                    <!-- Dinamik Şıklar -->
+                </div>
+
+                <div id="quiz-explanation-box" class="p-2.5 rounded-xl text-xs font-bold leading-relaxed hidden">
+                    <!-- Dinamik Açıklama -->
+                </div>
+            </div>
+
+            <!-- Alt Butonlar -->
+            <div class="pt-2 border-t border-slate-800 flex items-center justify-between shrink-0">
+                <button type="button" onclick="closeQuizModal()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold cursor-pointer">
+                    Vazgeç
+                </button>
+                <button type="button" onclick="nextQuizQuestion()" id="btn-quiz-next" class="px-4 py-1.5 bg-gradient-to-r from-amber-500 to-orange-600 text-slate-950 font-black text-xs rounded-xl shadow cursor-pointer hidden">
+                    Sonraki Soru <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 🔬 THREE.JS VE SİMÜLASYON MOTORU -->
+    <!-- ========================================================================= -->
+    <script>
+        // Ses Sentezleyici (Web Audio API)
+        const SoundEngine = {
+            ctx: null,
+            isMuted: false,
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) this.ctx = new AudioContext();
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume().catch(() => {});
+                }
+            },
+            playTone(freq, duration = 0.2, type = 'sine') {
+                if (this.isMuted) return;
+                this.init();
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            },
+            playCorrect() {
+                this.playTone(523.25, 0.12, 'triangle');
+                setTimeout(() => this.playTone(659.25, 0.15, 'triangle'), 100);
+                setTimeout(() => this.playTone(783.99, 0.25, 'triangle'), 220);
+            },
+            playWrong() {
+                this.playTone(220, 0.2, 'sawtooth');
+                setTimeout(() => this.playTone(180, 0.25, 'sawtooth'), 120);
+            },
+            playSupernova() {
+                if (this.isMuted) return;
+                this.init();
+                if (!this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(120, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(40, this.ctx.currentTime + 1.2);
+                    gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 1.2);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 1.2);
+                } catch(e) {}
+            },
+            playPulsar() {
+                this.playTone(880, 0.05, 'sine');
+            }
+        };
+
+        function toggleAudio() {
+            SoundEngine.isMuted = !SoundEngine.isMuted;
+            document.querySelectorAll('#audio-icon, #audio-icon-mobile').forEach(icon => {
+                icon.className = SoundEngine.isMuted ? 'fa-solid fa-volume-xmark text-rose-400' : 'fa-solid fa-volume-high text-slate-300';
+            });
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                document.querySelectorAll('#fullscreen-icon, #fullscreen-icon-mobile').forEach(i => i.className = 'fa-solid fa-compress');
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen();
+                document.querySelectorAll('#fullscreen-icon, #fullscreen-icon-mobile').forEach(i => i.className = 'fa-solid fa-expand');
+            }
+        }
+
+        // =========================================================================
+        // 📚 VERİ SETİ: YAŞAM DÖNGÜSÜ, BULUTSULAR VE 10 SORULUK TEST
+        // =========================================================================
+        const STELLAR_EVOLUTION_DATA = {
+            low: [
+                {
+                    id: 'nebula_low',
+                    name: 'Bulutsu (Nebula)',
+                    duration: '0 Milyon Yıl (Başlangıç)',
+                    color: '#f59e0b',
+                    scale: 3.5,
+                    meshType: 'cloud',
+                    desc: 'Uzaydaki devasa gaz (özellikle hidrojen) ve toz bulutları kütleçekimi etkisiyle çökmeye ve ısınmaya başlar. Burası yıldızın doğumevidir.',
+                    core: 'Yerçekimsel Yoğunlaşma',
+                    temp: '10 - 100 K (-263 °C)',
+                    size: 'Işık yılları genişliğinde',
+                    fate: 'Ön Yıldız (Protostar)',
+                    note: 'Güneş gibi küçük ve orta kütleli tüm yıldızlar bir gaz ve toz bulutundan doğar.'
+                },
+                {
+                    id: 'protostar_low',
+                    name: 'Ön Yıldız (Protostar)',
+                    duration: '10 Milyon Yıl',
+                    color: '#ea580c',
+                    scale: 2.2,
+                    meshType: 'protostar',
+                    desc: 'Gaz bulutunun merkezinde basınç ve sıcaklık milyonlarca dereceye çıkar. Çekirdek parlamaya başlar ama henüz nükleer füzyon tam başlamamıştır.',
+                    core: 'Basınçlı Çekirdek',
+                    temp: 'Yaklaşık 3.000 K',
+                    size: 'Güneş\\'in ~5 katı',
+                    fate: 'Küçük Kütleli Yıldız',
+                    note: 'Çekirdek sıcaklığı 10-15 milyon dereceye ulaştığında hidrojen atomları helyuma dönüşmeye başlar.'
+                },
+                {
+                    id: 'main_low',
+                    name: 'Küçük Kütleli Yıldız (Güneş)',
+                    duration: '10 Milyar Yıl (Kararlı Çağ)',
+                    color: '#eab308',
+                    scale: 1.5,
+                    meshType: 'sun_star',
+                    desc: 'Yıldızın en uzun ve en kararlı evresidir. Çekirdeğinde sürekli olarak Hidrojen atomları Helyum atomlarına dönüşür (nükleer füzyon). Güneşimiz şu anda bu aşamadadır!',
+                    core: 'Hidrojen -> Helyum Füzyonu',
+                    temp: '5.800 K (Yüzey), 15 Milyon K (Çekirdek)',
+                    size: '1 Güneş Çapı (~1.392.000 km)',
+                    fate: 'Kırmızı Dev Aşaması',
+                    note: 'Kütleçekim kuvveti ile iç basınç dengededir (hidrostatik denge). Yıldız milyarlarca yıl parlar.'
+                },
+                {
+                    id: 'red_giant',
+                    name: 'Kırmızı Dev (Red Giant)',
+                    duration: '1 Milyar Yıl',
+                    color: '#dc2626',
+                    scale: 4.8,
+                    meshType: 'red_giant',
+                    desc: 'Çekirdekteki hidrojen tükenir. Çekirdek büzülürken dış katmanlar yüzlerce kat şişer ve soğur. Yıldız kırmızı-turuncu devasa bir küreye dönüşür. Gelecekte Güneş Kırmızı Dev olduğunda Dünya\\'nın yörüngesine kadar genişleyecektir!',
+                    core: 'Helyum -> Karbon Füzyonu',
+                    temp: '3.000 - 3.500 K (Yüzey Soğur)',
+                    size: 'Güneş\\'in 100-200 Katı Dev Küre',
+                    fate: 'Gezegenimsi Bulutsu',
+                    note: 'Dış katmanlar soğuduğu için yıldız kırmızı görünür, hacmi devasa büyür.'
+                },
+                {
+                    id: 'planetary_nebula',
+                    name: 'Gezegenimsi Bulutsu (Planetary Nebula)',
+                    duration: '50.000 Yıl',
+                    color: '#06b6d4',
+                    scale: 3.8,
+                    meshType: 'planetary_ring',
+                    desc: 'Kırmızı dev dış gaz katmanlarını uzaya fırlatır. Bu gazlar uzayda parıldayan rengarenk zarif halkalar ve küreler oluşturur. Merkezde ise sıcak çekirdek kalır.',
+                    core: 'Çıplaklaşmış Karbon-Oksijen Çekirdek',
+                    temp: '100.000 K (Merkez)',
+                    size: 'Genişleyen Gaz Halkası (1 Işık Yılı)',
+                    fate: 'Beyaz Cüce',
+                    note: 'Adında gezegen geçmesine rağmen gezegenlerle ilgisi yoktur; teleskopla gezegene benzediği için bu tarihi ismi almıştır.'
+                },
+                {
+                    id: 'white_dwarf',
+                    name: 'Beyaz Cüce (White Dwarf)',
+                    duration: 'Milyarlarca Yıl',
+                    color: '#f8fafc',
+                    scale: 0.7,
+                    meshType: 'white_dwarf',
+                    desc: 'Yıldızın geriye kalan son derece yoğun ve sıcak çekirdeğidir. Yaklaşık Dünya boyutundadır ama Güneş kütlesindedir (bir çay kaşığı maddesi tonlarca gelir!). Artık nükleer füzyon yapmaz, yavaşça soğur.',
+                    core: 'Dejenere Karbon/Oksijen Maddesi',
+                    temp: '25.000 K (Beyaz Akkor)',
+                    size: 'Dünya Büyüklüğünde (~12.000 km)',
+                    fate: 'Siyah Cüce (Son Aşama)',
+                    note: 'Küçük kütleli yıldızların yaşamının son kararlı kalıntısıdır.'
+                }
+            ],
+            high: [
+                {
+                    id: 'nebula_high',
+                    name: 'Dev Bulutsu (Giant Nebula)',
+                    duration: '0 Milyon Yıl',
+                    color: '#6366f1',
+                    scale: 4.2,
+                    meshType: 'cloud_high',
+                    desc: 'Güneş\\'ten 8-20 kat daha fazla kütleye sahip devasa gaz bulutudur. Muazzam kütleçekimiyle çok daha hızlı ve şiddetle çöker.',
+                    core: 'Şiddetli Kütleçekim Çöküşü',
+                    temp: '10 - 100 K',
+                    size: 'Devasa Moleküler Bulut',
+                    fate: 'Büyük Kütleli Yıldız',
+                    note: 'Büyük kütleli yıldızlar yakıtlarını çok hızlı tüketir ve çok daha kısa yaşarlar.'
+                },
+                {
+                    id: 'main_high',
+                    name: 'Büyük Kütleli Mavi Yıldız',
+                    duration: '10-50 Milyon Yıl (Çok Kısa Ömür)',
+                    color: '#38bdf8',
+                    scale: 2.8,
+                    meshType: 'blue_star',
+                    desc: 'Güneş\\'ten binlerce kat daha parlak, akkor halinde parlayan dev yıldız. Çekirdeğinde yakıtını öyle çılgınca yakar ki milyonlarca yılda tüketir (Rigel, Spica gibi).',
+                    core: 'Hızlı ve Şiddetli Füzyon',
+                    temp: '20.000 - 35.000 K (Aşırı Sıcak!)',
+                    size: 'Güneş\\'in 10-25 Katı',
+                    fate: 'Kırmızı Süperdev',
+                    note: 'En sıcak ve en parlak yıldızlardır, bu nedenle renkleri belirgin şekilde mavidir.'
+                },
+                {
+                    id: 'red_supergiant',
+                    name: 'Kırmızı Süperdev (Red Supergiant)',
+                    duration: 'Birkaç Yüz Bin Yıl',
+                    color: '#b91c1c',
+                    scale: 6.0,
+                    meshType: 'red_supergiant',
+                    desc: 'Evrendeki en hacimli yıldızlardır (örn: Betelgeuse). O kadar büyüktür ki Güneş\\'in yerine konsa Jüpiter\\'in yörüngesini dahi içine alırdı! Çekirdeğinde demire kadar ağır elementler üretilir.',
+                    core: 'Demire (Fe) Kadar Katmanlı Füzyon',
+                    temp: '3.000 K (Yüzey), Milyarlarca K (Merkez)',
+                    size: 'Güneş\\'in 1000 Katı Hacim!',
+                    fate: 'Süpernova Patlaması!',
+                    note: 'Çekirdekte demir biriktiğinde nükleer füzyon durur ve yıldız kendi içine çökmeye başlar.'
+                },
+                {
+                    id: 'supernova',
+                    name: '💥 SÜPERNOVA PATLAMASI!',
+                    duration: 'Günler/Aylar',
+                    color: '#facc15',
+                    scale: 5.5,
+                    meshType: 'supernova',
+                    desc: 'Evrenin en görkemli patlaması! Yıldız saniyeler içinde kendi içine çöker ve akıl almaz bir enerjiyle uzaya patlar. Bir galaksideki tüm yıldızların toplamından daha parlak parlar ve altın, platin, uranyum gibi tüm ağır elementleri uzaya saçar!',
+                    core: 'Şok Dalgası ve İnfilak',
+                    temp: '10 Milyar Kelvin!',
+                    size: 'Işık Hızıyla Genişleyen Şok Dalgası',
+                    fate: 'Nötron Yıldızı veya Kara Delik',
+                    note: 'Vücudumuzdaki demir, kanımızdaki hemoglobin ve takılardaki altın bir süpernova patlamasında üretilmiştir!'
+                },
+                {
+                    id: 'neutron_star',
+                    name: 'Nötron Yıldızı (Atarca / Pulsar)',
+                    duration: 'Milyarlarca Yıl',
+                    color: '#a855f7',
+                    scale: 0.6,
+                    meshType: 'pulsar',
+                    desc: 'Patlamadan sonra kalan çekirdeğin proton ve elektronlarının birleşerek nötrona dönüştüğü aşırı yoğun küre. Çapı sadece 20 km\\'dir ama Güneş kütlesindedir! Kendi etrafında saniyede yüzlerce kez dönerek manyetik ışın fışkırtır.',
+                    core: 'Saf Nötron Denizi',
+                    temp: '1 Milyon K',
+                    size: 'Şehir Büyüklüğünde (~20 km)',
+                    fate: 'Sonsuz Radyasyon',
+                    note: 'Dünyanın en yoğun gök cisimlerindendir; 1 santimetreküpü bir dağ kadar ağırdır.'
+                },
+                {
+                    id: 'black_hole',
+                    name: '🕳️ KARA DELİK (Black Hole)',
+                    duration: 'Sonsuz',
+                    color: '#0f172a',
+                    scale: 1.8,
+                    meshType: 'black_hole',
+                    desc: 'Eğer geride kalan çekirdeğin kütlesi Güneş\\'in 3 katından fazlaysa hiçbir kuvvet çökmeyi durduramaz. Kütleçekimi o kadar güçlüdür ki ışık dahi kaçamaz! Çevresinde olay ufku ve ışık saçan çekim diski oluşur.',
+                    core: 'Tekillik (Sonsuz Yoğunluk)',
+                    temp: 'Olay Ufku Çevresi Aşırı Sıcak',
+                    size: 'Olay Ufku Yarıçapı (~30-60 km)',
+                    fate: 'Evrenin En Gizemli Çekim Merkezi',
+                    note: 'Kara delikler uzayda delik değil, sonsuz çekim gücüne sahip aşırı yoğun cisimlerdir.'
+                }
+            ]
+        };
+
+        const QUIZ_QUESTIONS = [
+            {
+                q: "1. Yıldızların doğum yeri olan, gaz ve toz bulutlarından meydana gelen devasa gök cisimlerine ne ad verilir?",
+                options: ["Bulutsu (Nebula)", "Kara Delik", "Takımyıldızı", "Göktaşı"],
+                correct: 0,
+                explanation: "Yıldızlar uzaydaki hidrojen gazı ve toz bulutlarının (Bulutsu / Nebula) kütleçekim etkisiyle yoğunlaşması sonucu doğarlar."
+            },
+            {
+                q: "2. Gökbilimde yıldızların rengi ile yüzey sıcaklıkları arasında nasıl bir ilişki vardır?",
+                options: [
+                    "Mavi yıldızlar en sıcak, kırmızı yıldızlar en soğuktur.",
+                    "Kırmızı yıldızlar en sıcak, mavi yıldızlar en soğuktur.",
+                    "Tüm yıldızların yüzey sıcaklığı aynıdır.",
+                    "Yıldızın rengi sıcaklığı değil sadece yaşını belirtir."
+                ],
+                correct: 0,
+                explanation: "Günlük yaşam yanılgısının aksine; gökbilimde mavi/beyaz yıldızlar en sıcak (>10.000 K), sarı yıldızlar orta (~6.000 K), kırmızı yıldızlar ise en soğuk (~3.000 K) yıldızlardır."
+            },
+            {
+                q: "3. Güneşimiz gibi küçük kütleli bir yıldızın yaşam döngüsü sırasıyla hangi evrelerden geçer?",
+                options: [
+                    "Bulutsu -> Küçük Kütleli Yıldız -> Kırmızı Dev -> Gezegenimsi Bulutsu -> Beyaz Cüce",
+                    "Bulutsu -> Kırmızı Süperdev -> Süpernova -> Kara Delik",
+                    "Beyaz Cüce -> Kırmızı Dev -> Güneş -> Bulutsu",
+                    "Bulutsu -> Nötron Yıldızı -> Gezegenimsi Bulutsu -> Güneş"
+                ],
+                correct: 0,
+                explanation: "Küçük kütleli yıldızlar Kırmızı Dev olduktan sonra dış katmanlarını Gezegenimsi Bulutsu olarak uzaya bırakır ve geriye Beyaz Cüce çekirdeği kalır."
+            },
+            {
+                q: "4. Büyük kütleli yıldızların ömürlerinin sonunda yaşadığı, evrendeki en şiddetli patlamaya ne ad verilir?",
+                options: ["Süpernova Patlaması", "Büyük Patlama (Big Bang)", "Gezegenimsi Çöküş", "Güneş Tutulması"],
+                correct: 0,
+                explanation: "Büyük kütleli kırmızı süperdevlerin çekirdeği çöktüğünde muazzam bir enerjiyle uzaya patlamasına 'Süpernova Patlaması' denir."
+            },
+            {
+                q: "5. Süpernova patlamasından sonra geriye kalan aşırı yoğun çekirdeğin ışığı bile kaçıramayacak kadar güçlü bir kütleçekimine sahip olmasıyla ne oluşur?",
+                options: ["Kara Delik", "Beyaz Cüce", "Kuyruklu Yıldız", "Kutup Yıldızı"],
+                correct: 0,
+                explanation: "Süpernova sonrasında geriye kalan kütle çok büyükse kütleçekimi durdurulamaz ve ışığı dahi hapseden bir Kara Delik meydana gelir."
+            },
+            {
+                q: "6. Gökyüzüne bakıldığında bir arada görünen, mitolojik kahramanlara veya hayvanlara benzetilen yıldız gruplarına ne denir?",
+                options: ["Takımyıldızı", "Işık Yılı", "Galaksi", "Güneş Sistemi"],
+                correct: 0,
+                explanation: "Gökyüzünde birbirine göre konumları değişmeyen yıldız gruplarına 'Takımyıldızı' (Büyükayı, Avcı, Ejderha vb.) adı verilir."
+            },
+            {
+                q: "7. Kutup Yıldızı (Polaris) ile ilgili aşağıda verilen bilgilerden hangisi DOĞRUDUR?",
+                options: [
+                    "Daima tam kuzey yönünü gösterir ve Küçükayı takımyıldızının kuyruğundadır.",
+                    "Gökyüzünün en sıcak ve en büyük yıldızıdır.",
+                    "Sürekli hareket ederek her mevsim yön değiştirir.",
+                    "Güney Kutup Noktası'ndan çok net görülür."
+                ],
+                correct: 0,
+                explanation: "Kutup Yıldızı (Polaris) Dünya'nın dönme ekseni doğrultusunda olduğu için daima tam Kuzeyi gösterir ve Küçükayı takımyıldızının en ucundaki yıldızdır."
+            },
+            {
+                q: "8. Büyükayı takımyıldızını kullanarak Kutup Yıldızı'nı bulmak isteyen bir öğrenci hangi kuralı uygulamalıdır?",
+                options: [
+                    "Cezvenin ucundaki iki yıldız arasındaki mesafeyi 5 kat ileri uzatmalıdır.",
+                    "Cezvenin sapını geriye doğru 10 kat uzatmalıdır.",
+                    "En parlak kırmızı yıldızı aramalıdır.",
+                    "Ay'ın yanındaki ilk yıldıza bakmalıdır."
+                ],
+                correct: 0,
+                explanation: "Büyükayı cezvesinin dış iki yıldızı arasındaki mesafe ağız yönünde 5 kat uzatıldığında doğrudan Kutup Yıldızı'na (Kuzey'e) ulaşılır."
+            },
+            {
+                q: "9. Astronomide kullanılan 'Işık Yılı' kavramı neyi ifade eder?",
+                options: [
+                    "Işığın boşlukta 1 yılda aldığı mesafe birimini",
+                    "Güneş'in Dünya etrafında dönme süresini",
+                    "Bir yıldızın yaşını",
+                    "Geceleri yıldızların parladığı toplam saati"
+                ],
+                correct: 0,
+                explanation: "Işık yılı bir zaman değil; ışığın boşlukta saniyede 300.000 km hızla bir yılda kat ettiği yaklaşık 9,5 trilyon kilometrelik MESAFE (uzaklık) birimidir."
+            },
+            {
+                q: "10. Dünya'mızın ısı ve ışık kaynağı olan Güneşimiz ile ilgili hangisi DOĞRUDUR?",
+                options: [
+                    "Orta büyüklükte ve sarı renkli, orta sıcaklıkta bir yıldızdır.",
+                    "Evrendeki en büyük ve en sıcak dev yıldızdır.",
+                    "Ömrünün sonunda süpernova patlamasıyla kara deliğe dönüşecektir.",
+                    "Yüzey sıcaklığı 30.000 dereceden fazladır."
+                ],
+                correct: 0,
+                explanation: "Güneş, yaklaşık 5.800 K yüzey sıcaklığına sahip orta kütleli, sarı cüce bir yıldızdır ve ömrünü Beyaz Cüce olarak tamamlayacaktır."
+            }
+        ];
+
+        // =========================================================================
+        // 🎮 THREE.JS SİMÜLASYON MOTORU
+        // =========================================================================
+        let scene, camera, renderer, controls;
+        let starMesh = null;
+        let coronaMesh = null;
+        let particlesMesh = null;
+        let constellationGroup = null;
+        let polarisLineMesh = null;
+
+        let activeModule = 1; // 1: Yaşam, 2: Sıcaklık, 3: Bulutsu, 4: Takımyıldızı
+        let currentMassBranch = 'low'; // 'low' | 'high'
+        let currentStageIdx = 0;
+        let isAutoPlaying = false;
+        let autoPlayTimer = null;
+        let showConstLines = true;
+        let showPolarisFinder = false;
+
+        function initThree() {
+            const container = document.getElementById('webgl-container');
+            if (!container) return;
+
+            scene = new THREE.Scene();
+            scene.fog = new THREE.FogExp2(0x020617, 0.015);
+
+            camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.set(0, 0, 16);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+            renderer.toneMapping = THREE.ACESFilmicToneMapping;
+            renderer.toneMappingExposure = 1.2;
+            container.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxDistance = 50;
+            controls.minDistance = 2;
+
+            // Ortam ve Işıklar
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+            scene.add(ambientLight);
+
+            const pointLight = new THREE.PointLight(0xffffff, 2, 100);
+            pointLight.position.set(10, 10, 10);
+            scene.add(pointLight);
+
+            // Arka Plan Uzay Yıldız Tozu
+            createSpaceDust();
+
+            // İlk sahne objesini oluştur
+            renderStellarStage();
+
+            window.addEventListener('resize', onWindowResize);
+            animate();
+        }
+
+        function createSpaceDust() {
+            const dustGeo = new THREE.BufferGeometry();
+            const dustCount = 1200;
+            const posArray = new Float32Array(dustCount * 3);
+            const colorArray = new Float32Array(dustCount * 3);
+
+            for (let i = 0; i < dustCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 120;
+                posArray[i + 1] = (Math.random() - 0.5) * 120;
+                posArray[i + 2] = (Math.random() - 0.5) * 120;
+
+                const r = 0.6 + Math.random() * 0.4;
+                const g = 0.6 + Math.random() * 0.4;
+                const b = 0.8 + Math.random() * 0.2;
+                colorArray[i] = r;
+                colorArray[i + 1] = g;
+                colorArray[i + 2] = b;
+            }
+
+            dustGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            dustGeo.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+
+            const dustMat = new THREE.PointsMaterial({
+                size: 0.35,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            const dustMesh = new THREE.Points(dustGeo, dustMat);
+            scene.add(dustMesh);
+        }
+
+        function clearMainMeshes() {
+            if (starMesh) { scene.remove(starMesh); starMesh = null; }
+            if (coronaMesh) { scene.remove(coronaMesh); coronaMesh = null; }
+            if (particlesMesh) { scene.remove(particlesMesh); particlesMesh = null; }
+            if (constellationGroup) { scene.remove(constellationGroup); constellationGroup = null; }
+            if (polarisLineMesh) { scene.remove(polarisLineMesh); polarisLineMesh = null; }
+        }
+
+        // =========================================================================
+        // 🌟 MODÜL 1: YAŞAM DÖNGÜSÜ 3D OLUŞTURUCUSU
+        // =========================================================================
+        function renderStellarStage() {
+            clearMainMeshes();
+            const branch = STELLAR_EVOLUTION_DATA[currentMassBranch];
+            const data = branch[currentStageIdx];
+            if (!data) return;
+
+            // Kamera mesafesini ayarla
+            camera.position.set(0, 0, Math.max(12, data.scale * 3.2));
+            controls.target.set(0, 0, 0);
+
+            // UI Güncelle
+            document.getElementById('scene-module-badge').innerHTML = '<i class="fa-solid fa-sparkles mr-1"></i> 1. Yaşam Döngüsü';
+            document.getElementById('scene-status-badge').textContent = 'Evre: ' + data.name;
+            document.getElementById('scene-banner-text').textContent = '🔭 ' + data.desc;
+
+            document.getElementById('m1-stage-title').textContent = data.name;
+            document.getElementById('m1-stage-duration').textContent = data.duration;
+            document.getElementById('m1-stage-desc').textContent = data.desc;
+            document.getElementById('m1-hud-core').textContent = data.core;
+            document.getElementById('m1-hud-temp').textContent = data.temp;
+            document.getElementById('m1-hud-size').textContent = data.size;
+            document.getElementById('m1-hud-fate').textContent = data.fate;
+            document.getElementById('m1-maarif-note').textContent = data.note;
+
+            renderStagePills();
+
+            // 3D Obje İnşası
+            if (data.meshType === 'cloud' || data.meshType === 'cloud_high') {
+                createNebulaCloudMesh(data.color, data.scale);
+                SoundEngine.playTone(300, 0.4, 'sine');
+            } else if (data.meshType === 'planetary_ring') {
+                createPlanetaryNebulaMesh();
+                SoundEngine.playTone(450, 0.4, 'triangle');
+            } else if (data.meshType === 'supernova') {
+                createSupernovaExplosionMesh();
+                SoundEngine.playSupernova();
+                confetti({ particleCount: 50, spread: 80, origin: { y: 0.5 } });
+            } else if (data.meshType === 'pulsar') {
+                createPulsarMesh();
+                SoundEngine.playPulsar();
+            } else if (data.meshType === 'black_hole') {
+                createBlackHoleMesh();
+                SoundEngine.playTone(110, 0.8, 'sawtooth');
+            } else {
+                createStandardStarMesh(data.color, data.scale);
+                SoundEngine.playTone(520, 0.2, 'sine');
+            }
+        }
+
+        function createStandardStarMesh(colorHex, scale = 1.5) {
+            const geo = new THREE.SphereGeometry(scale, 48, 48);
+            const mat = new THREE.MeshStandardMaterial({
+                color: new THREE.Color(colorHex),
+                emissive: new THREE.Color(colorHex),
+                emissiveIntensity: 0.9,
+                roughness: 0.3,
+                metalness: 0.1
+            });
+            starMesh = new THREE.Mesh(geo, mat);
+            scene.add(starMesh);
+
+            // Parıltı Koronası (Glow Halo)
+            const coronaGeo = new THREE.SphereGeometry(scale * 1.25, 32, 32);
+            const coronaMat = new THREE.MeshBasicMaterial({
+                color: new THREE.Color(colorHex),
+                transparent: true,
+                opacity: 0.3,
+                wireframe: true
+            });
+            coronaMesh = new THREE.Mesh(coronaGeo, coronaMat);
+            scene.add(coronaMesh);
+        }
+
+        function createNebulaCloudMesh(colorHex, scale = 3.5) {
+            const partCount = 700;
+            const geo = new THREE.BufferGeometry();
+            const positions = new Float32Array(partCount * 3);
+            const colors = new Float32Array(partCount * 3);
+            const baseColor = new THREE.Color(colorHex);
+
+            for (let i = 0; i < partCount * 3; i += 3) {
+                const u = Math.random();
+                const v = Math.random();
+                const theta = u * 2.0 * Math.PI;
+                const phi = Math.acos(2.0 * v - 1.0);
+                const r = Math.cbrt(Math.random()) * scale;
+
+                positions[i] = r * Math.sin(phi) * Math.cos(theta);
+                positions[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+                positions[i + 2] = r * Math.cos(phi);
+
+                colors[i] = baseColor.r + (Math.random() - 0.5) * 0.2;
+                colors[i + 1] = baseColor.g + (Math.random() - 0.5) * 0.2;
+                colors[i + 2] = baseColor.b + (Math.random() - 0.5) * 0.2;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+            const mat = new THREE.PointsMaterial({
+                size: 0.5,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.75
+            });
+            particlesMesh = new THREE.Points(geo, mat);
+            scene.add(particlesMesh);
+        }
+
+        function createPlanetaryNebulaMesh() {
+            // Ortada sıcak Beyaz Cüce çekirdeği
+            createStandardStarMesh('#ffffff', 0.5);
+
+            // Etrafta genişleyen halka
+            const ringGeo = new THREE.TorusGeometry(3.5, 0.8, 24, 60);
+            const ringMat = new THREE.MeshStandardMaterial({
+                color: 0x06b6d4,
+                emissive: 0x0891b2,
+                emissiveIntensity: 0.7,
+                transparent: true,
+                opacity: 0.65,
+                roughness: 0.4
+            });
+            coronaMesh = new THREE.Mesh(ringGeo, ringMat);
+            coronaMesh.rotation.x = Math.PI / 3;
+            scene.add(coronaMesh);
+        }
+
+        function createSupernovaExplosionMesh() {
+            const count = 1000;
+            const geo = new THREE.BufferGeometry();
+            const pos = new Float32Array(count * 3);
+            const cols = new Float32Array(count * 3);
+
+            for (let i = 0; i < count * 3; i += 3) {
+                const r = 1 + Math.random() * 5.5;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos((Math.random() * 2) - 1);
+
+                pos[i] = r * Math.sin(phi) * Math.cos(theta);
+                pos[i + 1] = r * Math.sin(phi) * Math.sin(theta);
+                pos[i + 2] = r * Math.cos(phi);
+
+                // Altın / Ateş renkleri
+                cols[i] = 1.0;
+                cols[i + 1] = Math.random() * 0.9;
+                cols[i + 2] = Math.random() * 0.2;
+            }
+
+            geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+            geo.setAttribute('color', new THREE.BufferAttribute(cols, 3));
+
+            const mat = new THREE.PointsMaterial({
+                size: 0.45,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.9
+            });
+            particlesMesh = new THREE.Points(geo, mat);
+            scene.add(particlesMesh);
+
+            // Çekirdekte patlayan beyaz ışık küresi
+            const centerGeo = new THREE.SphereGeometry(1.2, 32, 32);
+            const centerMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            starMesh = new THREE.Mesh(centerGeo, centerMat);
+            scene.add(starMesh);
+        }
+
+        function createPulsarMesh() {
+            createStandardStarMesh('#a855f7', 0.6);
+
+            // Manyetik Kutuplardan Fışkıran Işın Demetleri
+            const beamGeo = new THREE.CylinderGeometry(0.08, 0.7, 8, 16);
+            const beamMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.85 });
+            
+            const beamGroup = new THREE.Group();
+            const beam1 = new THREE.Mesh(beamGeo, beamMat);
+            beam1.position.y = 4;
+            const beam2 = new THREE.Mesh(beamGeo, beamMat);
+            beam2.position.y = -4;
+            beam2.rotation.x = Math.PI;
+
+            beamGroup.add(beam1);
+            beamGroup.add(beam2);
+            beamGroup.rotation.z = Math.PI / 5;
+            coronaMesh = beamGroup;
+            scene.add(coronaMesh);
+        }
+
+        function createBlackHoleMesh() {
+            // Olay Ufku (Simsiyah küre)
+            const holeGeo = new THREE.SphereGeometry(1.6, 48, 48);
+            const holeMat = new THREE.MeshBasicMaterial({ color: 0x000000 });
+            starMesh = new THREE.Mesh(holeGeo, holeMat);
+            scene.add(starMesh);
+
+            // Büyüleyici Akreşın Diski (Accretion Disk)
+            const diskGeo = new THREE.RingGeometry(2.0, 5.2, 48);
+            const diskMat = new THREE.MeshBasicMaterial({
+                color: 0xf59e0b,
+                side: THREE.DoubleSide,
+                transparent: true,
+                opacity: 0.8
+            });
+            coronaMesh = new THREE.Mesh(diskGeo, diskMat);
+            coronaMesh.rotation.x = Math.PI / 2.3;
+            scene.add(coronaMesh);
+        }
+
+        function renderStagePills() {
+            const container = document.getElementById('m1-stage-pills');
+            if (!container) return;
+            const branch = STELLAR_EVOLUTION_DATA[currentMassBranch];
+            container.innerHTML = branch.map((s, idx) => {
+                const isActive = (idx === currentStageIdx);
+                const btnClass = isActive 
+                    ? 'px-2 py-0.5 rounded-lg text-[10px] font-black bg-indigo-600 text-white border border-indigo-400 shadow-sm shrink-0'
+                    : 'px-2 py-0.5 rounded-lg text-[10px] font-bold bg-slate-800 text-slate-400 hover:text-white shrink-0 cursor-pointer';
+                return \`<button type="button" onclick="goToStage(\${idx})" class="\${btnClass}">\${idx + 1}. \${s.name.split(' ')[0]}</button>\`;
+            }).join('');
+        }
+
+        function goToStage(idx) {
+            currentStageIdx = idx;
+            renderStellarStage();
+        }
+
+        function stepStellarTimeline(delta) {
+            const branch = STELLAR_EVOLUTION_DATA[currentMassBranch];
+            currentStageIdx += delta;
+            if (currentStageIdx < 0) currentStageIdx = 0;
+            if (currentStageIdx >= branch.length) currentStageIdx = branch.length - 1;
+            renderStellarStage();
+        }
+
+        function toggleStellarAutoPlay() {
+            isAutoPlaying = !isAutoPlaying;
+            const btn = document.getElementById('btn-m1-play');
+            const icon = document.getElementById('icon-m1-play');
+            const text = document.getElementById('text-m1-play');
+
+            if (isAutoPlaying) {
+                if (btn) btn.className = 'px-3 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow';
+                if (icon) icon.className = 'fa-solid fa-pause';
+                if (text) text.textContent = 'Durdur';
+
+                autoPlayTimer = setInterval(() => {
+                    const branch = STELLAR_EVOLUTION_DATA[currentMassBranch];
+                    currentStageIdx++;
+                    if (currentStageIdx >= branch.length) {
+                        currentStageIdx = 0;
+                    }
+                    renderStellarStage();
+                }, 3200);
+            } else {
+                if (btn) btn.className = 'px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black transition-all flex items-center gap-1.5 cursor-pointer active:scale-95 shadow';
+                if (icon) icon.className = 'fa-solid fa-play';
+                if (text) text.textContent = 'Otomatik İlerle';
+                clearInterval(autoPlayTimer);
+            }
+        }
+
+        function selectStellarMassBranch(branch) {
+            currentMassBranch = branch;
+            currentStageIdx = 0;
+            const btnLow = document.getElementById('btn-branch-low');
+            const btnHigh = document.getElementById('btn-branch-high');
+
+            if (branch === 'low') {
+                btnLow.className = 'py-1.5 px-2 rounded-lg font-black text-xs transition-all flex items-center justify-center gap-1 bg-amber-500 text-slate-950 shadow cursor-pointer';
+                btnHigh.className = 'py-1.5 px-2 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-1 bg-slate-900 text-slate-300 hover:text-white cursor-pointer';
+            } else {
+                btnHigh.className = 'py-1.5 px-2 rounded-lg font-black text-xs transition-all flex items-center justify-center gap-1 bg-sky-500 text-slate-950 shadow cursor-pointer';
+                btnLow.className = 'py-1.5 px-2 rounded-lg font-bold text-xs transition-all flex items-center justify-center gap-1 bg-slate-900 text-slate-300 hover:text-white cursor-pointer';
+            }
+
+            renderStellarStage();
+        }
+
+        // =========================================================================
+        // 🌡️ MODÜL 2: RENK VE SICAKLIK LABORATUVARI
+        // =========================================================================
+        function initModule2Temp() {
+            clearMainMeshes();
+            camera.position.set(0, 0, 12);
+            controls.target.set(0, 0, 0);
+
+            document.getElementById('scene-module-badge').innerHTML = '<i class="fa-solid fa-temperature-half mr-1"></i> 2. Renk & Sıcaklık';
+            document.getElementById('scene-status-badge').textContent = 'Yıldız Termometresi';
+            document.getElementById('scene-banner-text').textContent = '🌡️ Sıcaklığı değiştirin: Mavi yıldızlar en sıcak, kırmızı yıldızlar en soğuktur!';
+
+            onStarTempSlider(5800);
+        }
+
+        function onStarTempSlider(val) {
+            const temp = parseInt(val, 10);
+            document.getElementById('label-star-temp').textContent = temp.toLocaleString('tr-TR') + ' K';
+
+            // Sıcaklığa göre renk ve özellik hesaplama (Wien kanunu & Karacisim spektrumu)
+            let colorHex, colorClass, radiation, scale;
+            if (temp < 3800) {
+                colorHex = '#ef4444';
+                colorClass = 'Kırmızı (M-Tipi) • EN SOĞUK';
+                radiation = 'Düşük Frekans (Kızılötesi Ağırlıklı)';
+                scale = 2.4;
+            } else if (temp < 5200) {
+                colorHex = '#f97316';
+                colorClass = 'Turuncu (K-Tipi) • Ilık';
+                radiation = 'Orta-Düşük Frekans';
+                scale = 1.9;
+            } else if (temp < 7500) {
+                colorHex = '#eab308';
+                colorClass = 'Sarı (G-Tipi, Güneş Benzeri) • Orta Sıcak';
+                radiation = 'Görünür Işık Zirvesi';
+                scale = 1.6;
+            } else if (temp < 11000) {
+                colorHex = '#f8fafc';
+                colorClass = 'Beyaz (A-Tipi, Sirius) • Çok Sıcak';
+                radiation = 'Yüksek Enerji / Morötesi';
+                scale = 1.8;
+            } else {
+                colorHex = '#38bdf8';
+                colorClass = 'Mavi / Cyan (O/B-Tipi, Rigel) • EN SICAK!';
+                radiation = 'Aşırı Yüksek Radyasyon / X-Işını & UV';
+                scale = 2.2;
+            }
+
+            document.getElementById('m2-color-class').textContent = colorClass;
+            document.getElementById('m2-color-class').style.color = colorHex;
+            document.getElementById('m2-radiation-power').textContent = radiation;
+
+            // 3D Obje güncelle
+            if (!starMesh) {
+                createStandardStarMesh(colorHex, scale);
+            } else {
+                starMesh.material.color.set(colorHex);
+                starMesh.material.emissive.set(colorHex);
+                starMesh.scale.set(scale, scale, scale);
+                if (coronaMesh) {
+                    coronaMesh.material.color.set(colorHex);
+                    coronaMesh.scale.set(scale * 1.25, scale * 1.25, scale * 1.25);
+                }
+            }
+        }
+
+        function setPresetStar(key) {
+            const slider = document.getElementById('slider-star-temp');
+            let t = 5800;
+            if (key === 'betelgeuse') t = 3500;
+            else if (key === 'gunes') t = 5800;
+            else if (key === 'sirius') t = 9900;
+            else if (key === 'rigel') t = 12000;
+
+            if (slider) slider.value = t;
+            onStarTempSlider(t);
+            SoundEngine.playTone(t / 20, 0.2, 'sine');
+        }
+
+        // =========================================================================
+        // 🌌 MODÜL 3: BULUTSULAR GALERİSİ
+        // =========================================================================
+        const NEBULA_DATA = {
+            orion: {
+                title: 'Orion (Avcı) Bulutsusu',
+                type: 'Parlak / Salma Bulutsusu (Yıldız Doğumevi)',
+                dist: '1.344 Işık Yılı',
+                kind: 'Gaz İyonlaşması (HII Bölgesi)',
+                color: '#ec4899',
+                desc: 'Gökyüzündeki en aktif yıldız doğumevidir. İçindeki yüzlerce genç yıldızın morötesi ışığı hidrojen gazını parlatır ve pembe-mor bir ışıma yayar.'
+            },
+            atbasi: {
+                title: 'Atbaşı Bulutsusu (Horsehead)',
+                type: 'Karanlık Bulutsu',
+                dist: '1.375 Işık Yılı',
+                kind: 'Işığı Bloke Eden Toz Bulutu',
+                color: '#475569',
+                desc: 'Arkasındaki parlak gaz bulutunun önünde durarak at başı silueti oluşturan yoğun ve soğuk toz bulutudur. İçinde yeni yıldızlar saklıdır.'
+            },
+            halka: {
+                title: 'Halka (Ring / M57) Bulutsusu',
+                type: 'Gezegenimsi Bulutsu',
+                dist: '2.570 Işık Yılı',
+                kind: 'Ölen Yıldız Kalıntısı',
+                color: '#06b6d4',
+                desc: 'Çalgı takımyıldızında yer alan, ölen orta kütleli bir yıldızın uzaya fırlattığı dairesel gaz tabakasıdır. Merkezindeki beyaz cüce net olarak görülür.'
+            },
+            yengec: {
+                title: 'Yengeç Bulutsusu (Crab / M1)',
+                type: 'Süpernova Kalıntısı',
+                dist: '6.500 Işık Yılı',
+                kind: 'Pulsar Rüzgârı Bulutsusu',
+                color: '#f59e0b',
+                desc: 'M.S. 1054 yılında Çinli gökbilimcilerin gündüz bile gördüğü bir süpernova patlamasının kalıntısıdır. Merkezinde saniyede 30 kez dönen bir atarca (pulsar) vardır.'
+            }
+        };
+
+        function initModule3Nebulae() {
+            clearMainMeshes();
+            selectNebula('orion');
+        }
+
+        function selectNebula(key) {
+            clearMainMeshes();
+            const data = NEBULA_DATA[key];
+            if (!data) return;
+
+            ['orion', 'atbasi', 'halka', 'yengec'].forEach(k => {
+                const b = document.getElementById('btn-neb-' + k);
+                if (b) {
+                    b.className = (k === key) 
+                        ? 'px-2.5 py-1 rounded-xl text-xs font-bold bg-indigo-600 text-white shrink-0 cursor-pointer shadow'
+                        : 'px-2.5 py-1 rounded-xl text-xs font-bold bg-slate-800 text-slate-300 shrink-0 cursor-pointer';
+                }
+            });
+
+            document.getElementById('scene-module-badge').innerHTML = '<i class="fa-solid fa-cloud-bolt mr-1"></i> 3. Bulutsular';
+            document.getElementById('scene-status-badge').textContent = data.title;
+            document.getElementById('scene-banner-text').textContent = '🌌 ' + data.title + ' • ' + data.type;
+
+            document.getElementById('m3-nebula-title').textContent = data.title;
+            document.getElementById('m3-nebula-type').textContent = data.type;
+            document.getElementById('m3-nebula-dist').textContent = data.dist;
+            document.getElementById('m3-nebula-kind').textContent = data.kind;
+            document.getElementById('m3-nebula-desc').textContent = data.desc;
+
+            // 3D Model oluştur
+            if (key === 'orion') {
+                createNebulaCloudMesh('#ec4899', 4.5);
+                camera.position.set(0, 0, 16);
+            } else if (key === 'atbasi') {
+                createNebulaCloudMesh('#64748b', 3.8);
+                camera.position.set(0, 0, 15);
+            } else if (key === 'halka') {
+                createPlanetaryNebulaMesh();
+                camera.position.set(0, 0, 14);
+            } else if (key === 'yengec') {
+                createSupernovaExplosionMesh();
+                camera.position.set(0, 0, 16);
+            }
+
+            SoundEngine.playTone(400, 0.25, 'triangle');
+        }
+
+        // =========================================================================
+        // 🧭 MODÜL 4: TAKIMYILDIZLARI VE KUTUP YILDIZI
+        // =========================================================================
+        const CONSTELLATIONS = {
+            ursaMajor: [ // Büyükayı (Cezve)
+                { x: -5, y: 3, z: 0 },
+                { x: -3.5, y: 3.5, z: 0 },
+                { x: -2, y: 2.8, z: 0 },
+                { x: -0.5, y: 1.5, z: 0 },
+                { x: -0.2, y: -0.5, z: 0 }, // Merak
+                { x: 2.0, y: -0.3, z: 0 },  // Dubhe
+                { x: 1.5, y: 1.7, z: 0 },
+                { x: -0.5, y: 1.5, z: 0 }
+            ],
+            polaris: { x: 2.0, y: 6.5, z: 0 }, // Kutup Yıldızı (Merak-Dubhe 5 kat)
+            ursaMinor: [ // Küçükayı
+                { x: 2.0, y: 6.5, z: 0 }, // Polaris (Kutup Yıldızı uçta)
+                { x: 3.2, y: 5.6, z: 0 },
+                { x: 4.1, y: 4.8, z: 0 },
+                { x: 5.2, y: 4.2, z: 0 },
+                { x: 5.8, y: 5.0, z: 0 },
+                { x: 4.8, y: 5.8, z: 0 },
+                { x: 4.1, y: 4.8, z: 0 }
+            ]
+        };
+
+        function initModule4Constellations() {
+            clearMainMeshes();
+            camera.position.set(0, 2, 18);
+            controls.target.set(0, 2, 0);
+
+            document.getElementById('scene-module-badge').innerHTML = '<i class="fa-solid fa-compass mr-1"></i> 4. Takımyıldızları';
+            document.getElementById('scene-status-badge').textContent = 'Büyükayı, Küçükayı & Polaris';
+            document.getElementById('scene-banner-text').textContent = '🧭 Büyükayı cezvesinin ucunu 5 kat uzatarak tam kuzeydeki Kutup Yıldızı\\'nı bulun!';
+
+            buildConstellations3D();
+        }
+
+        function buildConstellations3D() {
+            constellationGroup = new THREE.Group();
+
+            // Yıldızları oluştur
+            const starGeo = new THREE.SphereGeometry(0.2, 16, 16);
+            const starMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const polarisMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+
+            // Büyükayı Yıldızları & Çizgileri
+            const pointsMajor = CONSTELLATIONS.ursaMajor.map(p => new THREE.Vector3(p.x, p.y, p.z));
+            pointsMajor.forEach(p => {
+                const s = new THREE.Mesh(starGeo, starMat);
+                s.position.copy(p);
+                constellationGroup.add(s);
+            });
+
+            if (showConstLines) {
+                const lineGeo = new THREE.BufferGeometry().setFromPoints(pointsMajor);
+                const lineMat = new THREE.LineBasicMaterial({ color: 0x6366f1, transparent: true, opacity: 0.6 });
+                const line = new THREE.Line(lineGeo, lineMat);
+                constellationGroup.add(line);
+            }
+
+            // Küçükayı Yıldızları & Çizgileri
+            const pointsMinor = CONSTELLATIONS.ursaMinor.map(p => new THREE.Vector3(p.x, p.y, p.z));
+            pointsMinor.forEach((p, idx) => {
+                const s = new THREE.Mesh(starGeo, (idx === 0) ? polarisMat : starMat);
+                s.position.copy(p);
+                if (idx === 0) s.scale.set(1.8, 1.8, 1.8); // Kutup yıldızı parlak
+                constellationGroup.add(s);
+            });
+
+            if (showConstLines) {
+                const lineGeoMinor = new THREE.BufferGeometry().setFromPoints(pointsMinor);
+                const lineMatMinor = new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.6 });
+                const lineMinor = new THREE.Line(lineGeoMinor, lineMatMinor);
+                constellationGroup.add(lineMinor);
+            }
+
+            // Kutup Yıldızı 5 Kat Kılavuz Çizgisi (Lazer Çizgisi)
+            if (showPolarisFinder) {
+                const pMerak = new THREE.Vector3(-0.2, -0.5, 0);
+                const pDubhe = new THREE.Vector3(2.0, -0.3, 0);
+                const pPolaris = new THREE.Vector3(2.0, 6.5, 0);
+
+                const guidePoints = [pMerak, pDubhe, pPolaris];
+                const guideGeo = new THREE.BufferGeometry().setFromPoints(guidePoints);
+                const guideMat = new THREE.LineDashedMaterial({
+                    color: 0xf59e0b,
+                    dashSize: 0.5,
+                    gapSize: 0.25,
+                    linewidth: 2
+                });
+                polarisLineMesh = new THREE.Line(guideGeo, guideMat);
+                polarisLineMesh.computeLineDistances();
+                constellationGroup.add(polarisLineMesh);
+            }
+
+            scene.add(constellationGroup);
+        }
+
+        function toggleConstellationLines() {
+            showConstLines = !showConstLines;
+            clearMainMeshes();
+            buildConstellations3D();
+            SoundEngine.playTone(600, 0.1, 'sine');
+        }
+
+        function togglePolarisFinder() {
+            showPolarisFinder = !showPolarisFinder;
+            const btn = document.getElementById('btn-polaris-finder');
+            if (btn) {
+                btn.className = showPolarisFinder
+                    ? 'px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-amber-400 to-orange-500 text-slate-950 shrink-0 cursor-pointer flex items-center gap-1 shadow-lg animate-pulse'
+                    : 'px-3 py-1 rounded-xl text-xs font-black bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 shrink-0 cursor-pointer flex items-center gap-1 shadow';
+            }
+            clearMainMeshes();
+            buildConstellations3D();
+            if (showPolarisFinder) {
+                SoundEngine.playTone(800, 0.3, 'triangle');
+                document.getElementById('scene-banner-text').textContent = '🎯 Büyükayı son iki yıldızı (Merak-Dubhe) tam 5 kat uzatıldı -> Kutup Yıldızı (Polaris) bulundu! Yön: TAM KUZEY.';
+            } else {
+                document.getElementById('scene-banner-text').textContent = '🧭 Büyükayı cezvesinin ucunu 5 kat uzatarak tam kuzeydeki Kutup Yıldızı\\'nı bulun!';
+            }
+        }
+
+        // =========================================================================
+        // 🔄 GENEL MODÜL GEÇİŞ YÖNETİMİ
+        // =========================================================================
+        function switchLabModule(modId) {
+            activeModule = modId;
+            clearInterval(autoPlayTimer);
+            isAutoPlaying = false;
+
+            // Navigasyon butonlarını güncelle
+            for (let i = 1; i <= 4; i++) {
+                const btnDt = document.getElementById('btn-m' + i + '-dt');
+                const btnMob = document.getElementById('btn-m' + i + '-mob');
+                const isAct = (i === modId);
+
+                if (btnDt) {
+                    btnDt.className = isAct
+                        ? 'nav-btn-dt px-3 py-1 rounded-xl font-black text-xs transition-all flex items-center gap-1.5 bg-indigo-600 text-white border border-indigo-500 shadow-sm cursor-pointer active:scale-95'
+                        : 'nav-btn-dt px-3 py-1 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 cursor-pointer active:scale-95';
+                }
+                if (btnMob) {
+                    btnMob.className = isAct
+                        ? 'nav-btn-mob px-2.5 py-1 rounded-lg font-black text-[11px] whitespace-nowrap shrink-0 bg-indigo-600 text-white border border-indigo-500 shadow-sm flex items-center gap-1'
+                        : 'nav-btn-mob px-2.5 py-1 rounded-lg font-bold text-[11px] whitespace-nowrap shrink-0 bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-1';
+                }
+
+                // Alt kontrol panellerini aç/kapat
+                const ctrl = document.getElementById('controls-m' + i);
+                if (ctrl) {
+                    if (isAct) {
+                        ctrl.classList.remove('hidden');
+                        ctrl.classList.add('flex');
+                    } else {
+                        ctrl.classList.remove('flex');
+                        ctrl.classList.add('hidden');
+                    }
+                }
+
+                // Sağ bilgi panellerini aç/kapat
+                const panel = document.getElementById('panel-m' + i);
+                if (panel) {
+                    if (isAct) panel.classList.remove('hidden');
+                    else panel.classList.add('hidden');
+                }
+            }
+
+            // Modül başlığı
+            const titleEl = document.getElementById('panel-title');
+            if (modId === 1) {
+                if (titleEl) titleEl.textContent = 'Yıldızların Yaşam Döngüsü';
+                renderStellarStage();
+            } else if (modId === 2) {
+                if (titleEl) titleEl.textContent = 'Renk & Sıcaklık Laboratuvarı';
+                initModule2Temp();
+            } else if (modId === 3) {
+                if (titleEl) titleEl.textContent = 'Bulutsular (Nebula) Galerisi';
+                initModule3Nebulae();
+            } else if (modId === 4) {
+                if (titleEl) titleEl.textContent = 'Takımyıldızları & Kutup Yıldızı';
+                initModule4Constellations();
+            }
+        }
+
+        function resetCurrentModule() {
+            if (activeModule === 1) {
+                currentStageIdx = 0;
+                renderStellarStage();
+            } else if (activeModule === 2) {
+                onStarTempSlider(5800);
+            } else if (activeModule === 3) {
+                selectNebula('orion');
+            } else if (activeModule === 4) {
+                showPolarisFinder = false;
+                initModule4Constellations();
+            }
+        }
+
+        // =========================================================================
+        // 🏆 MODAL: 10 SORULUK TEST YÖNETİMİ
+        // =========================================================================
+        let currentQuizIdx = 0;
+        let quizScore = 0;
+        let isQuizAnswered = false;
+
+        function openQuizModal() {
+            currentQuizIdx = 0;
+            quizScore = 0;
+            loadQuizQuestion(0);
+            const m = document.getElementById('modal-quiz');
+            if (m) {
+                m.classList.remove('hidden');
+                setTimeout(() => m.classList.remove('opacity-0'), 10);
+            }
+        }
+
+        function closeQuizModal() {
+            const m = document.getElementById('modal-quiz');
+            if (m) {
+                m.classList.add('opacity-0');
+                setTimeout(() => m.classList.add('hidden'), 250);
+            }
+        }
+
+        function loadQuizQuestion(idx) {
+            const q = QUIZ_QUESTIONS[idx];
+            if (!q) return;
+
+            isQuizAnswered = false;
+            document.getElementById('quiz-question-counter').textContent = 'Soru ' + (idx + 1) + ' / ' + QUIZ_QUESTIONS.length;
+            document.getElementById('quiz-score-badge').textContent = 'Puan: ' + quizScore + ' / 100';
+            document.getElementById('quiz-question-text').textContent = q.q;
+
+            const expBox = document.getElementById('quiz-explanation-box');
+            if (expBox) expBox.className = 'hidden';
+
+            const nextBtn = document.getElementById('btn-quiz-next');
+            if (nextBtn) nextBtn.classList.add('hidden');
+
+            const container = document.getElementById('quiz-options-container');
+            if (container) {
+                container.innerHTML = q.options.map((opt, oIdx) => {
+                    return \`
+                        <button type="button" onclick="answerQuizQuestion(\${oIdx})" id="quiz-opt-\${oIdx}" class="w-full p-2.5 sm:p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-left text-xs font-semibold text-slate-200 transition-all flex items-center gap-2 cursor-pointer active:scale-98">
+                            <span class="w-5 h-5 rounded-full bg-slate-800 text-slate-300 font-mono text-[10px] flex items-center justify-center shrink-0">\${String.fromCharCode(65 + oIdx)}</span>
+                            <span>\${opt}</span>
+                        </button>
+                    \`;
+                }).join('');
+            }
+        }
+
+        function answerQuizQuestion(selectedIdx) {
+            if (isQuizAnswered) return;
+            isQuizAnswered = true;
+
+            const q = QUIZ_QUESTIONS[currentQuizIdx];
+            const isCorrect = (selectedIdx === q.correct);
+            const expBox = document.getElementById('quiz-explanation-box');
+
+            if (isCorrect) {
+                quizScore += 10;
+                SoundEngine.playCorrect();
+                const selBtn = document.getElementById('quiz-opt-' + selectedIdx);
+                if (selBtn) selBtn.className = 'w-full p-2.5 sm:p-3 rounded-xl bg-emerald-950/90 border-2 border-emerald-400 text-emerald-200 text-left text-xs font-bold flex items-center gap-2';
+                if (expBox) {
+                    expBox.className = 'mt-3 p-2.5 rounded-xl text-xs font-bold bg-emerald-950/80 text-emerald-200 border border-emerald-500/50 block';
+                    expBox.innerHTML = '🎉 <strong>TEBRİKLER! DOĞRU CEVAP!</strong><br>' + q.explanation;
+                }
+            } else {
+                SoundEngine.playWrong();
+                const selBtn = document.getElementById('quiz-opt-' + selectedIdx);
+                const corrBtn = document.getElementById('quiz-opt-' + q.correct);
+                if (selBtn) selBtn.className = 'w-full p-2.5 sm:p-3 rounded-xl bg-rose-950/90 border-2 border-rose-500 text-rose-200 text-left text-xs font-bold flex items-center gap-2';
+                if (corrBtn) corrBtn.className = 'w-full p-2.5 sm:p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-left text-xs font-bold flex items-center gap-2';
+                if (expBox) {
+                    expBox.className = 'mt-3 p-2.5 rounded-xl text-xs font-bold bg-rose-950/80 text-rose-200 border border-rose-500/50 block';
+                    expBox.innerHTML = '❌ <strong>YANLIŞ CEVAP!</strong><br>' + q.explanation;
+                }
+            }
+
+            document.getElementById('quiz-score-badge').textContent = 'Puan: ' + quizScore + ' / 100';
+            const nextBtn = document.getElementById('btn-quiz-next');
+            if (nextBtn) nextBtn.classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            if (currentQuizIdx < QUIZ_QUESTIONS.length - 1) {
+                currentQuizIdx++;
+                loadQuizQuestion(currentQuizIdx);
+            } else {
+                confetti({ particleCount: 90, spread: 90, origin: { y: 0.6 } });
+                alert('🏆 TEBRİKLER YILDIZ KÂŞİFİ! Testi tamamladın. Toplam Puanın: ' + quizScore + ' / 100');
+                closeQuizModal();
+            }
+        }
+
+        // =========================================================================
+        // 🔄 ANİMASYON DÖNGÜSÜ & PENCERE BOYUTLANDIRMA
+        // =========================================================================
+        function onWindowResize() {
+            const container = document.getElementById('webgl-container');
+            if (!container || !renderer || !camera) return;
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            if (controls) controls.update();
+
+            // Yıldız ve halka animasyonu
+            if (starMesh) {
+                starMesh.rotation.y += 0.005;
+            }
+            if (coronaMesh) {
+                coronaMesh.rotation.z += 0.003;
+                coronaMesh.rotation.y += 0.002;
+            }
+            if (particlesMesh) {
+                particlesMesh.rotation.y += 0.001;
+            }
+
+            if (renderer && scene && camera) {
+                renderer.render(scene, camera);
+            }
+        }
+
+        // Başlat
+        window.addEventListener('DOMContentLoaded', () => {
+            initThree();
+        });
+    </script>
+</body>
+</html>
+`;
+
+const outputPath = path.join(__dirname, '..', 'oyunlar', 'yildiz-laboratuvari.html');
+fs.writeFileSync(outputPath, html, 'utf8');
+console.log('Successfully written', outputPath, 'size:', html.length);
+
+// Verify syntax
+const scriptRegex = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
+let match;
+let count = 0;
+while ((match = scriptRegex.exec(html)) !== null) {
+    count++;
+    new vm.Script(match[1]);
+}
+console.log('Verified', count, 'inline scripts in yildiz-laboratuvari.html: 100% Syntax OK!');

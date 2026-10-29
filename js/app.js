@@ -1380,7 +1380,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         category: "egitsel-oyunlar",
         targetSection: "1",
         title: "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı",
-        unit: "1. Ünite: Güneş, Dünya ve Ay",
+        unit: "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
         desc: "Güneş, Dünya ve Ay'ın dönme ve dolanma hareketlerini 7 farklı modda, bağımsız kontrollerle, çalışan analog saat yön göstergesi ve Ay evreleriyle 3D olarak keşfedin!",
         fileName: "gunes-dunya-ay-3d.html",
         fileUrl: "oyunlar/gunes-dunya-ay-3d.html",
@@ -1397,7 +1397,7 @@ const DEFAULT_CUSTOM_MATERIALS = [
         category: "egitsel-oyunlar",
         targetSection: "1",
         title: "5. Sınıf Ay'ın Evreleri 3D Etkileşimli Uzay Simülatörü",
-        unit: "1. Ünite: Güneş, Dünya ve Ay",
+        unit: "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
         desc: "Güneş, Dünya ve Ay'ın hareketlerini fotogerçekçi 3D planetaryumda keşfedin. Ay'ı yörüngesinde parmağınızla sürükleyin, Dünya'dan görünen 8 evreyi canlı teleskopla izleyin.",
         fileName: "ayin-evreleri-3d.html",
         fileUrl: "oyunlar/ayin-evreleri-3d.html",
@@ -3278,7 +3278,7 @@ function renderHomeRecentMaterialsSection() {
             grade: "5",
             category: "egitsel-oyunlar",
             format: "Web Bağlantısı",
-            unit: "1. Ünite: Güneş, Dünya ve Ay",
+            unit: "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
             title: "Laboratuvar Malzemeleri Eşleştirme",
             desc: "Ortaokul Fen Bilimleri derslerinde kullanılan 30 temel laboratuvar araç-gerecini görsel ve isimleriyle eşleştirme oyunu.",
             createdAt: "08.09.2026",
@@ -5979,18 +5979,26 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
                                         <!-- Alt Başlık Butonları (Yatay Kaydırılabilir ve Tıklanabilir) -->
                                         <div class="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-thin subtopic-pill-container" data-unit="${unitNum}">
+                                            <!-- 🌟 0. "Tüm Konular" Butonu -->
+                                            <button type="button"
+                                                    onclick="filterMaterialsBySubtopic('${unitNum}', 'all', '${grade.number}', '${normSubTab}')"
+                                                    data-subtopic="all"
+                                                    class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-black bg-blue-600 text-white shadow-md transition-all flex items-center gap-1.5 shrink-0 cursor-pointer">
+                                                <span class="min-w-[22px] px-1 h-5 rounded-lg bg-white/20 text-white font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">★</span>
+                                                <span class="truncate">Tüm Konular</span>
+                                                <span class="px-1.5 py-0.2 rounded-full text-[10px] bg-white/20 text-white font-black shadow-2xs">${totalItems.length}</span>
+                                            </button>
                                             <!-- Numaralı Alt Başlıklar (Örn: 1. Güneş'in Yapısı ve Özellikleri) -->
-                                            ${subtopics.map((sub, sIdx) => {
+                                            ${subtopics.map((sub) => {
                                                 const matchCount = totalItems.filter(item => isMaterialMatchingSubtopic(item, sub)).length;
-                                                const isFirstActive = (sIdx === 0);
                                                 return `
                                                 <button type="button"
                                                         onclick="filterMaterialsBySubtopic('${unitNum}', '${sub.num}', '${grade.number}', '${normSubTab}')"
                                                         data-subtopic="${sub.num}"
-                                                        class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs ${isFirstActive ? 'font-black bg-blue-600 text-white shadow-md' : 'font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80'} transition-all flex items-center gap-1.5 shrink-0 cursor-pointer">
-                                                    <span class="min-w-[26px] px-1.5 h-5 rounded-lg ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-100 text-blue-800'} font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">${sub.code || sub.num}</span>
+                                                        class="subtopic-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1.5 shrink-0 cursor-pointer hover:border-slate-300">
+                                                    <span class="min-w-[26px] px-1.5 h-5 rounded-lg bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center shrink-0 shadow-xs">${sub.code || sub.num}</span>
                                                     <span class="truncate max-w-[280px] sm:max-w-none">${sub.shortTitle || sub.title}</span>
-                                                    ${matchCount > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[10px] ${isFirstActive ? 'bg-white/20 text-white' : 'bg-blue-50 text-blue-700 border border-blue-200'} font-black shadow-2xs">${matchCount}</span>` : ''}
+                                                    ${matchCount > 0 ? `<span class="px-1.5 py-0.2 rounded-full text-[10px] bg-blue-50 text-blue-700 border border-blue-200 font-black shadow-2xs">${matchCount}</span>` : ''}
                                                 </button>
                                                 `;
                                             }).join('')}
@@ -6113,7 +6121,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const matched = subtopics.filter(s => isMaterialMatchingSubtopic(item, s)).map(s => s.num);
     const subtopicsAttr = matched.length > 0 ? matched.join(',') : 'all';
     const firstSubNum = (subtopics.length > 0) ? subtopics[0].num : null;
-    const isInitiallyVisible = (firstSubNum === null) || matched.includes(firstSubNum) || (matched.length === 0);
+    const isInitiallyVisible = true;
     return `<div data-unit="${unitNum}" data-subtopics="${subtopicsAttr}" style="${isInitiallyVisible ? '' : 'display: none;'}" draggable="${isAdmin ? 'true' : 'false'}" ondragstart="handleCardDragStart(event, '${item.id}')" ondragover="handleCardDragOver(event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(event, '${item.id}')" class="unit-material-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group cursor-grab active:cursor-grabbing">`;
 })()}
                                                 <div>
@@ -14837,7 +14845,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
     if (isPriorityHtmlPresentation && targetUrl && targetUrl !== "#") {
         await openFullScreenPresentationModal({
             id: (found && found.id) || id,
-            title: (found && found.title) || title || "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay (3D Sinematik Akıllı Tahta Sunumu)",
+            title: (found && found.title) || title || "5. Sınıf 1. Ünite: Gökyüzündeki Komşularımız ve Biz (3D Sinematik Akıllı Tahta Sunumu)",
             fileName: (found && found.fileName) || fileName || "5-sinif-1-unite-gunes-dunya-ay.html",
             fileUrl: targetUrl,
             format: "İNTERAKTİF SUNUM",
@@ -14901,7 +14909,7 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         const fullUrl = targetUrl;
         await openFullScreenPresentationModal({
             id: (found && found.id) || id,
-            title: (found && found.title) || title || "5. Sınıf 1. Ünite: Güneş, Dünya ve Ay (3D Sinematik Akıllı Tahta Sunumu)",
+            title: (found && found.title) || title || "5. Sınıf 1. Ünite: Gökyüzündeki Komşularımız ve Biz (3D Sinematik Akıllı Tahta Sunumu)",
             fileName: (found && found.fileName) || fileName || "5-sinif-1-unite-gunes-dunya-ay.html",
             fileUrl: fullUrl,
             format: "İNTERAKTİF SUNUM",

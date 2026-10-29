@@ -14,6 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
   const countInput = document.getElementById('countInput');
   const difficultyInput = document.getElementById('difficultyInput');
   const questionTypeInput = document.getElementById('questionTypeInput');
+  // Konu / Alt Başlık ve Mevcut Yaprak Testler
+  const subtopicGroup = document.getElementById('subtopicGroup');
+  const subtopicPills = document.getElementById('subtopicPills');
+  const subtopicCountBadge = document.getElementById('subtopicCountBadge');
+  const existingTestsSection = document.getElementById('existingTestsSection');
+  const existingTestsList = document.getElementById('existingTestsList');
+  const existingTestsCountBadge = document.getElementById('existingTestsCountBadge');
+  let selectedSubtopicNum = 'all';
+  let cachedMaterials = [];
 
   // Kaynak Dosya Yükleme (Drag & Drop) Elements
   const sourceFileDropzone = document.getElementById('sourceFileDropzone');
@@ -113,6 +122,10 @@ document.addEventListener('DOMContentLoaded', () => {
   // 1. MÜFREDAT VERİSİNİ YÜKLE & HEDEF ÖĞRENME ÇIKTILARI ÇOKLU SEÇİM MENÜSÜ
   // ==========================================================================
   async function loadCurriculum(grade = "5") {
+    selectedSubtopicNum = 'all';
+    if (cachedMaterials.length === 0) {
+      loadYaprakMaterials();
+    }
     const cleanGrade = String(grade).replace(/^grade-/, "");
 
     // A. İlk olarak yerleşik çevrimdışı müfredattan anında yükle
@@ -367,37 +380,214 @@ document.addEventListener('DOMContentLoaded', () => {
     units.forEach((unit, idx) => {
       const btn = document.createElement('div');
       btn.className = `unit-pill ${idx === selectedUnitIndex ? 'active' : ''}`;
-      btn.innerHTML = `<span>${unit.icon || '📌'}</span> <span>${unit.name}</span>`;
+      btn.innerHTML = `<span>${unit.icon || '📘'}</span> <span>${unit.name}</span>`;
       btn.addEventListener('click', () => {
         document.querySelectorAll('.unit-pill').forEach(p => p.classList.remove('active'));
         btn.classList.add('active');
         selectedUnitIndex = idx;
-        const unitOutcomes = getUnitOutcomesList(unit);
+        selectedSubtopicNum = 'all';
+        renderSubtopics(unit);
+        const unitOutcomes = getUnitOutcomesList(unit, 'all');
         renderOutcomes(unitOutcomes, true);
+        renderMatchingYaprakTests(gradeInput ? gradeInput.value : '5', unit, 'all');
       });
       unitPills.appendChild(btn);
     });
 
-    // İlk üniteyi otomatik aktif et ve kazanımlarını doldur
-    const firstUnitOutcomes = getUnitOutcomesList(units[selectedUnitIndex] || units[0]);
+    const activeUnit = units[selectedUnitIndex] || units[0];
+    renderSubtopics(activeUnit);
+    const firstUnitOutcomes = getUnitOutcomesList(activeUnit, 'all');
     renderOutcomes(firstUnitOutcomes, false);
+    renderMatchingYaprakTests(gradeInput ? gradeInput.value : '5', activeUnit, 'all');
   }
 
-  function getUnitOutcomesList(unit) {
+  // Türkiye Yüzyılı Maarif Modeli: Konu / Alt Başlık Butonlarını (Pills) Oluştur
+  function renderSubtopics(unit) {
+    if (!subtopicPills) return;
+    subtopicPills.innerHTML = '';
+
+    const subtopics = Array.isArray(unit.subtopics) ? unit.subtopics : [];
+    if (subtopicCountBadge) {
+      subtopicCountBadge.textContent = subtopics.length > 0 ? `${subtopics.length} Konu` : 'Tüm Ünite';
+    }
+
+    if (subtopics.length === 0) {
+      subtopicPills.innerHTML = '<span class="subtopic-pill active">★ Tüm Ünite Konuları</span>';
+      return;
+    }
+
+    // 1. "Tüm Konular" Butonu
+    const allBtn = document.createElement('div');
+    allBtn.className = `subtopic-pill ${selectedSubtopicNum === 'all' ? 'active' : ''}`;
+    allBtn.setAttribute('data-subtopic', 'all');
+    allBtn.innerHTML = '<span>★</span> <span>Tüm Konular (Genel)</span>';
+    allBtn.addEventListener('click', () => {
+      document.querySelectorAll('.subtopic-pill').forEach(p => p.classList.remove('active'));
+      allBtn.classList.add('active');
+      selectedSubtopicNum = 'all';
+      const outcomes = getUnitOutcomesList(unit, 'all');
+      renderOutcomes(outcomes, false);
+      renderMatchingYaprakTests(gradeInput ? gradeInput.value : '5', unit, 'all');
+    });
+    subtopicPills.appendChild(allBtn);
+
+    // 2. Her bir Alt Konu Butonu (1.1, 1.2, 1.3...)
+    subtopics.forEach((st) => {
+      const btn = document.createElement('div');
+      const isSubActive = (String(selectedSubtopicNum) === String(st.num));
+      btn.className = `subtopic-pill ${isSubActive ? 'active' : ''}`;
+      btn.setAttribute('data-subtopic', st.num);
+      btn.innerHTML = `<span class="subtopic-pill-code">${st.code || st.num}</span> <span>${st.shortTitle || st.title}</span>`;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.subtopic-pill').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        selectedSubtopicNum = st.num;
+        const subOutcomes = getUnitOutcomesList(unit, st.num);
+        renderOutcomes(subOutcomes, false);
+        renderMatchingYaprakTests(gradeInput ? gradeInput.value : '5', unit, st.num);
+      });
+      subtopicPills.appendChild(btn);
+    });
+  }
+
+  function getUnitOutcomesList(unit, subtopicNum = 'all') {
     if (!unit) return [];
+
+    // Belirli bir alt konu seçilmişse yalnızca o konunun öğrenme çıktılarını getir
+    if (subtopicNum && subtopicNum !== 'all' && Array.isArray(unit.subtopics)) {
+      const foundSub = unit.subtopics.find(s => String(s.num) === String(subtopicNum) || String(s.code) === String(subtopicNum));
+      if (foundSub && Array.isArray(foundSub.outcomes) && foundSub.outcomes.length > 0) {
+        return foundSub.outcomes;
+      }
+    }
+
+    // Tüm ünitenin öğrenme çıktıları
     if (Array.isArray(unit.outcomes) && unit.outcomes.length > 0) {
       return unit.outcomes;
     }
+
     if (Array.isArray(unit.subtopics) && unit.subtopics.length > 0) {
-      return unit.subtopics.map((st, i) => ({
-        id: st.code || `FB.${i + 1}`,
-        text: `${st.code ? st.code + ' - ' : ''}${st.title}${st.description ? ': ' + st.description : ''}`
-      }));
+      const allOuts = [];
+      unit.subtopics.forEach(st => {
+        if (Array.isArray(st.outcomes)) {
+          st.outcomes.forEach(o => allOuts.push(o));
+        } else {
+          allOuts.push({ id: st.code || 'FB', text: st.title });
+        }
+      });
+      if (allOuts.length > 0) return allOuts;
     }
-    return [{ id: 'FB.1', text: `${unit.name} temel kavram ve kazanımları` }];
+
+    return [{ id: 'FB.1', text: `${unit.name} temel kavram ve öğrenme çıktıları` }];
   }
 
-  // 4. "Hedef Öğrenme Çıktıları" Dinamik Çoklu Seçim Açılır Menüsü (Multi-Select Dropdown)
+  // Materyalleri Yükle ve Önbelleğe Al
+  async function loadYaprakMaterials() {
+    try {
+      const res = await fetch('data/materials.json?v=' + Date.now());
+      if (res.ok) {
+        cachedMaterials = await res.json();
+      }
+    } catch(e) {
+      console.warn('materials.json yükleme uyarısı:', e);
+    }
+    try {
+      const local = JSON.parse(localStorage.getItem('rotali_custom_materials') || '[]');
+      if (Array.isArray(local) && local.length > 0) {
+        const ids = new Set(cachedMaterials.map(m => m.id));
+        local.forEach(lm => {
+          if (!ids.has(lm.id)) cachedMaterials.push(lm);
+        });
+      }
+    } catch(e) {}
+  }
+
+  // Seçilen Sınıf → Ünite → Konu'ya Göre Mevcut Yaprak Testleri Listele
+  function renderMatchingYaprakTests(grade, unit, subtopicNum = 'all') {
+    if (!existingTestsList) return;
+    existingTestsList.innerHTML = '';
+
+    const cleanGrade = String(grade).replace(/^grade-/, '').trim();
+    const curUnitName = unit ? (unit.name || '') : '';
+    const curUnitNum = unit ? (unit.num || 1) : 1;
+
+    // A. Bu sınıfa ve üniteye ait test formatındaki materyalleri filtrele
+    const tests = cachedMaterials.filter(m => {
+      if (!m || !m.id) return false;
+      const mGrade = String(m.grade || '').replace(/^grade-/, '').trim();
+      if (mGrade !== cleanGrade && mGrade !== 'all') return false;
+
+      // Ünite eşleşmesi: numaraya veya isme göre
+      const mUnit = String(m.unit || '');
+      const unitMatches = mUnit.includes(`${curUnitNum}. Ünite`) || 
+                          mUnit.includes(`${curUnitNum}.Ünite`) || 
+                          mUnit.toLowerCase().includes(curUnitName.toLowerCase()) ||
+                          (curUnitName && mUnit.toLowerCase().includes(curUnitName.toLowerCase().replace(/^\d+\.\s*ünite:\s*/i, '')));
+      if (!unitMatches) return false;
+
+      // Kategori / format kontrolü (Yaprak test veya Soru bankası veya Deneme)
+      const cat = String(m.category || '').toLowerCase();
+      const fmt = String(m.format || '').toLowerCase();
+      const title = String(m.title || '').toLowerCase();
+      const isTest = cat === 'soru-bankasi' || cat === 'yaprak-test' || cat === 'denemeler' ||
+                     fmt.includes('yaprak test') || fmt.includes('test') || fmt.includes('sınav') ||
+                     title.includes('yaprak test') || title.includes('test') || title.includes('sınav');
+      return isTest;
+    });
+
+    // B. Eğer belirli bir alt konu seçilmişse filtrele
+    let filteredTests = tests;
+    if (subtopicNum && subtopicNum !== 'all' && Array.isArray(unit.subtopics)) {
+      const targetSub = unit.subtopics.find(s => String(s.num) === String(subtopicNum) || String(s.code) === String(subtopicNum));
+      if (targetSub) {
+        filteredTests = tests.filter(item => {
+          if (typeof isMaterialMatchingSubtopic === 'function') {
+            return isMaterialMatchingSubtopic(item, targetSub);
+          }
+          const tText = (item.title + ' ' + (item.desc || '')).toLowerCase();
+          return tText.includes(String(targetSub.code).toLowerCase()) || 
+                 (targetSub.keywords && targetSub.keywords.some(k => tText.includes(k.toLowerCase())));
+        });
+      }
+    }
+
+    if (existingTestsCountBadge) {
+      existingTestsCountBadge.textContent = `${filteredTests.length} Test`;
+    }
+
+    if (filteredTests.length === 0) {
+      existingTestsList.innerHTML = `
+        <div class="existing-test-empty">
+          <span>ℹ️ Bu ${subtopicNum === 'all' ? 'üniteye' : 'alt konuya'} ait henüz yayınlanmış yaprak test bulunamadı.</span>
+          <div style="margin-top: 4px; font-weight: 700; color: #2563eb;">Yukarıdaki formdan "Soruları Gemini AI İle Üret" butonuna basarak anında yeni test üretebilirsiniz.</div>
+        </div>`;
+      return;
+    }
+
+    filteredTests.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'existing-test-card';
+      const solveUrl = t.fileUrl || t.url || '#';
+      const isHtml = solveUrl.endsWith('.html');
+      const isPdf = solveUrl.endsWith('.pdf');
+
+      card.innerHTML = `
+        <div class="existing-test-info">
+          <div class="existing-test-title" title="${escapeHtml(t.title)}">${escapeHtml(t.title)}</div>
+          <div class="existing-test-meta">
+            <span class="format-tag">${escapeHtml(t.format || 'YAPRAK TEST')}</span>
+            <span>🎯 ${cleanGrade}. Sınıf • ${curUnitNum}. Ünite</span>
+          </div>
+        </div>
+        <div class="existing-test-actions">
+          ${isHtml ? `<a href="${solveUrl}" target="_blank" class="btn-test-action btn-test-solve">🚀 Çöz</a>` : ''}
+          ${isPdf ? `<a href="${solveUrl}" target="_blank" class="btn-test-action btn-test-pdf">📄 PDF</a>` : ''}
+        </div>
+      `;
+      existingTestsList.appendChild(card);
+    });
+  }
+
   function renderOutcomes(outcomes, openDropdownOnSelect = false) {
     outcomesChecklist.innerHTML = '';
     const safeOutcomes = Array.isArray(outcomes) ? outcomes : [];

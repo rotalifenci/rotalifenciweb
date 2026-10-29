@@ -81,6 +81,17 @@
               </div>
             </div>
 
+            <!-- Konu / Alt Başlık Seçimi (Türkiye Yüzyılı Maarif Modeli) -->
+            <div class="form-group" id="subtopicGroup">
+              <div class="label-with-action">
+                <label>Konu / Alt Başlık Seçimi</label>
+                <span class="subtopic-badge-count" id="subtopicCountBadge"></span>
+              </div>
+              <div class="subtopic-pills-container" id="subtopicPills">
+                <!-- JS ile doldurulacak: Tüm Konular + 1.1, 1.2... -->
+              </div>
+            </div>
+
             <!-- 4. "Hedef Öğrenme Çıktıları" Alanı (Dinamik Çoklu Seçim Açılır Menüsü) -->
             <div class="form-group">
               <div class="label-with-action">
@@ -194,6 +205,17 @@
               <span class="btn-text">Soruları Gemini AI İle Üret</span>
             </button>
           </form>
+
+          <!-- 5. Seçilen Konuya Ait Mevcut Yaprak Testler & Soru Bankası -->
+          <div id="existingTestsSection" class="existing-tests-section">
+            <div class="label-with-action" style="margin-bottom: 8px;">
+              <label style="color: #0f172a; font-weight: 800; font-size: 13px;">📋 Seçilen Konunun Yaprak Testleri</label>
+              <span class="subtopic-badge-count" id="existingTestsCountBadge">0 Test</span>
+            </div>
+            <div class="existing-tests-list" id="existingTestsList">
+              <!-- JS ile listelenecek testler -->
+            </div>
+          </div>
         </div>
       </section>
 

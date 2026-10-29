@@ -1738,28 +1738,28 @@ const testConfigs = [
     file: 'testler/5-sinif-1-unite-test-no-1-kisa-cevapli-bosluk-doldurma.html',
     title: 'Test No: 1 - Kısa Cevaplı / Boşluk Doldurma',
     grade: '5',
-    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    unit: '1. Ünite: Gökyüzündeki Komşularımız ve Biz',
     subject: 'Fen Bilimleri'
   },
   {
     file: 'testler/5-sinif-1-unite-gunes-dunya-ve-ay-acik-uclu-klasik-sinavi-1-30-sor.html',
-    title: '5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru)',
+    title: '5. Sınıf 1. Ünite: Gökyüzündeki Komşularımız ve Biz Açık Uçlu Klasik Sınavı - 1 (30 Soru)',
     grade: '5',
-    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    unit: '1. Ünite: Gökyüzündeki Komşularımız ve Biz',
     subject: 'Fen Bilimleri'
   },
   {
     file: 'testler/5-sinif-1-unite-gunes-dunya-ve-ay-acik-uclu-klasik-sinavi.html',
-    title: '5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Sınavı - 1 (30 Soru)',
+    title: '5. Sınıf 1. Ünite: Gökyüzündeki Komşularımız ve Biz Açık Uçlu Sınavı - 1 (30 Soru)',
     grade: '5',
-    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    unit: '1. Ünite: Gökyüzündeki Komşularımız ve Biz',
     subject: 'Fen Bilimleri'
   },
   {
     file: 'testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html',
-    title: '5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1',
+    title: '5. Sınıf 1. Ünite: Gökyüzündeki Komşularımız ve Biz Yaprak Testi - 1',
     grade: '5',
-    unit: '1. Ünite: Güneş, Dünya ve Ay',
+    unit: '1. Ünite: Gökyüzündeki Komşularımız ve Biz',
     subject: 'Fen Bilimleri'
   }
 ];
