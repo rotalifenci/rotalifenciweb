@@ -3702,5 +3702,41 @@
     "questionCount": 20,
     "createdAt": "2026-10-29T23:19:36.872Z",
     "updatedAt": "2026-10-29T23:19:36.872Z"
+  },
+  {
+    "id": "mat-test-7-1-1793316124948",
+    "grade": "7",
+    "category": "denemeler",
+    "targetSection": "1",
+    "title": "Test No: 10 - Kısa Cevaplı / Boşluk Doldurma",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "7. Sınıf Fen Bilimleri 1. Ünite: Güneş Sistemi ve Ötesi için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "fileName": "7-sinif-1-unite-test-no-10-kisa-cevapli-bosluk-doldurma.html",
+    "fileUrl": "testler/7-sinif-1-unite-test-no-10-kisa-cevapli-bosluk-doldurma.html",
+    "imageUrl": "assets/test-kapak-7.svg",
+    "kapakResmi": "assets/test-kapak-7.svg",
+    "cover": "assets/test-kapak-7.svg",
+    "format": "AÇIK UÇLU SINAV",
+    "hasBlob": false,
+    "tags": [
+      "7. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "soru-bankasi",
+      "denemeler",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "açık uçlu sınav",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 20 Soru • Test-6",
+    "testNumber": 6,
+    "questionCount": 20,
+    "createdAt": "2026-10-29T23:22:04.948Z",
+    "updatedAt": "2026-10-29T23:22:04.948Z"
   }
 ]
