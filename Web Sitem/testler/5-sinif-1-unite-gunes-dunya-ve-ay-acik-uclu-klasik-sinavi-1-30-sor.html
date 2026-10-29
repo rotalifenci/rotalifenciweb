@@ -915,6 +915,97 @@
       .yp-bar-icon-btn { width: 42px !important; height: 42px !important; font-size: 18px !important; }
       .yp-space-routes-list { grid-template-columns: 1fr; }
     }
+    /* === YENİ SORU ÇÖZME DÜZENİ: Sol %60 soru + görsel / Sağ %40 cevap alanı === */
+    .exam-countdown-badge { display: none !important; }
+    .yp-control-row { position: sticky; top: 68px; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; width: 100%; padding: 12px max(28px, calc((100vw - 1440px) / 2 + 28px)) 10px; background: rgba(240, 244, 249, 0.93); backdrop-filter: blur(10px); }
+    body.theme-dark .yp-control-row { background: rgba(5, 10, 24, 0.9); }
+    .yp-control-left, .yp-control-right { display: flex; align-items: center; gap: 14px; }
+    .yp-control-row .yp-bar-timer { flex-direction: row; gap: 12px; padding: 10px 22px !important; border-radius: 20px !important; background: #ffffff; border: 2px solid #bfdbfe; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12); min-width: 0 !important; }
+    .yp-timer-label { font-size: 13px; font-weight: 800; letter-spacing: 0.6px; color: #475569; }
+    .yp-timer-digits { font-family: 'Outfit', monospace; font-size: 38px; font-weight: 900; line-height: 1; color: #1e3a8a; letter-spacing: 1px; }
+    .yp-bar-timer.timer-warning .yp-timer-digits { color: #92400e; }
+    .yp-bar-timer.timer-urgent .yp-timer-digits { color: #991b1b; }
+    .yp-control-row .yp-bar-counter { font-size: 22px !important; padding: 14px 22px !important; border-radius: 18px !important; min-width: 96px; }
+    .yp-control-row .yp-bar-btn { font-size: 19px !important; padding: 15px 32px !important; border-radius: 18px !important; min-height: 56px; }
+    .yp-bar-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .yp-space-scroll-stream { padding: 18px 28px 130px 28px !important; }
+    .yp-space-slide-section { min-height: calc(100vh - 290px); justify-content: flex-start; padding: 22px 26px; }
+    .yp-slide-kind { display: inline-block; align-self: flex-start; font-size: 13px; font-weight: 800; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 999px; padding: 5px 12px; }
+    .yp-slide-main-title { font-size: 20px !important; }
+    .yp-space-col-left .yp-space-visual-frame { min-height: 0 !important; max-height: 380px !important; width: 100%; padding: 14px !important; }
+    .yp-space-col-left .yp-space-visual-frame svg, .yp-space-col-left .yp-space-visual-frame img { width: 100%; height: auto; max-width: 100%; max-height: 350px; }
+    .yp-question-card { font-size: clamp(24px, 2.1vw, 28px) !important; line-height: 1.55 !important; font-weight: 700 !important; padding: 24px 28px !important; }
+    .yp-answer-panel { width: 100%; background: #ffffff; border: 2px solid #bfdbfe; border-radius: 26px; padding: 28px; box-shadow: 0 14px 40px rgba(37, 99, 235, 0.10); }
+    body.theme-dark .yp-answer-panel { background: rgba(10, 18, 42, 0.85); border-color: rgba(56, 189, 248, 0.4); }
+    .yp-answer-title { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 900; color: #1e3a8a; letter-spacing: 1px; margin-bottom: 16px; }
+    body.theme-dark .yp-answer-title { color: #fde047; }
+    .yp-answer-panel .slide-input-label { display: none; }
+    .yp-answer-panel .slide-short-answer-box, .yp-answer-panel .slide-open-ended-box { background: transparent; border: none; padding: 0; }
+    .yp-answer-panel .slide-short-input { font-size: 24px; padding: 20px 22px; border-radius: 16px; border: 2px solid #93c5fd; }
+    .yp-answer-panel .slide-open-textarea { font-size: 20px; padding: 18px 20px; min-height: 340px; border-radius: 16px; border: 2px solid #93c5fd; resize: vertical; line-height: 1.6; }
+    .yp-answer-panel .slide-opt-card { font-size: 19px; padding: 16px 20px; }
+    .yp-answer-panel .slide-opt-letter { width: 40px; height: 40px; font-size: 17px; }
+    @media (min-width: 961px) {
+      .yp-space-slide-grid { grid-template-columns: minmax(0, 60fr) minmax(0, 40fr); gap: 28px; align-items: start; }
+      .yp-space-col-left { max-height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; }
+      .yp-space-col-right { position: sticky; top: 170px; align-items: flex-start; }
+    }
+    @media (max-width: 960px) {
+      .yp-control-row { position: static; padding: 12px 14px 0; }
+      .yp-control-left, .yp-control-right { width: 100%; }
+      .yp-control-right .yp-bar-btn { flex: 1; }
+      .yp-control-left .yp-bar-timer { flex: 1; justify-content: center; }
+      .yp-timer-digits { font-size: 30px; }
+      .yp-space-slide-section { min-height: 0; padding: 16px; }
+      .yp-space-col-left { max-height: none; overflow: visible; }
+      .yp-space-col-right { position: static; }
+      .yp-space-scroll-stream { padding: 14px 12px 120px 12px !important; }
+    }
+    @media print { .yp-control-row { display: none !important; } }
+    /* === MOBİL / GÖRSEL DÜZELTMELERİ === */
+    .yp-space-col-left .yp-space-visual-frame { display: block !important; height: auto !important; }
+    .yp-space-col-left .yp-space-visual-frame svg { display: block; margin: 0 auto; width: 100%; height: auto; }
+    .yp-space-slide-grid > * { min-width: 0; }
+    .yp-slide-main-title, .yp-question-card, .yp-slide-subtitle { overflow-wrap: anywhere; }
+    @media (max-width: 960px) {
+      .yp-space-slide-grid { grid-template-columns: minmax(0, 1fr) !important; }
+      .space-topbar { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+      .doc-main-title, .space-badge { display: none; }
+      .topbar-btn { padding: 8px 10px; font-size: 12px; }
+      .yp-question-card { font-size: clamp(22px, 5.4vw, 26px) !important; padding: 18px 18px !important; }
+      .yp-answer-panel { padding: 18px; }
+      .yp-answer-panel .slide-open-textarea { min-height: 220px; }
+      .yp-control-left { flex-wrap: nowrap; }
+      .yp-control-row .yp-bar-timer { padding: 8px 14px !important; }
+      .yp-control-row .yp-bar-counter { font-size: 18px !important; padding: 10px 14px !important; min-width: 70px; }
+      .yp-control-row .yp-bar-btn { font-size: 17px !important; padding: 12px 16px !important; min-height: 50px; }
+      .yp-space-watermark { display: none; }
+    }
+    @media (max-width: 600px) {
+      .yp-control-row { padding: 8px 10px 0 !important; gap: 8px !important; }
+      .yp-control-left { display: flex !important; gap: 6px !important; width: 100% !important; align-items: center !important; }
+      .yp-control-row .yp-bar-timer { flex: 1 !important; padding: 6px 10px !important; min-width: 0 !important; gap: 6px !important; border-radius: 14px !important; }
+      .yp-timer-label { font-size: 10px !important; letter-spacing: 0 !important; }
+      .yp-timer-digits { font-size: 22px !important; }
+      .yp-control-row .yp-bar-counter { font-size: 14px !important; padding: 6px 10px !important; min-width: 52px !important; border-radius: 14px !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; }
+      .yp-control-right { width: 100% !important; gap: 8px !important; display: flex !important; }
+      .yp-control-right .yp-bar-btn { flex: 1 !important; font-size: 15px !important; padding: 10px 12px !important; min-height: 44px !important; border-radius: 14px !important; }
+    }
+    /* end mobile */
+
+    /* === KAPSAYICI VE TAŞMA ENGELLEYİCİ GÜVENLİK KURALLARI === */
+    html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 100% !important; }
+    .space-topbar { max-width: 100vw !important; box-sizing: border-box !important; }
+    .yp-control-row { max-width: 100vw !important; box-sizing: border-box !important; }
+    .yp-control-left, .yp-control-right { min-width: 0 !important; }
+    .yp-space-scroll-stream { max-width: 100vw !important; box-sizing: border-box !important; overflow-x: hidden !important; }
+    .yp-space-slide-section { max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .yp-space-slide-grid { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+    .yp-space-col-left, .yp-space-col-right { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+    .yp-space-visual-frame { max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .yp-space-visual-frame svg { max-width: 100% !important; height: auto !important; }
+    .yp-neon-card, .yp-question-card, .yp-answer-panel { max-width: 100% !important; box-sizing: border-box !important; }
+
   </style>
 </head>
 <body>
@@ -948,6 +1039,25 @@
     </div>
   </header>
 
+  <!-- Kontrol Satırı: Sol büyük kronometre + soru no / Sağ Önceki-Sonraki -->
+  <div class="yp-control-row" id="ypControlRow">
+    <div class="yp-control-left">
+      <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
+        <span class="yp-timer-label">⏱️ KALAN SÜRE</span>
+        <span class="yp-timer-digits" id="ypBottomTimerText">30:00</span>
+      </div>
+      <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">1 / 30</div>
+    </div>
+    <div class="yp-control-right">
+    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
+      ‹ Önceki
+    </button>
+    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
+      Sonraki &gt;
+    </button>
+    </div>
+  </div>
+
   <!-- Dikey Kaydırma & Dokunmatik Slayt Akış Alanı -->
   <main class="yp-space-scroll-stream" id="spaceScrollStream">
     
@@ -961,20 +1071,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 1</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 1:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Gökyüzünde hareketliymiş gibi görünen, ısı ve ışık kaynağımız olan dev kütleli gök cisminin adı nedir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-1" name="f1-3rcgut" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(1, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 1:</strong> Gökyüzünde hareketliymiş gibi görünen, ısı ve ışık kaynağımız olan dev kütleli gök cisminin adı nedir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -989,11 +1090,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 1</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-1" name="f1-fzj50y" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(1, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1010,20 +1114,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 2</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 2:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Dünya&#039;mızın tek doğal uydusu olan gök cismine ne ad verilir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-2" name="f2-bgi3r8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(2, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="earthPhoto_1"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="192" y="27" width="136" height="136" clip-path="url(#earthPhoto_1)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#0284c7" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Dünya</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 2:</strong> Dünya&#039;mızın tek doğal uydusu olan gök cismine ne ad verilir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1038,14 +1139,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="earthPhoto_1"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/earth.jpg" xlink:href="/images/earth.jpg" x="192" y="27" width="136" height="136" clip-path="url(#earthPhoto_1)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#0284c7" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Dünya</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-2" name="f2-f8k67x" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(2, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1062,20 +1163,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 3</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 3:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Üzerinde yaşadığımız, katmanlardan oluşan ve şekli küreye benzeyen gezegenin adı nedir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-3" name="f3-y9sr0t" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(3, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="75" fill="#2277bb"/><text x="260" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" text-anchor="middle" fill="#ffffff">?</text></svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 3:</strong> Üzerinde yaşadığımız, katmanlardan oluşan ve şekli küreye benzeyen gezegenin adı nedir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1090,8 +1182,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="75" fill="#2277bb"/><text x="260" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" text-anchor="middle" fill="#ffffff">?</text></svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-3" name="f3-s0ll2i" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(3, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1108,20 +1206,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 4</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 4:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş, Dünya ve Ay büyüklük olarak kıyaslandığında en büyük olan gök cismidir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-4" name="f4-nz71kb" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(4, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 4:</strong> Güneş, Dünya ve Ay büyüklük olarak kıyaslandığında en büyük olan gök cismidir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1136,11 +1225,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 4</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-4" name="f4-yik3ct" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(4, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1157,20 +1249,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 5</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 5:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş, Dünya ve Ay&#039;ın genel geometrik şekli neye benzer?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-5" name="f5-7d0gv1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(5, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 5:</strong> Güneş, Dünya ve Ay&#039;ın genel geometrik şekli neye benzer?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1185,11 +1268,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 5</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-5" name="f5-tbuxyg" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(5, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1206,20 +1292,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 6</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 6:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş doğal bir ısı ve ... kaynağıdır. Cümledeki boşluğa ne gelmelidir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-6" name="f6-6n16qn" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(6, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 6:</strong> Güneş doğal bir ısı ve ... kaynağıdır. Cümledeki boşluğa ne gelmelidir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1234,11 +1311,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 6</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-6" name="f6-oz2xbt" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(6, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1255,20 +1335,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 7</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 7:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;ın yüzeyinde gök taşlarının çarpması sonucu oluşan çukurlara ne denir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-7" name="f7-2p0n7x" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(7, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_4"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_4)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 7:</strong> Ay&#039;ın yüzeyinde gök taşlarının çarpması sonucu oluşan çukurlara ne denir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1283,14 +1360,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_4"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_4)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-7" name="f7-7h9vo6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(7, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1307,20 +1384,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 8</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 8:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş, gök cismi sınıflandırmalarından hangisine girer?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-8" name="f8-2wgyxv" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(8, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_8"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_8)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 8:</strong> Güneş, gök cismi sınıflandırmalarından hangisine girer?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1335,14 +1409,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_8"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_8)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-8" name="f8-4yn0ni" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(8, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1359,20 +1433,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 9</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 9:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay, bir gezegen etrafında dönen gök cismi olduğu için hangi gruba dahildir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-9" name="f9-33mwe8" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(9, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_9"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_9)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 9:</strong> Ay, bir gezegen etrafında dönen gök cismi olduğu için hangi gruba dahildir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1387,14 +1458,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_9"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_9)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-9" name="f9-ixi2a7" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(9, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1411,20 +1482,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 10</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 10:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in çapı, Dünya&#039;nın çapından yaklaşık olarak kaç kat daha büyüktür?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-10" name="f10-l6ovrg" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(10, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_10"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_10)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 10:</strong> Güneş&#039;in çapı, Dünya&#039;nın çapından yaklaşık olarak kaç kat daha büyüktür?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1439,14 +1507,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_10"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_10)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-10" name="f10-2dgpgt" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(10, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1463,20 +1531,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 11</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 11:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;da hava olaylarının görülmemesinin temel sebebi neyin çok ince veya yok olmasıdır?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-11" name="f11-i0cdaw" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(11, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_11"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_11)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 11:</strong> Ay&#039;da hava olaylarının görülmemesinin temel sebebi neyin çok ince veya yok olmasıdır?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1491,14 +1556,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_11"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_11)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-11" name="f11-x1usxz" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(11, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1515,20 +1580,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 12</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 12:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş, Dünya gibi ... yapılı katmanlardan oluşur.
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-12" name="f12-s0clp4" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(12, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_12"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_12)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 12:</strong> Güneş, Dünya gibi ... yapılı katmanlardan oluşur.
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1543,14 +1605,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_12"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_12)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-12" name="f12-597x5u" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(12, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1567,20 +1629,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 13</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 13:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş kendi etrafında hangi yöne doğru dönme hareketi yapar?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-13" name="f13-uj464r" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(13, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_13"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_13)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 13:</strong> Güneş kendi etrafında hangi yöne doğru dönme hareketi yapar?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1595,14 +1654,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_13"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_13)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-13" name="f13-r8z3xj" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(13, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1619,20 +1678,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 14</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 14:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;ın çapı, Dünya&#039;nın çapının yaklaşık olarak kaçta biridir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-14" name="f14-fitjbx" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(14, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_14"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_14)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 14:</strong> Ay&#039;ın çapı, Dünya&#039;nın çapının yaklaşık olarak kaçta biridir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1647,14 +1703,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_14"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_14)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-14" name="f14-40ohh6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(14, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1671,20 +1727,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 15</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 15:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Evrendeki diğer dev yıldızlara kıyasla Güneş hangi boyutta bir yıldızdır?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-15" name="f15-rywci1" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(15, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 15:</strong> Evrendeki diğer dev yıldızlara kıyasla Güneş hangi boyutta bir yıldızdır?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1699,11 +1746,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 15</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-15" name="f15-y4ea7x" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(15, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1720,20 +1770,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 16</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 16:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;ın yüzeyi toz tabakası ve ... ile kaplıdır.
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-16" name="f16-pprl1j" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(16, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_15"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_15)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 16:</strong> Ay&#039;ın yüzeyi toz tabakası ve ... ile kaplıdır.
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1748,14 +1795,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_15"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_15)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-16" name="f16-fnnuf7" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(16, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1772,20 +1819,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 17</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 17:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş esas olarak hangi maddelerden (gazlardan) oluşan büyük bir ateş topudur?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-17" name="f17-drvsuz" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(17, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_17"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_17)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 17:</strong> Güneş esas olarak hangi maddelerden (gazlardan) oluşan büyük bir ateş topudur?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1800,14 +1844,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_17"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_17)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-17" name="f17-ej7ylp" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(17, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1824,20 +1868,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 18</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 18:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Dünya&#039;nın uzaydan çekilen fotoğraflarında hangi geometrik şekle benzediği açıkça görülür?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-18" name="f18-x99k4f" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(18, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_18"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_18)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 18:</strong> Dünya&#039;nın uzaydan çekilen fotoğraflarında hangi geometrik şekle benzediği açıkça görülür?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1852,14 +1893,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_18"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_18)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-18" name="f18-lu1qwk" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(18, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1876,20 +1917,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 19</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 19:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş, gerçekte devasa boyutlarda olmasına rağmen neden gökyüzünde küçük bir daire gibi görünür?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-19" name="f19-0sd0k9" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(19, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 19:</strong> Güneş, gerçekte devasa boyutlarda olmasına rağmen neden gökyüzünde küçük bir daire gibi görünür?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1904,11 +1936,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 19</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-19" name="f19-8978dr" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(19, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1925,20 +1960,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 20</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 20:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay, kendi başına bir ışık kaynağı değildir; o Güneş&#039;ten aldığı ışığı ... bir gök cismidir.
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-20" name="f20-c7ovuw" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(20, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 20:</strong> Ay, kendi başına bir ışık kaynağı değildir; o Güneş&#039;ten aldığı ışığı ... bir gök cismidir.
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -1953,11 +1979,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 20</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-20" name="f20-9h9d08" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(20, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -1974,20 +2003,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 21</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 21:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay yüzeyinde canlı yaşamını ve hava olaylarını zorlaştıran sıvı durumundaki temel eksiklik nedir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-21" name="f21-ce0oyu" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(21, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_19"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_19)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 21:</strong> Ay yüzeyinde canlı yaşamını ve hava olaylarını zorlaştıran sıvı durumundaki temel eksiklik nedir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2002,14 +2028,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_19"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_19)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-21" name="f21-d1h12k" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(21, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2026,20 +2052,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 22</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 22:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in de Dünya gibi iç içe geçmiş farklı ... vardır.
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-22" name="f22-ex90sk" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(22, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_22"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_22)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 22:</strong> Güneş&#039;in de Dünya gibi iç içe geçmiş farklı ... vardır.
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2054,14 +2077,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_22"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_22)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-22" name="f22-ihs4ih" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(22, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2078,20 +2101,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 23</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 23:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Gökyüzüne baktığımızda Güneş ve Ay neden neredeyse aynı büyüklükteymiş gibi görünür?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-23" name="f23-m8sih3" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(23, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 23:</strong> Gökyüzüne baktığımızda Güneş ve Ay neden neredeyse aynı büyüklükteymiş gibi görünür?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2106,11 +2120,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 23</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-23" name="f23-bdc61x" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(23, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2127,20 +2144,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 24</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 24:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in merkezi yüzeyine göre çok daha ... dir. Boşluğa ne gelmelidir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-24" name="f24-5gbmqh" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(24, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_23"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_23)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 24:</strong> Güneş&#039;in merkezi yüzeyine göre çok daha ... dir. Boşluğa ne gelmelidir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2155,14 +2169,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_23"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_23)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-24" name="f24-ezfv26" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(24, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2179,20 +2193,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 25</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 25:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay yüzeyinde kraterlerin yanı sıra devasa çukurlar ve yüksek ... da yer alır.
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-25" name="f25-yai3ke" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(25, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_25"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_25)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 25:</strong> Ay yüzeyinde kraterlerin yanı sıra devasa çukurlar ve yüksek ... da yer alır.
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2207,14 +2218,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_25"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_25)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-25" name="f25-l6v81f" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(25, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2231,20 +2242,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 26</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 26:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş, tıpkı Dünya gibi kendi ekseni etrafında ne yapar?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-26" name="f26-9c64ph" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(26, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_26"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_26)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 26:</strong> Güneş, tıpkı Dünya gibi kendi ekseni etrafında ne yapar?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2259,14 +2267,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_26"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_26)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-26" name="f26-0lm6la" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(26, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2283,20 +2291,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 27</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 27:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;a ilk ayak basan insan kimdir? (Soyadı veya adı yeterlidir)
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-27" name="f27-c23dpe" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(27, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_27"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_27)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 27:</strong> Ay&#039;a ilk ayak basan insan kimdir? (Soyadı veya adı yeterlidir)
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2311,14 +2316,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_27"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_27)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-27" name="f27-k6v3at" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(27, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2335,20 +2340,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 28</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 28:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Dünya&#039;daki yaşamın devam etmesini sağlayan ısı ve ışığı bize ulaştıran gök cismi nedir?
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-28" name="f28-3rdzif" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(28, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_28"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_28)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 28:</strong> Dünya&#039;daki yaşamın devam etmesini sağlayan ısı ve ışığı bize ulaştıran gök cismi nedir?
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2363,14 +2365,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_28"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_28)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-28" name="f28-d02zkt" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(28, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2387,20 +2389,17 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 29</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 29:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;ın uzaydan bakıldığında tamamen yuvarlak yani ... şeklinde olduğu görülür.
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-29" name="f29-4r5k2f" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(29, this.value)">
-        </div>
-      
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_29"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_29)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 29:</strong> Ay&#039;ın uzaydan bakıldığında tamamen yuvarlak yani ... şeklinde olduğu görülür.
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2415,14 +2414,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_29"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_29)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-29" name="f29-ej5z2f" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(29, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2439,20 +2438,11 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Açık Uçlu Klasik Sınavı - 1 (30 Soru) — Soru 30</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Kısa Cevaplı / Boşluk Doldurma</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 30:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in yaydığı enerji temel olarak neyi oluşturur? (İki kelime: Isı ve ...)
-              </div>
-              
-        <div class="slide-short-answer-box">
-          <span class="slide-input-label">✍️ Cevabınız:</span>
-          <input type="text" class="slide-short-input" id="input-q-30" name="f30-0rfmy7" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(30, this.value)">
-        </div>
-      
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 30:</strong> Güneş&#039;in yaydığı enerji temel olarak neyi oluşturur? (İki kelime: Isı ve ...)
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -2467,11 +2457,14 @@
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 30</text>
-      </svg>
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              
+        <div class="slide-short-answer-box">
+          <span class="slide-input-label">✍️ Cevabınız:</span>
+          <input type="text" class="slide-short-input" id="input-q-30" name="f30-eenae6" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" readonly onfocus="this.removeAttribute('readonly')" placeholder="Kısa cevabınızı buraya yazınız..." oninput="recordAnswer(30, this.value)">
+        </div>
+      
             </div>
           </div>
         </div>
@@ -2491,24 +2484,11 @@
 
   <!-- Sabit Alt Kontrol Çubuğu -->
   <nav class="yp-space-bottom-bar" aria-label="Soru Kontrolleri">
-    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
-      ‹ Önceki
-    </button>
 
-    <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">
-      1 / 30
-    </div>
 
     <!-- ⏱️ Canlı Alt Kronometre -->
-    <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
-      ⏱️ <span id="ypBottomTimerText">30:00</span>
-    </div>
 
-    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
-      Sonraki &gt;
-    </button>
 
-    <div class="yp-bar-divider"></div>
 
     <button type="button" class="yp-bar-btn yp-bar-routes" onclick="toggleRoutesDrawer()" title="Soru Rotaları Menüsü">
       🧭 Soru Rotaları
@@ -2632,6 +2612,10 @@
       activeSlideIdx = Math.max(0, Math.min(totalQuestions - 1, idx));
       const counterEl = document.getElementById('slideCounter');
       if (counterEl) counterEl.textContent = (activeSlideIdx + 1) + ' / ' + totalQuestions;
+      const __pb = document.getElementById('btnPrevSlide');
+      const __nb = document.getElementById('btnNextSlide');
+      if (__pb) __pb.disabled = activeSlideIdx <= 0;
+      if (__nb) __nb.disabled = activeSlideIdx >= totalQuestions - 1;
       document.querySelectorAll('.yp-route-item').forEach((b, i) => {
         b.classList.toggle('active', i === activeSlideIdx);
       });
@@ -2670,6 +2654,7 @@
     }, { threshold: 0.5 });
 
     document.querySelectorAll('.yp-space-slide-section').forEach(sec => observer.observe(sec));
+    updateCounter(0);
 
     // Klavye Yön Tuşları Desteği
     document.addEventListener('keydown', (e) => {

@@ -915,6 +915,97 @@
       .yp-bar-icon-btn { width: 42px !important; height: 42px !important; font-size: 18px !important; }
       .yp-space-routes-list { grid-template-columns: 1fr; }
     }
+    /* === YENİ SORU ÇÖZME DÜZENİ: Sol %60 soru + görsel / Sağ %40 cevap alanı === */
+    .exam-countdown-badge { display: none !important; }
+    .yp-control-row { position: sticky; top: 68px; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; width: 100%; padding: 12px max(28px, calc((100vw - 1440px) / 2 + 28px)) 10px; background: rgba(240, 244, 249, 0.93); backdrop-filter: blur(10px); }
+    body.theme-dark .yp-control-row { background: rgba(5, 10, 24, 0.9); }
+    .yp-control-left, .yp-control-right { display: flex; align-items: center; gap: 14px; }
+    .yp-control-row .yp-bar-timer { flex-direction: row; gap: 12px; padding: 10px 22px !important; border-radius: 20px !important; background: #ffffff; border: 2px solid #bfdbfe; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12); min-width: 0 !important; }
+    .yp-timer-label { font-size: 13px; font-weight: 800; letter-spacing: 0.6px; color: #475569; }
+    .yp-timer-digits { font-family: 'Outfit', monospace; font-size: 38px; font-weight: 900; line-height: 1; color: #1e3a8a; letter-spacing: 1px; }
+    .yp-bar-timer.timer-warning .yp-timer-digits { color: #92400e; }
+    .yp-bar-timer.timer-urgent .yp-timer-digits { color: #991b1b; }
+    .yp-control-row .yp-bar-counter { font-size: 22px !important; padding: 14px 22px !important; border-radius: 18px !important; min-width: 96px; }
+    .yp-control-row .yp-bar-btn { font-size: 19px !important; padding: 15px 32px !important; border-radius: 18px !important; min-height: 56px; }
+    .yp-bar-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .yp-space-scroll-stream { padding: 18px 28px 130px 28px !important; }
+    .yp-space-slide-section { min-height: calc(100vh - 290px); justify-content: flex-start; padding: 22px 26px; }
+    .yp-slide-kind { display: inline-block; align-self: flex-start; font-size: 13px; font-weight: 800; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 999px; padding: 5px 12px; }
+    .yp-slide-main-title { font-size: 20px !important; }
+    .yp-space-col-left .yp-space-visual-frame { min-height: 0 !important; max-height: 380px !important; width: 100%; padding: 14px !important; }
+    .yp-space-col-left .yp-space-visual-frame svg, .yp-space-col-left .yp-space-visual-frame img { width: 100%; height: auto; max-width: 100%; max-height: 350px; }
+    .yp-question-card { font-size: clamp(24px, 2.1vw, 28px) !important; line-height: 1.55 !important; font-weight: 700 !important; padding: 24px 28px !important; }
+    .yp-answer-panel { width: 100%; background: #ffffff; border: 2px solid #bfdbfe; border-radius: 26px; padding: 28px; box-shadow: 0 14px 40px rgba(37, 99, 235, 0.10); }
+    body.theme-dark .yp-answer-panel { background: rgba(10, 18, 42, 0.85); border-color: rgba(56, 189, 248, 0.4); }
+    .yp-answer-title { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 900; color: #1e3a8a; letter-spacing: 1px; margin-bottom: 16px; }
+    body.theme-dark .yp-answer-title { color: #fde047; }
+    .yp-answer-panel .slide-input-label { display: none; }
+    .yp-answer-panel .slide-short-answer-box, .yp-answer-panel .slide-open-ended-box { background: transparent; border: none; padding: 0; }
+    .yp-answer-panel .slide-short-input { font-size: 24px; padding: 20px 22px; border-radius: 16px; border: 2px solid #93c5fd; }
+    .yp-answer-panel .slide-open-textarea { font-size: 20px; padding: 18px 20px; min-height: 340px; border-radius: 16px; border: 2px solid #93c5fd; resize: vertical; line-height: 1.6; }
+    .yp-answer-panel .slide-opt-card { font-size: 19px; padding: 16px 20px; }
+    .yp-answer-panel .slide-opt-letter { width: 40px; height: 40px; font-size: 17px; }
+    @media (min-width: 961px) {
+      .yp-space-slide-grid { grid-template-columns: minmax(0, 60fr) minmax(0, 40fr); gap: 28px; align-items: start; }
+      .yp-space-col-left { max-height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; }
+      .yp-space-col-right { position: sticky; top: 170px; align-items: flex-start; }
+    }
+    @media (max-width: 960px) {
+      .yp-control-row { position: static; padding: 12px 14px 0; }
+      .yp-control-left, .yp-control-right { width: 100%; }
+      .yp-control-right .yp-bar-btn { flex: 1; }
+      .yp-control-left .yp-bar-timer { flex: 1; justify-content: center; }
+      .yp-timer-digits { font-size: 30px; }
+      .yp-space-slide-section { min-height: 0; padding: 16px; }
+      .yp-space-col-left { max-height: none; overflow: visible; }
+      .yp-space-col-right { position: static; }
+      .yp-space-scroll-stream { padding: 14px 12px 120px 12px !important; }
+    }
+    @media print { .yp-control-row { display: none !important; } }
+    /* === MOBİL / GÖRSEL DÜZELTMELERİ === */
+    .yp-space-col-left .yp-space-visual-frame { display: block !important; height: auto !important; }
+    .yp-space-col-left .yp-space-visual-frame svg { display: block; margin: 0 auto; width: 100%; height: auto; }
+    .yp-space-slide-grid > * { min-width: 0; }
+    .yp-slide-main-title, .yp-question-card, .yp-slide-subtitle { overflow-wrap: anywhere; }
+    @media (max-width: 960px) {
+      .yp-space-slide-grid { grid-template-columns: minmax(0, 1fr) !important; }
+      .space-topbar { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+      .doc-main-title, .space-badge { display: none; }
+      .topbar-btn { padding: 8px 10px; font-size: 12px; }
+      .yp-question-card { font-size: clamp(22px, 5.4vw, 26px) !important; padding: 18px 18px !important; }
+      .yp-answer-panel { padding: 18px; }
+      .yp-answer-panel .slide-open-textarea { min-height: 220px; }
+      .yp-control-left { flex-wrap: nowrap; }
+      .yp-control-row .yp-bar-timer { padding: 8px 14px !important; }
+      .yp-control-row .yp-bar-counter { font-size: 18px !important; padding: 10px 14px !important; min-width: 70px; }
+      .yp-control-row .yp-bar-btn { font-size: 17px !important; padding: 12px 16px !important; min-height: 50px; }
+      .yp-space-watermark { display: none; }
+    }
+    @media (max-width: 600px) {
+      .yp-control-row { padding: 8px 10px 0 !important; gap: 8px !important; }
+      .yp-control-left { display: flex !important; gap: 6px !important; width: 100% !important; align-items: center !important; }
+      .yp-control-row .yp-bar-timer { flex: 1 !important; padding: 6px 10px !important; min-width: 0 !important; gap: 6px !important; border-radius: 14px !important; }
+      .yp-timer-label { font-size: 10px !important; letter-spacing: 0 !important; }
+      .yp-timer-digits { font-size: 22px !important; }
+      .yp-control-row .yp-bar-counter { font-size: 14px !important; padding: 6px 10px !important; min-width: 52px !important; border-radius: 14px !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; }
+      .yp-control-right { width: 100% !important; gap: 8px !important; display: flex !important; }
+      .yp-control-right .yp-bar-btn { flex: 1 !important; font-size: 15px !important; padding: 10px 12px !important; min-height: 44px !important; border-radius: 14px !important; }
+    }
+    /* end mobile */
+
+    /* === KAPSAYICI VE TAŞMA ENGELLEYİCİ GÜVENLİK KURALLARI === */
+    html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 100% !important; }
+    .space-topbar { max-width: 100vw !important; box-sizing: border-box !important; }
+    .yp-control-row { max-width: 100vw !important; box-sizing: border-box !important; }
+    .yp-control-left, .yp-control-right { min-width: 0 !important; }
+    .yp-space-scroll-stream { max-width: 100vw !important; box-sizing: border-box !important; overflow-x: hidden !important; }
+    .yp-space-slide-section { max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .yp-space-slide-grid { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+    .yp-space-col-left, .yp-space-col-right { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+    .yp-space-visual-frame { max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .yp-space-visual-frame svg { max-width: 100% !important; height: auto !important; }
+    .yp-neon-card, .yp-question-card, .yp-answer-panel { max-width: 100% !important; box-sizing: border-box !important; }
+
   </style>
 </head>
 <body>
@@ -948,6 +1039,25 @@
     </div>
   </header>
 
+  <!-- Kontrol Satırı: Sol büyük kronometre + soru no / Sağ Önceki-Sonraki -->
+  <div class="yp-control-row" id="ypControlRow">
+    <div class="yp-control-left">
+      <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
+        <span class="yp-timer-label">⏱️ KALAN SÜRE</span>
+        <span class="yp-timer-digits" id="ypBottomTimerText">30:00</span>
+      </div>
+      <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">1 / 30</div>
+    </div>
+    <div class="yp-control-right">
+    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
+      ‹ Önceki
+    </button>
+    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
+      Sonraki &gt;
+    </button>
+    </div>
+  </div>
+
   <!-- Dikey Kaydırma & Dokunmatik Slayt Akış Alanı -->
   <main class="yp-space-scroll-stream" id="spaceScrollStream">
     
@@ -961,14 +1071,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 1</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 1:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 1:</strong> Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi yanlıştır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-1" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Güneş, küre şeklindedir, bir ısı ve ışık kaynağıdır ve Dünya&#039;ya en yakın yıldızdır. Ancak Güneş de diğer gök cisimleri gibi kendi etrafında dönme hareketi yapar.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -995,25 +1118,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-1" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Güneş, küre şeklindedir, bir ısı ve ışık kaynağıdır ve Dünya&#039;ya en yakın yıldızdır. Ancak Güneş de diğer gök cisimleri gibi kendi etrafında dönme hareketi yapar.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 1</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1029,14 +1133,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 2</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 2:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Görselde temel özellikleri verilen Ay hakkında öğrencilerin yaptığı aşağıdaki yorumlardan hangisi doğrudur?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_1"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_1)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 2:</strong> Görselde temel özellikleri verilen Ay hakkında öğrencilerin yaptığı aşağıdaki yorumlardan hangisi doğrudur?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-2" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay&#039;ın geometrik şekli küreye benzer. Ay bir ısı kaynağı değildir, Güneş&#039;ten aldığı ışığı yansıtır. Atmosferi yok denecek kadar azdır ve Dünya&#039;dan küçüktür.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1063,28 +1186,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-2" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay&#039;ın geometrik şekli küreye benzer. Ay bir ısı kaynağı değildir, Güneş&#039;ten aldığı ışığı yansıtır. Atmosferi yok denecek kadar azdır ve Dünya&#039;dan küçüktür.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_1"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_1)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1100,14 +1201,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 3</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 3:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş ve Ay büyüklükleri bakımından karşılaştırıldığında hangi ifade doğru olur?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 3:</strong> Güneş ve Ay büyüklükleri bakımından karşılaştırıldığında hangi ifade doğru olur?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-3" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Güneş bir yıldızdır ve Ay&#039;a göre devasa büyüklüktedir. Güneş&#039;in içerisine yaklaşık 64 milyon adet Ay sığabilir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1134,25 +1248,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-3" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Güneş bir yıldızdır ve Ay&#039;a göre devasa büyüklüktedir. Güneş&#039;in içerisine yaklaşık 64 milyon adet Ay sığabilir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 3</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1168,14 +1263,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 4</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 4:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Yukarıda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 4:</strong> Yukarıda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-4" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Güneş ve Ay&#039;ın ortak özelliklerinden biri küre şeklinde olmalarıdır. Ancak Ay ısı ve ışık kaynağı değildir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1202,25 +1310,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-4" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Güneş ve Ay&#039;ın ortak özelliklerinden biri küre şeklinde olmalarıdır. Ancak Ay ısı ve ışık kaynağı değildir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 4</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1236,14 +1325,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 5</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 5:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş orta sıcaklıkta bir yıldızdır. Güneş&#039;in katmanlı yapısı ve yapısındaki maddeler düşünüldüğünde aşağıdakilerden hangisi doğrud?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 5:</strong> Güneş orta sıcaklıkta bir yıldızdır. Güneş&#039;in katmanlı yapısı ve yapısındaki maddeler düşünüldüğünde aşağıdakilerden hangisi doğrud?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-5" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gaz halindeki maddelerden (çoğunlukla hidrojen ve helyum) oluşur, oldukça sıcaktır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1270,25 +1372,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-5" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gaz halindeki maddelerden (çoğunlukla hidrojen ve helyum) oluşur, oldukça sıcaktır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 5</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1304,14 +1387,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 6</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 6:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay yüzeyinde bulunan kraterler ve taşlık alanlar ile ilgili olarak aşağıdakilerden hangisi söylenebilir?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_3"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_3)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 6:</strong> Ay yüzeyinde bulunan kraterler ve taşlık alanlar ile ilgili olarak aşağıdakilerden hangisi söylenebilir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-6" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay&#039;ın atmosferi çok ince olduğu için gök taşları yanarak yok olamaz ve yüzeye çarparak büyük çukurlar (kraterler) oluşturur.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1338,28 +1440,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-6" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay&#039;ın atmosferi çok ince olduğu için gök taşları yanarak yok olamaz ve yüzeye çarparak büyük çukurlar (kraterler) oluşturur.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_3"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_3)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1375,14 +1455,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 7</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 7:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Dünya&#039;nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi yanlıştır?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_7"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_7)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 7:</strong> Dünya&#039;nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi yanlıştır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-7" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Ay bir ışık kaynağı değildir, Güneş&#039;ten aldığı ışığı yansıtır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1409,28 +1508,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-7" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Ay bir ışık kaynağı değildir, Güneş&#039;ten aldığı ışığı yansıtır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_7"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_7)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1446,14 +1523,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 8</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 8:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in dünyaya olan devasa uzaklığına rağmen dünyamızı ısıtması ve aydınlatması onun hangi temel özelliği ile ilgilidir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 8:</strong> Güneş&#039;in dünyaya olan devasa uzaklığına rağmen dünyamızı ısıtması ve aydınlatması onun hangi temel özelliği ile ilgilidir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-8" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş etrafa yoğun ısı ve ışık yayan bir yıldızdır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1480,25 +1570,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-8" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş etrafa yoğun ısı ve ışık yayan bir yıldızdır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 8</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1514,14 +1585,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 9</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 9:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay&#039;ın yüzeyinde hava olaylarının (yağmur, rüzgâr, kar vb.) görülmeme nedeni aşağıdakilerden hangisidir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 9:</strong> Ay&#039;ın yüzeyinde hava olaylarının (yağmur, rüzgâr, kar vb.) görülmeme nedeni aşağıdakilerden hangisidir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-9" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Hava olaylarının gerçekleşebilmesi için kalın bir atmosfer tabakasına ihtiyaç vardır. Ay&#039;ın atmosferi çok incedir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1548,25 +1632,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-9" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Hava olaylarının gerçekleşebilmesi için kalın bir atmosfer tabakasına ihtiyaç vardır. Ay&#039;ın atmosferi çok incedir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 9</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1582,14 +1647,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 10</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 10:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Bir öğrenci fen bilimleri ödevi için Güneş ve Ay modelleri hazırlamıştır. Bu modellerde Güneş ve Ay&#039;ın ortak olarak hangi geometrik şekle benzediğini göstermiştir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 10:</strong> Bir öğrenci fen bilimleri ödevi için Güneş ve Ay modelleri hazırlamıştır. Bu modellerde Güneş ve Ay&#039;ın ortak olarak hangi geometrik şekle benzediğini göstermiştir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-10" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş ve Ay küre şekline benzer.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1616,25 +1694,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-10" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş ve Ay küre şekline benzer.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 10</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1650,14 +1709,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 11</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 11:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Yukarıda kendini tanıtan gök cismi hangisidir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 11:</strong> Yukarıda kendini tanıtan gök cismi hangisidir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-11" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gazlardan oluşur.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1684,25 +1756,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-11" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gazlardan oluşur.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 11</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1718,14 +1771,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 12</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 12:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay yüzeyinde gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının temel sebebi nedir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 12:</strong> Ay yüzeyinde gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının temel sebebi nedir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-12" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Atmosfer, gök cisimlerini battaniye gibi sararak aşırı ısınmayı veya soğumayı önler. Ay&#039;da atmosfer çok ince olduğu için gece çok soğuk, gündüz ise çok sıcak olur.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1752,25 +1818,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-12" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Atmosfer, gök cisimlerini battaniye gibi sararak aşırı ısınmayı veya soğumayı önler. Ay&#039;da atmosfer çok ince olduğu için gece çok soğuk, gündüz ise çok sıcak olur.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 12</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1786,14 +1833,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 13</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 13:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi yanlıştır?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 13:</strong> Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi yanlıştır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-13" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Ay (II), Güneş&#039;ten (I) çok daha küçüktür.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1820,25 +1880,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-13" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Ay (II), Güneş&#039;ten (I) çok daha küçüktür.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 13</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1854,14 +1895,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 14</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 14:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in yüzeyinde daha soğuk bölgeler olduğu bilinen ve görselde temsili olarak gösterilen lekelere ne ad verilir?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_8"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_8)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 14:</strong> Güneş&#039;in yüzeyinde daha soğuk bölgeler olduğu bilinen ve görselde temsili olarak gösterilen lekelere ne ad verilir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-14" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş yüzeyindeki daha soğuk görünen karanlık bölgelere Güneş lekesi denir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1888,28 +1948,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-14" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş yüzeyindeki daha soğuk görünen karanlık bölgelere Güneş lekesi denir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_8"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_8)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1925,14 +1963,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 15</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 15:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Yukarıda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_15"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_15)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 15:</strong> Yukarıda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-15" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay dünyanın tek doğal uydusudur ve yüzeyi toz/taşlıktır. Ancak Ay&#039;ın kendi ışığı yoktur, 3. ifade yanlıştır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -1959,28 +2016,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-15" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay dünyanın tek doğal uydusudur ve yüzeyi toz/taşlıktır. Ancak Ay&#039;ın kendi ışığı yoktur, 3. ifade yanlıştır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_15"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_15)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -1996,14 +2031,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 16</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 16:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in dünyaya olan devasa büyüklüğüne rağmen gökyüzüne baktığımızda küçük bir top gibi görünmesinin sebebi aşağıdakilerden hangisidir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 16:</strong> Güneş&#039;in dünyaya olan devasa büyüklüğüne rağmen gökyüzüne baktığımızda küçük bir top gibi görünmesinin sebebi aşağıdakilerden hangisidir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-16" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Cisimler uzakta olduklarında olduğundan daha küçük görünürler. Güneş çok büyük olmasına rağmen Dünya&#039;ya çok uzaktır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2030,25 +2078,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-16" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Cisimler uzakta olduklarında olduğundan daha küçük görünürler. Güneş çok büyük olmasına rağmen Dünya&#039;ya çok uzaktır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 16</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2064,14 +2093,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 17</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 17:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay hakkında araştırma yapan bir öğrenci aşağıdakilerden hangisine ulaşamaz?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_16"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_16)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 17:</strong> Ay hakkında araştırma yapan bir öğrenci aşağıdakilerden hangisine ulaşamaz?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-17" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay&#039;da atmosfer çok ince olduğu için rüzgâr, yağmur gibi hava olayları gözlenmez.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2098,28 +2146,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-17" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay&#039;da atmosfer çok ince olduğu için rüzgâr, yağmur gibi hava olayları gözlenmez.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_16"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_16)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2135,14 +2161,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 18</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 18:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in yapısı ve katmanları ile ilgili aşağıda verilen bilgilerden hangisi doğrudur?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 18:</strong> Güneş&#039;in yapısı ve katmanları ile ilgili aşağıda verilen bilgilerden hangisi doğrudur?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-18" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş gaz halindedir, bir yıldızdır, kendi ışığını üretir ve çekirdeğinde sıcaklık çok yüksektir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2169,25 +2208,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-18" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş gaz halindedir, bir yıldızdır, kendi ışığını üretir ve çekirdeğinde sıcaklık çok yüksektir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 18</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2203,14 +2223,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 19</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 19:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş ve Ay büyüklükleri göz önüne alındığında, yaklaşık olarak kaç tane Ay&#039;ın büyüklüğü bir Güneş&#039;in büyüklüğüne eşittir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 19:</strong> Güneş ve Ay büyüklükleri göz önüne alındığında, yaklaşık olarak kaç tane Ay&#039;ın büyüklüğü bir Güneş&#039;in büyüklüğüne eşittir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-19" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş Ay&#039;dan devasa büyüktür, içerisine milyonlarca Ay sığabilir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2237,25 +2270,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-19" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş Ay&#039;dan devasa büyüktür, içerisine milyonlarca Ay sığabilir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 19</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2271,14 +2285,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 20</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 20:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Astronotlar Ay yüzeyine ayak bastıklarında yürürken hafif zıpladıklarını gözlemlemişlerdir. Bu durumun temel sebebi nedir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 20:</strong> Astronotlar Ay yüzeyine ayak bastıklarında yürürken hafif zıpladıklarını gözlemlemişlerdir. Bu durumun temel sebebi nedir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-20" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Ay&#039;ın kütlesi dünyadan küçük olduğu için çekim kuvveti de azdır (Dünya&#039;nın altıda biri kadardır).</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2305,25 +2332,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-20" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Ay&#039;ın kütlesi dünyadan küçük olduğu için çekim kuvveti de azdır (Dünya&#039;nın altıda biri kadardır).</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 20</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2339,14 +2347,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 21</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 21:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri değildir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 21:</strong> Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri değildir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-21" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Yıldızlar kendi ısı ve ışığını üreten canlı (enerjik) gök cisimleridir, ışıksız değillerdir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2373,25 +2394,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-21" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Yıldızlar kendi ısı ve ışığını üreten canlı (enerjik) gök cisimleridir, ışıksız değillerdir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 21</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2407,14 +2409,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 22</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 22:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Aşağıdaki Venn şemasında Güneş ve Ay&#039;ın özellikleri karşılaştırılmıştır. Ortak bölgeye hangisi yazılmalıdır?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 22:</strong> Aşağıdaki Venn şemasında Güneş ve Ay&#039;ın özellikleri karşılaştırılmıştır. Ortak bölgeye hangisi yazılmalıdır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-22" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş ve Ay&#039;ın ortak geometrik özelliği küre şeklinde olmalarıdır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2441,25 +2456,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-22" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş ve Ay&#039;ın ortak geometrik özelliği küre şeklinde olmalarıdır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 22</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2475,14 +2471,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 23</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 23:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay ile ilgili olarak aşağıda verilenlerden hangisi yanlıştır?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 23:</strong> Ay ile ilgili olarak aşağıda verilenlerden hangisi yanlıştır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-23" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Ay&#039;ın şekli aslında değişmez, her zaman küredir. Dünya&#039;dan bakıldığında Güneş ışığını alış açısına göre farklı göründüğü (evreler oluştuğu) için şekli değişiyormuş gibi algılanır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2509,25 +2518,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-23" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: D — Doğru Seçenek: [D] — Ay&#039;ın şekli aslında değişmez, her zaman küredir. Dünya&#039;dan bakıldığında Güneş ışığını alış açısına göre farklı göründüğü (evreler oluştuğu) için şekli değişiyormuş gibi algılanır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 23</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2543,14 +2533,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 24</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 24:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş evrendeki diğer dev yıldızlara göre hangi boyuttadır?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 24:</strong> Güneş evrendeki diğer dev yıldızlara göre hangi boyuttadır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-24" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş, evrendeki devasa yıldızlar yanında orta büyüklükte bir yıldız olarak sınıflandırılır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2577,25 +2580,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-24" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş, evrendeki devasa yıldızlar yanında orta büyüklükte bir yıldız olarak sınıflandırılır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 24</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2611,14 +2595,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 25</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 25:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Ay yüzeyine ilk defa insan ayak basmıştır ve bırakılan ayak izleri yıllarca bozulmadan kalmıştır. Bunun nedeni aşağıdakilerden hangisidir?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="moonPhoto_18"><circle cx="260" cy="95" r="68"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_18)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 25:</strong> Ay yüzeyine ilk defa insan ayak basmıştır ve bırakılan ayak izleri yıllarca bozulmadan kalmıştır. Bunun nedeni aşağıdakilerden hangisidir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-25" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Atmosferin ve rüzgârın olmayışı yüzeydeki izlerin veya tozların uçup gitmesini engeller, bu yüzden ayak izleri bozulmaz.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2645,28 +2648,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-25" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Atmosferin ve rüzgârın olmayışı yüzeydeki izlerin veya tozların uçup gitmesini engeller, bu yüzden ayak izleri bozulmaz.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="moonPhoto_18"><circle cx="260" cy="95" r="68"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_18)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2682,14 +2663,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 26</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 26:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi yanlıştır?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 26:</strong> Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi yanlıştır?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-26" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş Ay&#039;dan küçüktür ifadesi yanlıştır, Güneş Ay&#039;dan devasa büyüktür.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2716,25 +2710,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-26" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: C — Doğru Seçenek: [C] — Güneş Ay&#039;dan küçüktür ifadesi yanlıştır, Güneş Ay&#039;dan devasa büyüktür.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 26</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2750,14 +2725,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 27</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 27:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş&#039;in enerjisini nereden aldığı ve yapısında en çok hangi maddelerin bulunduğu, fen bilimleri dersinde anlatılmaktadır. Güneş&#039;in yapısında çoğunlukla hangi gazlar bulunur?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 27:</strong> Güneş&#039;in enerjisini nereden aldığı ve yapısında en çok hangi maddelerin bulunduğu, fen bilimleri dersinde anlatılmaktadır. Güneş&#039;in yapısında çoğunlukla hangi gazlar bulunur?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-27" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş&#039;in yapısında temel olarak hidrojen ve helyum gazları bulunur.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2784,25 +2772,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-27" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş&#039;in yapısında temel olarak hidrojen ve helyum gazları bulunur.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 27</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2818,14 +2787,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 28</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 28:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Dünya&#039;dan gökyüzüne baktığımızda Güneş ile Ay&#039;ı neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel açıklaması nedir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 28:</strong> Dünya&#039;dan gökyüzüne baktığımızda Güneş ile Ay&#039;ı neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel açıklaması nedir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-28" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay Güneş&#039;ten çok küçüktür ancak Dünya&#039;ya çok yakın olduğu için Güneş ile hemen hemen aynı boyutta görünür.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2852,25 +2834,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-28" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Ay Güneş&#039;ten çok küçüktür ancak Dünya&#039;ya çok yakın olduğu için Güneş ile hemen hemen aynı boyutta görünür.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 28</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2886,14 +2849,33 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 29</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 29:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Güneş lekeleriyle ilgili aşağıdakilerden hangisi doğrudur?
+            <div class="yp-space-visual-frame"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs><clipPath id="sunPhoto_26"><circle cx="260" cy="95" r="70"/></clipPath></defs>
+  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_26)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
+</svg></div>
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 29:</strong> Güneş lekeleriyle ilgili aşağıdakilerden hangisi doğrudur?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-29" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş lekeleri, Güneş&#039;in yüzeyinde çevrelerine göre daha soğuk oldukları için koyu (karanlık) görünen bölgelerdir.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2920,28 +2902,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-29" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: B — Doğru Seçenek: [B] — Güneş lekeleri, Güneş&#039;in yüzeyinde çevrelerine göre daha soğuk oldukları için koyu (karanlık) görünen bölgelerdir.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <defs><clipPath id="sunPhoto_26"><circle cx="260" cy="95" r="70"/></clipPath></defs>
-  <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-  <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_26)" preserveAspectRatio="xMidYMid slice"/>
-  <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
-  <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
-</svg>
-            </div>
           </div>
         </div>
       </section>
@@ -2957,14 +2917,27 @@
             </div>
             <h2 class="yp-slide-main-title">5. Sınıf 1. Ünite: Güneş, Dünya ve Ay Yaprak Testi - 1 — Soru 30</h2>
             <p class="yp-slide-subtitle">MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu</p>
+            <div class="yp-slide-kind">🧩 Çoktan Seçmeli</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru 30:</strong> &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 &lt;div class=&quot;yp-neon-card neon-blue&quot;&gt;
-                 Yukarıda Güneş, Dünya ve Ay&#039;ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?
+            
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru 30:</strong> Yukarıda Güneş, Dünya ve Ay&#039;ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?
+            </div>
+
+            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
+            <div class="yp-golden-rule-box" id="golden-box-30" style="display: none;">
+              <div class="yp-golden-rule-icon">💡</div>
+              <div class="yp-golden-rule-content">
+                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
+                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Güneş en büyüktür, ardından Dünya gelir, en küçüğü ise Ay&#039;dır.</span>
               </div>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
+          <div class="yp-space-col-right">
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
               
         <div class="slide-options-grid">
           
@@ -2991,25 +2964,6 @@
         </div>
       
             </div>
-
-            <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
-            <div class="yp-golden-rule-box" id="golden-box-30" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ÇÖZÜM &amp; DOĞRU CEVAP</strong>
-                <span>Doğru Cevap: A — Doğru Seçenek: [A] — Güneş en büyüktür, ardından Dünya gelir, en küçüğü ise Ay&#039;dır.</span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              <svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-        <rect width="100%" height="100%" fill="#ffffff" stroke="#e2e8f0"/>
-        <text x="260" y="115" text-anchor="middle" font-family="'Times New Roman', serif" font-size="20" fill="#64748b">Soru 30</text>
-      </svg>
-            </div>
           </div>
         </div>
       </section>
@@ -3028,24 +2982,11 @@
 
   <!-- Sabit Alt Kontrol Çubuğu -->
   <nav class="yp-space-bottom-bar" aria-label="Soru Kontrolleri">
-    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
-      ‹ Önceki
-    </button>
 
-    <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">
-      1 / 30
-    </div>
 
     <!-- ⏱️ Canlı Alt Kronometre -->
-    <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
-      ⏱️ <span id="ypBottomTimerText">30:00</span>
-    </div>
 
-    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
-      Sonraki &gt;
-    </button>
 
-    <div class="yp-bar-divider"></div>
 
     <button type="button" class="yp-bar-btn yp-bar-routes" onclick="toggleRoutesDrawer()" title="Soru Rotaları Menüsü">
       🧭 Soru Rotaları
@@ -3169,6 +3110,10 @@
       activeSlideIdx = Math.max(0, Math.min(totalQuestions - 1, idx));
       const counterEl = document.getElementById('slideCounter');
       if (counterEl) counterEl.textContent = (activeSlideIdx + 1) + ' / ' + totalQuestions;
+      const __pb = document.getElementById('btnPrevSlide');
+      const __nb = document.getElementById('btnNextSlide');
+      if (__pb) __pb.disabled = activeSlideIdx <= 0;
+      if (__nb) __nb.disabled = activeSlideIdx >= totalQuestions - 1;
       document.querySelectorAll('.yp-route-item').forEach((b, i) => {
         b.classList.toggle('active', i === activeSlideIdx);
       });
@@ -3207,6 +3152,7 @@
     }, { threshold: 0.5 });
 
     document.querySelectorAll('.yp-space-slide-section').forEach(sec => observer.observe(sec));
+    updateCounter(0);
 
     // Klavye Yön Tuşları Desteği
     document.addEventListener('keydown', (e) => {

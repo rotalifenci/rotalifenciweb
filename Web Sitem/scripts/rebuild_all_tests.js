@@ -147,6 +147,7 @@ function parseQuestionsFromHtml(html) {
       const cardMatch = sPart.match(/<div class="yp-neon-card[^"]*">([\s\S]*?)<\/div>/);
       if (cardMatch) {
         qText = unescapeHtml(cardMatch[1].replace(/<strong>Soru\s*\d+:<\/strong>/i, '').trim());
+        for (let k = 0; k < 4; k++) qText = qText.replace(/<\/?div[^>]*>/gi, '').trim();
       }
 
       let visualSvg = '';
@@ -249,6 +250,11 @@ function buildLightSpaceTestHtml({
       </svg>
     `;
 
+    const __svgForShow = (q.visual_svg && q.visual_svg.trim()) ? visualHtml : '';
+    const __isPlaceholder = !__svgForShow || (/>\s*Soru\s*\d+\s*<\/text>/.test(__svgForShow) && __svgForShow.length < 700);
+    const visualBlock = __isPlaceholder ? '' : '<div class="yp-space-visual-frame">' + visualHtml + '</div>';
+    const kindLabel = isMultipleChoice ? 'Çoktan Seçmeli' : (isShortAnswer ? 'Kısa Cevaplı / Boşluk Doldurma' : 'Açık Uçlu (Klasik)');
+
     return `
       <section class="yp-space-slide-section" id="yp-space-slide-${idx}" data-slide-index="${idx}">
         <div class="yp-space-slide-grid">
@@ -260,12 +266,11 @@ function buildLightSpaceTestHtml({
             </div>
             <h2 class="yp-slide-main-title">${safeTitle} — Soru ${qNum}</h2>
             <p class="yp-slide-subtitle">${escapeHtml(q.learning_outcome || 'MEB Maarif Modeli Yeni Nesil Yazılıya Hazırlık Sorusu')}</p>
+            <div class="yp-slide-kind">🧩 ${kindLabel}</div>
             
-            <div class="yp-neon-cards-stack">
-              <div class="yp-neon-card neon-blue">
-                <strong>Soru ${qNum}:</strong> ${escapeHtml(q.question || '')}
-              </div>
-              ${answerAreaHtml}
+            ${visualBlock}
+            <div class="yp-neon-card neon-blue yp-question-card">
+              <strong>Soru ${qNum}:</strong> ${escapeHtml(q.question || '')}
             </div>
 
             <!-- Cevaplar ve İpuçları Test Sırasında Kesinlikle Gizlidir (display: none) -->
@@ -280,8 +285,9 @@ function buildLightSpaceTestHtml({
 
           <!-- Sağ Sütun (%42 Genişlik): Yüksek Çözünürlüklü Yuvarlatılmış Görsel Kutusu -->
           <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              ${visualHtml}
+            <div class="yp-answer-panel">
+              <h3 class="yp-answer-title">✍️ CEVABINIZ</h3>
+              ${answerAreaHtml}
             </div>
           </div>
         </div>
@@ -1210,6 +1216,97 @@ function buildLightSpaceTestHtml({
       .yp-bar-icon-btn { width: 42px !important; height: 42px !important; font-size: 18px !important; }
       .yp-space-routes-list { grid-template-columns: 1fr; }
     }
+    /* === YENİ SORU ÇÖZME DÜZENİ: Sol %60 soru + görsel / Sağ %40 cevap alanı === */
+    .exam-countdown-badge { display: none !important; }
+    .yp-control-row { position: sticky; top: 68px; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; width: 100%; padding: 12px max(28px, calc((100vw - 1440px) / 2 + 28px)) 10px; background: rgba(240, 244, 249, 0.93); backdrop-filter: blur(10px); }
+    body.theme-dark .yp-control-row { background: rgba(5, 10, 24, 0.9); }
+    .yp-control-left, .yp-control-right { display: flex; align-items: center; gap: 14px; }
+    .yp-control-row .yp-bar-timer { flex-direction: row; gap: 12px; padding: 10px 22px !important; border-radius: 20px !important; background: #ffffff; border: 2px solid #bfdbfe; box-shadow: 0 8px 24px rgba(37, 99, 235, 0.12); min-width: 0 !important; }
+    .yp-timer-label { font-size: 13px; font-weight: 800; letter-spacing: 0.6px; color: #475569; }
+    .yp-timer-digits { font-family: 'Outfit', monospace; font-size: 38px; font-weight: 900; line-height: 1; color: #1e3a8a; letter-spacing: 1px; }
+    .yp-bar-timer.timer-warning .yp-timer-digits { color: #92400e; }
+    .yp-bar-timer.timer-urgent .yp-timer-digits { color: #991b1b; }
+    .yp-control-row .yp-bar-counter { font-size: 22px !important; padding: 14px 22px !important; border-radius: 18px !important; min-width: 96px; }
+    .yp-control-row .yp-bar-btn { font-size: 19px !important; padding: 15px 32px !important; border-radius: 18px !important; min-height: 56px; }
+    .yp-bar-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+    .yp-space-scroll-stream { padding: 18px 28px 130px 28px !important; }
+    .yp-space-slide-section { min-height: calc(100vh - 290px); justify-content: flex-start; padding: 22px 26px; }
+    .yp-slide-kind { display: inline-block; align-self: flex-start; font-size: 13px; font-weight: 800; color: #0369a1; background: #e0f2fe; border: 1px solid #bae6fd; border-radius: 999px; padding: 5px 12px; }
+    .yp-slide-main-title { font-size: 20px !important; }
+    .yp-space-col-left .yp-space-visual-frame { min-height: 0 !important; max-height: 380px !important; width: 100%; padding: 14px !important; }
+    .yp-space-col-left .yp-space-visual-frame svg, .yp-space-col-left .yp-space-visual-frame img { width: 100%; height: auto; max-width: 100%; max-height: 350px; }
+    .yp-question-card { font-size: clamp(24px, 2.1vw, 28px) !important; line-height: 1.55 !important; font-weight: 700 !important; padding: 24px 28px !important; }
+    .yp-answer-panel { width: 100%; background: #ffffff; border: 2px solid #bfdbfe; border-radius: 26px; padding: 28px; box-shadow: 0 14px 40px rgba(37, 99, 235, 0.10); }
+    body.theme-dark .yp-answer-panel { background: rgba(10, 18, 42, 0.85); border-color: rgba(56, 189, 248, 0.4); }
+    .yp-answer-title { font-family: 'Outfit', 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 900; color: #1e3a8a; letter-spacing: 1px; margin-bottom: 16px; }
+    body.theme-dark .yp-answer-title { color: #fde047; }
+    .yp-answer-panel .slide-input-label { display: none; }
+    .yp-answer-panel .slide-short-answer-box, .yp-answer-panel .slide-open-ended-box { background: transparent; border: none; padding: 0; }
+    .yp-answer-panel .slide-short-input { font-size: 24px; padding: 20px 22px; border-radius: 16px; border: 2px solid #93c5fd; }
+    .yp-answer-panel .slide-open-textarea { font-size: 20px; padding: 18px 20px; min-height: 340px; border-radius: 16px; border: 2px solid #93c5fd; resize: vertical; line-height: 1.6; }
+    .yp-answer-panel .slide-opt-card { font-size: 19px; padding: 16px 20px; }
+    .yp-answer-panel .slide-opt-letter { width: 40px; height: 40px; font-size: 17px; }
+    @media (min-width: 961px) {
+      .yp-space-slide-grid { grid-template-columns: minmax(0, 60fr) minmax(0, 40fr); gap: 28px; align-items: start; }
+      .yp-space-col-left { max-height: calc(100vh - 320px); overflow-y: auto; padding-right: 10px; }
+      .yp-space-col-right { position: sticky; top: 170px; align-items: flex-start; }
+    }
+    @media (max-width: 960px) {
+      .yp-control-row { position: static; padding: 12px 14px 0; }
+      .yp-control-left, .yp-control-right { width: 100%; }
+      .yp-control-right .yp-bar-btn { flex: 1; }
+      .yp-control-left .yp-bar-timer { flex: 1; justify-content: center; }
+      .yp-timer-digits { font-size: 30px; }
+      .yp-space-slide-section { min-height: 0; padding: 16px; }
+      .yp-space-col-left { max-height: none; overflow: visible; }
+      .yp-space-col-right { position: static; }
+      .yp-space-scroll-stream { padding: 14px 12px 120px 12px !important; }
+    }
+    @media print { .yp-control-row { display: none !important; } }
+    /* === MOBİL / GÖRSEL DÜZELTMELERİ === */
+    .yp-space-col-left .yp-space-visual-frame { display: block !important; height: auto !important; }
+    .yp-space-col-left .yp-space-visual-frame svg { display: block; margin: 0 auto; width: 100%; height: auto; }
+    .yp-space-slide-grid > * { min-width: 0; }
+    .yp-slide-main-title, .yp-question-card, .yp-slide-subtitle { overflow-wrap: anywhere; }
+    @media (max-width: 960px) {
+      .yp-space-slide-grid { grid-template-columns: minmax(0, 1fr) !important; }
+      .space-topbar { flex-wrap: wrap; padding: 10px 12px; gap: 8px; }
+      .doc-main-title, .space-badge { display: none; }
+      .topbar-btn { padding: 8px 10px; font-size: 12px; }
+      .yp-question-card { font-size: clamp(22px, 5.4vw, 26px) !important; padding: 18px 18px !important; }
+      .yp-answer-panel { padding: 18px; }
+      .yp-answer-panel .slide-open-textarea { min-height: 220px; }
+      .yp-control-left { flex-wrap: nowrap; }
+      .yp-control-row .yp-bar-timer { padding: 8px 14px !important; }
+      .yp-control-row .yp-bar-counter { font-size: 18px !important; padding: 10px 14px !important; min-width: 70px; }
+      .yp-control-row .yp-bar-btn { font-size: 17px !important; padding: 12px 16px !important; min-height: 50px; }
+      .yp-space-watermark { display: none; }
+    }
+    @media (max-width: 600px) {
+      .yp-control-row { padding: 8px 10px 0 !important; gap: 8px !important; }
+      .yp-control-left { display: flex !important; gap: 6px !important; width: 100% !important; align-items: center !important; }
+      .yp-control-row .yp-bar-timer { flex: 1 !important; padding: 6px 10px !important; min-width: 0 !important; gap: 6px !important; border-radius: 14px !important; }
+      .yp-timer-label { font-size: 10px !important; letter-spacing: 0 !important; }
+      .yp-timer-digits { font-size: 22px !important; }
+      .yp-control-row .yp-bar-counter { font-size: 14px !important; padding: 6px 10px !important; min-width: 52px !important; border-radius: 14px !important; display: flex !important; align-items: center !important; justify-content: center !important; flex-shrink: 0 !important; }
+      .yp-control-right { width: 100% !important; gap: 8px !important; display: flex !important; }
+      .yp-control-right .yp-bar-btn { flex: 1 !important; font-size: 15px !important; padding: 10px 12px !important; min-height: 44px !important; border-radius: 14px !important; }
+    }
+    /* end mobile */
+
+    /* === KAPSAYICI VE TAŞMA ENGELLEYİCİ GÜVENLİK KURALLARI === */
+    html, body { overflow-x: hidden !important; max-width: 100vw !important; width: 100% !important; }
+    .space-topbar { max-width: 100vw !important; box-sizing: border-box !important; }
+    .yp-control-row { max-width: 100vw !important; box-sizing: border-box !important; }
+    .yp-control-left, .yp-control-right { min-width: 0 !important; }
+    .yp-space-scroll-stream { max-width: 100vw !important; box-sizing: border-box !important; overflow-x: hidden !important; }
+    .yp-space-slide-section { max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .yp-space-slide-grid { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+    .yp-space-col-left, .yp-space-col-right { min-width: 0 !important; width: 100% !important; box-sizing: border-box !important; }
+    .yp-space-visual-frame { max-width: 100% !important; box-sizing: border-box !important; overflow: hidden !important; }
+    .yp-space-visual-frame svg { max-width: 100% !important; height: auto !important; }
+    .yp-neon-card, .yp-question-card, .yp-answer-panel { max-width: 100% !important; box-sizing: border-box !important; }
+
   </style>
 </head>
 <body>
@@ -1243,6 +1340,25 @@ function buildLightSpaceTestHtml({
     </div>
   </header>
 
+  <!-- Kontrol Satırı: Sol büyük kronometre + soru no / Sağ Önceki-Sonraki -->
+  <div class="yp-control-row" id="ypControlRow">
+    <div class="yp-control-left">
+      <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
+        <span class="yp-timer-label">⏱️ KALAN SÜRE</span>
+        <span class="yp-timer-digits" id="ypBottomTimerText">${qCount}:00</span>
+      </div>
+      <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">1 / ${qCount}</div>
+    </div>
+    <div class="yp-control-right">
+    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
+      ‹ Önceki
+    </button>
+    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
+      Sonraki &gt;
+    </button>
+    </div>
+  </div>
+
   <!-- Dikey Kaydırma & Dokunmatik Slayt Akış Alanı -->
   <main class="yp-space-scroll-stream" id="spaceScrollStream">
     ${slidesHtml}
@@ -1260,24 +1376,11 @@ function buildLightSpaceTestHtml({
 
   <!-- Sabit Alt Kontrol Çubuğu -->
   <nav class="yp-space-bottom-bar" aria-label="Soru Kontrolleri">
-    <button type="button" class="yp-bar-btn yp-bar-prev" id="btnPrevSlide" onclick="prevSlide()" title="Önceki Soru (Yukarı Ok)">
-      ‹ Önceki
-    </button>
 
-    <div class="yp-bar-counter" id="slideCounter" title="Aktif Soru / Toplam Soru">
-      1 / ${qCount}
-    </div>
 
     <!-- ⏱️ Canlı Alt Kronometre -->
-    <div class="yp-bar-timer" id="ypBottomTimer" title="Kalan Sınav Süresi">
-      ⏱️ <span id="ypBottomTimerText">${qCount}:00</span>
-    </div>
 
-    <button type="button" class="yp-bar-btn yp-bar-next" id="btnNextSlide" onclick="nextSlide()" title="Sonraki Soru (Aşağı Ok)">
-      Sonraki &gt;
-    </button>
 
-    <div class="yp-bar-divider"></div>
 
     <button type="button" class="yp-bar-btn yp-bar-routes" onclick="toggleRoutesDrawer()" title="Soru Rotaları Menüsü">
       🧭 Soru Rotaları
@@ -1401,6 +1504,10 @@ function buildLightSpaceTestHtml({
       activeSlideIdx = Math.max(0, Math.min(totalQuestions - 1, idx));
       const counterEl = document.getElementById('slideCounter');
       if (counterEl) counterEl.textContent = (activeSlideIdx + 1) + ' / ' + totalQuestions;
+      const __pb = document.getElementById('btnPrevSlide');
+      const __nb = document.getElementById('btnNextSlide');
+      if (__pb) __pb.disabled = activeSlideIdx <= 0;
+      if (__nb) __nb.disabled = activeSlideIdx >= totalQuestions - 1;
       document.querySelectorAll('.yp-route-item').forEach((b, i) => {
         b.classList.toggle('active', i === activeSlideIdx);
       });
@@ -1439,6 +1546,7 @@ function buildLightSpaceTestHtml({
     }, { threshold: 0.5 });
 
     document.querySelectorAll('.yp-space-slide-section').forEach(sec => observer.observe(sec));
+    updateCounter(0);
 
     // Klavye Yön Tuşları Desteği
     document.addEventListener('keydown', (e) => {
