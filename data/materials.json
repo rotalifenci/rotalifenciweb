@@ -3577,5 +3577,41 @@
     "questionCount": 15,
     "createdAt": "2026-10-29T22:29:02.999Z",
     "updatedAt": "2026-10-29T22:29:02.999Z"
+  },
+  {
+    "id": "mat-test-6-1-1793313055357",
+    "grade": "6",
+    "category": "denemeler",
+    "targetSection": "1",
+    "title": "Test No: 7 - Açık Uçlu Klasik",
+    "unit": "1. Ünite: Güneş Sistemi ve Tutulmalar",
+    "desc": "6. Sınıf Fen Bilimleri 1. Ünite: Güneş Sistemi ve Tutulmalar için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "fileName": "6-sinif-1-unite-test-no-7-acik-uclu-klasik.html",
+    "fileUrl": "testler/6-sinif-1-unite-test-no-7-acik-uclu-klasik.html",
+    "imageUrl": "assets/test-kapak-6.svg",
+    "kapakResmi": "assets/test-kapak-6.svg",
+    "cover": "assets/test-kapak-6.svg",
+    "format": "AÇIK UÇLU SINAV",
+    "hasBlob": false,
+    "tags": [
+      "6. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "soru-bankasi",
+      "denemeler",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "açık uçlu sınav",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 15 Soru • Test-4",
+    "testNumber": 4,
+    "questionCount": 15,
+    "createdAt": "2026-10-29T22:30:55.357Z",
+    "updatedAt": "2026-10-29T22:30:55.357Z"
   }
 ]
