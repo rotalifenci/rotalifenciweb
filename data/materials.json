@@ -3361,5 +3361,41 @@
     "questionCount": 20,
     "createdAt": "2026-10-29T22:08:22.244Z",
     "updatedAt": "2026-10-29T22:08:22.244Z"
+  },
+  {
+    "id": "mat-test-5-1-1793312095622",
+    "grade": "5",
+    "category": "denemeler",
+    "targetSection": "1",
+    "title": "Test No: 1 - Açık Uçlu Klasik",
+    "unit": "1. Ünite: Güneş, Dünya ve Ay",
+    "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Güneş, Dünya ve Ay için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
+    "fileName": "5-sinif-1-unite-test-no-1-acik-uclu-klasik.html",
+    "fileUrl": "testler/5-sinif-1-unite-test-no-1-acik-uclu-klasik.html",
+    "imageUrl": "assets/test-kapak-5.svg",
+    "kapakResmi": "assets/test-kapak-5.svg",
+    "cover": "assets/test-kapak-5.svg",
+    "format": "AÇIK UÇLU SINAV",
+    "hasBlob": false,
+    "tags": [
+      "5. sınıf",
+      "1. ünite",
+      "yaprak test",
+      "soru-bankasi",
+      "denemeler",
+      "test / deneme",
+      "yazılıya hazırlık",
+      "açık uçlu sınav",
+      "kazanım testi",
+      "deneme",
+      "rotalı fenci",
+      "meb maarif modeli"
+    ],
+    "visibility": "public",
+    "downloadCount": "📝 15 Soru • Test-2",
+    "testNumber": 2,
+    "questionCount": 15,
+    "createdAt": "2026-10-29T22:14:55.622Z",
+    "updatedAt": "2026-10-29T22:14:55.622Z"
   }
 ]
