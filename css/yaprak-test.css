@@ -7529,3 +7529,756 @@ body.pdf-export-mode .footer-right-web {
   border-radius: 8px;
   line-height: 1.5;
 }
+
+
+/* ========================================================
+   📖 ROTALI FENCİ – Z-KİTAP AKILLI TAHTA MODAL STİLLERİ
+   (Yaprak Test & Test / Deneme Modülleri Ortak Standart)
+   ======================================================== */
+:root {
+  --zk-bg: #ffffff;
+  --zk-text: #0f172a;
+  --zk-text-muted: #475569;
+  --zk-border: #e2e8f0;
+  --zk-primary: #0284c7;
+  --zk-primary-dark: #0369a1;
+  --zk-orange: #ea580c;
+  --zk-orange-dark: #c2410c;
+  --zk-font-scale: 1.0;
+}
+
+/* Modal Overlay & Container */
+.zk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: #0f172a;
+}
+
+.zk-modal-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+/* Üst Kontrol Çubuğu (Toolbar) */
+.zk-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 24px;
+  background: #ffffff;
+  border-bottom: 2px solid #e2e8f0;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.zk-topbar-left, .zk-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.zk-brand-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+.zk-brand-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #e11d48;
+  object-fit: cover;
+}
+.zk-brand-name {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 15px;
+  letter-spacing: -0.2px;
+  color: #0f172a;
+}
+
+.zk-unit-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  border: 1px solid #cbd5e1;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.zk-timer-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: #eff6ff;
+  border: 1.5px solid #93c5fd;
+  color: #1e40af;
+  font-family: 'Outfit', monospace;
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.08);
+  transition: all 0.2s ease;
+  user-select: none;
+}
+.zk-timer-badge:hover {
+  background: #dbeafe;
+  border-color: #60a5fa;
+  transform: translateY(-1px);
+}
+.zk-timer-badge.is-paused {
+  background: #fef3c7 !important;
+  border-color: #fcd34d !important;
+  color: #92400e !important;
+}
+
+.zk-counter-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  color: #0f172a;
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.zk-font-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+.zk-btn-font {
+  background: transparent;
+  border: none;
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.zk-btn-font:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.zk-btn-font:first-child {
+  border-right: 1px solid #cbd5e1;
+}
+
+.zk-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  color: #1e293b;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.zk-mode-btn:hover {
+  background: #e0f2fe;
+  border-color: #38bdf8;
+  color: #0284c7;
+}
+
+.zk-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+.zk-nav-prev {
+  background: #1e293b;
+  color: #ffffff;
+}
+.zk-nav-prev:hover {
+  background: #0f172a;
+  transform: translateY(-1px);
+}
+.zk-nav-next {
+  background: #ea580c;
+  color: #ffffff;
+}
+.zk-nav-next:hover {
+  background: #c2410c;
+  transform: translateY(-1px);
+}
+
+.zk-icon-btn, .zk-close-btn {
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  color: #334155;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.zk-icon-btn:hover, .zk-close-btn:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+.zk-close-btn:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #b91c1c;
+}
+
+/* Soru Viewport & Slaytlar */
+.zk-slide-viewport {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: relative;
+  background: #ffffff;
+}
+
+.zk-slide-section {
+  width: 100%;
+  min-height: 100%;
+  padding: 24px 36px 36px 36px;
+  display: none;
+}
+.zk-slide-section.is-active {
+  display: block !important;
+}
+
+.zk-slide-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.zk-modal-overlay.zk-mode-split .zk-slide-grid {
+  grid-template-columns: 3fr 2fr;
+  max-width: 1440px;
+}
+
+/* Sol Sütun (Soru, Görsel ve Şıklar) */
+.zk-col-left {
+  width: 100%;
+  min-width: 0;
+}
+
+.zk-question-card {
+  background: #ffffff;
+  border: none;
+  padding: 0;
+  width: 100%;
+}
+
+.zk-question-header {
+  margin-bottom: 12px;
+}
+.zk-qnum-tag {
+  display: inline-block;
+  font-size: 15px;
+  font-weight: 800;
+  color: #0284c7;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Soru Görseli (METNİN ÜSTÜNDE) */
+.zk-visual-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 10px 0 20px 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 12px;
+  max-height: 38vh;
+  overflow: hidden;
+}
+.zk-visual-container svg, .zk-visual-container img {
+  max-width: 100%;
+  max-height: 36vh;
+  height: auto;
+  object-fit: contain;
+}
+
+/* Soru Kökü (1. Görseldeki Gibi Büyük, Siyah, Net) */
+.zk-question-stem {
+  color: #000000;
+  font-weight: 800;
+  line-height: 1.55;
+  letter-spacing: -0.2px;
+  margin-bottom: 24px;
+  word-break: break-word;
+}
+.zk-question-stem u {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2.5px;
+}
+.zk-size-large {
+  font-size: calc(28px * var(--zk-font-scale, 1.0));
+}
+.zk-size-medium {
+  font-size: calc(25px * var(--zk-font-scale, 1.0));
+}
+.zk-size-compact {
+  font-size: calc(22px * var(--zk-font-scale, 1.0));
+  line-height: 1.5;
+}
+
+/* Seçenekler Listesi (Alt alta ferah kartlar) */
+.zk-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+
+.zk-option-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: #0f172a;
+  font-size: calc(21px * var(--zk-font-scale, 1.0));
+  line-height: 1.5;
+  user-select: none;
+}
+.zk-option-item:hover {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+.zk-option-item.is-selected {
+  background: #e0f2fe !important;
+  border-color: #0284c7 !important;
+  color: #0369a1 !important;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(2, 132, 199, 0.15);
+}
+.zk-option-item.is-correct {
+  background: #dcfce7 !important;
+  border-color: #22c55e !important;
+  color: #15803d !important;
+  font-weight: 800;
+}
+.zk-opt-letter {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  color: #0284c7;
+  flex-shrink: 0;
+}
+.zk-opt-text {
+  flex: 1;
+}
+
+/* Kısa Cevap / Açık Uçlu Soru İçi Giriş Alanı */
+.zk-inline-short-box, .zk-inline-open-box {
+  margin-top: 18px;
+  padding: 16px 20px;
+  border-radius: 14px;
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+}
+.zk-inline-label {
+  display: block;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: #334155;
+  margin-bottom: 8px;
+}
+.zk-inline-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: calc(20px * var(--zk-font-scale, 1.0));
+  font-weight: 700;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.zk-inline-input:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+.zk-inline-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 10px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: calc(18px * var(--zk-font-scale, 1.0));
+  font-family: inherit;
+  line-height: 1.6;
+  outline: none;
+  resize: vertical;
+}
+.zk-inline-textarea:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+
+/* Çözüm ve Doğru Cevap Kutusu */
+.zk-solution-box {
+  margin-top: 22px;
+  padding: 18px 22px;
+  border-radius: 14px;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  border-left: 6px solid #16a34a;
+}
+.zk-solution-badge {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #15803d;
+  margin-bottom: 8px;
+}
+.zk-solution-text {
+  font-size: calc(16px * var(--zk-font-scale, 1.0));
+  line-height: 1.6;
+  color: #166534;
+}
+.zk-correct-val {
+  font-weight: 800;
+  color: #14532d;
+}
+.zk-expl-text {
+  margin-top: 6px;
+  font-size: 14px;
+  color: #166534;
+}
+
+/* Sağ Sütun: Cevap Paneli (Mod 2) */
+.zk-col-right {
+  display: none;
+  width: 100%;
+  min-width: 0;
+}
+.zk-modal-overlay.zk-mode-split .zk-col-right {
+  display: block;
+}
+
+.zk-answer-panel {
+  background: #f8fafc;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 22px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+.zk-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+.zk-panel-header h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 17px;
+  font-weight: 900;
+  color: #0f172a;
+}
+.zk-panel-hint {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.zk-choice-buttons {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.zk-choice-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1.5px solid #cbd5e1;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.zk-choice-btn:hover {
+  border-color: #0284c7;
+  background: #f0f9ff;
+}
+.zk-choice-btn.is-active {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+}
+.zk-choice-circle {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 900;
+  font-size: 14px;
+  color: #0f172a;
+}
+.zk-choice-btn.is-active .zk-choice-circle {
+  background: #ffffff;
+  border-color: #ffffff;
+  color: #0284c7;
+}
+
+.zk-short-input, .zk-open-textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 2px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 16px;
+  font-family: inherit;
+  outline: none;
+}
+.zk-short-input:focus, .zk-open-textarea:focus {
+  border-color: #0284c7;
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+}
+.zk-notes-label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #475569;
+  margin-bottom: 6px;
+}
+.zk-notes-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1.5px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  resize: vertical;
+}
+
+/* Soru Rotaları Çekmecesi */
+.zk-routes-drawer {
+  position: absolute;
+  bottom: 64px;
+  left: 24px;
+  background: #ffffff;
+  border: 2px solid #cbd5e1;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 18px;
+  max-width: 440px;
+  width: 90%;
+  max-height: 55vh;
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+}
+.zk-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 8px;
+  border-bottom: 1.5px solid #e2e8f0;
+}
+.zk-drawer-header h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 15px;
+  font-weight: 900;
+  color: #0f172a;
+}
+.zk-drawer-close {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  color: #64748b;
+}
+.zk-routes-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  overflow-y: auto;
+}
+.zk-route-item {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #334155;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.zk-route-item:hover {
+  background: #e0f2fe;
+  border-color: #38bdf8;
+  color: #0284c7;
+}
+.zk-route-item.active {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  color: #ffffff !important;
+}
+
+/* Alt Çubuk (Bottombar) */
+.zk-bottombar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  background: #ffffff;
+  border-top: 2px solid #e2e8f0;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+  flex-shrink: 0;
+  z-index: 100;
+}
+.zk-bar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 10px;
+  background: #f1f5f9;
+  border: 1.5px solid #cbd5e1;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #1e293b;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.zk-bar-btn:hover {
+  background: #e2e8f0;
+}
+.zk-watermark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+  color: #64748b;
+  text-decoration: none;
+}
+.zk-finish-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border-radius: 12px;
+  background: #10b981;
+  border: none;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14.5px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+.zk-finish-btn:hover {
+  background: #059669;
+  transform: translateY(-1px);
+}
+
+/* A4 Soru Kartındaki Z-Kitap Önizleme Butonu */
+.btn-zk-single-preview {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 8px;
+  background: #f0f9ff;
+  border: 1px solid #7dd3fc;
+  color: #0284c7;
+  font-size: 11.5px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: auto;
+}
+.btn-zk-single-preview:hover {
+  background: #0284c7;
+  color: #ffffff;
+  border-color: #0284c7;
+  transform: translateY(-1px);
+}
+
+.view-mode-tabs {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}

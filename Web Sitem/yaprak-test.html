@@ -31,11 +31,11 @@
         <img src="assets/logo.jpg" alt="Rotalı Fenci Logo" class="brand-logo-img">
         <div>
           <h1>Rotalı Fenci - Yaprak Test & Test / Deneme</h1>
-          <p class="subtitle">MEB Müfredatına Dayalı Görsel ve Şekilli Akıllı Soru Üretim Sistemi</p>
+          <p class="subtitle">MEB Müfredatına Dayalı Görsel ve Şekilli Akıllı Soru Üretim Sistemi (Z-Kitap & A4 Baskı)</p>
         </div>
       </div>
       <div class="header-badges">
-        <button type="button" id="headerSpaceViewerBtn" class="badge badge-link" style="background:linear-gradient(135deg,#0f172a,#1e1b4b); color:#38bdf8; border:1px solid rgba(56,189,248,0.45); cursor:pointer;" title="Eğitim İçeriği / Test 3D Derin Uzay Görüntüleyicisini Aç">🌌 3D Uzay Sunum / Görüntüleyici</button>
+        <button type="button" id="headerSpaceViewerBtn" class="badge badge-link" style="background:#0284c7; color:#fff; border:none; cursor:pointer;" title="Soruları Z-Kitap Akıllı Tahta Formatında Önizle">📖 Z-Kitap Akıllı Tahta Önizleme</button>
         <a href="testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html" class="badge badge-link" target="_blank">📄 Güneş, Dünya ve Ay Testi</a>
         <span class="badge gemini-badge">⚡ Gemini 3.6 Flash</span>
         <button type="button" id="apiKeySettingsBtn" class="badge badge-link" style="background:#0284c7; color:#fff; border:none; cursor:pointer;" title="Kendi Gemini API Anahtarınızı girin">🔑 API Anahtarı</button>
@@ -261,8 +261,8 @@
             </div>
 
             <!-- 🌌 3D Sinematik Uzay Sunum / Görüntüleyici Modu -->
-            <button type="button" id="open3DSpaceViewBtn" class="btn btn-space-viewer btn-sm" title="3D Sinematik Derin Uzay Görüntüleyici Modunda Aç (Akıllı Tahta & Dikey Akış)">
-              <span class="icon">🌌</span> 3D Uzay Sunum Modu
+            <button type="button" id="open3DSpaceViewBtn" class="btn btn-space-viewer btn-sm" style="background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%); color: #fff; font-weight: 800; border: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);" title="Soruları Z-Kitap Akıllı Tahta Formatında Tek Tek Önizle">
+              <span class="icon">📖</span> Z-Kitap Akıllı Tahta Önizleme
             </button>
 
             <!-- 🚀 Web Siteme Otomatik Ekle Butonu -->
@@ -291,6 +291,10 @@
 
         <!-- Görünüm & Sayfa Düzeni Kontrol Çubuğu -->
         <div class="view-controls-bar no-print" id="viewControlsBar" style="display: none;">
+          <div class="view-mode-tabs" style="display: inline-flex; align-items: center; gap: 6px; margin-right: 14px;">
+            <button type="button" id="viewModeA4Btn" class="btn-toggle active" title="A4 Sayfa / Yazdırma ve PDF Düzeni"><span>📄</span> A4 Yazdırma Düzeni</button>
+            <button type="button" id="viewModeZKitapBtn" class="btn-toggle" style="background:#eff6ff; color:#0284c7; border-color:#93c5fd; font-weight:800;" title="Soruları Z-Kitap Akıllı Tahta Formatında Önizle"><span>📖</span> Z-Kitap Önizleme</button>
+          </div>
           <div class="column-controls">
             <span class="ctrl-label">Mizanpaj:</span>
             <button type="button" id="toggleColumnsBtn" class="btn-toggle active" title="2 Sütunlu MEB Kitapçık Düzeni">
@@ -329,8 +333,8 @@
           <h3>Kazanımları Seçin veya Kaynak Dosya Yükleyin</h3>
           <p>Sol taraftaki panelden bir ünite seçip <strong>Hedef Öğrenme Çıktılarını</strong> işaretleyebilir veya <strong>Word (.docx), PDF (.pdf), Görsel (.png, .jpg)</strong> kaynak dosyanızı sürükleyip bırakabilirsiniz. Ayrıca eğitim içeriklerini ve üretilen soruları <strong>🌌 3D Uzay Sunum Modu</strong> ile akıllı tahtada dikey akışla görüntüleyebilirsiniz.</p>
           <div style="margin-top: 18px;">
-            <button type="button" id="emptyStateSpaceViewerBtn" class="btn btn-space-viewer" style="padding: 10px 20px; font-size: 14px;">
-              🌌 Eğitim İçeriği / Sunum 3D Uzay Görüntüleyicisini Aç
+            <button type="button" id="emptyStateSpaceViewerBtn" class="btn btn-space-viewer" style="padding: 10px 20px; font-size: 14px; background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%); color: #fff; font-weight: 800; border: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);">
+              📖 Z-Kitap Akıllı Tahta Önizlemesini Aç
             </button>
           </div>
         </div>
@@ -351,89 +355,99 @@
   </div>
 
   <!-- 1. Dosya Görüntüleyici ve Arayüz Tasarımı (3D Sinematik Derin Uzay Sunum / Slayt Alanı) -->
-  <div class="yp-space-viewer-modal no-print" id="ypSpaceViewerModal" style="display: none;" aria-hidden="true">
-    <!-- Derin Uzay Yıldız Parıltılı Arka Plan -->
-    <div class="yp-space-stars-bg"></div>
-    <div class="yp-space-nebula-glow"></div>
+    <!-- 📖 ROTALI FENCİ – Z-KİTAP AKILLI TAHTA VE SORU ÖNİZLEME MODALI -->
+  <div class="zk-modal-overlay no-print" id="ypSpaceViewerModal" style="display: none;" aria-hidden="true">
+    <div class="zk-modal-container">
+      <!-- 📌 1. ÜST KONTROL ÇUBUĞU (Z-KİTAP TOOLBAR) -->
+      <header class="zk-topbar">
+        <div class="zk-topbar-left">
+          <div class="zk-brand-link">
+            <img src="assets/logo.jpg" class="zk-brand-logo" alt="Logo">
+            <span class="zk-brand-name">ROTALI FENCİ</span>
+          </div>
+          <span class="zk-unit-tag" id="zkModalUnitTag">5. SINIF • FEN BİLİMLERİ</span>
+          <div class="zk-timer-badge" id="zkModalTimer" title="Kronometre: Tıklayarak duraklatabilir veya devam ettirebilirsiniz">
+            <span class="zk-timer-state-icon">⏱️</span>
+            <span class="zk-timer-time" id="zkModalTimerText">20:00</span>
+          </div>
+          <div class="zk-counter-pill" id="zkModalCounterPill" title="Aktif Soru / Toplam Soru">
+            1 / 1
+          </div>
+        </div>
 
-    <!-- Üst Bilgi & Hızlı İçerik Seçim Çubuğu -->
-    <header class="yp-space-topbar">
-      <div class="yp-space-topbar-left">
-        <span class="yp-space-badge">🌌 3D SİNEMATİK UZAY GÖRÜNTÜLEYİCİ</span>
-        <span class="yp-space-doc-title" id="ypSpaceDocTitle">Rotalı Fenci Eğitim Sunumu & Soru Görüntüleyici</span>
+        <div class="zk-topbar-right">
+          <!-- A- / A+ Font Kontrolleri -->
+          <div class="zk-font-controls" title="Yazı Boyutunu Ayarla">
+            <button type="button" class="zk-btn-font" id="zkModalFontDownBtn" title="Yazıyı Küçült">A-</button>
+            <button type="button" class="zk-btn-font" id="zkModalFontUpBtn" title="Yazıyı Büyüt">A+</button>
+          </div>
+
+          <!-- Z-Kitap / Çözüm Modu Geçiş Butonu -->
+          <button type="button" class="zk-mode-btn" id="zkModalModeToggleBtn" title="Görünüm Modunu Değiştir">
+            <span id="zkModalModeIcon">📖</span>
+            <span id="zkModalModeLabel">Z-Kitap Modu</span>
+          </button>
+
+          <!-- Öğretmen Çözümleri Aç/Kapat Butonu -->
+          <button type="button" class="zk-mode-btn" id="zkModalToggleSolutionsBtn" title="Doğru Cevap ve Çözümleri Önizlemede Aç/Kapat" style="background: #f0fdf4; border-color: #86efac; color: #166534;">
+            <span>💡</span>
+            <span id="zkModalSolutionsBtnLabel">Çözümleri Göster</span>
+          </button>
+
+          <!-- Sağ Üst Önceki / Sonraki Butonları -->
+          <button type="button" class="zk-nav-btn zk-nav-prev" id="ypSpacePrevBtn" title="Önceki Soru (Sol Ok veya Yukarı)">
+            ‹ Önceki
+          </button>
+          <button type="button" class="zk-nav-btn zk-nav-next" id="ypSpaceNextBtn" title="Sonraki Soru (Sağ Ok veya Aşağı)">
+            Sonraki ›
+          </button>
+
+          <!-- Tam Ekran -->
+          <button type="button" class="zk-icon-btn" id="ypSpaceFullscreenBtn" title="Tam Ekran (16:9 Akıllı Tahta)">
+            ⛶
+          </button>
+
+          <!-- Kapat -->
+          <button type="button" class="zk-close-btn" id="closeYpSpaceViewerBtn" title="Önizlemeyi Kapat (ESC)">
+            ✕
+          </button>
+        </div>
+      </header>
+
+      <!-- 📖 2. SORU ALANI (TEK SORU - TEK EKRAN) -->
+      <main class="zk-slide-viewport" id="ypSpaceScrollStream">
+        <!-- JS tarafından tek tek sorular için zk-slide-section üretilir -->
+      </main>
+
+      <!-- 🧭 3. SORU ROTALARI ÇEKMECESİ -->
+      <div class="zk-routes-drawer" id="ypSpaceRoutesDrawer" style="display: none;">
+        <div class="zk-drawer-header">
+          <h4>🧭 Soru Rotaları &amp; Hızlı Geçiş</h4>
+          <button type="button" class="zk-drawer-close" id="closeYpSpaceRoutesBtn">✕</button>
+        </div>
+        <div class="zk-routes-grid" id="ypSpaceRoutesList"></div>
       </div>
-      <div class="yp-space-topbar-right">
-        <button type="button" class="yp-space-theme-btn" id="ypSpaceThemeToggleBtn" title="Açık / Koyu Tema Değiştir">
-          <span>🌓</span> <span id="ypSpaceThemeText">Koyu Mod</span>
+
+      <!-- 📌 4. ALT ÇUBUK -->
+      <footer class="zk-bottombar">
+        <button type="button" class="zk-bar-btn" id="ypSpaceRoutesBtn" title="Tüm soruları gör ve hızlı geçiş yap">
+          🧭 Soru Rotaları
         </button>
-        <label class="yp-space-upload-btn" title="Bilgisayardan eğitim dosyası (.docx, .pdf, .png, .jpg) yükle ve 3D uzay temasında görüntüle">
-          <input type="file" id="ypSpaceDirectFileInput" accept=".docx,.pdf,.png,.jpg,.jpeg" multiple hidden>
-          <span>📂 İçerik / Dosya Aç</span>
-        </label>
-        <button type="button" class="yp-space-close-btn" id="closeYpSpaceViewerBtn" title="Görüntüleyiciyi Kapat (ESC)">✕ Kapat</button>
-      </div>
-    </header>
 
-    <!-- Dikey Akış (Vertical Long-Scroll) ve Dokunmatik (Swipe) Slayt Akış Alanı -->
-    <div class="yp-space-scroll-stream" id="ypSpaceScrollStream">
-      <!-- JS tarafından 2 Sütunlu (%55 Sol Glassmorphism Neon Kartlar + Altın Kural / %45 Sağ Yuvarlatılmış Görsel) olarak doldurulur -->
+        <a href="https://instagram.com/rotalifenci" target="_blank" rel="noopener" class="zk-watermark" title="@rotalifenci Instagram">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+          </svg>
+          <span>@rotalifenci</span>
+        </a>
+
+        <button type="button" class="zk-finish-btn" id="zkModalFinishBtn" title="Önizlemede testi tamamla ve öğrenci puan raporunu göster">
+          🏁 Testi Bitir &amp; Puanla
+        </button>
+      </footer>
     </div>
-
-    <!-- Ünite Rotaları (İçindekiler Çekmecesi) -->
-    <div class="yp-space-routes-drawer" id="ypSpaceRoutesDrawer" style="display: none;">
-      <div class="yp-space-routes-header">
-        <h4>🧭 Ünite Rotaları & Slayt Geçişi</h4>
-        <button type="button" id="closeYpSpaceRoutesBtn">✕</button>
-      </div>
-      <div class="yp-space-routes-list" id="ypSpaceRoutesList"></div>
-    </div>
-
-    <!-- Sol Alt Köşe Sabit Filigran (@rotalifenci) -->
-    <a href="https://instagram.com/rotalifenci" target="_blank" rel="noopener" class="yp-space-watermark" title="@rotalifenci Instagram">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-        <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
-      </svg>
-      <span>@rotalifenci</span>
-    </a>
-
-    <!-- Ekranın Altında Her Zaman Sabit Kalan (Fixed/Sticky) Kontrol Çubuğu -->
-    <nav class="yp-space-bottom-bar" aria-label="Sunum ve İçerik Kontrolleri">
-      <button type="button" class="yp-bar-btn yp-bar-prev" id="ypSpacePrevBtn" title="Önceki Slayt / Soru (Yukarı Ok)">
-        ‹ Önceki
-      </button>
-
-      <div class="yp-bar-counter" id="ypSpaceSlideCounter" title="Aktif Slayt / Toplam">
-        1 / 1
-      </div>
-
-      <button type="button" class="yp-bar-btn yp-bar-next" id="ypSpaceNextBtn" title="Sonraki Slayt / Soru (Aşağı Ok)">
-        Sonraki &gt;
-      </button>
-
-      <div class="yp-bar-divider"></div>
-
-      <button type="button" class="yp-bar-btn yp-bar-routes" id="ypSpaceRoutesBtn" title="Ünite Rotaları Menüsü">
-        🧭 Ünite Rotaları
-      </button>
-
-      <button type="button" class="yp-bar-icon-btn" id="ypSpaceSoundBtn" title="Sesli Okuma / Efekt (Aç/Kapat)">
-        🔊
-      </button>
-
-      <button type="button" class="yp-bar-icon-btn" id="ypSpaceFullscreenBtn" title="Tam Ekran (F11)">
-        ⛶
-      </button>
-
-      <button type="button" class="yp-bar-icon-btn" id="ypSpacePrintBtn" title="Yazdır">
-        🖨️
-      </button>
-
-      <button type="button" class="yp-bar-icon-btn" id="ypSpaceSaveBtn" title="PDF Olarak Kaydet">
-        💾
-      </button>
-    </nav>
   </div>
 
   <!-- Web Sitesine Yayınlama Modalı -->

@@ -1,28 +1,44 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+  <!-- 🔒 Yönetici Güvenlik Doğrulaması: Sadece Yetkili Girişine Açık -->
+  <script>
+    (function() {
+      if (localStorage.getItem("rotali_is_admin") !== "true") {
+        var pass = prompt("🔒 Bu sayfa yalnızca yönetici erişimine açıktır. Lütfen yönetici şifresini girin:");
+        if (pass === "Rotali5822.") {
+          localStorage.setItem("rotali_is_admin", "true");
+        } else {
+          alert("Yetkisiz erişim. Ana sayfaya yönlendiriliyorsunuz.");
+          window.location.href = "index.html#home";
+        }
+      }
+    })();
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yaprak Test & Soru Üretim Portalı (Gemini AI)</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/yaprak-test.css?v=20261028_2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app-container">
     <!-- Üst Başlık ve Durum Çubuğu -->
     <header class="app-header no-print">
-      <div class="brand">
-        <img src="rotali-fenci.jpg" alt="Rotalı Fenci Logo" class="brand-logo-img">
+      <div class="brand"><a href="index.html#home" class="badge badge-link" style="margin-right: 12px; text-decoration: none;">🏠 Ana Sayfaya Dön</a>
+        <img src="assets/logo.jpg" alt="Rotalı Fenci Logo" class="brand-logo-img">
         <div>
           <h1>Rotalı Fenci - Yaprak Test & Test / Deneme</h1>
-          <p class="subtitle">MEB Müfredatına Dayalı Görsel ve Şekilli Akıllı Soru Üretim Sistemi</p>
+          <p class="subtitle">MEB Müfredatına Dayalı Görsel ve Şekilli Akıllı Soru Üretim Sistemi (Z-Kitap & A4 Baskı)</p>
         </div>
       </div>
       <div class="header-badges">
-        <a href="/test-gunes-dunya-ay.html" class="badge badge-link" target="_blank">📄 Güneş, Dünya ve Ay Testi</a>
+        <button type="button" id="headerSpaceViewerBtn" class="badge badge-link" style="background:#0284c7; color:#fff; border:none; cursor:pointer;" title="Soruları Z-Kitap Akıllı Tahta Formatında Önizle">📖 Z-Kitap Akıllı Tahta Önizleme</button>
+        <a href="testler/5-sinif-1-unite-gunes-dunya-ve-ay-yaprak-testi.html" class="badge badge-link" target="_blank">📄 Güneş, Dünya ve Ay Testi</a>
         <span class="badge gemini-badge">⚡ Gemini 3.6 Flash</span>
+        <button type="button" id="apiKeySettingsBtn" class="badge badge-link" style="background:#0284c7; color:#fff; border:none; cursor:pointer;" title="Kendi Gemini API Anahtarınızı girin">🔑 API Anahtarı</button>
         <span class="badge status-badge" id="apiStatusBadge">● Sistem Aktif</span>
       </div>
     </header>
@@ -65,14 +81,34 @@
               </div>
             </div>
 
-            <!-- Kazanım Listesi (Check-box çoklu seçim alanı) -->
+            <!-- Konu / Alt Başlık Seçimi (Türkiye Yüzyılı Maarif Modeli) -->
+            <div class="form-group" id="subtopicGroup">
+              <div class="label-with-action">
+                <label>Konu / Alt Başlık Seçimi</label>
+                <span class="subtopic-badge-count" id="subtopicCountBadge"></span>
+              </div>
+              <div class="subtopic-pills-container" id="subtopicPills">
+                <!-- JS ile doldurulacak: Tüm Konular + 1.1, 1.2... -->
+              </div>
+            </div>
+
+            <!-- 4. "Hedef Öğrenme Çıktıları" Alanı (Dinamik Çoklu Seçim Açılır Menüsü) -->
             <div class="form-group">
               <div class="label-with-action">
-                <label>Hedef Öğrenme Çıktıları (Seçiniz)</label>
-                <button type="button" id="selectAllOutcomesBtn" class="link-btn">Tümünü Seç</button>
+                <label for="outcomesDropdownTrigger">Hedef Öğrenme Çıktıları (Seçiniz)</label>
+                <button type="button" id="selectAllOutcomesBtn" class="link-btn" disabled>Tümünü Seç</button>
               </div>
-              <div class="outcomes-checklist" id="outcomesChecklist">
-                <div class="empty-hint">Lütfen yukarıdan bir ünite seçiniz...</div>
+              <div class="outcomes-dropdown-wrapper" id="outcomesDropdownWrapper">
+                <button type="button" id="outcomesDropdownTrigger" class="outcomes-dropdown-trigger is-disabled" disabled aria-expanded="false">
+                  <span class="outcomes-trigger-left">
+                    <span class="outcomes-trigger-dot" id="outcomesTriggerDot"></span>
+                    <span id="outcomesSummaryText" class="outcomes-summary-text">Önce yukarıdan bir ünite seçiniz...</span>
+                  </span>
+                  <span class="outcomes-dropdown-chevron" id="outcomesDropdownChevron">▾</span>
+                </button>
+                <div class="outcomes-checklist dropdown-menu" id="outcomesChecklist">
+                  <div class="empty-hint">Lütfen yukarıdan bir ünite seçiniz...</div>
+                </div>
               </div>
             </div>
 
@@ -82,6 +118,27 @@
                 <label for="customOutcome">Özel Kazanım / Açıklama Ekle (Opsiyonel)</label>
               </div>
               <textarea id="customOutcome" class="form-control outcome-textarea" rows="2" placeholder="Listeden seçmek yerine veya ek olarak kendi özel kazanımınızı buraya yazabilirsiniz..."></textarea>
+            </div>
+
+            <!-- 2. Kaynak Dosya Yükleme Alanı (Soru Üretimi İçin Drag & Drop) -->
+            <div class="form-group">
+              <div class="label-with-action">
+                <label for="sourceFileInput">Kaynak Dosya Yükle (Soru Üretimi & İçerik Görüntüleme)</label>
+                <span class="source-format-tag">.docx • .pdf • .png • .jpg</span>
+              </div>
+              <div class="source-dropzone" id="sourceFileDropzone" tabindex="0" role="button" aria-label="Soru üretimi için kaynak dosyanızı sürükleyin veya seçin">
+                <input type="file" id="sourceFileInput" accept=".docx,.pdf,.png,.jpg,.jpeg,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg" multiple hidden>
+                <div class="source-dropzone-cloud-icon" aria-hidden="true">
+                  <svg width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+                    <path d="M12 13v6"/>
+                    <path d="m9 16 3-3 3 3"/>
+                  </svg>
+                </div>
+                <p class="source-dropzone-text">Soru üretimi için kaynak dosyanızı sürükleyin veya seçin</p>
+                <span class="source-dropzone-hint">Word (.docx), PDF (.pdf) ve Görsel (.png, .jpg — OCR destekli)</span>
+              </div>
+              <div class="source-file-preview-list" id="sourceFilePreviewList"></div>
             </div>
 
             <!-- Hedef Sayfa Sayısı Butonları (Otomatik & 1, 2, 3, 4, 6 Sayfa) -->
@@ -104,13 +161,13 @@
             <div class="form-group">
               <label for="questionTypeInput">Soru Tarzı / Ölçme Formatı</label>
               <select id="questionTypeInput" class="form-control" style="font-weight:600; color:var(--primary);">
-                <option value="multiple_choice" selected>🔘 Çoktan Seçmeli (4 Seçenekli LGS / MEB)</option>
-                <option value="short_answer">✏️ Kısa Cevaplı / Boşluk Doldurma</option>
-                <option value="open_ended">📝 Açık Uçlu (Klasik / Deney Analizi)</option>
-                <option value="structured_grid">🔲 Yapılandırılmış Grid (9 Kutucuklu Izgara)</option>
-                <option value="concept_map">🗺️ Kavram Haritası (Eksik Kavramları Bulma)</option>
-                <option value="v_diagram">📐 V Diyagramı (Bilimsel Süreç & Raporlama)</option>
-                <option value="mixed">🎯 Karma Test (Bütünleşik Çoklu Soru Tarzı)</option>
+                <option value="multiple_choice" data-short-label="Çoktan Seçmeli LGS" selected>🔘 Çoktan Seçmeli (4 Seçenekli LGS / MEB)</option>
+                <option value="short_answer" data-short-label="Kısa Cevaplı / Boşluk Doldurma">✏️ Kısa Cevaplı / Boşluk Doldurma</option>
+                <option value="open_ended" data-short-label="Açık Uçlu Klasik">📝 Açık Uçlu (Klasik / Deney Analizi)</option>
+                <option value="structured_grid" data-short-label="Yapılandırılmış Grid">🔲 Yapılandırılmış Grid (9 Kutucuklu Izgara)</option>
+                <option value="concept_map" data-short-label="Kavram Haritası">🗺️ Kavram Haritası (Eksik Kavramları Bulma)</option>
+                <option value="v_diagram" data-short-label="V Diyagramı">📐 V Diyagramı (Bilimsel Süreç & Raporlama)</option>
+                <option value="mixed" data-short-label="Karma Ölçme Testi">🎯 Karma Test (Bütünleşik Çoklu Soru Tarzı)</option>
               </select>
             </div>
 
@@ -148,12 +205,43 @@
               <span class="btn-text">Soruları Gemini AI İle Üret</span>
             </button>
           </form>
+
+          <!-- 5. Seçilen Konuya Ait Mevcut Yaprak Testler & Soru Bankası -->
+          <div id="existingTestsSection" class="existing-tests-section">
+            <div class="label-with-action" style="margin-bottom: 8px;">
+              <label style="color: #0f172a; font-weight: 800; font-size: 13px;">📋 Seçilen Konunun Yaprak Testleri</label>
+              <span class="subtopic-badge-count" id="existingTestsCountBadge">0 Test</span>
+            </div>
+            <div class="existing-tests-list" id="existingTestsList">
+              <!-- JS ile listelenecek testler -->
+            </div>
+          </div>
         </div>
       </section>
 
       <!-- Sağ Panel: Üretilen Sorular ve Bilgisayara Kaydetme Merkezi -->
       <section class="preview-panel">
         
+        <!-- 3. Akıllı Otomatik Başlıklandırma Modülü (H1 Ortalı + Kalem Düzenle) -->
+        <div class="smart-title-banner no-print" id="smartTitleBanner" style="display: none;">
+          <div class="smart-title-display" id="smartTitleDisplay">
+            <h1 id="smartAutoTitleHeading" class="smart-auto-title-h1">Test No: 1 - Çoktan Seçmeli LGS</h1>
+            <button type="button" id="editSmartTitleBtn" class="smart-title-edit-btn" title="Başlığı manuel olarak düzenle">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                <path d="m15 5 4 4"/>
+              </svg>
+              <span>Düzenle</span>
+            </button>
+          </div>
+          <div class="smart-title-editor" id="smartTitleEditor" style="display: none;">
+            <input type="text" id="smartTitleInput" class="smart-title-input" placeholder="Test başlığını girin...">
+            <button type="button" id="saveSmartTitleBtn" class="btn btn-primary btn-sm">✓ Kaydet</button>
+            <button type="button" id="cancelSmartTitleBtn" class="btn btn-secondary btn-sm">İptal</button>
+          </div>
+          <p class="smart-title-subhint">Bu başlık test önizlemesinde ve PDF / Word (.docx) çıktı dosya adında varsayılan olarak kullanılır.</p>
+        </div>
+
         <!-- Üst Aksiyon Araç Çubuğu (Bilgisayara Kaydetme Düğmeleri) -->
         <div class="toolbar no-print" id="actionToolbar" style="display: none;">
           <div class="toolbar-title">
@@ -171,6 +259,11 @@
               <button type="button" class="btn-quick-page" data-pages="4" onclick="setTargetPages(4)">4S</button>
               <button type="button" class="btn-quick-page" data-pages="6" onclick="setTargetPages(6)">6S</button>
             </div>
+
+            <!-- 🌌 3D Sinematik Uzay Sunum / Görüntüleyici Modu -->
+            <button type="button" id="open3DSpaceViewBtn" class="btn btn-space-viewer btn-sm" style="background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%); color: #fff; font-weight: 800; border: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);" title="Soruları Z-Kitap Akıllı Tahta Formatında Tek Tek Önizle">
+              <span class="icon">📖</span> Z-Kitap Akıllı Tahta Önizleme
+            </button>
 
             <!-- 🚀 Web Siteme Otomatik Ekle Butonu -->
             <button type="button" id="publishToWebBtn" class="btn btn-publish-web btn-sm" title="Hazırlanan testi Rotalı Fenci web sitesine otomatik ekle ve yayınla">
@@ -198,6 +291,10 @@
 
         <!-- Görünüm & Sayfa Düzeni Kontrol Çubuğu -->
         <div class="view-controls-bar no-print" id="viewControlsBar" style="display: none;">
+          <div class="view-mode-tabs" style="display: inline-flex; align-items: center; gap: 6px; margin-right: 14px;">
+            <button type="button" id="viewModeA4Btn" class="btn-toggle active" title="A4 Sayfa / Yazdırma ve PDF Düzeni"><span>📄</span> A4 Yazdırma Düzeni</button>
+            <button type="button" id="viewModeZKitapBtn" class="btn-toggle" style="background:#eff6ff; color:#0284c7; border-color:#93c5fd; font-weight:800;" title="Soruları Z-Kitap Akıllı Tahta Formatında Önizle"><span>📖</span> Z-Kitap Önizleme</button>
+          </div>
           <div class="column-controls">
             <span class="ctrl-label">Mizanpaj:</span>
             <button type="button" id="toggleColumnsBtn" class="btn-toggle active" title="2 Sütunlu MEB Kitapçık Düzeni">
@@ -226,15 +323,20 @@
           <div class="spinner"></div>
           <div class="loading-text">
             <h3>Gemini AI Soruları Hazırlıyor...</h3>
-            <p>Seçtiğiniz kazanımlara tam uygun, pedagojik çeldiricilere sahip sorular üretiliyor.</p>
+            <p>Seçtiğiniz kazanımlara ve yüklediğiniz kaynak dosyalara tam uygun sorular üretiliyor.</p>
           </div>
         </div>
 
         <!-- Başlangıç Boş Durum Ekranı -->
         <div class="empty-state" id="emptyState">
           <div class="empty-icon">🎯</div>
-          <h3>Kazanımları Seçin ve Testinizi Oluşturun</h3>
-          <p>Sol taraftaki panelden bir ünite seçip kazanımları işaretleyiniz. <strong>"Soruları Gemini AI İle Üret"</strong> butonuna tıkladığınızda sorularınız anında oluşturulacak ve doğrudan <strong>Word (.docx)</strong> veya <strong>PDF</strong> olarak bilgisayarınıza kaydedilebilecektir.</p>
+          <h3>Kazanımları Seçin veya Kaynak Dosya Yükleyin</h3>
+          <p>Sol taraftaki panelden bir ünite seçip <strong>Hedef Öğrenme Çıktılarını</strong> işaretleyebilir veya <strong>Word (.docx), PDF (.pdf), Görsel (.png, .jpg)</strong> kaynak dosyanızı sürükleyip bırakabilirsiniz. Ayrıca eğitim içeriklerini ve üretilen soruları <strong>🌌 3D Uzay Sunum Modu</strong> ile akıllı tahtada dikey akışla görüntüleyebilirsiniz.</p>
+          <div style="margin-top: 18px;">
+            <button type="button" id="emptyStateSpaceViewerBtn" class="btn btn-space-viewer" style="padding: 10px 20px; font-size: 14px; background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%); color: #fff; font-weight: 800; border: none; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);">
+              📖 Z-Kitap Akıllı Tahta Önizlemesini Aç
+            </button>
+          </div>
         </div>
 
         <!-- Soru Kartları Listesi -->
@@ -250,6 +352,102 @@
 
       </section>
     </main>
+  </div>
+
+  <!-- 1. Dosya Görüntüleyici ve Arayüz Tasarımı (3D Sinematik Derin Uzay Sunum / Slayt Alanı) -->
+    <!-- 📖 ROTALI FENCİ – Z-KİTAP AKILLI TAHTA VE SORU ÖNİZLEME MODALI -->
+  <div class="zk-modal-overlay no-print" id="ypSpaceViewerModal" style="display: none;" aria-hidden="true">
+    <div class="zk-modal-container">
+      <!-- 📌 1. ÜST KONTROL ÇUBUĞU (Z-KİTAP TOOLBAR) -->
+      <header class="zk-topbar">
+        <div class="zk-topbar-left">
+          <div class="zk-brand-link">
+            <img src="assets/logo.jpg" class="zk-brand-logo" alt="Logo">
+            <span class="zk-brand-name">ROTALI FENCİ</span>
+          </div>
+          <span class="zk-unit-tag" id="zkModalUnitTag">5. SINIF • FEN BİLİMLERİ</span>
+          <div class="zk-timer-badge" id="zkModalTimer" title="Kronometre: Tıklayarak duraklatabilir veya devam ettirebilirsiniz">
+            <span class="zk-timer-state-icon">⏱️</span>
+            <span class="zk-timer-time" id="zkModalTimerText">20:00</span>
+          </div>
+          <div class="zk-counter-pill" id="zkModalCounterPill" title="Aktif Soru / Toplam Soru">
+            1 / 1
+          </div>
+        </div>
+
+        <div class="zk-topbar-right">
+          <!-- A- / A+ Font Kontrolleri -->
+          <div class="zk-font-controls" title="Yazı Boyutunu Ayarla">
+            <button type="button" class="zk-btn-font" id="zkModalFontDownBtn" title="Yazıyı Küçült">A-</button>
+            <button type="button" class="zk-btn-font" id="zkModalFontUpBtn" title="Yazıyı Büyüt">A+</button>
+          </div>
+
+          <!-- Z-Kitap / Çözüm Modu Geçiş Butonu -->
+          <button type="button" class="zk-mode-btn" id="zkModalModeToggleBtn" title="Görünüm Modunu Değiştir">
+            <span id="zkModalModeIcon">📖</span>
+            <span id="zkModalModeLabel">Z-Kitap Modu</span>
+          </button>
+
+          <!-- Öğretmen Çözümleri Aç/Kapat Butonu -->
+          <button type="button" class="zk-mode-btn" id="zkModalToggleSolutionsBtn" title="Doğru Cevap ve Çözümleri Önizlemede Aç/Kapat" style="background: #f0fdf4; border-color: #86efac; color: #166534;">
+            <span>💡</span>
+            <span id="zkModalSolutionsBtnLabel">Çözümleri Göster</span>
+          </button>
+
+          <!-- Sağ Üst Önceki / Sonraki Butonları -->
+          <button type="button" class="zk-nav-btn zk-nav-prev" id="ypSpacePrevBtn" title="Önceki Soru (Sol Ok veya Yukarı)">
+            ‹ Önceki
+          </button>
+          <button type="button" class="zk-nav-btn zk-nav-next" id="ypSpaceNextBtn" title="Sonraki Soru (Sağ Ok veya Aşağı)">
+            Sonraki ›
+          </button>
+
+          <!-- Tam Ekran -->
+          <button type="button" class="zk-icon-btn" id="ypSpaceFullscreenBtn" title="Tam Ekran (16:9 Akıllı Tahta)">
+            ⛶
+          </button>
+
+          <!-- Kapat -->
+          <button type="button" class="zk-close-btn" id="closeYpSpaceViewerBtn" title="Önizlemeyi Kapat (ESC)">
+            ✕
+          </button>
+        </div>
+      </header>
+
+      <!-- 📖 2. SORU ALANI (TEK SORU - TEK EKRAN) -->
+      <main class="zk-slide-viewport" id="ypSpaceScrollStream">
+        <!-- JS tarafından tek tek sorular için zk-slide-section üretilir -->
+      </main>
+
+      <!-- 🧭 3. SORU ROTALARI ÇEKMECESİ -->
+      <div class="zk-routes-drawer" id="ypSpaceRoutesDrawer" style="display: none;">
+        <div class="zk-drawer-header">
+          <h4>🧭 Soru Rotaları &amp; Hızlı Geçiş</h4>
+          <button type="button" class="zk-drawer-close" id="closeYpSpaceRoutesBtn">✕</button>
+        </div>
+        <div class="zk-routes-grid" id="ypSpaceRoutesList"></div>
+      </div>
+
+      <!-- 📌 4. ALT ÇUBUK -->
+      <footer class="zk-bottombar">
+        <button type="button" class="zk-bar-btn" id="ypSpaceRoutesBtn" title="Tüm soruları gör ve hızlı geçiş yap">
+          🧭 Soru Rotaları
+        </button>
+
+        <a href="https://instagram.com/rotalifenci" target="_blank" rel="noopener" class="zk-watermark" title="@rotalifenci Instagram">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+            <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+          </svg>
+          <span>@rotalifenci</span>
+        </a>
+
+        <button type="button" class="zk-finish-btn" id="zkModalFinishBtn" title="Önizlemede testi tamamla ve öğrenci puan raporunu göster">
+          🏁 Testi Bitir &amp; Puanla
+        </button>
+      </footer>
+    </div>
   </div>
 
   <!-- Web Sitesine Yayınlama Modalı -->
@@ -271,7 +469,7 @@
         <div id="publishFormStep">
           <div class="form-group">
             <label for="pubTitle">Test Başlığı</label>
-            <input type="text" id="pubTitle" class="form-control" placeholder="Örn: 5. Sınıf 1. Ünite Güneş, Dünya ve Ay Yaprak Testi">
+            <input type="text" id="pubTitle" class="form-control" placeholder="Örn: Test No: 1 - Çoktan Seçmeli LGS">
           </div>
 
           <div class="form-row">
@@ -357,8 +555,12 @@
     </div>
   </div>
 
+  <!-- Harici Kütüphaneler: PDF, Word (.docx) Okuma ve Çıktı Alma -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="app.js?v=6"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="js/curriculum-data.js?v=20261029_0245"></script>
+  <script src="js/yaprak-test.js?v=20261029_0245"></script>
 </body>
 </html>

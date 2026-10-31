@@ -1392,6 +1392,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="question-header">
               <div class="question-number">${qNum}. Soru</div>
               <div class="question-card-actions no-print">
+                <button type="button" class="btn-zk-single-preview" title="Bu Soruyu Z-Kitap Akıllı Tahta Formatında Önizle" onclick="window.openZKitapQuestion(${qNum - 1})">📖 Z-Kitap Önizle</button>
                 <button type="button" class="btn-action-icon" title="Düzenle" onclick="startEditQuestion(${qNum - 1})">✏️</button>
                 <button type="button" class="btn-action-icon" title="Yeniden Üret" onclick="regenerateQuestion(${qNum - 1})">🔄</button>
                 <button type="button" class="btn-action-icon btn-action-delete" title="Sil" onclick="deleteQuestion(${qNum - 1})">🗑️</button>
@@ -2094,133 +2095,503 @@ document.addEventListener('DOMContentLoaded', () => {
     }];
   }
 
-  function render3DSpaceViewer(slides, docTitle) {
-    if (!ypSpaceViewerModal || !ypSpaceScrollStream) return;
-    ypSpaceSlides = Array.isArray(slides) && slides.length > 0 ? slides : buildSlidesFromCurrentState();
-    ypActiveSlideIdx = 0;
+  
+  // ========================================================
+  // 📖 ROTALI FENCİ – Z-KİTAP AKILLI TAHTA ÖNİZLEME MOTORU
+  // ========================================================
+  let zkActiveSlideIdx = 0;
+  let zkFontScale = 1.0;
+  let zkIsSplitMode = false;
+  let zkShowSolutions = false;
+  let zkTimerInterval = null;
+  let zkTimerSeconds = 1200;
+  let zkTimerIsPaused = false;
+  let zkUserAnswers = {};
+  let zkCurrentQuestions = [];
 
-    if (ypSpaceDocTitle) {
-      ypSpaceDocTitle.textContent = docTitle || currentSmartTitle || 'Rotalı Fenci 3D Uzay Eğitim Görüntüleyici';
+  function formatQuestionStemText(rawText) {
+    let text = String(rawText || '').trim();
+    text = text.replace(/^Soru\s*\d+\s*[:.-]\s*/i, '');
+    const keywordsToUnderline = [
+      'değildir', 'degildir', 'olamaz', 'ulaşılamaz', 'ulasilamaz', 'söylenemez',
+      'soylenemez', 'kesinlikle', 'en fazladır', 'en azdır', 'yanlıştır', 'dogru degildir',
+      'beklenmez', 'gösterilemez', 'gosterilemez', 'hangisidir'
+    ];
+    keywordsToUnderline.forEach(kw => {
+      const reg = new RegExp(`\\b(${kw})\\b`, 'gi');
+      text = text.replace(reg, '<u>$1</u>');
+    });
+    return text;
+  }
+
+  function renderZKitapPreview(questionsOrSlides, initialIndex = 0, docTitle = '') {
+    if (!ypSpaceViewerModal || !ypSpaceScrollStream) return;
+
+    // Soru listesini doğrula veya mevcut durumdan al
+    let qList = [];
+    if (Array.isArray(questionsOrSlides) && questionsOrSlides.length > 0) {
+      if (questionsOrSlides[0].question) {
+        qList = questionsOrSlides;
+      } else {
+        qList = questionsOrSlides.map((s, i) => ({
+          id: i + 1,
+          question: (s.cards && s.cards[0] ? s.cards[0].html.replace(/<[^>]+>/g, '') : s.title) || `Soru ${i + 1}`,
+          visual_svg: s.visualHtml || '',
+          options: {},
+          correct_answer: s.goldenRule ? s.goldenRule.replace(/<[^>]+>/g, '') : '',
+          explanation: s.subtitle || ''
+        }));
+      }
+    } else if (currentQuestions && currentQuestions.length > 0) {
+      qList = currentQuestions;
+    } else {
+      // Örnek soru ile Z-Kitap modunu başlat
+      const uName = (curriculumData && curriculumData.units && curriculumData.units[selectedUnitIndex])
+        ? curriculumData.units[selectedUnitIndex].name
+        : 'Fen Bilimleri';
+      qList = [{
+        id: 1,
+        question: `${gradeInput ? gradeInput.value : '5'}. Sınıf ${uName} konusu için hazırlanan sorunun bilimsel açıklaması ve yorumu aşağıdakilerden hangisinde doğru verilmiştir?`,
+        options: {
+          A: "Gözlemler doğrudan bilimsel kanıt olarak değerlendirilir.",
+          B: "Model üzerinde yapılan ölçümler hatalı sonuç verebilir.",
+          C: "Farklı kaynaklardan toplanan veriler birbiriyle karşılaştırılmalıdır.",
+          D: "Bilimsel sonuçlar yalnızca tek bir deneye dayanır."
+        },
+        correct_answer: "C",
+        explanation: "Bilimsel çalışmalarda doğrulanabilirlik için farklı kaynaklardan elde edilen veriler karşılaştırılmalıdır."
+      }];
     }
 
+    zkCurrentQuestions = qList;
+    zkActiveSlideIdx = Math.max(0, Math.min(initialIndex, qList.length - 1));
+
+    // Modal Üst Bilgileri
+    const zkModalUnitTag = document.getElementById('zkModalUnitTag');
+    const zkModalCounterPill = document.getElementById('zkModalCounterPill');
+    const ypSpaceDocTitle = document.getElementById('ypSpaceDocTitle');
+
+    const gradeVal = currentMeta.grade || (gradeInput ? gradeInput.value : '5');
+    const unitTitle = currentMeta.learning_area || (curriculumData && curriculumData.units && curriculumData.units[selectedUnitIndex] ? curriculumData.units[selectedUnitIndex].name : 'Fen Bilimleri');
+
+    if (zkModalUnitTag) {
+      zkModalUnitTag.textContent = `${gradeVal}. SINIF • ${unitTitle.toUpperCase()}`;
+    }
+    if (ypSpaceDocTitle) {
+      ypSpaceDocTitle.textContent = docTitle || currentSmartTitle || `${gradeVal}. Sınıf Fen Bilimleri Z-Kitap`;
+    }
+
+    // Kronometre Başlat (Soru Başı 1 Dakika)
+    initZKitapTimer(Math.max(1, qList.length) * 60);
+
+    // Soruları Z-Kitap Slaytlarına Dönüştür
     ypSpaceScrollStream.innerHTML = '';
-    if (ypSpaceRoutesList) ypSpaceRoutesList.innerHTML = '';
+    const routesList = document.getElementById('ypSpaceRoutesList');
+    if (routesList) routesList.innerHTML = '';
 
-    ypSpaceSlides.forEach((slide, idx) => {
-      const sec = document.createElement('section');
-      sec.className = 'yp-space-slide-section';
-      sec.id = `yp-space-slide-${idx}`;
-      sec.dataset.slideIndex = String(idx);
+    qList.forEach((q, idx) => {
+      const qNum = idx + 1;
+      const isMultipleChoice = q.options && q.options.A;
+      const isShortAnswer = q.type === 'short_answer';
+      const isOpenEnded = q.type === 'open_ended' || (!isMultipleChoice && !isShortAnswer);
 
-      const cardsHtml = (slide.cards || []).map(c => `
-        <div class="yp-neon-card ${c.neon || 'neon-blue'}">
-          ${c.html}
-        </div>
-      `).join('');
+      const correctAns = String(q.correct_answer || '').trim();
+      const formattedStem = formatQuestionStemText(q.question);
+      const stemLen = formattedStem.length;
 
-      sec.innerHTML = `
-        <div class="yp-space-slide-grid">
-          <div class="yp-space-col-left">
-            <div class="yp-slide-category">
-              <span>✦</span>
-              <span>${escapeHtml(slide.category || 'ROTALI FENCİ EĞİTİM MODÜLÜ')}</span>
-            </div>
-            <h2 class="yp-slide-main-title">${escapeHtml(slide.title || `Slayt ${idx + 1}`)}</h2>
-            <p class="yp-slide-subtitle">${escapeHtml(slide.subtitle || '')}</p>
-            <div class="yp-neon-cards-stack">
-              ${cardsHtml}
-            </div>
-            <div class="yp-golden-rule-box" style="display: none;">
-              <div class="yp-golden-rule-icon">💡</div>
-              <div class="yp-golden-rule-content">
-                <strong>ALTIN KURAL / İPUCU</strong>
-                <span>${escapeHtml(slide.goldenRule || '')}</span>
+      let sizeClass = 'zk-size-large';
+      if (stemLen > 280) sizeClass = 'zk-size-compact';
+      else if (stemLen > 140) sizeClass = 'zk-size-medium';
+
+      // Soru Görseli (Varsa temizle ve üstte göster)
+      let visualHtml = '';
+      if (q.visual_svg && q.visual_svg.trim()) {
+        const cleanedSvg = prepareSvgForDisplay(q.visual_svg, q.question, q.options, q.correct_answer);
+        if (cleanedSvg) {
+          visualHtml = `<div class="zk-visual-container">${cleanedSvg}</div>`;
+        }
+      }
+
+      // Seçenekler (A, B, C, D Alt alta ferah Z-Kitap kartları)
+      let optionsHtml = '';
+      if (isMultipleChoice) {
+        optionsHtml = `
+          <div class="zk-options-list" data-qid="${qNum}">
+            ${['A', 'B', 'C', 'D'].map(let => `
+              <div class="zk-option-item ${zkUserAnswers[qNum] === let ? 'is-selected' : ''}" data-qid="${qNum}" data-opt="${let}" onclick="window.selectZKitapOption(${qNum}, '${let}')">
+                <span class="zk-opt-letter">${let})</span>
+                <span class="zk-opt-text">${escapeHtml(q.options[let] || '')}</span>
               </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      // Kısa Cevap / Açık Uçlu Soru İçi Giriş Alanı
+      let inlineAnswerHtml = '';
+      if (isShortAnswer) {
+        inlineAnswerHtml = `
+          <div class="zk-inline-short-box">
+            <span class="zk-inline-label">✍️ Cevabınız:</span>
+            <input type="text" class="zk-inline-input" id="zk-inline-input-${qNum}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="Cevabınızı buraya yazınız..." value="${escapeHtml(zkUserAnswers[qNum] || '')}" oninput="window.recordZKitapAnswer(${qNum}, this.value)">
+          </div>
+        `;
+      } else if (isOpenEnded) {
+        inlineAnswerHtml = `
+          <div class="zk-inline-open-box">
+            <span class="zk-inline-label">✍️ Cevabınız ve Açıklamanız:</span>
+            <textarea class="zk-inline-textarea" id="zk-inline-input-${qNum}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" rows="3" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="window.recordZKitapAnswer(${qNum}, this.value)">${escapeHtml(zkUserAnswers[qNum] || '')}</textarea>
+          </div>
+        `;
+      }
+
+      // Çözüm Kutusu
+      const solutionHtml = `
+        <div class="zk-solution-box" id="zk-sol-box-${qNum}" style="display: ${zkShowSolutions ? 'block' : 'none'};">
+          <div class="zk-solution-badge">💡 ÇÖZÜM &amp; DOĞRU CEVAP</div>
+          <div class="zk-solution-text">
+            <strong>Doğru Cevap:</strong> <span class="zk-correct-val">${escapeHtml(correctAns)}</span>
+            ${q.explanation ? `<p class="zk-expl-text">${escapeHtml(q.explanation)}</p>` : ''}
+          </div>
+        </div>
+      `;
+
+      // Sağ Panel (%40 Mod 2)
+      let rightPanelContent = '';
+      if (isMultipleChoice) {
+        rightPanelContent = `
+          <div class="zk-answer-panel">
+            <div class="zk-panel-header">
+              <h3>✍️ ÖĞRENCİ CEVABI</h3>
+              <span class="zk-panel-hint">Şıkkı Seçiniz</span>
+            </div>
+            <div class="zk-choice-buttons">
+              ${['A', 'B', 'C', 'D'].map(let => `
+                <button type="button" class="zk-choice-btn ${zkUserAnswers[qNum] === let ? 'is-active' : ''}" data-qid="${qNum}" data-opt="${let}" onclick="window.selectZKitapOption(${qNum}, '${let}')">
+                  <span class="zk-choice-circle">${let}</span>
+                  <span class="zk-choice-label">${let} Şıkkı</span>
+                </button>
+              `).join('')}
+            </div>
+            <div class="zk-notes-box">
+              <label class="zk-notes-label">📝 Öğretmen / Çözüm Notu:</label>
+              <textarea class="zk-notes-textarea" id="zk-notes-${qNum}" rows="4" placeholder="Çözüm basamakları ve öğretmen notları..."></textarea>
             </div>
           </div>
-          <div class="yp-space-col-right">
-            <div class="yp-space-visual-frame">
-              ${slide.visualHtml || buildDefaultSpaceIllustrationSvg(slide.title, idx)}
+        `;
+      } else {
+        rightPanelContent = `
+          <div class="zk-answer-panel">
+            <div class="zk-panel-header">
+              <h3>✍️ CEVABINIZ</h3>
+              <span class="zk-panel-hint">${isShortAnswer ? 'Kısa Cevap' : 'Açık Uçlu'}</span>
             </div>
+            <div class="zk-textarea-box">
+              <textarea class="zk-open-textarea" id="zk-right-input-${qNum}" rows="5" placeholder="Cevabınızı buraya yazınız..." oninput="window.recordZKitapAnswer(${qNum}, this.value)">${escapeHtml(zkUserAnswers[qNum] || '')}</textarea>
+            </div>
+            <div class="zk-notes-box" style="margin-top: 14px;">
+              <label class="zk-notes-label">📝 Öğretmen Notu / İpuçları:</label>
+              <textarea class="zk-notes-textarea" id="zk-notes-${qNum}" rows="3" placeholder="Öğrenciye dönüt ve açıklamalar..."></textarea>
+            </div>
+          </div>
+        `;
+      }
+
+      const sec = document.createElement('section');
+      sec.className = `zk-slide-section ${idx === zkActiveSlideIdx ? 'is-active' : ''}`;
+      sec.id = `yp-zk-slide-${idx}`;
+      sec.dataset.slideIndex = String(idx);
+
+      sec.innerHTML = `
+        <div class="zk-slide-grid">
+          <!-- Sol Sütun (%60 / %100) -->
+          <div class="zk-col-left">
+            <div class="zk-question-card">
+              <div class="zk-question-header">
+                <span class="zk-qnum-tag">${qNum}. Soru</span>
+              </div>
+              
+              ${visualHtml}
+              
+              <div class="zk-question-stem ${sizeClass}">
+                ${formattedStem}
+              </div>
+
+              ${optionsHtml}
+              ${inlineAnswerHtml}
+              ${solutionHtml}
+            </div>
+          </div>
+
+          <!-- Sağ Sütun (%40) -->
+          <div class="zk-col-right">
+            ${rightPanelContent}
           </div>
         </div>
       `;
 
       ypSpaceScrollStream.appendChild(sec);
 
-      if (ypSpaceRoutesList) {
+      // Soru Rotaları Çekmecesi Butonu
+      if (routesList) {
         const routeBtn = document.createElement('button');
         routeBtn.type = 'button';
-        routeBtn.className = `yp-route-item ${idx === 0 ? 'active' : ''}`;
-        routeBtn.textContent = `${idx + 1}. ${slide.title || 'Slayt'}`;
+        routeBtn.className = `zk-route-item ${idx === zkActiveSlideIdx ? 'active' : ''}`;
+        routeBtn.textContent = `${qNum}. Soru`;
         routeBtn.addEventListener('click', () => {
-          scrollToSpaceSlide(idx);
-          if (ypSpaceRoutesDrawer) ypSpaceRoutesDrawer.style.display = 'none';
+          showZKitapSlide(idx);
+          const drawer = document.getElementById('ypSpaceRoutesDrawer');
+          if (drawer) drawer.style.display = 'none';
         });
-        ypSpaceRoutesList.appendChild(routeBtn);
+        routesList.appendChild(routeBtn);
       }
     });
 
-    updateSpaceSlideCounter(0);
+    showZKitapSlide(zkActiveSlideIdx);
+
     ypSpaceViewerModal.style.display = 'flex';
     ypSpaceViewerModal.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
   }
 
-  function updateSpaceSlideCounter(idx) {
-    ypActiveSlideIdx = Math.max(0, Math.min(idx, ypSpaceSlides.length - 1));
-    if (ypSpaceSlideCounter) {
-      ypSpaceSlideCounter.textContent = `${ypActiveSlideIdx + 1} / ${ Math.max(1, ypSpaceSlides.length) }`;
+  function showZKitapSlide(idx) {
+    if (!zkCurrentQuestions || zkCurrentQuestions.length === 0) return;
+    zkActiveSlideIdx = Math.max(0, Math.min(idx, zkCurrentQuestions.length - 1));
+
+    // Slaytları güncelle
+    const allSections = document.querySelectorAll('.zk-slide-section');
+    allSections.forEach((sec, i) => {
+      sec.classList.toggle('is-active', i === zkActiveSlideIdx);
+      sec.style.display = (i === zkActiveSlideIdx) ? 'block' : 'none';
+    });
+
+    // Sayaç güncelle
+    const zkModalCounterPill = document.getElementById('zkModalCounterPill');
+    if (zkModalCounterPill) {
+      zkModalCounterPill.textContent = `${zkActiveSlideIdx + 1} / ${zkCurrentQuestions.length}`;
     }
-    if (ypSpaceRoutesList) {
-      Array.from(ypSpaceRoutesList.children).forEach((el, i) => {
-        el.classList.toggle('active', i === ypActiveSlideIdx);
+
+    // Buton aktiflik durumları
+    if (ypSpacePrevBtn) ypSpacePrevBtn.style.opacity = zkActiveSlideIdx === 0 ? '0.5' : '1';
+    if (ypSpaceNextBtn) ypSpaceNextBtn.style.opacity = zkActiveSlideIdx === zkCurrentQuestions.length - 1 ? '0.5' : '1';
+
+    // Rota çekmecesi butonları
+    const routesList = document.getElementById('ypSpaceRoutesList');
+    if (routesList) {
+      Array.from(routesList.children).forEach((btn, i) => {
+        btn.classList.toggle('active', i === zkActiveSlideIdx);
+      });
+    }
+
+    // Başa kaydır
+    if (ypSpaceScrollStream) ypSpaceScrollStream.scrollTop = 0;
+  }
+
+  function initZKitapTimer(totalSeconds) {
+    if (zkTimerInterval) clearInterval(zkTimerInterval);
+    zkTimerSeconds = totalSeconds;
+    zkTimerIsPaused = false;
+
+    function renderTime() {
+      const m = Math.floor(zkTimerSeconds / 60);
+      const s = zkTimerSeconds % 60;
+      const timeStr = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+      const timerEl = document.getElementById('zkModalTimerText');
+      if (timerEl) timerEl.textContent = timeStr;
+    }
+
+    renderTime();
+    zkTimerInterval = setInterval(() => {
+      if (!zkTimerIsPaused && zkTimerSeconds > 0) {
+        zkTimerSeconds--;
+        renderTime();
+        if (zkTimerSeconds <= 0) {
+          clearInterval(zkTimerInterval);
+          alert('⏱️ Sınav süresi tamamlandı!');
+        }
+      }
+    }, 1000);
+
+    const timerBadge = document.getElementById('zkModalTimer');
+    if (timerBadge && !timerBadge._hasClickListener) {
+      timerBadge._hasClickListener = true;
+      timerBadge.addEventListener('click', () => {
+        zkTimerIsPaused = !zkTimerIsPaused;
+        timerBadge.classList.toggle('is-paused', zkTimerIsPaused);
+        const icon = timerBadge.querySelector('.zk-timer-state-icon');
+        if (icon) icon.textContent = zkTimerIsPaused ? '⏸️' : '⏱️';
       });
     }
   }
 
-  function scrollToSpaceSlide(targetIdx) {
-    if (!ypSpaceScrollStream || ypSpaceSlides.length === 0) return;
-    const clamped = Math.max(0, Math.min(targetIdx, ypSpaceSlides.length - 1));
-    const targetEl = document.getElementById(`yp-space-slide-${clamped}`);
-    if (targetEl) {
-      targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      updateSpaceSlideCounter(clamped);
+  window.selectZKitapOption = function(qNum, letter) {
+    zkUserAnswers[qNum] = letter;
+    const slide = document.getElementById(`yp-zk-slide-${qNum - 1}`);
+    if (!slide) return;
+
+    // Sol panel şıkları güncelle
+    slide.querySelectorAll('.zk-option-item').forEach(el => {
+      const isSel = el.getAttribute('data-opt') === letter;
+      el.classList.toggle('is-selected', isSel);
+    });
+
+    // Sağ panel butonları güncelle
+    slide.querySelectorAll('.zk-choice-btn').forEach(btn => {
+      const isAct = btn.getAttribute('data-opt') === letter;
+      btn.classList.toggle('is-active', isAct);
+    });
+  };
+
+  window.recordZKitapAnswer = function(qNum, val) {
+    zkUserAnswers[qNum] = val;
+    // İki inputu senkronize tut
+    const inlineInput = document.getElementById(`zk-inline-input-${qNum}`);
+    const rightInput = document.getElementById(`zk-right-input-${qNum}`);
+    if (inlineInput && inlineInput.value !== val) inlineInput.value = val;
+    if (rightInput && rightInput.value !== val) rightInput.value = val;
+  };
+
+  window.openZKitapQuestion = function(idx) {
+    renderZKitapPreview(currentQuestions, idx);
+  };
+
+  // Font Boyutlandırma (A- / A+)
+  const zkFontDownBtn = document.getElementById('zkModalFontDownBtn');
+  const zkFontUpBtn = document.getElementById('zkModalFontUpBtn');
+  if (zkFontDownBtn) {
+    zkFontDownBtn.addEventListener('click', () => {
+      zkFontScale = Math.max(0.75, +(zkFontScale - 0.1).toFixed(2));
+      document.documentElement.style.setProperty('--zk-font-scale', zkFontScale);
+    });
+  }
+  if (zkFontUpBtn) {
+    zkFontUpBtn.addEventListener('click', () => {
+      zkFontScale = Math.min(1.4, +(zkFontScale + 0.1).toFixed(2));
+      document.documentElement.style.setProperty('--zk-font-scale', zkFontScale);
+    });
+  }
+
+  // Z-Kitap / Çözüm Modu Geçiş Butonu
+  const zkModalModeToggleBtn = document.getElementById('zkModalModeToggleBtn');
+  if (zkModalModeToggleBtn) {
+    zkModalModeToggleBtn.addEventListener('click', () => {
+      zkIsSplitMode = !zkIsSplitMode;
+      ypSpaceViewerModal.classList.toggle('zk-mode-split', zkIsSplitMode);
+      const icon = document.getElementById('zkModalModeIcon');
+      const label = document.getElementById('zkModalModeLabel');
+      if (icon) icon.textContent = zkIsSplitMode ? '✍️' : '📖';
+      if (label) label.textContent = zkIsSplitMode ? 'Çözüm Modu' : 'Z-Kitap Modu';
+    });
+  }
+
+  // Çözümleri Aç / Kapat Butonu
+  const zkModalToggleSolutionsBtn = document.getElementById('zkModalToggleSolutionsBtn');
+  if (zkModalToggleSolutionsBtn) {
+    zkModalToggleSolutionsBtn.addEventListener('click', () => {
+      zkShowSolutions = !zkShowSolutions;
+      const lbl = document.getElementById('zkModalSolutionsBtnLabel');
+      if (lbl) lbl.textContent = zkShowSolutions ? 'Çözümleri Gizle' : 'Çözümleri Göster';
+      document.querySelectorAll('.zk-solution-box').forEach(box => {
+        box.style.display = zkShowSolutions ? 'block' : 'none';
+      });
+    });
+  }
+
+  // Testi Bitir & Puanla Butonu
+  const zkModalFinishBtn = document.getElementById('zkModalFinishBtn');
+  if (zkModalFinishBtn) {
+    zkModalFinishBtn.addEventListener('click', () => {
+      if (!zkCurrentQuestions || zkCurrentQuestions.length === 0) return;
+      let correct = 0;
+      let answered = 0;
+      zkCurrentQuestions.forEach((q, i) => {
+        const userAns = String(zkUserAnswers[i + 1] || '').trim().toUpperCase();
+        const corrAns = String(q.correct_answer || '').trim().toUpperCase();
+        if (userAns) {
+          answered++;
+          if (userAns === corrAns || corrAns.includes(userAns) || userAns.includes(corrAns)) {
+            correct++;
+          }
+        }
+      });
+      const total = zkCurrentQuestions.length;
+      const score = Math.round((correct / total) * 100);
+      alert(`🏁 TEST DEĞERLENDİRME RAPORU\n\nToplam Soru: ${total}\nCevaplanan: ${answered}\nDoğru Sayısı: ${correct}\nYanlış / Boş: ${total - correct}\n\nBAŞARI PUANI: ${score} / 100\n\nÇözümler ve doğru cevaplar şimdi ekranda açılıyor.`);
+      
+      // Çözümleri otomatik aç
+      zkShowSolutions = true;
+      const lbl = document.getElementById('zkModalSolutionsBtnLabel');
+      if (lbl) lbl.textContent = 'Çözümleri Gizle';
+      document.querySelectorAll('.zk-solution-box').forEach(box => {
+        box.style.display = 'block';
+      });
+    });
+  }
+
+  // Klavye Yön Tuşları ile Geçiş
+  window.addEventListener('keydown', (e) => {
+    if (!ypSpaceViewerModal || ypSpaceViewerModal.style.display === 'none') return;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      showZKitapSlide(zkActiveSlideIdx + 1);
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      showZKitapSlide(zkActiveSlideIdx - 1);
+    } else if (e.key === 'Escape') {
+      if (closeYpSpaceViewerBtn) closeYpSpaceViewerBtn.click();
     }
+  });
+
+  // Dokunmatik Tahtalar İçin Kaydırma (Swipe)
+  let touchStartX = 0;
+  if (ypSpaceScrollStream) {
+    ypSpaceScrollStream.addEventListener('touchstart', (e) => {
+      if (e.touches && e.touches[0]) touchStartX = e.touches[0].clientX;
+    }, { passive: true });
+    ypSpaceScrollStream.addEventListener('touchend', (e) => {
+      if (e.changedTouches && e.changedTouches[0]) {
+        const deltaX = e.changedTouches[0].clientX - touchStartX;
+        if (deltaX < -50) showZKitapSlide(zkActiveSlideIdx + 1);
+        else if (deltaX > 50) showZKitapSlide(zkActiveSlideIdx - 1);
+      }
+    }, { passive: true });
+  }
+
+  // A4 vs Z-Kitap Mod Sekmeleri
+  const viewModeA4Btn = document.getElementById('viewModeA4Btn');
+  const viewModeZKitapBtn = document.getElementById('viewModeZKitapBtn');
+  if (viewModeZKitapBtn) {
+    viewModeZKitapBtn.addEventListener('click', () => {
+      renderZKitapPreview(currentQuestions, 0);
+    });
+  }
+  if (viewModeA4Btn) {
+    viewModeA4Btn.addEventListener('click', () => {
+      if (ypSpaceViewerModal) ypSpaceViewerModal.style.display = 'none';
+      const container = document.getElementById('questionsContainer');
+      if (container) container.scrollIntoView({ behavior: 'smooth' });
+    });
+  }
+
+  function render3DSpaceViewer(slides, docTitle) {
+    renderZKitapPreview(slides, 0, docTitle);
+  }
+
+  function updateSpaceSlideCounter(idx) {
+    showZKitapSlide(idx);
+  }
+
+  function scrollToSpaceSlide(targetIdx) {
+    showZKitapSlide(targetIdx);
   }
 
   function open3DSpaceViewerForSourceFile(fileObj) {
     const slides = convertSourceFileToSlides(fileObj);
-    render3DSpaceViewer(slides, `🌌 ${fileObj.name} — 3D Uzay Görüntüleyici`);
-  }
-
-  if (ypSpaceScrollStream) {
-    ypSpaceScrollStream.addEventListener('scroll', () => {
-      const sections = ypSpaceScrollStream.querySelectorAll('.yp-space-slide-section');
-      if (sections.length === 0) return;
-      const streamRect = ypSpaceScrollStream.getBoundingClientRect();
-      const centerLine = streamRect.top + streamRect.height * 0.4;
-
-      let bestIdx = ypActiveSlideIdx;
-      let minDelta = Infinity;
-      sections.forEach((sec, idx) => {
-        const rect = sec.getBoundingClientRect();
-        const delta = Math.abs(rect.top - centerLine);
-        if (delta < minDelta) {
-          minDelta = delta;
-          bestIdx = idx;
-        }
-      });
-      if (bestIdx !== ypActiveSlideIdx) {
-        updateSpaceSlideCounter(bestIdx);
-      }
-    }, { passive: true });
+    renderZKitapPreview(slides, 0, `📖 ${fileObj.name} — Z-Kitap Önizleme`);
   }
 
   [open3DSpaceViewBtn, headerSpaceViewerBtn, emptyStateSpaceViewerBtn].forEach(btn => {
     if (btn) {
       btn.addEventListener('click', () => {
-        const slides = buildSlidesFromCurrentState();
-        render3DSpaceViewer(slides, currentSmartTitle);
+        renderZKitapPreview(currentQuestions, 0, currentSmartTitle);
       });
     }
   });
@@ -2231,19 +2602,21 @@ document.addEventListener('DOMContentLoaded', () => {
         ypSpaceViewerModal.style.display = 'none';
         ypSpaceViewerModal.setAttribute('aria-hidden', 'true');
       }
+      document.body.style.overflow = '';
+      if (zkTimerInterval) clearInterval(zkTimerInterval);
       if (window.speechSynthesis) window.speechSynthesis.cancel();
     });
   }
 
   if (ypSpacePrevBtn) {
     ypSpacePrevBtn.addEventListener('click', () => {
-      scrollToSpaceSlide(ypActiveSlideIdx - 1);
+      showZKitapSlide(zkActiveSlideIdx - 1);
     });
   }
 
   if (ypSpaceNextBtn) {
     ypSpaceNextBtn.addEventListener('click', () => {
-      scrollToSpaceSlide(ypActiveSlideIdx + 1);
+      showZKitapSlide(zkActiveSlideIdx + 1);
     });
   }
 
@@ -2282,10 +2655,9 @@ document.addEventListener('DOMContentLoaded', () => {
         ypSpaceSoundBtn.textContent = '🔊';
         return;
       }
-      const activeSlide = ypSpaceSlides[ypActiveSlideIdx];
-      if (!activeSlide) return;
-      const plainCards = (activeSlide.cards || []).map(c => c.html.replace(/<[^>]+>/g, '')).join('. ');
-      const utterance = new SpeechSynthesisUtterance(`${activeSlide.title}. ${plainCards}. ${activeSlide.goldenRule || ''}`);
+      const q = zkCurrentQuestions[zkActiveSlideIdx];
+      if (!q) return;
+      const utterance = new SpeechSynthesisUtterance(`${zkActiveSlideIdx + 1}. Soru. ${q.question}`);
       utterance.lang = 'tr-TR';
       utterance.onend = () => {
         ypSpeechActive = false;
