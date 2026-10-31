@@ -438,31 +438,29 @@ function buildZKitapHtml({
       flex-shrink: 0;
     }
 
-    /* Ray / Boncuk Taşıyıcı */
+    /* Ray / Boncuk Taşıyıcı (Kesilmeyen, dinamik kaydırılabilir ve ortalanabilir alan) */
     .rf-bead-track-container {
       flex: 1;
       position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
-      max-width: 600px;
+      max-width: 860px;
+      min-width: 0;
       margin: 0 auto;
       overflow-x: auto;
-      padding: 4px 10px;
+      overflow-y: hidden;
+      padding: 6px 14px;
       scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+      user-select: none;
+    }
+    .rf-bead-track-container:active {
+      cursor: grabbing;
     }
     .rf-bead-track-container::-webkit-scrollbar {
       display: none;
-    }
-
-    .rf-bead-track-rod {
-      position: absolute;
-      left: 20px;
-      right: 20px;
-      height: 5px;
-      background: #cbd5e1;
-      border-radius: 3px;
-      z-index: 1;
     }
 
     .rf-beads-row {
@@ -470,19 +468,40 @@ function buildZKitapHtml({
       z-index: 2;
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
+      margin: 0 auto;
+      min-width: max-content;
+      padding: 4px 12px;
+    }
+
+    /* Ray Çubuğu: Doğrudan boncuk satırının arkasında boydan boya uzanır, birlikte kayar */
+    .rf-beads-row::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 2px;
+      z-index: 1;
+      pointer-events: none;
     }
 
     .rf-bead {
-      width: 32px;
-      height: 32px;
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
       background: #e2e8f0;
-      color: #475569;
+      color: #334155;
       font-size: 13.5px;
       font-weight: 800;
       border: 2px solid #ffffff;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -490,21 +509,23 @@ function buildZKitapHtml({
       transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
     .rf-bead:hover {
-      transform: scale(1.1);
+      transform: scale(1.12);
       background: #cbd5e1;
     }
     .rf-bead.is-active {
       background: #0284c7;
       color: #ffffff;
       transform: scale(1.18);
-      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.35);
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.4);
     }
     .rf-bead.is-answered {
       background: #10b981;
       color: #ffffff;
     }
-
-    /* « » Ok Butonları */
+    .rf-bead.is-answered.is-active {
+      background: #0284c7;
+      box-shadow: 0 0 0 2px #10b981, 0 3px 8px rgba(2, 132, 199, 0.4);
+    }/* « » Ok Butonları */
     .rf-nav-arrows {
       display: flex;
       align-items: center;
@@ -870,8 +891,7 @@ function buildZKitapHtml({
       <div class="rf-footer-spacer"></div>
 
       <!-- Ortadaki Boncuklu İlerleme Rayı -->
-      <div class="rf-bead-track-container">
-        <div class="rf-bead-track-rod"></div>
+      <div class="rf-bead-track-container" id="rfBeadTrackContainer">
         <div class="rf-beads-row" id="rfBeadsRow">
           ${beadsHtml}
         </div>
@@ -970,14 +990,58 @@ function buildZKitapHtml({
     if (btnPrev) btnPrev.disabled = (index === 0);
     if (btnNext) btnNext.disabled = (index === TOTAL_QUESTIONS - 1);
 
-    // Boncuğu ortala
-    const activeBead = document.getElementById('rf-bead-' + index);
-    if (activeBead) {
-      activeBead.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+    // Boncuğu görünür alana kaydır ve ortala
+    centerActiveBead(index);
+  }
+  }
+
+    function centerActiveBead(index) {
+    const track = document.getElementById('rfBeadTrackContainer');
+    const bead = document.getElementById('rf-bead-' + index);
+    if (track && bead) {
+      const containerWidth = track.clientWidth;
+      const beadLeft = bead.offsetLeft;
+      const beadWidth = bead.offsetWidth;
+      const target = beadLeft - (containerWidth / 2) + (beadWidth / 2);
+      track.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
     }
   }
 
-  function prevSlide() { showSlide(activeSlide - 1); }
+  function initTrackInteractions() {
+    const track = document.getElementById('rfBeadTrackContainer');
+    if (!track) return;
+
+    // Fare tekerleği ile yatay kaydırma
+    track.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        track.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+
+    // Fare / Dokunmatik Sürükleyerek Kaydırma
+    let isDown = false;
+    let startX = 0;
+    let scrollStart = 0;
+
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - track.offsetLeft;
+      scrollStart = track.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => { isDown = false; });
+
+    track.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - track.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      track.scrollLeft = scrollStart - walk;
+    });
+  }
+
+function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
 
@@ -1185,6 +1249,7 @@ function buildZKitapHtml({
   document.addEventListener('DOMContentLoaded', () => {
     showSlide(0);
     initTimer();
+    initTrackInteractions();
   });
 </script>
 
