@@ -17372,16 +17372,19 @@ async function openInteractiveTestModal(targetUrl, title = "İnteraktif Sınav",
     modal.style.display = "flex";
     modal.classList.remove("hidden");
 
-    const cleanFileName = (fileName || targetUrl.split("/").pop() || "").split("?")[0];
-
-    // 1. Tarayıcıda anında önbelleklenmiş tam HTML var mı kontrol et (0ms Gecikme & Kesin 404 Koruması)
-    let cachedHtml = "";
+    // 1. Tarayıcı önbelleğindeki eski test kalıntılarını temizle (Z-Kitap formatını zorunlu kıl)
     try {
-        if (materialId) cachedHtml = localStorage.getItem("rotali_test_html_" + materialId);
-        if (!cachedHtml && cleanFileName) cachedHtml = localStorage.getItem("rotali_test_html_" + cleanFileName);
+        if (typeof localStorage !== "undefined") {
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const k = localStorage.key(i);
+                if (k && (k.startsWith("rotali_test_html_") || k.includes("test_html"))) {
+                    localStorage.removeItem(k);
+                }
+            }
+        }
     } catch(e) {}
 
-    // 2. Eğer statik dosya henüz Vercel CDN'e oturmamışsa sunucusuz test görüntüleyici endpoint'ine yönlendir
+    const cleanFileName = (fileName || targetUrl.split("/").pop() || "").split("?")[0];
     const viewerUrl = (cleanFileName ? `/testler/${cleanFileName}` : targetUrl) + '?v=' + Date.now();
 
     modal.innerHTML = `
@@ -17393,7 +17396,7 @@ async function openInteractiveTestModal(targetUrl, title = "İnteraktif Sınav",
                     </span>
                     <div class="min-w-0">
                         <h3 class="text-xs sm:text-sm font-black text-white truncate max-w-[200px] sm:max-w-md md:max-w-xl uppercase tracking-wide">${String(title || '').toLocaleUpperCase('tr-TR')}</h3>
-                        <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">Rotalı Fenci • MEB Maarif Modeli İnteraktif Sınav Portalı</span>
+                        <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">Rotalı Fenci • MEB Maarif Modeli Z-Kitap Soru Portalı</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
@@ -17412,26 +17415,10 @@ async function openInteractiveTestModal(targetUrl, title = "İnteraktif Sınav",
                 </div>
             </div>
             <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden flex flex-col p-0 m-0">
-                <iframe id="interactive-test-iframe" src="${cachedHtml ? 'about:blank' : viewerUrl}" class="w-full h-full flex-1 border-0 block bg-white" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                <iframe id="interactive-test-iframe" src="${viewerUrl}" class="w-full h-full flex-1 border-0 block bg-white" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
             </div>
         </div>
     `;
-
-    const iframe = document.getElementById("interactive-test-iframe");
-    if (iframe) {
-        if (cachedHtml) {
-            iframe.srcdoc = cachedHtml;
-        } else {
-            // Eğer statik URL 404 dönerse GitHub API fallback devreye girsin
-            iframe.onerror = function() {
-                fetch(`https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/testler/${cleanFileName}`)
-                    .then(r => r.text())
-                    .then(raw => {
-                        if (raw && raw.length > 500) iframe.srcdoc = raw;
-                    });
-            };
-        }
-    }
 }
 window.openInteractiveTestModal = openInteractiveTestModal;
 
