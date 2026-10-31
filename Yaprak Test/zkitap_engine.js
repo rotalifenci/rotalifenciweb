@@ -246,8 +246,8 @@ function buildZKitapHtml({
 
     html, body {
       width: 100%;
-      height: 100%;
-      overflow-x: hidden;
+      height: 100vh;
+      overflow: hidden; /* Ekranda kaydırma KESİNLİKLE olmasın (Z-Kitap Akıllı Tahta) */
       background: var(--zk-bg);
       color: var(--zk-text);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -257,7 +257,9 @@ function buildZKitapHtml({
     body {
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
+      height: 100vh;
+      max-height: 100vh;
+      overflow: hidden;
     }
 
     /* 📌 1. ÜST KONTROL ÇUBUĞU (Z-KİTAP TOOLBAR) */
@@ -516,13 +518,17 @@ function buildZKitapHtml({
       flex: 1;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       position: relative;
       background: #ffffff;
       width: 100%;
-      max-width: 1540px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 24px 32px 80px 32px;
-      min-height: calc(100vh - 130px);
+      padding: 10px 24px 70px 24px;
+      height: calc(100vh - 120px);
+      max-height: calc(100vh - 120px);
+      overflow: hidden;
+      box-sizing: border-box;
     }
 
     .zk-slide-section {
@@ -593,17 +599,19 @@ function buildZKitapHtml({
       display: flex;
       justify-content: center;
       align-items: center;
-      margin: 14px 0 20px 0;
+      margin: 6px 0 10px 0;
       background: #ffffff;
       border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 12px;
-      max-height: 40vh;
+      border-radius: 12px;
+      padding: 6px 12px;
+      max-height: 25vh;
       overflow: hidden;
+      flex-shrink: 1;
     }
     .zk-visual-container svg, .zk-visual-container img {
       max-width: 100%;
-      max-height: 38vh;
+      max-height: 24vh;
+      width: auto;
       height: auto;
       object-fit: contain;
     }
@@ -623,14 +631,16 @@ function buildZKitapHtml({
       text-decoration-thickness: 2.5px;
     }
     .zk-size-large {
-      font-size: calc(30px * var(--zk-font-scale, 1.0));
+      font-size: clamp(19px, 1.85vw, calc(26px * var(--zk-font-scale, 1.0)));
+      line-height: 1.45;
     }
     .zk-size-medium {
-      font-size: calc(26px * var(--zk-font-scale, 1.0));
+      font-size: clamp(17px, 1.6vw, calc(23px * var(--zk-font-scale, 1.0)));
+      line-height: 1.4;
     }
     .zk-size-compact {
-      font-size: calc(22px * var(--zk-font-scale, 1.0));
-      line-height: 1.5;
+      font-size: clamp(15px, 1.4vw, calc(19px * var(--zk-font-scale, 1.0)));
+      line-height: 1.35;
     }
 
     /* 📖 Çoktan Seçmeli Seçenekler (1. Görsel Referansı: A, B, C, D Alt Alta, Geniş ve Ferah) */
@@ -644,16 +654,16 @@ function buildZKitapHtml({
     .zk-option-item {
       display: flex;
       align-items: flex-start;
-      gap: 14px;
-      padding: 14px 20px;
-      border-radius: 12px;
+      gap: 12px;
+      padding: 8px 16px;
+      border-radius: 10px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       cursor: pointer;
       transition: all 0.15s ease;
       color: #0f172a;
-      font-size: calc(22px * var(--zk-font-scale, 1.0));
-      line-height: 1.5;
+      font-size: clamp(15px, 1.35vw, calc(20px * var(--zk-font-scale, 1.0)));
+      line-height: 1.35;
       user-select: none;
     }
     .zk-option-item:hover {
@@ -682,11 +692,12 @@ function buildZKitapHtml({
 
     /* Z-Kitap Modunda Kısa Cevap / Açık Uçlu Satır İçi Giriş Alanı */
     .zk-inline-short-box, .zk-inline-open-box {
-      margin-top: 20px;
-      padding: 18px 20px;
+      margin-top: 10px;
+      padding: 10px 14px;
       background: #f8fafc;
       border: 1.5px solid #cbd5e1;
-      border-radius: 14px;
+      border-radius: 10px;
+      flex-shrink: 0;
     }
     .zk-inline-label {
       display: block;

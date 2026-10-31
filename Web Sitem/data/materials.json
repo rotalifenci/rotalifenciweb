@@ -3086,7 +3086,7 @@
   {
     "id": "mat-test-5-1-1792881391044",
     "grade": "5",
-    "category": "soru-bankasi",
+    "category": "denemeler",
     "targetSection": "1",
     "title": "5. Sınıf 1. Ünite: Gökyüzündeki Komşularımız ve Biz Yaprak Testi - 1 (30 Soru)",
     "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
@@ -3341,7 +3341,6 @@
     "downloadCount": "Yeni",
     "hasBlob": false,
     "visibility": "public",
-
     "isCloud": true,
     "tags": [],
     "createdAt": "17.09.2026"
@@ -3777,6 +3776,5 @@
     "questionCount": 20,
     "createdAt": "2026-10-29T23:22:04.948Z",
     "updatedAt": "2026-10-29T23:22:04.948Z"
-
   }
 ]

@@ -1692,11 +1692,12 @@ function matchesSubTabCategory(item, subTab) {
     if (target === "etkinlikler") {
         return itemCat === "etkinlikler" || itemCat === "etkinlik" || itemCat === "foy";
     }
-    if (target === "soru-bankasi") {
-        return itemCat === "soru-bankasi" || itemCat === "soru" || itemCat === "test" || itemCat === "denemeler" || itemCat === "deneme" || format.includes("yaprak test") || format.includes("açık uçlu");
+        if (target === "soru-bankasi") {
+        // Kullanıcı talimatı: Yaprak test / Test / Deneme bölümündeki tüm içerikler kaldırıldı, tüm sınav ve test içerikleri sadece Yazılıya Hazırlık bölümünde gösterilir.
+        return false;
     }
     if (target === "denemeler") {
-        return itemCat === "denemeler" || itemCat === "deneme" || itemCat === "soru-bankasi" || itemCat === "test" || format.includes("açık uçlu") || format.includes("yaprak test") || format.includes("yazılı");
+        return itemCat === "denemeler" || itemCat === "deneme" || itemCat === "soru-bankasi" || itemCat === "test" || itemCat === "yaprak-test" || format.includes("açık uçlu") || format.includes("yaprak test") || format.includes("yazılı") || format.includes("test") || format.includes("sınav");
     }
     if (target === "egitsel-oyunlar" || target === "oyunlar") {
         return itemCat === "egitsel-oyunlar" || itemCat === "oyunlar" || itemCat === "oyun" || (!itemCat && format.includes("oyun"));
@@ -6002,6 +6003,48 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 </button>
                                                 `;
                                             }).join('')}
+                                        
+                                        <!-- 📌 4 Soru Türü Filtreleme Butonları (Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu, Kavram Haritası) -->
+                                        <div class="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-thin qtype-pill-container" data-unit="${unitNum}">
+                                            <span class="text-[11px] font-bold text-slate-500 shrink-0 mr-1 flex items-center gap-1">
+                                                <i class="fa-solid fa-layer-group text-blue-600 text-xs"></i>
+                                                <span>Soru Türü:</span>
+                                            </span>
+                                            <!-- Tümü -->
+                                            <button type="button"
+                                                    onclick="filterMaterialsByQType('${unitNum}', 'all', '${grade.number}', '${normSubTab}')"
+                                                    data-qtype="all"
+                                                    class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-black bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1 shrink-0 cursor-pointer">
+                                                <span>Tümü</span>
+                                            </button>
+                                            <!-- 🔘 Çoktan Seçmeli -->
+                                            <button type="button"
+                                                    onclick="filterMaterialsByQType('${unitNum}', 'multiple_choice', '${grade.number}', '${normSubTab}')"
+                                                    data-qtype="multiple_choice"
+                                                    class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer hover:border-slate-300">
+                                                <span>🔘 Çoktan Seçmeli</span>
+                                            </button>
+                                            <!-- ✏️ Kısa Cevaplı -->
+                                            <button type="button"
+                                                    onclick="filterMaterialsByQType('${unitNum}', 'short_answer', '${grade.number}', '${normSubTab}')"
+                                                    data-qtype="short_answer"
+                                                    class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer hover:border-slate-300">
+                                                <span>✏️ Kısa Cevaplı</span>
+                                            </button>
+                                            <!-- 📝 Açık Uçlu -->
+                                            <button type="button"
+                                                    onclick="filterMaterialsByQType('${unitNum}', 'open_ended', '${grade.number}', '${normSubTab}')"
+                                                    data-qtype="open_ended"
+                                                    class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer hover:border-slate-300">
+                                                <span>📝 Açık Uçlu</span>
+                                            </button>
+                                            <!-- 🗺️ Kavram Haritası -->
+                                            <button type="button"
+                                                    onclick="filterMaterialsByQType('${unitNum}', 'concept_map', '${grade.number}', '${normSubTab}')"
+                                                    data-qtype="concept_map"
+                                                    class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer hover:border-slate-300">
+                                                <span>🗺️ Kavram Haritası</span>
+                                            </button>
                                         </div>
                                     </div>
                                     `;
@@ -6122,7 +6165,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
     const subtopicsAttr = matched.length > 0 ? matched.join(',') : 'all';
     const firstSubNum = (subtopics.length > 0) ? subtopics[0].num : null;
     const isInitiallyVisible = true;
-    return `<div data-unit="${unitNum}" data-subtopics="${subtopicsAttr}" style="${isInitiallyVisible ? '' : 'display: none;'}" draggable="${isAdmin ? 'true' : 'false'}" ondragstart="handleCardDragStart(event, '${item.id}')" ondragover="handleCardDragOver(event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(event, '${item.id}')" class="unit-material-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group cursor-grab active:cursor-grabbing">`;
+    return `<div data-unit="${unitNum}" data-subtopics="${subtopicsAttr}" data-qtype="${typeof resolveMaterialQType === 'function' ? resolveMaterialQType(item) : 'multiple_choice'}" style="${isInitiallyVisible ? '' : 'display: none;'}" draggable="${isAdmin ? 'true' : 'false'}" ondragstart="handleCardDragStart(event, '${item.id}')" ondragover="handleCardDragOver(event)" ondragleave="handleCardDragLeave(event)" ondrop="handleCardDrop(event, '${item.id}')" class="unit-material-card bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:border-slate-400 hover:shadow-md transition-all flex flex-col justify-between group cursor-grab active:cursor-grabbing">`;
 })()}
                                                 <div>
                                                     <div class="flex items-center justify-between gap-2 mb-2">
