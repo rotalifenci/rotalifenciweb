@@ -246,8 +246,9 @@ function buildZKitapHtml({
 
     html, body {
       width: 100%;
-      height: 100vh;
-      overflow: hidden; /* Ekranda kaydırma KESİNLİKLE olmasın (Z-Kitap Akıllı Tahta) */
+      height: 100vh !important;
+      max-height: 100vh !important;
+      overflow: hidden !important; /* Ekranda kaydırma KESİNLİKLE olmasın (Z-Kitap Akıllı Tahta) */
       background: var(--zk-bg);
       color: var(--zk-text);
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -257,9 +258,9 @@ function buildZKitapHtml({
     body {
       display: flex;
       flex-direction: column;
-      height: 100vh;
-      max-height: 100vh;
-      overflow: hidden;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      overflow: hidden !important;
     }
 
     /* 📌 1. ÜST KONTROL ÇUBUĞU (Z-KİTAP TOOLBAR) */
@@ -524,10 +525,10 @@ function buildZKitapHtml({
       width: 100%;
       max-width: 1400px;
       margin: 0 auto;
-      padding: 10px 24px 70px 24px;
-      height: calc(100vh - 120px);
-      max-height: calc(100vh - 120px);
-      overflow: hidden;
+      padding: 10px 24px 68px 24px !important;
+      height: calc(100vh - 116px) !important;
+      max-height: calc(100vh - 116px) !important;
+      overflow: hidden !important;
       box-sizing: border-box;
     }
 
@@ -604,13 +605,13 @@ function buildZKitapHtml({
       border: 1px solid #e2e8f0;
       border-radius: 12px;
       padding: 6px 12px;
-      max-height: 25vh;
+      max-height: 22vh;
       overflow: hidden;
       flex-shrink: 1;
     }
     .zk-visual-container svg, .zk-visual-container img {
       max-width: 100%;
-      max-height: 24vh;
+      max-height: 21vh;
       width: auto;
       height: auto;
       object-fit: contain;
@@ -619,10 +620,10 @@ function buildZKitapHtml({
     /* 📖 Soru Kökü (1. Görseldeki Gibi Büyük, Siyah, Net ve Yüksek Kontrastlı) */
     .zk-question-stem {
       color: #000000;
-      font-weight: 800;
-      line-height: 1.55;
+      font-weight: 850;
+      line-height: 1.5;
       letter-spacing: -0.2px;
-      margin-bottom: 24px;
+      margin-bottom: 16px;
       word-break: break-word;
     }
     .zk-question-stem u {
@@ -631,16 +632,16 @@ function buildZKitapHtml({
       text-decoration-thickness: 2.5px;
     }
     .zk-size-large {
-      font-size: clamp(19px, 1.85vw, calc(26px * var(--zk-font-scale, 1.0)));
-      line-height: 1.45;
+      font-size: clamp(24px, 2.3vw, calc(32px * var(--zk-font-scale, 1.0)));
+      line-height: 1.5;
     }
     .zk-size-medium {
-      font-size: clamp(17px, 1.6vw, calc(23px * var(--zk-font-scale, 1.0)));
-      line-height: 1.4;
+      font-size: clamp(21px, 2.0vw, calc(28px * var(--zk-font-scale, 1.0)));
+      line-height: 1.45;
     }
     .zk-size-compact {
-      font-size: clamp(15px, 1.4vw, calc(19px * var(--zk-font-scale, 1.0)));
-      line-height: 1.35;
+      font-size: clamp(18px, 1.7vw, calc(24px * var(--zk-font-scale, 1.0)));
+      line-height: 1.4;
     }
 
     /* 📖 Çoktan Seçmeli Seçenekler (1. Görsel Referansı: A, B, C, D Alt Alta, Geniş ve Ferah) */
@@ -718,15 +719,16 @@ function buildZKitapHtml({
     }
     .zk-inline-textarea {
       width: 100%;
-      font-size: calc(20px * var(--zk-font-scale, 1.0));
-      padding: 12px 16px;
+      font-size: calc(18px * var(--zk-font-scale, 1.0));
+      padding: 10px 14px;
       border-radius: 10px;
       border: 1.5px solid #93c5fd;
       background: #ffffff;
       color: #0f172a;
       font-weight: 600;
-      line-height: 1.6;
-      resize: vertical;
+      line-height: 1.5;
+      max-height: 70px;
+      resize: none;
     }
 
     /* 💡 Çözüm & Doğru Cevap Kutusu (Sınav bittiğinde açılır) */
@@ -877,20 +879,39 @@ function buildZKitapHtml({
       bottom: 0;
       left: 0;
       right: 0;
-      z-index: 95;
+      height: 60px;
+      max-height: 60px;
+      z-index: 100;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 10px 24px;
-      background: rgba(255, 255, 255, 0.95);
+      justify-content: center;
+      padding: 6px 24px;
+      background: rgba(255, 255, 255, 0.98);
       backdrop-filter: blur(12px);
       border-top: 1.5px solid #e2e8f0;
-      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 -3px 12px rgba(0, 0, 0, 0.04);
     }
-    .zk-bottom-left, .zk-bottom-right {
+    .zk-bottom-left {
+      position: absolute;
+      left: 24px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
+    }
+    .zk-bottom-center {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: nowrap;
+      margin: 0 auto;
+    }
+    .zk-bottom-right {
+      position: absolute;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
     .zk-bottom-btn {
@@ -1166,7 +1187,11 @@ function buildZKitapHtml({
   <!-- SABİT ALT ÇUBUK -->
   <footer class="zk-bottombar">
     <div class="zk-bottom-left">
-      <!-- Önceki / Sayaç / Sonraki (Her soruda sabit ve erişilebilir) -->
+      <!-- Sol dengeleyici -->
+    </div>
+
+    <!-- Ortalanmış Buton Grubu: Önceki / Sayaç / Sonraki / Rotalar / Bitir & Puanla / Sesli Oku -->
+    <div class="zk-bottom-center">
       <button type="button" class="zk-bottom-btn zk-prev-btn" onclick="prevSlide()" title="Önceki Soru (Sol Ok)">‹ Önceki</button>
       <span class="zk-bottom-counter" id="zkBottomCounter">1 / ${qCount}</span>
       <button type="button" class="zk-bottom-btn zk-next-btn" onclick="nextSlide()" title="Sonraki Soru (Sağ Ok)">Sonraki ›</button>

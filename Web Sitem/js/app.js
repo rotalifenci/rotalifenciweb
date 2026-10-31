@@ -4839,6 +4839,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
 
     const allCustomMaterials = (typeof getCustomMaterialsList === "function") ? getCustomMaterialsList() : [];
     const getTabCustomCount = (tabKey) => {
+        if (tabKey === "soru-bankasi") return 0; // Test ve sınavlar sadece Yazılıya Hazırlık bölümünde gösterilir
         const deletedIds = new Set((typeof getDeletedMaterialIds === "function") ? getDeletedMaterialIds() : []);
         return allCustomMaterials.filter(item => {
             if (!item || !item.id || deletedIds.has(item.id)) return false;
@@ -6003,6 +6004,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 </button>
                                                 `;
                                             }).join('')}
+                                        </div>
+
                                         
                                         <!-- 📌 4 Soru Türü Filtreleme Butonları (Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu, Kavram Haritası) -->
                                         <div class="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-thin qtype-pill-container" data-unit="${unitNum}">
@@ -6046,7 +6049,6 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 <span>🗺️ Kavram Haritası</span>
                                             </button>
                                         </div>
-                                    </div>
                                     `;
                                 })()}
                                 ${totalItems.length > 0 ? `
@@ -17380,7 +17382,7 @@ async function openInteractiveTestModal(targetUrl, title = "İnteraktif Sınav",
     } catch(e) {}
 
     // 2. Eğer statik dosya henüz Vercel CDN'e oturmamışsa sunucusuz test görüntüleyici endpoint'ine yönlendir
-    const viewerUrl = cleanFileName ? `/api/test-viewer?file=${encodeURIComponent(cleanFileName)}` : targetUrl;
+    const viewerUrl = (cleanFileName ? `/testler/${cleanFileName}` : targetUrl) + '?v=' + Date.now();
 
     modal.innerHTML = `
         <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100vh; width: 100vw; max-width: 100vw;" onclick="event.stopPropagation()">
