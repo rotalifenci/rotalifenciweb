@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,201 +787,191 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Günümüzde uzaya gönderilen bazı uyduların görev süreleri dolduğunda veya işlevini yitirdiğinde dünya etrafında kontrolsüz bir şekilde dönmeye devam etmesi hangi çevre sorununa yol açmaktadır? Bu durumun uzay çalışmalarına ve gelecekteki uydulara olası zararlarını iki nedenle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Günümüzde uzaya gönderilen bazı uyduların görev süreleri dolduğunda veya işlevini yitirdiğinde dünya etrafında kontrolsüz bir şekilde dönmeye devam etmesi hangi çevre sorununa yol açmaktadır? Bu durumun uzay çalışmalarına ve gelecekteki uydulara olası zararlarını iki nedenle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M50 150 L350 150" stroke="#333" stroke-width="2"/><circle cx="120" cy="150" r="25" fill="#4A90E2"/><text x="100" y="190" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14">?</text><path d="M280 150 L280 80" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5"/><rect x="250" y="60" width="60" height="30" fill="#95a5a6" stroke="#333"/><text x="240" y="45" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14">?</text></svg></div>
-          <div class="rf-stem-text">Yandaki görselde Dünya'nın yörüngesine yerleştirilmiş bir yapay uydu şematize edilmiştir. Yapay uyduların Dünya yüzeyine inmeden yörüngede kalabilmesini ve görevlerini (Haberleşme, gözlem vb.) kesintisiz sürdürebilmesini sağlayan temel fiziksel faktörler nelerdir? Açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M50 150 L350 150" stroke="#333" stroke-width="2"/><circle cx="120" cy="150" r="25" fill="#4A90E2"/><text x="100" y="190" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14">?</text><path d="M280 150 L280 80" stroke="#e74c3c" stroke-width="2" stroke-dasharray="5,5"/><rect x="250" y="60" width="60" height="30" fill="#95a5a6" stroke="#333"/><text x="240" y="45" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yandaki görselde Dünya'nın yörüngesine yerleştirilmiş bir yapay uydu şematize edilmiştir. Yapay uyduların Dünya yüzeyine inmeden yörüngede kalabilmesini ve görevlerini (Haberleşme, gözlem vb.) kesintisiz sürdürebilmesini sağlayan temel fiziksel faktörler nelerdir? Açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Astronotların uzay istasyonlarında (UAS) uzun süre kaldıktan sonra Dünya'ya döndüklerinde kemik erimesi (kemik mineral yoğunluğunda azalma) ve kas güçsüzlüğü yaşamalarının temel nedeni nedir? Bilimsel gerekçesiyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Astronotların uzay istasyonlarında (UAS) uzun süre kaldıktan sonra Dünya'ya döndüklerinde kemik erimesi (kemik mineral yoğunluğunda azalma) ve kas güçsüzlüğü yaşamalarının temel nedeni nedir? Bilimsel gerekçesiyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Gökbilimciler uzay araştırmalarında hem Dünya tabanlı (yerdeki) teleskopları hem de uzay teleskoplarını (örneğin Hubble Uzay Teleskobu) kullanırlar. Hubble Uzay Teleskobu'nun, Dünya'daki en büyük teleskoplardan bile çok daha net ve keskin görüntüler elde edebilmesinin temel sebebi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Gökbilimciler uzay araştırmalarında hem Dünya tabanlı (yerdeki) teleskopları hem de uzay teleskoplarını (örneğin Hubble Uzay Teleskobu) kullanırlar. Hubble Uzay Teleskobu'nun, Dünya'daki en büyük teleskoplardan bile çok daha net ve keskin görüntüler elde edebilmesinin temel sebebi nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Uzay araştırmaları sırasında geliştirilen teknolojilerin (örneğin teflon, velcro bant, itfaiyeci tüpleri, kulak termometreleri) günlük hayatımıza aktarılmasına ne ad verilir? Bu durumun teknoloji ve bilim tarihindeki önemini kısaca açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Uzay araştırmaları sırasında geliştirilen teknolojilerin (örneğin teflon, velcro bant, itfaiyeci tüpleri, kulak termometreleri) günlük hayatımıza aktarılmasına ne ad verilir? Bu durumun teknoloji ve bilim tarihindeki önemini kısaca açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">İnsansız uzay sondaları (örneğin Curiosity veya Perseverance), insanlı uzay araçlarına kıyasla derin uzay ve diğer gezegen araştırmalarında neden daha çok tercih edilmektedir? İki önemli gerekçe yazınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">İnsansız uzay sondaları (örneğin Curiosity veya Perseverance), insanlı uzay araçlarına kıyasla derin uzay ve diğer gezegen araştırmalarında neden daha çok tercih edilmektedir? İki önemli gerekçe yazınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yapay uydular görevlerine göre gözlem uyduları ve haberleşme uyduları olarak ikiye ayrılır. Hava tahminleri yapmak, doğal afetleri izlemek veya yeryüzü şekillerini haritalandırmak isteyen bir ülkenin hangi tür yapay uyduyu fırlatması gerekir? Nedenini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yapay uydular görevlerine göre gözlem uyduları ve haberleşme uyduları olarak ikiye ayrılır. Hava tahminleri yapmak, doğal afetleri izlemek veya yeryüzü şekillerini haritalandırmak isteyen bir ülkenin hangi tür yapay uyduyu fırlatması gerekir? Nedenini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Uzay kirliliğinin önlenmesi veya azaltılması için gelecekte uzay ajanslarının alabileceği iki etkili önlemi bilimsel gerekçeleriyle birlikte açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Uzay kirliliğinin önlenmesi veya azaltılması için gelecekte uzay ajanslarının alabileceği iki etkili önlemi bilimsel gerekçeleriyle birlikte açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Bir roketin Dünya atmosferinden çıkıp uzay boşluğuna ulaşabilmesi için yer çekimi kuvvetini yenmesi gerekir. Bu süreçte roketlerin kademeli (parçalı) olarak tasarlanmasının temel mühendislik sebebi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Bir roketin Dünya atmosferinden çıkıp uzay boşluğuna ulaşabilmesi için yer çekimi kuvvetini yenmesi gerekir. Bu süreçte roketlerin kademeli (parçalı) olarak tasarlanmasının temel mühendislik sebebi nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Aşağıdaki ifadede yer alan bilimsel hatayı bularak düzeltiniz:
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Aşağıdaki ifadede yer alan bilimsel hatayı bularak düzeltiniz:
 'Yapay uydular uzay boşluğunda hiçbir kuvvetin etkisinde kalmadıkları için sonsuza kadar aynı hızla hareket ederler.'</div>
-        </div>
-        
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Uluslararası Uzay İstasyonu (ISS) üzerinde yapılan bilimsel deneylerin Dünya laboratuvarlarında yapılamayan sonuçlar vermesinin en temel sebebi nedir? Bir örnek vererek açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Uluslararası Uzay İstasyonu (ISS) üzerinde yapılan bilimsel deneylerin Dünya laboratuvarlarında yapılamayan sonuçlar vermesinin en temel sebebi nedir? Bir örnek vererek açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Uzay kirliliğinin sadece uzay araçlarını değil, gelecekte Dünya'daki insan yaşamını da dolaylı olarak olumsuz etkileme ihtimali bulunmaktadır. Bu durumun hangi alanlardaki aksamalardan kaynaklanabileceğini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Uzay kirliliğinin sadece uzay araçlarını değil, gelecekte Dünya'daki insan yaşamını da dolaylı olarak olumsuz etkileme ihtimali bulunmaktadır. Bu durumun hangi alanlardaki aksamalardan kaynaklanabileceğini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Gökbilimciler uzaydan gelen ışıkları incelemek için sadece görünür ışık teleskopları değil, kızılötesi, ultraviyole ve radyo teleskopları da kullanırlar. Farklı dalga boylarındaki ışıkları incelemek evrenin sırlarını çözmede neden gereklidir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Gökbilimciler uzaydan gelen ışıkları incelemek için sadece görünür ışık teleskopları değil, kızılötesi, ultraviyole ve radyo teleskopları da kullanırlar. Farklı dalga boylarındaki ışıkları incelemek evrenin sırlarını çözmede neden gereklidir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Türkiye'nin uzayda aktif olan gözlem ve haberleşme uyduları bulunmaktadır. Bu uyduların ülkemize askeri, ekonomik ve teknolojik açıdan sağladığı katkılardan iki tanesini belirtiniz.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Türkiye'nin uzayda aktif olan gözlem ve haberleşme uyduları bulunmaktadır. Bu uyduların ülkemize askeri, ekonomik ve teknolojik açıdan sağladığı katkılardan iki tanesini belirtiniz.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yeryüzündeki dev optik teleskoplar kurulurken şehir ışıklarından uzak, yüksek dağlık bölgeler tercih edilir. Bu tercihin arkasındaki iki bilimsel gerekçeyi açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yeryüzündeki dev optik teleskoplar kurulurken şehir ışıklarından uzak, yüksek dağlık bölgeler tercih edilir. Bu tercihin arkasındaki iki bilimsel gerekçeyi açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1072,9 +1113,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1113,16 +1153,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,200 +787,225 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="60" y1="110" x2="460" y2="110" stroke="#333333" stroke-width="4"/><circle cx="100" cy="110" r="30" fill="none" stroke="#333333" stroke-width="3"/><circle cx="420" cy="110" r="15" fill="none" stroke="#333333" stroke-width="3"/><text x="80" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><text x="380" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Aynalı teleskoplarda ışığı toplamak ve odaklamak için mercekler yerine ne tür optik elemanlar kullanılır ve bu durumun mercekli teleskoplara göre sağladığı temel avantaj nedir? Gerekçesiyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="60" y1="110" x2="460" y2="110" stroke="#333333" stroke-width="4"/><circle cx="100" cy="110" r="30" fill="none" stroke="#333333" stroke-width="3"/><circle cx="420" cy="110" r="15" fill="none" stroke="#333333" stroke-width="3"/><text x="80" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><text x="380" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Aynalı teleskoplarda ışığı toplamak ve odaklamak için mercekler yerine ne tür optik elemanlar kullanılır ve bu durumun mercekli teleskoplara göre sağladığı temel avantaj nedir? Gerekçesiyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Tarih boyunca teleskobun icadı ve geliştirilmesi, insanların gökyüzüne bakış açısını ve evren hakkındaki bilgilerini kökten değiştermiştir. Hans Lippershey tarafından bulunan ve Galileo Galilei tarafından gökyüzü incelemelerinde kullanılan ilk teleskoplar ile günümüzdeki devasa yapay uydu teleskopları (örneğin Hubble) karşılaştırıldığında, gök bilimin gelişimindeki temel sıçrama noktası ne olmuştur? Açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Tarih boyunca teleskobun icadı ve geliştirilmesi, insanların gökyüzüne bakış açısını ve evren hakkındaki bilgilerini kökten değiştermiştir. Hans Lippershey tarafından bulunan ve Galileo Galilei tarafından gökyüzü incelemelerinde kullanılan ilk teleskoplar ile günümüzdeki devasa yapay uydu teleskopları (örneğin Hubble) karşılaştırıldığında, gök bilimin gelişimindeki temel sıçrama noktası ne olmuştur? Açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="150" y="80" width="220" height="60" fill="none" stroke="#333333" stroke-width="3"/><line x1="150" y1="110" x2="80" y2="110" stroke="#333333" stroke-width="3" stroke-dasharray="5,5"/><line x1="370" y1="110" x2="440" y2="110" stroke="#333333" stroke-width="3"/><text x="210" y="60" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><text x="190" y="120" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Yeryüzüne kurulan dev optik teleskopların gözlem yaparken Dünya atmosferinden olumsuz etkilendiği bilinmektedir. Atmosferin bu olumsuz etkisi teleskop görüntülerini nasıl bozar ve bilim insanları bu sorunu aşmak için hangi çözümleri geliştirmiştir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="150" y="80" width="220" height="60" fill="none" stroke="#333333" stroke-width="3"/><line x1="150" y1="110" x2="80" y2="110" stroke="#333333" stroke-width="3" stroke-dasharray="5,5"/><line x1="370" y1="110" x2="440" y2="110" stroke="#333333" stroke-width="3"/><text x="210" y="60" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><text x="190" y="120" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yeryüzüne kurulan dev optik teleskopların gözlem yaparken Dünya atmosferinden olumsuz etkilendiği bilinmektedir. Atmosferin bu olumsuz etkisi teleskop görüntülerini nasıl bozar ve bilim insanları bu sorunu aşmak için hangi çözümleri geliştirmiştir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Galileo Galilei'nin 1609 yılında teleskopla yaptığı gözlemler (Jüpiter'in uyduları, Venüs'ün evreleri vb.), o dönemin yaygın kabul gören Dünya merkezli evren modelini sarsmıştır. Bir optik alet olan teleskobun, sadece astronomik bir araç olmanın ötesinde felsefi ve bilimsel devrimlere nasıl öncülük ettiğini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Galileo Galilei'nin 1609 yılında teleskopla yaptığı gözlemler (Jüpiter'in uyduları, Venüs'ün evreleri vb.), o dönemin yaygın kabul gören Dünya merkezli evren modelini sarsmıştır. Bir optik alet olan teleskobun, sadece astronomik bir araç olmanın ötesinde felsefi ve bilimsel devrimlere nasıl öncülük ettiğini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="160" cy="100" r="40" fill="none" stroke="#333333" stroke-width="3"/><text x="130" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><circle cx="360" cy="100" r="20" fill="none" stroke="#333333" stroke-width="3"/><text x="330" y="150" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><line x1="200" y1="100" x2="340" y2="100" stroke="#333333" stroke-width="2" stroke-dasharray="4,4"/></text></svg></div>
-          <div class="rf-stem-text">Yukarıda temel kısımları şematize edilen mercekli teleskopta, gök cisminden gelen ışığın ilk olarak çarptığı büyük merceğin (objektif) ve gözün yaklaştığı küçük merceğin (göz merceği) temel görevleri sırasıyla nelerdir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="160" cy="100" r="40" fill="none" stroke="#333333" stroke-width="3"/><text x="130" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><circle cx="360" cy="100" r="20" fill="none" stroke="#333333" stroke-width="3"/><text x="330" y="150" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><line x1="200" y1="100" x2="340" y2="100" stroke="#333333" stroke-width="2" stroke-dasharray="4,4"/></text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda temel kısımları şematize edilen mercekli teleskopta, gök cisminden gelen ışığın ilk olarak çarptığı büyük merceğin (objektif) ve gözün yaklaştığı küçük merceğin (göz merceği) temel görevleri sırasıyla nelerdir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Günümüzde amatör gök bilimciler küçük mercekli veya aynalı teleskoplarla gökyüzü gözlemleri yaparken, profesyonel gözlemevleri devasa aynalı teleskoplar kullanmaktadır. Amatör teleskoplar ile profesyonel gözlemevlerindeki teleskoplar arasındaki en temel yapısal ve işlevsel fark nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Günümüzde amatör gök bilimciler küçük mercekli veya aynalı teleskoplarla gökyüzü gözlemleri yaparken, profesyonel gözlemevleri devasa aynalı teleskoplar kullanmaktadır. Amatör teleskoplar ile profesyonel gözlemevlerindeki teleskoplar arasındaki en temel yapısal ve işlevsel fark nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 100 150 Q 260 50 420 150" fill="none" stroke="#333333" stroke-width="3"/><line x1="260" y1="100" x2="260" y2="160" stroke="#333333" stroke-width="3"/><text x="210" y="180" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Çanak Anten</text></svg></div>
-          <div class="rf-stem-text">Gök bilimi çalışmalarında sadece görünür ışığı toplayan optik teleskoplar değil, yukarıda şematize edilen radyo teleskopları da kullanılmaktadır. Radyo teleskoplarının yapısı optik teleskoplardan farklıdır; görünür ışık yerine radyo dalgalarını toplarlar. Radyo teleskoplarının gök bilimindeki önemi ve sağladığı avantaj nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 100 150 Q 260 50 420 150" fill="none" stroke="#333333" stroke-width="3"/><line x1="260" y1="100" x2="260" y2="160" stroke="#333333" stroke-width="3"/><text x="210" y="180" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Çanak Anten</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gök bilimi çalışmalarında sadece görünür ışığı toplayan optik teleskoplar değil, yukarıda şematize edilen radyo teleskopları da kullanılmaktadır. Radyo teleskoplarının yapısı optik teleskoplardan farklıdır; görünür ışık yerine radyo dalgalarını toplarlar. Radyo teleskoplarının gök bilimindeki önemi ve sağladığı avantaj nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Isaac Newton, ışık renkleri ve mercekli teleskoplardaki renk sapması sorununu çözmek için kendi adıyla anılan yeni bir teleskop türü geliştirmiştir. Newton tipi teleskobun yapısındaki en önemli yenilik ve bu yeniliğin optik kusurları engellemedeki rolü nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Isaac Newton, ışık renkleri ve mercekli teleskoplardaki renk sapması sorununu çözmek için kendi adıyla anılan yeni bir teleskop türü geliştirmiştir. Newton tipi teleskobun yapısındaki en önemli yenilik ve bu yeniliğin optik kusurları engellemedeki rolü nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="100" r="50" fill="none" stroke="#333333" stroke-width="3"/><circle cx="260" cy="100" r="15" fill="#333333"/><text x="210" y="170" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Gözlemevleri kurulurken şehir merkezlerinden uzak, dağlık ve açık alanlar tercih edilir. Şehir merkezlerindeki yapay aydınlatmaların oluşturduğu ışık kirliliğinin, teleskoplu gözlemler üzerindeki olumsuz etkisini bilimsel gerekçesiyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="100" r="50" fill="none" stroke="#333333" stroke-width="3"/><circle cx="260" cy="100" r="15" fill="#333333"/><text x="210" y="170" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gözlemevleri kurulurken şehir merkezlerinden uzak, dağlık ve açık alanlar tercih edilir. Şehir merkezlerindeki yapay aydınlatmaların oluşturduğu ışık kirliliğinin, teleskoplu gözlemler üzerindeki olumsuz etkisini bilimsel gerekçesiyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Hans Lippershey'in ilk patenti aldığı teleskop tasarımı iki mercekten oluşuyordu. Teleskobun icadından kısa süre sonra Galileo'nun bu aleti astronomiye uyarlaması, insanlık tarihinin en büyük teknolojik sıçramalarından biri olarak kabul edilir. Teleskobun bilim tarihi açısından dönüm noktası olmasının temel sebebi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Hans Lippershey'in ilk patenti aldığı teleskop tasarımı iki mercekten oluşuyordu. Teleskobun icadından kısa süre sonra Galileo'nun bu aleti astronomiye uyarlaması, insanlık tarihinin en büyük teknolojik sıçramalarından biri olarak kabul edilir. Teleskobun bilim tarihi açısından dönüm noktası olmasının temel sebebi nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="180" y="70" width="160" height="80" fill="none" stroke="#333333" stroke-width="3"/><line x1="260" y1="30" x2="260" y2="70" stroke="#333333" stroke-width="3"/><text x="210" y="170" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Dünya etrafında yörüngede dönen uzay teleskopları (örneğin Hubble Uzay Teleskobu), yeryüzündeki en gelişmiş dev teleskoplardan bile neden daha net ve keskin görüntüler elde eder? Gerekçesini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="180" y="70" width="160" height="80" fill="none" stroke="#333333" stroke-width="3"/><line x1="260" y1="30" x2="260" y2="70" stroke="#333333" stroke-width="3"/><text x="210" y="170" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Dünya etrafında yörüngede dönen uzay teleskopları (örneğin Hubble Uzay Teleskobu), yeryüzündeki en gelişmiş dev teleskoplardan bile neden daha net ve keskin görüntüler elde eder? Gerekçesini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Teleskoplar çalışma prensiplerine göre mercekli, aynalı ve katadioptrik (hem mercek hem ayna içeren) olmak üzere üçe ayrılır. Bu teleskop türlerinden aynalı teleskopların büyük ölçekli araştırmalarda mercekli teleskoplara tercih edilmesinin mekanik ve fiziksel iki nedenini yazınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Teleskoplar çalışma prensiplerine göre mercekli, aynalı ve katadioptrik (hem mercek hem ayna içeren) olmak üzere üçe ayrılır. Bu teleskop türlerinden aynalı teleskopların büyük ölçekli araştırmalarda mercekli teleskoplara tercih edilmesinin mekanik ve fiziksel iki nedenini yazınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="100" r="60" fill="none" stroke="#333333" stroke-width="3"/><text x="210" y="180" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Gözlemevlerinin (Rasathanelerin) kubbelerinin açılır kapanır ve özel bir yapıda tasarlanmasının teleskoplu gözlemler açısından işlevsel önemi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="100" r="60" fill="none" stroke="#333333" stroke-width="3"/><text x="210" y="180" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gözlemevlerinin (Rasathanelerin) kubbelerinin açılır kapanır ve özel bir yapıda tasarlanmasının teleskoplu gözlemler açısından işlevsel önemi nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Tarih boyunca astronomi bilimi, gözle yapılan ilk incelemelerden mekanik araçlara, oradan da günümüzdeki gelişmiş teleskop ve uzay sondalarına evrilmiştir. Bu tarihsel süreçte teleskobun icadının gök bilime yaptığı en kalıcı katkı nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Tarih boyunca astronomi bilimi, gözle yapılan ilk incelemelerden mekanik araçlara, oradan da günümüzdeki gelişmiş teleskop ve uzay sondalarına evrilmiştir. Bu tarihsel süreçte teleskobun icadının gök bilime yaptığı en kalıcı katkı nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="100" y1="100" x2="420" y2="100" stroke="#333333" stroke-width="4"/><circle cx="150" cy="100" r="35" fill="none" stroke="#333333" stroke-width="3"/><rect x="350" y="80" width="40" height="40" fill="none" stroke="#333333" stroke-width="3"/><text x="130" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><text x="340" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Oküler (Göz merceği)</text></svg></div>
-          <div class="rf-stem-text">Yukarıda şematik olarak gösterilen bir teleskop sisteminde, 'Işık Toplayıcı Kısım' olarak belirtilen yapının çapı iki katına çıkarıldığında, bu teleskobun ışık toplama gücünde ve sönük yıldızları görme kapasitesinde nasıl bir değişim olur? Açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="100" y1="100" x2="420" y2="100" stroke="#333333" stroke-width="4"/><circle cx="150" cy="100" r="35" fill="none" stroke="#333333" stroke-width="3"/><rect x="350" y="80" width="40" height="40" fill="none" stroke="#333333" stroke-width="3"/><text x="130" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><text x="340" y="160" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Oküler (Göz merceği)</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda şematik olarak gösterilen bir teleskop sisteminde, 'Işık Toplayıcı Kısım' olarak belirtilen yapının çapı iki katına çıkarıldığında, bu teleskobun ışık toplama gücünde ve sönük yıldızları görme kapasitesinde nasıl bir değişim olur? Açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1071,9 +1147,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1112,16 +1187,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

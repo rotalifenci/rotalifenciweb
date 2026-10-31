@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,200 +787,225 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="100" cy="110" r="50" fill="#ffcc00"/><text x="80" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><circle cx="400" cy="110" r="30" fill="#3399ff"/><text x="385" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#fff">?</text><path d="M 160 100 Q 250 50 340 100" stroke="#666" stroke-dasharray="5,5" fill="none"/></svg></div>
-          <div class="rf-stem-text">Güneş ve Dünya'nın büyüklükleri gerçekte birbirinden çok farklı olmasına rağmen, gökyüzüne baktığımızda ikisini de neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel gerekçesini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="100" cy="110" r="50" fill="#ffcc00"/><text x="80" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><circle cx="400" cy="110" r="30" fill="#3399ff"/><text x="385" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#fff">?</text><path d="M 160 100 Q 250 50 340 100" stroke="#666" stroke-dasharray="5,5" fill="none"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş ve Dünya'nın büyüklükleri gerçekte birbirinden çok farklı olmasına rağmen, gökyüzüne baktığımızda ikisini de neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel gerekçesini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="120" cy="110" r="45" fill="#3399ff"/><text x="100" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="16" fill="#fff">?</text><circle cx="350" cy="110" r="20" fill="#cccccc"/><text x="335" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay</text><path d="M 180 110 Q 265 60 315 100" stroke="red" stroke-width="2" fill="none" marker-end="url(#arrow)"/></svg></div>
-          <div class="rf-stem-text">Ay, Dünya etrafındaki dolanma hareketini tamamlarken aynı zamanda kendi ekseni etrafında da dönme hareketi yapar. Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin birbirine eşit olmasının dünyadan gözlenen sonuçlarını açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="120" cy="110" r="45" fill="#3399ff"/><text x="100" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="16" fill="#fff">?</text><circle cx="350" cy="110" r="20" fill="#cccccc"/><text x="335" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay</text><path d="M 180 110 Q 265 60 315 100" stroke="red" stroke-width="2" fill="none" marker-end="url(#arrow)"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay, Dünya etrafındaki dolanma hareketini tamamlarken aynı zamanda kendi ekseni etrafında da dönme hareketi yapar. Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin birbirine eşit olmasının dünyadan gözlenen sonuçlarını açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.8/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="60" fill="#ffcc00"/><text x="240" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez astronomlar nasıl fark etmişlerdir? Bu hareketin gözlenebilmesi için hangi yöntemin kullanıldığını açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.8/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="60" fill="#ffcc00"/><text x="240" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez astronomlar nasıl fark etmişlerdir? Bu hareketin gözlenebilmesi için hangi yöntemin kullanıldığını açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay, Dünya'nın tek doğal uydusudur ve Dünya etrafında dolanırken belirli bir yörüngeyi izler. Ay olmasaydı Dünya üzerinde hangi önemli eksiklikler veya değişimler yaşanırdı? Bir tanesini neden-sonuç ilişkisi kurarak açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay, Dünya'nın tek doğal uydusudur ve Dünya etrafında dolanırken belirli bir yörüngeyi izler. Ay olmasaydı Dünya üzerinde hangi önemli eksiklikler veya değişimler yaşanırdı? Bir tanesini neden-sonuç ilişkisi kurarak açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="80" cy="110" r="35" fill="#3399ff"/><text x="65" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">?</text><circle cx="260" cy="110" r="20" fill="#cccccc"/><text x="245" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay</text><circle cx="440" cy="110" r="55" fill="#ffcc00"/><text x="420" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Yukarıdaki modelde Güneş, Dünya ve Ay'ın büyüklükleri ve aralarındaki mesafeler bilimsel olarak ölçeklendirilmemiştir. Sadece cisimlerin birbirine göre büyüklük sıralamasını yazarak en büyükten en küçüğe doğru sıralayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="80" cy="110" r="35" fill="#3399ff"/><text x="65" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">?</text><circle cx="260" cy="110" r="20" fill="#cccccc"/><text x="245" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay</text><circle cx="440" cy="110" r="55" fill="#ffcc00"/><text x="420" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıdaki modelde Güneş, Dünya ve Ay'ın büyüklükleri ve aralarındaki mesafeler bilimsel olarak ölçeklendirilmemiştir. Sadece cisimlerin birbirine göre büyüklük sıralamasını yazarak en büyükten en küçüğe doğru sıralayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Dünya, Güneş etrafındaki dolanımını 365 gün 6 saatte tamamlar. Bu hareketin sonuçlarından biri olan mevsimlerin oluşumu, sadece Dünya'nın Güneş etrafındaki dolanmasıyla mı ilgilidir? Başka hangi faktörün bu süreçte etkili olduğunu açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Dünya, Güneş etrafındaki dolanımını 365 gün 6 saatte tamamlar. Bu hareketin sonuçlarından biri olan mevsimlerin oluşumu, sadece Dünya'nın Güneş etrafındaki dolanmasıyla mı ilgilidir? Başka hangi faktörün bu süreçte etkili olduğunu açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="50" fill="#3399ff"/><text x="240" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="16" fill="#fff">?</text><path d="M 260 40 A 70 70 0 1 1 259 40" stroke="black" stroke-width="2" stroke-dasharray="4,4" fill="none"/><line x1="260" y1="30" x2="260" y2="190" stroke="red" stroke-width="2" stroke-dasharray="5,5"/><text x="270" y="40" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" fill="red">?</text></svg></div>
-          <div class="rf-stem-text">Dünya'nın görselde kırmızı kesikli çizgiyle gösterilen ekseni etrafındaki dönme hareketini tamamladığı süre ne kadardır ve bu hareketin sonucunda ne oluşur?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="50" fill="#3399ff"/><text x="240" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="16" fill="#fff">?</text><path d="M 260 40 A 70 70 0 1 1 259 40" stroke="black" stroke-width="2" stroke-dasharray="4,4" fill="none"/><line x1="260" y1="30" x2="260" y2="190" stroke="red" stroke-width="2" stroke-dasharray="5,5"/><text x="270" y="40" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="12" fill="red">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Dünya'nın görselde kırmızı kesikli çizgiyle gösterilen ekseni etrafındaki dönme hareketini tamamladığı süre ne kadardır ve bu hareketin sonucunda ne oluşur?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay, hem kendi ekseni etrafında döner hem Dünya etrafında dolanır hem de Dünya ile birlikte Güneş etrafında dolanma hareketi yapar. Ay'ın yaptığı bu hareketlerin birbirine olan yön ve izledikleri yollar açısından ortak yönü nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay, hem kendi ekseni etrafında döner hem Dünya etrafında dolanır hem de Dünya ile birlikte Güneş etrafında dolanma hareketi yapar. Ay'ın yaptığı bu hareketlerin birbirine olan yön ve izledikleri yollar açısından ortak yönü nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="100" cy="110" r="40" fill="#ffcc00"/><text x="80" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><circle cx="300" cy="110" r="30" fill="#3399ff"/><text x="285" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">?</text><circle cx="420" cy="110" r="15" fill="#cccccc"/><text x="410" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay</text><path d="M 300 70 A 40 40 0 1 1 299 70" stroke="purple" stroke-width="1.5" fill="none"/></svg></div>
-          <div class="rf-stem-text">Yukarıdaki şemada Ay'ın Dünya etrafındaki yörüngesi gösterilmiştir. Ay'ın bu yörüngede bir tam tur dönmesi ile geçen süre yaklaşık kaç gündür?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="100" cy="110" r="40" fill="#ffcc00"/><text x="80" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text><circle cx="300" cy="110" r="30" fill="#3399ff"/><text x="285" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">?</text><circle cx="420" cy="110" r="15" fill="#cccccc"/><text x="410" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="10" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay</text><path d="M 300 70 A 40 40 0 1 1 299 70" stroke="purple" stroke-width="1.5" fill="none"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıdaki şemada Ay'ın Dünya etrafındaki yörüngesi gösterilmiştir. Ay'ın bu yörüngede bir tam tur dönmesi ile geçen süre yaklaşık kaç gündür?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Eğer Güneş, Dünya ve Ay futbol topu, basketbol topu ve mercimek tanesi olsaydı; büyüklükleri doğru orantılı olacak şekilde bu nesneleri hangi gök cismiyle eşleştirirdiniz? Gerekçesiyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Eğer Güneş, Dünya ve Ay futbol topu, basketbol topu ve mercimek tanesi olsaydı; büyüklükleri doğru orantılı olacak şekilde bu nesneleri hangi gök cismiyle eşleştirirdiniz? Gerekçesiyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Uzaydan Dünya'ya bakan bir astronot, Ay'ın şeklini küreye benzer şekilde görür. Ancak biz Dünya'dan baktığımızda Ay'ın şeklini bazen daire, bazen yarım daire, bazen de kavisli (hilal) olarak görürüz. Ay'ın şeklinin bu şekilde farklı görünmesinin temel nedeni nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Uzaydan Dünya'ya bakan bir astronot, Ay'ın şeklini küreye benzer şekilde görür. Ancak biz Dünya'dan baktığımızda Ay'ın şeklini bazen daire, bazen yarım daire, bazen de kavisli (hilal) olarak görürüz. Ay'ın şeklinin bu şekilde farklı görünmesinin temel nedeni nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="70" fill="#ffcc00"/><text x="240" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Güneş'in yapısı hakkında bilgi veren bir öğrenci, Güneş'in katmanlardan oluşan sıcak bir yıldız olduğunu belirtmiştir. Güneş'in Dünya gibi kayaç bir yapıda olmadığını, gaz halinde olduğunu kanıtlayan en önemli özelliği nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="260" cy="110" r="70" fill="#ffcc00"/><text x="240" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="18" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş'in yapısı hakkında bilgi veren bir öğrenci, Güneş'in katmanlardan oluşan sıcak bir yıldız olduğunu belirtmiştir. Güneş'in Dünya gibi kayaç bir yapıda olmadığını, gaz halinde olduğunu kanıtlayan en önemli özelliği nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay'ın yüzeyinde asteroitlerin çarpması sonucu oluşan derin çukurlar (kraterler) vardır. Bu kraterlerin Dünya'da Ay'dakiler kadar belirgin ve kalıcı olmamasının temel sebebi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay'ın yüzeyinde asteroitlerin çarpması sonucu oluşan derin çukurlar (kraterler) vardır. Bu kraterlerin Dünya'da Ay'dakiler kadar belirgin ve kalıcı olmamasının temel sebebi nedir?</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="110" r="35" fill="#3399ff"/><text x="135" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">?</text><path d="M 150 50 A 60 60 0 1 1 149 50" stroke="blue" stroke-width="2" fill="none" marker-end="url(#arrow)"/></svg></div>
-          <div class="rf-stem-text">Dünya kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru gerçekleştirir. Bu durumun gökyüzündeki cisimlerin (Güneş, yıldızlar vb.) hareket algımız üzerindeki etkisini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="110" r="35" fill="#3399ff"/><text x="135" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">?</text><path d="M 150 50 A 60 60 0 1 1 149 50" stroke="blue" stroke-width="2" fill="none" marker-end="url(#arrow)"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Dünya kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru gerçekleştirir. Bu durumun gökyüzündeki cisimlerin (Güneş, yıldızlar vb.) hareket algımız üzerindeki etkisini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş ve Ay, gökyüzüne baktığımızda neredeyse aynı büyüklükte görünürler. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun optik ve mesafe ilişkisi açısından mantığını bir cümleyle özetleyiniz.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş ve Ay, gökyüzüne baktığımızda neredeyse aynı büyüklükte görünürler. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun optik ve mesafe ilişkisi açısından mantığını bir cümleyle özetleyiniz.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1071,9 +1147,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1112,16 +1187,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,265 +787,345 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="50" y1="75" x2="250" y2="75" stroke="#333" stroke-width="4"/><circle cx="80" cy="75" r="25" fill="#ddd" stroke="#333" stroke-width="2"/><circle cx="220" cy="75" r="15" fill="#bbb" stroke="#333" stroke-width="2"/><text x="150" y="50" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Gök cisimlerini incelemek amacıyla gökyüzüne yöneltilen, uzaktaki cisimlerin daha büyük ve net görünmesini sağlayan optik araca ne ad verilir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="50" y1="75" x2="250" y2="75" stroke="#333" stroke-width="4"/><circle cx="80" cy="75" r="25" fill="#ddd" stroke="#333" stroke-width="2"/><circle cx="220" cy="75" r="15" fill="#bbb" stroke="#333" stroke-width="2"/><text x="150" y="50" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gök cisimlerini incelemek amacıyla gökyüzüne yöneltilen, uzaktaki cisimlerin daha büyük ve net görünmesini sağlayan optik araca ne ad verilir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-1" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(1, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="70" y="60" width="160" height="30" fill="#f0f0f0" stroke="#333" stroke-width="2"/><circle cx="85" cy="75" r="10" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Mercekler yerine ışığı toplamak ve odaklamak için büyük aynaların kullanıldığı teleskop çeşidi <u>hangisidir</u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="70" y="60" width="160" height="30" fill="#f0f0f0" stroke="#333" stroke-width="2"/><circle cx="85" cy="75" r="10" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Mercekler yerine ışığı toplamak ve odaklamak için büyük aynaların kullanıldığı teleskop çeşidi <u>hangisidir</u>?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-2" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(2, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="70" y="60" width="160" height="30" fill="#f0f0f0" stroke="#333" stroke-width="2"/><ellipse cx="85" cy="75" rx="5" ry="12" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Yapısında ışığı kırmak suretiyle görüntü oluşturan merceklerin bulunduğu teleskop türü <u>hangisidir</u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="70" y="60" width="160" height="30" fill="#f0f0f0" stroke="#333" stroke-width="2"/><ellipse cx="85" cy="75" rx="5" ry="12" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yapısında ışığı kırmak suretiyle görüntü oluşturan merceklerin bulunduğu teleskop türü <u>hangisidir</u>?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-3" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(3, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 100 100 Q 150 40 200 100" fill="none" stroke="#333" stroke-width="3"/><circle cx="150" cy="70" r="8" fill="#333"/><text x="150" y="130" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Gök cisimlerinden yayılan radyo dalgalarını toplayarak inceleme yapmamızı sağlayan dev çanaklara sahip teleskop çeşidi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 100 100 Q 150 40 200 100" fill="none" stroke="#333" stroke-width="3"/><circle cx="150" cy="70" r="8" fill="#333"/><text x="150" y="130" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gök cisimlerinden yayılan radyo dalgalarını toplayarak inceleme yapmamızı sağlayan dev çanaklara sahip teleskop çeşidi nedir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-4" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(4, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="150" y1="20" x2="150" y2="130" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/><circle cx="150" cy="75" r="30" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="145" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Işık kirliliği, bulutlar ve hava koşullarından etkilenmemek amacıyla Dünya atmosferinin dışına gönderilen gelişmiş teleskoplara ne ad verilir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="150" y1="20" x2="150" y2="130" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/><circle cx="150" cy="75" r="30" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="145" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Işık kirliliği, bulutlar ve hava koşullarından etkilenmemek amacıyla Dünya atmosferinin dışına gönderilen gelişmiş teleskoplara ne ad verilir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-5" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(5, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">1609</text></svg></div>
-          <div class="rf-stem-text">İlk kez gökyüzü incelemesi yapmak için teleskobu kullanan ve bu alanda çığır açan ünlü bilim insanı kimdir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">1609</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">İlk kez gökyüzü incelemesi yapmak için teleskobu kullanan ve bu alanda çığır açan ünlü bilim insanı kimdir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-6" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(6, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="100" y="50" width="100" height="50" fill="#eee" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Göz merceği</text></svg></div>
-          <div class="rf-stem-text">Teleskopta gözümüzü yaklaştırarak görüntüyü incelememizi sağlayan, göz hizasındaki merceğe ne ad verilir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="100" y="50" width="100" height="50" fill="#eee" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Göz merceği</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskopta gözümüzü yaklaştırarak görüntüyü incelememizi sağlayan, göz hizasındaki merceğe ne ad verilir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-7" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(7, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="50" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Teleskobun ışığı toplayan, gök cismine bakan ve ön kısmında yer alan büyük mercek veya ayna sistemine ne denir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="50" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskobun ışığı toplayan, gök cismine bakan ve ön kısmında yer alan büyük mercek veya ayna sistemine ne denir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-8" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(8, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 80 110 L 150 40 L 220 110 Z" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="130" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Üç ayak</text></svg></div>
-          <div class="rf-stem-text">Teleskobun sabit durmasını ve titreşimsiz gözlem yapılmasını sağlayan ayak sistemine ne ad verilir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 80 110 L 150 40 L 220 110 Z" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="130" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Üç ayak</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskobun sabit durmasını ve titreşimsiz gözlem yapılmasını sağlayan ayak sistemine ne ad verilir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-9" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(9, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-dasharray="4,4"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Gözlemevlerinin şehir merkezlerinden uzak, yüksek dağlara kurulmasının temel sebebi hangi olumsuzluktan kaçınmaktır?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-dasharray="4,4"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gözlemevlerinin şehir merkezlerinden uzak, yüksek dağlara kurulmasının temel sebebi hangi olumsuzluktan kaçınmaktır?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-10" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(10, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="80" y="50" width="140" height="50" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Gözlemevi</text></svg></div>
-          <div class="rf-stem-text">İçerisinde dev teleskopların bulunduğu, gök bilimi araştırmalarının yürütüldüğü bilimsel binalara ne denir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="80" y="50" width="140" height="50" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Gözlemevi</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">İçerisinde dev teleskopların bulunduğu, gök bilimi araştırmalarının yürütüldüğü bilimsel binalara ne denir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-11" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(11, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="45" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">1990 yılında fırlatılan ve dünyanın etrafında dönerek uzayın derinliklerinden muhteşem fotoğraflar gönderen en ünlü uzay teleskobunun adı nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="45" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">1990 yılında fırlatılan ve dünyanın etrafında dönerek uzayın derinliklerinden muhteşem fotoğraflar gönderen en ünlü uzay teleskobunun adı nedir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-12" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(12, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="50" y1="75" x2="250" y2="75" stroke="#333" stroke-width="3"/><text x="150" y="50" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Tüp</text></svg></div>
-          <div class="rf-stem-text">Teleskobun merceklerini veya aynalarını bir arada tutan, dış etkenlerden koruyan ana gövde borusuna ne denir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="50" y1="75" x2="250" y2="75" stroke="#333" stroke-width="3"/><text x="150" y="50" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Tüp</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskobun merceklerini veya aynalarını bir arada tutan, dış etkenlerden koruyan ana gövde borusuna ne denir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-13" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(13, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Rasathanelerin kurulacağı yerler seçilirken bulutlu gün sayısının az olması ve hangi katmanın etkisinin en aza indirilmesi istenir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Rasathanelerin kurulacağı yerler seçilirken bulutlu gün sayısının az olması ve hangi katmanın etkisinin en aza indirilmesi istenir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-14" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(14, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 100 90 L 150 40 L 200 90 Z" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="120" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Gözlemevlerinin kurulacağı yerlerde yıl boyunca gözlem yapabilmek için en önemli hava şartı kriteri nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><path d="M 100 90 L 150 40 L 200 90 Z" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="120" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gözlemevlerinin kurulacağı yerlerde yıl boyunca gözlem yapabilmek için en önemli hava şartı kriteri nedir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-15" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(15, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-15" data-slide="15" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="35" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">İlk aynalı teleskobu geliştiren ve renk sapmalarını büyük ölçüde engelleyen ünlü fizikçi ve matematikçi kimdir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-15" data-slide="15" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="35" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">İlk aynalı teleskobu geliştiren ve renk sapmalarını büyük ölçüde engelleyen ünlü fizikçi ve matematikçi kimdir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-16" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(16, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-16" data-slide="16" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="110" y="60" width="80" height="30" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Teleskobun ana özelliklerinden biri olan ve cisimleri çıplak gözle görülemeyecek kadar büyük gösterme yeteneğine ne denir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-16" data-slide="16" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><rect x="110" y="60" width="80" height="30" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="115" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskobun ana özelliklerinden biri olan ve cisimleri çıplak gözle görülemeyecek kadar büyük gösterme yeteneğine ne denir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-17" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(17, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-17" data-slide="17" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Teleskobun yapısındaki objektifin çapı arttıkça hangi kapasitesi de artarak daha sönük gök cisimlerinin görülmesini sağlar?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-17" data-slide="17" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="40" fill="none" stroke="#333" stroke-width="2"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskobun yapısındaki objektifin çapı arttıkça hangi kapasitesi de artarak daha sönük gök cisimlerinin görülmesini sağlar?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-18" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(18, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-18" data-slide="18" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="60" y1="75" x2="240" y2="75" stroke="#333" stroke-width="2"/><text x="150" y="50" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
-          <div class="rf-stem-text">Gök bilimin gelişiminde teleskobun icadından sonra evrenin yapısının anlaşılmasıyla galaksiler ve ne gibi büyük yapılar keşfedilmiştir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-18" data-slide="18" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><line x1="60" y1="75" x2="240" y2="75" stroke="#333" stroke-width="2"/><text x="150" y="50" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Gök bilimin gelişiminde teleskobun icadından sonra evrenin yapısının anlaşılmasıyla galaksiler ve ne gibi büyük yapılar keşfedilmiştir?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-19" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(19, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-19" data-slide="19" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="45" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Gök bilimi</text></svg></div>
-          <div class="rf-stem-text">Teleskobun icadı, evrenin ve uzayın incelendiği bilim dalı olan hangi alanın gelişiminde devrim yaratmıştır?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-19" data-slide="19" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 150" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="75" r="45" fill="none" stroke="#333" stroke-width="3"/><text x="150" y="80" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#333">Gök bilimi</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Teleskobun icadı, evrenin ve uzayın incelendiği bilim dalı olan hangi alanın gelişiminde devrim yaratmıştır?</div>
+            
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-20" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(20, this.value)">
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1136,9 +1267,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1177,16 +1307,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

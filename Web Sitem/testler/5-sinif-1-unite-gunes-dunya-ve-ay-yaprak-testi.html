@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,12 +787,10 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            
         <div class="rf-options-list" data-qid="1">
           
               <div class="rf-option-card" data-qid="1" data-opt="A" onclick="selectOption(1, 'A')">
@@ -766,21 +815,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="moonPhoto_1"><circle cx="260" cy="95" r="68"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_1)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
 </svg></div>
-          <div class="rf-stem-text">Görselde temel özellikleri verilen Ay hakkında öğrencilerin yaptığı aşağıdaki yorumlardan hangisi doğrudur?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Görselde temel özellikleri verilen Ay hakkında öğrencilerin yaptığı aşağıdaki yorumlardan hangisi doğrudur?</div>
+            
         <div class="rf-options-list" data-qid="2">
           
               <div class="rf-option-card" data-qid="2" data-opt="A" onclick="selectOption(2, 'A')">
@@ -805,15 +858,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş ve Ay büyüklükleri bakımından karşılaştırıldığında hangi ifade doğru olur?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş ve Ay büyüklükleri bakımından karşılaştırıldığında hangi ifade doğru olur?</div>
+            
         <div class="rf-options-list" data-qid="3">
           
               <div class="rf-option-card" data-qid="3" data-opt="A" onclick="selectOption(3, 'A')">
@@ -838,15 +890,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yukarıda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yukarıda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?</div>
+            
         <div class="rf-options-list" data-qid="4">
           
               <div class="rf-option-card" data-qid="4" data-opt="A" onclick="selectOption(4, 'A')">
@@ -871,15 +922,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş orta sıcaklıkta bir yıldızdır. Güneş'in katmanlı yapısı ve yapısındaki maddeler düşünüldüğünde aşağıdakilerden hangisi doğrud?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş orta sıcaklıkta bir yıldızdır. Güneş'in katmanlı yapısı ve yapısındaki maddeler düşünüldüğünde aşağıdakilerden hangisi doğrud?</div>
+            
         <div class="rf-options-list" data-qid="5">
           
               <div class="rf-option-card" data-qid="5" data-opt="A" onclick="selectOption(5, 'A')">
@@ -904,21 +954,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="moonPhoto_3"><circle cx="260" cy="95" r="68"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_3)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
 </svg></div>
-          <div class="rf-stem-text">Ay yüzeyinde bulunan kraterler ve taşlık alanlar ile ilgili olarak aşağıdakilerden hangisi söylenebilir?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay yüzeyinde bulunan kraterler ve taşlık alanlar ile ilgili olarak aşağıdakilerden hangisi söylenebilir?</div>
+            
         <div class="rf-options-list" data-qid="6">
           
               <div class="rf-option-card" data-qid="6" data-opt="A" onclick="selectOption(6, 'A')">
@@ -943,21 +997,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="moonPhoto_7"><circle cx="260" cy="95" r="68"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_7)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
 </svg></div>
-          <div class="rf-stem-text">Dünya'nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Dünya'nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            
         <div class="rf-options-list" data-qid="7">
           
               <div class="rf-option-card" data-qid="7" data-opt="A" onclick="selectOption(7, 'A')">
@@ -982,15 +1040,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş'in dünyaya olan devasa uzaklığına rağmen dünyamızı ısıtması ve aydınlatması onun hangi temel özelliği ile ilgilidir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş'in dünyaya olan devasa uzaklığına rağmen dünyamızı ısıtması ve aydınlatması onun hangi temel özelliği ile ilgilidir?</div>
+            
         <div class="rf-options-list" data-qid="8">
           
               <div class="rf-option-card" data-qid="8" data-opt="A" onclick="selectOption(8, 'A')">
@@ -1015,15 +1072,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay'ın yüzeyinde hava olaylarının (yağmur, rüzgâr, kar vb.) görülmeme nedeni aşağıdakilerden <u>hangisidir</u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay'ın yüzeyinde hava olaylarının (yağmur, rüzgâr, kar vb.) görülmeme nedeni aşağıdakilerden <u>hangisidir</u>?</div>
+            
         <div class="rf-options-list" data-qid="9">
           
               <div class="rf-option-card" data-qid="9" data-opt="A" onclick="selectOption(9, 'A')">
@@ -1048,15 +1104,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Bir öğrenci fen bilimleri ödevi için Güneş ve Ay modelleri hazırlamıştır. Bu modellerde Güneş ve Ay'ın ortak olarak hangi geometrik şekle benzediğini göstermiştir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Bir öğrenci fen bilimleri ödevi için Güneş ve Ay modelleri hazırlamıştır. Bu modellerde Güneş ve Ay'ın ortak olarak hangi geometrik şekle benzediğini göstermiştir?</div>
+            
         <div class="rf-options-list" data-qid="10">
           
               <div class="rf-option-card" data-qid="10" data-opt="A" onclick="selectOption(10, 'A')">
@@ -1081,15 +1136,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yukarıda kendini tanıtan gök cismi <u>hangisidir</u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yukarıda kendini tanıtan gök cismi <u>hangisidir</u>?</div>
+            
         <div class="rf-options-list" data-qid="11">
           
               <div class="rf-option-card" data-qid="11" data-opt="A" onclick="selectOption(11, 'A')">
@@ -1114,15 +1168,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay yüzeyinde gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının temel sebebi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay yüzeyinde gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının temel sebebi nedir?</div>
+            
         <div class="rf-options-list" data-qid="12">
           
               <div class="rf-option-card" data-qid="12" data-opt="A" onclick="selectOption(12, 'A')">
@@ -1147,15 +1200,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            
         <div class="rf-options-list" data-qid="13">
           
               <div class="rf-option-card" data-qid="13" data-opt="A" onclick="selectOption(13, 'A')">
@@ -1180,21 +1232,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="sunPhoto_8"><circle cx="260" cy="95" r="70"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_8)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
 </svg></div>
-          <div class="rf-stem-text">Güneş'in yüzeyinde daha soğuk bölgeler olduğu bilinen ve görselde temsili olarak gösterilen lekelere ne ad verilir?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş'in yüzeyinde daha soğuk bölgeler olduğu bilinen ve görselde temsili olarak gösterilen lekelere ne ad verilir?</div>
+            
         <div class="rf-options-list" data-qid="14">
           
               <div class="rf-option-card" data-qid="14" data-opt="A" onclick="selectOption(14, 'A')">
@@ -1219,21 +1275,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="moonPhoto_15"><circle cx="260" cy="95" r="68"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_15)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
 </svg></div>
-          <div class="rf-stem-text">Yukarıda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?</div>
+            
         <div class="rf-options-list" data-qid="15">
           
               <div class="rf-option-card" data-qid="15" data-opt="A" onclick="selectOption(15, 'A')">
@@ -1258,15 +1318,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-15" data-slide="15" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş'in dünyaya olan devasa büyüklüğüne rağmen gökyüzüne baktığımızda küçük bir top gibi görünmesinin sebebi aşağıdakilerden <u>hangisidir</u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-15" data-slide="15" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş'in dünyaya olan devasa büyüklüğüne rağmen gökyüzüne baktığımızda küçük bir top gibi görünmesinin sebebi aşağıdakilerden <u>hangisidir</u>?</div>
+            
         <div class="rf-options-list" data-qid="16">
           
               <div class="rf-option-card" data-qid="16" data-opt="A" onclick="selectOption(16, 'A')">
@@ -1291,21 +1350,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-16" data-slide="16" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-16" data-slide="16" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="moonPhoto_16"><circle cx="260" cy="95" r="68"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_16)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
 </svg></div>
-          <div class="rf-stem-text">Ay hakkında araştırma yapan bir öğrenci aşağıdakilerden hangisine ulaşamaz?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay hakkında araştırma yapan bir öğrenci aşağıdakilerden hangisine ulaşamaz?</div>
+            
         <div class="rf-options-list" data-qid="17">
           
               <div class="rf-option-card" data-qid="17" data-opt="A" onclick="selectOption(17, 'A')">
@@ -1330,15 +1393,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-17" data-slide="17" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş'in yapısı ve katmanları ile ilgili aşağıda verilen bilgilerden hangisi doğrudur?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-17" data-slide="17" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş'in yapısı ve katmanları ile ilgili aşağıda verilen bilgilerden hangisi doğrudur?</div>
+            
         <div class="rf-options-list" data-qid="18">
           
               <div class="rf-option-card" data-qid="18" data-opt="A" onclick="selectOption(18, 'A')">
@@ -1363,15 +1425,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-18" data-slide="18" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş ve Ay büyüklükleri göz önüne alındığında, yaklaşık olarak kaç tane Ay'ın büyüklüğü bir Güneş'in büyüklüğüne eşittir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-18" data-slide="18" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş ve Ay büyüklükleri göz önüne alındığında, yaklaşık olarak kaç tane Ay'ın büyüklüğü bir Güneş'in büyüklüğüne eşittir?</div>
+            
         <div class="rf-options-list" data-qid="19">
           
               <div class="rf-option-card" data-qid="19" data-opt="A" onclick="selectOption(19, 'A')">
@@ -1396,15 +1457,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-19" data-slide="19" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Astronotlar Ay yüzeyine ayak bastıklarında yürürken hafif zıpladıklarını gözlemlemişlerdir. Bu durumun temel sebebi nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-19" data-slide="19" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Astronotlar Ay yüzeyine ayak bastıklarında yürürken hafif zıpladıklarını gözlemlemişlerdir. Bu durumun temel sebebi nedir?</div>
+            
         <div class="rf-options-list" data-qid="20">
           
               <div class="rf-option-card" data-qid="20" data-opt="A" onclick="selectOption(20, 'A')">
@@ -1429,15 +1489,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-20" data-slide="20" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri <u><u><u><u><u><u>değildir</u></u></u></u></u></u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-20" data-slide="20" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri <u><u><u><u><u><u>değildir</u></u></u></u></u></u>?</div>
+            
         <div class="rf-options-list" data-qid="21">
           
               <div class="rf-option-card" data-qid="21" data-opt="A" onclick="selectOption(21, 'A')">
@@ -1462,15 +1521,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-21" data-slide="21" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Aşağıdaki Venn şemasında Güneş ve Ay'ın özellikleri karşılaştırılmıştır. Ortak bölgeye hangisi yazılmalıdır?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-21" data-slide="21" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Aşağıdaki Venn şemasında Güneş ve Ay'ın özellikleri karşılaştırılmıştır. Ortak bölgeye hangisi yazılmalıdır?</div>
+            
         <div class="rf-options-list" data-qid="22">
           
               <div class="rf-option-card" data-qid="22" data-opt="A" onclick="selectOption(22, 'A')">
@@ -1495,15 +1553,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-22" data-slide="22" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay ile ilgili olarak aşağıda verilenlerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-22" data-slide="22" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay ile ilgili olarak aşağıda verilenlerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            
         <div class="rf-options-list" data-qid="23">
           
               <div class="rf-option-card" data-qid="23" data-opt="A" onclick="selectOption(23, 'A')">
@@ -1528,15 +1585,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-23" data-slide="23" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş evrendeki diğer dev yıldızlara göre hangi boyuttadır?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-23" data-slide="23" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş evrendeki diğer dev yıldızlara göre hangi boyuttadır?</div>
+            
         <div class="rf-options-list" data-qid="24">
           
               <div class="rf-option-card" data-qid="24" data-opt="A" onclick="selectOption(24, 'A')">
@@ -1561,21 +1617,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-24" data-slide="24" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-24" data-slide="24" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="moonPhoto_18"><circle cx="260" cy="95" r="68"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonPhoto_18)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
 </svg></div>
-          <div class="rf-stem-text">Ay yüzeyine ilk defa insan ayak basmıştır ve bırakılan ayak izleri yıllarca bozulmadan kalmıştır. Bunun nedeni aşağıdakilerden <u>hangisidir</u>?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay yüzeyine ilk defa insan ayak basmıştır ve bırakılan ayak izleri yıllarca bozulmadan kalmıştır. Bunun nedeni aşağıdakilerden <u>hangisidir</u>?</div>
+            
         <div class="rf-options-list" data-qid="25">
           
               <div class="rf-option-card" data-qid="25" data-opt="A" onclick="selectOption(25, 'A')">
@@ -1600,15 +1660,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-25" data-slide="25" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-25" data-slide="25" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            
         <div class="rf-options-list" data-qid="26">
           
               <div class="rf-option-card" data-qid="26" data-opt="A" onclick="selectOption(26, 'A')">
@@ -1633,15 +1692,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-26" data-slide="26" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş'in enerjisini nereden aldığı ve yapısında en çok hangi maddelerin bulunduğu, fen bilimleri dersinde anlatılmaktadır. Güneş'in yapısında çoğunlukla hangi gazlar bulunur?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-26" data-slide="26" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş'in enerjisini nereden aldığı ve yapısında en çok hangi maddelerin bulunduğu, fen bilimleri dersinde anlatılmaktadır. Güneş'in yapısında çoğunlukla hangi gazlar bulunur?</div>
+            
         <div class="rf-options-list" data-qid="27">
           
               <div class="rf-option-card" data-qid="27" data-opt="A" onclick="selectOption(27, 'A')">
@@ -1666,15 +1724,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-27" data-slide="27" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Dünya'dan gökyüzüne baktığımızda Güneş ile Ay'ı neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel açıklaması nedir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-27" data-slide="27" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Dünya'dan gökyüzüne baktığımızda Güneş ile Ay'ı neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel açıklaması nedir?</div>
+            
         <div class="rf-options-list" data-qid="28">
           
               <div class="rf-option-card" data-qid="28" data-opt="A" onclick="selectOption(28, 'A')">
@@ -1699,21 +1756,25 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-28" data-slide="28" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-28" data-slide="28" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <defs><clipPath id="sunPhoto_26"><circle cx="260" cy="95" r="70"/></clipPath></defs>
   <rect width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
   <image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="190" y="25" width="140" height="140" clip-path="url(#sunPhoto_26)" preserveAspectRatio="xMidYMid slice"/>
   <circle cx="260" cy="95" r="70" fill="none" stroke="#f59e0b" stroke-width="2"/>
   <text x="260" y="190" text-anchor="middle" fill="#0f172a" font-family="'Times New Roman', Times, serif" font-size="14" font-weight="700">Güneş</text>
 </svg></div>
-          <div class="rf-stem-text">Güneş lekeleriyle ilgili aşağıdakilerden hangisi doğrudur?</div>
-        </div>
-        
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş lekeleriyle ilgili aşağıdakilerden hangisi doğrudur?</div>
+            
         <div class="rf-options-list" data-qid="29">
           
               <div class="rf-option-card" data-qid="29" data-opt="A" onclick="selectOption(29, 'A')">
@@ -1738,15 +1799,14 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-29" data-slide="29" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Yukarıda Güneş, Dünya ve Ay'ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-29" data-slide="29" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Yukarıda Güneş, Dünya ve Ay'ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?</div>
+            
         <div class="rf-options-list" data-qid="30">
           
               <div class="rf-option-card" data-qid="30" data-opt="A" onclick="selectOption(30, 'A')">
@@ -1771,8 +1831,9 @@
             
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1914,9 +1975,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1955,16 +2015,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

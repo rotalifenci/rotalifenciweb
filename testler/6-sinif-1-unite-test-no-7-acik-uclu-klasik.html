@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,200 +787,205 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="80" cy="100" r="40" fill="#f59e0b"/><text x="70" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">1</text><circle cx="250" cy="100" r="20" fill="#64748b"/><text x="245" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">2</text><circle cx="420" cy="100" r="30" fill="#3b82f6"/><text x="415" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">3</text><line x1="120" y1="100" x2="230" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/><line x1="270" y1="100" x2="390" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/></svg></div>
-          <div class="rf-stem-text">Yukarıdaki modelde numaralandırılmış gök cisimlerinin isimlerini yazarak bu dizilimin hangi doğa olayını temsil ettiğini ve 2 numaralı cismin gölgesinin neden 3 numaralı cismin üzerine düştüğünü bilimsel gerekçeleriyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="80" cy="100" r="40" fill="#f59e0b"/><text x="70" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">1</text><circle cx="250" cy="100" r="20" fill="#64748b"/><text x="245" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">2</text><circle cx="420" cy="100" r="30" fill="#3b82f6"/><text x="415" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">3</text><line x1="120" y1="100" x2="230" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/><line x1="270" y1="100" x2="390" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıdaki modelde numaralandırılmış gök cisimlerinin isimlerini yazarak bu dizilimin hangi doğa olayını temsil ettiğini ve 2 numaralı cismin gölgesinin neden 3 numaralı cismin üzerine düştüğünü bilimsel gerekçeleriyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="80" cy="100" r="40" fill="#f59e0b"/><text x="70" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">G</text><circle cx="250" cy="100" r="30" fill="#3b82f6"/><text x="245" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">D</text><circle cx="420" cy="100" r="20" fill="#64748b"/><text x="415" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">A</text><line x1="120" y1="100" x2="220" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/><line x1="280" y1="100" x2="400" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/></svg></div>
-          <div class="rf-stem-text">Yukarıda Güneş (G), Dünya (D) ve Ay (A) konumları verilmiştir. Bu dizilim gerçekleştiğinde Dünya'dan gözlenen olayın adını yazınız ve bu olayın Dünya'nın hangi evresinde ve hangi vakitte (gündüz/gece) gözlenebileceğini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 500 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="80" cy="100" r="40" fill="#f59e0b"/><text x="70" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">G</text><circle cx="250" cy="100" r="30" fill="#3b82f6"/><text x="245" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">D</text><circle cx="420" cy="100" r="20" fill="#64748b"/><text x="415" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#fff">A</text><line x1="120" y1="100" x2="220" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/><line x1="280" y1="100" x2="400" y2="100" stroke="#94a3b8" stroke-dasharray="5,5"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda Güneş (G), Dünya (D) ve Ay (A) konumları verilmiştir. Bu dizilim gerçekleştiğinde Dünya'dan gözlenen olayın adını yazınız ve bu olayın Dünya'nın hangi evresinde ve hangi vakitte (gündüz/gece) gözlenebileceğini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş tutulması gözlemlenirken çıplak gözle doğrudan bakmak neden göz sağlığımız açısından son derece tehlikelidir? Gerekçesiyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş tutulması gözlemlenirken çıplak gözle doğrudan bakmak neden göz sağlığımız açısından son derece tehlikelidir? Gerekçesiyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay her ay dolunay evresine gelmesine rağmen neden her ay Ay Tutulması gerçekleşmez? Bilimsel sebebini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay her ay dolunay evresine gelmesine rağmen neden her ay Ay Tutulması gerçekleşmez? Bilimsel sebebini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="60" cy="100" r="30" fill="#f59e0b"/><circle cx="200" cy="100" r="15" fill="#64748b"/><circle cx="340" cy="100" r="25" fill="#3b82f6"/><line x1="90" y1="100" x2="185" y2="100" stroke="#000" stroke-dasharray="3,3"/><line x1="215" y1="100" x2="315" y2="100" stroke="#000" stroke-dasharray="3,3"/></svg></div>
-          <div class="rf-stem-text">Bir öğrenci fen bilimleri dersi için yukarıdaki modeli hazırlamıştır. Modeldeki cisimleri sırasıyla Güneş, Ay ve Dünya olarak belirlemiştir. Bu modelde eksik veya hatalı olan durumlar varsa bilimsel olarak düzeltiniz.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="60" cy="100" r="30" fill="#f59e0b"/><circle cx="200" cy="100" r="15" fill="#64748b"/><circle cx="340" cy="100" r="25" fill="#3b82f6"/><line x1="90" y1="100" x2="185" y2="100" stroke="#000" stroke-dasharray="3,3"/><line x1="215" y1="100" x2="315" y2="100" stroke="#000" stroke-dasharray="3,3"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Bir öğrenci fen bilimleri dersi için yukarıdaki modeli hazırlamıştır. Modeldeki cisimleri sırasıyla Güneş, Ay ve Dünya olarak belirlemiştir. Bu modelde eksik veya hatalı olan durumlar varsa bilimsel olarak düzeltiniz.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş tutulması ile Ay tutulması olaylarının ortak yönlerini ve aralarındaki en temel farkı açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş tutulması ile Ay tutulması olaylarının ortak yönlerini ve aralarındaki en temel farkı açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay tutulması olayı gerçekleştiği sırada, Ay tamamen karanlıkta kalıp gökyüzünden tamamen kaybolmaz, genellikle hafif kırmızımsı (bakır rengi) bir görünüm alır. Bu durumun bilimsel nedenini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay tutulması olayı gerçekleştiği sırada, Ay tamamen karanlıkta kalıp gökyüzünden tamamen kaybolmaz, genellikle hafif kırmızımsı (bakır rengi) bir görünüm alır. Bu durumun bilimsel nedenini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş tutulması Dünya'nın sadece belirli bölgelerinden gözlenebilirken, Ay tutulması Dünya'nın gece yaşanan her yerinden gözlenebilir. Bu durumun nedenini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş tutulması Dünya'nın sadece belirli bölgelerinden gözlenebilirken, Ay tutulması Dünya'nın gece yaşanan her yerinden gözlenebilir. Bu durumun nedenini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#3b82f6"/><circle cx="150" cy="40" r="20" fill="#64748b"/><path d="M 140 10 A 30 30 0 0 1 160 10" stroke="#f59e0b" stroke-width="4" fill="none"/></svg></div>
-          <div class="rf-stem-text">Bir öğrenci yapacağı model için eline mavi bir top (Dünya), gri bir top (Ay) ve bir el feneri almıştır. Dünya modelini sabitlemiş, Ay modelini ise Dünya'nın etrafında konumlandırmıştır. El fenerini de bir yöne tutmuştur. Öğrencinin bu malzemelerle 'Güneş Tutulması' modeli oluşturabilmesi için Ay ve el fenerini nasıl konumlandırması gerektiğini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 300 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="100%" height="100%" fill="#ffffff"/><circle cx="150" cy="100" r="50" fill="#3b82f6"/><circle cx="150" cy="40" r="20" fill="#64748b"/><path d="M 140 10 A 30 30 0 0 1 160 10" stroke="#f59e0b" stroke-width="4" fill="none"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Bir öğrenci yapacağı model için eline mavi bir top (Dünya), gri bir top (Ay) ve bir el feneri almıştır. Dünya modelini sabitlemiş, Ay modelini ise Dünya'nın etrafında konumlandırmıştır. El fenerini de bir yöne tutmuştur. Öğrencinin bu malzemelerle 'Güneş Tutulması' modeli oluşturabilmesi için Ay ve el fenerini nasıl konumlandırması gerektiğini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş tutulması neden yalnızca gündüz vakti gerçekleşebilir? Bilimsel gerekçesini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş tutulması neden yalnızca gündüz vakti gerçekleşebilir? Bilimsel gerekçesini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Tam bir Güneş tutulması anında bulunduğunuz yerde hava birden kararırmış gibi olur, hava sıcaklığı düşer ve yıldızlar görünmeye başlar. Bu kısa süreli değişimlerin nedenini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Tam bir Güneş tutulması anında bulunduğunuz yerde hava birden kararırmış gibi olur, hava sıcaklığı düşer ve yıldızlar görünmeye başlar. Bu kısa süreli değişimlerin nedenini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay tutulmasının her ay gerçekleşmemesinin sebebi ile Güneş tutulmasının her ay gerçekleşmemesinin sebebi aynı temel kurala dayanır. Bu kuralı kısaca açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay tutulmasının her ay gerçekleşmemesinin sebebi ile Güneş tutulmasının her ay gerçekleşmemesinin sebebi aynı temel kurala dayanır. Bu kuralı kısaca açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Bir öğrenci, 'Ay tutulması sırasında Ay, Güneş'in ışığını hiç alamaz ve tamamen yok olur.' şeklinde bir iddiada bulunmuştur. Öğrencinin bu iddiasındaki yanlışı bilimsel olarak düzeltiniz.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Bir öğrenci, 'Ay tutulması sırasında Ay, Güneş'in ışığını hiç alamaz ve tamamen yok olur.' şeklinde bir iddiada bulunmuştur. Öğrencinin bu iddiasındaki yanlışı bilimsel olarak düzeltiniz.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş tutulması ile ilgili hazırlanan bir posterde, Ay'ın Dünya'ya Güneş'ten daha yakın olduğu belirtilmiştir. Bu bilginin Güneş tutulmasının gerçekleşmesindeki rolünü açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş tutulması ile ilgili hazırlanan bir posterde, Ay'ın Dünya'ya Güneş'ten daha yakın olduğu belirtilmiştir. Bu bilginin Güneş tutulmasının gerçekleşmesindeki rolünü açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Sınıf ortamında portakal (Dünya), tenis topu (Ay) ve el feneri (Güneş) kullanarak Ay tutulması modeli oluşturmak isteyen bir grup öğrenci, cisimleri hangi sırayla ve nasıl dizmelidir? Açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Sınıf ortamında portakal (Dünya), tenis topu (Ay) ve el feneri (Güneş) kullanarak Ay tutulması modeli oluşturmak isteyen bir grup öğrenci, cisimleri hangi sırayla ve nasıl dizmelidir? Açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1071,9 +1127,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1112,16 +1167,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

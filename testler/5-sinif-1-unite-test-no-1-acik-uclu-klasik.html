@@ -159,7 +159,7 @@
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -167,39 +167,90 @@
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -211,19 +262,19 @@
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -241,14 +292,14 @@
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -263,23 +314,22 @@
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -293,17 +343,18 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -736,200 +787,225 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-      <section class="rf-question-slide is-active" id="rf-slide-0" data-slide="0" style="display: block;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="70" fill="#ffd700" stroke="#ff8c00" stroke-width="4"/><text x="200" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="24" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Yukarıda geometrik şekli ve temel özelliklerinden biri soru işareti ile belirtilen gök cisminin ne olduğunu ve gökyüzünde büyük görünmesine rağmen Dünya'dan çok küçük görünmesinin temel sebebini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="70" fill="#ffd700" stroke="#ff8c00" stroke-width="4"/><text x="200" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="24" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda geometrik şekli ve temel özelliklerinden biri soru işareti ile belirtilen gök cisminin ne olduğunu ve gökyüzünde büyük görünmesine rağmen Dünya'dan çok küçük görünmesinin temel sebebini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-1" data-slide="1" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="60" fill="#e0e0e0" stroke="#9e9e9e" stroke-width="3"/><text x="200" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="24" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
-          <div class="rf-stem-text">Geometrik şekli küreye benzeyen bu gök cismi üzerine teleskopla bakıldığında yüzeyinde çukurlar olduğu görülür. Bu gök cisminin kendi ışık kaynağı olmadığı halde neden gece gökyüzünde parlak bir şekilde görülebildiğini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="60" fill="#e0e0e0" stroke="#9e9e9e" stroke-width="3"/><text x="200" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="24" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Geometrik şekli küreye benzeyen bu gök cismi üzerine teleskopla bakıldığında yüzeyinde çukurlar olduğu görülür. Bu gök cisminin kendi ışık kaynağı olmadığı halde neden gece gökyüzünde parlak bir şekilde görülebildiğini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-2" data-slide="2" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş, Dünya ve Ay'ın üçünün de ortak olan geometrik şekli nedir? Bu geometrik şeklin uzaydaki gök cisimleri için ortak olmasının nedenini bilimsel olarak açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş, Dünya ve Ay'ın üçünün de ortak olan geometrik şekli nedir? Bu geometrik şeklin uzaydaki gök cisimleri için ortak olmasının nedenini bilimsel olarak açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-3" data-slide="3" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="120" cy="100" r="60" fill="#ffd700"/><circle cx="280" cy="100" r="30" fill="#e0e0e0"/><text x="120" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">X</text><text x="280" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Y</text></svg></div>
-          <div class="rf-stem-text">Yukarıdaki görselde X ve Y ile temsil edilen iki gök cismi verilmiştir. X gök cisminin sıcak bir gaz bulutu, Y gök cisminin ise soğuk ve kayalık bir yapıya sahip olduğu bilindiğine göre, bu gök cisimlerinin adlarını yazarak ısı ve ışık yayma özelliklerindeki temel farkı açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="120" cy="100" r="60" fill="#ffd700"/><circle cx="280" cy="100" r="30" fill="#e0e0e0"/><text x="120" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">X</text><text x="280" y="105" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Y</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıdaki görselde X ve Y ile temsil edilen iki gök cismi verilmiştir. X gök cisminin sıcak bir gaz bulutu, Y gök cisminin ise soğuk ve kayalık bir yapıya sahip olduğu bilindiğine göre, bu gök cisimlerinin adlarını yazarak ısı ve ışık yayma özelliklerindeki temel farkı açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-4" data-slide="4" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Günlük hayatta gökyüzüne baktığımızda Güneş ve Ay'ı neredeyse aynı büyüklükte görürüz. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun nedenini günlük hayattan bir örnekle (örneğin tren veya futbol topu örneğiyle) açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Günlük hayatta gökyüzüne baktığımızda Güneş ve Ay'ı neredeyse aynı büyüklükte görürüz. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun nedenini günlük hayattan bir örnekle (örneğin tren veya futbol topu örneğiyle) açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-5" data-slide="5" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="70" fill="none" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/><circle cx="200" y="100" cx="200" cy="100" r="20" fill="#9e9e9e"/><path d="M 100 100 Q 150 50 200 100" fill="none" stroke="red" stroke-width="2"/></svg></div>
-          <div class="rf-stem-text">Ay'ın yüzeyinde ince bir atmosfer tabakası olduğu bilinmektedir. Bu durumun Ay üzerinde gece ile gündüz arasındaki sıcaklık farkının Dünya'ya göre aşırı derecede fazla (çok sıcak veya çok soğuk) olmasına neden olmasını açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="70" fill="none" stroke="#333" stroke-width="2" stroke-dasharray="5,5"/><circle cx="200" y="100" cx="200" cy="100" r="20" fill="#9e9e9e"/><path d="M 100 100 Q 150 50 200 100" fill="none" stroke="red" stroke-width="2"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay'ın yüzeyinde ince bir atmosfer tabakası olduğu bilinmektedir. Bu durumun Ay üzerinde gece ile gündüz arasındaki sıcaklık farkının Dünya'ya göre aşırı derecede fazla (çok sıcak veya çok soğuk) olmasına neden olmasını açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-6" data-slide="6" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş'in yapısında katı maddeler yerine çoğunlukla hidrojen ve helyum gibi gazlar bulunmaktadır. Buna rağmen Güneş'in dağılmadan küresel bir biçimde kalmasını sağlayan temel etken nedir? Açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş'in yapısında katı maddeler yerine çoğunlukla hidrojen ve helyum gibi gazlar bulunmaktadır. Buna rağmen Güneş'in dağılmadan küresel bir biçimde kalmasını sağlayan temel etken nedir? Açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-7" data-slide="7" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="50" fill="#cccccc"/><circle cx="180" cy="90" r="8" fill="#999999"/><circle cx="220" cy="110" r="12" fill="#999999"/><circle cx="190" cy="120" r="6" fill="#999999"/></svg><text x="200" y="180" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay'ın yüzey yapıları</text></div>
-          <div class="rf-stem-text">Yukarıda yüzeyinde kraterler (çukurlar) bulunan Ay'ın bu yapıya nasıl sahip olduğunu ve Dünya'da Ay'a kıyasla çok daha az krater bulunmasının nedenini açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="50" fill="#cccccc"/><circle cx="180" cy="90" r="8" fill="#999999"/><circle cx="220" cy="110" r="12" fill="#999999"/><circle cx="190" cy="120" r="6" fill="#999999"/></svg><text x="200" y="180" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">Ay'ın yüzey yapıları</text></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda yüzeyinde kraterler (çukurlar) bulunan Ay'ın bu yapıya nasıl sahip olduğunu ve Dünya'da Ay'a kıyasla çok daha az krater bulunmasının nedenini açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-8" data-slide="8" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş kendi ekseni etrafında dönerken, Ay da hem kendi ekseni etrafında hem de Dünya etrafında döner. Bu hareketlerin sonucunda Güneş ve Ay'ın geometrik küre şekillerinde bir değişim gözlenir mi? Gerekçesiyle açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş kendi ekseni etrafında dönerken, Ay da hem kendi ekseni etrafında hem de Dünya etrafında döner. Bu hareketlerin sonucunda Güneş ve Ay'ın geometrik küre şekillerinde bir değişim gözlenir mi? Gerekçesiyle açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-9" data-slide="9" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="65" fill="#ffb703"/><path d="M 130 100 L 90 100 M 270 100 L 310 100 M 200 30 L 200 10 M 200 170 L 200 190" stroke="#ffb703" stroke-width="4"/></svg></div>
-          <div class="rf-stem-text">Güneş'in bir yıldız olduğu bilinmektedir. Yıldızların genel özellikleri düşünüldüğünde, Güneş'in Dünya'mızın yaşam kaynağı olmasını sağlayan temel özelliklerinden ikisini yazınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="65" fill="#ffb703"/><path d="M 130 100 L 90 100 M 270 100 L 310 100 M 200 30 L 200 10 M 200 170 L 200 190" stroke="#ffb703" stroke-width="4"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş'in bir yıldız olduğu bilinmektedir. Yıldızların genel özellikleri düşünüldüğünde, Güneş'in Dünya'mızın yaşam kaynağı olmasını sağlayan temel özelliklerinden ikisini yazınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-10" data-slide="10" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Bir öğrenci "Ay bir ışık kaynağıdır çünkü geceleri onu çok parlak görüyoruz" iddiasında bulunmuştur. Bu öğrencinin bilimsel açıdan yanıldığını, Ay'ın ve Güneş'in özelliklerini kullanarak açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Bir öğrenci "Ay bir ışık kaynağıdır çünkü geceleri onu çok parlak görüyoruz" iddiasında bulunmuştur. Bu öğrencinin bilimsel açıdan yanıldığını, Ay'ın ve Güneş'in özelliklerini kullanarak açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-11" data-slide="11" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="55" fill="#dcdcdc"/><path d="M 160 80 Q 180 70 200 90 T 240 85" fill="none" stroke="#a9a9a9" stroke-width="3"/></svg></div>
-          <div class="rf-stem-text">Yukarıda temsilî olarak verilen Ay'ın yüzeyindeki toz tabakasının (regolit) ve rüzgar/yağmur gibi hava olaylarının olmamasının, Ay'da ayak izlerinin milyonlarca yıl bozulmadan kalmasını nasıl sağladığını açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="200" cy="100" r="55" fill="#dcdcdc"/><path d="M 160 80 Q 180 70 200 90 T 240 85" fill="none" stroke="#a9a9a9" stroke-width="3"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Yukarıda temsilî olarak verilen Ay'ın yüzeyindeki toz tabakasının (regolit) ve rüzgar/yağmur gibi hava olaylarının olmamasının, Ay'da ayak izlerinin milyonlarca yıl bozulmadan kalmasını nasıl sağladığını açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-12" data-slide="12" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Güneş, Dünya'ya en yakın yıldızdır. Eğer Güneş, evrendeki diğer bazı dev yıldızlar gibi çok daha büyük olsaydı, Dünya'mız üzerindeki yaşamı nasıl etkilerdi? Mantıksal bir gerekçe ile açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Güneş, Dünya'ya en yakın yıldızdır. Eğer Güneş, evrendeki diğer bazı dev yıldızlar gibi çok daha büyük olsaydı, Dünya'mız üzerindeki yaşamı nasıl etkilerdi? Mantıksal bir gerekçe ile açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-13" data-slide="13" style="display: none;">
-        <div class="rf-question-stem">
-          <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="40" fill="#ffcc00"/><circle cx="300" cy="100" r="40" fill="#cccccc"/></svg></div>
-          <div class="rf-stem-text">Boyutları şekildeki gibi iki farklı küre şeklinde gök cismi verilmiştir. Sol taraftaki cisim kendi enerjisini üretip yayarken sağdaki cisim bunu yapamamaktadır. Bu iki gök cisminin uzaydaki ortak geometrik biçimlerinin adını ve bu biçimi alma nedenini yazınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 400 200" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><circle cx="100" cy="100" r="40" fill="#ffcc00"/><circle cx="300" cy="100" r="40" fill="#cccccc"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Boyutları şekildeki gibi iki farklı küre şeklinde gök cismi verilmiştir. Sol taraftaki cisim kendi enerjisini üretip yayarken sağdaki cisim bunu yapamamaktadır. Bu iki gök cisminin uzaydaki ortak geometrik biçimlerinin adını ve bu biçimi alma nedenini yazınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
 
-      <section class="rf-question-slide " id="rf-slide-14" data-slide="14" style="display: none;">
-        <div class="rf-question-stem">
-          
-          <div class="rf-stem-text">Ay, Dünya'nın tek doğal uydusudur. Ay'ın Dünya'ya olan uzaklığı zaman zaman çok az değişse de genel olarak küresel yapısını ve görünümünü korur. Ay'ın küresel bir şekle sahip olduğunu uzaya giden astronotların gözlemleri dışında yeryüzünden nasıl kanıtlayabiliriz? Açıklayınız.</div>
-        </div>
-        
+        <section class="rf-question-slide rf-no-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">Ay, Dünya'nın tek doğal uydusudur. Ay'ın Dünya'ya olan uzaklığı zaman zaman çok az değişse de genel olarak küresel yapısını ve görünümünü korur. Ay'ın küresel bir şekle sahip olduğunu uzaya giden astronotların gözlemleri dışında yeryüzünden nasıl kanıtlayabiliriz? Açıklayınız.</div>
+            
         <div class="rf-input-container">
           <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
-      </section>
-    
+          </div>
+        </section>
+      
       </div>
 
       <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
@@ -1071,9 +1147,8 @@
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1112,16 +1187,32 @@
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;

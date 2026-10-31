@@ -48,7 +48,7 @@ function buildZKitapHtml({
   const durationMinutes = qCount * 2;
   const durationSeconds = durationMinutes * 60;
 
-  // Soruları üret
+  // Soruları üret (Şekilli sorularda Sol Kolon: Şekil, Sağ Kolon: Soru Metni & Cevap)
   const slidesHtml = questions.map((q, idx) => {
     const qNum = idx + 1;
     const isMultipleChoice = !!(q.options && (q.options.A || q.options.B));
@@ -56,11 +56,8 @@ function buildZKitapHtml({
     const isOpenEnded = q.type === 'open_ended' || (!isMultipleChoice && !isShortAnswer);
 
     const formattedStem = formatQuestionStem(q.question);
-
-    let visualHtml = '';
-    if (q.visual_svg && q.visual_svg.trim()) {
-      visualHtml = `<div class="rf-visual-box">${q.visual_svg}</div>`;
-    }
+    const hasVisual = !!(q.visual_svg && q.visual_svg.trim());
+    const visualHtml = hasVisual ? `<div class="rf-visual-box">${q.visual_svg}</div>` : '';
 
     let optionsHtml = '';
     if (isMultipleChoice) {
@@ -92,18 +89,32 @@ function buildZKitapHtml({
       `;
     }
 
-    return `
-      <section class="rf-question-slide ${idx === 0 ? 'is-active' : ''}" id="rf-slide-${idx}" data-slide="${idx}" style="${idx === 0 ? 'display: block;' : 'display: none;'}">
-        <div class="rf-question-stem">
-          ${visualHtml}
-          <div class="rf-stem-text">${formattedStem}</div>
-        </div>
-        ${optionsHtml}
-      </section>
-    `;
+    if (hasVisual) {
+      return `
+        <section class="rf-question-slide rf-has-visual ${idx === 0 ? 'is-active' : ''}" id="rf-slide-${idx}" data-slide="${idx}" style="${idx === 0 ? 'display: flex;' : 'display: none;'}">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            ${visualHtml}
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">${formattedStem}</div>
+            ${optionsHtml}
+          </div>
+        </section>
+      `;
+    } else {
+      return `
+        <section class="rf-question-slide rf-no-visual ${idx === 0 ? 'is-active' : ''}" id="rf-slide-${idx}" data-slide="${idx}" style="${idx === 0 ? 'display: flex;' : 'display: none;'}">
+          <div class="rf-slide-content-col rf-full-width">
+            <div class="rf-stem-text">${formattedStem}</div>
+            ${optionsHtml}
+          </div>
+        </section>
+      `;
+    }
   }).join('\n');
 
-  // Ray / Boncuklu İlerleme Çubuğu Node'ları
   const beadsHtml = questions.map((q, idx) => {
     return `<button type="button" class="rf-bead ${idx === 0 ? 'is-active' : ''}" id="rf-bead-${idx}" onclick="goToSlide(${idx})" title="Soru ${idx + 1}">${idx + 1}</button>`;
   }).join('');
@@ -269,7 +280,7 @@ function buildZKitapHtml({
       font-size: 13px;
     }
 
-    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA) */
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
     .rf-card-body {
       flex: 1;
       display: flex;
@@ -277,39 +288,90 @@ function buildZKitapHtml({
       justify-content: center;
       min-height: 0;
       overflow: hidden;
-      padding: 8px 4px;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
     }
 
     .rf-question-slide {
       width: 100%;
       height: 100%;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
-    }
-
-    .rf-question-stem {
-      margin-bottom: 18px;
-    }
-
-    .rf-visual-box {
-      width: 100%;
-      display: flex;
-      justify-content: center;
+      flex-direction: row;
       align-items: center;
-      margin-bottom: 12px;
-      max-height: 22vh;
+      justify-content: center;
+      gap: 28px;
       overflow: hidden;
     }
-    .rf-visual-box svg, .rf-visual-box img {
-      max-height: 21vh;
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 44%;
+      max-width: 46%;
+      height: 100%;
+      max-height: 52vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
       max-width: 100%;
+      max-height: 48vh;
       object-fit: contain;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(19px, 1.9vw, 25px);
+      font-size: clamp(16px, 1.5vw, 22px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -321,19 +383,19 @@ function buildZKitapHtml({
       text-decoration-thickness: 2.5px;
     }
 
-    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D Beyaz Kartları) */
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
     .rf-options-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
       width: 100%;
     }
 
     .rf-option-card {
       display: flex;
       align-items: center;
-      gap: 14px;
-      padding: 10px 18px;
+      gap: 12px;
+      padding: 8px 14px;
       background: #ffffff;
       border: 1.5px solid #e2e8f0;
       border-radius: 8px;
@@ -351,14 +413,14 @@ function buildZKitapHtml({
     }
 
     .rf-opt-badge {
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       border-radius: 6px;
       background: #f8fafc;
       border: 1.5px solid #93c5fd;
       color: #0284c7;
       font-weight: 900;
-      font-size: 14px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -373,23 +435,22 @@ function buildZKitapHtml({
     }
 
     .rf-opt-text {
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #1e293b;
-      line-height: 1.4;
+      line-height: 1.35;
     }
 
-    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ KUTULARI */
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
     .rf-input-container {
       width: 100%;
-      margin-top: 6px;
     }
     .rf-short-input {
       width: 100%;
-      font-size: 18px;
+      font-size: 16.5px;
       font-weight: 700;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
@@ -403,17 +464,18 @@ function buildZKitapHtml({
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 600;
       color: #0f172a;
-      padding: 12px 18px;
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1.5px solid #cbd5e1;
       background: #ffffff;
       outline: none;
       resize: none;
-      max-height: 80px;
-      line-height: 1.5;
+      height: 85px;
+      max-height: 95px;
+      line-height: 1.45;
       font-family: inherit;
       transition: all 0.15s ease;
     }
@@ -993,9 +1055,8 @@ function buildZKitapHtml({
     // Boncuğu görünür alana kaydır ve ortala
     centerActiveBead(index);
   }
-  }
 
-    function centerActiveBead(index) {
+  function centerActiveBead(index) {
     const track = document.getElementById('rfBeadTrackContainer');
     const bead = document.getElementById('rf-bead-' + index);
     if (track && bead) {
@@ -1034,16 +1095,32 @@ function buildZKitapHtml({
 
     track.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - track.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      track.scrollLeft = scrollStart - walk;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
     });
   }
 
-function prevSlide() { showSlide(activeSlide - 1); }
+  function prevSlide() { showSlide(activeSlide - 1); }
   function nextSlide() { showSlide(activeSlide + 1); }
   function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
 
   function selectOption(qNum, letter) {
     if (isFinished) return;
