@@ -18,7 +18,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yaprak Test & Soru Üretim Portalı (Gemini AI)</title>
-  <link rel="stylesheet" href="css/yaprak-test.css?v=20261028_2">
+  <link rel="stylesheet" href="css/yaprak-test.css?v=1793462707204">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -157,46 +157,114 @@
               </div>
             </div>
 
-            <!-- Soru Sayısı, Soru Tarzı ve Zorluk Seviyesi -->
-            <div class="form-group">
-              <label for="questionTypeInput">Soru Tarzı / Ölçme Formatı</label>
-              <select id="questionTypeInput" class="form-control" style="font-weight:600; color:var(--primary);">
-                <option value="multiple_choice" data-short-label="Çoktan Seçmeli LGS" selected>🔘 Çoktan Seçmeli (4 Seçenekli LGS / MEB)</option>
-                <option value="short_answer" data-short-label="Kısa Cevaplı / Boşluk Doldurma">✏️ Kısa Cevaplı / Boşluk Doldurma</option>
-                <option value="open_ended" data-short-label="Açık Uçlu Klasik">📝 Açık Uçlu (Klasik / Deney Analizi)</option>
-                <option value="structured_grid" data-short-label="Yapılandırılmış Grid">🔲 Yapılandırılmış Grid (9 Kutucuklu Izgara)</option>
-                <option value="concept_map" data-short-label="Kavram Haritası">🗺️ Kavram Haritası (Eksik Kavramları Bulma)</option>
-                <option value="v_diagram" data-short-label="V Diyagramı">📐 V Diyagramı (Bilimsel Süreç & Raporlama)</option>
-                <option value="mixed" data-short-label="Karma Ölçme Testi">🎯 Karma Test (Bütünleşik Çoklu Soru Tarzı)</option>
+            <!-- Soru Türleri ve Bağımsız Soru Sayıları (Maarif Modeli 4 Tür) -->
+            <div class="form-group qt-multiselect-panel">
+              <div class="label-with-action">
+                <label>Soru Türleri ve Sayıları (Çoklu Seçim)</label>
+                <span class="qt-total-badge" id="qtTotalCountBadge">📊 Toplam: 10 Soru</span>
+              </div>
+              <div class="qt-hint-text">Aynı anda birden fazla soru türü seçebilir, her birinin soru sayısını ayrı ayrı belirleyebilirsiniz:</div>
+              
+              <div class="qt-checkbox-list" id="qtCheckboxList">
+                <!-- 1. Çoktan Seçmeli -->
+                <div class="qt-item-row is-active" id="qt_row_multiple_choice">
+                  <label class="qt-checkbox-label" for="qt_cb_multiple_choice">
+                    <input type="checkbox" id="qt_cb_multiple_choice" class="qt-checkbox" data-type="multiple_choice" data-label="Çoktan Seçmeli" checked>
+                    <span class="qt-icon">🔘</span>
+                    <span class="qt-info">
+                      <span class="qt-name">Çoktan Seçmeli</span>
+                      <span class="qt-sub">4 Seçenekli LGS / MEB Sınav Formatı</span>
+                    </span>
+                  </label>
+                  <div class="qt-count-box">
+                    <input type="number" id="qt_count_multiple_choice" class="qt-count-input" min="1" max="30" value="10">
+                    <span class="qt-unit">soru</span>
+                  </div>
+                </div>
+
+                <!-- 2. Kısa Cevaplı / Boşluk Doldurma -->
+                <div class="qt-item-row" id="qt_row_short_answer">
+                  <label class="qt-checkbox-label" for="qt_cb_short_answer">
+                    <input type="checkbox" id="qt_cb_short_answer" class="qt-checkbox" data-type="short_answer" data-label="Kısa Cevaplı">
+                    <span class="qt-icon">✏️</span>
+                    <span class="qt-info">
+                      <span class="qt-name">Kısa Cevaplı / Boşluk Doldurma</span>
+                      <span class="qt-sub">Tek Kelimelik / Kısa İfadeli Net Cevaplar</span>
+                    </span>
+                  </label>
+                  <div class="qt-count-box">
+                    <input type="number" id="qt_count_short_answer" class="qt-count-input" min="1" max="30" value="5" disabled>
+                    <span class="qt-unit">soru</span>
+                  </div>
+                </div>
+
+                <!-- 3. Açık Uçlu (Klasik) -->
+                <div class="qt-item-row" id="qt_row_open_ended">
+                  <label class="qt-checkbox-label" for="qt_cb_open_ended">
+                    <input type="checkbox" id="qt_cb_open_ended" class="qt-checkbox" data-type="open_ended" data-label="Açık Uçlu">
+                    <span class="qt-icon">📝</span>
+                    <span class="qt-info">
+                      <span class="qt-name">Açık Uçlu (Klasik)</span>
+                      <span class="qt-sub">Bilimsel Süreç, Deney Analizi ve Gerekçe</span>
+                    </span>
+                  </label>
+                  <div class="qt-count-box">
+                    <input type="number" id="qt_count_open_ended" class="qt-count-input" min="1" max="30" value="5" disabled>
+                    <span class="qt-unit">soru</span>
+                  </div>
+                </div>
+
+                <!-- 4. Kavram Haritası -->
+                <div class="qt-item-row" id="qt_row_concept_map">
+                  <label class="qt-checkbox-label" for="qt_cb_concept_map">
+                    <input type="checkbox" id="qt_cb_concept_map" class="qt-checkbox" data-type="concept_map" data-label="Kavram Haritası">
+                    <span class="qt-icon">🗺️</span>
+                    <span class="qt-info">
+                      <span class="qt-name">Kavram Haritası</span>
+                      <span class="qt-sub">Eksik Bırakılan Kavram ve İlişkileri Bulma</span>
+                    </span>
+                  </label>
+                  <div class="qt-count-box">
+                    <input type="number" id="qt_count_concept_map" class="qt-count-input" min="1" max="30" value="3" disabled>
+                    <span class="qt-unit">soru</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Çıktı Dosyası Modu Seçimi -->
+              <div class="qt-output-format-card">
+                <div class="qt-output-title"><i class="fa-solid fa-folder-tree text-primary"></i> <strong>Çıktı Dosyası Formatı:</strong></div>
+                <div class="qt-output-radios">
+                  <label class="qt-radio-item" title="Her soru türü için müstakil bir yaprak test dosyası oluşturur ve web sitesinde ilgili bölüme aktarır.">
+                    <input type="radio" name="qtOutputMode" id="qtModeSeparate" value="separate" checked>
+                    <span><strong>Her soru türünü ayrı dosyada oluştur</strong> (Önerilen)</span>
+                  </label>
+                  <label class="qt-radio-item" title="Tüm seçili türlerdeki soruları tek bir karma test dosyasında birleştirir.">
+                    <input type="radio" name="qtOutputMode" id="qtModeMerged" value="merged">
+                    <span><strong>Bütün soruları tek dosyada birleştir</strong></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Geriye Dönük Uyumluluk Gizli Elemanları -->
+              <select id="questionTypeInput" style="display:none;" aria-hidden="true">
+                <option value="multiple_choice" selected>Çoktan Seçmeli</option>
+                <option value="short_answer">Kısa Cevaplı</option>
+                <option value="open_ended">Açık Uçlu</option>
+                <option value="concept_map">Kavram Haritası</option>
               </select>
+              <input type="hidden" id="countInput" value="10">
             </div>
 
-            <div class="form-row">
-              <div class="form-group flex-1">
-                <label for="countInput">Soru Sayısı</label>
-                <select id="countInput" class="form-control">
-                  <option value="4">4 Soru (Kısa Test)</option>
-                  <option value="5">5 Soru</option>
-                  <option value="6">6 Soru (1 Tam Sayfa)</option>
-                  <option value="8">8 Soru</option>
-                  <option value="10" selected>10 Soru (Deneme Formatı)</option>
-                  <option value="12">12 Soru (2 Tam Sayfa)</option>
-                  <option value="15">15 Soru</option>
-                  <option value="20">20 Soru (Tam LGS Denemesi)</option>
-                  <option value="25">25 Soru</option>
-                  <option value="30">30 Soru (Geniş Ünite Tarama)</option>
-                </select>
-              </div>
-
-              <div class="form-group flex-1">
-                <label for="difficultyInput">Zorluk Seviyesi</label>
-                <select id="difficultyInput" class="form-control">
-                  <option value="Karma (Dengeli - Kolay/Orta/Zor)" selected>Karma (Dengeli LGS)</option>
-                  <option value="Kolay">Kolay (Kavrama)</option>
-                  <option value="Orta">Orta (Uygulama)</option>
-                  <option value="Zor">Zor (Yeni Nesil Analiz)</option>
-                </select>
-              </div>
+            <!-- Zorluk Seviyesi -->
+            <div class="form-group">
+              <label for="difficultyInput">Zorluk Seviyesi</label>
+              <select id="difficultyInput" class="form-control">
+                <option value="Karma (Dengeli - Kolay/Orta/Zor)" selected>Karma (Dengeli LGS / MEB)</option>
+                <option value="Kolay">Kolay (Kavrama)</option>
+                <option value="Orta">Orta (Uygulama)</option>
+                <option value="Zor">Zor (Yeni Nesil Analiz)</option>
+              </select>
             </div>
 
             <!-- Üretim Butonu -->
@@ -560,7 +628,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-  <script src="js/curriculum-data.js?v=20261029_0245"></script>
-  <script src="js/yaprak-test.js?v=20261029_0245"></script>
+  <script src="js/curriculum-data.js?v=1793462707204"></script>
+  <script src="js/yaprak-test.js?v=1793462707204"></script>
 </body>
 </html>

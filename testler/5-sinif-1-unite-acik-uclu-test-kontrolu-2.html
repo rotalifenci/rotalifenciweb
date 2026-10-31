@@ -981,7 +981,7 @@
             <span class="zk-panel-hint">Açık Uçlu / Bilimsel Gerekçe</span>
           </div>
           <div class="zk-textarea-box">
-            <textarea class="zk-open-textarea" id="input-q-1" name="f1-4f2rhh" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" rows="6" placeholder="Açık uçlu bilimsel cevabınızı ve gerekçenizi buraya yazınız..." oninput="recordAnswer(1, this.value)"></textarea>
+            <textarea class="zk-open-textarea" id="input-q-1" name="f1-e83tx0" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" rows="6" placeholder="Açık uçlu bilimsel cevabınızı ve gerekçenizi buraya yazınız..." oninput="recordAnswer(1, this.value)"></textarea>
           </div>
         </div>
       
@@ -994,8 +994,15 @@
   <!-- SABİT ALT ÇUBUK -->
   <footer class="zk-bottombar">
     <div class="zk-bottom-left">
-      <button type="button" class="zk-bottom-btn" onclick="toggleRoutesDrawer()">
+      <!-- Önceki / Sayaç / Sonraki (Her soruda sabit ve erişilebilir) -->
+      <button type="button" class="zk-bottom-btn zk-prev-btn" onclick="prevSlide()" title="Önceki Soru (Sol Ok)">‹ Önceki</button>
+      <span class="zk-bottom-counter" id="zkBottomCounter">1 / 1</span>
+      <button type="button" class="zk-bottom-btn zk-next-btn" onclick="nextSlide()" title="Sonraki Soru (Sağ Ok)">Sonraki ›</button>
+      <button type="button" class="zk-bottom-btn" onclick="toggleRoutesDrawer()" title="Tüm Soruları Gör">
         🧭 Soru Rotaları
+      </button>
+      <button type="button" class="zk-bottom-btn zk-bottom-finish-btn" onclick="finishAndEvaluateExam()" style="background:#059669;color:#fff;font-weight:800;" title="Testi Bitir ve Çözümleri Gör">
+        🏁 Testi Bitir &amp; Puanla
       </button>
       <button type="button" class="zk-bottom-btn" onclick="toggleSpeechQuestion()" id="btnSpeech">
         🔊 Sesli Oku
@@ -1058,7 +1065,7 @@
     const totalQuestions = 1;
     let activeSlideIdx = 0;
     const studentAnswers = {};
-    const correctAnswers = [{"id":1,"type":"multiple_choice","correct":"KÜRE"}];
+    const correctAnswers = [{"id":1,"type":"open_ended","correct":"KÜRE"}];
 
     // ⏱️ KRONOMETRE MOTORU (Kaç soru varsa o kadar dakika)
     let remainingSeconds = totalQuestions * 60;

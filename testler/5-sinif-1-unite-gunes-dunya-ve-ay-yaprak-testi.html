@@ -950,7 +950,7 @@
               
               
               <div class="zk-question-stem zk-size-large">
-                Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u>yanlıştır</u>?
+                Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u>yanlıştır</u></u>?
               </div>
 
               
@@ -1538,7 +1538,7 @@
 </svg></div>
               
               <div class="zk-question-stem zk-size-large">
-                Dünya'nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi <u>yanlıştır</u>?
+                Dünya'nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi <u><u>yanlıştır</u></u>?
               </div>
 
               
@@ -2108,7 +2108,7 @@
               
               
               <div class="zk-question-stem zk-size-medium">
-                Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u>yanlıştır</u>?
+                Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u>yanlıştır</u></u>?
               </div>
 
               
@@ -2886,7 +2886,7 @@
               
               
               <div class="zk-question-stem zk-size-large">
-                Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri <u>değildir</u>?
+                Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri <u><u>değildir</u></u>?
               </div>
 
               
@@ -3076,7 +3076,7 @@
               
               
               <div class="zk-question-stem zk-size-large">
-                Ay ile ilgili olarak aşağıda verilenlerden hangisi <u>yanlıştır</u>?
+                Ay ile ilgili olarak aşağıda verilenlerden hangisi <u><u>yanlıştır</u></u>?
               </div>
 
               
@@ -3367,7 +3367,7 @@
               
               
               <div class="zk-question-stem zk-size-large">
-                Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi <u>yanlıştır</u>?
+                Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi <u><u>yanlıştır</u></u>?
               </div>
 
               
@@ -3840,8 +3840,15 @@
   <!-- SABİT ALT ÇUBUK -->
   <footer class="zk-bottombar">
     <div class="zk-bottom-left">
-      <button type="button" class="zk-bottom-btn" onclick="toggleRoutesDrawer()">
+      <!-- Önceki / Sayaç / Sonraki (Her soruda sabit ve erişilebilir) -->
+      <button type="button" class="zk-bottom-btn zk-prev-btn" onclick="prevSlide()" title="Önceki Soru (Sol Ok)">‹ Önceki</button>
+      <span class="zk-bottom-counter" id="zkBottomCounter">1 / 30</span>
+      <button type="button" class="zk-bottom-btn zk-next-btn" onclick="nextSlide()" title="Sonraki Soru (Sağ Ok)">Sonraki ›</button>
+      <button type="button" class="zk-bottom-btn" onclick="toggleRoutesDrawer()" title="Tüm Soruları Gör">
         🧭 Soru Rotaları
+      </button>
+      <button type="button" class="zk-bottom-btn zk-bottom-finish-btn" onclick="finishAndEvaluateExam()" style="background:#059669;color:#fff;font-weight:800;" title="Testi Bitir ve Çözümleri Gör">
+        🏁 Testi Bitir &amp; Puanla
       </button>
       <button type="button" class="zk-bottom-btn" onclick="toggleSpeechQuestion()" id="btnSpeech">
         🔊 Sesli Oku

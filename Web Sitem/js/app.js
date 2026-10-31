@@ -19362,6 +19362,64 @@ document.addEventListener("fullscreenchange", () => {
 
 
 // 📌 Müfredat Alt Başlıklarına Göre Materyal Filtreleme Motoru
+
+// 📌 4 Soru Türü Çözümleyici (Maarif Modeli: Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu, Kavram Haritası)
+function resolveMaterialQType(item) {
+    if (!item) return 'multiple_choice';
+    const text = `${item.title || ''} ${item.description || ''} ${item.format || ''} ${item.category || ''} ${item.fileUrl || ''} ${item.question_type || ''}`.toLowerCase();
+    if (text.includes('kavram harita') || text.includes('concept_map')) return 'concept_map';
+    if (text.includes('kısa cevap') || text.includes('kisa cevap') || text.includes('boşluk doldurma') || text.includes('bosluk doldurma') || text.includes('short_answer')) return 'short_answer';
+    if (text.includes('açık uçlu') || text.includes('acik uclu') || text.includes('klasik') || text.includes('open_ended')) return 'open_ended';
+    return 'multiple_choice';
+}
+window.resolveMaterialQType = resolveMaterialQType;
+
+// 📌 4 Soru Türüne Göre Materyal Filtreleme Motoru
+function filterMaterialsByQType(unitNum, qtype, gradeNum, subTab) {
+    const unitEl = document.querySelector(`.unit-accordion-card[data-unit="${unitNum}"]`) || 
+                   document.querySelector(`#hub-container-${subTab}-${gradeNum}-unit-${unitNum}`) ||
+                   document.querySelector(`[data-unit="${unitNum}"]`);
+    if (!unitEl) return;
+
+    // Buton aktifliklerini güncelle
+    const buttons = unitEl.querySelectorAll('.qtype-filter-btn');
+    buttons.forEach(btn => {
+        const isMatch = (btn.getAttribute('data-qtype') === String(qtype));
+        if (isMatch) {
+            btn.className = "qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-black bg-blue-600 text-white shadow-xs transition-all flex items-center gap-1 shrink-0 cursor-pointer";
+        } else {
+            btn.className = "qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer";
+        }
+    });
+
+    // Kartları filtrele
+    const cards = unitEl.querySelectorAll('.unit-material-card');
+    let visibleCount = 0;
+    cards.forEach(card => {
+        const cardQType = card.getAttribute('data-qtype') || 'multiple_choice';
+        if (qtype === 'all' || cardQType === qtype) {
+            // Eğer aynı zamanda bir alt konu filtresi varsa onu da gözet
+            const activeSubtopicBtn = unitEl.querySelector('.subtopic-filter-btn.bg-blue-600');
+            const activeSub = activeSubtopicBtn ? activeSubtopicBtn.getAttribute('data-subtopic') : 'all';
+            if (activeSub && activeSub !== 'all') {
+                const cardSubs = (card.getAttribute('data-subtopics') || '').split(',').map(s => s.trim());
+                if (cardSubs.includes(String(activeSub)) || cardSubs.includes('all')) {
+                    card.style.display = '';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            } else {
+                card.style.display = '';
+                visibleCount++;
+            }
+        } else {
+            card.style.display = 'none';
+        }
+    });
+}
+window.filterMaterialsByQType = filterMaterialsByQType;
+
 function filterMaterialsBySubtopic(unitNum, subtopicNum, gradeNum, subTab) {
     const unitEl = document.querySelector(`.unit-accordion-card[data-unit="${unitNum}"]`) || 
                    document.querySelector(`#hub-container-${subTab}-${gradeNum}-unit-${unitNum}`) ||

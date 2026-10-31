@@ -1037,8 +1037,15 @@
   <!-- SABİT ALT ÇUBUK -->
   <footer class="zk-bottombar">
     <div class="zk-bottom-left">
-      <button type="button" class="zk-bottom-btn" onclick="toggleRoutesDrawer()">
+      <!-- Önceki / Sayaç / Sonraki (Her soruda sabit ve erişilebilir) -->
+      <button type="button" class="zk-bottom-btn zk-prev-btn" onclick="prevSlide()" title="Önceki Soru (Sol Ok)">‹ Önceki</button>
+      <span class="zk-bottom-counter" id="zkBottomCounter">1 / 1</span>
+      <button type="button" class="zk-bottom-btn zk-next-btn" onclick="nextSlide()" title="Sonraki Soru (Sağ Ok)">Sonraki ›</button>
+      <button type="button" class="zk-bottom-btn" onclick="toggleRoutesDrawer()" title="Tüm Soruları Gör">
         🧭 Soru Rotaları
+      </button>
+      <button type="button" class="zk-bottom-btn zk-bottom-finish-btn" onclick="finishAndEvaluateExam()" style="background:#059669;color:#fff;font-weight:800;" title="Testi Bitir ve Çözümleri Gör">
+        🏁 Testi Bitir &amp; Puanla
       </button>
       <button type="button" class="zk-bottom-btn" onclick="toggleSpeechQuestion()" id="btnSpeech">
         🔊 Sesli Oku
