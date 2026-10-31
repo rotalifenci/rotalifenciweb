@@ -756,7 +756,7 @@
       <!-- Sağ Kontroller: Süre, Ses, Tam Ekran, Testi bitir -->
       <div class="rf-header-right">
         <div class="rf-timer-pill" id="rfTimerDigits" title="Kalan Süre (Soru Sayısı x 2 Dakika)">
-          ⏱️ <span id="rfTimerVal">40:00</span>
+          ⏱️ <span id="rfTimerVal">30:00</span>
         </div>
         <button type="button" class="rf-icon-btn" onclick="toggleSpeech()" title="Soruyu Sesli Oku">
           <i class="fa-solid fa-volume-high"></i>
@@ -787,9 +787,22 @@
     <div class="rf-card-body" id="rfCardBody">
       <div class="rf-questions-stream" id="rfQuestionsStream">
         
-        <section class="rf-question-slide rf-no-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Gökyüzünde hareketli ve ısı kaynağı olarak gördüğümüz, katmanlardan oluşan ve Dünya'ya en yakın yıldız olan gök cisminin adı nedir?</div>
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonCleanClip_3dg21"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonCleanClip_3dg21)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Görselde özellikleri verilen ve katmanlı bir yapıya sahip olan ısı ve ışık kaynağımızın adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-1" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(1, this.value)">
@@ -799,9 +812,14 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-1" data-slide="1" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Dünya'mızın tek doğal uydusu olan ve üzerinde kraterler bulunan gök cisminin adı nedir?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-1" data-slide="1" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="sunAxisClip"><circle cx="260" cy="110" r="80"/></clipPath></defs><rect width="520" height="220" fill="#ffffff"/><image href="/images/sun.jpg" xlink:href="/images/sun.jpg" x="180" y="30" width="160" height="160" clip-path="url(#sunAxisClip)" preserveAspectRatio="xMidYMid slice"/><line x1="260" y1="10" x2="260" y2="210" stroke="#0f172a" stroke-width="2" stroke-dasharray="5,5"/><text x="270" y="25" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş, kendi ekseni etrafındaki dönme hareketini hangi yönün tersine doğru gerçekleştirir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-2" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(2, this.value)">
@@ -811,9 +829,14 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-2" data-slide="2" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş, Dünya ve Ay'ın uzaydan bakıldığında sahip olduğu genel geometrik şekil nedir?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-2" data-slide="2" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="moonClip"><circle cx="260" cy="110" r="80"/></clipPath></defs><rect width="520" height="220" fill="#ffffff"/><image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="180" y="30" width="160" height="160" clip-path="url(#moonClip)" preserveAspectRatio="xMidYMid slice"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Dünya'mızın tek doğal uydusu olan, yüzeyinde kraterler bulunan gök cisminin adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-3" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(3, this.value)">
@@ -823,9 +846,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-3" data-slide="3" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Yüzeyinde sıcak gazların oluşturduğu dev patlamalar nedeniyle karanlık lekelere sahip olan ısı ve ışık kaynağı gök cismi <u>hangisidir</u>?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-3" data-slide="3" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_ek9o9"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_ek9o9)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay'ın Dünya'ya olan uzaklığı sürekli değişmektedir. Ay'ın Dünya'ya en uzak olduğu konuma ne ad verilir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-4" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(4, this.value)">
@@ -835,9 +871,14 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-4" data-slide="4" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Kendi başına ışık üretmeyen, ancak Güneş'ten aldığı ışığı yansıtan gök cismi <u>hangisidir</u>?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-4" data-slide="4" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><defs><clipPath id="moonSurface"><rect x="160" y="40" width="200" height="140" rx="10"/></clipPath></defs><rect width="520" height="220" fill="#ffffff"/><image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="160" y="40" width="200" height="140" clip-path="url(#moonSurface)" preserveAspectRatio="xMidYMid slice"/><rect x="160" y="40" width="200" height="140" rx="10" fill="none" stroke="#0f172a" stroke-width="2"/></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay'ın atmosferi çok incedir ve yok denecek kadar azdır. Bu durum Ay'da hangi olayın görülmesini engeller?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-5" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(5, this.value)">
@@ -847,9 +888,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-5" data-slide="5" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Büyüklükleri karşılaştırıldığında, Güneş ile Ay'dan hangisinin hacmi diğerine göre çok daha büyüktür?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-5" data-slide="5" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_ooy7s"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_ooy7s)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin eşit olması sonucunda Dünya'dan hep aynı ....... görülür.</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-6" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(6, this.value)">
@@ -859,9 +913,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-6" data-slide="6" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş'in dünyaya olan uzaklığı nedeniyle gökyüzünde adeta Ay ile aynı büyüklükte görünmesine yol açan durum nedir? (Oran / Yanılsama anlamında)</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-6" data-slide="6" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_5gjs3"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_5gjs3)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay'ın ana evrelerinden biri olan ve Ay'ın Dünya ile Güneş arasında kaldığı, karanlık görünen evrenin adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-7" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(7, this.value)">
@@ -871,9 +938,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-7" data-slide="7" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş'in yaydığı enerji hangi iki temel unsurun oluşmasını sağlar?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-7" data-slide="7" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_59snr"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_59snr)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Görselde karanlık tarafı sol tarafta, aydınlık yarım daire şekli sağ tarafta olan Ay'ın ara evresinin adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-8" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(8, this.value)">
@@ -883,9 +963,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-8" data-slide="8" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş'in veya Ay'ın küresel şeklinin tam ortasından geçtiği varsayılan en büyük uzunluğa ne denir?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-8" data-slide="8" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_zzzg6"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_zzzg6)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay'ın Dünya'ya bakan yüzünün tamamen aydınlık olduğu ana evrenin adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-9" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(9, this.value)">
@@ -895,9 +988,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-9" data-slide="9" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş de tıpkı Dünya gibi iç içe geçmiş farklı sıcaklık ve yoğunluklardaki ...lardan oluşur. Boş bırakılan yere ne yazılmalıdır?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-9" data-slide="9" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_z86hc"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_z86hc)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Dolunaydan sonraki hafta görülen ve sol tarafının aydınlık olduğu ara evrenin adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-10" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(10, this.value)">
@@ -907,9 +1013,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Ay'ın yüzeyinde gök taşlarının çarpmasıyla oluşan büyük çukurlara verilen bilimsel ad nedir?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-10" data-slide="10" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_dxiyr"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_dxiyr)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş, Dünya ve Ay'ın hacimsel olarak büyüklükten küçüğe doğru sıralamasında en büyük hacme sahip olan gök cismi <u>hangisidir</u>?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-11" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(11, this.value)">
@@ -919,9 +1038,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-11" data-slide="11" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş'in kendi ekseni etrafında dönme hareketi yaptığını kanıtlayan üzerindeki koyu renkli bölgelerin adı nedir?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-11" data-slide="11" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_j5nsb"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_j5nsb)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Hacim karşılaştırması yapıldığında, Dünya ile Ay yan yana getirildiğinde hangisi daha büyük hacme sahiptir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-12" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(12, this.value)">
@@ -931,9 +1063,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-12" data-slide="12" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Ay'ın yüzeyinde yer alan taşlık, tozlu ve ince katmana ne ad verilir?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-12" data-slide="12" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_oho3e"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_oho3e)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">?</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Ay, etrafında dolandığı gezegen olan Dünya'nın yanı sıra hangi gök cisminin etrafında da dolanma hareketi yapar?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-13" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(13, this.value)">
@@ -943,9 +1088,22 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-13" data-slide="13" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş, orta sıcaklıkta bir ...dır. Cümledeki boşluğa hangi gök cismi sınıfı yazılmalıdır?</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-13" data-slide="13" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <clipPath id="moonAutoClip_xi9pz"><circle cx="260" cy="95" r="68"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="520" height="220" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <image href="/images/moon.jpg" xlink:href="/images/moon.jpg" x="192" y="27" width="136" height="136" clip-path="url(#moonAutoClip_xi9pz)" preserveAspectRatio="xMidYMid slice"/>
+  <circle cx="260" cy="95" r="68" fill="none" stroke="#94a3b8" stroke-width="2"/>
+  <text x="260" y="190" text-anchor="middle" fill="#0f172a" stroke="#e2e8f0" stroke-width="1" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="14" font-weight="700">Ay</text>
+</svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş, Dünya ve Ay modelinde, Ay'ın ana evrelerinin tümünün tamamlanması için geçen süre yaklaşık kaç gündür?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-14" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(14, this.value)">
@@ -955,72 +1113,17 @@
         </section>
       
 
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-14" data-slide="14" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Ay, küre şeklindedir ve tam ortasından geçen hayali çizginin oluşturduğu ... uzunluğuna sahiptir.</div>
+        <section class="rf-question-slide rf-has-visual " id="rf-slide-14" data-slide="14" style="display: none;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><svg xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 520 220" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg"><rect width="520" height="220" fill="#ffffff"/><text x="260" y="110" font-family="'Times New Roman', Times, serif"Times New Roman', Times, serif" font-size="20" text-anchor="middle" fill="#ffffff" stroke="#e2e8f0" stroke-width="1">?</text></svg></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Verilen modelde Güneş ve Dünya'dan sonra en küçük olan üçüncü gök cismi <u>hangisidir</u>?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-15" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(15, this.value)">
-        </div>
-      
-          </div>
-        </section>
-      
-
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-15" data-slide="15" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş'in yapısında katı maddeler yerine yoğun olarak bulunan sıcak maddelere ne denir?</div>
-            
-        <div class="rf-input-container">
-          <input type="text" class="rf-short-input" id="rf-input-16" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(16, this.value)">
-        </div>
-      
-          </div>
-        </section>
-      
-
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-16" data-slide="16" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Ay'da hava olaylarının (rüzgar, yağmur vb.) görülmemesinin temel sebebi neyin yokluğudur?</div>
-            
-        <div class="rf-input-container">
-          <input type="text" class="rf-short-input" id="rf-input-17" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(17, this.value)">
-        </div>
-      
-          </div>
-        </section>
-      
-
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-17" data-slide="17" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez kimin gibi gözlemler doğrulamıştır? (Genel bilim tarihi veya hareket anlamında, dönme yönü batıdan doğuya doğrudur)</div>
-            
-        <div class="rf-input-container">
-          <input type="text" class="rf-short-input" id="rf-input-18" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(18, this.value)">
-        </div>
-      
-          </div>
-        </section>
-      
-
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-18" data-slide="18" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Ay, Dünya etrafındaki dolanma hareketini hangi yönde gerçekleştirir?</div>
-            
-        <div class="rf-input-container">
-          <input type="text" class="rf-short-input" id="rf-input-19" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(19, this.value)">
-        </div>
-      
-          </div>
-        </section>
-      
-
-        <section class="rf-question-slide rf-no-visual " id="rf-slide-19" data-slide="19" style="display: none;">
-          <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Dünya'daki yaşamın devam etmesini sağlayan en büyük doğal ısı ve ışık kaynağı nedir?</div>
-            
-        <div class="rf-input-container">
-          <input type="text" class="rf-short-input" id="rf-input-20" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(20, this.value)">
         </div>
       
           </div>
@@ -1073,7 +1176,7 @@
       <!-- Ortadaki Boncuklu İlerleme Rayı -->
       <div class="rf-bead-track-container" id="rfBeadTrackContainer">
         <div class="rf-beads-row" id="rfBeadsRow">
-          <button type="button" class="rf-bead is-active" id="rf-bead-0" onclick="goToSlide(0)" title="Soru 1">1</button><button type="button" class="rf-bead " id="rf-bead-1" onclick="goToSlide(1)" title="Soru 2">2</button><button type="button" class="rf-bead " id="rf-bead-2" onclick="goToSlide(2)" title="Soru 3">3</button><button type="button" class="rf-bead " id="rf-bead-3" onclick="goToSlide(3)" title="Soru 4">4</button><button type="button" class="rf-bead " id="rf-bead-4" onclick="goToSlide(4)" title="Soru 5">5</button><button type="button" class="rf-bead " id="rf-bead-5" onclick="goToSlide(5)" title="Soru 6">6</button><button type="button" class="rf-bead " id="rf-bead-6" onclick="goToSlide(6)" title="Soru 7">7</button><button type="button" class="rf-bead " id="rf-bead-7" onclick="goToSlide(7)" title="Soru 8">8</button><button type="button" class="rf-bead " id="rf-bead-8" onclick="goToSlide(8)" title="Soru 9">9</button><button type="button" class="rf-bead " id="rf-bead-9" onclick="goToSlide(9)" title="Soru 10">10</button><button type="button" class="rf-bead " id="rf-bead-10" onclick="goToSlide(10)" title="Soru 11">11</button><button type="button" class="rf-bead " id="rf-bead-11" onclick="goToSlide(11)" title="Soru 12">12</button><button type="button" class="rf-bead " id="rf-bead-12" onclick="goToSlide(12)" title="Soru 13">13</button><button type="button" class="rf-bead " id="rf-bead-13" onclick="goToSlide(13)" title="Soru 14">14</button><button type="button" class="rf-bead " id="rf-bead-14" onclick="goToSlide(14)" title="Soru 15">15</button><button type="button" class="rf-bead " id="rf-bead-15" onclick="goToSlide(15)" title="Soru 16">16</button><button type="button" class="rf-bead " id="rf-bead-16" onclick="goToSlide(16)" title="Soru 17">17</button><button type="button" class="rf-bead " id="rf-bead-17" onclick="goToSlide(17)" title="Soru 18">18</button><button type="button" class="rf-bead " id="rf-bead-18" onclick="goToSlide(18)" title="Soru 19">19</button><button type="button" class="rf-bead " id="rf-bead-19" onclick="goToSlide(19)" title="Soru 20">20</button>
+          <button type="button" class="rf-bead is-active" id="rf-bead-0" onclick="goToSlide(0)" title="Soru 1">1</button><button type="button" class="rf-bead " id="rf-bead-1" onclick="goToSlide(1)" title="Soru 2">2</button><button type="button" class="rf-bead " id="rf-bead-2" onclick="goToSlide(2)" title="Soru 3">3</button><button type="button" class="rf-bead " id="rf-bead-3" onclick="goToSlide(3)" title="Soru 4">4</button><button type="button" class="rf-bead " id="rf-bead-4" onclick="goToSlide(4)" title="Soru 5">5</button><button type="button" class="rf-bead " id="rf-bead-5" onclick="goToSlide(5)" title="Soru 6">6</button><button type="button" class="rf-bead " id="rf-bead-6" onclick="goToSlide(6)" title="Soru 7">7</button><button type="button" class="rf-bead " id="rf-bead-7" onclick="goToSlide(7)" title="Soru 8">8</button><button type="button" class="rf-bead " id="rf-bead-8" onclick="goToSlide(8)" title="Soru 9">9</button><button type="button" class="rf-bead " id="rf-bead-9" onclick="goToSlide(9)" title="Soru 10">10</button><button type="button" class="rf-bead " id="rf-bead-10" onclick="goToSlide(10)" title="Soru 11">11</button><button type="button" class="rf-bead " id="rf-bead-11" onclick="goToSlide(11)" title="Soru 12">12</button><button type="button" class="rf-bead " id="rf-bead-12" onclick="goToSlide(12)" title="Soru 13">13</button><button type="button" class="rf-bead " id="rf-bead-13" onclick="goToSlide(13)" title="Soru 14">14</button><button type="button" class="rf-bead " id="rf-bead-14" onclick="goToSlide(14)" title="Soru 15">15</button>
         </div>
       </div>
 
@@ -1100,15 +1203,15 @@
 
 <script>
   // Sınav Verisi & Durum
-  const TOTAL_QUESTIONS = 20;
+  const TOTAL_QUESTIONS = 15;
   let activeSlide = 0;
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Gökyüzünde hareketli ve ısı kaynağı olarak gördüğümüz, katmanlardan oluşan ve Dünya'ya en yakın yıldız olan gök cisminin adı nedir?","correct":"Güneş","explanation":"Güneş, Dünya'ya en yakın yıldızdır ve bir ısı, ışık kaynağıdır. Geometrik şekli küre şeklindedir.","type":"short_answer"},{"id":2,"question":"Dünya'mızın tek doğal uydusu olan ve üzerinde kraterler bulunan gök cisminin adı nedir?","correct":"Ay","explanation":"Ay, Dünya'nın tek doğal uydusudur ve yüzeyinde büyük çukurlar (kraterler) bulunur.","type":"short_answer"},{"id":3,"question":"Güneş, Dünya ve Ay'ın uzaydan bakıldığında sahip olduğu genel geometrik şekil nedir?","correct":"Küre","explanation":"Güneş, Dünya ve Ay küresel bir şekle sahiptir.","type":"short_answer"},{"id":4,"question":"Yüzeyinde sıcak gazların oluşturduğu dev patlamalar nedeniyle karanlık lekelere sahip olan ısı ve ışık kaynağı gök cismi hangisidir?","correct":"Güneş","explanation":"Güneş'in yüzeyinde daha soğuk bölgeler olarak görülen ve 'Güneş lekesi' adı verilen karanlık bölgeler bulunur.","type":"short_answer"},{"id":5,"question":"Kendi başına ışık üretmeyen, ancak Güneş'ten aldığı ışığı yansıtan gök cismi hangisidir?","correct":"Ay","explanation":"Ay bir ışık kaynağı değildir; Güneş'ten aldığı ışığı yansıttığı için parlak görünür.","type":"short_answer"},{"id":6,"question":"Büyüklükleri karşılaştırıldığında, Güneş ile Ay'dan hangisinin hacmi diğerine göre çok daha büyüktür?","correct":"Güneş","explanation":"Güneş, Ay'a göre devasa büyüklüktedir. Güneş'in içerisine yaklaşık 64 milyon Ay sığabilir.","type":"short_answer"},{"id":7,"question":"Güneş'in dünyaya olan uzaklığı nedeniyle gökyüzünde adeta Ay ile aynı büyüklükte görünmesine yol açan durum nedir? (Oran / Yanılsama anlamında)","correct":"Perspektif","explanation":"Güneş Ay'dan çok daha büyük olmasına rağmen, Dünya'ya çok daha uzakta olduğu için ikisi gökyüzünde neredeyse aynı boyutta görünür.","type":"short_answer"},{"id":8,"question":"Güneş'in yaydığı enerji hangi iki temel unsurun oluşmasını sağlar?","correct":"Isı ve ışık","explanation":"Güneş bir yıldızdır ve etrafına sürekli ısı ve ışık yayar.","type":"short_answer"},{"id":9,"question":"Güneş'in veya Ay'ın küresel şeklinin tam ortasından geçtiği varsayılan en büyük uzunluğa ne denir?","correct":"Çap","explanation":"Küre şeklindeki gök cisimlerinin merkezinden geçen ve iki noktayı birleştiren doğru parçası çaptır.","type":"short_answer"},{"id":10,"question":"Güneş de tıpkı Dünya gibi iç içe geçmiş farklı sıcaklık ve yoğunluklardaki ...lardan oluşur. Boş bırakılan yere ne yazılmalıdır?","correct":"Katman","explanation":"Güneş, gaz bulutlarından oluşan ve iç içe katmanları bulunan bir yıldızdır.","type":"short_answer"},{"id":11,"question":"Ay'ın yüzeyinde gök taşlarının çarpmasıyla oluşan büyük çukurlara verilen bilimsel ad nedir?","correct":"Krater","explanation":"Ay yüzeyindeki büyük çukurlara krater denir.","type":"short_answer"},{"id":12,"question":"Güneş'in kendi ekseni etrafında dönme hareketi yaptığını kanıtlayan üzerindeki koyu renkli bölgelerin adı nedir?","correct":"Güneş lekesi","explanation":"Güneş lekeleri sayesinde Güneş'in kendi ekseni etrafında döndüğü gözlemlenmiştir.","type":"short_answer"},{"id":13,"question":"Ay'ın yüzeyinde yer alan taşlık, tozlu ve ince katmana ne ad verilir?","correct":"Ay tozu","explanation":"Ay yüzeyi regolit adı verilen ince bir toz tabakası ve taşlarla kaplıdır.","type":"short_answer"},{"id":14,"question":"Güneş, orta sıcaklıkta bir ...dır. Cümledeki boşluğa hangi gök cismi sınıfı yazılmalıdır?","correct":"Yıldız","explanation":"Güneş bir yıldızdır.","type":"short_answer"},{"id":15,"question":"Ay, küre şeklindedir ve tam ortasından geçen hayali çizginin oluşturduğu ... uzunluğuna sahiptir.","correct":"Çap","explanation":"Tüm küresel cisimler gibi Ay'ın da bir çapı vardır.","type":"short_answer"},{"id":16,"question":"Güneş'in yapısında katı maddeler yerine yoğun olarak bulunan sıcak maddelere ne denir?","correct":"Gaz","explanation":"Güneş tamamen sıcak gazlardan (özellikle hidrojen ve helyum) oluşmuş bir gök cismidir.","type":"short_answer"},{"id":17,"question":"Ay'da hava olaylarının (rüzgar, yağmur vb.) görülmemesinin temel sebebi neyin yokluğudur?","correct":"Atmosfer","explanation":"Ay'ın atmosferi yok denecek kadar ince olduğundan hava olayları gerçekleşmez, gece ile gündüz arasındaki sıcaklık farkı çok fazladır.","type":"short_answer"},{"id":18,"question":"Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez kimin gibi gözlemler doğrulamıştır? (Genel bilim tarihi veya hareket anlamında, dönme yönü batıdan doğuya doğrudur)","correct":"Batıdan doğuya","explanation":"Güneş, Dünya gibi kendi ekseni etrafında batıdan doğuya doğru dönme hareketi yapar.","type":"short_answer"},{"id":19,"question":"Ay, Dünya etrafındaki dolanma hareketini hangi yönde gerçekleştirir?","correct":"Batıdan doğuya","explanation":"Ay, Dünya etrafındaki dolanma hareketini batıdan doğuya doğru yapar.","type":"short_answer"},{"id":20,"question":"Dünya'daki yaşamın devam etmesini sağlayan en büyük doğal ısı ve ışık kaynağı nedir?","correct":"Güneş","explanation":"Güneş, dünyadaki yaşamın temel enerji kaynağıdır.","type":"short_answer"}];
+  const rawQuestions = [{"id":1,"question":"Görselde özellikleri verilen ve katmanlı bir yapıya sahip olan ısı ve ışık kaynağımızın adı nedir?","correct":"Güneş","explanation":"Görselde verilen ve Dünya'ya ısı ile ışık sağlayan en yakın yıldız Güneş'tir.","type":"short_answer"},{"id":2,"question":"Güneş, kendi ekseni etrafındaki dönme hareketini hangi yönün tersine doğru gerçekleştirir?","correct":"Saat yönünün tersi","explanation":"Güneş, kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru, yani saat yönünün tersine yapar.","type":"short_answer"},{"id":3,"question":"Dünya'mızın tek doğal uydusu olan, yüzeyinde kraterler bulunan gök cisminin adı nedir?","correct":"Ay","explanation":"Dünya'ya en yakın gök cismi ve tek doğal uydu Ay'dır.","type":"short_answer"},{"id":4,"question":"Ay'ın Dünya'ya olan uzaklığı sürekli değişmektedir. Ay'ın Dünya'ya en uzak olduğu konuma ne ad verilir?","correct":"Ötegiz","explanation":"Ay'ın elips yörüngesi nedeniyle Dünya'ya en uzak olduğu noktaya ötegiz (apogee) denir.","type":"short_answer"},{"id":5,"question":"Ay'ın atmosferi çok incedir ve yok denecek kadar azdır. Bu durum Ay'da hangi olayın görülmesini engeller?","correct":"Hava olayları","explanation":"Atmosferin olmaması rüzgar, yağmur gibi hava olaylarının gerçekleşmesini engeller.","type":"short_answer"},{"id":6,"question":"Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin eşit olması sonucunda Dünya'dan hep aynı ....... görülür.","correct":"yüz","explanation":"Sürelerin eşit olması nedeniyle dünyadan her zaman Ay'ın aynı yüzü gözlemlenir.","type":"short_answer"},{"id":7,"question":"Ay'ın ana evrelerinden biri olan ve Ay'ın Dünya ile Güneş arasında kaldığı, karanlık görünen evrenin adı nedir?","correct":"Yeni ay","explanation":"Ay'ın Güneş'e bakan tarafı Dünya'dan görünmediği bu ana evre 'Yeni ay' olarak adlandırılır.","type":"short_answer"},{"id":8,"question":"Görselde karanlık tarafı sol tarafta, aydınlık yarım daire şekli sağ tarafta olan Ay'ın ara evresinin adı nedir?","correct":"İlk dördün","explanation":"Yeni aydan yaklaşık 1 hafta sonra görülen ve sağ tarafın aydınlık olduğu ara evre 'İlk dördün'dür.","type":"short_answer"},{"id":9,"question":"Ay'ın Dünya'ya bakan yüzünün tamamen aydınlık olduğu ana evrenin adı nedir?","correct":"Dolunay","explanation":"Dünya'nın, Güneş ile Ay arasında kaldığı konumda görülen tam daire şeklindeki parlak evre dolunaydır.","type":"short_answer"},{"id":10,"question":"Dolunaydan sonraki hafta görülen ve sol tarafının aydınlık olduğu ara evrenin adı nedir?","correct":"Son dördün","explanation":"Dolunaydan sonraki hafta görülen, sol yarısı aydınlık olan ara evre 'Son dördün'dür.","type":"short_answer"},{"id":11,"question":"Güneş, Dünya ve Ay'ın hacimsel olarak büyüklükten küçüğe doğru sıralamasında en büyük hacme sahip olan gök cismi hangisidir?","correct":"Güneş","explanation":"Üç gök cisminden hacimce en büyüğü Güneş'tir.","type":"short_answer"},{"id":12,"question":"Hacim karşılaştırması yapıldığında, Dünya ile Ay yan yana getirildiğinde hangisi daha büyük hacme sahiptir?","correct":"Dünya","explanation":"Dünya, Ay'a göre çok daha büyük bir hacme sahiptir.","type":"short_answer"},{"id":13,"question":"Ay, etrafında dolandığı gezegen olan Dünya'nın yanı sıra hangi gök cisminin etrafında da dolanma hareketi yapar?","correct":"Güneş","explanation":"Ay, Dünya ile birlikte Güneş'in etrafında da dolanma hareketi gerçekleştirir.","type":"short_answer"},{"id":14,"question":"Güneş, Dünya ve Ay modelinde, Ay'ın ana evrelerinin tümünün tamamlanması için geçen süre yaklaşık kaç gündür?","correct":"29 gün","explanation":"Ay'ın bir evreden tekrar aynı evreye gelmesi (evrelerin tamamlanması) yaklaşık 29 gün sürer (1 ay).","type":"short_answer"},{"id":15,"question":"Verilen modelde Güneş ve Dünya'dan sonra en küçük olan üçüncü gök cismi hangisidir?","correct":"Ay","explanation":"Güneş, Dünya ve Ay sistemi içerisindeki en küçük gök cismi Ay'dır.","type":"short_answer"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
-  let timeLeftSeconds = 2400;
+  let timeLeftSeconds = 1800;
   let timerInterval = null;
 
   function initTimer() {
@@ -1376,7 +1479,7 @@
   function restartTest() {
     userAnswers = {};
     isFinished = false;
-    timeLeftSeconds = 2400;
+    timeLeftSeconds = 1800;
 
     // Tüm kart seçimlerini ve girişleri temizle
     document.querySelectorAll('.rf-option-card').forEach(c => c.classList.remove('is-selected'));
