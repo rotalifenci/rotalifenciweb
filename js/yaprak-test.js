@@ -2947,7 +2947,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             localStorage.setItem('rotali_custom_materials', JSON.stringify(localMats));
             // Z-Kitap dosyaları doğrudan sunucudan/dosyadan yüklenir, localStorage önbelleklenmez.
-            }
           } catch (e) {}
         }
 
