@@ -1,0 +1,32 @@
+<svg viewBox="0 0 600 320" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="moonGrad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="85%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="600" height="320" rx="12" fill="#090d16"/>
+  <rect x="140" y="16" width="320" height="30" rx="15" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="300" y="36" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700">BİLİMSEL GÖK CİSMİ İNCELEME MODELİ</text>
+
+  <!-- Ay Küresi -->
+  <circle cx="300" cy="165" r="85" fill="url(#moonGrad)"/>
+
+  <!-- Krater Çukurları -->
+  <circle cx="260" cy="135" r="14" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="340" cy="140" r="18" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="270" cy="205" r="22" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="330" cy="215" r="12" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Hedef (?) Rozeti -->
+  <rect x="250" y="125" width="100" height="80" rx="14" fill="#ffffff" stroke="#ef4444" stroke-width="3"/>
+  <text x="300" y="175" text-anchor="middle" fill="#ef4444" font-family="'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900">?</text>
+  <text x="300" y="196" text-anchor="middle" fill="#64748b" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">GÖK CİSMİ</text>
+
+  <!-- Alt Bilgi Kutusu -->
+  <rect x="150" y="275" width="300" height="28" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="300" y="293" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600">Özellik: Yüzeyinde kraterler bulunan kayalık küre</text>
+</svg>

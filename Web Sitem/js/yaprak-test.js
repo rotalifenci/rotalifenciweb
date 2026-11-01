@@ -2007,6 +2007,31 @@ document.addEventListener('DOMContentLoaded', () => {
     renderQuestions();
   };
 
+  
+  // ==========================================================================
+  // AKILLI SORU–GÖRSEL EŞLEŞTİRME VE DÜZENLEME KONTROLLERİ (ÖĞRETMEN ARAÇLARI)
+  // ==========================================================================
+  window.harmonizeQuestionVisual = (idx) => {
+    if (idx < 0 || idx >= currentQuestions.length) return;
+    const q = currentQuestions[idx];
+    if (window.visualMatchEngine) {
+      const brief = window.visualMatchEngine.generateVisualBrief(q.question, q.options || {}, q.correct_answer || '');
+      q.visual_svg = brief.renderedHtml;
+      renderQuestions();
+      alert('✨ Görsel, soru metnindeki konu, kavram ve pedagojik işaretlere göre başarıyla uyarlandı:\n\n' + brief.coreConcept + ' (' + brief.assetAlt + ')');
+    } else {
+      alert('Görsel eşleştirme motoru hazır değil.');
+    }
+  };
+
+  window.removeQuestionVisual = (idx) => {
+    if (idx < 0 || idx >= currentQuestions.length) return;
+    if (confirm('Bu soruya ait görseli kaldırmak istediğinizden emin misiniz?')) {
+      currentQuestions[idx].visual_svg = '';
+      renderQuestions();
+    }
+  };
+
   window.cancelEditQuestion = () => {
     editingQuestionIndex = -1;
     renderQuestions();
