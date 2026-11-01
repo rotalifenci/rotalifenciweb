@@ -1,3 +1,4 @@
+const { getScientificVisual } = require('./scientific_visual_engine.js');
 // Vercel Serverless Function: POST /api/generate-questions
 const CANDIDATE_MODELS = [
   "gemini-2.5-flash",
@@ -67,6 +68,10 @@ function sanitizeToWhiteBackground(svgContent) {
 // 2. Yalnızca soru ile ilgili gök cismi gösterilir (Güneş soruluyorsa Ay eklenmez).
 // 3. Basit vektör daireler yerine NASA yüksek çözünürlüklü gerçek fotoğrafları kullanılır.
 function enhanceCelestialVisual(visual_svg, question, options = {}, correctLetterOrText = '') {
+  const sci = getScientificVisual(question, options, visual_svg);
+  if (sci && (sci.includes('<img') || sci.includes('<image'))) {
+    return sci;
+  }
   if (!visual_svg || typeof visual_svg !== 'string' || !visual_svg.includes('<svg')) return '';
 
   let svg = visual_svg;
