@@ -4,6 +4,7 @@
   "private": true,
   "description": "Rotalı Fenci - Ortaokul Fen Bilimleri ve LGS Eğitim Platformu",
   "scripts": {
-    "yayinla": "node Web Sitem/scripts/yayinla.js"
+    "yayinla": "node Web Sitem/scripts/yayinla.js",
+    "test": "node --test tests/soru_hazirlama_module.test.js"
   }
 }

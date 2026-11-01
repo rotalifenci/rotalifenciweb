@@ -118,14 +118,25 @@ document.addEventListener('DOMContentLoaded', () => {
           if (row) row.classList.add('is-active');
           const val = parseInt(countInputEl.value, 10) || 0;
           total += val;
+          if (window.questionPrepEngine) {
+            window.questionPrepEngine.setTypeEnabled(t, true);
+            window.questionPrepEngine.setTypeCount(t, val);
+          }
         } else {
           countInputEl.disabled = true;
           if (row) row.classList.remove('is-active');
+          if (window.questionPrepEngine) {
+            window.questionPrepEngine.setTypeEnabled(t, false);
+          }
         }
       }
     });
 
     syncActivitySubtypesUI();
+
+    if (window.questionPrepEngine) {
+      total = window.questionPrepEngine.getTotalCount();
+    }
 
     if (qtTotalCountBadge) {
       qtTotalCountBadge.textContent = `📊 Toplam: ${total} İçerik`;
@@ -253,6 +264,14 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+        document.querySelectorAll('input[name="qtOutputMode"]').forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (window.questionPrepEngine) {
+          window.questionPrepEngine.setOutputMode(radio.value);
+        }
+      });
+    });
+
     updateQtTotalCount();
   }
 
@@ -263,14 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuestionTypesAndActivities();
   }
 
-    const mainActCb = document.getElementById('qt_cb_activity');
-    if (mainActCb) {
-      mainActCb.addEventListener('change', () => {
-        syncActivitySubtypesUI();
-        updateQtTotalCount();
-      });
-    }
-  });
+
 
 
 
@@ -466,6 +478,12 @@ document.addEventListener('DOMContentLoaded', () => {
     text = text.replace(/rotamenci/gi, 'Rotalı Fenci');
     text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*>\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 > $2');
     text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*<\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 < $2');
+        // Kullanıcı Talimatı: "sorularda yukarıdaki demiş yandaki diye düzelt tüm sorular için bunu yap"
+    text = text.replace(/\bYukarıdaki\b/g, 'Yandaki');
+    text = text.replace(/\byukarıdaki\b/g, 'yandaki');
+    text = text.replace(/\bYukarıda\b/g, 'Yanda');
+    text = text.replace(/\byukarıda\b/g, 'yanda');
+
     return text.trim();
   }
 
