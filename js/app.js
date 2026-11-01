@@ -3593,21 +3593,21 @@ function renderHomePage(container) {
         <section class="relative bg-gradient-to-b from-slate-50 via-white to-slate-100/70 border-b border-slate-200 py-10 lg:py-14 overflow-hidden select-none">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 relative w-full">
                 
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-8">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center mb-8">
                     <!-- Sol Metin & Slogan -->
-                    <div class="lg:col-span-7 flex flex-col items-start text-left">
+                    <div class="lg:col-span-6 flex flex-col items-start text-left">
                         <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-red-50 border border-red-200 text-red-700 text-xs font-black tracking-wider uppercase mb-4 shadow-2xs">
                             <i class="fa-solid fa-sparkles text-red-600 animate-pulse"></i>
                             <span>TÜRKİYE'NİN DİJİTAL FEN EĞİTİM PORTALI</span>
                         </div>
 
-                        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-black text-slate-900 tracking-tight leading-[1.15] mb-4">
+                        <h1 class="text-3xl sm:text-5xl lg:text-5xl xl:text-6xl font-black text-slate-900 tracking-tight leading-[1.15] mb-4">
                             Bilimi Keşfet, <br class="hidden sm:inline"/>
                             <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-orange-500 to-indigo-900">Rotanı Çiz!</span>
                         </h1>
 
                         <!-- Kullanıcının İstediği Tam Metin (Eğitim Ağı Formatında Vurgulu & Akıcı Sunum) -->
-                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-medium mb-6 max-w-2xl">
+                        <p class="text-slate-600 text-sm sm:text-base leading-relaxed font-medium mb-6 max-w-xl">
                             <strong class="text-slate-900 font-extrabold">Rotalı Fenci;</strong> PDF ders notları, akıllı tahta sunumları, deney videoları, istasyon etkinlikleri, yeni nesil soru bankası, LGS denemeleri, 3D eğitsel oyunları ve <em class="text-indigo-900 font-bold not-italic">“Bilimin Rotasını Çizenler”</em> köşesiyle akıllı tahta, bilgisayar, tablet ve telefonlarda kesintisiz bir öğrenme deneyimi sunar.
                         </p>
 
@@ -3630,10 +3630,13 @@ function renderHomePage(container) {
                         </div>
                     </div>
 
-                    <!-- Sağ Görsel Kart (Rotalı Fenci Tanıtım Afişi) -->
-                    <div class="lg:col-span-5 relative w-full flex items-center justify-center">
-                        <div class="relative w-full max-w-[520px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200/80 bg-white group transition-all duration-300 hover:shadow-red-500/15 hover:scale-[1.01] cursor-pointer" onclick="window.open('assets/rotali-fenci-tanitim.jpg', '_blank')" title="Büyütmek için tıklayın">
-                            <img src="assets/rotali-fenci-tanitim.jpg" alt="Rotalı Fenci - Rotamız Fen!" class="w-full h-auto object-cover rounded-2xl block" loading="eager">
+                    <!-- Sağ Görsel Kart (Rotalı Fenci Tanıtım Afişi - Tam Alan Kaplama & Maksimum Netlik) -->
+                    <div class="lg:col-span-6 w-full flex items-center justify-center">
+                        <div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white ring-2 ring-slate-200/90 bg-slate-950 group transition-all duration-300 hover:shadow-red-500/25 hover:scale-[1.01] cursor-pointer" onclick="window.open('assets/rotali-fenci-tanitim.jpg', '_blank')" title="Tam boy görmek için tıklayın">
+                            <img src="assets/rotali-fenci-tanitim.jpg" alt="Rotalı Fenci - Rotamız Fen!" class="w-full h-auto block object-cover" style="width: 100%; display: block;" loading="eager">
+                            <span class="absolute bottom-3 right-3 px-3 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-black border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 pointer-events-none shadow-lg">
+                                <i class="fa-solid fa-expand text-amber-400"></i> Tam Boy Gör
+                            </span>
                         </div>
                     </div>
                 </div>
