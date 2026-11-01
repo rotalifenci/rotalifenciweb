@@ -60,14 +60,28 @@
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -186,7 +200,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -201,17 +215,17 @@
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -225,32 +239,36 @@
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -343,19 +361,21 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {
@@ -794,10 +814,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda geometrik şekli ve temel özelliklerinden biri soru işareti ile belirtilen gök cisminin ne olduğunu ve gökyüzünde büyük görünmesine rağmen Dünya'dan çok küçük görünmesinin temel sebebini açıklayınız.</div>
+            <div class="rf-stem-text">Yanda geometrik şekli ve temel özelliklerinden biri soru işareti ile belirtilen gök cisminin ne olduğunu ve gökyüzünde büyük görünmesine rağmen Dünya'dan çok küçük görünmesinin temel sebebini açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-1" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
           </div>
@@ -814,7 +834,7 @@
             <div class="rf-stem-text">Geometrik şekli küreye benzeyen bu gök cismi üzerine teleskopla bakıldığında yüzeyinde çukurlar olduğu görülür. Bu gök cisminin kendi ışık kaynağı olmadığı halde neden gece gökyüzünde parlak bir şekilde görülebildiğini açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-2" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
           </div>
@@ -831,7 +851,7 @@
             <div class="rf-stem-text">Güneş, Dünya ve Ay'ın üçünün de ortak olan geometrik şekli nedir? Bu geometrik şeklin uzaydaki gök cisimleri için ortak olmasının nedenini bilimsel olarak açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-3" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
           </div>
@@ -845,10 +865,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıdaki görselde X ve Y ile temsil edilen iki gök cismi verilmiştir. X gök cisminin sıcak bir gaz bulutu, Y gök cisminin ise soğuk ve kayalık bir yapıya sahip olduğu bilindiğine göre, bu gök cisimlerinin adlarını yazarak ısı ve ışık yayma özelliklerindeki temel farkı açıklayınız.</div>
+            <div class="rf-stem-text">Yandaki görselde X ve Y ile temsil edilen iki gök cismi verilmiştir. X gök cisminin sıcak bir gaz bulutu, Y gök cisminin ise soğuk ve kayalık bir yapıya sahip olduğu bilindiğine göre, bu gök cisimlerinin adlarını yazarak ısı ve ışık yayma özelliklerindeki temel farkı açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-4" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
           </div>
@@ -865,7 +885,7 @@
             <div class="rf-stem-text">Günlük hayatta gökyüzüne baktığımızda Güneş ve Ay'ı neredeyse aynı büyüklükte görürüz. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun nedenini günlük hayattan bir örnekle (örneğin tren veya futbol topu örneğiyle) açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-5" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
           </div>
@@ -882,7 +902,7 @@
             <div class="rf-stem-text">Ay'ın yüzeyinde ince bir atmosfer tabakası olduğu bilinmektedir. Bu durumun Ay üzerinde gece ile gündüz arasındaki sıcaklık farkının Dünya'ya göre aşırı derecede fazla (çok sıcak veya çok soğuk) olmasına neden olmasını açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-6" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
           </div>
@@ -899,7 +919,7 @@
             <div class="rf-stem-text">Güneş'in yapısında katı maddeler yerine çoğunlukla hidrojen ve helyum gibi gazlar bulunmaktadır. Buna rağmen Güneş'in dağılmadan küresel bir biçimde kalmasını sağlayan temel etken nedir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-7" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
           </div>
@@ -913,10 +933,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda yüzeyinde kraterler (çukurlar) bulunan Ay'ın bu yapıya nasıl sahip olduğunu ve Dünya'da Ay'a kıyasla çok daha az krater bulunmasının nedenini açıklayınız.</div>
+            <div class="rf-stem-text">Yanda yüzeyinde kraterler (çukurlar) bulunan Ay'ın bu yapıya nasıl sahip olduğunu ve Dünya'da Ay'a kıyasla çok daha az krater bulunmasının nedenini açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-8" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
           </div>
@@ -933,7 +953,7 @@
             <div class="rf-stem-text">Güneş kendi ekseni etrafında dönerken, Ay da hem kendi ekseni etrafında hem de Dünya etrafında döner. Bu hareketlerin sonucunda Güneş ve Ay'ın geometrik küre şekillerinde bir değişim gözlenir mi? Gerekçesiyle açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-9" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
           </div>
@@ -950,7 +970,7 @@
             <div class="rf-stem-text">Güneş'in bir yıldız olduğu bilinmektedir. Yıldızların genel özellikleri düşünüldüğünde, Güneş'in Dünya'mızın yaşam kaynağı olmasını sağlayan temel özelliklerinden ikisini yazınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-10" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
           </div>
@@ -967,7 +987,7 @@
             <div class="rf-stem-text">Bir öğrenci "Ay bir ışık kaynağıdır çünkü geceleri onu çok parlak görüyoruz" iddiasında bulunmuştur. Bu öğrencinin bilimsel açıdan yanıldığını, Ay'ın ve Güneş'in özelliklerini kullanarak açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-11" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
           </div>
@@ -981,10 +1001,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda temsilî olarak verilen Ay'ın yüzeyindeki toz tabakasının (regolit) ve rüzgar/yağmur gibi hava olaylarının olmamasının, Ay'da ayak izlerinin milyonlarca yıl bozulmadan kalmasını nasıl sağladığını açıklayınız.</div>
+            <div class="rf-stem-text">Yanda temsilî olarak verilen Ay'ın yüzeyindeki toz tabakasının (regolit) ve rüzgar/yağmur gibi hava olaylarının olmamasının, Ay'da ayak izlerinin milyonlarca yıl bozulmadan kalmasını nasıl sağladığını açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-12" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
           </div>
@@ -1001,7 +1021,7 @@
             <div class="rf-stem-text">Güneş, Dünya'ya en yakın yıldızdır. Eğer Güneş, evrendeki diğer bazı dev yıldızlar gibi çok daha büyük olsaydı, Dünya'mız üzerindeki yaşamı nasıl etkilerdi? Mantıksal bir gerekçe ile açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-13" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
           </div>
@@ -1018,7 +1038,7 @@
             <div class="rf-stem-text">Boyutları şekildeki gibi iki farklı küre şeklinde gök cismi verilmiştir. Sol taraftaki cisim kendi enerjisini üretip yayarken sağdaki cisim bunu yapamamaktadır. Bu iki gök cisminin uzaydaki ortak geometrik biçimlerinin adını ve bu biçimi alma nedenini yazınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-14" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
           </div>
@@ -1035,7 +1055,7 @@
             <div class="rf-stem-text">Ay, Dünya'nın tek doğal uydusudur. Ay'ın Dünya'ya olan uzaklığı zaman zaman çok az değişse de genel olarak küresel yapısını ve görünümünü korur. Ay'ın küresel bir şekle sahip olduğunu uzaya giden astronotların gözlemleri dışında yeryüzünden nasıl kanıtlayabiliriz? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-15" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
           </div>
@@ -1120,7 +1140,7 @@
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Yukarıda geometrik şekli ve temel özelliklerinden biri soru işareti ile belirtilen gök cisminin ne olduğunu ve gökyüzünde büyük görünmesine rağmen Dünya'dan çok küçük görünmesinin temel sebebini açıklayınız.","correct":"Gök cismi Güneş'tir. Dünya'dan çok büyük görünmesinin temel sebebi, Dünya'mıza diğer benzer gök cisimlerinden çok daha uzakta olmasıdır.","explanation":"Güneş küre şeklindedir ve orta büyüklükte bir yıldızdır. Gerçekte çok büyük olmasına rağmen Dünya'ya çok uzak olduğu için gökyüzünde küçük bir daire şeklinde görünür.","type":"open_ended"},{"id":2,"question":"Geometrik şekli küreye benzeyen bu gök cismi üzerine teleskopla bakıldığında yüzeyinde çukurlar olduğu görülür. Bu gök cisminin kendi ışık kaynağı olmadığı halde neden gece gökyüzünde parlak bir şekilde görülebildiğini açıklayınız.","correct":"Bu gök cismi Ay'dır. Kendi ışığı yoktur ancak Güneş'ten aldığı ışığı Dünya'mıza yansıttığı için parlak görünür.","explanation":"Ay, Güneş gibi bir ışık kaynağı değildir. Sadece Güneş'ten gelen ışınları yansıtan bir ayna gibi davranır.","type":"open_ended"},{"id":3,"question":"Güneş, Dünya ve Ay'ın üçünün de ortak olan geometrik şekli nedir? Bu geometrik şeklin uzaydaki gök cisimleri için ortak olmasının nedenini bilimsel olarak açıklayınız.","correct":"Üçünün de ortak geometrik şekli küredir. Gök cisimlerinin kütle çekim kuvvetinin etkisiyle maddeyi merkeze doğru eşit oranda çekmesi sonucunda küresel bir şekil alırlar.","explanation":"Evrendeki büyük kütleli gök cisimleri, sahip oldukları çekim kuvveti nedeniyle her yönden merkeze doğru çökerek küreye benzer geometrik şekiller oluştururlar.","type":"open_ended"},{"id":4,"question":"Yukarıdaki görselde X ve Y ile temsil edilen iki gök cismi verilmiştir. X gök cisminin sıcak bir gaz bulutu, Y gök cisminin ise soğuk ve kayalık bir yapıya sahip olduğu bilindiğine göre, bu gök cisimlerinin adlarını yazarak ısı ve ışık yayma özelliklerindeki temel farkı açıklayınız.","correct":"X Güneş'tir, Y ise Ay'dır. Güneş sıcak gazlardan oluştuğu için ısı ve ışık yayar (ısı kaynağıdır), Ay ise katı ve kayalık bir gök cismi olduğundan kendi başına ısı ve ışık üretemez.","explanation":"Yıldızlar (Güneş gibi) nükleer tepkimelerle kendi enerjilerini üretip yayarken, uydular (Ay gibi) ve gezegenler dışarıdan aldıkları ışığı yansıtırlar.","type":"open_ended"},{"id":5,"question":"Günlük hayatta gökyüzüne baktığımızda Güneş ve Ay'ı neredeyse aynı büyüklükte görürüz. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun nedenini günlük hayattan bir örnekle (örneğin tren veya futbol topu örneğiyle) açıklayınız.","correct":"Cisimler uzaktakiyken olduğundan daha küçük görünür. Güneş gerçekte çok büyük olmasına rağmen Ay'a göre Dünya'mıza çok daha uzaktır, bu yüzden hemen hemen aynı boyuttaymış gibi görünürler.","explanation":"Boyutları farklı olan iki nesneden büyük olanı uzağa, küçük olanı yakına koyduğumuzda gözümüze aynı boyutta görünebilirler.","type":"open_ended"},{"id":6,"question":"Ay'ın yüzeyinde ince bir atmosfer tabakası olduğu bilinmektedir. Bu durumun Ay üzerinde gece ile gündüz arasındaki sıcaklık farkının Dünya'ya göre aşırı derecede fazla (çok sıcak veya çok soğuk) olmasına neden olmasını açıklayınız.","correct":"Atmosfer, güneş ışınlarının gündüz aşırı ısıtmasını, gece ise ısı kaybını önleyen bir örtü görevi görür. Ay'da atmosfer yok denecek kadar az olduğu için bu ısı dengesi sağlanamaz ve sıcaklık farkı çok büyük olur.","explanation":"Atmosfer tabakası sera etkisi yaratarak gezegen veya uyduların sıcaklık dengesini korur.","type":"open_ended"},{"id":7,"question":"Güneş'in yapısında katı maddeler yerine çoğunlukla hidrojen ve helyum gibi gazlar bulunmaktadır. Buna rağmen Güneş'in dağılmadan küresel bir biçimde kalmasını sağlayan temel etken nedir? Açıklayınız.","correct":"Güneş'in sahip olduğu devasa kütle çekim kuvveti, gazların uzaya dağılmasını engeller ve merkeze doğru çekerek küresel bir formda kalmasını sağlar.","explanation":"Yıldızların devasa kütleleri çok güçlü çekim kuvvetleri oluşturur ve bu kuvvet gaz kütlelerini bir arada tutar.","type":"open_ended"},{"id":8,"question":"Yukarıda yüzeyinde kraterler (çukurlar) bulunan Ay'ın bu yapıya nasıl sahip olduğunu ve Dünya'da Ay'a kıyasla çok daha az krater bulunmasının nedenini açıklayınız.","correct":"Ay'ın yüzeyindeki çukurlar (kraterler) gök taşlarının çarpmasıyla oluşmuştur. Dünya'da da bu tür çarpmalar olabilir ancak Dünya'nın kalın bir atmosferi olduğu için küçük gök taşları atmosferde yanarak yok olur. Ay'da atmosfer olmadığı için taşlar doğrudan yüzeye çarpar.","explanation":"Atmosfer gök cisimlerini uzaydan gelen tehlikelere karşı koruyan bir kalkan görevi görür.","type":"open_ended"},{"id":9,"question":"Güneş kendi ekseni etrafında dönerken, Ay da hem kendi ekseni etrafında hem de Dünya etrafında döner. Bu hareketlerin sonucunda Güneş ve Ay'ın geometrik küre şekillerinde bir değişim gözlenir mi? Gerekçesiyle açıklayınız.","correct":"Hayır, gözlenmez. Bu hareketler gök cisimlerinin küresel şekillerini değiştirmez; çünkü kütle çekim kuvveti her yönde dengededir ve şekillerini korur.","explanation":"Dönme hareketleri gök cisimlerinin geometrik formunu (küre yapısını) kalıcı olarak bozmaz.","type":"open_ended"},{"id":10,"question":"Güneş'in bir yıldız olduğu bilinmektedir. Yıldızların genel özellikleri düşünüldüğünde, Güneş'in Dünya'mızın yaşam kaynağı olmasını sağlayan temel özelliklerinden ikisini yazınız.","correct":"1. Isı ve ışık yayması, 2. Dünya'ya uygun mesafede bulunarak suyun sıvı halde kalmasını sağlaması.","explanation":"Güneş hem ısı vererek yaşanabilir sıcaklık sağlar hem de ışık vererek bitkilerin besin üretmesine olanak tanır.","type":"open_ended"},{"id":11,"question":"Bir öğrenci \"Ay bir ışık kaynağıdır çünkü geceleri onu çok parlak görüyoruz\" iddiasında bulunmuştur. Bu öğrencinin bilimsel açıdan yanıldığını, Ay'ın ve Güneş'in özelliklerini kullanarak açıklayınız.","correct":"Öğrenci yanılmaktadır. Ay bir ışık kaynağı değildir, çünkü taş ve kayalardan oluşur. Geceleri parlak görünmesinin sebebi, Güneş'ten aldığı ışığı bir ayna gibi yansıtmasıdır.","explanation":"Işık kaynağı olan cisimler kendi ışığını üretir (Güneş gibi). Işığı yansıtan cisimler ise ışık kaynağı değildir (Ay gibi).","type":"open_ended"},{"id":12,"question":"Yukarıda temsilî olarak verilen Ay'ın yüzeyindeki toz tabakasının (regolit) ve rüzgar/yağmur gibi hava olaylarının olmamasının, Ay'da ayak izlerinin milyonlarca yıl bozulmadan kalmasını nasıl sağladığını açıklayınız.","correct":"Ay'da atmosfer ve hava olayları (rüzgar, yağmur, kar) yoktur. Bu yüzden ayak izlerini veya yüzey şekillerini silecek ya da aşındıracak bir etken bulunmadığından izler ilk günkü gibi kalır.","explanation":"Dünyamızda hava olayları aşınmaya sebep olurken, atmosferi olmayan gök cisimlerinde izler uzun süre kalır.","type":"open_ended"},{"id":13,"question":"Güneş, Dünya'ya en yakın yıldızdır. Eğer Güneş, evrendeki diğer bazı dev yıldızlar gibi çok daha büyük olsaydı, Dünya'mız üzerindeki yaşamı nasıl etkilerdi? Mantıksal bir gerekçe ile açıklayınız.","correct":"Çok daha büyük bir Güneş, dünyaya aşırı derecede fazla ısı ve ışık yayardı. Bu durum dünyadaki tüm su kaynaklarının buharlaşmasına ve yaşama elverişsiz aşırı sıcak bir ortama neden olurdu.","explanation":"Yıldızların boyutu ve yaydığı enerji miktarı, çevresindeki gezegenlerin yaşanabilirliğini doğrudan etkiler.","type":"open_ended"},{"id":14,"question":"Boyutları şekildeki gibi iki farklı küre şeklinde gök cismi verilmiştir. Sol taraftaki cisim kendi enerjisini üretip yayarken sağdaki cisim bunu yapamamaktadır. Bu iki gök cisminin uzaydaki ortak geometrik biçimlerinin adını ve bu biçimi alma nedenini yazınız.","correct":"Ortak geometrik biçimleri küredir. Kütle çekim kuvvetinin etkisiyle maddelerin merkeze doğru eşit çekilmesi bu şekli almalarını sağlar.","explanation":"Küre, uzaydaki büyük kütleli cisimlerin çekim etkisiyle büründüğü temel geometrik formdur.","type":"open_ended"},{"id":15,"question":"Ay, Dünya'nın tek doğal uydusudur. Ay'ın Dünya'ya olan uzaklığı zaman zaman çok az değişse de genel olarak küresel yapısını ve görünümünü korur. Ay'ın küresel bir şekle sahip olduğunu uzaya giden astronotların gözlemleri dışında yeryüzünden nasıl kanıtlayabiliriz? Açıklayınız.","correct":"Ay tutulması sırasında Dünya'nın Ay üzerindeki gölgesinin kenarlarının daire şeklinde (kavisli) görünmesi, Ay'ın ve Dünya'nın küresel olduğunun kanıtlarından biridir.","explanation":"Gölge boyları ve şekilleri cisimlerin geometrik formları hakkında net ipuçları verir.","type":"open_ended"}];
+  const rawQuestions = [{"id":1,"question":"Yanda geometrik şekli ve temel özelliklerinden biri soru işareti ile belirtilen gök cisminin ne olduğunu ve gökyüzünde büyük görünmesine rağmen Dünya'dan çok küçük görünmesinin temel sebebini açıklayınız.","correct":"Gök cismi Güneş'tir. Dünya'dan çok büyük görünmesinin temel sebebi, Dünya'mıza diğer benzer gök cisimlerinden çok daha uzakta olmasıdır.","explanation":"Güneş küre şeklindedir ve orta büyüklükte bir yıldızdır. Gerçekte çok büyük olmasına rağmen Dünya'ya çok uzak olduğu için gökyüzünde küçük bir daire şeklinde görünür.","type":"open_ended"},{"id":2,"question":"Geometrik şekli küreye benzeyen bu gök cismi üzerine teleskopla bakıldığında yüzeyinde çukurlar olduğu görülür. Bu gök cisminin kendi ışık kaynağı olmadığı halde neden gece gökyüzünde parlak bir şekilde görülebildiğini açıklayınız.","correct":"Bu gök cismi Ay'dır. Kendi ışığı yoktur ancak Güneş'ten aldığı ışığı Dünya'mıza yansıttığı için parlak görünür.","explanation":"Ay, Güneş gibi bir ışık kaynağı değildir. Sadece Güneş'ten gelen ışınları yansıtan bir ayna gibi davranır.","type":"open_ended"},{"id":3,"question":"Güneş, Dünya ve Ay'ın üçünün de ortak olan geometrik şekli nedir? Bu geometrik şeklin uzaydaki gök cisimleri için ortak olmasının nedenini bilimsel olarak açıklayınız.","correct":"Üçünün de ortak geometrik şekli küredir. Gök cisimlerinin kütle çekim kuvvetinin etkisiyle maddeyi merkeze doğru eşit oranda çekmesi sonucunda küresel bir şekil alırlar.","explanation":"Evrendeki büyük kütleli gök cisimleri, sahip oldukları çekim kuvveti nedeniyle her yönden merkeze doğru çökerek küreye benzer geometrik şekiller oluştururlar.","type":"open_ended"},{"id":4,"question":"Yandaki görselde X ve Y ile temsil edilen iki gök cismi verilmiştir. X gök cisminin sıcak bir gaz bulutu, Y gök cisminin ise soğuk ve kayalık bir yapıya sahip olduğu bilindiğine göre, bu gök cisimlerinin adlarını yazarak ısı ve ışık yayma özelliklerindeki temel farkı açıklayınız.","correct":"X Güneş'tir, Y ise Ay'dır. Güneş sıcak gazlardan oluştuğu için ısı ve ışık yayar (ısı kaynağıdır), Ay ise katı ve kayalık bir gök cismi olduğundan kendi başına ısı ve ışık üretemez.","explanation":"Yıldızlar (Güneş gibi) nükleer tepkimelerle kendi enerjilerini üretip yayarken, uydular (Ay gibi) ve gezegenler dışarıdan aldıkları ışığı yansıtırlar.","type":"open_ended"},{"id":5,"question":"Günlük hayatta gökyüzüne baktığımızda Güneş ve Ay'ı neredeyse aynı büyüklükte görürüz. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun nedenini günlük hayattan bir örnekle (örneğin tren veya futbol topu örneğiyle) açıklayınız.","correct":"Cisimler uzaktakiyken olduğundan daha küçük görünür. Güneş gerçekte çok büyük olmasına rağmen Ay'a göre Dünya'mıza çok daha uzaktır, bu yüzden hemen hemen aynı boyuttaymış gibi görünürler.","explanation":"Boyutları farklı olan iki nesneden büyük olanı uzağa, küçük olanı yakına koyduğumuzda gözümüze aynı boyutta görünebilirler.","type":"open_ended"},{"id":6,"question":"Ay'ın yüzeyinde ince bir atmosfer tabakası olduğu bilinmektedir. Bu durumun Ay üzerinde gece ile gündüz arasındaki sıcaklık farkının Dünya'ya göre aşırı derecede fazla (çok sıcak veya çok soğuk) olmasına neden olmasını açıklayınız.","correct":"Atmosfer, güneş ışınlarının gündüz aşırı ısıtmasını, gece ise ısı kaybını önleyen bir örtü görevi görür. Ay'da atmosfer yok denecek kadar az olduğu için bu ısı dengesi sağlanamaz ve sıcaklık farkı çok büyük olur.","explanation":"Atmosfer tabakası sera etkisi yaratarak gezegen veya uyduların sıcaklık dengesini korur.","type":"open_ended"},{"id":7,"question":"Güneş'in yapısında katı maddeler yerine çoğunlukla hidrojen ve helyum gibi gazlar bulunmaktadır. Buna rağmen Güneş'in dağılmadan küresel bir biçimde kalmasını sağlayan temel etken nedir? Açıklayınız.","correct":"Güneş'in sahip olduğu devasa kütle çekim kuvveti, gazların uzaya dağılmasını engeller ve merkeze doğru çekerek küresel bir formda kalmasını sağlar.","explanation":"Yıldızların devasa kütleleri çok güçlü çekim kuvvetleri oluşturur ve bu kuvvet gaz kütlelerini bir arada tutar.","type":"open_ended"},{"id":8,"question":"Yanda yüzeyinde kraterler (çukurlar) bulunan Ay'ın bu yapıya nasıl sahip olduğunu ve Dünya'da Ay'a kıyasla çok daha az krater bulunmasının nedenini açıklayınız.","correct":"Ay'ın yüzeyindeki çukurlar (kraterler) gök taşlarının çarpmasıyla oluşmuştur. Dünya'da da bu tür çarpmalar olabilir ancak Dünya'nın kalın bir atmosferi olduğu için küçük gök taşları atmosferde yanarak yok olur. Ay'da atmosfer olmadığı için taşlar doğrudan yüzeye çarpar.","explanation":"Atmosfer gök cisimlerini uzaydan gelen tehlikelere karşı koruyan bir kalkan görevi görür.","type":"open_ended"},{"id":9,"question":"Güneş kendi ekseni etrafında dönerken, Ay da hem kendi ekseni etrafında hem de Dünya etrafında döner. Bu hareketlerin sonucunda Güneş ve Ay'ın geometrik küre şekillerinde bir değişim gözlenir mi? Gerekçesiyle açıklayınız.","correct":"Hayır, gözlenmez. Bu hareketler gök cisimlerinin küresel şekillerini değiştirmez; çünkü kütle çekim kuvveti her yönde dengededir ve şekillerini korur.","explanation":"Dönme hareketleri gök cisimlerinin geometrik formunu (küre yapısını) kalıcı olarak bozmaz.","type":"open_ended"},{"id":10,"question":"Güneş'in bir yıldız olduğu bilinmektedir. Yıldızların genel özellikleri düşünüldüğünde, Güneş'in Dünya'mızın yaşam kaynağı olmasını sağlayan temel özelliklerinden ikisini yazınız.","correct":"1. Isı ve ışık yayması, 2. Dünya'ya uygun mesafede bulunarak suyun sıvı halde kalmasını sağlaması.","explanation":"Güneş hem ısı vererek yaşanabilir sıcaklık sağlar hem de ışık vererek bitkilerin besin üretmesine olanak tanır.","type":"open_ended"},{"id":11,"question":"Bir öğrenci \"Ay bir ışık kaynağıdır çünkü geceleri onu çok parlak görüyoruz\" iddiasında bulunmuştur. Bu öğrencinin bilimsel açıdan yanıldığını, Ay'ın ve Güneş'in özelliklerini kullanarak açıklayınız.","correct":"Öğrenci yanılmaktadır. Ay bir ışık kaynağı değildir, çünkü taş ve kayalardan oluşur. Geceleri parlak görünmesinin sebebi, Güneş'ten aldığı ışığı bir ayna gibi yansıtmasıdır.","explanation":"Işık kaynağı olan cisimler kendi ışığını üretir (Güneş gibi). Işığı yansıtan cisimler ise ışık kaynağı değildir (Ay gibi).","type":"open_ended"},{"id":12,"question":"Yanda temsilî olarak verilen Ay'ın yüzeyindeki toz tabakasının (regolit) ve rüzgar/yağmur gibi hava olaylarının olmamasının, Ay'da ayak izlerinin milyonlarca yıl bozulmadan kalmasını nasıl sağladığını açıklayınız.","correct":"Ay'da atmosfer ve hava olayları (rüzgar, yağmur, kar) yoktur. Bu yüzden ayak izlerini veya yüzey şekillerini silecek ya da aşındıracak bir etken bulunmadığından izler ilk günkü gibi kalır.","explanation":"Dünyamızda hava olayları aşınmaya sebep olurken, atmosferi olmayan gök cisimlerinde izler uzun süre kalır.","type":"open_ended"},{"id":13,"question":"Güneş, Dünya'ya en yakın yıldızdır. Eğer Güneş, evrendeki diğer bazı dev yıldızlar gibi çok daha büyük olsaydı, Dünya'mız üzerindeki yaşamı nasıl etkilerdi? Mantıksal bir gerekçe ile açıklayınız.","correct":"Çok daha büyük bir Güneş, dünyaya aşırı derecede fazla ısı ve ışık yayardı. Bu durum dünyadaki tüm su kaynaklarının buharlaşmasına ve yaşama elverişsiz aşırı sıcak bir ortama neden olurdu.","explanation":"Yıldızların boyutu ve yaydığı enerji miktarı, çevresindeki gezegenlerin yaşanabilirliğini doğrudan etkiler.","type":"open_ended"},{"id":14,"question":"Boyutları şekildeki gibi iki farklı küre şeklinde gök cismi verilmiştir. Sol taraftaki cisim kendi enerjisini üretip yayarken sağdaki cisim bunu yapamamaktadır. Bu iki gök cisminin uzaydaki ortak geometrik biçimlerinin adını ve bu biçimi alma nedenini yazınız.","correct":"Ortak geometrik biçimleri küredir. Kütle çekim kuvvetinin etkisiyle maddelerin merkeze doğru eşit çekilmesi bu şekli almalarını sağlar.","explanation":"Küre, uzaydaki büyük kütleli cisimlerin çekim etkisiyle büründüğü temel geometrik formdur.","type":"open_ended"},{"id":15,"question":"Ay, Dünya'nın tek doğal uydusudur. Ay'ın Dünya'ya olan uzaklığı zaman zaman çok az değişse de genel olarak küresel yapısını ve görünümünü korur. Ay'ın küresel bir şekle sahip olduğunu uzaya giden astronotların gözlemleri dışında yeryüzünden nasıl kanıtlayabiliriz? Açıklayınız.","correct":"Ay tutulması sırasında Dünya'nın Ay üzerindeki gölgesinin kenarlarının daire şeklinde (kavisli) görünmesi, Ay'ın ve Dünya'nın küresel olduğunun kanıtlarından biridir.","explanation":"Gölge boyları ve şekilleri cisimlerin geometrik formları hakkında net ipuçları verir.","type":"open_ended"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
   let timeLeftSeconds = 1800;

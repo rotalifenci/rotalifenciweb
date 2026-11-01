@@ -53,8 +53,22 @@ function buildZKitapHtml({
     const qNum = idx + 1;
     const isMultipleChoice = !!(q.options && (q.options.A || q.options.B));
     const isShortAnswer = q.type === 'short_answer';
-    const isOpenEnded = q.type === 'open_ended' || (!isMultipleChoice && !isShortAnswer);
+    const isActivity = q.type === 'activity';
+    const isOpenEnded = q.type === 'open_ended' || (!isMultipleChoice && !isShortAnswer && !isActivity);
 
+    if (q.question) {
+      q.question = q.question
+        .replace(/Yukarıdaki/g, 'Yandaki')
+        .replace(/yukarıdaki/g, 'yandaki')
+        .replace(/Yukarıdakilerden/g, 'Yandakilerden')
+        .replace(/yukarıdakilerden/g, 'yandakilerden')
+        .replace(/Yukarıdakiler/g, 'Yandakiler')
+        .replace(/yukarıdakiler/g, 'yandakiler')
+        .replace(/Yukarıdan/g, 'Yandan')
+        .replace(/yukarıdan/g, 'yandan')
+        .replace(/Yukarıda\b/g, 'Yanda')
+        .replace(/yukarıda\b/g, 'yanda');
+    }
     const formattedStem = formatQuestionStem(q.question);
     const hasVisual = !!(q.visual_svg && q.visual_svg.trim());
     const visualHtml = hasVisual ? `<div class="rf-visual-box">${q.visual_svg}</div>` : '';
@@ -81,10 +95,75 @@ function buildZKitapHtml({
           <input type="text" class="rf-short-input" id="rf-input-${qNum}" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(${qNum}, this.value)">
         </div>
       `;
+    } else if (isActivity) {
+      const data = q.activity_data || {};
+      let actUi = '';
+
+      if (data.items_left && data.items_right) {
+        actUi = `
+          <div style="display:grid; grid-template-columns:1fr 50px 1fr; gap:6px; margin:8px 0; font-size:12px;">
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              ${data.items_left.map(it => `<div style="padding:4px 8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-weight:600;"><strong style="color:#2563eb;">${it.id})</strong> ${escapeHtml(it.text || it)}</div>`).join('')}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px; align-items:center;">
+              ${data.items_left.map(() => `<div style="height:28px; width:40px; border:1.5px dashed #3b82f6; border-radius:6px; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:11px;">( ... )</div>`).join('')}
+            </div>
+            <div style="display:flex; flex-direction:column; gap:4px;">
+              ${data.items_right.map(it => `<div style="padding:4px 8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px; font-weight:600;"><strong style="color:#475569;">${it.id})</strong> ${escapeHtml(it.text || it)}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      } else if (data.order_items) {
+        actUi = `
+          <div style="display:flex; flex-direction:column; gap:6px; margin:8px 0; font-size:12px;">
+            ${data.order_items.map((it, i) => `
+              <div style="display:flex; align-items:center; gap:8px; padding:4px 8px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:6px;">
+                <span style="width:22px; height:22px; border-radius:50%; background:#2563eb; color:#fff; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:800; flex-shrink:0;">${i + 1}</span>
+                <span style="font-weight:600;">${escapeHtml(it)}</span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } else if (data.table_headers && data.table_rows) {
+        actUi = `
+          <div style="overflow-x:auto; margin:8px 0;">
+            <table style="width:100%; border-collapse:collapse; font-size:11px;">
+              <thead>
+                <tr style="background:#f1f5f9;">${data.table_headers.map(h => `<th style="border:1px solid #cbd5e1; padding:4px 6px; text-align:left;">${escapeHtml(h)}</th>`).join('')}</tr>
+              </thead>
+              <tbody>
+                ${data.table_rows.map(row => `
+                  <tr>${row.map(cell => `<td style="border:1px solid #cbd5e1; padding:4px 6px; background:#fff;">${escapeHtml(cell)}</td>`).join('')}</tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (data.categories) {
+        actUi = `
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(130px, 1fr)); gap:6px; margin:8px 0; font-size:11px;">
+            ${data.categories.map(c => `
+              <div style="border:1.5px solid #cbd5e1; border-radius:8px; background:#fff; overflow:hidden;">
+                <div style="background:#f1f5f9; padding:4px 6px; font-weight:800; text-align:center;">${escapeHtml(c)}</div>
+                <div style="padding:6px; min-height:40px; border-top:1px solid #cbd5e1; color:#94a3b8; font-style:italic; font-size:10px;">[ Öğeleri buraya yerleştiriniz ]</div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      }
+
+      optionsHtml = `
+        <div class="rf-input-container">
+          ${q.instruction ? `<div style="background:#eff6ff; border-left:3.5px solid #2563eb; padding:8px 12px; border-radius:8px; font-size:13px; font-weight:700; color:#1e40af; margin-bottom:10px; line-height:1.5;">📌 Yönerge: ${escapeHtml(q.instruction)}</div>` : ''}
+          ${actUi}
+          <div style="font-size:12px; font-weight:800; color:#334155; margin:8px 0 4px 0;">✍️ Etkinlik Çözüm ve Cevabınız:</div>
+          <textarea class="rf-open-textarea" id="rf-input-${qNum}" rows="2" autocomplete="off" spellcheck="false" placeholder="Etkinlik cevabınızı buraya yazınız..." oninput="syncAnswer(${qNum}, this.value)"></textarea>
+        </div>
+      `;
     } else {
       optionsHtml = `
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-${qNum}" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(${qNum}, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-${qNum}" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(${qNum}, this.value)"></textarea>
         </div>
       `;
     }
@@ -181,14 +260,28 @@ function buildZKitapHtml({
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -307,7 +400,7 @@ function buildZKitapHtml({
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -322,17 +415,17 @@ function buildZKitapHtml({
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -346,32 +439,36 @@ function buildZKitapHtml({
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -464,19 +561,21 @@ function buildZKitapHtml({
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {

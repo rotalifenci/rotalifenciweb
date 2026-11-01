@@ -60,14 +60,28 @@
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -186,7 +200,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -201,17 +215,17 @@
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -225,32 +239,36 @@
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -343,19 +361,21 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {
@@ -794,7 +814,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıdaki modelde Güneş, Dünya ve X ile gösterilen gök cismi aynı doğrultudadır. Bu konumda gerçekleşen doğa olayının adı nedir?</div>
+            <div class="rf-stem-text">Yandaki modelde Güneş, Dünya ve X ile gösterilen gök cismi aynı doğrultudadır. Bu konumda gerçekleşen doğa olayının adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-1" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(1, this.value)">
@@ -811,7 +831,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıdaki modelde Güneş, Y ile gösterilen gök cismi ve Ay aynı doğrultudadır. Bu konumda gerçekleşen olayın adı nedir?</div>
+            <div class="rf-stem-text">Yandaki modelde Güneş, Y ile gösterilen gök cismi ve Ay aynı doğrultudadır. Bu konumda gerçekleşen olayın adı nedir?</div>
             
         <div class="rf-input-container">
           <input type="text" class="rf-short-input" id="rf-input-2" autocomplete="off" spellcheck="false" placeholder="Kısa cevabınızı buraya yazınız..." oninput="syncAnswer(2, this.value)">
@@ -1120,7 +1140,7 @@
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Yukarıdaki modelde Güneş, Dünya ve X ile gösterilen gök cismi aynı doğrultudadır. Bu konumda gerçekleşen doğa olayının adı nedir?","correct":"Güneş tutulması","explanation":"Güneş ile Dünya arasına Ay'ın girdiği ve Ay'ın gölgesinin Dünya üzerine düştüğü olay Güneş tutulmasıdır. Modelde X ile gösterilen gök cismi Ay'dır.","type":"short_answer"},{"id":2,"question":"Yukarıdaki modelde Güneş, Y ile gösterilen gök cismi ve Ay aynı doğrultudadır. Bu konumda gerçekleşen olayın adı nedir?","correct":"Ay tutulması","explanation":"Güneş ile Ay arasına Dünya'nın girdiği ve Ay'ın Dünya'nın gölgesinde kaldığı olay Ay tutulmasıdır. Modelde Y ile gösterilen gök cismi Dünya'dır.","type":"short_answer"},{"id":3,"question":"Güneş tutulması olayı ayın hangi evresinde gerçekleşir?","correct":"Yeni ay","explanation":"Güneş tutulması, Ay'ın Güneş ile Dünya arasına girdiği ve yeni ay evresinde olduğu zaman gerçekleşir.","type":"short_answer"},{"id":4,"question":"Ay tutulması olayı ayın hangi evresinde gerçekleşir?","correct":"Dolunay","explanation":"Ay tutulması, Dünya'nın Güneş ile Ay arasına girdiği ve Ay'ın dolunay evresinde olduğu zaman gerçekleşir.","type":"short_answer"},{"id":5,"question":"Ay tutulması sırasında Dünya'nın arkasında oluşan ve Ay'ın üzerine düşerek onun görünmez ya da kızıl görünmesine neden olan karanlık bölgeye ne ad verilir?","correct":"Gölge konisi","explanation":"Ay tutulmasında Dünya, Güneş ışınlarını engeller ve arkasında bir gölge konisi oluşturur. Ay bu bölgeye girdiğinde tutulma gerçekleşir.","type":"short_answer"},{"id":6,"question":"Güneş tutulması dünyada çok dar bir alan üzerine gözlenirken, Ay tutulması dünyada daha ne tür bir alandan gözlenebilir?","correct":"Geniş","explanation":"Ay'ın gölgesi Dünya üzerinde çok küçük bir bölgeye düştüğü için Güneş tutulması dar bir alandan izlenir. Ay tutulmasında ise Dünya'nın gölgesi büyük olduğu için geceyi yaşayan geniş bir alandan izlenebilir.","type":"short_answer"},{"id":7,"question":"Güneş tutulması sırasında çıplak gözle doğrudan bakmak göz sağlığına zararlıdır. Bu olayı güvenli izlemek için ne tür özel filtreli araçlar kullanılmalıdır?","correct":"Güneş filtresi","explanation":"Güneş tutulmaları sırasında zararlı ışınlar geldiği için mutlaka özel güneş filtreleri veya tutulma gözlükleri kullanılmalıdır.","type":"short_answer"},{"id":8,"question":"Ay tutulmasını gözlemlemek için Güneş tutulmasında olduğu gibi özel bir filtreye gerek var mıdır?","correct":"Yoktur","explanation":"Ay tutulması sırasında Ay, Güneş'ten aldığı ışığı yansıtmadığı ve zararlı ışınlar yaymadığı için çıplak gözle güvenle izlenebilir.","type":"short_answer"},{"id":9,"question":"Işığın doğrusal yayıldığının en büyük kanıtlarından biri olan, gök cisimlerinin birbirinin gölgesinde kalması olayına genel olarak ne ad verilir?","correct":"Işık tutulması","explanation":"Güneş ve Ay tutulmaları, ışığın doğrusal yayıldığını ve opak cisimlerin arkasında gölge oluşturduğunu kanıtlayan doğal olaylardır.","type":"short_answer"},{"id":10,"question":"Her ay yeni ay ve dolunay evresi olmasına rağmen her ay Güneş ve Ay tutulmasının gerçekleşmeme sebebi Ay'ın dolanma düzleminin Dünya'nın dolanma düzlemiyle yaptığı ne ile ilgilidir?","correct":"Açı","explanation":"Ay'ın yörünge düzlemi ile Dünya'nın yörünge düzlemi arasında yaklaşık 5 derecelik bir açı vardır. Bu yüzden her ay tam aynı doğrultuya gelmezler.","type":"short_answer"},{"id":11,"question":"Güneş tutulması sırasında Ay, Dünya'ya göre hangi konumdadır (gök cisimlerinin sırası: Güneş - ... - Dünya)?","correct":"Ay","explanation":"Güneş tutulmasında sıralama Güneş - Ay - Dünya şeklindedir.","type":"short_answer"},{"id":12,"question":"Ay tutulması sırasında Dünya, Güneş'e göre hangi konumdadır (gök cisimlerinin sırası: Güneş - ... - Ay)?","correct":"Dünya","explanation":"Ay tutulmasında sıralama Güneş - Dünya - Ay şeklindedir.","type":"short_answer"},{"id":13,"question":"Dünya'nın gölgesinin Ay üzerine düşmesiyle gerçekleşen olay sırasında Ay tamamen kaybolmaz, hafif bakırımsı kırmızı bir renk alır. Bu olay nedir?","correct":"Ay tutulması","explanation":"Ay tutulmasında Dünya atmosferinden kırılan kırmızı tonundaki ışıklar Ay'a ulaştığı için Ay kırmızımsı görünür.","type":"short_answer"},{"id":14,"question":"Güneş tutulması Dünya üzerinde gündüz yaşanan bölgelerde mi yoksa gece yaşanan bölgelerde mi gözlenir?","correct":"Gündüz","explanation":"Güneş tutulması Güneş'in görüldüğü zaman yani gündüz vakti gerçekleşir.","type":"short_answer"},{"id":15,"question":"Ay tutulması Dünya üzerinde gündüz yaşanan bölgelerde mi yoksa gece yaşanan bölgelerde mi gözlenir?","correct":"Gece","explanation":"Ay tutulması Ay'ın gökyüzünde görülebildiği zaman yani gece vakti gerçekleşir.","type":"short_answer"}];
+  const rawQuestions = [{"id":1,"question":"Yandaki modelde Güneş, Dünya ve X ile gösterilen gök cismi aynı doğrultudadır. Bu konumda gerçekleşen doğa olayının adı nedir?","correct":"Güneş tutulması","explanation":"Güneş ile Dünya arasına Ay'ın girdiği ve Ay'ın gölgesinin Dünya üzerine düştüğü olay Güneş tutulmasıdır. Modelde X ile gösterilen gök cismi Ay'dır.","type":"short_answer"},{"id":2,"question":"Yandaki modelde Güneş, Y ile gösterilen gök cismi ve Ay aynı doğrultudadır. Bu konumda gerçekleşen olayın adı nedir?","correct":"Ay tutulması","explanation":"Güneş ile Ay arasına Dünya'nın girdiği ve Ay'ın Dünya'nın gölgesinde kaldığı olay Ay tutulmasıdır. Modelde Y ile gösterilen gök cismi Dünya'dır.","type":"short_answer"},{"id":3,"question":"Güneş tutulması olayı ayın hangi evresinde gerçekleşir?","correct":"Yeni ay","explanation":"Güneş tutulması, Ay'ın Güneş ile Dünya arasına girdiği ve yeni ay evresinde olduğu zaman gerçekleşir.","type":"short_answer"},{"id":4,"question":"Ay tutulması olayı ayın hangi evresinde gerçekleşir?","correct":"Dolunay","explanation":"Ay tutulması, Dünya'nın Güneş ile Ay arasına girdiği ve Ay'ın dolunay evresinde olduğu zaman gerçekleşir.","type":"short_answer"},{"id":5,"question":"Ay tutulması sırasında Dünya'nın arkasında oluşan ve Ay'ın üzerine düşerek onun görünmez ya da kızıl görünmesine neden olan karanlık bölgeye ne ad verilir?","correct":"Gölge konisi","explanation":"Ay tutulmasında Dünya, Güneş ışınlarını engeller ve arkasında bir gölge konisi oluşturur. Ay bu bölgeye girdiğinde tutulma gerçekleşir.","type":"short_answer"},{"id":6,"question":"Güneş tutulması dünyada çok dar bir alan üzerine gözlenirken, Ay tutulması dünyada daha ne tür bir alandan gözlenebilir?","correct":"Geniş","explanation":"Ay'ın gölgesi Dünya üzerinde çok küçük bir bölgeye düştüğü için Güneş tutulması dar bir alandan izlenir. Ay tutulmasında ise Dünya'nın gölgesi büyük olduğu için geceyi yaşayan geniş bir alandan izlenebilir.","type":"short_answer"},{"id":7,"question":"Güneş tutulması sırasında çıplak gözle doğrudan bakmak göz sağlığına zararlıdır. Bu olayı güvenli izlemek için ne tür özel filtreli araçlar kullanılmalıdır?","correct":"Güneş filtresi","explanation":"Güneş tutulmaları sırasında zararlı ışınlar geldiği için mutlaka özel güneş filtreleri veya tutulma gözlükleri kullanılmalıdır.","type":"short_answer"},{"id":8,"question":"Ay tutulmasını gözlemlemek için Güneş tutulmasında olduğu gibi özel bir filtreye gerek var mıdır?","correct":"Yoktur","explanation":"Ay tutulması sırasında Ay, Güneş'ten aldığı ışığı yansıtmadığı ve zararlı ışınlar yaymadığı için çıplak gözle güvenle izlenebilir.","type":"short_answer"},{"id":9,"question":"Işığın doğrusal yayıldığının en büyük kanıtlarından biri olan, gök cisimlerinin birbirinin gölgesinde kalması olayına genel olarak ne ad verilir?","correct":"Işık tutulması","explanation":"Güneş ve Ay tutulmaları, ışığın doğrusal yayıldığını ve opak cisimlerin arkasında gölge oluşturduğunu kanıtlayan doğal olaylardır.","type":"short_answer"},{"id":10,"question":"Her ay yeni ay ve dolunay evresi olmasına rağmen her ay Güneş ve Ay tutulmasının gerçekleşmeme sebebi Ay'ın dolanma düzleminin Dünya'nın dolanma düzlemiyle yaptığı ne ile ilgilidir?","correct":"Açı","explanation":"Ay'ın yörünge düzlemi ile Dünya'nın yörünge düzlemi arasında yaklaşık 5 derecelik bir açı vardır. Bu yüzden her ay tam aynı doğrultuya gelmezler.","type":"short_answer"},{"id":11,"question":"Güneş tutulması sırasında Ay, Dünya'ya göre hangi konumdadır (gök cisimlerinin sırası: Güneş - ... - Dünya)?","correct":"Ay","explanation":"Güneş tutulmasında sıralama Güneş - Ay - Dünya şeklindedir.","type":"short_answer"},{"id":12,"question":"Ay tutulması sırasında Dünya, Güneş'e göre hangi konumdadır (gök cisimlerinin sırası: Güneş - ... - Ay)?","correct":"Dünya","explanation":"Ay tutulmasında sıralama Güneş - Dünya - Ay şeklindedir.","type":"short_answer"},{"id":13,"question":"Dünya'nın gölgesinin Ay üzerine düşmesiyle gerçekleşen olay sırasında Ay tamamen kaybolmaz, hafif bakırımsı kırmızı bir renk alır. Bu olay nedir?","correct":"Ay tutulması","explanation":"Ay tutulmasında Dünya atmosferinden kırılan kırmızı tonundaki ışıklar Ay'a ulaştığı için Ay kırmızımsı görünür.","type":"short_answer"},{"id":14,"question":"Güneş tutulması Dünya üzerinde gündüz yaşanan bölgelerde mi yoksa gece yaşanan bölgelerde mi gözlenir?","correct":"Gündüz","explanation":"Güneş tutulması Güneş'in görüldüğü zaman yani gündüz vakti gerçekleşir.","type":"short_answer"},{"id":15,"question":"Ay tutulması Dünya üzerinde gündüz yaşanan bölgelerde mi yoksa gece yaşanan bölgelerde mi gözlenir?","correct":"Gece","explanation":"Ay tutulması Ay'ın gökyüzünde görülebildiği zaman yani gece vakti gerçekleşir.","type":"short_answer"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
   let timeLeftSeconds = 1800;

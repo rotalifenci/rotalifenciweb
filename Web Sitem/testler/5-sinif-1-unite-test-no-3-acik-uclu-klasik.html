@@ -60,14 +60,28 @@
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -186,7 +200,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -201,17 +215,17 @@
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -225,32 +239,36 @@
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -343,19 +361,21 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {
@@ -797,7 +817,7 @@
             <div class="rf-stem-text">Güneş ve Dünya'nın büyüklükleri gerçekte birbirinden çok farklı olmasına rağmen, gökyüzüne baktığımızda ikisini de neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel gerekçesini açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-1" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
           </div>
@@ -814,7 +834,7 @@
             <div class="rf-stem-text">Ay, Dünya etrafındaki dolanma hareketini tamamlarken aynı zamanda kendi ekseni etrafında da dönme hareketi yapar. Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin birbirine eşit olmasının dünyadan gözlenen sonuçlarını açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-2" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
           </div>
@@ -831,7 +851,7 @@
             <div class="rf-stem-text">Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez astronomlar nasıl fark etmişlerdir? Bu hareketin gözlenebilmesi için hangi yöntemin kullanıldığını açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-3" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
           </div>
@@ -848,7 +868,7 @@
             <div class="rf-stem-text">Ay, Dünya'nın tek doğal uydusudur ve Dünya etrafında dolanırken belirli bir yörüngeyi izler. Ay olmasaydı Dünya üzerinde hangi önemli eksiklikler veya değişimler yaşanırdı? Bir tanesini neden-sonuç ilişkisi kurarak açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-4" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
           </div>
@@ -862,10 +882,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıdaki modelde Güneş, Dünya ve Ay'ın büyüklükleri ve aralarındaki mesafeler bilimsel olarak ölçeklendirilmemiştir. Sadece cisimlerin birbirine göre büyüklük sıralamasını yazarak en büyükten en küçüğe doğru sıralayınız.</div>
+            <div class="rf-stem-text">Yandaki modelde Güneş, Dünya ve Ay'ın büyüklükleri ve aralarındaki mesafeler bilimsel olarak ölçeklendirilmemiştir. Sadece cisimlerin birbirine göre büyüklük sıralamasını yazarak en büyükten en küçüğe doğru sıralayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-5" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
           </div>
@@ -882,7 +902,7 @@
             <div class="rf-stem-text">Dünya, Güneş etrafındaki dolanımını 365 gün 6 saatte tamamlar. Bu hareketin sonuçlarından biri olan mevsimlerin oluşumu, sadece Dünya'nın Güneş etrafındaki dolanmasıyla mı ilgilidir? Başka hangi faktörün bu süreçte etkili olduğunu açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-6" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
           </div>
@@ -899,7 +919,7 @@
             <div class="rf-stem-text">Dünya'nın görselde kırmızı kesikli çizgiyle gösterilen ekseni etrafındaki dönme hareketini tamamladığı süre ne kadardır ve bu hareketin sonucunda ne oluşur?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-7" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
           </div>
@@ -916,7 +936,7 @@
             <div class="rf-stem-text">Ay, hem kendi ekseni etrafında döner hem Dünya etrafında dolanır hem de Dünya ile birlikte Güneş etrafında dolanma hareketi yapar. Ay'ın yaptığı bu hareketlerin birbirine olan yön ve izledikleri yollar açısından ortak yönü nedir?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-8" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
           </div>
@@ -930,10 +950,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıdaki şemada Ay'ın Dünya etrafındaki yörüngesi gösterilmiştir. Ay'ın bu yörüngede bir tam tur dönmesi ile geçen süre yaklaşık kaç gündür?</div>
+            <div class="rf-stem-text">Yandaki şemada Ay'ın Dünya etrafındaki yörüngesi gösterilmiştir. Ay'ın bu yörüngede bir tam tur dönmesi ile geçen süre yaklaşık kaç gündür?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-9" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
           </div>
@@ -950,7 +970,7 @@
             <div class="rf-stem-text">Eğer Güneş, Dünya ve Ay futbol topu, basketbol topu ve mercimek tanesi olsaydı; büyüklükleri doğru orantılı olacak şekilde bu nesneleri hangi gök cismiyle eşleştirirdiniz? Gerekçesiyle açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-10" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
           </div>
@@ -967,7 +987,7 @@
             <div class="rf-stem-text">Uzaydan Dünya'ya bakan bir astronot, Ay'ın şeklini küreye benzer şekilde görür. Ancak biz Dünya'dan baktığımızda Ay'ın şeklini bazen daire, bazen yarım daire, bazen de kavisli (hilal) olarak görürüz. Ay'ın şeklinin bu şekilde farklı görünmesinin temel nedeni nedir?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-11" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
           </div>
@@ -984,7 +1004,7 @@
             <div class="rf-stem-text">Güneş'in yapısı hakkında bilgi veren bir öğrenci, Güneş'in katmanlardan oluşan sıcak bir yıldız olduğunu belirtmiştir. Güneş'in Dünya gibi kayaç bir yapıda olmadığını, gaz halinde olduğunu kanıtlayan en önemli özelliği nedir?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-12" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
           </div>
@@ -1001,7 +1021,7 @@
             <div class="rf-stem-text">Ay'ın yüzeyinde asteroitlerin çarpması sonucu oluşan derin çukurlar (kraterler) vardır. Bu kraterlerin Dünya'da Ay'dakiler kadar belirgin ve kalıcı olmamasının temel sebebi nedir?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-13" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
           </div>
@@ -1018,7 +1038,7 @@
             <div class="rf-stem-text">Dünya kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru gerçekleştirir. Bu durumun gökyüzündeki cisimlerin (Güneş, yıldızlar vb.) hareket algımız üzerindeki etkisini açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-14" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
           </div>
@@ -1035,7 +1055,7 @@
             <div class="rf-stem-text">Güneş ve Ay, gökyüzüne baktığımızda neredeyse aynı büyüklükte görünürler. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun optik ve mesafe ilişkisi açısından mantığını bir cümleyle özetleyiniz.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-15" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
           </div>
@@ -1120,7 +1140,7 @@
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Güneş ve Dünya'nın büyüklükleri gerçekte birbirinden çok farklı olmasına rağmen, gökyüzüne baktığımızda ikisini de neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel gerekçesini açıklayınız.","correct":"Güneş, Dünya'dan çok daha büyük olmasına rağmen Dünya'ya çok uzak olduğu için küçük görünür. Dünya ise Güneş'e kıyasla çok daha küçük olmasına rağmen bize çok daha yakın olduğu için Güneş ile benzer büyüklükteymiş gibi algılanır. Yani temel sebep aralarındaki uzaklık farkıdır.","explanation":"Cisimlerin gözümüzdeki boyutu, gerçek boyutları ile birlikte onlara olan uzaklıklarına bağlıdır. Uzaktaki büyük cisimler küçük görünür.","type":"open_ended"},{"id":2,"question":"Ay, Dünya etrafındaki dolanma hareketini tamamlarken aynı zamanda kendi ekseni etrafında da dönme hareketi yapar. Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin birbirine eşit olmasının dünyadan gözlenen sonuçlarını açıklayınız.","correct":"Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresi eşit (yaklaşık 27 gün 8 saat) olduğu için, Dünya'dan bakan bir gözlemci her zaman Ay'ın aynı yüzünü görür, diğer yüzünü (karanlık yüz) asla göremez.","explanation":"Bu senkronize hareket nedeniyle Ay'ın hep aynı yüzü Dünya'ya dönük kalır.","type":"open_ended"},{"id":3,"question":"Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez astronomlar nasıl fark etmişlerdir? Bu hareketin gözlenebilmesi için hangi yöntemin kullanıldığını açıklayınız.","correct":"Güneş'in üzerinde bulunan ve 'Güneş lekesi' adı verilen koyu renkli bölgelerin zamanla doğudan batıya doğru hareket ettiği gözlemlenmiştir. Bu lekelerin yer değiştirmesi, Güneş'in kendi ekseni etrafında döndüğünü kanıtlar.","explanation":"Güneş lekelerinin takibi, Güneş'in dönme hareketinin kanıtıdır.","type":"open_ended"},{"id":4,"question":"Ay, Dünya'nın tek doğal uydusudur ve Dünya etrafında dolanırken belirli bir yörüngeyi izler. Ay olmasaydı Dünya üzerinde hangi önemli eksiklikler veya değişimler yaşanırdı? Bir tanesini neden-sonuç ilişkisi kurarak açıklayınız.","correct":"Ay'ın kütle çekim kuvveti Dünya üzerindeki okyanuslarda gelgit (med","explanation":"cezir) olaylarına neden olur. Eğer Ay olmasaydı, gelgit olayları çok daha zayıf (sadece Güneş'in etkisiyle) gerçekleşir ve kıyı ekosistemleri ile deniz taşımacılığı olumsuz etkilenirdi. — Ay, Dünya'nın eksen eğikliğinin dengelenmesinde ve gelgit olaylarında kritik role sahiptir.","type":"open_ended"},{"id":5,"question":"Yukarıdaki modelde Güneş, Dünya ve Ay'ın büyüklükleri ve aralarındaki mesafeler bilimsel olarak ölçeklendirilmemiştir. Sadece cisimlerin birbirine göre büyüklük sıralamasını yazarak en büyükten en küçüğe doğru sıralayınız.","correct":"Büyüklük sıralaması (büyükten küçüğe): 1. Güneş, 2. Dünya, 3. Ay.","explanation":"Güneş aralarında en büyük gök cismidir, Dünya orta büyüklüktedir, Ay ise en küçükleridir.","type":"open_ended"},{"id":6,"question":"Dünya, Güneş etrafındaki dolanımını 365 gün 6 saatte tamamlar. Bu hareketin sonuçlarından biri olan mevsimlerin oluşumu, sadece Dünya'nın Güneş etrafındaki dolanmasıyla mı ilgilidir? Başka hangi faktörün bu süreçte etkili olduğunu açıklayınız.","correct":"Hayır, sadece dolanma hareketi yetmez. Mevsimlerin oluşmasında Dünya'nın eksen eğikliği de en az dolanma hareketi kadar etkilidir. Eksen eğikliği sayesinde güneş ışınları yıl boyunca farklı açıverle düşer.","explanation":"Mevsimler hem Dünya'nın Güneş etrafındaki dolanımı hem de 23 derece 27 dakikalık eksen eğikliği sonucunda oluşur.","type":"open_ended"},{"id":7,"question":"Dünya'nın görselde kırmızı kesikli çizgiyle gösterilen ekseni etrafındaki dönme hareketini tamamladığı süre ne kadardır ve bu hareketin sonucunda ne oluşur?","correct":"Dünya kendi ekseni etrafındaki dönmesini 24 saatte (1 günde) tamamlar. Bu hareketin sonucunda gece ve gündüz birbirini takip eder.","explanation":"Dünya'nın günlük hareketi dönme, süresi 24 saat, sonucu gece-gündüzdür.","type":"open_ended"},{"id":8,"question":"Ay, hem kendi ekseni etrafında döner hem Dünya etrafında dolanır hem de Dünya ile birlikte Güneş etrafında dolanma hareketi yapar. Ay'ın yaptığı bu hareketlerin birbirine olan yön ve izledikleri yollar açısından ortak yönü nedir?","correct":"Ay'ın tüm bu hareketlerindeki dönme ve dolanma yönleri batıdan doğuya (saat yönünün tersine) doğru gerçekleşir.","explanation":"Güneş sistemindeki hemen hemen tüm gök cisimleri gibi Ay da batıdan doğuya doğru hareket eder.","type":"open_ended"},{"id":9,"question":"Yukarıdaki şemada Ay'ın Dünya etrafındaki yörüngesi gösterilmiştir. Ay'ın bu yörüngede bir tam tur dönmesi ile geçen süre yaklaşık kaç gündür?","correct":"Ay, Dünya etrafındaki bir tam dolanımını yaklaşık 29,5 günde (ya da 27 gün 8 saatte) tamamlar.","explanation":"Ay'ın Dünya etrafındaki dolanım süresi yaklaşık 27-29 günlük periyotlar halindedir.","type":"open_ended"},{"id":10,"question":"Eğer Güneş, Dünya ve Ay futbol topu, basketbol topu ve mercimek tanesi olsaydı; büyüklükleri doğru orantılı olacak şekilde bu nesneleri hangi gök cismiyle eşleştirirdiniz? Gerekçesiyle açıklayınız.","correct":"Basketbol topu Güneş'i (en büyük), futbol topu Dünya'yı (orta boy), mercimek tanesi ise Ay'ı (en küçük) temsil eder. Çünkü büyüklük sıralaması Güneş > Dünya > Ay şeklindedir.","explanation":"Güneş en büyük, Dünya orta, Ay ise en küçük boyuttadır.","type":"open_ended"},{"id":11,"question":"Uzaydan Dünya'ya bakan bir astronot, Ay'ın şeklini küreye benzer şekilde görür. Ancak biz Dünya'dan baktığımızda Ay'ın şeklini bazen daire, bazen yarım daire, bazen de kavisli (hilal) olarak görürüz. Ay'ın şeklinin bu şekilde farklı görünmesinin temel nedeni nedir?","correct":"Ay kendi başına ışık üretmez, Güneş'ten aldığı ışığı yansıtır. Dünya etrafında dolanırken Güneş, Dünya ve Ay'ın birbirlerine göre konumları değiştiği için Ay'ın ışık alan kısımlarının dünyadan görünüş oranı değişir. Buna Ay'ın evreleri denir.","explanation":"Ay'ın evrelerinin temel sebebi konum değişimi ve ışık alan yüzeyin farklı açıdan görülmesidir.","type":"open_ended"},{"id":12,"question":"Güneş'in yapısı hakkında bilgi veren bir öğrenci, Güneş'in katmanlardan oluşan sıcak bir yıldız olduğunu belirtmiştir. Güneş'in Dünya gibi kayaç bir yapıda olmadığını, gaz halinde olduğunu kanıtlayan en önemli özelliği nedir?","correct":"Güneş katı bir yüzeye sahip değildir; tamamen kızgın gazlardan (özellikle hidrojen ve helyum) oluşur. Bu yüzden üzerine inmek veya kayaç yapısından bahsetmek mümkün değildir.","explanation":"Güneş bir yıldızdır ve devasa bir gaz küresidir.","type":"open_ended"},{"id":13,"question":"Ay'ın yüzeyinde asteroitlerin çarpması sonucu oluşan derin çukurlar (kraterler) vardır. Bu kraterlerin Dünya'da Ay'dakiler kadar belirgin ve kalıcı olmamasının temel sebebi nedir?","correct":"Dünya'nın atmosferi vardır. Atmosfer, gök taşlarının sürtünme etkisiyle yanarak küçülmesini ve birçoğunun yeryüzüne ulaşamadan yok olmasını sağlar. Ayrıca Dünya'daki rüzgar, yağmur gibi hava olayları (erozyon) yüzeyi sürekli değiştirir. Ay'da ise atmosfer olmadığı için gök taşları doğrudan çarpar ve izler ilk günkü gibi kalır.","explanation":"Atmosferin varlığı Dünya'yı gök taşlarına karşı korur ve yüzey şekillerini aşındırır.","type":"open_ended"},{"id":14,"question":"Dünya kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru gerçekleştirir. Bu durumun gökyüzündeki cisimlerin (Güneş, yıldızlar vb.) hareket algımız üzerindeki etkisini açıklayınız.","correct":"Dünya batıdan doğuya döndüğü için, biz dünyadaki gözlemciler sanki Güneş ve yıldızlar doğudan batıya hareket ediyormuş gibi (görün hareket) algılarız. Bu yüzden Güneş doğudan doğup batıdan batar.","explanation":"Bakış açısı ve dönme yönü nedeniyle hareket ters yönde algılanır.","type":"open_ended"},{"id":15,"question":"Güneş ve Ay, gökyüzüne baktığımızda neredeyse aynı büyüklükte görünürler. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun optik ve mesafe ilişkisi açısından mantığını bir cümleyle özetleyiniz.","correct":"Ay bize çok yakın olduğu için küçük olmasına rağmen büyük görünür; Güneş ise devasa büyüklükte olmasına rağmen çok uzakta olduğu için küçük görünür ve sonuçta ikisi aynı boyutta algılanır.","explanation":"Uzaklık ve gerçek boyutun orantılı bir illüzyon yaratmasıdır.","type":"open_ended"}];
+  const rawQuestions = [{"id":1,"question":"Güneş ve Dünya'nın büyüklükleri gerçekte birbirinden çok farklı olmasına rağmen, gökyüzüne baktığımızda ikisini de neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel gerekçesini açıklayınız.","correct":"Güneş, Dünya'dan çok daha büyük olmasına rağmen Dünya'ya çok uzak olduğu için küçük görünür. Dünya ise Güneş'e kıyasla çok daha küçük olmasına rağmen bize çok daha yakın olduğu için Güneş ile benzer büyüklükteymiş gibi algılanır. Yani temel sebep aralarındaki uzaklık farkıdır.","explanation":"Cisimlerin gözümüzdeki boyutu, gerçek boyutları ile birlikte onlara olan uzaklıklarına bağlıdır. Uzaktaki büyük cisimler küçük görünür.","type":"open_ended"},{"id":2,"question":"Ay, Dünya etrafındaki dolanma hareketini tamamlarken aynı zamanda kendi ekseni etrafında da dönme hareketi yapar. Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresinin birbirine eşit olmasının dünyadan gözlenen sonuçlarını açıklayınız.","correct":"Ay'ın kendi ekseni etrafındaki dönme süresi ile Dünya etrafındaki dolanma süresi eşit (yaklaşık 27 gün 8 saat) olduğu için, Dünya'dan bakan bir gözlemci her zaman Ay'ın aynı yüzünü görür, diğer yüzünü (karanlık yüz) asla göremez.","explanation":"Bu senkronize hareket nedeniyle Ay'ın hep aynı yüzü Dünya'ya dönük kalır.","type":"open_ended"},{"id":3,"question":"Güneş'in kendi ekseni etrafında dönme hareketi yaptığını ilk kez astronomlar nasıl fark etmişlerdir? Bu hareketin gözlenebilmesi için hangi yöntemin kullanıldığını açıklayınız.","correct":"Güneş'in üzerinde bulunan ve 'Güneş lekesi' adı verilen koyu renkli bölgelerin zamanla doğudan batıya doğru hareket ettiği gözlemlenmiştir. Bu lekelerin yer değiştirmesi, Güneş'in kendi ekseni etrafında döndüğünü kanıtlar.","explanation":"Güneş lekelerinin takibi, Güneş'in dönme hareketinin kanıtıdır.","type":"open_ended"},{"id":4,"question":"Ay, Dünya'nın tek doğal uydusudur ve Dünya etrafında dolanırken belirli bir yörüngeyi izler. Ay olmasaydı Dünya üzerinde hangi önemli eksiklikler veya değişimler yaşanırdı? Bir tanesini neden-sonuç ilişkisi kurarak açıklayınız.","correct":"Ay'ın kütle çekim kuvveti Dünya üzerindeki okyanuslarda gelgit (med","explanation":"cezir) olaylarına neden olur. Eğer Ay olmasaydı, gelgit olayları çok daha zayıf (sadece Güneş'in etkisiyle) gerçekleşir ve kıyı ekosistemleri ile deniz taşımacılığı olumsuz etkilenirdi. — Ay, Dünya'nın eksen eğikliğinin dengelenmesinde ve gelgit olaylarında kritik role sahiptir.","type":"open_ended"},{"id":5,"question":"Yandaki modelde Güneş, Dünya ve Ay'ın büyüklükleri ve aralarındaki mesafeler bilimsel olarak ölçeklendirilmemiştir. Sadece cisimlerin birbirine göre büyüklük sıralamasını yazarak en büyükten en küçüğe doğru sıralayınız.","correct":"Büyüklük sıralaması (büyükten küçüğe): 1. Güneş, 2. Dünya, 3. Ay.","explanation":"Güneş aralarında en büyük gök cismidir, Dünya orta büyüklüktedir, Ay ise en küçükleridir.","type":"open_ended"},{"id":6,"question":"Dünya, Güneş etrafındaki dolanımını 365 gün 6 saatte tamamlar. Bu hareketin sonuçlarından biri olan mevsimlerin oluşumu, sadece Dünya'nın Güneş etrafındaki dolanmasıyla mı ilgilidir? Başka hangi faktörün bu süreçte etkili olduğunu açıklayınız.","correct":"Hayır, sadece dolanma hareketi yetmez. Mevsimlerin oluşmasında Dünya'nın eksen eğikliği de en az dolanma hareketi kadar etkilidir. Eksen eğikliği sayesinde güneş ışınları yıl boyunca farklı açıverle düşer.","explanation":"Mevsimler hem Dünya'nın Güneş etrafındaki dolanımı hem de 23 derece 27 dakikalık eksen eğikliği sonucunda oluşur.","type":"open_ended"},{"id":7,"question":"Dünya'nın görselde kırmızı kesikli çizgiyle gösterilen ekseni etrafındaki dönme hareketini tamamladığı süre ne kadardır ve bu hareketin sonucunda ne oluşur?","correct":"Dünya kendi ekseni etrafındaki dönmesini 24 saatte (1 günde) tamamlar. Bu hareketin sonucunda gece ve gündüz birbirini takip eder.","explanation":"Dünya'nın günlük hareketi dönme, süresi 24 saat, sonucu gece-gündüzdür.","type":"open_ended"},{"id":8,"question":"Ay, hem kendi ekseni etrafında döner hem Dünya etrafında dolanır hem de Dünya ile birlikte Güneş etrafında dolanma hareketi yapar. Ay'ın yaptığı bu hareketlerin birbirine olan yön ve izledikleri yollar açısından ortak yönü nedir?","correct":"Ay'ın tüm bu hareketlerindeki dönme ve dolanma yönleri batıdan doğuya (saat yönünün tersine) doğru gerçekleşir.","explanation":"Güneş sistemindeki hemen hemen tüm gök cisimleri gibi Ay da batıdan doğuya doğru hareket eder.","type":"open_ended"},{"id":9,"question":"Yandaki şemada Ay'ın Dünya etrafındaki yörüngesi gösterilmiştir. Ay'ın bu yörüngede bir tam tur dönmesi ile geçen süre yaklaşık kaç gündür?","correct":"Ay, Dünya etrafındaki bir tam dolanımını yaklaşık 29,5 günde (ya da 27 gün 8 saatte) tamamlar.","explanation":"Ay'ın Dünya etrafındaki dolanım süresi yaklaşık 27-29 günlük periyotlar halindedir.","type":"open_ended"},{"id":10,"question":"Eğer Güneş, Dünya ve Ay futbol topu, basketbol topu ve mercimek tanesi olsaydı; büyüklükleri doğru orantılı olacak şekilde bu nesneleri hangi gök cismiyle eşleştirirdiniz? Gerekçesiyle açıklayınız.","correct":"Basketbol topu Güneş'i (en büyük), futbol topu Dünya'yı (orta boy), mercimek tanesi ise Ay'ı (en küçük) temsil eder. Çünkü büyüklük sıralaması Güneş > Dünya > Ay şeklindedir.","explanation":"Güneş en büyük, Dünya orta, Ay ise en küçük boyuttadır.","type":"open_ended"},{"id":11,"question":"Uzaydan Dünya'ya bakan bir astronot, Ay'ın şeklini küreye benzer şekilde görür. Ancak biz Dünya'dan baktığımızda Ay'ın şeklini bazen daire, bazen yarım daire, bazen de kavisli (hilal) olarak görürüz. Ay'ın şeklinin bu şekilde farklı görünmesinin temel nedeni nedir?","correct":"Ay kendi başına ışık üretmez, Güneş'ten aldığı ışığı yansıtır. Dünya etrafında dolanırken Güneş, Dünya ve Ay'ın birbirlerine göre konumları değiştiği için Ay'ın ışık alan kısımlarının dünyadan görünüş oranı değişir. Buna Ay'ın evreleri denir.","explanation":"Ay'ın evrelerinin temel sebebi konum değişimi ve ışık alan yüzeyin farklı açıdan görülmesidir.","type":"open_ended"},{"id":12,"question":"Güneş'in yapısı hakkında bilgi veren bir öğrenci, Güneş'in katmanlardan oluşan sıcak bir yıldız olduğunu belirtmiştir. Güneş'in Dünya gibi kayaç bir yapıda olmadığını, gaz halinde olduğunu kanıtlayan en önemli özelliği nedir?","correct":"Güneş katı bir yüzeye sahip değildir; tamamen kızgın gazlardan (özellikle hidrojen ve helyum) oluşur. Bu yüzden üzerine inmek veya kayaç yapısından bahsetmek mümkün değildir.","explanation":"Güneş bir yıldızdır ve devasa bir gaz küresidir.","type":"open_ended"},{"id":13,"question":"Ay'ın yüzeyinde asteroitlerin çarpması sonucu oluşan derin çukurlar (kraterler) vardır. Bu kraterlerin Dünya'da Ay'dakiler kadar belirgin ve kalıcı olmamasının temel sebebi nedir?","correct":"Dünya'nın atmosferi vardır. Atmosfer, gök taşlarının sürtünme etkisiyle yanarak küçülmesini ve birçoğunun yeryüzüne ulaşamadan yok olmasını sağlar. Ayrıca Dünya'daki rüzgar, yağmur gibi hava olayları (erozyon) yüzeyi sürekli değiştirir. Ay'da ise atmosfer olmadığı için gök taşları doğrudan çarpar ve izler ilk günkü gibi kalır.","explanation":"Atmosferin varlığı Dünya'yı gök taşlarına karşı korur ve yüzey şekillerini aşındırır.","type":"open_ended"},{"id":14,"question":"Dünya kendi ekseni etrafındaki dönme hareketini batıdan doğuya doğru gerçekleştirir. Bu durumun gökyüzündeki cisimlerin (Güneş, yıldızlar vb.) hareket algımız üzerindeki etkisini açıklayınız.","correct":"Dünya batıdan doğuya döndüğü için, biz dünyadaki gözlemciler sanki Güneş ve yıldızlar doğudan batıya hareket ediyormuş gibi (görün hareket) algılarız. Bu yüzden Güneş doğudan doğup batıdan batar.","explanation":"Bakış açısı ve dönme yönü nedeniyle hareket ters yönde algılanır.","type":"open_ended"},{"id":15,"question":"Güneş ve Ay, gökyüzüne baktığımızda neredeyse aynı büyüklükte görünürler. Ancak gerçekte Güneş Ay'dan çok daha büyüktür. Bu durumun optik ve mesafe ilişkisi açısından mantığını bir cümleyle özetleyiniz.","correct":"Ay bize çok yakın olduğu için küçük olmasına rağmen büyük görünür; Güneş ise devasa büyüklükte olmasına rağmen çok uzakta olduğu için küçük görünür ve sonuçta ikisi aynı boyutta algılanır.","explanation":"Uzaklık ve gerçek boyutun orantılı bir illüzyon yaratmasıdır.","type":"open_ended"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
   let timeLeftSeconds = 1800;

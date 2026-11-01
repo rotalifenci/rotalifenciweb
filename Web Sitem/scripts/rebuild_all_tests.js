@@ -13,6 +13,21 @@ function unescapeHtml(str) {
     .replace(/&#39;/g, "'");
 }
 
+function fixYukariToYanda(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/Yukarıdaki/g, 'Yandaki')
+    .replace(/yukarıdaki/g, 'yandaki')
+    .replace(/Yukarıdakilerden/g, 'Yandakilerden')
+    .replace(/yukarıdakilerden/g, 'yandakilerden')
+    .replace(/Yukarıdakiler/g, 'Yandakiler')
+    .replace(/yukarıdakiler/g, 'yandakiler')
+    .replace(/Yukarıdan/g, 'Yandan')
+    .replace(/yukarıdan/g, 'yandan')
+    .replace(/Yukarıda\b/g, 'Yanda')
+    .replace(/yukarıda\b/g, 'yanda');
+}
+
 function parseQuestionsFromHtml(html) {
   // 1. Direct JSON from rawQuestions script tag if available
   const rawQMatch = html.match(/const rawQuestions = (\[[\s\S]*?\]);/);
@@ -20,7 +35,6 @@ function parseQuestionsFromHtml(html) {
     try {
       const parsed = JSON.parse(rawQMatch[1]);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Also extract options from html if needed
         return parsed.map((p, idx) => {
           let options = p.options || null;
           let visualSvg = p.visual_svg || '';
@@ -58,10 +72,10 @@ function parseQuestionsFromHtml(html) {
           return {
             id: p.id || (idx + 1),
             type: options ? 'multiple_choice' : (p.type || 'open_ended'),
-            question: p.question || `Soru ${idx + 1}`,
+            question: fixYukariToYanda(p.question || `Soru ${idx + 1}`),
             options: options,
             correct_answer: p.correct || p.correct_answer || '',
-            explanation: p.explanation || '',
+            explanation: fixYukariToYanda(p.explanation || ''),
             visual_svg: visualSvg
           };
         });
@@ -78,7 +92,7 @@ function parseQuestionsFromHtml(html) {
       const part = rfParts[i];
       let qText = '';
       const textMatch = part.match(/<div class="rf-stem-text">([\s\S]*?)<\/div>/);
-      if (textMatch) qText = unescapeHtml(textMatch[1].trim());
+      if (textMatch) qText = fixYukariToYanda(unescapeHtml(textMatch[1].trim()));
 
       let visualSvg = '';
       const vMatch = part.match(/<div class="rf-visual-box">([\s\S]*?)<\/div>/);
@@ -117,7 +131,7 @@ function parseQuestionsFromHtml(html) {
       const zPart = zkParts[i];
       let qText = '';
       const stemMatch = zPart.match(/<div class="zk-question-stem[^"]*">([\s\S]*?)<\/div>/);
-      if (stemMatch) qText = unescapeHtml(stemMatch[1].replace(/<strong>\s*\d+\.\s*<\/strong>/i, '').trim());
+      if (stemMatch) qText = fixYukariToYanda(unescapeHtml(stemMatch[1].replace(/<strong>\s*\d+\.\s*<\/strong>/i, '').trim()));
 
       let visualSvg = '';
       const vMatch = zPart.match(/<div class="zk-visual-container">([\s\S]*?)<\/div>/);
@@ -128,7 +142,7 @@ function parseQuestionsFromHtml(html) {
       const cMatch = zPart.match(/<span class="zk-correct-val">([\s\S]*?)<\/span>/i);
       if (cMatch) correctAns = unescapeHtml(cMatch[1].trim());
       const eMatch = zPart.match(/<p class="zk-expl-text">([\s\S]*?)<\/p>/i);
-      if (eMatch) expl = unescapeHtml(eMatch[1].trim());
+      if (eMatch) expl = fixYukariToYanda(unescapeHtml(eMatch[1].trim()));
 
       let options = null;
       let type = 'short_answer';
@@ -199,7 +213,10 @@ function rebuildAllTests() {
       try {
         const rawHtml = fs.readFileSync(fullPath, 'utf8');
         const questions = parseQuestionsFromHtml(rawHtml);
-        questions.forEach(q => { q.visual_svg = getScientificVisual(q.question, q.options, q.visual_svg); });
+        questions.forEach(q => {
+          q.question = fixYukariToYanda(q.question);
+          q.visual_svg = getScientificVisual(q.question, q.options, q.visual_svg);
+        });
 
         if (questions.length === 0) {
           console.warn(`⚠️ No questions parsed in ${f}, skipping.`);
@@ -226,7 +243,7 @@ function rebuildAllTests() {
     });
   });
 
-  console.log(`\n🎉 Rebuild complete! Upgraded ${count} test files to Reference Layout & 2x Duration Mode.`);
+  console.log(`\n🎉 Rebuild complete! Upgraded ${count} test files to Enhanced Layout & Yandaki Nomenclature.`);
 }
 
 rebuildAllTests();

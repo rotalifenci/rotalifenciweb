@@ -60,14 +60,28 @@
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -186,7 +200,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -201,17 +215,17 @@
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -225,32 +239,36 @@
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -343,19 +361,21 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {
@@ -794,10 +814,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıdaki şemada optik bir teleskobun yapısında yer alan temel mercek veya aynaların konumları gösterilmiştir. Şemada harflendirilmiş temel kısımların (A ve B) adlarını ve teleskobun yapısındaki temel görevlerini kısaca açıklayınız.</div>
+            <div class="rf-stem-text">Yandaki şemada optik bir teleskobun yapısında yer alan temel mercek veya aynaların konumları gösterilmiştir. Şemada harflendirilmiş temel kısımların (A ve B) adlarını ve teleskobun yapısındaki temel görevlerini kısaca açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-1" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
           </div>
@@ -814,7 +834,7 @@
             <div class="rf-stem-text">Hans Lippershey'in mercekleri bir tüp içerisinden birbirine bakacak şekilde yerleştirmesiyle ilk teleskop benzeri araç icat edilmiştir. Galileo Galilei ise bu icadı gökyüzü incelemelerinde kullanmıştır. Galileo'nun teleskobu gök bilime kazandırdığı en önemli devrimsel yenilik nedir? Gerekçesiyle açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-2" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
           </div>
@@ -828,10 +848,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yeryüzünde kurulan devasa optik teleskopların uzaydaki cisimleri incelerken karşılaştığı en büyük çevresel engel yukarıdaki görselde simgelenmiştir. Bu engelin teleskopların görüntü kalitesi üzerindeki olumsuz etkisini ve bu sorunu çözmek için geliştirilen yöntemi açıklayınız.</div>
+            <div class="rf-stem-text">Yeryüzünde kurulan devasa optik teleskopların uzaydaki cisimleri incelerken karşılaştığı en büyük çevresel engel yandaki görselde simgelenmiştir. Bu engelin teleskopların görüntü kalitesi üzerindeki olumsuz etkisini ve bu sorunu çözmek için geliştirilen yöntemi açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-3" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
           </div>
@@ -848,7 +868,7 @@
             <div class="rf-stem-text">Aynalı teleskoplar ile mercekli teleskoplar arasında ışığı toplama prensibi açısından temel bir fark vardır. Isaac Newton'un geliştirdiği aynalı teleskobun mercekli teleskoplara göre sağladığı fiziksel avantaj nedir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-4" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
           </div>
@@ -862,10 +882,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Gök bilimi sadece görünür ışığı incelemez. Radyo dalgaları, kızılötesi ve X-ışınları gibi farklı dalga boylarını toplayan teleskoplar da vardır. Yukarıda şematize edilen sistemde çanak anten şeklinde bir ayna ve odak noktasında bir dedektör bulunmaktadır. Bu tür teleskopların (örneğin Radyo Teleskopları) evreni incelemedeki rolü nedir?</div>
+            <div class="rf-stem-text">Gök bilimi sadece görünür ışığı incelemez. Radyo dalgaları, kızılötesi ve X-ışınları gibi farklı dalga boylarını toplayan teleskoplar da vardır. Yanda şematize edilen sistemde çanak anten şeklinde bir ayna ve odak noktasında bir dedektör bulunmaktadır. Bu tür teleskopların (örneğin Radyo Teleskopları) evreni incelemedeki rolü nedir?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-5" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
           </div>
@@ -882,7 +902,7 @@
             <div class="rf-stem-text">Tarih boyunca teleskobun icadı ve gelişimi, insanların gökyüzüne bakış açısını nasıl değiştirmiştir? Bilimsel ve felsefi açıdan bir örnekle açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-6" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
           </div>
@@ -899,7 +919,7 @@
             <div class="rf-stem-text">Basit bir mercekli teleskop yapmak isteyen bir öğrenci, odak noktaları farklı olan iki dışbükey (ince kenarlı) merceği uygun mesafelerde bir tüp içine yerleştirmelidir. Bu iki merceğin (objektif ve göz merceği) teleskop içerisindeki işlevsel uyumunu açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-7" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
           </div>
@@ -916,7 +936,7 @@
             <div class="rf-stem-text">Rasathanelerin (Gözlemevlerinin) şehir merkezlerinden uzak, dağlık ve yüksek yerlere kurulmasının teleskopik gözlemler açısından gerekçesi nedir?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-8" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
           </div>
@@ -933,7 +953,7 @@
             <div class="rf-stem-text">Atmosferin dışında görev yapan uzay teleskopları (örneğin Hubble Uzay Teleskobu), yer tabanlı teleskoplara göre neden çok daha net ve derinlemesine görüntüler elde edebilir? Gerekçesini yazınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-9" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
           </div>
@@ -950,7 +970,7 @@
             <div class="rf-stem-text">Isaac Newton'un 1668 yılında geliştirdiği aynalı teleskop tasarımı, o dönem kullanılan mercekli teleskoplara göre gök bilime hangi teknik üstünlüğü kazandırmıştır?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-10" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
           </div>
@@ -967,7 +987,7 @@
             <div class="rf-stem-text">Bir teleskobun ışık toplama gücü, objektifinin (mercek veya aynasının) çapına doğrudan bağlıdır. Çapı daha büyük olan bir teleskop ile daha küçük olan bir teleskop arasındaki gözlem farkı nedir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-11" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
           </div>
@@ -984,7 +1004,7 @@
             <div class="rf-stem-text">Tarih boyunca çıplak gözle yapılan astronomi çalışmaları, teleskobun icadından sonra nasıl bir dönüşüm geçirmiştir? Gök bilimin gelişimindeki bu kırılma noktasını açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-12" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
           </div>
@@ -1001,7 +1021,7 @@
             <div class="rf-stem-text">Gökyüzünü incelemek için kullanılan teleskoplar mercekli, aynalı ve radyo teleskopları olmak üzere farklı türlere ayrılır. Radyo dalgaları yayan gök cisimlerini incelemek için neden klasik optik teleskoplar yerine çanak antenli radyo teleskopları tercih edilir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-13" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
           </div>
@@ -1018,7 +1038,7 @@
             <div class="rf-stem-text">Galileo Galilei'nin 1609 yılında teleskopla yaptığı gözlemler sonucunda Venüs'ün evrelerini keşfetmesi, o dönem kabul gören hangi bilimsel modeli çürütmüştür? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-14" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
           </div>
@@ -1035,7 +1055,7 @@
             <div class="rf-stem-text">Bir teleskobun temel işlevinin sadece uzaktaki cisimleri 'büyütmek' olmadığını, asıl önemli işlevinin 'ışık toplamak' olduğunu bilimsel gerekçesiyle açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-15" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
           </div>
@@ -1120,7 +1140,7 @@
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Yukarıdaki şemada optik bir teleskobun yapısında yer alan temel mercek veya aynaların konumları gösterilmiştir. Şemada harflendirilmiş temel kısımların (A ve B) adlarını ve teleskobun yapısındaki temel görevlerini kısaca açıklayınız.","correct":"A kısmı 'Objektif (Asıl Mercek/Ayna)', B kısmı ise 'Göz merceği'dir. Objektif, uzaktaki gök cisimlerinden gelen ışığı toplayarak bir görüntü oluşturur. Göz merceği ise objektifin oluşturduğu bu ara görüntüyü büyüterek gözün inceleyebileceği hale getirir.","explanation":"Optik teleskoplar, ışığı toplayan bir objektif (mercek veya ayna) ve bu görüntüyü büyüten bir göz merceğinden oluşur.","type":"open_ended"},{"id":2,"question":"Hans Lippershey'in mercekleri bir tüp içerisinden birbirine bakacak şekilde yerleştirmesiyle ilk teleskop benzeri araç icat edilmiştir. Galileo Galilei ise bu icadı gökyüzü incelemelerinde kullanmıştır. Galileo'nun teleskobu gök bilime kazandırdığı en önemli devrimsel yenilik nedir? Gerekçesiyle açıklayınız.","correct":"Galileo'nun teleskobu gökyüzüne çevirmesi, insan gözünün çıplak olarak görebildiği sınırları ortadan kaldırmıştır. Jüpiter'in uydularını, Ay'ın kraterlerini ve Samanyolu'nun yıldız kümeleri olduğunu gözlemlemiştir. Bu durum, Dünya'nın evrenin merkezinde olduğu düşüncesini sarsmış ve bilimsel gözleme dayalı astronominin önünü açmıştır.","explanation":"Teleskop, sadece yakınlaştırma aracı değil, aynı zamanda evren algımızı kökten değiştiren bilimsel bir devrim aracıdır.","type":"open_ended"},{"id":3,"question":"Yeryüzünde kurulan devasa optik teleskopların uzaydaki cisimleri incelerken karşılaştığı en büyük çevresel engel yukarıdaki görselde simgelenmiştir. Bu engelin teleskopların görüntü kalitesi üzerindeki olumsuz etkisini ve bu sorunu çözmek için geliştirilen yöntemi açıklayınız.","correct":"Engellerden biri Dünya'nın atmosferidir. Atmosferdeki gaz tabakası, hava akımları ve ışık kirliliği yıldız ışıklarını bükerek görüntünün bulanıklaşmasına neden olur. Bu sorunu çözmek için uzay teleskopları (örneğin Hubble) geliştirilmiş ve atmosferin dışına yerleştirilmiştir.","explanation":"Atmosferin ışığı kırma ve soğurma özellikleri, yer tabanlı teleskopların keskin görüntü almasını engeller.","type":"open_ended"},{"id":4,"question":"Aynalı teleskoplar ile mercekli teleskoplar arasında ışığı toplama prensibi açısından temel bir fark vardır. Isaac Newton'un geliştirdiği aynalı teleskobun mercekli teleskoplara göre sağladığı fiziksel avantaj nedir? Açıklayınız.","correct":"Mercekli teleskoplarda ışık mercekten geçerken renklere ayrılma (renk sapması) sorunu yaşanır ve büyük merceklerin yapımı çok ağırdır. Aynalı teleskoplarda ise ışık aynadan yansıtıldığı için renk sapması olmaz ve devasa aynalar arka kısımlarından desteklenerek daha hafif ve büyük yapılabilir.","explanation":"Aynalı teleskoplar, büyük çaplı optik sistemlerin üretilmesini ve daha sönük ışıkların toplanmasını kolaylaştırır.","type":"open_ended"},{"id":5,"question":"Gök bilimi sadece görünür ışığı incelemez. Radyo dalgaları, kızılötesi ve X-ışınları gibi farklı dalga boylarını toplayan teleskoplar da vardır. Yukarıda şematize edilen sistemde çanak anten şeklinde bir ayna ve odak noktasında bir dedektör bulunmaktadır. Bu tür teleskopların (örneğin Radyo Teleskopları) evreni incelemedeki rolü nedir?","correct":"Radyo teleskoplar, gözle görülemeyen gaz bulutlarını, süpernova kalıntılarını ve uzak galaksilerden gelen görünmez elektromanyetik dalgaları yakalar. Böylece evrenin sadece gözle görünen kısmıyla sınırlı kalmayıp, çok daha geniş bir tayfta incelenmesini sağlar.","explanation":"Farklı dalga boylarında gözlem yapan teleskoplar, evrenin gizli kalmış yapılarını ortaya çıkarır.","type":"open_ended"},{"id":6,"question":"Tarih boyunca teleskobun icadı ve gelişimi, insanların gökyüzüne bakış açısını nasıl değiştirmiştir? Bilimsel ve felsefi açıdan bir örnekle açıklayınız.","correct":"Teleskoptan önce evrenin Dünya merkezli olduğu düşünülüyordu. Teleskop sayesinde Venüs'ün evreleri ve Jüpiter'in uyduları gözlemlenerek Güneş merkezli sistem kanıtlandı. Bu durum, insanın evrendeki yerini yeniden sorgulamasına ve modern bilimsel metodun yerleşmesine öncülük etti.","explanation":"Teleskop, insanoğlunun evrendeki konumunu anlama sürecinde en büyük dönüm noktasıdır.","type":"open_ended"},{"id":7,"question":"Basit bir mercekli teleskop yapmak isteyen bir öğrenci, odak noktaları farklı olan iki dışbükey (ince kenarlı) merceği uygun mesafelerde bir tüp içine yerleştirmelidir. Bu iki merceğin (objektif ve göz merceği) teleskop içerisindeki işlevsel uyumunu açıklayınız.","correct":"Objektif merceği uzaktaki cisimden gelen ışığı kırarak odak noktasında küçük bir gerçek görüntü oluşturur. Göz merceği ise bu görüntüyü odağına alarak insan gözünün rahatça görebileceği büyük sanal bir görüntüye dönüştürür.","explanation":"Mercekli teleskopların çalışma prensibi iki merceğin birbirinin görüntüsünü büyütmesi esasına dayanır.","type":"open_ended"},{"id":8,"question":"Rasathanelerin (Gözlemevlerinin) şehir merkezlerinden uzak, dağlık ve yüksek yerlere kurulmasının teleskopik gözlemler açısından gerekçesi nedir?","correct":"Şehir merkezlerindeki yapay ışık kaynakları (ışık kirliliği) sönük yıldızların görünmesini engeller. Ayrıca yüksek ve dağlık alanlarda atmosfer tabakası daha incedir, hava akımları daha azdır ve bulutsuz gece sayısı daha fazladır; bu da net görüntü elde edilmesini sağlar.","explanation":"Gözlemevlerinin yer seçimi, teleskopların performansını doğrudan etkileyen coğrafi ve çevresel etkenlere bağlıdır.","type":"open_ended"},{"id":9,"question":"Atmosferin dışında görev yapan uzay teleskopları (örneğin Hubble Uzay Teleskobu), yer tabanlı teleskoplara göre neden çok daha net ve derinlemesine görüntüler elde edebilir? Gerekçesini yazınız.","correct":"Uzay teleskopları atmosferin dışında bulunduğu için hava türbülansından, bulutlardan ve atmosferin ışığı soğurma etkisinden tamamen muaftır. Bu sayede evrenin en uzak ve sönük noktalarından gelen ışıkları bile bozulmaya uğramadan toplayabilirler.","explanation":"Atmosfer engeli, yer teleskoplarının çözünürlüğünü sınırlar; uzay teleskopları bu sınırı ortadan kaldırır.","type":"open_ended"},{"id":10,"question":"Isaac Newton'un 1668 yılında geliştirdiği aynalı teleskop tasarımı, o dönem kullanılan mercekli teleskoplara göre gök bilime hangi teknik üstünlüğü kazandırmıştır?","correct":"Newton, mercek yerine iç bükey ayna kullanarak renk sapması (kromatik aberasyon) sorununu çözmüştür. Ayrıca aynaların arkasından desteklenebilmesi sayesinde daha büyük ve ağır teleskopların üretilmesinin önünü açmıştır.","explanation":"Aynalı teleskoplar modern astronomide devrim yaratmış ve günümüzdeki dev gözlemevlerinin temelini oluşturmuştur.","type":"open_ended"},{"id":11,"question":"Bir teleskobun ışık toplama gücü, objektifinin (mercek veya aynasının) çapına doğrudan bağlıdır. Çapı daha büyük olan bir teleskop ile daha küçük olan bir teleskop arasındaki gözlem farkı nedir? Açıklayınız.","correct":"Objektif çapı büyük olan teleskop, uzaktaki cisimlerden daha fazla ışık toplar. Bu sayede çıplak gözle veya küçük teleskoplarla asla görülemeyecek kadar sönük, uzak ve detaylı gök cisimleri (uzak galaksiler, sönük nebulalar) net bir şekilde gözlemlenebilir.","explanation":"Teleskopların gücü sadece büyütme oranına değil, öncelikli olarak ışık toplama alanına (çapına) bağlıdır.","type":"open_ended"},{"id":12,"question":"Tarih boyunca çıplak gözle yapılan astronomi çalışmaları, teleskobun icadından sonra nasıl bir dönüşüm geçirmiştir? Gök bilimin gelişimindeki bu kırılma noktasını açıklayınız.","correct":"Çıplak gözle yapılan gözlemler sadece parlak yıldızlar ve gezegenlerin hareketleriyle sınırlıydı. Teleskobun icadıyla birlikte insan gözünün algı sınırları aşıldı; binlerce yeni yıldız, gezegenlerin detayları, uydular ve galaksiler keşfedildi, böylece modern astrofizik ve gök bilim doğdu.","explanation":"Teleskop, astronomiyi teorik ve tahmini bir uğraştan kesin gözleme dayalı modern bir bilime dönüştürmüştür.","type":"open_ended"},{"id":13,"question":"Gökyüzünü incelemek için kullanılan teleskoplar mercekli, aynalı ve radyo teleskopları olmak üzere farklı türlere ayrılır. Radyo dalgaları yayan gök cisimlerini incelemek için neden klasik optik teleskoplar yerine çanak antenli radyo teleskopları tercih edilir? Açıklayınız.","correct":"Bazı gök cisimleri görünür ışık yaymaz ancak yoğun radyo dalgaları yayar. Optik teleskoplar bu dalgaları algılayamaz. Çanak anten şeklindeki radyo teleskoplar ise bu görünmez dalgaları toplayarak bilgisayarlar aracılığıyla görüntülenebilir verilere dönüştürür.","explanation":"Evrendeki her olay görünür ışık üretmez; bu yüzden farklı dalga boylarını yakalayan teleskop türleri hayati önem taşır.","type":"open_ended"},{"id":14,"question":"Galileo Galilei'nin 1609 yılında teleskopla yaptığı gözlemler sonucunda Venüs'ün evrelerini keşfetmesi, o dönem kabul gören hangi bilimsel modeli çürütmüştür? Açıklayınız.","correct":"Venüs'ün tıpkı Ay gibi evreler geçirmesi, onun Güneş etrafında döndüğünün en büyük kanıtıydı. Bu gözlem, o döneme kadar kabul edilen yer merkezli (Aristoteles","explanation":"Batlamyus) evren modelini çürütmüş, Kopernik'in güneş merkezli modelini doğrulamıştır. — Teleskopik gözlemler, evrenin merkezinin Dünya olmadığını kanıtlayan ilk somut verileri sunmuştur.","type":"open_ended"},{"id":15,"question":"Bir teleskobun temel işlevinin sadece uzaktaki cisimleri 'büyütmek' olmadığını, asıl önemli işlevinin 'ışık toplamak' olduğunu bilimsel gerekçesiyle açıklayınız.","correct":"Yıldızlar ve galaksiler çok uzakta olduğundan yeryüzüne gelen ışık miktarı çok azdır. Büyütme oranı ne kadar yüksek olursa olsun, yeterli ışık toplanmazsa görüntü karanlık ve bulanık olur. Teleskobun asıl görevi geniş yüzeyiyle çok fazla foton (ışık) toplayarak net bir görüntü elde etmektir.","explanation":"Teleskopların boyutu ve toplama alanı, onların derin uzayı incelemesindeki en temel fiziksel kısıttır.","type":"open_ended"}];
+  const rawQuestions = [{"id":1,"question":"Yandaki şemada optik bir teleskobun yapısında yer alan temel mercek veya aynaların konumları gösterilmiştir. Şemada harflendirilmiş temel kısımların (A ve B) adlarını ve teleskobun yapısındaki temel görevlerini kısaca açıklayınız.","correct":"A kısmı 'Objektif (Asıl Mercek/Ayna)', B kısmı ise 'Göz merceği'dir. Objektif, uzaktaki gök cisimlerinden gelen ışığı toplayarak bir görüntü oluşturur. Göz merceği ise objektifin oluşturduğu bu ara görüntüyü büyüterek gözün inceleyebileceği hale getirir.","explanation":"Optik teleskoplar, ışığı toplayan bir objektif (mercek veya ayna) ve bu görüntüyü büyüten bir göz merceğinden oluşur.","type":"open_ended"},{"id":2,"question":"Hans Lippershey'in mercekleri bir tüp içerisinden birbirine bakacak şekilde yerleştirmesiyle ilk teleskop benzeri araç icat edilmiştir. Galileo Galilei ise bu icadı gökyüzü incelemelerinde kullanmıştır. Galileo'nun teleskobu gök bilime kazandırdığı en önemli devrimsel yenilik nedir? Gerekçesiyle açıklayınız.","correct":"Galileo'nun teleskobu gökyüzüne çevirmesi, insan gözünün çıplak olarak görebildiği sınırları ortadan kaldırmıştır. Jüpiter'in uydularını, Ay'ın kraterlerini ve Samanyolu'nun yıldız kümeleri olduğunu gözlemlemiştir. Bu durum, Dünya'nın evrenin merkezinde olduğu düşüncesini sarsmış ve bilimsel gözleme dayalı astronominin önünü açmıştır.","explanation":"Teleskop, sadece yakınlaştırma aracı değil, aynı zamanda evren algımızı kökten değiştiren bilimsel bir devrim aracıdır.","type":"open_ended"},{"id":3,"question":"Yeryüzünde kurulan devasa optik teleskopların uzaydaki cisimleri incelerken karşılaştığı en büyük çevresel engel yandaki görselde simgelenmiştir. Bu engelin teleskopların görüntü kalitesi üzerindeki olumsuz etkisini ve bu sorunu çözmek için geliştirilen yöntemi açıklayınız.","correct":"Engellerden biri Dünya'nın atmosferidir. Atmosferdeki gaz tabakası, hava akımları ve ışık kirliliği yıldız ışıklarını bükerek görüntünün bulanıklaşmasına neden olur. Bu sorunu çözmek için uzay teleskopları (örneğin Hubble) geliştirilmiş ve atmosferin dışına yerleştirilmiştir.","explanation":"Atmosferin ışığı kırma ve soğurma özellikleri, yer tabanlı teleskopların keskin görüntü almasını engeller.","type":"open_ended"},{"id":4,"question":"Aynalı teleskoplar ile mercekli teleskoplar arasında ışığı toplama prensibi açısından temel bir fark vardır. Isaac Newton'un geliştirdiği aynalı teleskobun mercekli teleskoplara göre sağladığı fiziksel avantaj nedir? Açıklayınız.","correct":"Mercekli teleskoplarda ışık mercekten geçerken renklere ayrılma (renk sapması) sorunu yaşanır ve büyük merceklerin yapımı çok ağırdır. Aynalı teleskoplarda ise ışık aynadan yansıtıldığı için renk sapması olmaz ve devasa aynalar arka kısımlarından desteklenerek daha hafif ve büyük yapılabilir.","explanation":"Aynalı teleskoplar, büyük çaplı optik sistemlerin üretilmesini ve daha sönük ışıkların toplanmasını kolaylaştırır.","type":"open_ended"},{"id":5,"question":"Gök bilimi sadece görünür ışığı incelemez. Radyo dalgaları, kızılötesi ve X-ışınları gibi farklı dalga boylarını toplayan teleskoplar da vardır. Yanda şematize edilen sistemde çanak anten şeklinde bir ayna ve odak noktasında bir dedektör bulunmaktadır. Bu tür teleskopların (örneğin Radyo Teleskopları) evreni incelemedeki rolü nedir?","correct":"Radyo teleskoplar, gözle görülemeyen gaz bulutlarını, süpernova kalıntılarını ve uzak galaksilerden gelen görünmez elektromanyetik dalgaları yakalar. Böylece evrenin sadece gözle görünen kısmıyla sınırlı kalmayıp, çok daha geniş bir tayfta incelenmesini sağlar.","explanation":"Farklı dalga boylarında gözlem yapan teleskoplar, evrenin gizli kalmış yapılarını ortaya çıkarır.","type":"open_ended"},{"id":6,"question":"Tarih boyunca teleskobun icadı ve gelişimi, insanların gökyüzüne bakış açısını nasıl değiştirmiştir? Bilimsel ve felsefi açıdan bir örnekle açıklayınız.","correct":"Teleskoptan önce evrenin Dünya merkezli olduğu düşünülüyordu. Teleskop sayesinde Venüs'ün evreleri ve Jüpiter'in uyduları gözlemlenerek Güneş merkezli sistem kanıtlandı. Bu durum, insanın evrendeki yerini yeniden sorgulamasına ve modern bilimsel metodun yerleşmesine öncülük etti.","explanation":"Teleskop, insanoğlunun evrendeki konumunu anlama sürecinde en büyük dönüm noktasıdır.","type":"open_ended"},{"id":7,"question":"Basit bir mercekli teleskop yapmak isteyen bir öğrenci, odak noktaları farklı olan iki dışbükey (ince kenarlı) merceği uygun mesafelerde bir tüp içine yerleştirmelidir. Bu iki merceğin (objektif ve göz merceği) teleskop içerisindeki işlevsel uyumunu açıklayınız.","correct":"Objektif merceği uzaktaki cisimden gelen ışığı kırarak odak noktasında küçük bir gerçek görüntü oluşturur. Göz merceği ise bu görüntüyü odağına alarak insan gözünün rahatça görebileceği büyük sanal bir görüntüye dönüştürür.","explanation":"Mercekli teleskopların çalışma prensibi iki merceğin birbirinin görüntüsünü büyütmesi esasına dayanır.","type":"open_ended"},{"id":8,"question":"Rasathanelerin (Gözlemevlerinin) şehir merkezlerinden uzak, dağlık ve yüksek yerlere kurulmasının teleskopik gözlemler açısından gerekçesi nedir?","correct":"Şehir merkezlerindeki yapay ışık kaynakları (ışık kirliliği) sönük yıldızların görünmesini engeller. Ayrıca yüksek ve dağlık alanlarda atmosfer tabakası daha incedir, hava akımları daha azdır ve bulutsuz gece sayısı daha fazladır; bu da net görüntü elde edilmesini sağlar.","explanation":"Gözlemevlerinin yer seçimi, teleskopların performansını doğrudan etkileyen coğrafi ve çevresel etkenlere bağlıdır.","type":"open_ended"},{"id":9,"question":"Atmosferin dışında görev yapan uzay teleskopları (örneğin Hubble Uzay Teleskobu), yer tabanlı teleskoplara göre neden çok daha net ve derinlemesine görüntüler elde edebilir? Gerekçesini yazınız.","correct":"Uzay teleskopları atmosferin dışında bulunduğu için hava türbülansından, bulutlardan ve atmosferin ışığı soğurma etkisinden tamamen muaftır. Bu sayede evrenin en uzak ve sönük noktalarından gelen ışıkları bile bozulmaya uğramadan toplayabilirler.","explanation":"Atmosfer engeli, yer teleskoplarının çözünürlüğünü sınırlar; uzay teleskopları bu sınırı ortadan kaldırır.","type":"open_ended"},{"id":10,"question":"Isaac Newton'un 1668 yılında geliştirdiği aynalı teleskop tasarımı, o dönem kullanılan mercekli teleskoplara göre gök bilime hangi teknik üstünlüğü kazandırmıştır?","correct":"Newton, mercek yerine iç bükey ayna kullanarak renk sapması (kromatik aberasyon) sorununu çözmüştür. Ayrıca aynaların arkasından desteklenebilmesi sayesinde daha büyük ve ağır teleskopların üretilmesinin önünü açmıştır.","explanation":"Aynalı teleskoplar modern astronomide devrim yaratmış ve günümüzdeki dev gözlemevlerinin temelini oluşturmuştur.","type":"open_ended"},{"id":11,"question":"Bir teleskobun ışık toplama gücü, objektifinin (mercek veya aynasının) çapına doğrudan bağlıdır. Çapı daha büyük olan bir teleskop ile daha küçük olan bir teleskop arasındaki gözlem farkı nedir? Açıklayınız.","correct":"Objektif çapı büyük olan teleskop, uzaktaki cisimlerden daha fazla ışık toplar. Bu sayede çıplak gözle veya küçük teleskoplarla asla görülemeyecek kadar sönük, uzak ve detaylı gök cisimleri (uzak galaksiler, sönük nebulalar) net bir şekilde gözlemlenebilir.","explanation":"Teleskopların gücü sadece büyütme oranına değil, öncelikli olarak ışık toplama alanına (çapına) bağlıdır.","type":"open_ended"},{"id":12,"question":"Tarih boyunca çıplak gözle yapılan astronomi çalışmaları, teleskobun icadından sonra nasıl bir dönüşüm geçirmiştir? Gök bilimin gelişimindeki bu kırılma noktasını açıklayınız.","correct":"Çıplak gözle yapılan gözlemler sadece parlak yıldızlar ve gezegenlerin hareketleriyle sınırlıydı. Teleskobun icadıyla birlikte insan gözünün algı sınırları aşıldı; binlerce yeni yıldız, gezegenlerin detayları, uydular ve galaksiler keşfedildi, böylece modern astrofizik ve gök bilim doğdu.","explanation":"Teleskop, astronomiyi teorik ve tahmini bir uğraştan kesin gözleme dayalı modern bir bilime dönüştürmüştür.","type":"open_ended"},{"id":13,"question":"Gökyüzünü incelemek için kullanılan teleskoplar mercekli, aynalı ve radyo teleskopları olmak üzere farklı türlere ayrılır. Radyo dalgaları yayan gök cisimlerini incelemek için neden klasik optik teleskoplar yerine çanak antenli radyo teleskopları tercih edilir? Açıklayınız.","correct":"Bazı gök cisimleri görünür ışık yaymaz ancak yoğun radyo dalgaları yayar. Optik teleskoplar bu dalgaları algılayamaz. Çanak anten şeklindeki radyo teleskoplar ise bu görünmez dalgaları toplayarak bilgisayarlar aracılığıyla görüntülenebilir verilere dönüştürür.","explanation":"Evrendeki her olay görünür ışık üretmez; bu yüzden farklı dalga boylarını yakalayan teleskop türleri hayati önem taşır.","type":"open_ended"},{"id":14,"question":"Galileo Galilei'nin 1609 yılında teleskopla yaptığı gözlemler sonucunda Venüs'ün evrelerini keşfetmesi, o dönem kabul gören hangi bilimsel modeli çürütmüştür? Açıklayınız.","correct":"Venüs'ün tıpkı Ay gibi evreler geçirmesi, onun Güneş etrafında döndüğünün en büyük kanıtıydı. Bu gözlem, o döneme kadar kabul edilen yer merkezli (Aristoteles","explanation":"Batlamyus) evren modelini çürütmüş, Kopernik'in güneş merkezli modelini doğrulamıştır. — Teleskopik gözlemler, evrenin merkezinin Dünya olmadığını kanıtlayan ilk somut verileri sunmuştur.","type":"open_ended"},{"id":15,"question":"Bir teleskobun temel işlevinin sadece uzaktaki cisimleri 'büyütmek' olmadığını, asıl önemli işlevinin 'ışık toplamak' olduğunu bilimsel gerekçesiyle açıklayınız.","correct":"Yıldızlar ve galaksiler çok uzakta olduğundan yeryüzüne gelen ışık miktarı çok azdır. Büyütme oranı ne kadar yüksek olursa olsun, yeterli ışık toplanmazsa görüntü karanlık ve bulanık olur. Teleskobun asıl görevi geniş yüzeyiyle çok fazla foton (ışık) toplayarak net bir görüntü elde etmektir.","explanation":"Teleskopların boyutu ve toplama alanı, onların derin uzayı incelemesindeki en temel fiziksel kısıttır.","type":"open_ended"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
   let timeLeftSeconds = 1800;

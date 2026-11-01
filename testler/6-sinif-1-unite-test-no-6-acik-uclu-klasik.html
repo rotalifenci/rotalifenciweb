@@ -60,14 +60,28 @@
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -186,7 +200,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -201,17 +215,17 @@
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -225,32 +239,36 @@
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -343,19 +361,21 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {
@@ -797,7 +817,7 @@
             <div class="rf-stem-text">Güneş Sistemi'ndeki bazı gezegenlerin büyüklükleri X, Y ve Z küreleriyle temsil edilmiştir. X gezegeni en büyük gaz sal gezegen, Y gezegeni Dünya, Z ise Güneş'e en yakın gezegendir. Buna göre X, Y ve Z harflerinin temsil ettiği gezegenleri yazarak gerekçeleriyle eşleştiriniz.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-1" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-1" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
         </div>
       
           </div>
@@ -814,7 +834,7 @@
             <div class="rf-stem-text">Güneş'e en yakın dört gezegen ile Güneş'e en uzak dört gezegenin temel yapısal farklılıkları nelerdir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-2" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-2" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(2, this.value)"></textarea>
         </div>
       
           </div>
@@ -831,7 +851,7 @@
             <div class="rf-stem-text">A gezegeni Güneş'e B gezegeninden daha yakındır. Bu durum dikkate alındığında, A gezegeninin dolanma süresi ile B gezegeninin dolanma süresi arasında nasıl bir ilişki vardır? Gerekçesiyle açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-3" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-3" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(3, this.value)"></textarea>
         </div>
       
           </div>
@@ -848,7 +868,7 @@
             <div class="rf-stem-text">Venüs gezegeni, Güneş'e Merkür'den daha uzak olmasına rağmen neden Güneş Sistemi'nin en sıcak gezegenidir? Bilimsel gerekçesini açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-4" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-4" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(4, this.value)"></textarea>
         </div>
       
           </div>
@@ -862,10 +882,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Güneş Sistemi'ndeki gezegenler yukarıdaki gibi iki temel gruba ayrılmaktadır. Bu iki grup arasındaki temel farkları yapı, yoğunluk ve büyüklük açısından üç maddede açıklayınız.</div>
+            <div class="rf-stem-text">Güneş Sistemi'ndeki gezegenler yandaki gibi iki temel gruba ayrılmaktadır. Bu iki grup arasındaki temel farkları yapı, yoğunluk ve büyüklük açısından üç maddede açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-5" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-5" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(5, this.value)"></textarea>
         </div>
       
           </div>
@@ -882,7 +902,7 @@
             <div class="rf-stem-text">Satürn gezegeni hakkında bilinen en çarpıcı özelliklerden biri etrafındaki belirgin halkalardır. Sadece Satürn'ün mü halkaları vardır, diğer gazsal gezegenlerin durumu nedir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-6" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-6" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(6, this.value)"></textarea>
         </div>
       
           </div>
@@ -899,7 +919,7 @@
             <div class="rf-stem-text">Uranüs ve Neptün büyüklük, renk ve yapı bakımından birbirine çok benzerler ve 'ikiz gezegenler' olarak adlandırılırlar. Buna rağmen Neptün'ün Güneş'e uzaklığı Uranüs'ten fazladır. Bu durum iki gezegenin hangi özelliğini doğrudan etkiler? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-7" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-7" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(7, this.value)"></textarea>
         </div>
       
           </div>
@@ -916,7 +936,7 @@
             <div class="rf-stem-text">Bir öğrenci, 'Güneş Sistemi'ndeki en büyük gezegen Güneş'e en uzak olan gezegendir.' iddiasında bulunmuştur. Öğrencinin bu iddiası bilimsel olarak doğru mudur? Gerekçesiyle birlikte düzeltiniz.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-8" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-8" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(8, this.value)"></textarea>
         </div>
       
           </div>
@@ -933,7 +953,7 @@
             <div class="rf-stem-text">Mars, Dünya'dan sonra gelen dördüncü gezegendir ve 'Kızıl Gezegen' olarak bilinir. Mars'ın yüzeyinin kırmızı görünmesinin temel nedeni nedir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-9" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-9" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(9, this.value)"></textarea>
         </div>
       
           </div>
@@ -950,7 +970,7 @@
             <div class="rf-stem-text">Güneş Sistemi'ndeki gezegenler küçükten büyüğe doğru sıralandığında ilk iki sırada hangi gezegenler yer alır? Karasal veya gazsal olma durumlarını da belirterek yazınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-10" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-10" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(10, this.value)"></textarea>
         </div>
       
           </div>
@@ -967,7 +987,7 @@
             <div class="rf-stem-text">Venüs, Dünya ve Mars iç (karasal) gezegenler grubundandır. Bu üç gezegenin atmosferleri karşılaştırıldığında Dünya'yı diğer ikisinden ayıran en temel yaşamsal fark nedir? Açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-11" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-11" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(11, this.value)"></textarea>
         </div>
       
           </div>
@@ -984,7 +1004,7 @@
             <div class="rf-stem-text">Güneş Sistemi'ndeki gezegenlerin Güneş'e olan uzaklıkları arttıkça dolanma süreleri (bir yıl uzunlukları) nasıl değişir? Nedenini kısaca açıklayınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-12" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-12" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(12, this.value)"></textarea>
         </div>
       
           </div>
@@ -998,10 +1018,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda görseli verilen Satürn ve Jüpiter dış (gazsal) gezegenler grubunda yer alır. Bu iki dev gezegenin ortak yapısal özellikleri nelerdir? İki madde halinde yazınız.</div>
+            <div class="rf-stem-text">Yanda görseli verilen Satürn ve Jüpiter dış (gazsal) gezegenler grubunda yer alır. Bu iki dev gezegenin ortak yapısal özellikleri nelerdir? İki madde halinde yazınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-13" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-13" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(13, this.value)"></textarea>
         </div>
       
           </div>
@@ -1018,7 +1038,7 @@
             <div class="rf-stem-text">Uranüs gezegeni diğer gezegenlerden farklı olarak kendi ekseni etrafında sanki 'yuvarlanan bir varil gibi' yan yatmış şekilde döner. Bu durum Uranüs'ü diğer gezegenlerden ayıran ilginç bir özelliktir. Uranüs hangi gruba dahildir ve yapısal olarak neye benzer?</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-14" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-14" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(14, this.value)"></textarea>
         </div>
       
           </div>
@@ -1032,10 +1052,10 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Güneş Sistemi'nden seçilen yukarıdaki dört gezegen (Merkür, Dünya, Satürn, Neptün) büyüklükleri dikkate alınarak sıralanmak istenirse doğru sıralama nasıl olur? En büyükten en küçüğe doğru yazınız.</div>
+            <div class="rf-stem-text">Güneş Sistemi'nden seçilen yandaki dört gezegen (Merkür, Dünya, Satürn, Neptün) büyüklükleri dikkate alınarak sıralanmak istenirse doğru sıralama nasıl olur? En büyükten en küçüğe doğru yazınız.</div>
             
         <div class="rf-input-container">
-          <textarea class="rf-open-textarea" id="rf-input-15" rows="3" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
+          <textarea class="rf-open-textarea" id="rf-input-15" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(15, this.value)"></textarea>
         </div>
       
           </div>
@@ -1120,7 +1140,7 @@
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Güneş Sistemi'ndeki bazı gezegenlerin büyüklükleri X, Y ve Z küreleriyle temsil edilmiştir. X gezegeni en büyük gaz sal gezegen, Y gezegeni Dünya, Z ise Güneş'e en yakın gezegendir. Buna göre X, Y ve Z harflerinin temsil ettiği gezegenleri yazarak gerekçeleriyle eşleştiriniz.","correct":"X: Jüpiter (En büyük gaz sal gezegen), Y: Dünya (Yaşam olan tek karasal gezegen), Z: Merkür (Güneş'e en yakın ve en küçük gezegen).","explanation":"Güneş sistemi içerisindeki gezegenler büyüklüklerine ve yapılarına göre sınıflandırılır. X, gaz sal devler arasında en büyüğü olan Jüpiter'dir; Y, yaşam barındıran Dünya'dır; Z ise Güneş'e en yakın olan Merkür'dür.","type":"open_ended"},{"id":2,"question":"Güneş'e en yakın dört gezegen ile Güneş'e en uzak dört gezegenin temel yapısal farklılıkları nelerdir? Açıklayınız.","correct":"Güneş'e en yakın ilk dört gezegen (Merkür, Venüs, Dünya, Mars) karasal (kayalık) yapılıdır ve yüzeyleri serttir. En uzak dört gezegen (Jüpiter, Satürn, Uranüs, Neptün) ise gaz sal (yapıları çoğunlukla gazdan oluşan) devlerdir ve yüzeyleri yoktur.","explanation":"Güneş Sistemi'ndeki gezegenler Güneş'e olan konumlarına göre iki gruba ayrılır: İç gezegenler (karasal) ve dış gezegenler (gazsal).","type":"open_ended"},{"id":3,"question":"A gezegeni Güneş'e B gezegeninden daha yakındır. Bu durum dikkate alındığında, A gezegeninin dolanma süresi ile B gezegeninin dolanma süresi arasında nasıl bir ilişki vardır? Gerekçesiyle açıklayınız.","correct":"A gezegeninin Güneş etrafındaki dolanma süresi, B gezegenininkinden daha kısadır. Çünkü Güneş'e yakın olan gezegenlerin yörüngeleri daha dardır ve Güneş'in uyguladığı kütle çekim etkisiyle daha hızlı dönerler.","explanation":"Kepler kanunları ve Güneş sistemi dinamiklerine göre, Güneş'e yakın olan gezegenlerin yörünge uzunluğu daha kısa ve hızları daha fazladır, bu da bir yılı (dolanma süresini) kısaltır.","type":"open_ended"},{"id":4,"question":"Venüs gezegeni, Güneş'e Merkür'den daha uzak olmasına rağmen neden Güneş Sistemi'nin en sıcak gezegenidir? Bilimsel gerekçesini açıklayınız.","correct":"Venüs'ün atmosferinde yoğun olarak karbondioksit gibi sera gazları bulunur. Bu gazlar, Güneş'ten gelen ışınların gezegen yüzeyinden yansıyarak uzaya kaçmasını engeller ve sera etkisi yaratarak ısıyı hapsetmesine neden olur.","explanation":"Merkür Güneş'e en yakın gezegendir ancak atmosferi neredeyse yoktur. Venüs ise kalın bir atmosfer katmanına sahip olduğu için sera etkisiyle ısıyı tutar ve Merkür'den daha sıcak olur.","type":"open_ended"},{"id":5,"question":"Güneş Sistemi'ndeki gezegenler yukarıdaki gibi iki temel gruba ayrılmaktadır. Bu iki grup arasındaki temel farkları yapı, yoğunluk ve büyüklük açısından üç maddede açıklayınız.","correct":"1. Yapı: Karasal gezegenlerin yüzeyi kaya ve metalden oluşurken, gazsal gezegenler çoğunlukla gaz halindedir. 2. Yoğunluk: Karasal gezegenlerin yoğunlukları fazladır, gazsal gezegenlerin yoğunlukları düşüktür. 3. Büyüklük: Karasal gezegenler küçüktür, gazsal gezegenler ise çok daha büyüktür.","explanation":"İç (karasal) ve dış (gazsal) gezegenler fiziksel ve kimyasal özellikleri bakımından birbirinden keskin çizgilerle ayrılır.","type":"open_ended"},{"id":6,"question":"Satürn gezegeni hakkında bilinen en çarpıcı özelliklerden biri etrafındaki belirgin halkalardır. Sadece Satürn'ün mü halkaları vardır, diğer gazsal gezegenlerin durumu nedir? Açıklayınız.","correct":"Hayır, sadece Satürn'ün halkaları yoktur. Güneş Sistemi'ndeki tüm gazsal devlerin (Jüpiter, Satürn, Uranüs ve Neptün) etrafında buz ve kaya parçalarından oluşan halk sistemi bulunur. Ancak Satürn'ün halkaları en büyük ve en belirgin olanıdır.","explanation":"Halkalar sadece Satürn'e özgü değildir; tüm dış (gazsal) gezegenlerin halkaları vardır ancak kalınlık ve görünürlükleri farklıdır.","type":"open_ended"},{"id":7,"question":"Uranüs ve Neptün büyüklük, renk ve yapı bakımından birbirine çok benzerler ve 'ikiz gezegenler' olarak adlandırılırlar. Buna rağmen Neptün'ün Güneş'e uzaklığı Uranüs'ten fazladır. Bu durum iki gezegenin hangi özelliğini doğrudan etkiler? Açıklayınız.","correct":"Güneş'e olan uzaklıklarının farklı olması, bu iki gezegenin Güneş etrafındaki bir tam turunu (dolanma süresini) ve yüzey sıcaklıklarını doğrudan etkiler. Neptün, Güneş'e daha uzak olduğu için daha soğuktur ve dolanım süresi Uranüs'e göre daha uzundur.","explanation":"Güneş'e uzaklık arttıkça sıcaklık düşer ve yörünge yarıçapı büyüdüğü için dolanma süresi (bir yıl) uzar.","type":"open_ended"},{"id":8,"question":"Bir öğrenci, 'Güneş Sistemi'ndeki en büyük gezegen Güneş'e en uzak olan gezegendir.' iddiasında bulunmuştur. Öğrencinin bu iddiası bilimsel olarak doğru mudur? Gerekçesiyle birlikte düzeltiniz.","correct":"Öğrencinin iddiası yanlıştır. Güneş Sistemi'ndeki en büyük gezegen Jüpiter'dir ve Jüpiter gazsal bir dış gezegendir ancak en uzak gezegen değildir. Güneş'e en uzak gezegen Neptün'dür ve en büyük dördüncü gezegendir.","explanation":"Büyüklük sıralaması ile Güneş'e yakınlık sıralaması aynı değildir. En büyük gezegen Jüpiter'dir, en uzak gezegen ise Neptün'dür.","type":"open_ended"},{"id":9,"question":"Mars, Dünya'dan sonra gelen dördüncü gezegendir ve 'Kızıl Gezegen' olarak bilinir. Mars'ın yüzeyinin kırmızı görünmesinin temel nedeni nedir? Açıklayınız.","correct":"Mars'ın yüzeyinde bol miktarda demir oksit (pas) bulunur. Bu mineral tozları gezegenin yüzeyini kaplayarak uzaydan ve dünyadan bakıldığında kızıl/kırmızı görünmesine yol açar.","explanation":"Mars yüzeyindeki demir açısından zengin kayaların oksitlenmesi (paslanması) sonucunda kızıl bir görünüme sahip olmuştur.","type":"open_ended"},{"id":10,"question":"Güneş Sistemi'ndeki gezegenler küçükten büyüğe doğru sıralandığında ilk iki sırada hangi gezegenler yer alır? Karasal veya gazsal olma durumlarını da belirterek yazınız.","correct":"Küçükten büyüğe sıralamada ilk sırada Merkür, ikinci sırada Mars yer alır. Her iki gezegen de karasal (iç) yapılıdır ve Güneş Sistemi'nin en küçük iki gezegenidir.","explanation":"Merkür en küçük gezegendir, onu Mars takip eder. İkisi de karasal yapıdadır.","type":"open_ended"},{"id":11,"question":"Venüs, Dünya ve Mars iç (karasal) gezegenler grubundandır. Bu üç gezegenin atmosferleri karşılaştırıldığında Dünya'yı diğer ikisinden ayıran en temel yaşamsal fark nedir? Açıklayınız.","correct":"Dünya'nın atmosferinde canlıların solunum yapabilmesi için uygun oranda oksijen ve sıvı halde suyun bulunmasını sağlayan ideal basınç/sıcaklık dengesi vardır. Venüs ve Mars'ın atmosferi ise neredeyse tamamen zehirli gazlardan (yoğun karbondioksit) oluşur.","explanation":"Dünya, atmosfer bileşimi ve su varlığı sayesinde yaşam barındıran tek gezegendir; Venüs ve Mars'ta yaşam için gerekli koşullar bulunmaz.","type":"open_ended"},{"id":12,"question":"Güneş Sistemi'ndeki gezegenlerin Güneş'e olan uzaklıkları arttıkça dolanma süreleri (bir yıl uzunlukları) nasıl değişir? Nedenini kısaca açıklayınız.","correct":"Güneş'e olan uzaklık arttıkça gezegenlerin dolanma süreleri artar (uzar). Çünkü Güneş'ten uzaklaştıkça yörünge çevre uzunluğu büyür ve gezegenlerin Güneş etrafındaki dönüş hızları azalır.","explanation":"Uzak yörüngedeki gezegenler hem daha uzun bir yolu kat ederler hem de Güneş'in kütle çekimi zayıfladığı için daha yavaş hareket ederler.","type":"open_ended"},{"id":13,"question":"Yukarıda görseli verilen Satürn ve Jüpiter dış (gazsal) gezegenler grubunda yer alır. Bu iki dev gezegenin ortak yapısal özellikleri nelerdir? İki madde halinde yazınız.","correct":"1. İkisi de gazsal (yapıları çoğunlukla hidrojen ve helyum gazından oluşan) yapıdadır ve katı bir yüzeyleri yoktur. 2. İkisinin de etrafında halka sistemleri ve çok sayıda uyduları bulunmaktadır.","explanation":"Jüpiter ve Satürn dış gezegenler olup, devasa gaz kütlelerinden oluşurlar ve çok sayıda uyduya sahiptirler.","type":"open_ended"},{"id":14,"question":"Uranüs gezegeni diğer gezegenlerden farklı olarak kendi ekseni etrafında sanki 'yuvarlanan bir varil gibi' yan yatmış şekilde döner. Bu durum Uranüs'ü diğer gezegenlerden ayıran ilginç bir özelliktir. Uranüs hangi gruba dahildir ve yapısal olarak neye benzer?","correct":"Uranüs gazsal (dış) devler grubuna dahildir. Yapısal olarak buz devleri sınıfında yer alır ve yoğun bir atmosfer ile buz/kaya karışımı çekirdeğe sahiptir.","explanation":"Uranüs, Neptün ile birlikte gazsal gezegenler içinde 'buz devi' olarak alt gruba ayrılır ve aşırı yatık dönme eksenine sahiptir.","type":"open_ended"},{"id":15,"question":"Güneş Sistemi'nden seçilen yukarıdaki dört gezegen (Merkür, Dünya, Satürn, Neptün) büyüklükleri dikkate alınarak sıralanmak istenirse doğru sıralama nasıl olur? En büyükten en küçüğe doğru yazınız.","correct":"En büyükten en küçüğe doğru sıralama: Satürn > Neptün > Dünya > Merkür şeklindedir.","explanation":"Gazsal devlerden Satürn bu dörtlü içinde en büyüğüdür, onu Neptün izler. Karasal gezegenlerden Dünya üçüncü, Merkür ise en küçükleri olarak son sırada yer alır.","type":"open_ended"}];
+  const rawQuestions = [{"id":1,"question":"Güneş Sistemi'ndeki bazı gezegenlerin büyüklükleri X, Y ve Z küreleriyle temsil edilmiştir. X gezegeni en büyük gaz sal gezegen, Y gezegeni Dünya, Z ise Güneş'e en yakın gezegendir. Buna göre X, Y ve Z harflerinin temsil ettiği gezegenleri yazarak gerekçeleriyle eşleştiriniz.","correct":"X: Jüpiter (En büyük gaz sal gezegen), Y: Dünya (Yaşam olan tek karasal gezegen), Z: Merkür (Güneş'e en yakın ve en küçük gezegen).","explanation":"Güneş sistemi içerisindeki gezegenler büyüklüklerine ve yapılarına göre sınıflandırılır. X, gaz sal devler arasında en büyüğü olan Jüpiter'dir; Y, yaşam barındıran Dünya'dır; Z ise Güneş'e en yakın olan Merkür'dür.","type":"open_ended"},{"id":2,"question":"Güneş'e en yakın dört gezegen ile Güneş'e en uzak dört gezegenin temel yapısal farklılıkları nelerdir? Açıklayınız.","correct":"Güneş'e en yakın ilk dört gezegen (Merkür, Venüs, Dünya, Mars) karasal (kayalık) yapılıdır ve yüzeyleri serttir. En uzak dört gezegen (Jüpiter, Satürn, Uranüs, Neptün) ise gaz sal (yapıları çoğunlukla gazdan oluşan) devlerdir ve yüzeyleri yoktur.","explanation":"Güneş Sistemi'ndeki gezegenler Güneş'e olan konumlarına göre iki gruba ayrılır: İç gezegenler (karasal) ve dış gezegenler (gazsal).","type":"open_ended"},{"id":3,"question":"A gezegeni Güneş'e B gezegeninden daha yakındır. Bu durum dikkate alındığında, A gezegeninin dolanma süresi ile B gezegeninin dolanma süresi arasında nasıl bir ilişki vardır? Gerekçesiyle açıklayınız.","correct":"A gezegeninin Güneş etrafındaki dolanma süresi, B gezegenininkinden daha kısadır. Çünkü Güneş'e yakın olan gezegenlerin yörüngeleri daha dardır ve Güneş'in uyguladığı kütle çekim etkisiyle daha hızlı dönerler.","explanation":"Kepler kanunları ve Güneş sistemi dinamiklerine göre, Güneş'e yakın olan gezegenlerin yörünge uzunluğu daha kısa ve hızları daha fazladır, bu da bir yılı (dolanma süresini) kısaltır.","type":"open_ended"},{"id":4,"question":"Venüs gezegeni, Güneş'e Merkür'den daha uzak olmasına rağmen neden Güneş Sistemi'nin en sıcak gezegenidir? Bilimsel gerekçesini açıklayınız.","correct":"Venüs'ün atmosferinde yoğun olarak karbondioksit gibi sera gazları bulunur. Bu gazlar, Güneş'ten gelen ışınların gezegen yüzeyinden yansıyarak uzaya kaçmasını engeller ve sera etkisi yaratarak ısıyı hapsetmesine neden olur.","explanation":"Merkür Güneş'e en yakın gezegendir ancak atmosferi neredeyse yoktur. Venüs ise kalın bir atmosfer katmanına sahip olduğu için sera etkisiyle ısıyı tutar ve Merkür'den daha sıcak olur.","type":"open_ended"},{"id":5,"question":"Güneş Sistemi'ndeki gezegenler yandaki gibi iki temel gruba ayrılmaktadır. Bu iki grup arasındaki temel farkları yapı, yoğunluk ve büyüklük açısından üç maddede açıklayınız.","correct":"1. Yapı: Karasal gezegenlerin yüzeyi kaya ve metalden oluşurken, gazsal gezegenler çoğunlukla gaz halindedir. 2. Yoğunluk: Karasal gezegenlerin yoğunlukları fazladır, gazsal gezegenlerin yoğunlukları düşüktür. 3. Büyüklük: Karasal gezegenler küçüktür, gazsal gezegenler ise çok daha büyüktür.","explanation":"İç (karasal) ve dış (gazsal) gezegenler fiziksel ve kimyasal özellikleri bakımından birbirinden keskin çizgilerle ayrılır.","type":"open_ended"},{"id":6,"question":"Satürn gezegeni hakkında bilinen en çarpıcı özelliklerden biri etrafındaki belirgin halkalardır. Sadece Satürn'ün mü halkaları vardır, diğer gazsal gezegenlerin durumu nedir? Açıklayınız.","correct":"Hayır, sadece Satürn'ün halkaları yoktur. Güneş Sistemi'ndeki tüm gazsal devlerin (Jüpiter, Satürn, Uranüs ve Neptün) etrafında buz ve kaya parçalarından oluşan halk sistemi bulunur. Ancak Satürn'ün halkaları en büyük ve en belirgin olanıdır.","explanation":"Halkalar sadece Satürn'e özgü değildir; tüm dış (gazsal) gezegenlerin halkaları vardır ancak kalınlık ve görünürlükleri farklıdır.","type":"open_ended"},{"id":7,"question":"Uranüs ve Neptün büyüklük, renk ve yapı bakımından birbirine çok benzerler ve 'ikiz gezegenler' olarak adlandırılırlar. Buna rağmen Neptün'ün Güneş'e uzaklığı Uranüs'ten fazladır. Bu durum iki gezegenin hangi özelliğini doğrudan etkiler? Açıklayınız.","correct":"Güneş'e olan uzaklıklarının farklı olması, bu iki gezegenin Güneş etrafındaki bir tam turunu (dolanma süresini) ve yüzey sıcaklıklarını doğrudan etkiler. Neptün, Güneş'e daha uzak olduğu için daha soğuktur ve dolanım süresi Uranüs'e göre daha uzundur.","explanation":"Güneş'e uzaklık arttıkça sıcaklık düşer ve yörünge yarıçapı büyüdüğü için dolanma süresi (bir yıl) uzar.","type":"open_ended"},{"id":8,"question":"Bir öğrenci, 'Güneş Sistemi'ndeki en büyük gezegen Güneş'e en uzak olan gezegendir.' iddiasında bulunmuştur. Öğrencinin bu iddiası bilimsel olarak doğru mudur? Gerekçesiyle birlikte düzeltiniz.","correct":"Öğrencinin iddiası yanlıştır. Güneş Sistemi'ndeki en büyük gezegen Jüpiter'dir ve Jüpiter gazsal bir dış gezegendir ancak en uzak gezegen değildir. Güneş'e en uzak gezegen Neptün'dür ve en büyük dördüncü gezegendir.","explanation":"Büyüklük sıralaması ile Güneş'e yakınlık sıralaması aynı değildir. En büyük gezegen Jüpiter'dir, en uzak gezegen ise Neptün'dür.","type":"open_ended"},{"id":9,"question":"Mars, Dünya'dan sonra gelen dördüncü gezegendir ve 'Kızıl Gezegen' olarak bilinir. Mars'ın yüzeyinin kırmızı görünmesinin temel nedeni nedir? Açıklayınız.","correct":"Mars'ın yüzeyinde bol miktarda demir oksit (pas) bulunur. Bu mineral tozları gezegenin yüzeyini kaplayarak uzaydan ve dünyadan bakıldığında kızıl/kırmızı görünmesine yol açar.","explanation":"Mars yüzeyindeki demir açısından zengin kayaların oksitlenmesi (paslanması) sonucunda kızıl bir görünüme sahip olmuştur.","type":"open_ended"},{"id":10,"question":"Güneş Sistemi'ndeki gezegenler küçükten büyüğe doğru sıralandığında ilk iki sırada hangi gezegenler yer alır? Karasal veya gazsal olma durumlarını da belirterek yazınız.","correct":"Küçükten büyüğe sıralamada ilk sırada Merkür, ikinci sırada Mars yer alır. Her iki gezegen de karasal (iç) yapılıdır ve Güneş Sistemi'nin en küçük iki gezegenidir.","explanation":"Merkür en küçük gezegendir, onu Mars takip eder. İkisi de karasal yapıdadır.","type":"open_ended"},{"id":11,"question":"Venüs, Dünya ve Mars iç (karasal) gezegenler grubundandır. Bu üç gezegenin atmosferleri karşılaştırıldığında Dünya'yı diğer ikisinden ayıran en temel yaşamsal fark nedir? Açıklayınız.","correct":"Dünya'nın atmosferinde canlıların solunum yapabilmesi için uygun oranda oksijen ve sıvı halde suyun bulunmasını sağlayan ideal basınç/sıcaklık dengesi vardır. Venüs ve Mars'ın atmosferi ise neredeyse tamamen zehirli gazlardan (yoğun karbondioksit) oluşur.","explanation":"Dünya, atmosfer bileşimi ve su varlığı sayesinde yaşam barındıran tek gezegendir; Venüs ve Mars'ta yaşam için gerekli koşullar bulunmaz.","type":"open_ended"},{"id":12,"question":"Güneş Sistemi'ndeki gezegenlerin Güneş'e olan uzaklıkları arttıkça dolanma süreleri (bir yıl uzunlukları) nasıl değişir? Nedenini kısaca açıklayınız.","correct":"Güneş'e olan uzaklık arttıkça gezegenlerin dolanma süreleri artar (uzar). Çünkü Güneş'ten uzaklaştıkça yörünge çevre uzunluğu büyür ve gezegenlerin Güneş etrafındaki dönüş hızları azalır.","explanation":"Uzak yörüngedeki gezegenler hem daha uzun bir yolu kat ederler hem de Güneş'in kütle çekimi zayıfladığı için daha yavaş hareket ederler.","type":"open_ended"},{"id":13,"question":"Yanda görseli verilen Satürn ve Jüpiter dış (gazsal) gezegenler grubunda yer alır. Bu iki dev gezegenin ortak yapısal özellikleri nelerdir? İki madde halinde yazınız.","correct":"1. İkisi de gazsal (yapıları çoğunlukla hidrojen ve helyum gazından oluşan) yapıdadır ve katı bir yüzeyleri yoktur. 2. İkisinin de etrafında halka sistemleri ve çok sayıda uyduları bulunmaktadır.","explanation":"Jüpiter ve Satürn dış gezegenler olup, devasa gaz kütlelerinden oluşurlar ve çok sayıda uyduya sahiptirler.","type":"open_ended"},{"id":14,"question":"Uranüs gezegeni diğer gezegenlerden farklı olarak kendi ekseni etrafında sanki 'yuvarlanan bir varil gibi' yan yatmış şekilde döner. Bu durum Uranüs'ü diğer gezegenlerden ayıran ilginç bir özelliktir. Uranüs hangi gruba dahildir ve yapısal olarak neye benzer?","correct":"Uranüs gazsal (dış) devler grubuna dahildir. Yapısal olarak buz devleri sınıfında yer alır ve yoğun bir atmosfer ile buz/kaya karışımı çekirdeğe sahiptir.","explanation":"Uranüs, Neptün ile birlikte gazsal gezegenler içinde 'buz devi' olarak alt gruba ayrılır ve aşırı yatık dönme eksenine sahiptir.","type":"open_ended"},{"id":15,"question":"Güneş Sistemi'nden seçilen yandaki dört gezegen (Merkür, Dünya, Satürn, Neptün) büyüklükleri dikkate alınarak sıralanmak istenirse doğru sıralama nasıl olur? En büyükten en küçüğe doğru yazınız.","correct":"En büyükten en küçüğe doğru sıralama: Satürn > Neptün > Dünya > Merkür şeklindedir.","explanation":"Gazsal devlerden Satürn bu dörtlü içinde en büyüğüdür, onu Neptün izler. Karasal gezegenlerden Dünya üçüncü, Merkür ise en küçükleri olarak son sırada yer alır.","type":"open_ended"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
   let timeLeftSeconds = 1800;

@@ -60,14 +60,28 @@
       border-radius: 20px;
       border: 1.5px solid #e2e8f0;
       box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
-      width: 100%;
-      max-width: 1060px;
-      height: calc(100vh - 36px);
-      max-height: 720px;
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      padding: 20px 28px 16px 28px;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
     }
 
     /* 📌 1. KART ÜST BAŞLIĞI */
@@ -186,7 +200,7 @@
       flex-direction: row;
       align-items: center;
       justify-content: center;
-      gap: 28px;
+      gap: 32px;
       overflow: hidden;
     }
 
@@ -201,17 +215,17 @@
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 44%;
-      max-width: 46%;
+      flex: 0 0 58%;
+      max-width: 60%;
       height: 100%;
-      max-height: 52vh;
+      max-height: 68vh;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #f8fafc;
       border: 1.5px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 8px;
       overflow: hidden;
     }
 
@@ -225,32 +239,36 @@
 
     .rf-slide-visual-col .rf-visual-box svg,
     .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
       max-width: 100%;
-      max-height: 48vh;
+      max-height: 64vh;
       object-fit: contain;
+      border-radius: 10px;
     }
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 1;
+      flex: 0 0 38%;
+      max-width: 40%;
       min-width: 0;
       display: flex;
       flex-direction: column;
       justify-content: center;
-      gap: 14px;
+      gap: 12px;
       overflow: hidden;
     }
 
     .rf-slide-content-col.rf-full-width {
       width: 100%;
-      max-width: 860px;
+      max-width: 920px;
       margin: 0 auto;
-      gap: 20px;
+      gap: 16px;
     }
 
     .rf-stem-text {
       color: #0f172a;
-      font-size: clamp(16px, 1.5vw, 22px);
+      font-size: clamp(15px, 1.3vw, 19px);
       font-weight: 850;
       line-height: 1.45;
       letter-spacing: -0.2px;
@@ -343,19 +361,21 @@
 
     .rf-open-textarea {
       width: 100%;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 600;
       color: #0f172a;
-      padding: 10px 16px;
-      border-radius: 8px;
+      padding: 8px 12px;
+      border-radius: 10px;
       border: 1.5px solid #cbd5e1;
-      background: #ffffff;
+      background: #f8fafc;
       outline: none;
       resize: none;
-      height: 85px;
-      max-height: 95px;
-      line-height: 1.45;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
       font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 0.15s ease;
     }
     .rf-open-textarea:focus {
@@ -794,7 +814,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            <div class="rf-stem-text">Yanda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
             
         <div class="rf-options-list" data-qid="1">
           
@@ -905,7 +925,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?</div>
+            <div class="rf-stem-text">Yanda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?</div>
             
         <div class="rf-options-list" data-qid="4">
           
@@ -1159,7 +1179,7 @@
 
         <section class="rf-question-slide rf-no-visual " id="rf-slide-10" data-slide="10" style="display: none;">
           <div class="rf-slide-content-col rf-full-width">
-            <div class="rf-stem-text">Yukarıda kendini tanıtan gök cismi <u>hangisidir</u>?</div>
+            <div class="rf-stem-text">Yanda kendini tanıtan gök cismi <u>hangisidir</u>?</div>
             
         <div class="rf-options-list" data-qid="11">
           
@@ -1233,7 +1253,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
+            <div class="rf-stem-text">Yanda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u><u><u><u><u>yanlıştır</u></u></u></u></u></u>?</div>
             
         <div class="rf-options-list" data-qid="13">
           
@@ -1307,7 +1327,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?</div>
+            <div class="rf-stem-text">Yanda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?</div>
             
         <div class="rf-options-list" data-qid="15">
           
@@ -1862,7 +1882,7 @@
           </div>
           <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
           <div class="rf-slide-content-col">
-            <div class="rf-stem-text">Yukarıda Güneş, Dünya ve Ay'ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?</div>
+            <div class="rf-stem-text">Yanda Güneş, Dünya ve Ay'ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?</div>
             
         <div class="rf-options-list" data-qid="30">
           
@@ -1970,7 +1990,7 @@
   let userAnswers = {}; // { 1: 'B', 2: '' }
   let isFinished = false;
 
-  const rawQuestions = [{"id":1,"question":"Yukarıda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Güneş, küre şeklindedir, bir ısı ve ışık kaynağıdır ve Dünya'ya en yakın yıldızdır. Ancak Güneş de diğer gök cisimleri gibi kendi etrafında dönme hareketi yapar.","type":"multiple_choice"},{"id":2,"question":"Görselde temel özellikleri verilen Ay hakkında öğrencilerin yaptığı aşağıdaki yorumlardan hangisi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay'ın geometrik şekli küreye benzer. Ay bir ısı kaynağı değildir, Güneş'ten aldığı ışığı yansıtır. Atmosferi yok denecek kadar azdır ve Dünya'dan küçüktür.","type":"multiple_choice"},{"id":3,"question":"Güneş ve Ay büyüklükleri bakımından karşılaştırıldığında hangi ifade doğru olur?","correct":"A","explanation":"Doğru Seçenek: [A] — Güneş bir yıldızdır ve Ay'a göre devasa büyüklüktedir. Güneş'in içerisine yaklaşık 64 milyon adet Ay sığabilir.","type":"multiple_choice"},{"id":4,"question":"Yukarıda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?","correct":"A","explanation":"Doğru Seçenek: [A] — Güneş ve Ay'ın ortak özelliklerinden biri küre şeklinde olmalarıdır. Ancak Ay ısı ve ışık kaynağı değildir.","type":"multiple_choice"},{"id":5,"question":"Güneş orta sıcaklıkta bir yıldızdır. Güneş'in katmanlı yapısı ve yapısındaki maddeler düşünüldüğünde aşağıdakilerden hangisi doğrud?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gaz halindeki maddelerden (çoğunlukla hidrojen ve helyum) oluşur, oldukça sıcaktır.","type":"multiple_choice"},{"id":6,"question":"Ay yüzeyinde bulunan kraterler ve taşlık alanlar ile ilgili olarak aşağıdakilerden hangisi söylenebilir?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay'ın atmosferi çok ince olduğu için gök taşları yanarak yok olamaz ve yüzeye çarparak büyük çukurlar (kraterler) oluşturur.","type":"multiple_choice"},{"id":7,"question":"Dünya'nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"C","explanation":"Doğru Seçenek: [C] — Ay bir ışık kaynağı değildir, Güneş'ten aldığı ışığı yansıtır.","type":"multiple_choice"},{"id":8,"question":"Güneş'in dünyaya olan devasa uzaklığına rağmen dünyamızı ısıtması ve aydınlatması onun hangi temel özelliği ile ilgilidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş etrafa yoğun ısı ve ışık yayan bir yıldızdır.","type":"multiple_choice"},{"id":9,"question":"Ay'ın yüzeyinde hava olaylarının (yağmur, rüzgâr, kar vb.) görülmeme nedeni aşağıdakilerden hangisidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Hava olaylarının gerçekleşebilmesi için kalın bir atmosfer tabakasına ihtiyaç vardır. Ay'ın atmosferi çok incedir.","type":"multiple_choice"},{"id":10,"question":"Bir öğrenci fen bilimleri ödevi için Güneş ve Ay modelleri hazırlamıştır. Bu modellerde Güneş ve Ay'ın ortak olarak hangi geometrik şekle benzediğini göstermiştir?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş ve Ay küre şekline benzer.","type":"multiple_choice"},{"id":11,"question":"Yukarıda kendini tanıtan gök cismi hangisidir?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gazlardan oluşur.","type":"multiple_choice"},{"id":12,"question":"Ay yüzeyinde gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının temel sebebi nedir?","correct":"B","explanation":"Doğru Seçenek: [B] — Atmosfer, gök cisimlerini battaniye gibi sararak aşırı ısınmayı veya soğumayı önler. Ay'da atmosfer çok ince olduğu için gece çok soğuk, gündüz ise çok sıcak olur.","type":"multiple_choice"},{"id":13,"question":"Yukarıda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Ay (II), Güneş'ten (I) çok daha küçüktür.","type":"multiple_choice"},{"id":14,"question":"Güneş'in yüzeyinde daha soğuk bölgeler olduğu bilinen ve görselde temsili olarak gösterilen lekelere ne ad verilir?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş yüzeyindeki daha soğuk görünen karanlık bölgelere Güneş lekesi denir.","type":"multiple_choice"},{"id":15,"question":"Yukarıda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay dünyanın tek doğal uydusudur ve yüzeyi toz/taşlıktır. Ancak Ay'ın kendi ışığı yoktur, 3. ifade yanlıştır.","type":"multiple_choice"},{"id":16,"question":"Güneş'in dünyaya olan devasa büyüklüğüne rağmen gökyüzüne baktığımızda küçük bir top gibi görünmesinin sebebi aşağıdakilerden hangisidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Cisimler uzakta olduklarında olduğundan daha küçük görünürler. Güneş çok büyük olmasına rağmen Dünya'ya çok uzaktır.","type":"multiple_choice"},{"id":17,"question":"Ay hakkında araştırma yapan bir öğrenci aşağıdakilerden hangisine ulaşamaz?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay'da atmosfer çok ince olduğu için rüzgâr, yağmur gibi hava olayları gözlenmez.","type":"multiple_choice"},{"id":18,"question":"Güneş'in yapısı ve katmanları ile ilgili aşağıda verilen bilgilerden hangisi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş gaz halindedir, bir yıldızdır, kendi ışığını üretir ve çekirdeğinde sıcaklık çok yüksektir.","type":"multiple_choice"},{"id":19,"question":"Güneş ve Ay büyüklükleri göz önüne alındığında, yaklaşık olarak kaç tane Ay'ın büyüklüğü bir Güneş'in büyüklüğüne eşittir?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş Ay'dan devasa büyüktür, içerisine milyonlarca Ay sığabilir.","type":"multiple_choice"},{"id":20,"question":"Astronotlar Ay yüzeyine ayak bastıklarında yürürken hafif zıpladıklarını gözlemlemişlerdir. Bu durumun temel sebebi nedir?","correct":"A","explanation":"Doğru Seçenek: [A] — Ay'ın kütlesi dünyadan küçük olduğu için çekim kuvveti de azdır (Dünya'nın altıda biri kadardır).","type":"multiple_choice"},{"id":21,"question":"Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri <u><u><u><u><u>değildir</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Yıldızlar kendi ısı ve ışığını üreten canlı (enerjik) gök cisimleridir, ışıksız değillerdir.","type":"multiple_choice"},{"id":22,"question":"Aşağıdaki Venn şemasında Güneş ve Ay'ın özellikleri karşılaştırılmıştır. Ortak bölgeye hangisi yazılmalıdır?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş ve Ay'ın ortak geometrik özelliği küre şeklinde olmalarıdır.","type":"multiple_choice"},{"id":23,"question":"Ay ile ilgili olarak aşağıda verilenlerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Ay'ın şekli aslında değişmez, her zaman küredir. Dünya'dan bakıldığında Güneş ışığını alış açısına göre farklı göründüğü (evreler oluştuğu) için şekli değişiyormuş gibi algılanır.","type":"multiple_choice"},{"id":24,"question":"Güneş evrendeki diğer dev yıldızlara göre hangi boyuttadır?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş, evrendeki devasa yıldızlar yanında orta büyüklükte bir yıldız olarak sınıflandırılır.","type":"multiple_choice"},{"id":25,"question":"Ay yüzeyine ilk defa insan ayak basmıştır ve bırakılan ayak izleri yıllarca bozulmadan kalmıştır. Bunun nedeni aşağıdakilerden hangisidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Atmosferin ve rüzgârın olmayışı yüzeydeki izlerin veya tozların uçup gitmesini engeller, bu yüzden ayak izleri bozulmaz.","type":"multiple_choice"},{"id":26,"question":"Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş Ay'dan küçüktür ifadesi yanlıştır, Güneş Ay'dan devasa büyüktür.","type":"multiple_choice"},{"id":27,"question":"Güneş'in enerjisini nereden aldığı ve yapısında en çok hangi maddelerin bulunduğu, fen bilimleri dersinde anlatılmaktadır. Güneş'in yapısında çoğunlukla hangi gazlar bulunur?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş'in yapısında temel olarak hidrojen ve helyum gazları bulunur.","type":"multiple_choice"},{"id":28,"question":"Dünya'dan gökyüzüne baktığımızda Güneş ile Ay'ı neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel açıklaması nedir?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay Güneş'ten çok küçüktür ancak Dünya'ya çok yakın olduğu için Güneş ile hemen hemen aynı boyutta görünür.","type":"multiple_choice"},{"id":29,"question":"Güneş lekeleriyle ilgili aşağıdakilerden hangisi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş lekeleri, Güneş'in yüzeyinde çevrelerine göre daha soğuk oldukları için koyu (karanlık) görünen bölgelerdir.","type":"multiple_choice"},{"id":30,"question":"Yukarıda Güneş, Dünya ve Ay'ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?","correct":"A","explanation":"Doğru Seçenek: [A] — Güneş en büyüktür, ardından Dünya gelir, en küçüğü ise Ay'dır.","type":"multiple_choice"}];
+  const rawQuestions = [{"id":1,"question":"Yanda modeli verilen Güneş ile ilgili aşağıdaki ifadelerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Güneş, küre şeklindedir, bir ısı ve ışık kaynağıdır ve Dünya'ya en yakın yıldızdır. Ancak Güneş de diğer gök cisimleri gibi kendi etrafında dönme hareketi yapar.","type":"multiple_choice"},{"id":2,"question":"Görselde temel özellikleri verilen Ay hakkında öğrencilerin yaptığı aşağıdaki yorumlardan hangisi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay'ın geometrik şekli küreye benzer. Ay bir ısı kaynağı değildir, Güneş'ten aldığı ışığı yansıtır. Atmosferi yok denecek kadar azdır ve Dünya'dan küçüktür.","type":"multiple_choice"},{"id":3,"question":"Güneş ve Ay büyüklükleri bakımından karşılaştırıldığında hangi ifade doğru olur?","correct":"A","explanation":"Doğru Seçenek: [A] — Güneş bir yıldızdır ve Ay'a göre devasa büyüklüktedir. Güneş'in içerisine yaklaşık 64 milyon adet Ay sığabilir.","type":"multiple_choice"},{"id":4,"question":"Yanda verilen özelliklerden hangileri hem Güneş hem de Ay için ortak özellik olarak söylenebilir?","correct":"A","explanation":"Doğru Seçenek: [A] — Güneş ve Ay'ın ortak özelliklerinden biri küre şeklinde olmalarıdır. Ancak Ay ısı ve ışık kaynağı değildir.","type":"multiple_choice"},{"id":5,"question":"Güneş orta sıcaklıkta bir yıldızdır. Güneş'in katmanlı yapısı ve yapısındaki maddeler düşünüldüğünde aşağıdakilerden hangisi doğrud?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gaz halindeki maddelerden (çoğunlukla hidrojen ve helyum) oluşur, oldukça sıcaktır.","type":"multiple_choice"},{"id":6,"question":"Ay yüzeyinde bulunan kraterler ve taşlık alanlar ile ilgili olarak aşağıdakilerden hangisi söylenebilir?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay'ın atmosferi çok ince olduğu için gök taşları yanarak yok olamaz ve yüzeye çarparak büyük çukurlar (kraterler) oluşturur.","type":"multiple_choice"},{"id":7,"question":"Dünya'nın tek doğal uydusu olan Ay ile ilgili aşağıdakilerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"C","explanation":"Doğru Seçenek: [C] — Ay bir ışık kaynağı değildir, Güneş'ten aldığı ışığı yansıtır.","type":"multiple_choice"},{"id":8,"question":"Güneş'in dünyaya olan devasa uzaklığına rağmen dünyamızı ısıtması ve aydınlatması onun hangi temel özelliği ile ilgilidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş etrafa yoğun ısı ve ışık yayan bir yıldızdır.","type":"multiple_choice"},{"id":9,"question":"Ay'ın yüzeyinde hava olaylarının (yağmur, rüzgâr, kar vb.) görülmeme nedeni aşağıdakilerden hangisidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Hava olaylarının gerçekleşebilmesi için kalın bir atmosfer tabakasına ihtiyaç vardır. Ay'ın atmosferi çok incedir.","type":"multiple_choice"},{"id":10,"question":"Bir öğrenci fen bilimleri ödevi için Güneş ve Ay modelleri hazırlamıştır. Bu modellerde Güneş ve Ay'ın ortak olarak hangi geometrik şekle benzediğini göstermiştir?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş ve Ay küre şekline benzer.","type":"multiple_choice"},{"id":11,"question":"Yanda kendini tanıtan gök cismi hangisidir?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş bir yıldızdır ve yapısı gazlardan oluşur.","type":"multiple_choice"},{"id":12,"question":"Ay yüzeyinde gece ve gündüz arasındaki sıcaklık farkının aşırı derecede fazla olmasının temel sebebi nedir?","correct":"B","explanation":"Doğru Seçenek: [B] — Atmosfer, gök cisimlerini battaniye gibi sararak aşırı ısınmayı veya soğumayı önler. Ay'da atmosfer çok ince olduğu için gece çok soğuk, gündüz ise çok sıcak olur.","type":"multiple_choice"},{"id":13,"question":"Yanda görseli verilen I numaralı gök cismi (Güneş) ile II numaralı gök cismî (Ay) karşılaştırıldığında aşağıdakilerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Ay (II), Güneş'ten (I) çok daha küçüktür.","type":"multiple_choice"},{"id":14,"question":"Güneş'in yüzeyinde daha soğuk bölgeler olduğu bilinen ve görselde temsili olarak gösterilen lekelere ne ad verilir?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş yüzeyindeki daha soğuk görünen karanlık bölgelere Güneş lekesi denir.","type":"multiple_choice"},{"id":15,"question":"Yanda Ay ile ilgili hazırlanan bilgi kartındaki ifadelerden kaç tanesi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay dünyanın tek doğal uydusudur ve yüzeyi toz/taşlıktır. Ancak Ay'ın kendi ışığı yoktur, 3. ifade yanlıştır.","type":"multiple_choice"},{"id":16,"question":"Güneş'in dünyaya olan devasa büyüklüğüne rağmen gökyüzüne baktığımızda küçük bir top gibi görünmesinin sebebi aşağıdakilerden hangisidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Cisimler uzakta olduklarında olduğundan daha küçük görünürler. Güneş çok büyük olmasına rağmen Dünya'ya çok uzaktır.","type":"multiple_choice"},{"id":17,"question":"Ay hakkında araştırma yapan bir öğrenci aşağıdakilerden hangisine ulaşamaz?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay'da atmosfer çok ince olduğu için rüzgâr, yağmur gibi hava olayları gözlenmez.","type":"multiple_choice"},{"id":18,"question":"Güneş'in yapısı ve katmanları ile ilgili aşağıda verilen bilgilerden hangisi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş gaz halindedir, bir yıldızdır, kendi ışığını üretir ve çekirdeğinde sıcaklık çok yüksektir.","type":"multiple_choice"},{"id":19,"question":"Güneş ve Ay büyüklükleri göz önüne alındığında, yaklaşık olarak kaç tane Ay'ın büyüklüğü bir Güneş'in büyüklüğüne eşittir?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş Ay'dan devasa büyüktür, içerisine milyonlarca Ay sığabilir.","type":"multiple_choice"},{"id":20,"question":"Astronotlar Ay yüzeyine ayak bastıklarında yürürken hafif zıpladıklarını gözlemlemişlerdir. Bu durumun temel sebebi nedir?","correct":"A","explanation":"Doğru Seçenek: [A] — Ay'ın kütlesi dünyadan küçük olduğu için çekim kuvveti de azdır (Dünya'nın altıda biri kadardır).","type":"multiple_choice"},{"id":21,"question":"Güneş bir yıldızdır. Aşağıdakilerden hangisi yıldızların genel özelliklerinden biri <u><u><u><u><u>değildir</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Yıldızlar kendi ısı ve ışığını üreten canlı (enerjik) gök cisimleridir, ışıksız değillerdir.","type":"multiple_choice"},{"id":22,"question":"Aşağıdaki Venn şemasında Güneş ve Ay'ın özellikleri karşılaştırılmıştır. Ortak bölgeye hangisi yazılmalıdır?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş ve Ay'ın ortak geometrik özelliği küre şeklinde olmalarıdır.","type":"multiple_choice"},{"id":23,"question":"Ay ile ilgili olarak aşağıda verilenlerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"D","explanation":"Doğru Seçenek: [D] — Ay'ın şekli aslında değişmez, her zaman küredir. Dünya'dan bakıldığında Güneş ışığını alış açısına göre farklı göründüğü (evreler oluştuğu) için şekli değişiyormuş gibi algılanır.","type":"multiple_choice"},{"id":24,"question":"Güneş evrendeki diğer dev yıldızlara göre hangi boyuttadır?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş, evrendeki devasa yıldızlar yanında orta büyüklükte bir yıldız olarak sınıflandırılır.","type":"multiple_choice"},{"id":25,"question":"Ay yüzeyine ilk defa insan ayak basmıştır ve bırakılan ayak izleri yıllarca bozulmadan kalmıştır. Bunun nedeni aşağıdakilerden hangisidir?","correct":"B","explanation":"Doğru Seçenek: [B] — Atmosferin ve rüzgârın olmayışı yüzeydeki izlerin veya tozların uçup gitmesini engeller, bu yüzden ayak izleri bozulmaz.","type":"multiple_choice"},{"id":26,"question":"Aşağıdaki tabloda Güneş ve Ay hakkında verilen bilgilerden hangisi <u><u><u><u><u>yanlıştır</u></u></u></u></u>?","correct":"C","explanation":"Doğru Seçenek: [C] — Güneş Ay'dan küçüktür ifadesi yanlıştır, Güneş Ay'dan devasa büyüktür.","type":"multiple_choice"},{"id":27,"question":"Güneş'in enerjisini nereden aldığı ve yapısında en çok hangi maddelerin bulunduğu, fen bilimleri dersinde anlatılmaktadır. Güneş'in yapısında çoğunlukla hangi gazlar bulunur?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş'in yapısında temel olarak hidrojen ve helyum gazları bulunur.","type":"multiple_choice"},{"id":28,"question":"Dünya'dan gökyüzüne baktığımızda Güneş ile Ay'ı neredeyse aynı büyüklükte görürüz. Bu durumun bilimsel açıklaması nedir?","correct":"B","explanation":"Doğru Seçenek: [B] — Ay Güneş'ten çok küçüktür ancak Dünya'ya çok yakın olduğu için Güneş ile hemen hemen aynı boyutta görünür.","type":"multiple_choice"},{"id":29,"question":"Güneş lekeleriyle ilgili aşağıdakilerden hangisi doğrudur?","correct":"B","explanation":"Doğru Seçenek: [B] — Güneş lekeleri, Güneş'in yüzeyinde çevrelerine göre daha soğuk oldukları için koyu (karanlık) görünen bölgelerdir.","type":"multiple_choice"},{"id":30,"question":"Yanda Güneş, Dünya ve Ay'ın büyüklükleri göz önüne alınarak yapılan sıralamada büyükten küçüğe doğru sıralama hangi seçenekte doğru verilmiştir?","correct":"A","explanation":"Doğru Seçenek: [A] — Güneş en büyüktür, ardından Dünya gelir, en küçüğü ise Ay'dır.","type":"multiple_choice"}];
 
   // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
   let timeLeftSeconds = 3600;
