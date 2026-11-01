@@ -25,6 +25,7 @@ try {
   }
 }
 
+const recentPublishes = new Map();
 const GITHUB_REPO = "rotalifenci/rotalifenciweb";
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
 
@@ -102,6 +103,13 @@ module.exports = async (req, res) => {
       desc = "",
       subject = "Fen Bilimleri"
     } = req.body || {};
+
+    // Deduplication check
+    const dedupKey = `${cleanGrade || grade}_${targetSection}_${title}_${questions.length}`;
+    const now = Date.now();
+    if (recentPublishes.has(dedupKey) && (now - recentPublishes.get(dedupKey).time < 5000)) {
+      return res.status(200).json(recentPublishes.get(dedupKey).data);
+    }
 
     if (!questions || !Array.isArray(questions) || questions.length === 0) {
       return res.status(400).json({ error: "Yayınlanacak soru listesi eksik." });
@@ -240,6 +248,10 @@ module.exports = async (req, res) => {
       type: isActivity ? "activity" : (isOpenEnded ? "open_ended" : (isShortAnswer ? "short_answer" : "multiple_choice")),
       question_type: isActivity ? "activity" : (isOpenEnded ? "open_ended" : (isShortAnswer ? "short_answer" : "multiple_choice")),
       format: isActivity ? "ETKİNLİK" : (isOpenEnded ? "AÇIK UÇLU SINAV" : (isShortAnswer ? "KISA CEVAPLI TEST" : "YAPRAK TEST")),
+      topic: topic || unit,
+      subtopic: (isAllOutcomes || subtopic === "Tüm Kazanımlar") ? "Tüm Kazanımlar" : (subtopic || "Genel"),
+      isAllOutcomes: Boolean(isAllOutcomes || subtopic === "Tüm Kazanımlar"),
+      learning_outcome: learning_outcome || (questions[0] && questions[0].learning_outcome) || "",
       hasBlob: false,
       tags: [
         `${cleanGrade}. sınıf`,

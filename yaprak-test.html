@@ -161,7 +161,7 @@
             <div class="form-group qt-multiselect-panel">
               <div class="label-with-action">
                 <label>Soru Türleri ve Sayıları (Çoklu Seçim)</label>
-                <span class="qt-total-badge" id="qtTotalCountBadge">📊 Toplam: 10 Soru</span>
+                <span class="qt-total-badge" id="qtTotalCountBadge">📊 Toplam: 10 Soru / İçerik</span>
               </div>
               <div class="qt-hint-text">Aynı anda birden fazla soru türü seçebilir, her birinin soru sayısını ayrı ayrı belirleyebilirsiniz:</div>
               
@@ -169,7 +169,7 @@
                 <!-- 1. Çoktan Seçmeli -->
                 <div class="qt-item-row is-active" id="qt_row_multiple_choice">
                   <label class="qt-checkbox-label" for="qt_cb_multiple_choice">
-                    <input type="checkbox" id="qt_cb_multiple_choice" class="qt-checkbox" data-type="multiple_choice" data-label="Çoktan Seçmeli" checked>
+                    <input type="checkbox" id="qt_cb_multiple_choice" class="qt-checkbox" data-type="multiple_choice" data-label="Çoktan Seçmeli" checked onchange="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-icon">🔘</span>
                     <span class="qt-info">
                       <span class="qt-name">Çoktan Seçmeli</span>
@@ -177,7 +177,7 @@
                     </span>
                   </label>
                   <div class="qt-count-box">
-                    <input type="number" id="qt_count_multiple_choice" class="qt-count-input" min="1" max="30" value="10">
+                    <input type="number" id="qt_count_multiple_choice" class="qt-count-input" min="1" max="30" value="10" oninput="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-unit">soru</span>
                   </div>
                 </div>
@@ -185,7 +185,7 @@
                 <!-- 2. Kısa Cevaplı / Boşluk Doldurma -->
                 <div class="qt-item-row" id="qt_row_short_answer">
                   <label class="qt-checkbox-label" for="qt_cb_short_answer">
-                    <input type="checkbox" id="qt_cb_short_answer" class="qt-checkbox" data-type="short_answer" data-label="Kısa Cevaplı">
+                    <input type="checkbox" id="qt_cb_short_answer" class="qt-checkbox" data-type="short_answer" data-label="Kısa Cevaplı" onchange="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-icon">✏️</span>
                     <span class="qt-info">
                       <span class="qt-name">Kısa Cevaplı / Boşluk Doldurma</span>
@@ -193,7 +193,7 @@
                     </span>
                   </label>
                   <div class="qt-count-box">
-                    <input type="number" id="qt_count_short_answer" class="qt-count-input" min="1" max="30" value="5" disabled>
+                    <input type="number" id="qt_count_short_answer" class="qt-count-input" min="1" max="30" value="5" disabled oninput="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-unit">soru</span>
                   </div>
                 </div>
@@ -201,7 +201,7 @@
                 <!-- 3. Açık Uçlu (Klasik) -->
                 <div class="qt-item-row" id="qt_row_open_ended">
                   <label class="qt-checkbox-label" for="qt_cb_open_ended">
-                    <input type="checkbox" id="qt_cb_open_ended" class="qt-checkbox" data-type="open_ended" data-label="Açık Uçlu">
+                    <input type="checkbox" id="qt_cb_open_ended" class="qt-checkbox" data-type="open_ended" data-label="Açık Uçlu" onchange="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-icon">📝</span>
                     <span class="qt-info">
                       <span class="qt-name">Açık Uçlu (Klasik)</span>
@@ -209,7 +209,7 @@
                     </span>
                   </label>
                   <div class="qt-count-box">
-                    <input type="number" id="qt_count_open_ended" class="qt-count-input" min="1" max="30" value="5" disabled>
+                    <input type="number" id="qt_count_open_ended" class="qt-count-input" min="1" max="30" value="5" disabled oninput="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-unit">soru</span>
                   </div>
                 </div>
@@ -217,7 +217,7 @@
                 <!-- 4. Etkinlik Hazırlama Modülü -->
                 <div class="qt-item-row" id="qt_row_activity">
                   <label class="qt-checkbox-label" for="qt_cb_activity">
-                    <input type="checkbox" id="qt_cb_activity" class="qt-checkbox" data-type="activity" data-label="Etkinlik">
+                    <input type="checkbox" id="qt_cb_activity" class="qt-checkbox" data-type="activity" data-label="Etkinlik" onchange="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-icon">🎯</span>
                     <span class="qt-info">
                       <span class="qt-name">Etkinlik (13 Özel Etkinlik Türü)</span>
@@ -225,7 +225,7 @@
                     </span>
                   </label>
                   <div class="qt-count-box">
-                    <input type="number" id="qt_count_activity" class="qt-count-input" min="1" max="50" value="5" disabled>
+                    <input type="number" id="qt_count_activity" class="qt-count-input" min="1" max="50" value="5" disabled oninput="if(window.updateQtTotalCount) window.updateQtTotalCount()">
                     <span class="qt-unit">etkinlik</span>
                   </div>
                 </div>
@@ -863,8 +863,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="js/curriculum-data.js?v=1793485437951"></script>
-  <script src="js/question_preparation_state.js?v=20261101"></script>
-  <script src="js/visual_match_engine.js?v=20261101"></script>
-  <script src="js/yaprak-test.js?v=1793519878484"></script>
+  <script src="js/question_preparation_state.js?v=20261101_v4"></script>
+  <script src="js/visual_match_engine.js?v=20261101_v4"></script>
+  <script src="js/yaprak-test.js?v=20261101_v4"></script>
 </body>
 </html>

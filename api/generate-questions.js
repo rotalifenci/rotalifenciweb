@@ -32,6 +32,16 @@ function cleanTurkishAndLatex(str) {
   text = text.replace(/rotamenci/gi, 'Rotalı Fenci');
   text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*>\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 > $2');
   text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*<\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 < $2');
+  text = text.replace(/\bYukarıdaki\b/g, 'Yandaki');
+  text = text.replace(/\byukarıdaki\b/g, 'yandaki');
+  text = text.replace(/\bYukarıda\b/g, 'Yanda');
+  text = text.replace(/\byukarıda\b/g, 'yanda');
+  text = text.replace(/\bYukardaki\b/g, 'Yandaki');
+  text = text.replace(/\byukardaki\b/g, 'yandaki');
+  text = text.replace(/yukarıda\s+verilen/gi, 'yanda verilen');
+  text = text.replace(/yukarıdaki\s+görsel/gi, 'yandaki görsel');
+  text = text.replace(/yukarıdaki\s+model/gi, 'yandaki model');
+  text = text.replace(/yukarıdaki\s+şekil/gi, 'yandaki şekil');
   return text.trim();
 }
 

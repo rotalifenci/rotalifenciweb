@@ -139,11 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     if (qtTotalCountBadge) {
-      qtTotalCountBadge.textContent = `📊 Toplam: ${total} İçerik`;
+      qtTotalCountBadge.textContent = `📊 Toplam: ${total} Soru / İçerik`;
     }
     const hiddenCount = document.getElementById('countInput');
     if (hiddenCount) hiddenCount.value = String(total || 10);
   }
+  window.updateQtTotalCount = updateQtTotalCount;
 
   function initQuestionTypesAndActivities() {
     const types = ['multiple_choice', 'short_answer', 'open_ended', 'activity'];
@@ -1394,7 +1395,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const cleanedQuestions = (data.questions || []).map(q => {
           const cq = { ...q };
           cq.type = q.type || item.type;
-          cq.question = cleanTurkishAndLatex(cq.question);
+          cq.question = cleanTurkishAndLatex(cq.question)
+            .replace(/\bYukarıdaki\b/g, 'Yandaki')
+            .replace(/\byukarıdaki\b/g, 'yandaki')
+            .replace(/\bYukarıda\b/g, 'Yanda')
+            .replace(/\byukarıda\b/g, 'yanda')
+            .replace(/\bYukardaki\b/g, 'Yandaki')
+            .replace(/\byukardaki\b/g, 'yandaki')
+            .replace(/yukarıda\s+verilen/gi, 'yanda verilen')
+            .replace(/yukarıdaki\s+görsel/gi, 'yandaki görsel')
+            .replace(/yukarıdaki\s+model/gi, 'yandaki model')
+            .replace(/yukarıdaki\s+şekil/gi, 'yandaki şekil');
           if (cq.options) {
             cq.options = { ...cq.options };
             ['A', 'B', 'C', 'D'].forEach(opt => {

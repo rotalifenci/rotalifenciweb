@@ -3632,8 +3632,8 @@ function renderHomePage(container) {
 
                     <!-- Sağ Görsel Kart (Rotalı Fenci Tanıtım Afişi - Tam Alan Kaplama & Maksimum Netlik) -->
                     <div class="lg:col-span-6 w-full flex items-center justify-center">
-                        <div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white ring-2 ring-slate-200/90 bg-slate-950 group transition-all duration-300 hover:shadow-red-500/25 hover:scale-[1.01] cursor-pointer" onclick="window.open('assets/rotali-fenci-tanitim.jpg', '_blank')" title="Tam boy görmek için tıklayın">
-                            <img src="assets/rotali-fenci-tanitim.jpg" alt="Rotalı Fenci - Rotamız Fen!" class="w-full h-auto block object-cover" style="width: 100%; display: block;" loading="eager">
+                        <div class="relative w-full rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border-2 sm:border-4 border-white ring-2 ring-slate-200/90 bg-slate-900 group transition-all duration-300 hover:shadow-red-500/25 hover:scale-[1.01] cursor-pointer" onclick="window.open('assets/rotali-fenci-tanitim.jpg', '_blank')" title="Tam boy görmek için tıklayın">
+                            <img src="assets/rotali-fenci-tanitim.jpg?v=20261101_banner_hd" alt="Rotalı Fenci - Rotamız Fen!" class="w-full h-auto block object-cover" style="width: 100%; display: block;" loading="eager">
                             <span class="absolute bottom-3 right-3 px-3 py-1 rounded-xl bg-slate-950/80 backdrop-blur-md text-white text-[11px] font-black border border-white/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1.5 pointer-events-none shadow-lg">
                                 <i class="fa-solid fa-expand text-amber-400"></i> Tam Boy Gör
                             </span>
