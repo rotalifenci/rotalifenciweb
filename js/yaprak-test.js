@@ -479,11 +479,19 @@ document.addEventListener('DOMContentLoaded', () => {
     text = text.replace(/rotamenci/gi, 'Rotalı Fenci');
     text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*>\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 > $2');
     text = text.replace(/([A-Za-zÇĞİÖŞÜçğıöşü]+)\s*<\s*([A-Za-zÇĞİÖŞÜçğıöşü]+)/g, '$1 < $2');
-        // Kullanıcı Talimatı: "sorularda yukarıdaki demiş yandaki diye düzelt tüm sorular için bunu yap"
-    text = text.replace(/\bYukarıdaki\b/g, 'Yandaki');
-    text = text.replace(/\byukarıdaki\b/g, 'yandaki');
-    text = text.replace(/\bYukarıda\b/g, 'Yanda');
-    text = text.replace(/\byukarıda\b/g, 'yanda');
+    // Kullanıcı Talimatı: "sorularda yukarıdaki demiş yandaki diye düzelt tüm sorular için bunu yap"
+    text = text.replace(/Yukarıdakilerden/g, 'Yandakilerden')
+      .replace(/yukarıdakilerden/g, 'yandakilerden')
+      .replace(/Yukarıdakiler/g, 'Yandakiler')
+      .replace(/yukarıdakiler/g, 'yandakiler')
+      .replace(/Yukarıdaki/g, 'Yandaki')
+      .replace(/yukarıdaki/g, 'yandaki')
+      .replace(/Yukardaki/g, 'Yandaki')
+      .replace(/yukardaki/g, 'yandaki')
+      .replace(/Yukarıdan/g, 'Yandan')
+      .replace(/yukarıdan/g, 'yandan')
+      .replace(/Yukarıda/g, 'Yanda')
+      .replace(/yukarıda/g, 'yanda');
 
     return text.trim();
   }
@@ -1940,7 +1948,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${visualBoxHtml}
             ${gridHtml}
             <div class="question-text-and-options">
-              <div class="question-body">${escapeHtml(q.question)}</div>
+              <div class="question-body">${escapeHtml(cleanTurkishAndLatex(q.question))}</div>
               ${contentBodyHtml}
             </div>
             <div class="solution-box" style="display: ${showSolutions ? 'block' : 'none'};">
@@ -2685,6 +2693,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let zkCurrentQuestions = [];
 
   function formatQuestionStemText(rawText) {
+    rawText = cleanTurkishAndLatex(rawText);
     let text = String(rawText || '').trim();
     text = text.replace(/^Soru\s*\d+\s*[:.-]\s*/i, '');
     const keywordsToUnderline = [
