@@ -5976,7 +5976,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                         </div>
 
                                         
-                                        <!-- 📌 4 Soru Türü Filtreleme Butonları (Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu, Kavram Haritası) -->
+                                        <!-- 📌 4 Soru Türü Filtreleme Butonları (Sadece Testler ve Yazılıya Hazırlık Bölümlerinde Gösterilir) -->
+                                        ${(normSubTab === 'soru-bankasi' || normSubTab === 'denemeler' || subTab === 'soru-bankasi' || subTab === 'denemeler') ? `
                                         <div class="mt-2.5 pt-2.5 border-t border-slate-100 flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-thin qtype-pill-container" data-unit="${unitNum}">
                                             <span class="text-[11px] font-bold text-slate-500 shrink-0 mr-1 flex items-center gap-1">
                                                 <i class="fa-solid fa-layer-group text-blue-600 text-xs"></i>
@@ -6018,6 +6019,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 <span>🎯 Etkinlik</span>
                                             </button>
                                         </div>
+                                        ` : ''}
                                     `;
                                 })()}
                                 ${totalItems.length > 0 ? `
