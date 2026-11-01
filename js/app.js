@@ -2261,26 +2261,31 @@ function getWorkBadgeText(item) {
         qCount = item.questionCount + " Soru";
     }
 
-    const isOpenEnded = fmtL.includes("açık uçlu") || fmtL.includes("acik uclu") || titleL.includes("açık uçlu") || titleL.includes("acik uclu") || titleL.includes("klasik");
-    const isYaprakTest = fmtL.includes("yaprak test") || titleL.includes("yaprak test");
-    const isDeneme = fmtL.includes("deneme") || titleL.includes("deneme");
-    const isEtkinlik = fmtL.includes("etkinlik") || titleL.includes("etkinlik") || catL === "etkinlikler";
+    const qTypeL = String(item.question_type || item.type || "").toLowerCase();
+    const isEtkinlik = qTypeL === "activity" || fmtL.includes("etkinlik") || titleL.includes("etkinlik") || catL === "etkinlikler";
+    const isKisaCevap = !isEtkinlik && (qTypeL === "short_answer" || fmtL.includes("kısa") || titleL.includes("kısa") || fmtL.includes("bosluk") || titleL.includes("bosluk") || fmtL.includes("boşluk") || titleL.includes("boşluk"));
+    const isOpenEnded = !isEtkinlik && !isKisaCevap && (qTypeL === "open_ended" || fmtL.includes("açık uçlu") || fmtL.includes("acik uclu") || titleL.includes("açık uçlu") || titleL.includes("acik uclu") || titleL.includes("klasik") || fmtL.includes("klasik"));
+    const isDeneme = !isEtkinlik && !isKisaCevap && !isOpenEnded && (fmtL.includes("deneme") || titleL.includes("deneme"));
+    const isYaprakTest = !isEtkinlik && !isKisaCevap && !isOpenEnded && !isDeneme && (fmtL.includes("yaprak test") || titleL.includes("yaprak test") || fmtL.includes("çoktan") || qTypeL === "multiple_choice");
     const isCalisma = fmtL.includes("çalışma") || titleL.includes("çalışma") || fmtL.includes("calisma");
 
-    if (isOpenEnded) {
-        return "📝 " + (qCount || "30 Soru") + " • Klasik Sınav-" + num;
+    if (isEtkinlik) {
+        return "🧩 " + (qCount || "5 Etkinlik") + " • Etkinlik–" + num;
     }
-    if (isYaprakTest) {
-        return "📝 " + (qCount || "30 Soru") + " • Test-" + num;
+    if (isKisaCevap) {
+        return "✏️ " + (qCount || "10 Soru") + " • Kısa Cevaplı–" + num;
+    }
+    if (isOpenEnded) {
+        return "📝 " + (qCount || "5 Soru") + " • Açık Uçlu Sınav–" + num;
     }
     if (isDeneme) {
-        return "🎯 " + (qCount || "20 Soru") + " • Deneme-" + num;
+        return "🎯 " + (qCount || "20 Soru") + " • Deneme–" + num;
     }
-    if (isEtkinlik) {
-        return "🧩 Etkinlik-" + num;
+    if (isYaprakTest) {
+        return "🔘 " + (qCount || "10 Soru") + " • Test–" + num;
     }
     if (isCalisma) {
-        return "📄 Çalışma-" + num;
+        return "📄 " + (qCount || "10 Soru") + " • Çalışma–" + num;
     }
 
     if (rawBadge && !rawBadge.includes("Test-1")) {
@@ -2705,6 +2710,39 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                     const isVideo = item.category === "videolar" || (item.format && item.format.toUpperCase().includes("VİDEO")) || (item.format && item.format.toUpperCase() === "MP4");
                     const isBook = lowerTitle.includes("kitap") || lowerTitle.includes("kitab");
                     const actionUI = getMaterialActionUI(item, item.category);
+                    const rawType = String(item.question_type || item.type || item.format || "").toLowerCase();
+                    const isTestItem = item.category === "soru-bankasi" || item.category === "denemeler" || rawType.includes("test") || rawType.includes("sınav") || rawType.includes("sinav") || rawType.includes("etkinlik") || rawType.includes("çalışma") || (item.fileUrl && item.fileUrl.includes("testler/"));
+
+                    let trueTypeBadge = (item.format || "DOKÜMAN").toUpperCase();
+                    let trueTypeBadgeClass = "bg-slate-100 text-slate-700 border-slate-200";
+
+                    if (rawType.includes("activity") || rawType.includes("etkinlik")) {
+                        trueTypeBadge = "ETKİNLİK ÇALIŞMASI";
+                        trueTypeBadgeClass = "bg-rose-50 text-rose-700 border-rose-200 font-extrabold";
+                    } else if (rawType.includes("short") || rawType.includes("kısa") || rawType.includes("bosluk") || rawType.includes("boşluk")) {
+                        trueTypeBadge = "KISA CEVAPLI / BOŞLUK DOLDURMA";
+                        trueTypeBadgeClass = "bg-amber-50 text-amber-700 border-amber-200 font-extrabold";
+                    } else if (rawType.includes("open") || rawType.includes("açık") || rawType.includes("acik") || rawType.includes("klasik")) {
+                        trueTypeBadge = "AÇIK UÇLU SINAV";
+                        trueTypeBadgeClass = "bg-purple-50 text-purple-700 border-purple-200 font-extrabold";
+                    } else if (rawType.includes("multiple") || rawType.includes("çoktan") || rawType.includes("coktan") || rawType.includes("yaprak test")) {
+                        trueTypeBadge = "ÇOKTAN SEÇMELİ TEST";
+                        trueTypeBadgeClass = "bg-blue-50 text-blue-700 border-blue-200 font-extrabold";
+                    } else if (rawType.includes("deneme")) {
+                        trueTypeBadge = "DENEME SINAVI";
+                        trueTypeBadgeClass = "bg-indigo-50 text-indigo-700 border-indigo-200 font-extrabold";
+                    }
+
+                    let cardOutcomeHtml = "";
+                    if (isTestItem) {
+                        let outVal = "TÜM KAZANIMLAR";
+                        if (!item.isAllOutcomes && item.subtopic !== "Tüm Kazanımlar" && (item.learning_outcome || item.subtopic)) {
+                            const codePrefix = item.learning_outcome_code ? (item.learning_outcome_code + " - ") : "";
+                            outVal = codePrefix + (item.learning_outcome || item.subtopic);
+                        }
+                        cardOutcomeHtml = '<div class="mt-2 mb-2 px-2.5 py-1.5 rounded-lg bg-sky-50 border border-sky-100 flex items-start gap-1.5 text-[11px] font-semibold text-sky-950"><span class="text-sky-600 font-bold shrink-0">🎯 KAZANIM:</span><span class="leading-tight line-clamp-2">' + outVal + '</span></div>';
+                    }
+  
 
                     return `
                         <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-lg transition-all duration-200 p-4 sm:p-5 flex flex-col justify-between w-full max-w-full overflow-hidden">
@@ -2712,10 +2750,10 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                 <!-- Rozetler -->
                                 <div class="flex items-center justify-between gap-2 mb-3">
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-lg text-[10px] sm:text-xs font-black uppercase tracking-wider bg-amber-50 text-amber-800 border border-amber-200/80">
-                                        ${item.grade === 'all' ? 'Tüm Sınıflar' : item.grade + '. Sınıf'} • ${item.category === 'videolar' ? 'Video' : (item.category === 'egitsel-oyunlar' ? 'Oyun' : 'Ders Notu')}
+                                        ${item.grade === 'all' ? 'Tüm Sınıflar' : item.grade + '. Sınıf'} • ${item.category === 'videolar' ? 'Video' : (item.category === 'egitsel-oyunlar' ? 'Oyun' : (isTestItem ? 'Soru Hazırlama' : 'Ders Notu'))}
                                     </span>
-                                    <span class="text-[11px] font-bold text-slate-400 shrink-0">
-                                        ${item.format || 'DOKÜMAN'}
+                                    <span class="px-2.5 py-0.5 rounded-lg text-[10.5px] font-black uppercase tracking-wider border shrink-0 ${trueTypeBadgeClass}">
+                                        ${trueTypeBadge}
                                     </span>
                                 </div>
 
@@ -2734,6 +2772,7 @@ function renderCustomMaterialsSection(gradeNumber = "all", subTab = "all") {
                                                     <!-- On plan kapak gorseli (Kesilme yok, baslik ve detaylar 100% net ve gorunur) -->
                                     <img src="${resolveMaterialCover(item) || validImgUrl || 'assets/kapak-5.jpg'}" alt="${item.title}" class="relative z-10 w-auto h-full max-h-full max-w-full object-contain rounded-md shadow-md transition-transform duration-300 group-hover:scale-105" loading="lazy" />
                                 </div>
+                                ${cardOutcomeHtml}
 
                                 <!-- Açıklama: Çok uzun metinleri sınırlama (line-clamp-2) -->
                                 <p class="text-xs text-slate-600 leading-relaxed mb-4 font-medium line-clamp-2 break-words">

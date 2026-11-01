@@ -48,19 +48,25 @@ async function uploadFileToGitHub(relPath, contentString) {
     const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${relPath}`;
     let sha = null;
     try {
-      const getRes = await fetch(apiUrl, { headers: getGitHubHeaders(false) });
+      const getRes = await fetch(apiUrl, {
+        headers: getGitHubHeaders()
+      });
       if (getRes.ok) {
-        const d = await getRes.json();
-        sha = d.sha;
+        const fileData = await getRes.json();
+        sha = fileData.sha;
       }
-    } catch (e) {}
+    } catch (e) {
+      // File may not exist yet
+    }
 
+    const base64Content = Buffer.from(contentString, 'utf8').toString('base64');
     const body = {
-      message: `feat(test): publish ${relPath} with 3D cover visual`,
-      content: Buffer.from(contentString, 'utf8').toString('base64'),
-      branch: "main"
+      message: `🚀 Auto-publish material: ${relPath}`,
+      content: base64Content
     };
-    if (sha) body.sha = sha;
+    if (sha) {
+      body.sha = sha;
+    }
 
     const putRes = await fetch(apiUrl, {
       method: "PUT",
@@ -69,20 +75,20 @@ async function uploadFileToGitHub(relPath, contentString) {
     });
 
     if (!putRes.ok) {
-      const errTxt = await putRes.text();
-      console.warn("[Publish] GitHub commit warning:", errTxt);
+      const errText = await putRes.text();
+      console.warn(`[GitHub Upload] Warning for ${relPath}: ${putRes.status} ${errText}`);
     } else {
-      console.log(`[Publish] File successfully committed to GitHub repo: ${relPath}`);
+      console.log(`[GitHub Upload] Successfully committed: ${relPath}`);
     }
   } catch (err) {
-    console.warn("[Publish] GitHub upload error:", err.message);
+    console.warn(`[GitHub Upload] Network bypassed for ${relPath}:`, err.message);
   }
 }
 
-module.exports = async (req, res) => {
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -124,16 +130,25 @@ module.exports = async (req, res) => {
       return res.status(200).json(recentPublishes.get(dedupKey).data);
     }
 
-    const isActivity = questions.some(q => q.type === 'activity');
-    const isOpenEnded = !isActivity && questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A));
-    const isShortAnswer = !isActivity && questions.some(q => q.type === 'short_answer');
-    const testTypeLabel = isActivity 
-      ? "FEN BİLİMLERİ ETKİNLİKLERİ" 
-      : (isOpenEnded ? "AÇIK UÇLU SINAV" : (isShortAnswer ? "KISA CEVAPLI TEST" : (finalCategory === "denemeler" ? "DENEME SINAVI" : "YAPRAK TESTİ")));
+    // 1. Soru türünü tespit et (Doğrudan kayıtlı türden ve sorulardan)
+    const normType = String(question_type || "").toLowerCase();
+    const isActivity = normType === 'activity' || normType.includes('etkinlik') || questions.some(q => q.type === 'activity');
+    const isShortAnswer = !isActivity && (normType === 'short_answer' || normType.includes('kısa') || normType.includes('bosluk') || normType.includes('boşluk') || questions.some(q => q.type === 'short_answer'));
+    const isOpenEnded = !isActivity && !isShortAnswer && (normType === 'open_ended' || normType.includes('açık') || normType.includes('acik') || normType.includes('klasik') || questions.some(q => q.type === 'open_ended'));
+    const isMultipleChoice = !isActivity && !isShortAnswer && !isOpenEnded;
 
-    // Kaçıncı test olduğunu hesapla (mevcut materyallerden ve başlıktan)
+    const activeQuestionType = isActivity ? "activity" : (isShortAnswer ? "short_answer" : (isOpenEnded ? "open_ended" : "multiple_choice"));
+    const activeFormatLabel = isActivity 
+      ? "ETKİNLİK ÇALIŞMASI" 
+      : (isShortAnswer 
+        ? "KISA CEVAPLI / BOŞLUK DOLDURMA" 
+        : (isOpenEnded 
+          ? "AÇIK UÇLU SINAV" 
+          : (finalCategory === "denemeler" ? "DENEME SINAVI" : "ÇOKTAN SEÇMELİ TEST")));
+
+    // 2. Kaçıncı çalışma olduğunu ilgili soru türü kapsamında hesapla
     let testNumber = 1;
-    const titleNumMatch = String(title || "").match(/(?:-|Test|Sınav|Sınavı)\s*(\d+)/i);
+    const titleNumMatch = String(title || "").match(/(?:-|–|Test|Sınav|Sınavı|Çalışma|Çalışması|Etkinlik|Etkinliği)\s*(\d+)/i);
     if (titleNumMatch && parseInt(titleNumMatch[1], 10) > 0) {
       testNumber = parseInt(titleNumMatch[1], 10);
     } else {
@@ -147,7 +162,8 @@ module.exports = async (req, res) => {
         const matches = currentMaterials.filter(m =>
           String(m.grade || '').replace(/[^0-9]/g, '') === String(cleanGrade) &&
           String(m.targetSection || '1').replace(/[^0-9]/g, '') === String(cleanSection) &&
-          (m.category === 'soru-bankasi' || m.category === 'denemeler' || String(m.format || '').includes('TEST') || String(m.format || '').includes('SINAV'))
+          (m.category === 'soru-bankasi' || m.category === 'denemeler' || String(m.format || '').includes('TEST') || String(m.format || '').includes('SINAV') || String(m.format || '').includes('ETKİNLİK')) &&
+          (m.question_type === activeQuestionType || m.type === activeQuestionType || (m.format && m.format.includes(activeFormatLabel)))
         );
         testNumber = matches.length + 1;
       } catch (e) {
@@ -155,8 +171,16 @@ module.exports = async (req, res) => {
       }
     }
 
-    const finalTitle = title.trim() || `${cleanGrade}. Sınıf ${cleanSection}. Ünite: ${unit} ${testTypeLabel} - ${testNumber} (${questions.length} Soru)`;
-    const finalDesc = desc.trim() || `${cleanGrade}. Sınıf ${subject} ${unit} için MEB Maarif Modeli uyumlu ${isOpenEnded ? "açık uçlu klasik sınav" : "yaprak test"}. Cevap anahtarlı ve çözümlü.`;
+    const typePrefixTitle = isActivity
+      ? `ETKİNLİK ÇALIŞMASI – ${testNumber}`
+      : (isShortAnswer
+        ? `KISA CEVAPLI ÇALIŞMA – ${testNumber}`
+        : (isOpenEnded
+          ? `AÇIK UÇLU SINAV – ${testNumber}`
+          : `ÇOKTAN SEÇMELİ TEST – ${testNumber}`));
+
+    const finalTitle = title.trim() || `${cleanGrade}. Sınıf ${cleanSection}. Ünite: ${typePrefixTitle} (${questions.length} ${isActivity ? 'Etkinlik' : 'Soru'})`;
+    const finalDesc = desc.trim() || `${cleanGrade}. Sınıf ${subject} ${unit} için MEB Maarif Modeli uyumlu ${activeFormatLabel}. Cevap anahtarlı ve çözümlü.`;
 
     const cleanTitleForSlug = finalTitle
       .replace(new RegExp(`^${cleanGrade}\\.?\\s*Sınıf\\s*`, 'i'), '')
@@ -197,21 +221,23 @@ module.exports = async (req, res) => {
     await uploadFileToGitHub(`testler/${fileName}`, htmlContent);
     await uploadFileToGitHub(`Web Sitem/testler/${fileName}`, htmlContent);
 
-    // 4. Kapak Görseli Üret ve Ata (16:9 3D Özel Tasarım)
+    // 4. Kapak Görseli Üret ve Ata (Dinamik ve Bilgilerle %100 Birebir Eşleşen 16:9 Kapak)
     let coverUrl = `assets/covers/${cleanGrade}-${cleanSection}-${slug}-kapak.svg`;
-    const masterJpgPath = path.join(__dirname, '..', 'assets', 'covers', '5-1-yaprak-testi-1.jpg');
-
-    if (cleanGrade === "5" && cleanSection === "1" && testNumber === 1 && fs.existsSync(masterJpgPath)) {
-      coverUrl = "assets/covers/5-1-yaprak-testi-1.jpg";
-    } else if (typeof generateTestCoverSvg === 'function') {
+    if (typeof generateTestCoverSvg === 'function') {
       try {
         const coverSvg = generateTestCoverSvg({
           grade: cleanGrade,
           section: cleanSection,
           unitName: unit,
-          testType: testTypeLabel,
+          topic: topic || unit,
+          subtopic: subtopic || "",
+          testType: activeFormatLabel,
+          questionType: activeQuestionType,
           testNumber: testNumber,
-          questionCount: questions.length
+          questionCount: questions.length,
+          learningOutcome: learning_outcome || (questions[0] && questions[0].learning_outcome) || "",
+          outcomeCode: (questions[0] && questions[0].learning_outcome_code) || "",
+          isAllOutcomes: Boolean(isAllOutcomes || subtopic === "Tüm Kazanımlar")
         });
         const coverFileName = `${cleanGrade}-${cleanSection}-${slug}-kapak.svg`;
         const webCoversDir = path.join(path.resolve(__dirname, '..'), 'assets', 'covers');
@@ -234,7 +260,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    // 5. Materyal Kaydını Oluştur
+    // 5. Materyal Kaydını Oluştur (Tek Doğruluk Kaynağı Modeli)
     const materialId = `mat-test-${cleanGrade}-${cleanSection}-${Date.now()}`;
 
     const newMaterial = {
@@ -250,13 +276,14 @@ module.exports = async (req, res) => {
       imageUrl: coverUrl,
       kapakResmi: coverUrl,
       cover: coverUrl,
-      type: isActivity ? "activity" : (isOpenEnded ? "open_ended" : (isShortAnswer ? "short_answer" : "multiple_choice")),
-      question_type: isActivity ? "activity" : (isOpenEnded ? "open_ended" : (isShortAnswer ? "short_answer" : "multiple_choice")),
-      format: isActivity ? "ETKİNLİK" : (isOpenEnded ? "AÇIK UÇLU SINAV" : (isShortAnswer ? "KISA CEVAPLI TEST" : "YAPRAK TEST")),
+      type: activeQuestionType,
+      question_type: activeQuestionType,
+      format: activeFormatLabel,
       topic: topic || unit,
       subtopic: (isAllOutcomes || subtopic === "Tüm Kazanımlar") ? "Tüm Kazanımlar" : (subtopic || "Genel"),
       isAllOutcomes: Boolean(isAllOutcomes || subtopic === "Tüm Kazanımlar"),
       learning_outcome: learning_outcome || (questions[0] && questions[0].learning_outcome) || "",
+      learning_outcome_code: (questions[0] && questions[0].learning_outcome_code) || "",
       hasBlob: false,
       tags: [
         `${cleanGrade}. sınıf`,
@@ -266,14 +293,14 @@ module.exports = async (req, res) => {
         "denemeler",
         "test / deneme",
         "yazılıya hazırlık",
-        "açık uçlu sınav",
+        activeFormatLabel.toLowerCase(),
         "kazanım testi",
         "deneme",
         "rotalı fenci",
         "meb maarif modeli"
       ],
       visibility: "public",
-      downloadCount: `📝 ${questions.length} Soru • Test-${testNumber}`,
+      downloadCount: `📝 ${questions.length} ${isActivity ? 'Etkinlik' : 'Soru'} • ${isActivity ? 'Etkinlik' : 'Test'}-${testNumber}`,
       testNumber: testNumber,
       questionCount: questions.length,
       createdAt: new Date().toISOString(),

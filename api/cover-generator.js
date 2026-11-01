@@ -1,7 +1,7 @@
 /**
  * Rotalı Fenci - 16:9 Sinematik 3D Yaprak Test & Açık Uçlu Sınav Kapak Motoru
- * Her üretilen sınav için otomatik olarak sınıf, ünite, test numarası ve soru sayısını içeren
- * profesyonel 3D astronotlu ve Rotalı Fenci logolu kapak görseli üretir.
+ * Her üretilen sınav/test için otomatik olarak sınıf, ünite, test numarası, soru sayısı
+ * ve ÖĞRENME ÇIKTISI (Kazanım) bilgilerini içeren dinamik 3D kapak görseli üretir.
  */
 
 function escapeXml(str) {
@@ -18,26 +18,68 @@ function generateTestCoverSvg({
   grade = "5",
   section = "1",
   unitName = "Güneş, Dünya ve Ay",
-  testType = "YAPRAK TESTİ",
+  topic = "",
+  subtopic = "",
+  testType = "ÇOKTAN SEÇMELİ TEST",
+  questionType = "",
   testNumber = 1,
-  questionCount = 10
+  questionCount = 10,
+  learningOutcome = "",
+  outcomeCode = "",
+  isAllOutcomes = false
 }) {
   const g = String(grade).replace(/[^0-9]/g, '') || "5";
   const s = String(section).replace(/[^0-9]/g, '') || "1";
-  const cleanUnitName = String(unitName || "Fen Bilimleri")
+  const cleanUnitName = String(unitName || topic || "Fen Bilimleri")
     .replace(/^[0-9]+\.\s*Ünite[:\s]*/i, '')
     .trim()
     .toLocaleUpperCase('tr-TR');
 
-  let typeLabel = "YAPRAK TESTİ";
-  if (String(testType).toUpperCase().includes("AÇIK UÇLU") || String(testType).toUpperCase().includes("KLASİK")) {
+  // 1. Soru Türü Standardizasyonu (Kayıtlı ve gerçek soru türünden beslenir)
+  const normType = String(questionType || testType || "").toLowerCase();
+  let typeLabel = "ÇOKTAN SEÇMELİ TEST";
+  let ribbonText = `ÇOKTAN SEÇMELİ TEST – ${testNumber}`;
+  let isActivity = false;
+
+  if (normType.includes("activity") || normType.includes("etkinlik")) {
+    typeLabel = "ETKİNLİK ÇALIŞMASI";
+    ribbonText = `ETKİNLİK ÇALIŞMASI – ${testNumber}`;
+    isActivity = true;
+  } else if (normType.includes("short") || normType.includes("kısa") || normType.includes("bosluk") || normType.includes("boşluk")) {
+    typeLabel = "KISA CEVAPLI / BOŞLUK DOLDURMA";
+    ribbonText = `KISA CEVAPLI ÇALIŞMA – ${testNumber}`;
+  } else if (normType.includes("open") || normType.includes("açık") || normType.includes("acik") || normType.includes("klasik")) {
     typeLabel = "AÇIK UÇLU SINAV";
-  } else if (String(testType).toUpperCase().includes("DENEME")) {
+    ribbonText = `AÇIK UÇLU SINAV – ${testNumber}`;
+  } else if (normType.includes("deneme")) {
     typeLabel = "DENEME SINAVI";
+    ribbonText = `DENEME SINAVI – ${testNumber}`;
   }
 
-  const ribbonText = `${typeLabel}-${testNumber}`;
-  const qCountText = `${questionCount} SORU`;
+  // 2. Soru veya Etkinlik Sayısı (Kesinlikle sıra numarası ile karıştırılmaz)
+  const qCountText = isActivity ? `${questionCount} ETKİNLİK` : `${questionCount} SORU`;
+
+  // 3. Öğrenme Çıktısı (Kazanım) Formatı
+  let outcomeBadgeText = "🌟 ÖĞRENME ÇIKTISI: TÜM KAZANIMLAR";
+  const normOutcome = String(learningOutcome || subtopic || "").trim();
+
+  if (isAllOutcomes || normOutcome.toLocaleUpperCase('tr-TR').includes("TÜM KAZANIMLAR") || normOutcome.toLocaleUpperCase('tr-TR').includes("TUM KAZANIMLAR")) {
+    outcomeBadgeText = "🌟 ÖĞRENME ÇIKTISI: TÜM KAZANIMLAR";
+  } else if (normOutcome) {
+    let cleanCode = outcomeCode;
+    let cleanTitle = normOutcome;
+    const match = normOutcome.match(/^(F\.\d+\.\d+\.\d+\.\d+\.?)\s*[-–:]?\s*(.*)$/i);
+    if (match) {
+      cleanCode = cleanCode || match[1];
+      cleanTitle = match[2];
+    }
+    const prefix = cleanCode ? `${cleanCode} - ` : "";
+    let fullOutcome = `${prefix}${cleanTitle}`.trim();
+    if (fullOutcome.length > 55) {
+      fullOutcome = fullOutcome.substring(0, 52) + "...";
+    }
+    outcomeBadgeText = `🎯 ÖĞRENME ÇIKTISI: ${fullOutcome}`;
+  }
 
   // Benzersiz ID'ler için rastgele anahtar
   const uid = Math.random().toString(36).substring(2, 8);
@@ -167,104 +209,60 @@ function generateTestCoverSvg({
     <circle cx="60" cy="60" r="280" fill="url(#sunCorona_${uid})"/>
     <circle cx="40" cy="40" r="210" fill="url(#sunCorona_${uid})" opacity="0.8"/>
     <circle cx="0" cy="0" r="190" fill="url(#sunGrad_${uid})" filter="url(#glow_${uid})"/>
-    <!-- Güneş Granülleri / Flare Detayları -->
     <circle cx="30" cy="50" r="170" fill="none" stroke="#fef08a" stroke-width="3" stroke-dasharray="15 35 45 20" opacity="0.6"/>
     <circle cx="10" cy="20" r="185" fill="none" stroke="#fdba74" stroke-width="4" stroke-dasharray="40 60 20 50" opacity="0.7"/>
   </g>
 
-  <!-- 3. Alt Orta: Büyüleyici Planet Dünya -->
+  <!-- 3. Alt Orta: Planet Dünya -->
   <g transform="translate(640, 780)">
-    <!-- Atmosfer Parıltısı -->
     <ellipse cx="0" cy="0" rx="340" ry="240" fill="#38bdf8" opacity="0.35" filter="url(#glow_${uid})"/>
     <ellipse cx="0" cy="0" rx="325" ry="225" fill="#0284c7" opacity="0.4"/>
-    <!-- Dünya Küresi -->
     <ellipse cx="0" cy="0" rx="310" ry="215" fill="url(#earthGrad_${uid})"/>
-    <!-- Kıtalar / Karalar (Yeşil ve Altın detaylar) -->
     <path d="M -160 -110 Q -110 -150 -30 -130 Q 50 -120 120 -80 Q 90 -20 20 -40 Q -70 -30 -140 -70 Z" fill="#22c55e" opacity="0.85"/>
     <path d="M -80 -60 Q 10 -70 80 -30 Q 130 30 70 60 Q -10 50 -60 10 Z" fill="#eab308" opacity="0.8"/>
     <path d="M -220 -30 Q -180 -90 -120 -60 Q -130 10 -190 20 Z" fill="#15803d" opacity="0.8"/>
-    <!-- Bulut Sarmalları -->
     <path d="M -260 -80 Q -140 -120 0 -90 Q 160 -60 270 -40" fill="none" stroke="#ffffff" stroke-width="12" opacity="0.65" stroke-linecap="round" filter="url(#glow_${uid})"/>
-    <path d="M -180 20 Q -40 -10 110 30 Q 210 60 250 80" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.55" stroke-linecap="round"/>
   </g>
 
   <!-- Yörünge Çizgileri -->
   <ellipse cx="640" cy="620" rx="480" ry="120" fill="none" stroke="#38bdf8" stroke-width="2" stroke-dasharray="10 14" opacity="0.4"/>
-  <ellipse cx="640" cy="620" rx="550" ry="140" fill="none" stroke="#818cf8" stroke-width="1.5" opacity="0.3"/>
 
   <!-- 4. Sağ Alt: Detaylı 3D Ay Küresi -->
   <g transform="translate(1080, 560)">
     <circle cx="0" cy="0" r="115" fill="#000000" opacity="0.4" filter="url(#shadow3d_${uid})"/>
     <circle cx="0" cy="0" r="110" fill="url(#moonGrad_${uid})"/>
-    <!-- Kraterler -->
     <ellipse cx="-35" cy="-30" rx="22" ry="18" fill="#475569" opacity="0.6"/>
-    <ellipse cx="-37" cy="-28" rx="19" ry="15" fill="#334155" opacity="0.8"/>
     <ellipse cx="25" cy="-45" rx="15" ry="12" fill="#475569" opacity="0.5"/>
     <ellipse cx="40" cy="20" rx="28" ry="24" fill="#334155" opacity="0.65"/>
-    <ellipse cx="42" cy="22" rx="23" ry="19" fill="#1e293b" opacity="0.75"/>
-    <ellipse cx="-20" cy="40" rx="18" ry="14" fill="#475569" opacity="0.55"/>
-    <circle cx="2" cy="-10" r="9" fill="#64748b" opacity="0.6"/>
-    <!-- Ay Atmosfer Kenar Işığı -->
     <circle cx="0" cy="0" r="110" fill="none" stroke="#e2e8f0" stroke-width="2.5" opacity="0.7"/>
   </g>
 
-  <!-- Küçük Satürn (Sağ Kenar) -->
-  <g transform="translate(1210, 640)">
-    <ellipse cx="0" cy="0" rx="36" ry="10" fill="none" stroke="#fde047" stroke-width="3" opacity="0.7" transform="rotate(-20)"/>
-    <circle cx="0" cy="0" r="18" fill="#ca8a04"/>
-    <ellipse cx="0" cy="0" rx="36" ry="10" fill="none" stroke="#fef08a" stroke-width="1.5" opacity="0.9" stroke-dasharray="25 15" transform="rotate(-20)"/>
-  </g>
-
-  <!-- 5. Sol Alt: Sevimli 3D Astronot Karakteri -->
+  <!-- 5. Sol Alt: Astronot -->
   <g transform="translate(110, 560)" filter="url(#shadow3d_${uid})">
-    <!-- Karakter Görseli (Varsa embed / yoksa yüksek kaliteli vektör) -->
     <image href="assets/astronot-karakter-hd.png" xlink:href="assets/astronot-karakter-hd.png" x="-110" y="-220" width="280" height="350" preserveAspectRatio="xMidYMid meet" onerror="this.style.display='none'"/>
-    <!-- Vektör Astronot Destek / Fallback -->
     <g id="vectorAstronaut_${uid}" opacity="0.95">
-      <!-- Beden / Uzay Kıyafeti -->
       <ellipse cx="30" cy="40" rx="65" ry="70" fill="#f8fafc" stroke="#0284c7" stroke-width="4"/>
-      <!-- Göğüs Arması -->
       <circle cx="30" cy="40" r="22" fill="#0284c7"/>
       <path d="M 18 40 L 42 40 M 30 28 L 30 52" stroke="#ffffff" stroke-width="4" stroke-linecap="round"/>
-      <!-- Sol Kol / El (Yukarı İşaret Eden) -->
-      <path d="M 85 20 Q 120 -30 145 -70 Q 155 -60 140 -20 Q 125 10 95 35 Z" fill="#ffffff" stroke="#0284c7" stroke-width="4"/>
-      <!-- Kask -->
       <circle cx="30" cy="-65" r="72" fill="#ffffff" stroke="#0284c7" stroke-width="5"/>
-      <!-- Kask Camı / Vizör (Altın Yansımalı) -->
       <ellipse cx="34" cy="-60" rx="54" ry="46" fill="url(#goldBadgeGrad_${uid})" stroke="#0284c7" stroke-width="3"/>
-      <ellipse cx="25" cy="-75" rx="35" ry="16" fill="#ffffff" opacity="0.65"/>
-      <!-- Sevimli Gülümseyen Gözler (Vizör İçi) -->
-      <ellipse cx="18" cy="-58" rx="7" ry="10" fill="#0f172a"/>
-      <ellipse cx="50" cy="-58" rx="7" ry="10" fill="#0f172a"/>
-      <circle cx="16" cy="-62" r="2.5" fill="#ffffff"/>
-      <circle cx="48" cy="-62" r="2.5" fill="#ffffff"/>
-      <path d="M 24 -42 Q 34 -34 44 -42" fill="none" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>
     </g>
   </g>
 
   <!-- 6. Sağ Üst: Rotalı Fenci Gemi Dümeni Logosu -->
   <g transform="translate(1120, 140)" filter="url(#shadow3d_${uid})">
     <image href="assets/rotali-logo-transparent.png" xlink:href="assets/rotali-logo-transparent.png" x="-105" y="-105" width="210" height="210" preserveAspectRatio="xMidYMid meet" onerror="this.style.display='none'"/>
-    <!-- Vektör Dümen Fallback -->
     <g id="vectorHelm_${uid}" opacity="0.9">
       <circle cx="0" cy="0" r="76" fill="#ffffff" stroke="#854d0e" stroke-width="6"/>
       <circle cx="0" cy="0" r="66" fill="#991b1b" stroke="#ca8a04" stroke-width="4"/>
-      <!-- Dümen Parmakları -->
       <rect x="-8" y="-95" width="16" height="190" rx="8" fill="#a16207"/>
-      <rect x="-8" y="-95" width="16" height="190" rx="8" fill="#a16207" transform="rotate(45)"/>
-      <rect x="-8" y="-95" width="16" height="190" rx="8" fill="#a16207" transform="rotate(90)"/>
-      <rect x="-8" y="-95" width="16" height="190" rx="8" fill="#a16207" transform="rotate(135)"/>
       <circle cx="0" cy="0" r="54" fill="#ffffff"/>
-      <text x="0" y="-30" fill="#dc2626" font-size="11" font-weight="900" font-family="'Plus Jakarta Sans', sans-serif" text-anchor="middle" letter-spacing="1">ROTALI FENCİ</text>
-      <!-- Öğretmen İkonu -->
-      <circle cx="0" cy="8" r="24" fill="#1e293b"/>
-      <circle cx="0" cy="2" r="10" fill="#fde047"/>
-      <ellipse cx="0" cy="26" rx="16" ry="10" fill="#38bdf8"/>
+      <text x="0" y="-30" fill="#dc2626" font-size="11" font-weight="900" font-family="'Plus Jakarta Sans', sans-serif" text-anchor="middle">ROTALI FENCİ</text>
     </g>
   </g>
 
   <!-- 7. MERKEZ BAŞLIK VE 3D TİPOGRAFİ ALANI -->
-  <g transform="translate(640, 140)" text-anchor="middle">
+  <g transform="translate(640, 130)" text-anchor="middle">
     <!-- Işıltı Işınları -->
     <path d="M -140 -20 L -180 -35 M -145 0 L -195 0 M -140 20 L -180 35" stroke="#fde047" stroke-width="7" stroke-linecap="round" filter="url(#glow_${uid})"/>
     <path d="M 140 -20 L 180 -35 M 145 0 L 195 0 M 140 20 L 180 35" stroke="#fde047" stroke-width="7" stroke-linecap="round" filter="url(#glow_${uid})"/>
@@ -284,29 +282,32 @@ function generateTestCoverSvg({
     </g>
 
     <!-- ANA ÜNİTE BAŞLIĞI (3D Dev Altın Yazı) -->
-    <g transform="translate(0, 185)">
-      <!-- 3D Derinlik Katmanları (Mavi/Lacivert Gölgeler) -->
-      <text x="0" y="8" fill="#0c4a6e" font-size="64" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" stroke="#082f49" stroke-width="14" stroke-linejoin="round" letter-spacing="-0.5">${escapeXml(cleanUnitName)}</text>
-      <text x="0" y="4" fill="#0284c7" font-size="64" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" stroke="#0284c7" stroke-width="10" stroke-linejoin="round" letter-spacing="-0.5">${escapeXml(cleanUnitName)}</text>
-      <!-- Altın Degrade Yüzey -->
-      <text x="0" y="0" fill="url(#goldTextGrad_${uid})" font-size="64" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" stroke="#ffffff" stroke-width="2.5" letter-spacing="-0.5">${escapeXml(cleanUnitName)}</text>
+    <g transform="translate(0, 180)">
+      <text x="0" y="8" fill="#0c4a6e" font-size="62" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" stroke="#082f49" stroke-width="14" stroke-linejoin="round" letter-spacing="-0.5">${escapeXml(cleanUnitName)}</text>
+      <text x="0" y="4" fill="#0284c7" font-size="62" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" stroke="#0284c7" stroke-width="10" stroke-linejoin="round" letter-spacing="-0.5">${escapeXml(cleanUnitName)}</text>
+      <text x="0" y="0" fill="url(#goldTextGrad_${uid})" font-size="62" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" stroke="#ffffff" stroke-width="2.5" letter-spacing="-0.5">${escapeXml(cleanUnitName)}</text>
     </g>
 
-    <!-- 8. TEST TÜRÜ VE NUMARASI ŞERİT ROZETİ (YAPRAK TESTİ-1 / AÇIK UÇLU SINAV-1) -->
-    <g transform="translate(0, 275)" filter="url(#shadow3d_${uid})">
-      <!-- Şerit Arkalığı (Ribbon) -->
-      <path d="M -260 -28 L 260 -28 Q 285 5 260 38 L -260 38 Q -285 5 -260 -28 Z" fill="url(#ribbonGrad_${uid})" stroke="#ffffff" stroke-width="4"/>
-      <!-- Şerit Dikiş Efekti -->
-      <path d="M -245 -22 L 245 -22 Q 265 5 245 32 L -245 32 Q -265 5 -245 -22 Z" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6 4" opacity="0.6"/>
-      <!-- Şerit Metni -->
-      <text x="0" y="16" fill="#0f172a" font-size="34" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" letter-spacing="1">${ribbonText}</text>
+    <!-- 8. GERÇEK SORU TÜRÜ VE NUMARASI ŞERİT ROZETİ -->
+    <g transform="translate(0, 268)" filter="url(#shadow3d_${uid})">
+      <path d="M -290 -28 L 290 -28 Q 315 5 290 38 L -290 38 Q -315 5 -290 -28 Z" fill="url(#ribbonGrad_${uid})" stroke="#ffffff" stroke-width="4"/>
+      <path d="M -275 -22 L 275 -22 Q 295 5 275 32 L -275 32 Q -295 5 -275 -22 Z" fill="none" stroke="#0284c7" stroke-width="2" stroke-dasharray="6 4" opacity="0.6"/>
+      <text x="0" y="15" fill="#0f172a" font-size="32" font-weight="900" font-family="'Plus Jakarta Sans', Outfit, sans-serif" letter-spacing="1">${escapeXml(ribbonText)}</text>
     </g>
 
     <!-- 9. SORU SAYISI & MAARİF MODELİ BİLGİ ROZETİ -->
-    <g transform="translate(0, 345)" filter="url(#shadow3d_${uid})">
-      <rect x="-190" y="-18" width="380" height="38" rx="19" fill="#0f172a" fill-opacity="0.85" stroke="#38bdf8" stroke-width="2"/>
-      <text x="0" y="7" fill="#f8fafc" font-size="16" font-weight="800" font-family="'Plus Jakarta Sans', sans-serif" letter-spacing="1">
+    <g transform="translate(0, 332)" filter="url(#shadow3d_${uid})">
+      <rect x="-210" y="-17" width="420" height="34" rx="17" fill="#0f172a" fill-opacity="0.9" stroke="#38bdf8" stroke-width="2"/>
+      <text x="0" y="6" fill="#f8fafc" font-size="15" font-weight="800" font-family="'Plus Jakarta Sans', sans-serif" letter-spacing="1">
         <tspan fill="#fde047">★</tspan> <tspan fill="#38bdf8" font-weight="900">${qCountText}</tspan> • MEB MAARİF MODELİ <tspan fill="#fde047">★</tspan>
+      </text>
+    </g>
+
+    <!-- 10. ÖĞRENME ÇIKTISI (KAZANIM) ROZETİ -->
+    <g transform="translate(0, 385)" filter="url(#shadow3d_${uid})">
+      <rect x="-380" y="-17" width="760" height="36" rx="18" fill="#090d16" fill-opacity="0.95" stroke="#fbbf24" stroke-width="1.8"/>
+      <text x="0" y="6" fill="#fde047" font-size="13.5" font-weight="800" font-family="'Plus Jakarta Sans', Outfit, sans-serif" letter-spacing="0.4">
+        ${escapeXml(outcomeBadgeText)}
       </text>
     </g>
   </g>
