@@ -11326,8 +11326,8 @@ function updateAdminNavUI() {
         if (isAdmin) {
             topContainer.innerHTML = `
                 <div class="flex items-center gap-1.5 animate-in fade-in duration-200">
-                    <a href="yaprak-test.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer border border-indigo-500" title="📝 Yaprak Test & Soru Bankası Portalı (Yönetici)">
-                        <i class="fa-solid fa-file-pen text-amber-300"></i> <span class="hidden md:inline">Yaprak Test</span>
+                    <a href="yaprak-test.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs flex items-center gap-1.5 shadow-md transition-all cursor-pointer border border-indigo-500" title="📝 Rotalı Fenci Soru Hazırlama Portalı (Yönetici)">
+                        <i class="fa-solid fa-file-pen text-amber-300"></i> <span class="hidden md:inline">Soru Hazırlama</span>
                     </a>
                     <button type="button" onclick="if (window.RotaliCloud) RotaliCloud.openSettingsModal()" class="px-3 py-1.5 rounded-xl bg-indigo-900/80 hover:bg-indigo-800 text-indigo-200 font-black text-xs flex items-center gap-1.5 shadow-sm transition-all border border-indigo-700/60 active:scale-95 cursor-pointer" title="☁️ Supabase Bulut Veritabanı ve Depolama Ayarları">
                         <i class="fa-solid fa-cloud"></i> <span class="hidden md:inline">Bulut Ayarları</span>
@@ -11357,7 +11357,7 @@ function updateAdminNavUI() {
                 <div class="space-y-2 pt-2 border-t border-slate-200 animate-in fade-in duration-200">
                     <div class="text-[11px] font-black uppercase text-slate-400 tracking-wider px-2">👑 Yönetici Özel Portalları</div>
                     <a href="yaprak-test.html" target="_blank" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-white bg-indigo-600 hover:bg-indigo-700 flex items-center gap-2.5 shadow-md">
-                        <i class="fa-solid fa-file-pen text-amber-300 text-lg"></i> <span>📝 YAPRAK TEST & SORU BANKASI</span>
+                        <i class="fa-solid fa-file-pen text-amber-300 text-lg"></i> <span>📝 ROTALI FENCİ SORU HAZIRLAMA</span>
                     </a>
                     <button type="button" onclick="triggerUploadModal('5', 'ders-notu')" class="w-full text-left px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-white bg-blue-600 hover:bg-blue-700 flex items-center gap-2.5 shadow-md cursor-pointer">
                         <i class="fa-solid fa-plus text-lg"></i> <span>YENİ MATERYAL EKLE</span>

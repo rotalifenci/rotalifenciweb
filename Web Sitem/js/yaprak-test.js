@@ -35,7 +35,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let generatedBatches = {}; // { [type]: { type, label, count, questions, meta, smartTitle } }
   let activeBatchKey = null;
 
-    // 13 Alt Etkinlik Türü
+        // 13 Alt Etkinlik Türü
   const activitySubtypes = [
     'matching', 'ordering', 'table_completion', 'image_analysis',
     'diagram_labeling', 'visual_tagging', 'classification', 'experiment_analysis',
@@ -108,8 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const types = ['multiple_choice', 'short_answer', 'open_ended', 'activity'];
     let total = 0;
 
-    syncActivitySubtypesUI();
-
     types.forEach(t => {
       const cb = document.getElementById(`qt_cb_${t}`);
       const countInputEl = document.getElementById(`qt_count_${t}`);
@@ -127,6 +125,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
+    syncActivitySubtypesUI();
+
     if (qtTotalCountBadge) {
       qtTotalCountBadge.textContent = `📊 Toplam: ${total} İçerik`;
     }
@@ -134,53 +134,76 @@ document.addEventListener('DOMContentLoaded', () => {
     if (hiddenCount) hiddenCount.value = String(total || 10);
   }
 
-  setTimeout(updateQtTotalCount, 50);
+  function initQuestionTypesAndActivities() {
+    const types = ['multiple_choice', 'short_answer', 'open_ended', 'activity'];
 
-  // Satıra tıklandığında da checkbox'ı tetikle
-  ['multiple_choice', 'short_answer', 'open_ended', 'activity'].forEach(t => {
-    const row = document.getElementById(`qt_row_${t}`);
-    const cb = document.getElementById(`qt_cb_${t}`);
-    const countInput = document.getElementById(`qt_count_${t}`);
-    if (row && cb) {
-      row.addEventListener('click', (e) => {
-        if (e.target === countInput || countInput && countInput.contains(e.target)) return;
-        if (e.target === cb) return; // checkbox kendi eventini üretir
-        cb.checked = !cb.checked;
-        cb.dispatchEvent(new Event('change'));
-      });
-    }
-  });
+    types.forEach(t => {
+      const cb = document.getElementById(`qt_cb_${t}`);
+      const countInputEl = document.getElementById(`qt_count_${t}`);
+      const row = document.getElementById(`qt_row_${t}`);
 
+      if (cb) {
+        cb.addEventListener('change', () => {
+          updateQtTotalCount();
+        });
+        cb.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
 
-  // Wire activity quick buttons and subtype inputs
-  document.addEventListener('DOMContentLoaded', () => {
+      if (countInputEl) {
+        countInputEl.addEventListener('input', () => {
+          updateQtTotalCount();
+        });
+        countInputEl.addEventListener('change', () => {
+          updateQtTotalCount();
+        });
+        countInputEl.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+
+      if (row && cb) {
+        row.addEventListener('click', (e) => {
+          // Label, input veya buton tıklamalarında doğal davranışı bozma
+          if (e.target.closest('label') || e.target.closest('.qt-count-box') || e.target === cb) {
+            return;
+          }
+          cb.checked = !cb.checked;
+          updateQtTotalCount();
+        });
+      }
+    });
+
+    // Wire activity quick buttons
     const actSelectAllBtn = document.getElementById('qtActSelectAllBtn');
     if (actSelectAllBtn) {
-      actSelectAllBtn.addEventListener('click', () => {
+      actSelectAllBtn.onclick = (e) => {
+        e.preventDefault();
         activitySubtypes.forEach(k => {
           const cb = document.getElementById(`act_cb_${k}`);
           if (cb) cb.checked = true;
         });
-        syncActivitySubtypesUI();
         updateQtTotalCount();
-      });
+      };
     }
 
     const actClearBtn = document.getElementById('qtActClearBtn');
     if (actClearBtn) {
-      actClearBtn.addEventListener('click', () => {
+      actClearBtn.onclick = (e) => {
+        e.preventDefault();
         activitySubtypes.forEach(k => {
           const cb = document.getElementById(`act_cb_${k}`);
           if (cb) cb.checked = false;
         });
-        syncActivitySubtypesUI();
         updateQtTotalCount();
-      });
+      };
     }
 
     const actDistBtn = document.getElementById('qtActDefaultDistBtn');
     if (actDistBtn) {
-      actDistBtn.addEventListener('click', () => {
+      actDistBtn.onclick = (e) => {
+        e.preventDefault();
         const top5 = ['matching', 'ordering', 'table_completion', 'classification', 'experiment_analysis'];
         activitySubtypes.forEach(k => {
           const cb = document.getElementById(`act_cb_${k}`);
@@ -190,27 +213,55 @@ document.addEventListener('DOMContentLoaded', () => {
             if (inp) inp.value = top5.includes(k) ? '2' : '1';
           }
         });
-        syncActivitySubtypesUI();
         updateQtTotalCount();
-      });
+      };
     }
 
+    // Wire activity subtype inputs and cards
     activitySubtypes.forEach(k => {
       const cb = document.getElementById(`act_cb_${k}`);
       const inp = document.getElementById(`act_count_${k}`);
+      const card = cb ? cb.closest('.qt-act-card') : null;
+
       if (cb) {
         cb.addEventListener('change', () => {
-          syncActivitySubtypesUI();
           updateQtTotalCount();
+        });
+        cb.addEventListener('click', (e) => {
+          e.stopPropagation();
         });
       }
       if (inp) {
         inp.addEventListener('input', () => {
-          syncActivitySubtypesUI();
+          updateQtTotalCount();
+        });
+        inp.addEventListener('change', () => {
+          updateQtTotalCount();
+        });
+        inp.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+      if (card && cb) {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('label') || e.target.closest('.qt-act-count-box') || e.target === cb) {
+            return;
+          }
+          cb.checked = !cb.checked;
           updateQtTotalCount();
         });
       }
     });
+
+    updateQtTotalCount();
+  }
+
+  // Hem anında hem DOM hazır olduğunda çalıştır
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initQuestionTypesAndActivities);
+  } else {
+    initQuestionTypesAndActivities();
+  }
 
     const mainActCb = document.getElementById('qt_cb_activity');
     if (mainActCb) {
