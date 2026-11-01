@@ -239,7 +239,8 @@ module.exports = async (req, res) => {
       difficulty = "Karma (Dengeli)",
       question_type = "multiple_choice",
       source_files = [],
-      source_text = ""
+      source_text = "",
+      activity_types = []
     } = req.body || {};
 
     const outcomesList = Array.isArray(selected_outcomes) && selected_outcomes.length > 0

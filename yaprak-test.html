@@ -18,7 +18,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yaprak Test & Soru Üretim Portalı (Gemini AI)</title>
-  <link rel="stylesheet" href="css/yaprak-test.css?v=1793462707209">
+  <link rel="stylesheet" href="css/yaprak-test.css?v=1793462707204">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -214,21 +214,249 @@
                   </div>
                 </div>
 
-                <!-- 4. Kavram Haritası -->
-                <div class="qt-item-row" id="qt_row_concept_map">
-                  <label class="qt-checkbox-label" for="qt_cb_concept_map">
-                    <input type="checkbox" id="qt_cb_concept_map" class="qt-checkbox" data-type="concept_map" data-label="Kavram Haritası">
-                    <span class="qt-icon">🗺️</span>
+                <!-- 4. Etkinlik Hazırlama Modülü -->
+                <div class="qt-item-row" id="qt_row_activity">
+                  <label class="qt-checkbox-label" for="qt_cb_activity">
+                    <input type="checkbox" id="qt_cb_activity" class="qt-checkbox" data-type="activity" data-label="Etkinlik">
+                    <span class="qt-icon">🎯</span>
                     <span class="qt-info">
-                      <span class="qt-name">Kavram Haritası</span>
-                      <span class="qt-sub">Eksik Bırakılan Kavram ve İlişkileri Bulma</span>
+                      <span class="qt-name">Etkinlik (13 Özel Etkinlik Türü)</span>
+                      <span class="qt-sub">Eşleştirme, Sıralama, Tablo, Deney & STEM Becerileri</span>
                     </span>
                   </label>
                   <div class="qt-count-box">
-                    <input type="number" id="qt_count_concept_map" class="qt-count-input" min="1" max="30" value="3" disabled>
-                    <span class="qt-unit">soru</span>
+                    <input type="number" id="qt_count_activity" class="qt-count-input" min="1" max="50" value="5" disabled>
+                    <span class="qt-unit">etkinlik</span>
                   </div>
                 </div>
+              </div>
+
+              <!-- 🎯 ÖZEL ETKİNLİK HAZIRLAMA MODÜLÜ PANELİ (Etkinlik seçilince otomatik açılır) -->
+              <div class="qt-activity-subtypes-panel" id="qtActivitySubtypesPanel" style="display: none;">
+                <div class="qt-act-panel-header">
+                  <div class="qt-act-panel-title">
+                    <i class="fa-solid fa-shapes text-primary"></i>
+                    <span>Etkinlik Türleri ve Sayıları</span>
+                    <span class="qt-act-badge" id="qtActSubTotalBadge">0 Etkinlik</span>
+                  </div>
+                  <div class="qt-act-quick-actions">
+                    <button type="button" class="qt-act-quick-btn" id="qtActSelectAllBtn">Tümünü Seç</button>
+                    <button type="button" class="qt-act-quick-btn" id="qtActClearBtn">Temizle</button>
+                    <button type="button" class="qt-act-quick-btn is-highlight" id="qtActDefaultDistBtn">⚡ Dengeli Dağıt (10)</button>
+                  </div>
+                </div>
+                <div class="qt-act-hint">Aşağıdaki 13 etkinlik türünden istediklerinizi seçip her biri için bağımsız sayı belirleyebilirsiniz:</div>
+
+                <div class="qt-act-grid" id="qtActGrid">
+                  <!-- 1. Eşleştirme -->
+                  <div class="qt-act-card" data-act-type="matching">
+                    <label class="qt-act-label" for="act_cb_matching">
+                      <input type="checkbox" id="act_cb_matching" class="qt-act-cb" data-act="matching" data-title="Eşleştirme Etkinliği">
+                      <span class="qt-act-icon">🧩</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Eşleştirme</span>
+                        <span class="qt-act-desc">Kavram-tanım ve olay-sonuç</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_matching" class="qt-act-count-input" min="1" max="20" value="2" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 2. Sıralama -->
+                  <div class="qt-act-card" data-act-type="ordering">
+                    <label class="qt-act-label" for="act_cb_ordering">
+                      <input type="checkbox" id="act_cb_ordering" class="qt-act-cb" data-act="ordering" data-title="Sıralama Etkinliği">
+                      <span class="qt-act-icon">🔢</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Sıralama</span>
+                        <span class="qt-act-desc">Oluşum sırası ve basamaklar</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_ordering" class="qt-act-count-input" min="1" max="20" value="2" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 3. Tablo Tamamlama -->
+                  <div class="qt-act-card" data-act-type="table_completion">
+                    <label class="qt-act-label" for="act_cb_table_completion">
+                      <input type="checkbox" id="act_cb_table_completion" class="qt-act-cb" data-act="table_completion" data-title="Tablo Tamamlama Etkinliği">
+                      <span class="qt-act-icon">📊</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Tablo Tamamlama</span>
+                        <span class="qt-act-desc">Özellik ve veri matrisi</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_table_completion" class="qt-act-count-input" min="1" max="20" value="2" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 4. Görsel İnceleme ve Yorumlama -->
+                  <div class="qt-act-card" data-act-type="image_analysis">
+                    <label class="qt-act-label" for="act_cb_image_analysis">
+                      <input type="checkbox" id="act_cb_image_analysis" class="qt-act-cb" data-act="image_analysis" data-title="Görsel İnceleme ve Yorumlama">
+                      <span class="qt-act-icon">🔍</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Görsel Yorumlama</span>
+                        <span class="qt-act-desc">Görsel üzerinden çıkarım</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_image_analysis" class="qt-act-count-input" min="1" max="20" value="2" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 5. Şekil Üzerinde Kavram Yerleştirme -->
+                  <div class="qt-act-card" data-act-type="diagram_labeling">
+                    <label class="qt-act-label" for="act_cb_diagram_labeling">
+                      <input type="checkbox" id="act_cb_diagram_labeling" class="qt-act-cb" data-act="diagram_labeling" data-title="Şekil Üzerinde Kavram Yerleştirme">
+                      <span class="qt-act-icon">🏷️</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Kavram Yerleştirme</span>
+                        <span class="qt-act-desc">Model ve şema üzerinde</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_diagram_labeling" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 6. Görsel Etiketleme -->
+                  <div class="qt-act-card" data-act-type="visual_tagging">
+                    <label class="qt-act-label" for="act_cb_visual_tagging">
+                      <input type="checkbox" id="act_cb_visual_tagging" class="qt-act-cb" data-act="visual_tagging" data-title="Görsel Etiketleme">
+                      <span class="qt-act-icon">📌</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Görsel Etiketleme</span>
+                        <span class="qt-act-desc">Yapı ve kısımları adlandırma</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_visual_tagging" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 7. Sınıflandırma -->
+                  <div class="qt-act-card" data-act-type="classification">
+                    <label class="qt-act-label" for="act_cb_classification">
+                      <input type="checkbox" id="act_cb_classification" class="qt-act-cb" data-act="classification" data-title="Sınıflandırma Etkinliği">
+                      <span class="qt-act-icon">📂</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Sınıflandırma</span>
+                        <span class="qt-act-desc">Kategorilere ve gruplara ayırma</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_classification" class="qt-act-count-input" min="1" max="20" value="2" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 8. Deney Düzeneği İnceleme -->
+                  <div class="qt-act-card" data-act-type="experiment_analysis">
+                    <label class="qt-act-label" for="act_cb_experiment_analysis">
+                      <input type="checkbox" id="act_cb_experiment_analysis" class="qt-act-cb" data-act="experiment_analysis" data-title="Deney Düzeneği İnceleme">
+                      <span class="qt-act-icon">🧪</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Deney İnceleme</span>
+                        <span class="qt-act-desc">Bağımlı/bağımsız değişken & hipotez</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_experiment_analysis" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 9. Grafik Okuma ve Yorumlama -->
+                  <div class="qt-act-card" data-act-type="chart_interpretation">
+                    <label class="qt-act-label" for="act_cb_chart_interpretation">
+                      <input type="checkbox" id="act_cb_chart_interpretation" class="qt-act-cb" data-act="chart_interpretation" data-title="Grafik Okuma ve Yorumlama">
+                      <span class="qt-act-icon">📈</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Grafik Okuma</span>
+                        <span class="qt-act-desc">Veri analizi ve değişim yorumu</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_chart_interpretation" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 10. Bilimsel Süreç Becerileri -->
+                  <div class="qt-act-card" data-act-type="scientific_process">
+                    <label class="qt-act-label" for="act_cb_scientific_process">
+                      <input type="checkbox" id="act_cb_scientific_process" class="qt-act-cb" data-act="scientific_process" data-title="Bilimsel Süreç Becerileri">
+                      <span class="qt-act-icon">🔬</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Bilimsel Süreç</span>
+                        <span class="qt-act-desc">Gözlem, tahmin, veriye dayalı karar</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_scientific_process" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 11. Günlük Yaşam Problemi Çözme -->
+                  <div class="qt-act-card" data-act-type="daily_life_problem">
+                    <label class="qt-act-label" for="act_cb_daily_life_problem">
+                      <input type="checkbox" id="act_cb_daily_life_problem" class="qt-act-cb" data-act="daily_life_problem" data-title="Günlük Yaşam Problemi Çözme">
+                      <span class="qt-act-icon">💡</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Yaşam Problemi</span>
+                        <span class="qt-act-desc">Fen ilkeleriyle pratik çözüm</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_daily_life_problem" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 12. Kes-Yapıştır ve Boyama -->
+                  <div class="qt-act-card" data-act-type="cut_paste_coloring">
+                    <label class="qt-act-label" for="act_cb_cut_paste_coloring">
+                      <input type="checkbox" id="act_cb_cut_paste_coloring" class="qt-act-cb" data-act="cut_paste_coloring" data-title="Kes-Yapıştır ve Boyama">
+                      <span class="qt-act-icon">✂️</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">Kes-Yapıştır & Boya</span>
+                        <span class="qt-act-desc">Kesim çizgili etkileşimli kartlar</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_cut_paste_coloring" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+
+                  <!-- 13. STEM Tasarım Etkinliği -->
+                  <div class="qt-act-card" data-act-type="stem_design">
+                    <label class="qt-act-label" for="act_cb_stem_design">
+                      <input type="checkbox" id="act_cb_stem_design" class="qt-act-cb" data-act="stem_design" data-title="STEM Tasarım Etkinliği">
+                      <span class="qt-act-icon">🚀</span>
+                      <span class="qt-act-details">
+                        <span class="qt-act-name">STEM Tasarım</span>
+                        <span class="qt-act-desc">Mühendislik problemi & çizim</span>
+                      </span>
+                    </label>
+                    <div class="qt-act-count-box">
+                      <input type="number" id="act_count_stem_design" class="qt-act-count-input" min="1" max="20" value="1" disabled>
+                      <span class="qt-act-unit">etk.</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
               </div>
 
               <!-- Çıktı Dosyası Modu Seçimi -->

@@ -111,8 +111,12 @@ module.exports = async (req, res) => {
     const cleanSection = String(targetSection).replace(/^unit/i, '').replace(/[^0-9]/g, '') || "1";
     const finalCategory = category === "denemeler" ? "denemeler" : "soru-bankasi";
 
-    const isOpenEnded = questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A));
-    const testTypeLabel = isOpenEnded ? "AÇIK UÇLU SINAV" : (finalCategory === "denemeler" ? "DENEME SINAVI" : "YAPRAK TESTİ");
+    const isActivity = questions.some(q => q.type === 'activity');
+    const isOpenEnded = !isActivity && questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A));
+    const isShortAnswer = !isActivity && questions.some(q => q.type === 'short_answer');
+    const testTypeLabel = isActivity 
+      ? "FEN BİLİMLERİ ETKİNLİKLERİ" 
+      : (isOpenEnded ? "AÇIK UÇLU SINAV" : (isShortAnswer ? "KISA CEVAPLI TEST" : (finalCategory === "denemeler" ? "DENEME SINAVI" : "YAPRAK TESTİ")));
 
     // Kaçıncı test olduğunu hesapla (mevcut materyallerden ve başlıktan)
     let testNumber = 1;
@@ -233,7 +237,9 @@ module.exports = async (req, res) => {
       imageUrl: coverUrl,
       kapakResmi: coverUrl,
       cover: coverUrl,
-      format: isOpenEnded ? "AÇIK UÇLU SINAV" : "YAPRAK TEST",
+      type: isActivity ? "activity" : (isOpenEnded ? "open_ended" : (isShortAnswer ? "short_answer" : "multiple_choice")),
+      question_type: isActivity ? "activity" : (isOpenEnded ? "open_ended" : (isShortAnswer ? "short_answer" : "multiple_choice")),
+      format: isActivity ? "ETKİNLİK" : (isOpenEnded ? "AÇIK UÇLU SINAV" : (isShortAnswer ? "KISA CEVAPLI TEST" : "YAPRAK TEST")),
       hasBlob: false,
       tags: [
         `${cleanGrade}. sınıf`,

@@ -6041,12 +6041,12 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                     class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer hover:border-slate-300">
                                                 <span>📝 Açık Uçlu</span>
                                             </button>
-                                            <!-- 🗺️ Kavram Haritası -->
+                                            <!-- 🎯 Etkinlik -->
                                             <button type="button"
-                                                    onclick="filterMaterialsByQType('${unitNum}', 'concept_map', '${grade.number}', '${normSubTab}')"
-                                                    data-qtype="concept_map"
+                                                    onclick="filterMaterialsByQType('${unitNum}', 'activity', '${grade.number}', '${normSubTab}')"
+                                                    data-qtype="activity"
                                                     class="qtype-filter-btn px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200/80 transition-all flex items-center gap-1 shrink-0 cursor-pointer hover:border-slate-300">
-                                                <span>🗺️ Kavram Haritası</span>
+                                                <span>🎯 Etkinlik</span>
                                             </button>
                                         </div>
                                     `;
@@ -19398,8 +19398,8 @@ document.addEventListener("fullscreenchange", () => {
 // 📌 4 Soru Türü Çözümleyici (Maarif Modeli: Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu, Kavram Haritası)
 function resolveMaterialQType(item) {
     if (!item) return 'multiple_choice';
-    const text = `${item.title || ''} ${item.description || ''} ${item.format || ''} ${item.category || ''} ${item.fileUrl || ''} ${item.question_type || ''}`.toLowerCase();
-    if (text.includes('kavram harita') || text.includes('concept_map')) return 'concept_map';
+    const text = `${item.title || ''} ${item.description || ''} ${item.format || ''} ${item.category || ''} ${item.fileUrl || ''} ${item.question_type || ''} ${item.type || ''}`.toLowerCase();
+    if (text.includes('etkinlik') || text.includes('activity') || text.includes('eşleştirme') || text.includes('eslestirme') || text.includes('sıralama') || text.includes('siralama') || text.includes('kavram harita') || text.includes('concept_map')) return 'activity';
     if (text.includes('kısa cevap') || text.includes('kisa cevap') || text.includes('boşluk doldurma') || text.includes('bosluk doldurma') || text.includes('short_answer')) return 'short_answer';
     if (text.includes('açık uçlu') || text.includes('acik uclu') || text.includes('klasik') || text.includes('open_ended')) return 'open_ended';
     return 'multiple_choice';

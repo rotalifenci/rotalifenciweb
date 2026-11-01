@@ -1164,7 +1164,9 @@ document.addEventListener('DOMContentLoaded', () => {
           return cq;
         });
 
-        const batchSmartTitle = `Test No: ${testSequenceCounter + 1} - ${item.label}`;
+        const batchSmartTitle = item.type === 'activity' 
+          ? `Etkinlik ${testSequenceCounter + 1} - Fen Bilimleri Etkinlikleri` 
+          : `Test No: ${testSequenceCounter + 1} - ${item.label}`;
 
         generatedBatches[item.type] = {
           type: item.type,
@@ -1265,6 +1267,163 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // 5. Üretilen Soruları Ekrana Çizme (Profesyonel Sınav Kitapçığı + Akıllı Başlık)
+  
+  function getActivityTypeMeta(actType) {
+    const map = {
+      matching: { name: 'Eşleştirme', icon: '🧩' },
+      ordering: { name: 'Sıralama', icon: '🔢' },
+      table_completion: { name: 'Tablo Tamamlama', icon: '📊' },
+      image_analysis: { name: 'Görsel Yorumlama', icon: '🔍' },
+      diagram_labeling: { name: 'Kavram Yerleştirme', icon: '🏷️' },
+      visual_tagging: { name: 'Görsel Etiketleme', icon: '📌' },
+      classification: { name: 'Sınıflandırma', icon: '📂' },
+      experiment_analysis: { name: 'Deney Düzeneği İnceleme', icon: '🧪' },
+      chart_interpretation: { name: 'Grafik Okuma', icon: '📈' },
+      scientific_process: { name: 'Bilimsel Süreç', icon: '🔬' },
+      daily_life_problem: { name: 'Yaşam Problemi', icon: '💡' },
+      cut_paste_coloring: { name: 'Kes-Yapıştır & Boya', icon: '✂️' },
+      stem_design: { name: 'STEM Tasarım', icon: '🚀' }
+    };
+    return map[actType] || { name: 'Etkinlik', icon: '🎯' };
+  }
+
+  function renderActivityBodyHtml(q) {
+    const data = q.activity_data || {};
+    let out = '';
+
+    if (q.activity_type === 'matching' || (data.items_left && data.items_right)) {
+      const lefts = data.items_left || [
+        { id: 'A', text: '1. Kavram / Olay' },
+        { id: 'B', text: '2. Kavram / Olay' },
+        { id: 'C', text: '3. Kavram / Olay' }
+      ];
+      const rights = data.items_right || [
+        { id: '1', text: 'Açıklama / Tanım 1' },
+        { id: '2', text: 'Açıklama / Tanım 2' },
+        { id: '3', text: 'Açıklama / Tanım 3' }
+      ];
+
+      out += `
+        <div class="activity-matching-grid">
+          <div class="activity-match-col">
+            ${lefts.map(it => `
+              <div class="activity-match-item">
+                <span class="activity-match-tag">${it.id}</span>
+                <span>${escapeHtml(it.text || it)}</span>
+              </div>
+            `).join('')}
+          </div>
+          <div class="activity-match-col">
+            ${lefts.map(() => `
+              <div class="activity-match-box">( ..... )</div>
+            `).join('')}
+          </div>
+          <div class="activity-match-col">
+            ${rights.map(it => `
+              <div class="activity-match-item">
+                <span class="activity-match-tag" style="background:#475569;">${it.id}</span>
+                <span>${escapeHtml(it.text || it)}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    } else if (q.activity_type === 'ordering' || data.order_items) {
+      const items = data.order_items || ['1. Basamak', '2. Basamak', '3. Basamak', '4. Basamak'];
+      out += `
+        <div class="activity-ordering-list">
+          ${items.map((it, idx) => `
+            <div class="activity-order-row">
+              <span class="activity-order-circle">${idx + 1}</span>
+              <div class="activity-order-text">${escapeHtml(it)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (q.activity_type === 'table_completion' || (data.table_headers && data.table_rows)) {
+      const headers = data.table_headers || ['Kavram / Nesne', 'Temel Özellik', 'Örnek Durum'];
+      const rows = data.table_rows || [
+        ['Örnek 1', '................................', '................................'],
+        ['Örnek 2', '................................', '................................']
+      ];
+      out += `
+        <table class="activity-table">
+          <thead>
+            <tr>${headers.map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>
+          </thead>
+          <tbody>
+            ${rows.map(row => `
+              <tr>${row.map(cell => {
+                const isBlank = String(cell).includes('...') || String(cell).includes('[ ]');
+                return `<td class="${isBlank ? 'is-blank' : ''}">${escapeHtml(cell)}</td>`;
+              }).join('')}</tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    } else if (q.activity_type === 'classification' || data.categories) {
+      const cats = data.categories || ['1. Grup', '2. Grup'];
+      const pool = data.category_items || ['Öğe A', 'Öğe B', 'Öğe C', 'Öğe D'];
+      out += `
+        <div style="font-size:11px; font-weight:700; color:#475569; margin-bottom:6px;">Kavram Havuzu: ${pool.map(p => `<span style="display:inline-block; padding:2px 8px; margin:2px; background:#f1f5f9; border:1px solid #cbd5e1; border-radius:6px; font-weight:600;">${escapeHtml(p)}</span>`).join('')}</div>
+        <div class="activity-class-boxes">
+          ${cats.map(cat => `
+            <div class="activity-class-col">
+              <div class="activity-class-col-header">${escapeHtml(cat)}</div>
+              <div class="activity-class-col-body">
+                <div style="border-bottom:1px dashed #cbd5e1; height:24px;"></div>
+                <div style="border-bottom:1px dashed #cbd5e1; height:24px;"></div>
+                <div style="border-bottom:1px dashed #cbd5e1; height:24px;"></div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } else if (q.activity_type === 'cut_paste_coloring') {
+      out += `
+        <div class="activity-cut-box">
+          <span class="activity-cut-tag">✂️ KESİM ALANI</span>
+          <div style="display:flex; gap:8px; flex-wrap:wrap; padding-top:6px;">
+            ${(data.cut_cards || ['Kart 1', 'Kart 2', 'Kart 3']).map(c => `
+              <div style="border:1.5px dashed #dc2626; border-radius:6px; padding:6px 12px; font-size:11px; font-weight:700; background:#fff; color:#991b1b;">
+                ✂ ${escapeHtml(c)}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+        <div style="margin-top:8px; font-size:11px; font-weight:700; color:#475569;">Yukarıdaki parçaları keserek aşağıdaki yapıştırma kutularına yerleştiriniz:</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:6px;">
+          <div style="border:1.5px dashed #3b82f6; border-radius:8px; height:60px; background:#f8fafc; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px; font-weight:600;">[ Yapıştırma Alanı 1 ]</div>
+          <div style="border:1.5px dashed #3b82f6; border-radius:8px; height:60px; background:#f8fafc; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:11px; font-weight:600;">[ Yapıştırma Alanı 2 ]</div>
+        </div>
+      `;
+    } else if (q.activity_type === 'stem_design' || q.activity_type === 'experiment_analysis') {
+      out += `
+        <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:8px 10px; margin:8px 0; font-size:11px;">
+          ${data.materials ? `<div><strong>🧪 Gerekli Malzemeler:</strong> ${escapeHtml(Array.isArray(data.materials) ? data.materials.join(', ') : data.materials)}</div>` : ''}
+          ${data.steps ? `<div style="margin-top:4px;"><strong>📋 Uygulama Basamakları:</strong> ${escapeHtml(Array.isArray(data.steps) ? data.steps.join(' → ') : data.steps)}</div>` : ''}
+        </div>
+        <div style="border:1.5px dashed #3b82f6; border-radius:8px; padding:10px; min-height:75px; background:#ffffff; margin-top:8px;">
+          <div style="font-size:11px; font-weight:700; color:#2563eb; margin-bottom:4px;">✏️ Çözüm, Hipotez veya Tasarım Çizim Alanınız:</div>
+          <div style="border-bottom:1px dashed #e2e8f0; height:24px;"></div>
+          <div style="border-bottom:1px dashed #e2e8f0; height:24px;"></div>
+        </div>
+      `;
+    } else {
+      out += `
+        <div class="open-ended-answer-area">
+          <div class="answer-lines-prompt">Etkinlik çalışmanızı ve açıklamalarınızı yazınız:</div>
+          <div class="student-writing-lines">
+            <div class="write-line"></div>
+            <div class="write-line"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    return out;
+  }
+
   function renderQuestions() {
     const { grade = "5", subject = "Fen Bilimleri", learning_area = "", selected_outcomes = [] } = currentMeta;
     const total_questions = currentQuestions.length;
@@ -1642,6 +1801,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     currentQuestions[idx] = updated;
+    editingQuestionIndex = -1;
+    renderQuestions();
+  };
+
+  window.duplicateQuestion = (idx) => {
+    if (idx < 0 || idx >= currentQuestions.length) return;
+    const clone = JSON.parse(JSON.stringify(currentQuestions[idx]));
+    if (clone.activity_title) {
+      clone.activity_title += " (Kopya)";
+    }
+    currentQuestions.splice(idx + 1, 0, clone);
     editingQuestionIndex = -1;
     renderQuestions();
   };
