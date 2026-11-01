@@ -3869,9 +3869,6 @@ function renderGradesOverview(container) {
                                     <a href="#grade/${g.id}/videolar" class="p-2 bg-slate-50 hover:bg-rose-50 hover:text-rose-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>🎥</span> <span>Videolar</span>
                                     </a>
-                                    <a href="#grade/${g.id}/etkinlikler" class="p-2 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
-                                        <span>🧩</span> <span>Etkinlikler</span>
-                                    </a>
                                     <a href="#grade/${g.id}/soru-bankasi" class="p-2 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200/70 rounded-xl flex items-center gap-1.5 transition-colors">
                                         <span>📚</span> <span>Test / Deneme</span>
                                     </a>
@@ -4753,7 +4750,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
         savedSubTab = localStorage.getItem(subTabKey) || sessionStorage.getItem(subTabKey);
     } catch(e) {}
     let subTab = parts[1] || "ders-notu";
-    if (subTab === "uniteler") subTab = "ders-notu";
+    if (subTab === "uniteler" || subTab === "etkinlikler") subTab = "ders-notu";
     try {
         localStorage.setItem(subTabKey, subTab);
         sessionStorage.setItem(subTabKey, subTab);
@@ -4878,7 +4875,7 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
 
                     <!-- ANA KATEGORİLER (TÜM SEKMELER EKSİKSİZ) -->
                     <div class="pt-3 border-t border-white/20">
-                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-8" : "lg:grid-cols-7"} gap-1.5 sm:gap-2">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 ${grade.number === 8 || grade.isLGS ? "lg:grid-cols-7" : "lg:grid-cols-6"} gap-1.5 sm:gap-2">
                             
                             <!-- 1. Ders Notu / Sunumu (BİRLEŞİK) -->
                             <a href="#grade/${grade.id}/ders-notu" onclick="switchGradeSubTab('${grade.id}', 'ders-notu', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${(subTab === 'ders-notu' || subTab === 'ders-sunumu') ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
@@ -4901,18 +4898,6 @@ function renderGradeDetail(container, gradeIdWithTab = "grade-8") {
                                 <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
                                     <span>🎥 VİDEOLAR</span>
                                     ${getTabCustomCount('videolar') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'videolar' ? 'bg-rose-100 text-rose-800' : 'bg-white/30 text-white'}">${getTabCustomCount('videolar')}</span>` : ''}
-                                </span>
-                            </a>
-
-                            <!-- 3. Etkinlikler -->
-                            <a href="#grade/${grade.id}/etkinlikler" onclick="switchGradeSubTab('${grade.id}', 'etkinlikler', event)" class="group p-2 rounded-xl transition-all flex flex-col items-center justify-center text-center gap-1 cursor-pointer select-none no-underline ${subTab === 'etkinlikler' ? 'bg-white text-slate-900 shadow-lg scale-[1.02] ring-2 ring-white/50' : 'bg-white/15 hover:bg-white/25 backdrop-blur-md text-white border border-white/15'}">
-                                <div class="relative w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-sm ${subTab === 'etkinlikler' ? 'bg-emerald-600 text-white shadow-md' : 'bg-white/20 text-white'}">
-                                    <i class="fa-solid fa-puzzle-piece"></i>
-                                    ${getTabCustomCount('etkinlikler') > 0 ? `<span class="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-white shadow-sm animate-pulse"></span>` : ''}
-                                </div>
-                                <span class="text-[10px] font-black tracking-tight uppercase leading-tight flex items-center justify-center gap-1">
-                                    <span>🧩 ETKİNLİKLER</span>
-                                    ${getTabCustomCount('etkinlikler') > 0 ? `<span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${subTab === 'etkinlikler' ? 'bg-emerald-100 text-emerald-800' : 'bg-white/30 text-white'}">${getTabCustomCount('etkinlikler')}</span>` : ''}
                                 </span>
                             </a>
 

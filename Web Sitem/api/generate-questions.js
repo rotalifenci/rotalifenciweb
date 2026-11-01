@@ -307,6 +307,29 @@ module.exports = async (req, res) => {
 - "options" alanını {} yap.
 - "type" alanına "open_ended" yaz.
 - "correct_answer" veya "explanation" alanına model çözümü ve puanlama kriterini yaz.`;
+    } else if (question_type === "activity") {
+      const subTypeNames = (Array.isArray(activity_types) && activity_types.length > 0)
+        ? activity_types.map(a => `${a.title || a.type} (${a.count || 1} adet)`).join(', ')
+        : "Eşleştirme, Sıralama, Tablo Tamamlama, Sınıflandırma, Deney Analizi";
+      typeSpecificInstructions = `SORU TÜRÜ: ETKİNLİK (FEN BİLİMLERİ ÇALIŞMA KAĞIDI VE ETKİLEŞİMLİ ETKİNLİKLER)
+- Bu modül standart çoktan seçmeli sorular yerine öğrencilerin aktif olarak çözeceği, yazacağı veya eşleştireceği zengin çalışma etkinlikleri üretir.
+- İstenen etkinlik türleri: ${subTypeNames}
+- Her etkinlik objesinde aşağıdaki alanlar ZORUNLUDUR:
+  * "type": "activity"
+  * "activity_type": seçilen alt türlerden biri ("matching" | "ordering" | "table_completion" | "image_analysis" | "diagram_labeling" | "visual_tagging" | "classification" | "experiment_analysis" | "chart_interpretation" | "scientific_process" | "daily_life_problem" | "cut_paste_coloring" | "stem_design")
+  * "activity_title": Etkinlik için anlaşılır bir başlık (örn: "Gök Cisimleri ve Özellikleri Eşleştirmesi")
+  * "instruction": Öğrencinin ne yapması gerektiğini anlatan net bir yönerge (örn: "Sol sütunda verilen kavramları sağ sütundaki doğru açıklamalarıyla parantez içine harfleri yazarak eşleştiriniz.")
+  * "activity_data": Etkinliğin türüne göre yapılandırılmış veri:
+    - matching için: { "items_left": [{"id":"1","text":"..."}, {"id":"2","text":"..."}], "items_right": [{"id":"A","text":"..."}, {"id":"B","text":"..."}] }
+    - ordering için: { "order_items": ["...", "...", "..."], "correct_order": [2, 1, 3] }
+    - table_completion için: { "table_headers": ["Kavram", "Özellik", "Örnek"], "table_rows": [["Güneş", "...", "..."], ["Dünya", "...", "..."]] }
+    - classification için: { "categories": ["Kategori 1", "Kategori 2"], "pool": ["Öğe 1", "Öğe 2", "Öğe 3"] }
+    - cut_paste_coloring için: { "cut_items": ["Kesilecek parça 1", "Kesilecek parça 2"], "target_boxes": ["Hedef alan 1", "Hedef alan 2"] }
+    - stem_design / experiment_analysis için: { "materials": ["..."], "steps": ["..."], "task": "..." }
+  * "question": Etkinliğin çalışma metni ve yönergesi.
+  * "options": {}
+  * "correct_answer": Etkinliğin model çözümü ve doğru cevap anahtarı.
+  * "visual_svg": Gerekli durumlarda temiz, anlaşılır SVG çizimi.`;
     } else if (question_type === "concept_map") {
       typeSpecificInstructions = `SORU TÜRÜ: KAVRAM HARİTASI (EKSİK KAVRAMLARI BULMA)
 - Konuyla ilgili hiyerarşik veya ilişkisel bir kavram haritası şeması kurgula.
@@ -487,9 +510,16 @@ SADECE geçerli JSON dizisi döndür.`;
       }
 
       const questionText = cleanTurkishAndLatex(q.question || "");
+      const isAct = (q.type === 'activity' || question_type === 'activity');
+      const actType = q.activity_type || (isAct ? ((activity_types[idx % (activity_types.length || 1)] || {}).type || 'matching') : null);
+
       return {
         id: q.id || idx + 1,
-        type: q.type || question_type || "multiple_choice",
+        type: isAct ? 'activity' : (q.type || question_type || "multiple_choice"),
+        activity_type: actType,
+        activity_title: cleanTurkishAndLatex(q.activity_title || (isAct ? `Etkinlik ${idx + 1}` : "")),
+        instruction: cleanTurkishAndLatex(q.instruction || ""),
+        activity_data: q.activity_data || null,
         visual_svg: enhanceCelestialVisual(q.visual_svg || "", questionText, opts, correct),
         grid_items: Array.isArray(q.grid_items) ? q.grid_items.map(cleanTurkishAndLatex) : [],
         question: questionText,

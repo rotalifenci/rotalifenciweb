@@ -35,9 +35,81 @@ document.addEventListener('DOMContentLoaded', () => {
   let generatedBatches = {}; // { [type]: { type, label, count, questions, meta, smartTitle } }
   let activeBatchKey = null;
 
+    // 13 Alt Etkinlik Türü
+  const activitySubtypes = [
+    'matching', 'ordering', 'table_completion', 'image_analysis',
+    'diagram_labeling', 'visual_tagging', 'classification', 'experiment_analysis',
+    'chart_interpretation', 'scientific_process', 'daily_life_problem',
+    'cut_paste_coloring', 'stem_design'
+  ];
+
+  function syncActivitySubtypesUI() {
+    const actCb = document.getElementById('qt_cb_activity');
+    const panel = document.getElementById('qtActivitySubtypesPanel');
+    const actCountInput = document.getElementById('qt_count_activity');
+    const isActChecked = Boolean(actCb && actCb.checked);
+
+    if (panel) {
+      panel.style.display = isActChecked ? 'block' : 'none';
+    }
+
+    if (!isActChecked) {
+      if (actCountInput) actCountInput.disabled = true;
+      return;
+    }
+
+    if (actCountInput) actCountInput.disabled = false;
+
+    let subTotal = 0;
+    let checkedCount = 0;
+    activitySubtypes.forEach(key => {
+      const cb = document.getElementById(`act_cb_${key}`);
+      const countInput = document.getElementById(`act_count_${key}`);
+      const card = cb ? cb.closest('.qt-act-card') : null;
+      if (cb && countInput) {
+        if (cb.checked) {
+          checkedCount++;
+          countInput.disabled = false;
+          if (card) card.classList.add('is-selected');
+          subTotal += parseInt(countInput.value, 10) || 1;
+        } else {
+          countInput.disabled = true;
+          if (card) card.classList.remove('is-selected');
+        }
+      }
+    });
+
+    // İlk kez tıklandıysa ve hiçbiri seçili değilse varsayılan 3 türü seç
+    if (checkedCount === 0 && isActChecked) {
+      ['matching', 'ordering', 'table_completion'].forEach(k => {
+        const c = document.getElementById(`act_cb_${k}`);
+        const inp = document.getElementById(`act_count_${k}`);
+        const card = c ? c.closest('.qt-act-card') : null;
+        if (c) {
+          c.checked = true;
+          if (inp) {
+            inp.disabled = false;
+            subTotal += parseInt(inp.value, 10) || 2;
+          }
+          if (card) card.classList.add('is-selected');
+        }
+      });
+    }
+
+    const badge = document.getElementById('qtActSubTotalBadge');
+    if (badge) badge.textContent = `${subTotal} Etkinlik`;
+
+    if (actCountInput && subTotal > 0) {
+      actCountInput.value = String(subTotal);
+    }
+  }
+
   function updateQtTotalCount() {
+    const types = ['multiple_choice', 'short_answer', 'open_ended', 'activity'];
     let total = 0;
-    const types = ['multiple_choice', 'short_answer', 'open_ended', 'concept_map'];
+
+    syncActivitySubtypesUI();
+
     types.forEach(t => {
       const cb = document.getElementById(`qt_cb_${t}`);
       const countInputEl = document.getElementById(`qt_count_${t}`);
@@ -54,24 +126,101 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
     });
+
     if (qtTotalCountBadge) {
-      qtTotalCountBadge.textContent = `📊 Toplam: ${total} Soru`;
+      qtTotalCountBadge.textContent = `📊 Toplam: ${total} İçerik`;
     }
     const hiddenCount = document.getElementById('countInput');
     if (hiddenCount) hiddenCount.value = String(total || 10);
   }
 
-  ['multiple_choice', 'short_answer', 'open_ended', 'concept_map'].forEach(t => {
+  setTimeout(updateQtTotalCount, 50);
+
+  // Satıra tıklandığında da checkbox'ı tetikle
+  ['multiple_choice', 'short_answer', 'open_ended', 'activity'].forEach(t => {
+    const row = document.getElementById(`qt_row_${t}`);
     const cb = document.getElementById(`qt_cb_${t}`);
-    const countInputEl = document.getElementById(`qt_count_${t}`);
-    if (cb) {
-      cb.addEventListener('change', updateQtTotalCount);
-    }
-    if (countInputEl) {
-      countInputEl.addEventListener('input', updateQtTotalCount);
+    const countInput = document.getElementById(`qt_count_${t}`);
+    if (row && cb) {
+      row.addEventListener('click', (e) => {
+        if (e.target === countInput || countInput && countInput.contains(e.target)) return;
+        if (e.target === cb) return; // checkbox kendi eventini üretir
+        cb.checked = !cb.checked;
+        cb.dispatchEvent(new Event('change'));
+      });
     }
   });
-  setTimeout(updateQtTotalCount, 50);
+
+
+  // Wire activity quick buttons and subtype inputs
+  document.addEventListener('DOMContentLoaded', () => {
+    const actSelectAllBtn = document.getElementById('qtActSelectAllBtn');
+    if (actSelectAllBtn) {
+      actSelectAllBtn.addEventListener('click', () => {
+        activitySubtypes.forEach(k => {
+          const cb = document.getElementById(`act_cb_${k}`);
+          if (cb) cb.checked = true;
+        });
+        syncActivitySubtypesUI();
+        updateQtTotalCount();
+      });
+    }
+
+    const actClearBtn = document.getElementById('qtActClearBtn');
+    if (actClearBtn) {
+      actClearBtn.addEventListener('click', () => {
+        activitySubtypes.forEach(k => {
+          const cb = document.getElementById(`act_cb_${k}`);
+          if (cb) cb.checked = false;
+        });
+        syncActivitySubtypesUI();
+        updateQtTotalCount();
+      });
+    }
+
+    const actDistBtn = document.getElementById('qtActDefaultDistBtn');
+    if (actDistBtn) {
+      actDistBtn.addEventListener('click', () => {
+        const top5 = ['matching', 'ordering', 'table_completion', 'classification', 'experiment_analysis'];
+        activitySubtypes.forEach(k => {
+          const cb = document.getElementById(`act_cb_${k}`);
+          const inp = document.getElementById(`act_count_${k}`);
+          if (cb) {
+            cb.checked = top5.includes(k);
+            if (inp) inp.value = top5.includes(k) ? '2' : '1';
+          }
+        });
+        syncActivitySubtypesUI();
+        updateQtTotalCount();
+      });
+    }
+
+    activitySubtypes.forEach(k => {
+      const cb = document.getElementById(`act_cb_${k}`);
+      const inp = document.getElementById(`act_count_${k}`);
+      if (cb) {
+        cb.addEventListener('change', () => {
+          syncActivitySubtypesUI();
+          updateQtTotalCount();
+        });
+      }
+      if (inp) {
+        inp.addEventListener('input', () => {
+          syncActivitySubtypesUI();
+          updateQtTotalCount();
+        });
+      }
+    });
+
+    const mainActCb = document.getElementById('qt_cb_activity');
+    if (mainActCb) {
+      mainActCb.addEventListener('change', () => {
+        syncActivitySubtypesUI();
+        updateQtTotalCount();
+      });
+    }
+  });
+
 
 
   // Kaynak Dosya Yükleme (Drag & Drop) Elements
@@ -1074,24 +1223,47 @@ document.addEventListener('DOMContentLoaded', () => {
       { key: 'multiple_choice', label: 'Çoktan Seçmeli', icon: '🔘' },
       { key: 'short_answer', label: 'Kısa Cevaplı / Boşluk Doldurma', icon: '✏️' },
       { key: 'open_ended', label: 'Açık Uçlu (Klasik)', icon: '📝' },
-      { key: 'concept_map', label: 'Kavram Haritası', icon: '🗺️' }
+      { key: 'activity', label: 'Etkinlik', icon: '🎯' }
     ];
 
     qTypesList.forEach(item => {
       const cb = document.getElementById(`qt_cb_${item.key}`);
       const countInputEl = document.getElementById(`qt_count_${item.key}`);
       if (cb && cb.checked) {
+        let actSubTypes = [];
+        if (item.key === 'activity') {
+          activitySubtypes.forEach(k => {
+            const acb = document.getElementById(`act_cb_${k}`);
+            const ainp = document.getElementById(`act_count_${k}`);
+            if (acb && acb.checked) {
+              actSubTypes.push({
+                type: k,
+                title: acb.dataset.title || k,
+                count: parseInt(ainp ? ainp.value : '1', 10) || 1
+              });
+            }
+          });
+          if (actSubTypes.length === 0) {
+            actSubTypes = [
+              { type: 'matching', title: 'Eşleştirme', count: 2 },
+              { type: 'ordering', title: 'Sıralama', count: 1 },
+              { type: 'table_completion', title: 'Tablo Tamamlama', count: 2 }
+            ];
+          }
+        }
+
         selectedTypes.push({
           type: item.key,
           label: item.label,
           icon: item.icon,
-          count: parseInt(countInputEl ? countInputEl.value : '5', 10) || 5
+          count: parseInt(countInputEl ? countInputEl.value : '5', 10) || 5,
+          activity_types: actSubTypes
         });
       }
     });
 
     if (selectedTypes.length === 0) {
-      alert('Lütfen en az bir soru türü seçiniz (Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu veya Kavram Haritası).');
+      alert('Lütfen en az bir soru türü seçiniz (Çoktan Seçmeli, Kısa Cevaplı, Açık Uçlu veya Etkinlik).');
       return;
     }
 
@@ -1134,6 +1306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             question_count: item.count,
             difficulty,
             question_type: item.type,
+            activity_types: item.activity_types || [],
             source_text: combinedSourceText,
             source_files: uploadedSourceFiles.map(f => ({
               name: f.name,
