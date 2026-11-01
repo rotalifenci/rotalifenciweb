@@ -101,15 +101,13 @@ module.exports = async (req, res) => {
       category = "soru-bankasi",
       title = "",
       desc = "",
-      subject = "Fen Bilimleri"
+      subject = "Fen Bilimleri",
+      topic = "",
+      subtopic = "",
+      isAllOutcomes = false,
+      learning_outcome = "",
+      question_type = ""
     } = req.body || {};
-
-    // Deduplication check
-    const dedupKey = `${cleanGrade || grade}_${targetSection}_${title}_${questions.length}`;
-    const now = Date.now();
-    if (recentPublishes.has(dedupKey) && (now - recentPublishes.get(dedupKey).time < 5000)) {
-      return res.status(200).json(recentPublishes.get(dedupKey).data);
-    }
 
     if (!questions || !Array.isArray(questions) || questions.length === 0) {
       return res.status(400).json({ error: "Yayınlanacak soru listesi eksik." });
@@ -118,6 +116,13 @@ module.exports = async (req, res) => {
     const cleanGrade = String(grade).replace(/^grade-/, '').trim() || "5";
     const cleanSection = String(targetSection).replace(/^unit/i, '').replace(/[^0-9]/g, '') || "1";
     const finalCategory = category === "denemeler" ? "denemeler" : "soru-bankasi";
+
+    // Deduplication check
+    const dedupKey = `${cleanGrade}_${cleanSection}_${title}_${questions.length}`;
+    const now = Date.now();
+    if (recentPublishes.has(dedupKey) && (now - recentPublishes.get(dedupKey).time < 5000)) {
+      return res.status(200).json(recentPublishes.get(dedupKey).data);
+    }
 
     const isActivity = questions.some(q => q.type === 'activity');
     const isOpenEnded = !isActivity && questions.some(q => q.type === 'open_ended' || (!q.options || !q.options.A));

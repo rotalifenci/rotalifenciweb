@@ -3457,31 +3457,68 @@ document.addEventListener('DOMContentLoaded', () => {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `batch-tab-btn ${idx === 0 ? 'is-active' : ''}`;
-      btn.innerHTML = `<span>${item.icon}</span> <span>${item.label} (${b.questions.length})</span>`;
+      btn.dataset.type = item.type;
+      const unit = item.type === 'activity' ? 'Etkinlik' : 'Soru';
+      btn.innerHTML = `<span class="tab-icon">${item.icon}</span> <strong class="tab-label">${item.label}</strong> <span class="tab-count-badge" style="background:#e0f2fe; color:#0369a1; padding:2px 8px; border-radius:6px; font-size:11px; margin-left:4px; font-weight:800;">${b.questions.length} ${unit}</span>`;
       btn.addEventListener('click', () => {
         switchBatch(item.type);
       });
       batchTabsList.appendChild(btn);
     });
 
+    // Bütünleşik (Tümü) sekmesi
+    if (types.length > 1) {
+      let totalAll = 0;
+      types.forEach(t => {
+        if (generatedBatches[t.type]) totalAll += generatedBatches[t.type].questions.length;
+      });
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = 'batch-tab-btn';
+      allBtn.dataset.type = 'all';
+      allBtn.innerHTML = `<span class="tab-icon">📚</span> <strong class="tab-label">Tümü (Bütünleşik)</strong> <span class="tab-count-badge" style="background:#f1f5f9; color:#334155; padding:2px 8px; border-radius:6px; font-size:11px; margin-left:4px; font-weight:800;">${totalAll} Soru</span>`;
+      allBtn.addEventListener('click', () => {
+        switchBatch('all');
+      });
+      batchTabsList.appendChild(allBtn);
+    }
+
     batchFileTabsBar.style.display = 'flex';
   }
 
   function switchBatch(typeKey) {
-    const b = generatedBatches[typeKey];
-    if (!b) return;
     activeBatchKey = typeKey;
 
     if (batchTabsList) {
       batchTabsList.querySelectorAll('.batch-tab-btn').forEach(btn => {
-        const isActive = btn.textContent.includes(b.label);
+        const isActive = btn.dataset.type === typeKey;
         btn.classList.toggle('is-active', isActive);
       });
     }
 
-    currentQuestions = b.questions;
-    currentMeta = b.meta;
-    currentSmartTitle = b.smartTitle;
+    if (typeKey === 'all') {
+      let merged = [];
+      Object.keys(generatedBatches).forEach(k => {
+        merged = merged.concat(generatedBatches[k].questions);
+      });
+      currentQuestions = merged;
+      currentSmartTitle = `Bütünleşik Fen Bilimleri Sınavı (${merged.length} Soru / İçerik)`;
+      const metaTitle = document.getElementById('testMetaTitle');
+      if (metaTitle) metaTitle.textContent = currentSmartTitle;
+      const countBadge = document.getElementById('questionCountBadge');
+      if (countBadge) countBadge.textContent = `${merged.length} Soru`;
+    } else {
+      const b = generatedBatches[typeKey];
+      if (!b) return;
+      currentQuestions = b.questions;
+      currentMeta = b.meta;
+      currentSmartTitle = b.smartTitle;
+      const metaTitle = document.getElementById('testMetaTitle');
+      if (metaTitle) metaTitle.textContent = b.smartTitle;
+      const countBadge = document.getElementById('questionCountBadge');
+      if (countBadge) countBadge.textContent = `${b.questions.length} ${b.type === 'activity' ? 'Etkinlik' : 'Soru'}`;
+    }
+
     editingQuestionIndex = -1;
     renderQuestions();
   }

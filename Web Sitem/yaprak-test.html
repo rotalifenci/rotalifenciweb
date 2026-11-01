@@ -539,6 +539,20 @@
         </div>
 
         <!-- Üst Aksiyon Araç Çubuğu (Bilgisayara Kaydetme Düğmeleri) -->
+        <!-- Çoklu Dosya Sekmeleri ve Hızlı Dosya Geçiş Barı -->
+        <div id="batchFileTabsBar" class="batch-file-tabs-bar no-print" style="display: none;">
+          <div class="batch-tabs-title" style="display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 800; color: #1e293b;">
+            <span style="font-size: 16px;">📁</span>
+            <span>Hazırlanan Soru Türleri / Dosyalar:</span>
+          </div>
+          <div class="batch-tabs-list" id="batchTabsList">
+            <!-- Dinamik Olarak Sekmeler Buraya Basılır -->
+          </div>
+          <button type="button" id="batchPublishAllBtn" class="btn btn-sm btn-batch-publish" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: #fff; font-weight: 800; border: none; border-radius: 10px; padding: 8px 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);" title="Tüm soru türlerini ayrı ayrı web sitesine aktar">
+            <span>🚀</span> Tüm Dosyaları Ayrı Ayrı Web Siteme Aktar
+          </button>
+        </div>
+
         <div class="toolbar no-print" id="actionToolbar" style="display: none;">
           <div class="toolbar-title">
             <span id="testMetaTitle">5. Sınıf Fen Bilimleri Yaprak Testi</span>
@@ -863,8 +877,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script src="js/curriculum-data.js?v=1793485437951"></script>
-  <script src="js/question_preparation_state.js?v=20261101_v4"></script>
+  <script src="js/question_preparation_state.js?v=20261101_v5"></script>
   <script src="js/visual_match_engine.js?v=20261101_v4"></script>
-  <script src="js/yaprak-test.js?v=20261101_v4"></script>
+  <script src="js/yaprak-test.js?v=20261101_v5"></script>
 </body>
 </html>
