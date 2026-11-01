@@ -3630,29 +3630,10 @@ function renderHomePage(container) {
                         </div>
                     </div>
 
-                    <!-- Sağ Görsel Kart (Günün Vitrini) -->
-                    <div class="lg:col-span-5 relative w-full aspect-[16/11] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 flex flex-col justify-between p-6 sm:p-8 text-white group">
-                        <div class="flex items-center justify-between">
-                            <span class="px-3.5 py-1 rounded-full bg-red-600 text-white text-xs font-black uppercase tracking-wider shadow-md">
-                                🚀 Rotalı Fenci Hub
-                            </span>
-                            <span class="text-xs font-bold text-slate-300">MEB 2026-2027</span>
-                        </div>
-
-                        <div>
-                            <div class="text-2xl sm:text-3xl font-black mb-2 text-white group-hover:text-amber-300 transition-colors">
-                                Fen Bilimlerini Eğlenerek Keşfet
-                            </div>
-                            <p class="text-xs sm:text-sm text-slate-300 font-medium leading-relaxed">
-                                Deneyler, simülatörler ve etkileşimli dijital içeriklerle fen dersini her cihazda yaşayın.
-                            </p>
-                        </div>
-
-                        <div class="flex items-center justify-between pt-4 border-t border-white/10 text-xs font-bold text-slate-300">
-                            <span>📱 Mobil & Akıllı Tahta Uyumlu</span>
-                            <a href="#stem-lab" class="text-amber-400 hover:text-amber-300 flex items-center gap-1">
-                                STEM Keşfet →
-                            </a>
+                    <!-- Sağ Görsel Kart (Rotalı Fenci Tanıtım Afişi) -->
+                    <div class="lg:col-span-5 relative w-full flex items-center justify-center">
+                        <div class="relative w-full max-w-[520px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-slate-200/80 bg-white group transition-all duration-300 hover:shadow-red-500/15 hover:scale-[1.01] cursor-pointer" onclick="window.open('assets/rotali-fenci-tanitim.jpg', '_blank')" title="Büyütmek için tıklayın">
+                            <img src="assets/rotali-fenci-tanitim.jpg" alt="Rotalı Fenci - Rotamız Fen!" class="w-full h-auto object-cover rounded-2xl block" loading="eager">
                         </div>
                     </div>
                 </div>
