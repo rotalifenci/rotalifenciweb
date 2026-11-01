@@ -4,7 +4,7 @@
     "grade": "5",
     "category": "denemeler",
     "targetSection": "1",
-    "title": "Test No: 5 - Kısa Cevaplı / Boşluk Doldurma",
+    "title": "Test No: 4 - Kısa Cevaplı / Boşluk Doldurma",
     "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
     "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Gökyüzündeki Komşularımız ve Biz için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
     "fileName": "5-sinif-1-unite-test-no-5-kisa-cevapli-bosluk-doldurma.html",
@@ -16,7 +16,7 @@
     "question_type": "open_ended",
     "format": "AÇIK UÇLU SINAV",
     "topic": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
-    "subtopic": "Genel",
+    "subtopic": "",
     "isAllOutcomes": false,
     "learning_outcome": "Güneş'in yapısı ve özellikleri ile ilgili bilgi toplar.",
     "hasBlob": false,
@@ -39,7 +39,9 @@
     "testNumber": 4,
     "questionCount": 20,
     "createdAt": "2026-11-01T17:14:46.558Z",
-    "updatedAt": "2026-11-01T17:14:46.558Z"
+    "updatedAt": "2026-11-01T17:17:36.120Z",
+    "subtopicNum": null,
+    "subtopicCode": ""
   },
   {
     "id": "mat-test-5-1-1793552997708",
