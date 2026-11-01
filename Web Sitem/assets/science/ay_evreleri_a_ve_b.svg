@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%" style="background: radial-gradient(circle at 50% 50%, #0d1b2a 0%, #030712 100%); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;">
+  <rect x="230" y="20" width="440" height="38" rx="19" fill="#1e293b" stroke="#60a5fa" stroke-width="1.5" opacity="0.9" />
+  <text x="450" y="44" fill="#93c5fd" font-size="16" font-weight="700" text-anchor="middle">AY'IN ARDIŞIK ANA EVRELERİ (A ve B)</text>
+
+  <!-- PANEL A (İlk Dördün: Sağ Yarısı Aydınlık) -->
+  <rect x="80" y="90" width="300" height="310" rx="16" fill="#0f172a" stroke="#3b82f6" stroke-width="2" />
+  <circle cx="230" cy="190" r="60" fill="#020617" stroke="#475569" stroke-width="2" />
+  <!-- Sağ yarısı aydınlık (D Şekli) -->
+  <path d="M 230,130 A 60,60 0 0,1 230,250 Z" fill="#f8fafc" />
+  <g transform="translate(230, 90)">
+    <circle cx="0" cy="0" r="22" fill="#3b82f6" stroke="#ffffff" stroke-width="3" />
+    <text x="0" y="8" fill="#ffffff" font-size="20" font-weight="900" text-anchor="middle">A</text>
+  </g>
+  <text x="230" y="295" fill="#60a5fa" font-size="18" font-weight="800" text-anchor="middle">A Evresi: İlk Dördün</text>
+  <text x="230" y="325" fill="#94a3b8" font-size="13" text-anchor="middle">Sağ Yarısı Aydınlık (D Harfi)</text>
+  <text x="230" y="355" fill="#cbd5e1" font-size="12" text-anchor="middle">Yarım Daire Şeklinde Görünür</text>
+
+  <!-- GEÇİŞ OKU (ORTA) -->
+  <g transform="translate(450, 240)">
+    <line x1="-40" y1="0" x2="30" y2="0" stroke="#f59e0b" stroke-width="3" />
+    <polygon points="40,0 25,-8 25,8" fill="#f59e0b" />
+    <rect x="-60" y="-35" width="120" height="26" rx="6" fill="#f59e0b" />
+    <text x="0" y="-18" fill="#000000" font-size="12" font-weight="800" text-anchor="middle">~ 7 GÜN</text>
+    <text x="0" y="28" fill="#94a3b8" font-size="12" text-anchor="middle">(1 Hafta)</text>
+  </g>
+
+  <!-- PANEL B (Dolunay: Tamamı Aydınlık) -->
+  <rect x="520" y="90" width="300" height="310" rx="16" fill="#0f172a" stroke="#10b981" stroke-width="2" />
+  <!-- Tamamı Aydınlık Daire -->
+  <circle cx="670" cy="190" r="60" fill="#fef08a" stroke="#facc15" stroke-width="3" />
+  <!-- Hafif krater detayları -->
+  <circle cx="650" cy="170" r="12" fill="#fde047" opacity="0.6" />
+  <circle cx="690" cy="205" r="16" fill="#fde047" opacity="0.6" />
+  <circle cx="660" cy="215" r="9" fill="#fde047" opacity="0.6" />
+  <g transform="translate(670, 90)">
+    <circle cx="0" cy="0" r="22" fill="#10b981" stroke="#ffffff" stroke-width="3" />
+    <text x="0" y="8" fill="#ffffff" font-size="20" font-weight="900" text-anchor="middle">B</text>
+  </g>
+  <text x="670" y="295" fill="#34d399" font-size="18" font-weight="800" text-anchor="middle">B Evresi: Dolunay</text>
+  <text x="670" y="325" fill="#94a3b8" font-size="13" text-anchor="middle">Tamamı Aydınlık Parlak Disk</text>
+  <text x="670" y="355" fill="#cbd5e1" font-size="12" text-anchor="middle">Güneş Işığını Tam Olarak Yansıtır</text>
+
+  <!-- Alt Bilgi Notu -->
+  <rect x="180" y="425" width="540" height="34" rx="8" fill="#0f172a" stroke="#334155" stroke-width="1" />
+  <text x="450" y="447" fill="#cbd5e1" font-size="13" font-weight="600" text-anchor="middle">Ana evreler arasındaki geçiş süresi yaklaşık 1 haftadır (7 gün).</text>
+</svg>

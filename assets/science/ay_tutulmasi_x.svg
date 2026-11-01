@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%" style="background: radial-gradient(circle at 30% 50%, #0c142b 0%, #030712 100%); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;">
+  <defs>
+    <radialGradient id="sunGlowL" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff8db" />
+      <stop offset="25%" stop-color="#ffb703" />
+      <stop offset="70%" stop-color="#fb8500" />
+      <stop offset="100%" stop-color="#d62828" stop-opacity="0.9" />
+    </radialGradient>
+    <radialGradient id="sunHaloL" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffb703" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#fb8500" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="earthGradL" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#64dfdf" />
+      <stop offset="35%" stop-color="#2a9d8f" />
+      <stop offset="65%" stop-color="#1d3557" />
+      <stop offset="100%" stop-color="#0b1b33" />
+    </radialGradient>
+    <!-- Kanlı Ay / Bakır Rengi Ay (Dünya Gölgesinde) -->
+    <radialGradient id="bloodMoon" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#e07a5f" />
+      <stop offset="40%" stop-color="#9d0208" />
+      <stop offset="80%" stop-color="#6a040f" />
+      <stop offset="100%" stop-color="#370617" />
+    </radialGradient>
+    <linearGradient id="earthShadow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#050814" stop-opacity="0.98" />
+      <stop offset="100%" stop-color="#050814" stop-opacity="0.85" />
+    </linearGradient>
+    <linearGradient id="penumbraL" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2b2d42" stop-opacity="0.4" />
+      <stop offset="100%" stop-color="#4a4e69" stop-opacity="0.1" />
+    </linearGradient>
+  </defs>
+
+  <g fill="#ffffff" opacity="0.6">
+    <circle cx="90" cy="50" r="1.5" /><circle cx="270" cy="40" r="1.2" /><circle cx="410" cy="80" r="1.8" />
+    <circle cx="620" cy="60" r="1.5" /><circle cx="780" cy="50" r="2" /><circle cx="870" cy="80" r="1" />
+    <circle cx="100" cy="420" r="2" /><circle cx="310" cy="430" r="1.5" /><circle cx="560" cy="420" r="1" />
+    <circle cx="710" cy="440" r="1.8" /><circle cx="840" cy="410" r="1.3" />
+  </g>
+
+  <!-- BAŞLIK -->
+  <rect x="250" y="20" width="400" height="38" rx="19" fill="#1e293b" stroke="#a855f7" stroke-width="1.5" opacity="0.9" />
+  <text x="450" y="44" fill="#c084fc" font-size="16" font-weight="700" text-anchor="middle" letter-spacing="1.5">AY TUTULMASI BİLİMSEL MODELİ</text>
+
+  <!-- DÜNYA'NIN TAM VE YARI GÖLGE KONİSİ -->
+  <polygon points="480,186 900,100 900,380 480,294" fill="url(#penumbraL)" />
+  <polygon points="480,195 900,210 900,270 480,285" fill="url(#earthShadow)" stroke="#ef4444" stroke-dasharray="4,4" stroke-width="0.8" />
+
+  <!-- IŞINLAR -->
+  <line x1="120" y1="130" x2="480" y2="195" stroke="#ffd166" stroke-width="1.2" stroke-opacity="0.5" stroke-dasharray="5,4" />
+  <line x1="120" y1="350" x2="480" y2="285" stroke="#ffd166" stroke-width="1.2" stroke-opacity="0.5" stroke-dasharray="5,4" />
+  <line x1="120" y1="130" x2="900" y2="380" stroke="#ffd166" stroke-width="1" stroke-opacity="0.25" stroke-dasharray="3,3" />
+  <line x1="120" y1="350" x2="900" y2="100" stroke="#ffd166" stroke-width="1" stroke-opacity="0.25" stroke-dasharray="3,3" />
+
+  <!-- G: GÜNEŞ -->
+  <circle cx="120" cy="240" r="140" fill="url(#sunHaloL)" />
+  <circle cx="120" cy="240" r="110" fill="url(#sunGlowL)" />
+  <g transform="translate(120, 90)">
+    <circle cx="0" cy="0" r="22" fill="#ef4444" stroke="#ffffff" stroke-width="3" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.5))" />
+    <text x="0" y="8" fill="#ffffff" font-size="20" font-weight="900" text-anchor="middle">G</text>
+  </g>
+  <text x="120" y="380" fill="#fde047" font-size="16" font-weight="800" text-anchor="middle">G (Güneş)</text>
+  <text x="120" y="402" fill="#94a3b8" font-size="13" text-anchor="middle">Işık Kaynağı</text>
+
+  <!-- D: DÜNYA -->
+  <circle cx="480" cy="240" r="54" fill="url(#earthGradL)" stroke="#38bdf8" stroke-width="2" />
+  <path d="M 450,220 Q 465,210 475,225 Q 485,240 470,255 Q 455,250 450,220 Z" fill="#2d6a4f" opacity="0.8" />
+  <!-- Dünya Gece Tarafı Gölgesi -->
+  <path d="M 480,186 A 54,54 0 0,1 480,294 Z" fill="#000000" opacity="0.6" />
+  <g transform="translate(480, 145)">
+    <circle cx="0" cy="0" r="22" fill="#10b981" stroke="#ffffff" stroke-width="3" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.5))" />
+    <text x="0" y="8" fill="#ffffff" font-size="20" font-weight="900" text-anchor="middle">D</text>
+  </g>
+  <text x="480" y="380" fill="#38bdf8" font-size="16" font-weight="800" text-anchor="middle">D (Dünya)</text>
+  <text x="480" y="402" fill="#94a3b8" font-size="13" text-anchor="middle">Ortada (Işığı Engeller)</text>
+
+  <!-- A: AY (Dünya'nın Tam Gölgesinde) -->
+  <circle cx="780" cy="240" r="18" fill="url(#bloodMoon)" stroke="#ef4444" stroke-width="1.5" />
+  <g transform="translate(780, 180)">
+    <circle cx="0" cy="0" r="20" fill="#a855f7" stroke="#ffffff" stroke-width="3" filter="drop-shadow(0 4px 6px rgba(0,0,0,0.5))" />
+    <text x="0" y="7" fill="#ffffff" font-size="18" font-weight="900" text-anchor="middle">X</text>
+  </g>
+  <text x="780" y="285" fill="#fca5a5" font-size="15" font-weight="800" text-anchor="middle">X (Bilinmeyen Gök Cismi: Ay)</text>
+  <text x="780" y="305" fill="#94a3b8" font-size="12" text-anchor="middle">Tam Gölge İçinde (Kızıl Ay)</text>
+
+  <!-- Bilimsel Kural Kutusu -->
+  <rect x="210" y="430" width="480" height="34" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1" />
+  <text x="450" y="452" fill="#cbd5e1" font-size="13" font-weight="600" text-anchor="middle">Sıralama: Güneş (G) ➔ Dünya (D) ➔ Ay (A) | Dolunay Evresi &amp; Gece</text>
+</svg>

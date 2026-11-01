@@ -35,30 +35,121 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
   const norm = normalizeText(questionText);
   const cur = String(currentVisual || '');
 
-  // 1. UZAY İSTASYONU (ISS - Uluslararası Uzay İstasyonu)
+  // 1. ÖZEL BİLİMSEL MODELLER & DİYAGRAMLAR (Soru Metnindeki Şekil/Model Referansları)
+
+  // 1.1 Güneş Tutulması Numaralandırılmış Model (1: Güneş, 2: Ay, 3: Dünya)
+  if (
+    (norm.includes('numaralandirilmis') && (norm.includes('golgesinin') || norm.includes('dizilim') || norm.includes('tutulma')) && (norm.includes('2 numarali') || norm.includes('3 numarali'))) ||
+    (norm.includes('2 numarali cismin golgesinin') && norm.includes('3 numarali')) ||
+    (norm.includes('modelde numaralandirilmis gok cisimleri') && norm.includes('doga olayini'))
+  ) {
+    return makeImg('/assets/science/gunes_tutulmasi_123.svg', 'Güneş Tutulması Bilimsel Modeli (1: Güneş, 2: Ay, 3: Dünya)');
+  }
+
+  // 1.2 Ay Tutulması Harfli Model (G, D, A Dizilimi)
+  if (
+    (norm.includes('gunes g') && norm.includes('dunya d') && norm.includes('ay a')) ||
+    (norm.includes('konumlari verilmistir') && norm.includes('dizilim') && (norm.includes('dolunay') || norm.includes('gece')))
+  ) {
+    return makeImg('/assets/science/ay_tutulmasi_gda.svg', 'Ay Tutulması Bilimsel Modeli (G: Güneş, D: Dünya, A: Ay)');
+  }
+
+  // 1.3 Tutulmalarda X ve Y İle Gösterilen Bilinmeyen Gök Cisimleri
+  if (norm.includes('x ile gosterilen') && (norm.includes('tutulma') || norm.includes('golgesinde kalmakta') || norm.includes('ayni dogrultuda'))) {
+    return makeImg('/assets/science/ay_tutulmasi_x.svg', 'Ay Tutulması Modeli (Dünya Gölgesindeki X Gök Cismi)');
+  }
+  if (norm.includes('y ile gosterilen') && (norm.includes('tutulma') || norm.includes('golgesi dunya uzerine') || norm.includes('ayni dogrultuda'))) {
+    return makeImg('/assets/science/gunes_tutulmasi_y.svg', 'Güneş Tutulması Modeli (Gölgesi Dünya Üzerine Düşen Y Gök Cismi)');
+  }
+
+  // 1.4 Ay'ın Yeni Ay Evresi (Görünmeyen Koyu Kısım & Dünya'dan Görünüm)
+  if (
+    (norm.includes('koyu renkli kisim') && norm.includes('gorunmeyen kismi') && norm.includes('ana evre')) ||
+    (norm.includes('yeni ay') && norm.includes('gunes ile dunya arasindaki'))
+  ) {
+    return makeImg('/assets/science/ay_yeni_ay_modeli.svg', "Ay'ın Yeni Ay Evresi Bilimsel Modeli (Dünya'dan Görünüm ve Konum)");
+  }
+
+  // 1.5 Ay'ın Ardışık Ana Evreleri (A ve B Harfleri ile Gösterilen)
+  if (
+    (norm.includes('a ve b') || (norm.includes('a evresi') && norm.includes('b evresi'))) &&
+    (norm.includes('evre') && (norm.includes('takip eden') || norm.includes('gecis')))
+  ) {
+    return makeImg('/assets/science/ay_evreleri_a_ve_b.svg', "Ay'ın Ardışık Ana Evreleri (A: İlk Dördün, B: Dolunay)");
+  }
+
+  // 1.6 X ve Y Gök Cisimleri (Sıcak gaz bulutu Güneş ve soğuk kayalık Ay)
+  if (
+    norm.includes('x ve y ile temsil edilen') ||
+    (norm.includes('x gok cisminin sicak bir gaz') && norm.includes('y gok cisminin'))
+  ) {
+    return makeImg('/assets/science/gok_cisimleri_x_y.svg', 'X (Güneş) ve Y (Ay) Gök Cisimleri Karşılaştırmalı Modeli');
+  }
+
+  // 1.7 Dış Gezegenler Jüpiter ve Satürn Karşılaştırması
+  if (
+    (norm.includes('jupiter') && norm.includes('saturn')) ||
+    (norm.includes('gazsal gezegenler') && (norm.includes('jupiter') || norm.includes('saturn')))
+  ) {
+    return makeImg('/assets/science/jupiter_ve_saturn_gazsal_devler.svg', 'Gazsal Dış Gezegenler: Jüpiter ve Satürn');
+  }
+
+  // 1.8 Ay'ın Hatalı Yatay Bölünmüş Modeli (Üstü Aydınlık, Altı Karanlık)
+  if (
+    norm.includes('alt yarisi') && norm.includes('ust yarisi') && (norm.includes('karanlik') || norm.includes('aydinlik'))
+  ) {
+    return makeImg('/assets/science/ay_hatali_alt_ust_aydinlanma.svg', "Ay'ın Yatay Bölünmüş Hatalı Çizim Modeli");
+  }
+
+  // 1.9 Öğrencinin Hazırladığı Güneş Tutulması / Ay Tutulması Modeli
+  if (
+    norm.includes('ogrenci') && (norm.includes('modeli hazirlamistir') || norm.includes('model hazirlamistir')) &&
+    (norm.includes('gunes ay ve dunya') || norm.includes('gunes dunya ve ay') || norm.includes('eksik veya hatali'))
+  ) {
+    return makeImg('/assets/science/gunes_tutulmasi_123.svg', 'Öğrencinin Hazırladığı Güneş Tutulması Ölçek Modeli');
+  }
+
+  // 1.10 Genel Güneş Tutulması
+  if (
+    norm.includes('gunes tutulma') ||
+    (norm.includes('tutulma') && norm.includes('ay') && norm.includes('gunes') && norm.includes('gunduz'))
+  ) {
+    return makeImg('/assets/science/gunes_tutulmasi_123.svg', 'Güneş Tutulması Bilimsel Şeması ve Gölge Geometrisi');
+  }
+
+  // 1.11 Genel Ay Tutulması
+  if (
+    norm.includes('ay tutulma') ||
+    (norm.includes('tutulma') && (norm.includes('kanli ay') || norm.includes('kirmizimsi') || norm.includes('dolunay')))
+  ) {
+    return makeImg('/assets/science/ay_tutulmasi_gda.svg', 'Ay Tutulması Bilimsel Şeması ve Tam Gölge Konisi');
+  }
+
+  // 2. UZAY İSTASYONU (ISS - Uluslararası Uzay İstasyonu)
   if (
     norm.includes('istasyon') ||
     norm.includes('iss') ||
-    (norm.includes('uluslararasi') && norm.includes('astronot') && norm.includes('yapi')) ||
-    (norm.includes('astronot') && norm.includes('deney') && norm.includes('yapi'))
+    (norm.includes('insanlarin icinde yasayip') && norm.includes('laboratuvar')) ||
+    (norm.includes('astronotlarin icinde yasayip') && norm.includes('deney')) ||
+    (norm.includes('uluslararasi is birligi') && norm.includes('uzay'))
   ) {
     return makeImg('/assets/science/iss_space_station.jpg', 'Uluslararası Uzay İstasyonu (ISS)');
   }
 
-  // 2. GÖZLEMEVİ / RASATHANE
+  // 3. GÖZLEMEVİ / RASATHANE
   if (
     norm.includes('gozlemevi') ||
     norm.includes('rasathane') ||
     (norm.includes('daglarin yuksek zirve') && norm.includes('aynali')) ||
     (norm.includes('aynali sistem') && norm.includes('derinliklerini incelemek')) ||
-    norm.includes('isik kirlilig') ||
+    (norm.includes('isik kirlilig') && (norm.includes('gozlem') || norm.includes('teleskop') || norm.includes('sehir'))) ||
     (norm.includes('sehir isik') && norm.includes('dag')) ||
     (norm.includes('sehir') && norm.includes('teleskop'))
   ) {
     return makeImg('/assets/science/observatory_dome.jpg', 'Astronomik Gözlemevi (Rasathane)');
   }
 
-  // 3. GALİLEO VE İLK TELESKOP
+  // 4. GALİLEO VE İLK TELESKOP
   if (
     norm.includes('galileo') ||
     norm.includes('1609') ||
@@ -68,20 +159,18 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_13_galileo.jpg', 'Galileo Galilei ve İlk Teleskop');
   }
 
-  // 4. UZAY TELESKOBU & OPTİK TELESKOPLAR (Hubble, Mercekli, Aynalı)
+  // 5. UZAY TELESKOBU & OPTİK TELESKOPLAR (Hubble, Mercekli, Aynalı)
   if (
     norm.includes('uzay teleskob') ||
-    norm.includes('teleskop') ||
+    (norm.includes('teleskop') && !norm.includes('devre')) ||
     (norm.includes('atmosferin dis') && norm.includes('teleskop')) ||
-    (norm.includes('bakim ve onarim') && norm.includes('arac') && norm.includes('uzay')) ||
     (norm.includes('hubble') || norm.includes('james webb')) ||
-    norm.includes('mercek') ||
-    norm.includes('isigi kirmak suretiyle')
+    (norm.includes('mercek') && norm.includes('isigi kirmak'))
   ) {
     return makeImg('/assets/science/space_telescope.jpg', 'Gelişmiş Optik ve Uzay Teleskobu');
   }
 
-  // 5. ASTRONOT UZAY GİYSİSİ (EMU)
+  // 6. ASTRONOT UZAY GİYSİSİ (EMU)
   if (
     norm.includes('uzay giysi') ||
     norm.includes('astronot giysi') ||
@@ -90,7 +179,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/science/astronaut_spacesuit.jpg', 'Astronot Uzay Giysisi (EMU)');
   }
 
-  // 6. MARS KEŞİF ARACI / ROVER / ROBOTİK SONDA / KIZIL GEZEGEN
+  // 7. MARS KEŞİF ARACI / ROVER / ROBOTİK SONDA / KIZIL GEZEGEN
   if (
     norm.includes('curiosity') ||
     norm.includes('perseverance') ||
@@ -100,7 +189,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/science/mars_rover.jpg', 'Mars Keşif Robotu (Rover)');
   }
 
-  // 7. UZAY KİRLİLİĞİ / UZAY ÇÖPÜ
+  // 8. UZAY KİRLİLİĞİ / UZAY ÇÖPÜ
   if (
     norm.includes('uzay kirlilig') ||
     norm.includes('uzay cop') ||
@@ -109,7 +198,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/science/space_debris.jpg', 'Uzay Kirliliği ve Enkazlar');
   }
 
-  // 8. AY'A İNİŞ / APOLLO / AY MODÜLÜ
+  // 9. AY'A İNİŞ / APOLLO / AY MODÜLÜ
   if (
     norm.includes('apollo') ||
     (norm.includes('ayak basan') && norm.includes('astronot')) ||
@@ -118,7 +207,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/science/apollo_lunar_lander.jpg', 'Apollo Ay Modülü ve Ay Yüzeyi');
   }
 
-  // 9. YAPAY UYDU (Haberleşme, Meteoroloji, Gözlem)
+  // 10. YAPAY UYDU (Haberleşme, Meteoroloji, Gözlem)
   if (
     norm.includes('yapay uydu') ||
     norm.includes('turksat') ||
@@ -130,14 +219,14 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/science/satellite_orbit.jpg', 'Yapay Uydu ve Yörüngesi');
   }
 
-  // 10. AY'IN EVRELERİ (Özel Evre İsimleri)
-  if (norm.includes('ilk dordun') || (norm.includes('sag yarisi aydinlik') && hasWord(norm, 'ay'))) {
+  // 11. AY'IN EVRELERİ (Özel Evre İsimleri & Döngü)
+  if (norm.includes('ilk dordun') || (norm.includes('sag yarisi aydinlik') && (hasWord(norm, 'ay') || norm.includes('model')))) {
     return makeImg('/assets/slides/slide_29_ilk_dordun.jpg', "Ay'ın İlk Dördün Evresi (D Şekli)");
   }
-  if (norm.includes('son dordun') || (norm.includes('sol yarisi aydinlik') && hasWord(norm, 'ay')) || (norm.includes('ters d') && hasWord(norm, 'ay'))) {
+  if (norm.includes('son dordun') || (norm.includes('sol yarisi aydinlik') && (hasWord(norm, 'ay') || norm.includes('model'))) || norm.includes('ters d')) {
     return makeImg('/assets/slides/slide_31_son_dordun.jpg', "Ay'ın Son Dördün Evresi (Ters D)");
   }
-  if (norm.includes('dolunay') || (norm.includes('tamami aydinlik') && hasWord(norm, 'ay'))) {
+  if (norm.includes('dolunay') || norm.includes('tamami aydinlik') || (norm.includes('parlak bir daire') && hasWord(norm, 'ay'))) {
     return makeImg('/assets/slides/slide_30_dolunay.jpg', "Ay'ın Dolunay Evresi");
   }
   if (norm.includes('yeni ay') || (norm.includes('karanlik') && norm.includes('gorunmeyen') && norm.includes('ana evre'))) {
@@ -153,7 +242,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_34_eight_phases.jpg', "Ay'ın Evreleri Bilimsel Modeli");
   }
 
-  // 11. AY'IN YAPISI, KRATERLER, ATMOSFER
+  // 12. AY'IN YAPISI, KRATERLER, ATMOSFER
   if (norm.includes('krater') || norm.includes('cukurlar') || norm.includes('meteor carpmasi')) {
     return makeImg('/assets/slides/slide_18_krater_detay.jpg', 'Ay Yüzeyindeki Kraterler');
   }
@@ -161,7 +250,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_19_moon_atmosphere.jpg', "Ay'ın Yüzeyi ve İnce Atmosferi");
   }
 
-  // 12. GÜNEŞ'İN YAPISI, LEKELERİ, KATMANLARI
+  // 13. GÜNEŞ'İN YAPISI, LEKELERİ, KATMANLARI
   if (norm.includes('gunes leke') || (norm.includes('gunes') && norm.includes('koyu renkli bolge'))) {
     return makeImg('/assets/slides/slide_13_sunspots.jpg', 'Güneş Lekeleri (Fotosfer)');
   }
@@ -175,7 +264,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_8_fusion_energy.jpg', "Güneş'in Nükleer Füzyon Enerjisi");
   }
 
-  // 13. BOYUT VE MESAFE KARŞILAŞTIRMASI (Güneş, Dünya, Ay)
+  // 14. BOYUT VE MESAFE KARŞILAŞTIRMASI (Güneş, Dünya, Ay)
   if (
     (norm.includes('karsilastir') || norm.includes('boyut') || norm.includes('buyukluk') || norm.includes('cap')) &&
     (norm.includes('gunes') || norm.includes('dunya') || hasWord(norm, 'ay'))
@@ -183,27 +272,30 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_10_size_comparison.jpg', 'Güneş, Dünya ve Ay Boyut Karşılaştırması');
   }
 
-  // 14. HÜCRE, ORGANELLER, BİYOLOJİ
+  // 15. HÜCRE, ORGANELLER, BİYOLOJİ
   if (norm.includes('hucre') || norm.includes('mitokondri') || norm.includes('kloroplast') || norm.includes('sitoplazma')) {
     return makeImg('/assets/science/cell_structure.jpg', 'Bitki ve Hayvan Hücresi 3D Karşılaştırması');
   }
 
-  // 15. DİNAMOMETRE / KUVVET VE HAREKET
+  // 16. DİNAMOMETRE / KUVVET VE HAREKET
   if (norm.includes('dinamometre') || (norm.includes('kuvvet') && (norm.includes('newton') || norm.includes('yay') || norm.includes('olcum') || norm.includes('surtunme')))) {
     return makeImg('/assets/science/dynamometer.jpg', 'Hassas Dinamometre (Kuvvet Ölçer)');
   }
 
-  // 16. ELEKTRİK DEVRELERİ
-  if (norm.includes('devre') || norm.includes('ampul') || norm.includes('anahtar') || norm.includes('pil')) {
+  // 17. ELEKTRİK DEVRELERİ (Kesin Kontrol: 'devrim' veya 'evre' ile karışmasın)
+  if (
+    (hasWord(norm, 'devre') || hasWord(norm, 'devresi') || hasWord(norm, 'devreler') || hasWord(norm, 'devrede')) &&
+    (norm.includes('ampul') || norm.includes('anahtar') || norm.includes('pil') || norm.includes('volt') || norm.includes('iletken'))
+  ) {
     return makeImg('/assets/science/electric_circuit.jpg', 'Basit Elektrik Devresi Deney Seti');
   }
 
-  // 17. DNA VE GENETİK KOD
+  // 18. DNA VE GENETİK KOD
   if (norm.includes('dna') || norm.includes('genetik') || norm.includes('nukleotid') || norm.includes('kromozom')) {
     return makeImg('/assets/science/dna_structure.jpg', 'DNA Çift Sarmalı ve Genetik Yapı');
   }
 
-  // 18. FOTOSENTEZ & SU DÖNGÜSÜ & HAVA OLAYLARI
+  // 19. FOTOSENTEZ & SU DÖNGÜSÜ & HAVA OLAYLARI
   if (norm.includes('fotosentez')) {
     return makeImg('/assets/slides/slide_14_photosynthesis.jpg', 'Fotosentez ve Canlılık');
   }
@@ -211,7 +303,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_14_water_cycle.jpg', 'Doğada Su Döngüsü');
   }
 
-  // 19. DERİN UZAY, GALAKSİ, BULUTSU, EVREN, GEZEGENLER
+  // 20. DERİN UZAY, GALAKSİ, BULUTSU, EVREN, GEZEGENLER
   if (
     norm.includes('galaksi') ||
     norm.includes('samanyolu') ||
@@ -222,8 +314,6 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     norm.includes('yildiz') ||
     norm.includes('evren') ||
     norm.includes('gezegen') ||
-    norm.includes('jupiter') ||
-    norm.includes('saturn') ||
     norm.includes('neptun') ||
     norm.includes('uranus') ||
     norm.includes('merkur') ||
@@ -232,7 +322,7 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_3_universe_space.jpg', 'Derin Uzay, Galaksiler ve Gezegenler');
   }
 
-  // 20. GÜNEŞ KÜRESİ / AY KÜRESİ / DÜNYA KÜRESİ
+  // 21. GÜNEŞ KÜRESİ / AY KÜRESİ / DÜNYA KÜRESİ
   if (norm.includes('gunes') && !hasWord(norm, 'ay')) {
     return makeImg('/images/sun.jpg', 'Güneş Küresi');
   }
@@ -243,8 +333,8 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
     return makeImg('/assets/slides/slide_4_earth_globe.jpg', 'Dünya Gezegeni');
   }
 
-  // Eğer eski SVG varsa ve hiçbir kurala uymadıysa, anlamsız/boş çizim yerine derin uzay görselini koy
-  if (cur.includes('<svg')) {
+  // Eğer eski anlamsız SVG veya geçersiz görsel varsa derin uzay görseli sağla
+  if (cur.includes('<svg') && !cur.includes('rf-science-img')) {
     return makeImg('/assets/slides/slide_3_universe_space.jpg', 'Bilimsel Uzay ve Fen İnceleme Modeli');
   }
 
@@ -254,5 +344,6 @@ function getScientificVisual(questionText, options = {}, currentVisual = '') {
 module.exports = {
   getScientificVisual,
   normalizeText,
-  hasWord
+  hasWord,
+  makeImg
 };

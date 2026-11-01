@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 480" width="100%" height="100%" style="background: radial-gradient(circle at 50% 50%, #0d1b2a 0%, #030712 100%); font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;">
+  <rect x="230" y="20" width="440" height="38" rx="19" fill="#1e293b" stroke="#eab308" stroke-width="1.5" opacity="0.9" />
+  <text x="450" y="44" fill="#fde047" font-size="16" font-weight="700" text-anchor="middle">DIŞ GEZEGENLER: JÜPİTER VE SATÜRN</text>
+
+  <!-- JÜPİTER -->
+  <g transform="translate(250, 230)">
+    <circle cx="0" cy="0" r="90" fill="#d97706" />
+    <!-- Atmosfer Bantları -->
+    <path d="M -85,-30 Q 0,-20 85,-30 L 85,-10 Q 0,0 -85,-10 Z" fill="#b45309" opacity="0.8" />
+    <path d="M -90,10 Q 0,20 90,10 L 88,30 Q 0,40 -88,30 Z" fill="#92400e" opacity="0.85" />
+    <!-- Büyük Kırmızı Leke -->
+    <ellipse cx="40" cy="20" rx="20" ry="12" fill="#ef4444" opacity="0.9" stroke="#7f1d1d" stroke-width="1" />
+    <text x="0" y="125" fill="#fde047" font-size="20" font-weight="800" text-anchor="middle">Jüpiter</text>
+    <text x="0" y="148" fill="#94a3b8" font-size="13" text-anchor="middle">Güneş Sisteminin En Büyük Gezegeni</text>
+  </g>
+
+  <!-- SATÜRN -->
+  <g transform="translate(650, 230)">
+    <!-- Arka Halkalar -->
+    <ellipse cx="0" cy="0" rx="140" ry="32" fill="none" stroke="#ca8a04" stroke-width="14" opacity="0.5" transform="rotate(-18)" />
+    <circle cx="0" cy="0" r="65" fill="#eab308" />
+    <!-- Ön Halkalar -->
+    <path d="M -130,42 A 140,32 0 0,0 130,-42" fill="none" stroke="#fef08a" stroke-width="10" transform="rotate(-18)" />
+    <text x="0" y="125" fill="#fde047" font-size="20" font-weight="800" text-anchor="middle">Satürn</text>
+    <text x="0" y="148" fill="#94a3b8" font-size="13" text-anchor="middle">Görkemli Halka Sistemi ve Gazsal Yapı</text>
+  </g>
+
+  <!-- Ortak Özellikler Alt Şeridi -->
+  <rect x="180" y="420" width="540" height="34" rx="8" fill="#0f172a" stroke="#475569" stroke-width="1" />
+  <text x="450" y="442" fill="#cbd5e1" font-size="13" font-weight="600" text-anchor="middle">Ortak Özellik: Gazsal (Dış) Gezegenler • Karasal Yüzeyleri Yoktur • Çok Sayıda Uydu</text>
+</svg>
