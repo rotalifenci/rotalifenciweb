@@ -88,7 +88,7 @@
     "grade": "5",
     "category": "denemeler",
     "targetSection": "1",
-    "title": "Test No: 3 - Kısa Cevaplı / Boşluk Doldurma",
+    "title": "Test No: 2 - Kısa Cevaplı / Boşluk Doldurma",
     "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
     "desc": "5. Sınıf Fen Bilimleri 1. Ünite: Gökyüzündeki Komşularımız ve Biz için MEB Maarif Modeli uyumlu şekilli yaprak test. Cevap anahtarlı ve çözümlü.",
     "fileName": "5-sinif-1-unite-test-no-3-kisa-cevapli-bosluk-doldurma.html",
@@ -100,7 +100,7 @@
     "question_type": "open_ended",
     "format": "AÇIK UÇLU SINAV",
     "topic": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
-    "subtopic": "Genel",
+    "subtopic": "1.2. Gökyüzündeki Komşumuz: Ay",
     "isAllOutcomes": false,
     "learning_outcome": "Ay'ın özellikleri, dönme ve dolanma hareketleri ile ilgili bilimsel çıkarım yapabilme.",
     "hasBlob": false,
@@ -123,7 +123,9 @@
     "testNumber": 2,
     "questionCount": 20,
     "createdAt": "2026-11-01T17:04:26.581Z",
-    "updatedAt": "2026-11-01T17:04:26.581Z"
+    "updatedAt": "2026-11-01T17:16:11.074Z",
+    "subtopicNum": 2,
+    "subtopicCode": "1.2"
   },
   {
     "id": "mat-test-5-1-1793552298569",
