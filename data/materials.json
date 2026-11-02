@@ -1,5 +1,33 @@
 [
   {
+    "id": "mat-e92bf2be-d134-43a0-bd3e-2106ab3ac003",
+    "grade": "projeler",
+    "category": "projeler",
+    "targetSection": "projeler",
+    "title": "STEM",
+    "unit": "TÜBİTAK 2204-B Ortaokul Öğrencileri Araştırma Projeleri",
+    "subtopicNum": null,
+    "subtopicCode": "",
+    "subtopic": "",
+    "desc": "Rotalı Fenci özel eğitim materyali.",
+    "fileName": "STEM_8_Sayfa_Gorsel_Sunum.pdf",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793662046666_4m5et_stem_8_sayfa_gorsel_sunum.pdf",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793662045533_mat-e92bf2be-d134-43a0-bd3e-2106ab3ac003_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793662045533_mat-e92bf2be-d134-43a0-bd3e-2106ab3ac003_cover.jpg",
+    "format": "PDF",
+    "hasBlob": false,
+    "tags": [
+      "fenbilimleri",
+      "fen",
+      "ortaokul",
+      "MEB 2026-2027"
+    ],
+    "visibility": "public",
+    "downloadCount": "Yeni",
+    "createdAt": "2026-11-02T23:27:56.618Z",
+    "updatedAt": "2026-11-02T23:27:56.618Z"
+  },
+  {
     "id": "mat-99772910-9828-42ee-b630-31381cce5cc3",
     "grade": "projeler",
     "category": "projeler",
