@@ -39,9 +39,9 @@
     "subtopic": "",
     "desc": "Rotalı Fenci özel eğitim materyali.",
     "fileName": "eTwinning_Sunum.pdf",
-    "fileUrl": "",
-    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793661744822_mat-99772910-9828-42ee-b630-31381cce5cc3_cover.jpg",
-    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793661744822_mat-99772910-9828-42ee-b630-31381cce5cc3_cover.jpg",
+    "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793684845083_qbt5e_etwinning_sunum.pdf",
+    "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793684843896_mat-99772910-9828-42ee-b630-31381cce5cc3_cover.jpg",
+    "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793684843896_mat-99772910-9828-42ee-b630-31381cce5cc3_cover.jpg",
     "format": "PDF",
     "hasBlob": true,
     "tags": [
@@ -53,7 +53,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-02T23:25:10.131Z",
-    "updatedAt": "2026-11-02T23:25:10.131Z"
+    "updatedAt": "2026-11-03T05:48:09.232Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793684843896_mat-99772910-9828-42ee-b630-31381cce5cc3_cover.jpg"
   },
   {
     "id": "mat-c5435b10-1eed-4dd5-8884-975ddf940b7a",
