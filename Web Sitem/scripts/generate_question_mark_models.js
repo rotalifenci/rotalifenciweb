@@ -1,0 +1,197 @@
+const fs = require('fs');
+const path = require('path');
+
+// 1. Yapay Uydu Soru İşaretli Model (Earth Orbit + Satellite + (?) Badge)
+const yapayUyduSvg = `<svg viewBox="0 0 720 380" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="spaceBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#070c18"/>
+      <stop offset="60%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#1e293b"/>
+    </linearGradient>
+    <radialGradient id="earthGrad" cx="35%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0284c7"/>
+      <stop offset="85%" stop-color="#0369a1"/>
+      <stop offset="100%" stop-color="#082f49"/>
+    </radialGradient>
+    <radialGradient id="atmoGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="80%" stop-color="#38bdf8" stop-opacity="0.5"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadowGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.4"/>
+    </filter>
+  </defs>
+
+  <!-- Arka Plan: Derin Uzay -->
+  <rect x="0" y="0" width="720" height="380" rx="16" fill="url(#spaceBg)"/>
+
+  <!-- Uzak Yıldızlar -->
+  <circle cx="60" cy="50" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="140" cy="90" r="1" fill="#ffffff" opacity="0.6"/>
+  <circle cx="280" cy="40" r="1.5" fill="#ffffff" opacity="0.7"/>
+  <circle cx="480" cy="60" r="1" fill="#ffffff" opacity="0.5"/>
+  <circle cx="650" cy="110" r="1.5" fill="#ffffff" opacity="0.8"/>
+  <circle cx="680" cy="270" r="1" fill="#ffffff" opacity="0.6"/>
+  <circle cx="100" cy="320" r="1.5" fill="#ffffff" opacity="0.7"/>
+
+  <!-- Başlık Şeridi -->
+  <rect x="180" y="16" width="360" height="32" rx="16" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="360" y="37" text-anchor="middle" fill="#60a5fa" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700" letter-spacing="1">DÜNYA YÖRÜNGESİNDE BİLİMSEL ARAŞTIRMA MODELİ</text>
+
+  <!-- Dünya Modeli -->
+  <circle cx="190" cy="240" r="145" fill="url(#atmoGlow)"/>
+  <circle cx="190" cy="240" r="130" fill="url(#earthGrad)"/>
+  <!-- Kıtalar / Yüzey Detayı -->
+  <path d="M120 190 Q150 160 190 180 Q220 200 240 180 Q260 210 230 250 Q180 280 140 240 Z" fill="#10b981" opacity="0.6"/>
+  <path d="M210 270 Q250 250 280 280 Q260 310 220 300 Z" fill="#10b981" opacity="0.5"/>
+  <text x="190" y="246" text-anchor="middle" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="16" font-weight="800">DÜNYA</text>
+
+  <!-- Yörünge Yayı (Dashed Orbit) -->
+  <path d="M70 330 A340 260 0 0 1 650 160" fill="none" stroke="#94a3b8" stroke-width="2.5" stroke-dasharray="8 6" opacity="0.75"/>
+  <text x="560" y="235" fill="#94a3b8" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600">Yörünge Düzlemi</text>
+
+  <!-- UYDU MODELİ (Güneş panelleri, ana gövde, anten) -->
+  <g transform="translate(470, 110)" filter="url(#shadowGlow)">
+    <!-- Sol Güneş Paneli -->
+    <rect x="-90" y="-14" width="70" height="28" rx="3" fill="#1d4ed8" stroke="#93c5fd" stroke-width="1.5"/>
+    <line x1="-67" y1="-14" x2="-67" y2="14" stroke="#93c5fd" stroke-width="1"/>
+    <line x1="-44" y1="-14" x2="-44" y2="14" stroke="#93c5fd" stroke-width="1"/>
+    <line x1="-90" y1="0" x2="-20" y2="0" stroke="#93c5fd" stroke-width="1"/>
+
+    <!-- Bağlantı Kolu Sol -->
+    <rect x="-20" y="-3" width="10" height="6" fill="#cbd5e1"/>
+
+    <!-- Ana Gövde (Altın Yalıtımlı Kaplama) -->
+    <rect x="-10" y="-20" width="40" height="40" rx="6" fill="#f59e0b" stroke="#fef08a" stroke-width="2"/>
+    <circle cx="10" cy="0" r="9" fill="#1e293b" stroke="#cbd5e1" stroke-width="1.5"/>
+
+    <!-- Bağlantı Kolu Sağ -->
+    <rect x="30" y="-3" width="10" height="6" fill="#cbd5e1"/>
+
+    <!-- Sağ Güneş Paneli -->
+    <rect x="40" y="-14" width="70" height="28" rx="3" fill="#1d4ed8" stroke="#93c5fd" stroke-width="1.5"/>
+    <line x1="63" y1="-14" x2="63" y2="14" stroke="#93c5fd" stroke-width="1"/>
+    <line x1="86" y1="-14" x2="86" y2="14" stroke="#93c5fd" stroke-width="1"/>
+    <line x1="40" y1="0" x2="110" y2="0" stroke="#93c5fd" stroke-width="1"/>
+
+    <!-- Parabolik Çanak Anten -->
+    <path d="M-2 -20 Q10 -36 22 -20" fill="none" stroke="#e2e8f0" stroke-width="3"/>
+    <line x1="10" y1="-28" x2="10" y2="-40" stroke="#e2e8f0" stroke-width="2"/>
+    <circle cx="10" cy="-42" r="3" fill="#ef4444"/>
+
+    <!-- HEDEF VURGULAMA VE SORU İŞARETİ (?) ROZETİ -->
+    <circle cx="10" cy="0" r="48" fill="none" stroke="#ef4444" stroke-width="3" stroke-dasharray="6 4"/>
+    
+    <!-- Ok ve Açıklama Balonu -->
+    <line x1="10" y1="52" x2="10" y2="90" stroke="#ef4444" stroke-width="2.5" marker-end="url(#arrow)"/>
+    <rect x="-55" y="90" width="130" height="52" rx="10" fill="#ef4444" stroke="#ffffff" stroke-width="2" filter="url(#shadowGlow)"/>
+    <text x="10" y="118" text-anchor="middle" fill="#ffffff" font-family="'Segoe UI', Roboto, sans-serif" font-size="24" font-weight="900">?</text>
+    <text x="10" y="134" text-anchor="middle" fill="#fee2e2" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">İNSAN YAPIMI ARAÇ</text>
+  </g>
+
+  <!-- Alt Bilgi Notu -->
+  <rect x="180" y="340" width="360" height="26" rx="6" fill="#0f172a" stroke="#334155" stroke-width="1"/>
+  <text x="360" y="357" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="600">Modelde soru işareti (?) ile gösterilen uzay aracını inceleyiniz.</text>
+</svg>`;
+
+// 2. Güneş Soru İşaretli Model (Glowing Solar Sphere + (?) Badge)
+const gokCismiGunesSvg = `<svg viewBox="0 0 600 320" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffedd5"/>
+      <stop offset="30%" stop-color="#f59e0b"/>
+      <stop offset="70%" stop-color="#ea580c"/>
+      <stop offset="90%" stop-color="#b91c1c"/>
+      <stop offset="100%" stop-color="#7c2d12" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <rect x="0" y="0" width="600" height="320" rx="12" fill="#090d16"/>
+  <rect x="140" y="16" width="320" height="30" rx="15" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="300" y="36" text-anchor="middle" fill="#fbbf24" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700">BİLİMSEL GÖK CİSMİ İNCELEME MODELİ</text>
+
+  <!-- Güneş Küresi -->
+  <circle cx="300" cy="165" r="105" fill="#ea580c" opacity="0.3" filter="url(#glow)"/>
+  <circle cx="300" cy="165" r="85" fill="url(#sunGlow)"/>
+
+  <!-- Işık/Isı Işınları -->
+  <g stroke="#f59e0b" stroke-width="2" stroke-linecap="round" opacity="0.8">
+    <line x1="300" y1="55" x2="300" y2="40"/>
+    <line x1="300" y1="275" x2="300" y2="290"/>
+    <line x1="190" y1="165" x2="175" y2="165"/>
+    <line x1="410" y1="165" x2="425" y2="165"/>
+    <line x1="220" y1="85" x2="210" y2="75"/>
+    <line x1="380" y1="85" x2="390" y2="75"/>
+    <line x1="220" y1="245" x2="210" y2="255"/>
+    <line x1="380" y1="245" x2="390" y2="255"/>
+  </g>
+
+  <!-- Hedef (?) Rozeti -->
+  <rect x="250" y="125" width="100" height="80" rx="14" fill="#ffffff" stroke="#ef4444" stroke-width="3"/>
+  <text x="300" y="175" text-anchor="middle" fill="#ef4444" font-family="'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900">?</text>
+  <text x="300" y="196" text-anchor="middle" fill="#64748b" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">GÖK CİSMİ</text>
+
+  <!-- Alt Bilgi Kutusu -->
+  <rect x="150" y="275" width="300" height="28" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="300" y="293" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600">Özellik: Sıcak gazlardan oluşan dev küresel gök cismi</text>
+</svg>`;
+
+// 3. Ay Soru İşaretli Model (Cratered Lunar Sphere + (?) Badge)
+const gokCismiAySvg = `<svg viewBox="0 0 600 320" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="moonGrad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="50%" stop-color="#cbd5e1"/>
+      <stop offset="85%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#334155"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="0" y="0" width="600" height="320" rx="12" fill="#090d16"/>
+  <rect x="140" y="16" width="320" height="30" rx="15" fill="#1e293b" stroke="#94a3b8" stroke-width="1.5"/>
+  <text x="300" y="36" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="700">BİLİMSEL GÖK CİSMİ İNCELEME MODELİ</text>
+
+  <!-- Ay Küresi -->
+  <circle cx="300" cy="165" r="85" fill="url(#moonGrad)"/>
+
+  <!-- Krater Çukurları -->
+  <circle cx="260" cy="135" r="14" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="340" cy="140" r="18" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="270" cy="205" r="22" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+  <circle cx="330" cy="215" r="12" fill="#475569" stroke="#94a3b8" stroke-width="1.5" opacity="0.6"/>
+
+  <!-- Hedef (?) Rozeti -->
+  <rect x="250" y="125" width="100" height="80" rx="14" fill="#ffffff" stroke="#ef4444" stroke-width="3"/>
+  <text x="300" y="175" text-anchor="middle" fill="#ef4444" font-family="'Segoe UI', Roboto, sans-serif" font-size="44" font-weight="900">?</text>
+  <text x="300" y="196" text-anchor="middle" fill="#64748b" font-family="'Segoe UI', Roboto, sans-serif" font-size="10" font-weight="700">GÖK CİSMİ</text>
+
+  <!-- Alt Bilgi Kutusu -->
+  <rect x="150" y="275" width="300" height="28" rx="6" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="300" y="293" text-anchor="middle" fill="#cbd5e1" font-family="'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="600">Özellik: Yüzeyinde kraterler bulunan kayalık küre</text>
+</svg>`;
+
+const targets = [
+  { file: 'assets/science/yapay_uydu_soru_isareti.svg', content: yapayUyduSvg },
+  { file: 'assets/science/gok_cismi_soru_isareti_gunes.svg', content: gokCismiGunesSvg },
+  { file: 'assets/science/gok_cismi_soru_isareti_ay.svg', content: gokCismiAySvg },
+  { file: '../assets/science/yapay_uydu_soru_isareti.svg', content: yapayUyduSvg },
+  { file: '../assets/science/gok_cismi_soru_isareti_gunes.svg', content: gokCismiGunesSvg },
+  { file: '../assets/science/gok_cismi_soru_isareti_ay.svg', content: gokCismiAySvg }
+];
+
+targets.forEach(t => {
+  const dir = path.dirname(t.file);
+  if (fs.existsSync(dir)) {
+    fs.writeFileSync(t.file, t.content, 'utf8');
+    console.log('Saved:', t.file);
+  }
+});
