@@ -1,20 +1,34 @@
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
-import { CharacterType, MissionData } from '../types';
+import { CharacterType, EventStationData, MissionData } from '../types';
 import { createCharacterModel, RiggedCharacter } from './CharacterModel';
 import { buildHistoricalEnvironment, CollisionBox, EnvironmentResult } from './HistoricalEnvironment';
+import { buildStationsAndGuidePath3D, Station3DInstance } from './StationNPCModels';
 import { audioSystem } from '../utils/audioSynthesizer';
 import { getCurrentGraphicsProfile } from '../utils/graphicsSettings';
+
+export interface NearbyStationPrompt {
+  stationId: number;
+  targetType: 'storyteller' | 'guide';
+  distance: number;
+}
 
 interface GameCanvasProps {
   characterType: CharacterType;
   currentYear: number;
   sceneEnvironment?: 'mecca' | 'madinah' | 'hira' | 'sevr' | 'badr' | 'uhud' | 'hudaybiyyah';
   activeMission: MissionData | null;
+  eventStations?: EventStationData[];
+  completedStationIds?: number[];
   isPortalActive: boolean;
+  isPaused?: boolean;
+  teleportTarget?: { stationId: number; tick: number } | null;
   onInteractMission: () => void;
+  onInteractStoryteller?: (stationId: number) => void;
+  onInteractGuide?: (stationId: number) => void;
   onEnterPortal: () => void;
   onProximityChange: (nearBeacon: boolean, nearPortal: boolean) => void;
+  onStationProximityChange?: (nearby: NearbyStationPrompt | null) => void;
   virtualJoystick: { x: number; y: number };
   isVirtualSprint: boolean;
   isVirtualInteract: boolean;
@@ -25,10 +39,17 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   currentYear,
   sceneEnvironment,
   activeMission,
+  eventStations = [],
+  completedStationIds = [],
   isPortalActive,
+  isPaused = false,
+  teleportTarget = null,
   onInteractMission,
+  onInteractStoryteller,
+  onInteractGuide,
   onEnterPortal,
   onProximityChange,
+  onStationProximityChange,
   virtualJoystick,
   isVirtualSprint,
   isVirtualInteract
@@ -36,30 +57,40 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const characterRef = useRef<RiggedCharacter | null>(null);
   const environmentRef = useRef<EnvironmentResult | null>(null);
+  const stationInstancesRef = useRef<Station3DInstance[]>([]);
+  const playerPosRef = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 6));
 
   // Fresh props ref to avoid React closure stale state inside requestAnimationFrame loop
   const propsRef = useRef({
     virtualJoystick,
     isVirtualSprint,
-    isVirtualInteract
+    isVirtualInteract,
+    isPaused
   });
   propsRef.current = {
     virtualJoystick,
     isVirtualSprint,
-    isVirtualInteract
+    isVirtualInteract,
+    isPaused
   };
 
   const callbacksRef = useRef({
     onInteractMission,
+    onInteractStoryteller,
+    onInteractGuide,
     onEnterPortal,
     onProximityChange,
+    onStationProximityChange,
     isPortalActive,
     activeMission
   });
   callbacksRef.current = {
     onInteractMission,
+    onInteractStoryteller,
+    onInteractGuide,
     onEnterPortal,
     onProximityChange,
+    onStationProximityChange,
     isPortalActive,
     activeMission
   };
@@ -87,7 +118,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
     const camera = new THREE.PerspectiveCamera(
       52,
-      container.clientWidth / container.clientHeight,
+      Math.max(1, container.clientWidth) / Math.max(1, container.clientHeight),
       0.25,
       profile.viewDistance
     );
@@ -139,53 +170,51 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       env.setBeaconPosition(activeMission.targetPosition);
     }
 
+    // --- 3D EVENT STATIONS (AK SAKALLI TARİH ANLATICISI + SORU REHBER KARAKTERİ) ---
+    const stations3D = buildStationsAndGuidePath3D(
+      eventStations,
+      completedStationIds,
+      env.getGroundHeight
+    );
+    scene.add(stations3D.containerGroup);
+    stationInstancesRef.current = stations3D.stationInstances;
+
     // --- CHARACTER SETUP ---
     const char = createCharacterModel(characterType);
     characterRef.current = char;
 
-    // Ground elevation aware spawn position facing Kaaba (-Z)
-    const spawnY = env.getGroundHeight(0, 4);
-    const playerPos = new THREE.Vector3(0, spawnY, 4);
+    // Ground elevation aware spawn position facing Kaaba & Stations (-Z)
+    const spawnY = env.getGroundHeight(0, 6);
+    const playerPos = new THREE.Vector3(0, spawnY, 6);
+    playerPosRef.current = playerPos;
     char.group.position.copy(playerPos);
     scene.add(char.group);
 
-    // Initial heading: player faces -Z (toward Kaaba)
-    let playerHeading = Math.PI; // Heading in radians
-
-    // Camera follow parameters (Optimized to frame player character, entire Kaaba, and mountains)
-    let cameraAngleH = 0; // Horizontal orbit angle (radians, 0 = behind player facing -Z)
-    let cameraAngleV = 0.26; // Natural third-person elevation angle
-    let cameraDistance = 5.2; // Balanced viewing distance
+    let playerHeading = Math.PI; // Facing -Z
+    let cameraAngleH = 0;
+    let cameraAngleV = 0.28;
+    let cameraDistance = 5.4;
     const cameraLookAt = new THREE.Vector3(playerPos.x, playerPos.y + 1.55, playerPos.z);
 
-    // Position camera immediately behind player at spawn
     const initCamX = playerPos.x + Math.sin(cameraAngleH) * Math.cos(cameraAngleV) * cameraDistance;
     const initCamY = playerPos.y + Math.sin(cameraAngleV) * cameraDistance + 1.25;
     const initCamZ = playerPos.z + Math.cos(cameraAngleH) * Math.cos(cameraAngleV) * cameraDistance;
     camera.position.set(initCamX, initCamY, initCamZ);
     camera.lookAt(cameraLookAt);
 
-    // Debug hook to inspect scene and character
     (window as any).__debugGame = {
       scene,
       camera,
       char,
       playerPos,
-      get cameraAngleH() { return cameraAngleH; },
-      set cameraAngleH(v: number) { cameraAngleH = v; },
-      get cameraAngleV() { return cameraAngleV; },
-      set cameraAngleV(v: number) { cameraAngleV = v; },
-      get cameraDistance() { return cameraDistance; },
-      set cameraDistance(v: number) { cameraDistance = v; }
+      stations: stations3D.stationInstances
     };
 
     let stepSoundTimer = 0;
 
-    // Ensure container has focus for immediate keyboard input
     container.tabIndex = 0;
     container.focus();
 
-    // --- KEYBOARD LISTENERS ---
     const isTextInputActive = (target: EventTarget | null): boolean => {
       if (!target) return false;
       const el = target as HTMLElement;
@@ -193,12 +222,11 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (isTextInputActive(e.target)) return;
+      if (isTextInputActive(e.target) || propsRef.current.isPaused) return;
 
       const code = e.code;
       const key = (e.key || '').toLowerCase();
 
-      // Prevent arrow keys and space from scrolling browser page
       if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(code)) {
         e.preventDefault();
       }
@@ -218,7 +246,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       if (code === 'ShiftLeft' || code === 'ShiftRight' || key === 'shift') {
         inputsRef.current.sprint = true;
       }
-      if (code === 'KeyE' || code === 'Space' || key === 'e' || key === ' ') {
+      if (code === 'KeyE' || code === 'Space' || code === 'Enter' || key === 'e' || key === ' ') {
         inputsRef.current.interact = true;
         handleInteractTrigger();
       }
@@ -243,7 +271,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       if (code === 'ShiftLeft' || code === 'ShiftRight' || key === 'shift') {
         inputsRef.current.sprint = false;
       }
-      if (code === 'KeyE' || code === 'Space' || key === 'e' || key === ' ') {
+      if (code === 'KeyE' || code === 'Space' || code === 'Enter' || key === 'e' || key === ' ') {
         inputsRef.current.interact = false;
       }
     };
@@ -258,14 +286,20 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       inputsRef.current.isMouseDown = false;
     };
 
-    // --- OPTIONAL MOUSE CONTROLS (Player can still look around if desired) ---
+    // --- MOUSE & RAYCASTING CLICK SUPPORT ON 3D NPCs ---
     let lastMouseX = 0;
     let lastMouseY = 0;
+    let mouseDownStartX = 0;
+    let mouseDownStartY = 0;
+    const raycaster = new THREE.Raycaster();
+    const pointerNDC = new THREE.Vector2();
 
     const handleMouseDown = (e: MouseEvent) => {
       inputsRef.current.isMouseDown = true;
       lastMouseX = e.clientX;
       lastMouseY = e.clientY;
+      mouseDownStartX = e.clientX;
+      mouseDownStartY = e.clientY;
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -279,8 +313,48 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       cameraAngleV = Math.max(0.1, Math.min(1.1, cameraAngleV + deltaY * 0.004));
     };
 
-    const handleMouseUp = () => {
+    const handleMouseUp = (e: MouseEvent) => {
+      const wasDown = inputsRef.current.isMouseDown;
       inputsRef.current.isMouseDown = false;
+      if (!wasDown || propsRef.current.isPaused) return;
+
+      const dragDist = Math.hypot(e.clientX - mouseDownStartX, e.clientY - mouseDownStartY);
+      if (dragDist < 8) {
+        // Click raycast against 3D Station NPCs
+        const rect = renderer.domElement.getBoundingClientRect();
+        pointerNDC.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+        pointerNDC.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+        raycaster.setFromCamera(pointerNDC, camera);
+
+        const hits = raycaster.intersectObjects(stations3D.containerGroup.children, true);
+        for (const hit of hits) {
+          let obj: THREE.Object3D | null = hit.object;
+          while (obj) {
+            if (obj.userData && obj.userData.interactType && obj.userData.stationId) {
+              const stId = Number(obj.userData.stationId);
+              const iType = obj.userData.interactType as 'storyteller' | 'guide';
+
+              // Move character near the clicked station & trigger interaction
+              const inst = stationInstancesRef.current.find(s => s.stationId === stId);
+              if (inst) {
+                const targetWorld =
+                  iType === 'storyteller' ? inst.storytellerWorldPos : inst.guideWorldPos;
+                playerPos.set(targetWorld.x, env.getGroundHeight(targetWorld.x, targetWorld.z + 2.1), targetWorld.z + 2.1);
+                char.group.position.copy(playerPos);
+              }
+
+              audioSystem.playButtonClick();
+              if (iType === 'storyteller') {
+                callbacksRef.current.onInteractStoryteller?.(stId);
+              } else {
+                callbacksRef.current.onInteractGuide?.(stId);
+              }
+              return;
+            }
+            obj = obj.parent;
+          }
+        }
+      }
     };
 
     const handleWheel = (e: WheelEvent) => {
@@ -295,7 +369,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     window.addEventListener('mouseup', handleMouseUp);
     container.addEventListener('wheel', handleWheel, { passive: true });
 
-    // Touch look around for mobile right side of screen
+    // Touch look around for mobile / smartboard
     let lastTouchX = 0;
     let lastTouchY = 0;
     let isTouching = false;
@@ -328,7 +402,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     container.addEventListener('touchmove', handleTouchMove, { passive: true });
     container.addEventListener('touchend', handleTouchEnd);
 
-    // Collision check helper
     function checkCollision(x: number, z: number, colliders: CollisionBox[]): boolean {
       const radius = 0.45;
       for (const box of colliders) {
@@ -344,20 +417,51 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       return false;
     }
 
+    function findNearestStationTarget(pos: THREE.Vector3): NearbyStationPrompt | null {
+      let best: NearbyStationPrompt | null = null;
+      for (const inst of stationInstancesRef.current) {
+        const dStory = Math.hypot(
+          pos.x - inst.storytellerWorldPos.x,
+          pos.z - inst.storytellerWorldPos.z
+        );
+        if (dStory < 3.6 && (!best || dStory < best.distance)) {
+          best = { stationId: inst.stationId, targetType: 'storyteller', distance: dStory };
+        }
+        const dGuide = Math.hypot(
+          pos.x - inst.guideWorldPos.x,
+          pos.z - inst.guideWorldPos.z
+        );
+        if (dGuide < 3.6 && (!best || dGuide < best.distance)) {
+          best = { stationId: inst.stationId, targetType: 'guide', distance: dGuide };
+        }
+      }
+      return best;
+    }
+
     function handleInteractTrigger() {
       const charPos = char.group.position;
+
+      // 1. Check proximity to any 3D Station NPC (Storyteller or Question Guide)
+      const nearestNPC = findNearestStationTarget(charPos);
+      if (nearestNPC) {
+        audioSystem.playButtonClick();
+        char.updateAnimation(0, 'think');
+        if (nearestNPC.targetType === 'storyteller') {
+          callbacksRef.current.onInteractStoryteller?.(nearestNPC.stationId);
+        } else {
+          callbacksRef.current.onInteractGuide?.(nearestNPC.stationId);
+        }
+        return;
+      }
+
+      // 2. Legacy Beacon & Portal fallback
       const beaconPos = env.beaconGroup.position;
       const portalPos = env.portalGroup.position;
 
-      const distToBeacon = Math.sqrt(
-        Math.pow(charPos.x - beaconPos.x, 2) + Math.pow(charPos.z - beaconPos.z, 2)
-      );
+      const distToBeacon = Math.hypot(charPos.x - beaconPos.x, charPos.z - beaconPos.z);
+      const distToPortal = Math.hypot(charPos.x - portalPos.x, charPos.z - portalPos.z);
 
-      const distToPortal = Math.sqrt(
-        Math.pow(charPos.x - portalPos.x, 2) + Math.pow(charPos.z - portalPos.z, 2)
-      );
-
-      if (distToBeacon < 3.2 && callbacksRef.current.activeMission) {
+      if (distToBeacon < 3.4 && callbacksRef.current.activeMission) {
         audioSystem.playButtonClick();
         char.updateAnimation(0, 'think');
         callbacksRef.current.onInteractMission();
@@ -374,6 +478,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
     // --- ANIMATION & PHYSICS LOOP ---
     let animationFrameId: number;
     let lastTime = performance.now();
+    let lastReportedKey = '';
 
     const animate = (now: number) => {
       animationFrameId = requestAnimationFrame(animate);
@@ -381,18 +486,21 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       const delta = Math.min((now - lastTime) / 1000, 0.1);
       lastTime = now;
 
-      // Read fresh props from propsRef to avoid any React closure stale state
       const currentProps = propsRef.current;
+
+      // Pause heavy 3D updates while a video/question modal is open to save CPU/GPU
+      if (currentProps.isPaused) {
+        return;
+      }
+
       const vJoy = currentProps.virtualJoystick;
       const isVirtualSprintActive = currentProps.isVirtualSprint;
 
-      // Camera view vectors in the horizontal XZ plane
       const camForwardX = -Math.sin(cameraAngleH);
       const camForwardZ = -Math.cos(cameraAngleH);
       const camRightX = Math.cos(cameraAngleH);
       const camRightZ = -Math.sin(cameraAngleH);
 
-      // --- INTUITIVE CAMERA-RELATIVE MOVEMENT (UP ARROW ALWAYS MOVES FORWARD!) ---
       let inputFwd = 0;
       let inputSide = 0;
 
@@ -401,17 +509,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       if (inputsRef.current.left) inputSide -= 1;
       if (inputsRef.current.right) inputSide += 1;
 
-      // Analog Virtual Joystick input
-      if (Math.abs(vJoy.y) > 0.10) {
-        inputFwd -= vJoy.y; // Pushing up moves forward
+      if (Math.abs(vJoy.y) > 0.1) {
+        inputFwd -= vJoy.y;
       }
-      if (Math.abs(vJoy.x) > 0.10) {
-        inputSide += vJoy.x; // Pushing right moves right
+      if (Math.abs(vJoy.x) > 0.1) {
+        inputSide += vJoy.x;
       }
 
       const inputMag = Math.sqrt(inputFwd * inputFwd + inputSide * inputSide);
-      const isMoving = inputMag > 0.10;
-      // Sprint is active if either Shift is held or on-screen "Koş" button toggle is active
+      const isMoving = inputMag > 0.1;
       const isSprinting = (inputsRef.current.sprint || isVirtualSprintActive) && isMoving;
 
       let animState: 'idle' | 'walk' | 'run' = 'idle';
@@ -422,17 +528,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         const normFwd = inputFwd / inputMag;
         const normSide = inputSide / inputMag;
 
-        // Motion direction strictly in camera-relative view space
         const moveDirX = camForwardX * normFwd + camRightX * normSide;
         const moveDirZ = camForwardZ * normFwd + camRightZ * normSide;
 
-        const speed = isSprinting ? 6.4 : 3.5;
+        const speed = isSprinting ? 6.6 : 3.8;
         const moveDist = speed * delta * Math.min(1.0, inputMag);
 
         const stepX = moveDirX * moveDist;
         const stepZ = moveDirZ * moveDist;
 
-        // Slide collision checking against environment obstacles
         const newX = playerPos.x + stepX;
         const newZ = playerPos.z + stepZ;
 
@@ -443,18 +547,15 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           playerPos.z = newZ;
         }
 
-        // Clamp inside sanctuary boundaries
         playerPos.x = Math.max(-42, Math.min(42, playerPos.x));
         playerPos.z = Math.max(-42, Math.min(42, playerPos.z));
 
-        // Smoothly orient character to face movement direction
         const targetHeading = Math.atan2(moveDirX, moveDirZ);
         let headingDiff = targetHeading - playerHeading;
         while (headingDiff > Math.PI) headingDiff -= Math.PI * 2;
         while (headingDiff < -Math.PI) headingDiff += Math.PI * 2;
         playerHeading += headingDiff * Math.min(1, delta * 14);
 
-        // Auto camera follow: Camera smoothly rotates to stay directly behind character
         if (!inputsRef.current.isMouseDown && !isTouching) {
           let desiredCameraAngleH = playerHeading - Math.PI;
           let angleDiff = desiredCameraAngleH - cameraAngleH;
@@ -463,7 +564,6 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
           cameraAngleH += angleDiff * Math.min(1, delta * 3.8);
         }
 
-        // Footstep sounds
         stepSoundTimer += delta * (isSprinting ? 9.6 : 5.4);
         if (stepSoundTimer > 2.0) {
           stepSoundTimer = 0;
@@ -471,28 +571,10 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         }
       }
 
-      // Ground height tracking: ensure feet ALWAYS stay firmly on the ground without sinking
       playerPos.y = env.getGroundHeight(playerPos.x, playerPos.z);
 
-      // Update character position and animation
       char.group.position.copy(playerPos);
       char.updateAnimation(delta, animState, playerHeading);
-
-      // 3. AUTOMATIC CAMERA ROTATION & TRACKING
-      // When moving, camera smoothly catches up behind the character without requiring mouse interaction!
-      // When stationary (idle), players can freely look around and admire their character's face and world.
-      if ((window as any).__forceFrontView) {
-        cameraAngleH = playerHeading; // Directly facing front of character
-      } else if (isMoving && !inputsRef.current.isMouseDown && !isTouching) {
-        let desiredCameraAngleH = playerHeading - Math.PI;
-        while (desiredCameraAngleH > Math.PI) desiredCameraAngleH -= Math.PI * 2;
-        while (desiredCameraAngleH < -Math.PI) desiredCameraAngleH += Math.PI * 2;
-
-        let angleDiff = desiredCameraAngleH - cameraAngleH;
-        while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-        while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-        cameraAngleH += angleDiff * Math.min(1, delta * 4.5);
-      }
 
       const desiredCameraX = playerPos.x + Math.sin(cameraAngleH) * Math.cos(cameraAngleV) * cameraDistance;
       const desiredCameraY = playerPos.y + Math.sin(cameraAngleV) * cameraDistance + 1.25;
@@ -504,21 +586,25 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
       cameraLookAt.y += 1.55;
       camera.lookAt(cameraLookAt);
 
-      // Update Environment animations (portal vortex, beacon pulse, lanterns)
+      // Update Environment & 3D Stations (Storyteller greeting wave, floating books, path stones)
       env.updateEnvironment(delta, callbacksRef.current.isPortalActive);
+      stations3D.updateStations(delta, playerPos);
 
-      // Proximity checks for UI prompts
+      // Station NPC proximity check
+      const nearestNPC = findNearestStationTarget(playerPos);
+      const nextKey = nearestNPC ? `${nearestNPC.stationId}_${nearestNPC.targetType}` : '';
+      if (nextKey !== lastReportedKey) {
+        lastReportedKey = nextKey;
+        callbacksRef.current.onStationProximityChange?.(nearestNPC);
+      }
+
+      // Beacon & Portal proximity check
       const beaconPos = env.beaconGroup.position;
       const portalPos = env.portalGroup.position;
+      const distToBeacon = Math.hypot(playerPos.x - beaconPos.x, playerPos.z - beaconPos.z);
+      const distToPortal = Math.hypot(playerPos.x - portalPos.x, playerPos.z - portalPos.z);
 
-      const distToBeacon = Math.sqrt(
-        Math.pow(playerPos.x - beaconPos.x, 2) + Math.pow(playerPos.z - beaconPos.z, 2)
-      );
-      const distToPortal = Math.sqrt(
-        Math.pow(playerPos.x - portalPos.x, 2) + Math.pow(playerPos.z - portalPos.z, 2)
-      );
-
-      const nearBeacon = distToBeacon < 3.2;
+      const nearBeacon = distToBeacon < 3.4 || Boolean(nearestNPC);
       const nearPortal = distToPortal < 3.8 && callbacksRef.current.isPortalActive;
       callbacksRef.current.onProximityChange(nearBeacon, nearPortal);
 
@@ -533,7 +619,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
 
     const handleResize = () => {
       if (!container) return;
-      camera.aspect = container.clientWidth / container.clientHeight;
+      camera.aspect = Math.max(1, container.clientWidth) / Math.max(1, container.clientHeight);
       camera.updateProjectionMatrix();
       renderer.setSize(container.clientWidth, container.clientHeight);
     };
@@ -576,7 +662,22 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
         renderer.domElement.parentElement.removeChild(renderer.domElement);
       }
     };
-  }, [characterType, currentYear, sceneEnvironment]);
+  }, [characterType, currentYear, sceneEnvironment, eventStations, completedStationIds]);
+
+  // Teleport character directly in front of a requested station when triggered from the HUD
+  useEffect(() => {
+    if (!teleportTarget || !environmentRef.current || !characterRef.current) return;
+    const inst = stationInstancesRef.current.find(s => s.stationId === teleportTarget.stationId);
+    if (!inst) return;
+
+    const rootPos = inst.rootGroup.position;
+    const targetX = rootPos.x;
+    const targetZ = rootPos.z + 2.6;
+    const targetY = environmentRef.current.getGroundHeight(targetX, targetZ);
+
+    playerPosRef.current.set(targetX, targetY, targetZ);
+    characterRef.current.group.position.copy(playerPosRef.current);
+  }, [teleportTarget]);
 
   useEffect(() => {
     if (environmentRef.current && activeMission) {
@@ -587,6 +688,7 @@ export const GameCanvas: React.FC<GameCanvasProps> = ({
   return (
     <div
       ref={containerRef}
+      id="historical-3d-canvas-container"
       className="relative w-full h-full cursor-grab active:cursor-grabbing overflow-hidden focus:outline-none"
     />
   );

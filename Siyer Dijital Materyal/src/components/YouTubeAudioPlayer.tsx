@@ -91,10 +91,10 @@ export const YouTubeAudioPlayer: React.FC<YouTubeAudioPlayerProps> = ({
       />
 
       <div
-        className={`fixed z-40 flex items-center gap-2 pointer-events-auto transition-all duration-300 ${
+        className={`fixed z-40 items-center gap-2 pointer-events-auto transition-all duration-300 ${
           isGameMode
-            ? 'bottom-3 right-3 sm:bottom-4 sm:right-5'
-            : 'bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2'
+            ? 'hidden sm:flex bottom-4 right-5'
+            : 'flex bottom-2.5 sm:bottom-4 left-1/2 -translate-x-1/2'
         }`}
       >
         {isGameMode ? (

@@ -1808,6 +1808,265 @@ const ENVIRONMENT_IMAGES: Record<string, string> = {
   hudaybiyyah: '/assets/environment/courtyard_marble_detail.jpg'
 };
 
+const VALUE_NAMES_MAP: Record<string, string> = {
+  adalet: 'Adalet',
+  merhamet: 'Merhamet',
+  dostluk: 'Dostluk ve Vefa',
+  durustluk: 'Dürüstlük ve Güvenilirlik',
+  guvenilirlik: 'Güvenilirlik (Emânet)',
+  oz_denetim: 'Öz Denetim',
+  sabir: 'Sabır ve Sebat',
+  saygi: 'Saygı ve Hoşgörü',
+  hosgoru: 'Hoşgörü',
+  vefa: 'Vefa',
+  cesaret: 'Cesaret',
+  paylasma: 'Paylaşma',
+  kardeslik: 'Kardeşlik',
+  sevgi: 'Sevgi ve Merhamet',
+  sorumluluk: 'Sorumluluk',
+  vatanseverlik: 'Vatanseverlik ve Fedakârlık',
+  yardimseverlik: 'Yardımlaşma ve Paylaşma'
+};
+
+// Safe walkable 3D station positions around the sanctuary courtyard (player spawns at [0, 0, 8] facing -Z)
+const STATION_3D_POSITIONS: [number, number, number][] = [
+  [-6.5, 0.15, -2.5],
+  [6.5, 0.15, -4.5],
+  [-8.0, 0.15, -12.0],
+  [8.5, 0.15, -13.5],
+  [0.0, 0.0, 14.0]
+];
+
+function buildEventStationsForYear(verified: YearData): import('../types').EventStationData[] {
+  const stations: import('../types').EventStationData[] = [];
+  const npcCatalog: Array<{
+    npc: string;
+    npcRole: string;
+    npcAvatar: 'scholar' | 'chronicler' | 'teacher' | 'companion_guide';
+  }> = [
+    {
+      npc: 'Rehber Âlim Selman',
+      npcRole: '1. Durak • Soru Rehber Karakteri',
+      npcAvatar: 'scholar'
+    },
+    {
+      npc: 'Bilge Muallim Hikmet',
+      npcRole: '2. Durak • Soru Rehber Karakteri',
+      npcAvatar: 'teacher'
+    },
+    {
+      npc: 'Vak\'anüvis Âkif',
+      npcRole: '3. Durak • Soru Rehber Karakteri',
+      npcAvatar: 'chronicler'
+    }
+  ];
+
+  verified.missions.forEach((m) => {
+    const valId = m.valueDiscovery?.valueId || (verified.year < 610 ? 'durustluk' : verified.year < 622 ? 'sabir' : 'adalet');
+    const valName = VALUE_NAMES_MAP[valId] || 'Güzel Ahlak';
+
+    // Build 4 clear multiple-choice options for Station 1's Event Question
+    const distractorPool = [
+      'Şam Ticaret Panayırı',
+      'Taif Bahçeleri',
+      'Yemen Kervan Yolu',
+      'Kûfe Mescidi',
+      'Mısır Sarayı'
+    ].filter(d => !d.toLowerCase().includes(m.correctAnswer.toLowerCase()));
+
+    const s1Options = [
+      m.correctAnswer,
+      distractorPool[0] || 'Taif Vadisi',
+      distractorPool[1] || 'Şam Kervanı',
+      distractorPool[2] || 'Yemen Yolu'
+    ];
+
+    const s1ValueOptions = m.valueDiscovery?.scenarioOptions?.length
+      ? m.valueDiscovery.scenarioOptions
+      : [
+          {
+            id: `v_${verified.year}_1a`,
+            text: `Günlük hayatımda ${valName.toLowerCase()} ilkesine uygun, dürüst, sabırlı ve yapıcı davranırım.`,
+            isAppropriate: true,
+            feedback: `Tebrikler! Peygamber Efendimizin (s.a.v.) örnek ahlakını ve ${valName} değerini hayatına çok güzel yansıttın.`
+          },
+          {
+            id: `v_${verified.year}_1b`,
+            text: 'Sadece kendi çıkarımı düşünür, başkalarının duygularını önemsemem.',
+            isAppropriate: false,
+            feedback: `Bu davranış ${valName} değerine uygun değildir. Peygamberimiz her zaman adaletli, merhametli ve güvenilir olmayı öğütlemiştir.`
+          }
+        ];
+
+    const valueRecOptions = m.valueDiscovery?.recognitionOptions?.length
+      ? m.valueDiscovery.recognitionOptions
+      : [valName, 'Gösteriş', 'Acelecilik', 'Kayıtsızlık'];
+    const valueRecCorrectIdx = m.valueDiscovery?.correctRecognitionIndex ?? 0;
+
+    const st1Id = stations.length + 1;
+    stations.push({
+      id: st1Id,
+      status: 'published',
+      npc: npcCatalog[stations.length % npcCatalog.length].npc,
+      npcRole: `${st1Id}. Olay Durağı • Soru Rehber Karakteri`,
+      npcAvatar: npcCatalog[stations.length % npcCatalog.length].npcAvatar,
+      positionX: 38,
+      position3D: STATION_3D_POSITIONS[(st1Id - 1) % STATION_3D_POSITIONS.length],
+      storytellerName: 'Ak Sakallı Tarih Anlatıcısı',
+      storytellerAudioId: `audio_${verified.year}_station_${st1Id}`,
+      storytellerAudioUrl: m.animationVoiceUrl || '',
+      storytellerAudioTitle: `${verified.year} Yılı – ${m.title} Sesli Anlatımı`,
+      videoId: `video_${verified.year}_station_${st1Id}`,
+      videoTitle: `${verified.year} Yılı – ${m.title} Animasyonu`,
+      videoDescription: m.brief,
+      animation: m.animationVideoUrl || '',
+      animationScene: {
+        badge: `${verified.year} Yılı • ${st1Id}. Olay Durağı`,
+        title: m.title,
+        narration: m.narrativeText,
+        keyPoints: (m.subtitles || []).map(s => s.text),
+        historicalSource: `${verified.historicalSource.sourceName} (${verified.historicalSource.authorOrRef})`
+      },
+      eventQuestion: {
+        questionType: 'multiple_choice',
+        questionText: m.question,
+        options: s1Options,
+        correctIndex: 0,
+        explanation: m.thirdLevelExplanation
+      },
+      hint: `${m.hint1} (${m.hint2})`,
+      associatedValueIds: [valId],
+      valueRecognitionQuestion: {
+        questionText:
+          m.valueDiscovery?.recognitionQuestion ||
+          `Bu tarihsel olayda hangi temel ahlaki değer ön plana çıkmaktadır?`,
+        options: valueRecOptions,
+        correctIndex: valueRecCorrectIdx,
+        correctValueId: valId,
+        hint: `Olayın ana mesajını düşün: ${m.valueDiscovery?.explanationGuide || `${valName} değeri vurgulanmaktadır.`}`,
+        explanation:
+          m.valueDiscovery?.explanationGuide ||
+          `Bu olayda ${valName} değeri en güzel biçimde örneklendirilmiştir.`
+      },
+      dailyLifeQuestion: {
+        questionType: 'multiple_choice',
+        questionText:
+          m.valueDiscovery?.scenarioQuestion ||
+          `Bu olaydan öğrendiğimiz "${valName}" değerini okulda ve günlük hayatımızda nasıl yaşatmalıyız?`,
+        options: s1ValueOptions,
+        openEndedGuide: m.valueDiscovery?.explanationPrompt || `Sen olsaydın günlük hayatında ${valName} değerini nasıl uygulardın?`,
+        openEndedFeedback: `Paylaştığın düşünce çok değerli! ${valName} değerini günlük hayatımızda yaşatmak hem kendimize hem çevremize huzur kazandırır.`
+      },
+      valueQuestion: {
+        valueId: valId,
+        valueName: valName,
+        historicalConnection:
+          m.valueDiscovery?.explanationGuide ||
+          `${verified.year} yılındaki bu tarihsel olay bize ${valName} değerinin insan ve toplum hayatındaki önemini öğretir.`,
+        questionText:
+          m.valueDiscovery?.scenarioQuestion ||
+          `Bu olaydan öğrendiğimiz "${valName}" değerini okulda ve günlük hayatımızda nasıl yaşatmalıyız?`,
+        options: s1ValueOptions
+      }
+    });
+
+    // Station 2 from Reinforcement Question so each verified year has 2 sequential NPCs & question stops!
+    if (m.reinforcement) {
+      const npc2 = npcCatalog[stations.length % npcCatalog.length];
+      const st2Id = stations.length + 1;
+      const st2DailyOptions = [
+        {
+          id: `v_${verified.year}_2a`,
+          text:
+            m.valueDiscovery?.recognitionOptions?.[m.valueDiscovery?.correctRecognitionIndex || 0]
+              ? `${m.valueDiscovery.recognitionOptions[m.valueDiscovery.correctRecognitionIndex || 0]} bilinciyle hareket ederek çevreme örnek olurum.`
+              : `${valName} değerine sahip çıkarak arkadaşlarıma karşı adil, sabırlı ve yardımsever davranırım.`,
+          isAppropriate: true,
+          feedback: `Harika! Hem tarihsel olayı hem de ${valName} değerini başarıyla kavradın.`
+        },
+        {
+          id: `v_${verified.year}_2b`,
+          text: 'Zorluk karşısında hemen pes eder ve sorumluluktan kaçarım.',
+          isAppropriate: false,
+          feedback: `Tekrar düşünelim: Peygamber Efendimiz (s.a.v.) zorluklar karşısında sabır, hikmet ve ${valName.toLowerCase()} ile hareket etmiştir.`
+        }
+      ];
+
+      stations.push({
+        id: st2Id,
+        status: 'published',
+        npc: npc2.npc,
+        npcRole: `${st2Id}. Olay Durağı • Soru Rehber Karakteri`,
+        npcAvatar: npc2.npcAvatar,
+        positionX: 74,
+        position3D: STATION_3D_POSITIONS[(st2Id - 1) % STATION_3D_POSITIONS.length],
+        storytellerName: 'Ak Sakallı Tarih Anlatıcısı',
+        storytellerAudioId: `audio_${verified.year}_station_${st2Id}`,
+        storytellerAudioUrl: '',
+        storytellerAudioTitle: `${verified.year} Yılı – ${st2Id}. Olay Durağı Sesli Anlatımı`,
+        videoId: `video_${verified.year}_station_${st2Id}`,
+        videoTitle: `${verified.year} Yılı – ${st2Id}. Olay Durağı Animasyonu`,
+        videoDescription: m.reinforcement.instruction,
+        animation: '',
+        animationScene: {
+          badge: `${verified.year} Yılı • ${st2Id}. Olay Durağı`,
+          title: `${verified.title} – Tarihsel Bağlam ve Hikmet`,
+          narration: verified.historicalSummary,
+          keyPoints: [
+            m.reinforcement.instruction,
+            m.reinforcement.reinforcementNote
+          ],
+          historicalSource: `${verified.historicalSource.sourceName} (${verified.historicalSource.certaintyLevel})`
+        },
+        eventQuestion: {
+          questionType: 'multiple_choice',
+          questionText: m.reinforcement.question,
+          options: m.reinforcement.options,
+          correctIndex: m.reinforcement.correctIndex,
+          explanation: m.reinforcement.reinforcementNote
+        },
+        hint: `Olayın ana fikrini hatırla: ${m.reinforcement.reinforcementNote}`,
+        associatedValueIds: [valId],
+        valueRecognitionQuestion: {
+          questionText: `Bu olayda hangi değer ön plana çıkmaktadır?`,
+          options: [valName, 'Bencillik', 'Acelecilik', 'Kayıtsızlık'],
+          correctIndex: 0,
+          correctValueId: valId,
+          hint: `${m.reinforcement.reinforcementNote}`,
+          explanation: `Doğru! Bu tarihsel hadisede ${valName} değeri ön plana çıkmaktadır.`
+        },
+        dailyLifeQuestion: {
+          questionType: 'multiple_choice',
+          questionText: `${verified.year} yılındaki bu örnek duruşu günlük hayatımızda hangi davranışla gösterebiliriz?`,
+          options: st2DailyOptions,
+          openEndedGuide: `${valName} değerini arkadaşlarınla ilişkilerinde nasıl yaşatırsın?`,
+          openEndedFeedback: `Tebrikler! ${valName} değerini günlük hayatla çok güzel ilişkilendirdin.`
+        },
+        valueQuestion: {
+          valueId: valId,
+          valueName: valName,
+          historicalConnection: m.reinforcement.reinforcementNote,
+          questionText:
+            m.valueDiscovery?.recognitionQuestion ||
+            `${verified.year} yılındaki bu örnek duruşu günlük hayatımızda hangi davranışla gösterebiliriz?`,
+          options: st2DailyOptions
+        }
+      });
+    }
+  });
+
+  // Space station positions evenly across the stage (between 36% and 78%)
+  if (stations.length === 1) {
+    stations[0].positionX = 58;
+  } else if (stations.length > 1) {
+    stations.forEach((st, i) => {
+      st.positionX = Math.round(36 + (i * 42) / (stations.length - 1));
+    });
+  }
+
+  return stations;
+}
+
 // Build all 62 years (571-632) without fabricating or copying events into unverified years.
 export function getAllYearsData(): YearData[] {
   const existingMap = new Map<number, YearData>();
@@ -1823,10 +2082,21 @@ export function getAllYearsData(): YearData[] {
       const audio = verified.missions
         .map(m => m.animationVoiceUrl)
         .filter((a): a is string => Boolean(a));
+      const eventStations =
+        verified.eventStations && verified.eventStations.length > 0
+          ? verified.eventStations
+          : buildEventStationsForYear(verified);
 
       return {
         ...verified,
         hasVerifiedContent: true,
+        introAnimation: verified.introAnimation || '',
+        eventStations,
+        completionMessage:
+          verified.completionMessage ||
+          `Tebrikler! ${year} yılı (${verified.title}) tarihsel mekânındaki tüm soru ve değer duraklarını başarıyla tamamladın.`,
+        previousYear: year > 571 ? year - 1 : null,
+        nextYear: year < 632 ? year + 1 : null,
         events: verified.missions,
         values,
         sources: [verified.historicalSource],
@@ -1860,6 +2130,11 @@ export function getAllYearsData(): YearData[] {
         notes: 'Bu yıla ait doğrulanmış içerik henüz eklenmedi.'
       },
       missions: [],
+      introAnimation: '',
+      eventStations: [],
+      completionMessage: '',
+      previousYear: year > 571 ? year - 1 : null,
+      nextYear: year < 632 ? year + 1 : null,
       events: [],
       values: [],
       sources: [],

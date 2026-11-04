@@ -340,6 +340,7 @@ export const App: React.FC = () => {
           onOpenHistoryJournal={() => setActiveOverlay('history_journal')}
           onOpenValuesJournal={() => setActiveOverlay('values_journal')}
           onOpenSettings={() => setActiveOverlay('settings_modal')}
+          onOpenTeacherPanel={() => setActiveOverlay('teacher_panel')}
           onToggleMute={() => audioSystem.toggleMute()}
           onExitToMenu={() => setScreen('menu')}
         />
@@ -400,7 +401,9 @@ export const App: React.FC = () => {
         {activeOverlay === 'teacher_panel' && (
           <TeacherPanelModal
             years={curriculum}
+            progress={progress}
             onUpdateCurriculum={handleUpdateCurriculum}
+            onResetProgress={handleResetProgress}
             onClose={() => setActiveOverlay(null)}
           />
         )}

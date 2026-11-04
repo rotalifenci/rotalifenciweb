@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   ArrowLeft,
   ArrowRight,
@@ -7,8 +7,6 @@ import {
   Heart,
   Volume2,
   VolumeX,
-  Play,
-  Square,
   CheckCircle2,
   Sparkles,
   HelpCircle,
@@ -17,14 +15,19 @@ import {
   Settings,
   LogOut,
   AlertCircle,
-  Lightbulb,
   Award,
-  Film
+  Lock,
+  Footprints,
+  GraduationCap,
+  Box,
+  FileText
 } from 'lucide-react';
-import { CharacterType, MissionData, RootValueId, YearData } from '../types';
-import { ROOT_VALUES } from '../data/rootValues';
-import { evaluateStudentAnswer } from '../utils/nlpEvaluator';
+import { CharacterType, EventStationData, RootValueId, YearData } from '../types';
 import { audioSystem } from '../utils/audioSynthesizer';
+import { GameCanvas, NearbyStationPrompt } from '../game/GameCanvas';
+import { VirtualControls } from './VirtualControls';
+import { StorytellerAudioModal, stopActiveStorytellerAudio } from './StorytellerAudioModal';
+import { StationLearningModal } from './StationLearningModal';
 
 interface YearContentViewProps {
   yearData: YearData;
@@ -45,891 +48,658 @@ interface YearContentViewProps {
   onOpenHistoryJournal: () => void;
   onOpenValuesJournal: () => void;
   onOpenSettings: () => void;
+  onOpenTeacherPanel?: () => void;
   onToggleMute: () => void;
   onExitToMenu: () => void;
 }
-
-const SCENE_VISUALS: Record<string, { img: string; caption: string }> = {
-  mecca: {
-    img: '/assets/images/menu_hero.webp',
-    caption: 'Mekke-i Mükerreme ve Kâbe-i Muazzama Çevresi'
-  },
-  madinah: {
-    img: '/assets/images/doors_backdrop.webp',
-    caption: 'Medine-i Münevvere ve Mescid-i Nebevî İklimi'
-  },
-  hira: {
-    img: '/assets/environment/mecca_mountain_panorama.jpg',
-    caption: 'Cebel-i Nûr (Nur Dağı) ve Hira Mağarası Tefekkür İklimi'
-  },
-  sevr: {
-    img: '/assets/environment/pure_mountains.jpg',
-    caption: 'Sevr Dağı ve Hicret Yolculuğu'
-  },
-  badr: {
-    img: '/assets/environment/desert_sand_detail.jpg',
-    caption: 'Bedir Vadisi ve Tarihsel Karşılaşma Meydanı'
-  },
-  uhud: {
-    img: '/assets/environment/mountain_rock_detail.jpg',
-    caption: 'Uhud Dağı Etekleri ve Ayneyn (Okçular) Tepesi'
-  },
-  hudaybiyyah: {
-    img: '/assets/environment/courtyard_marble_detail.jpg',
-    caption: 'Hudeybiye Barış Meydanı ve Rıdvân Ağacı'
-  }
-};
 
 export const YearContentView: React.FC<YearContentViewProps> = ({
   yearData,
   allYears,
   selectedCharacter,
   completedYears,
-  completedMissionIds,
   unlockedValues,
-  wrongStrikesInYear,
   isMuted,
   onReturnToDoors,
   onNavigateYear,
   onAnswerEvaluated,
   onCompleteValueDiscovery,
-  onOpenCinematicModal,
-  onOpenQuestionModal,
-  onOpenValueModal,
   onOpenHistoryJournal,
   onOpenValuesJournal,
   onOpenSettings,
+  onOpenTeacherPanel,
   onToggleMute,
   onExitToMenu
 }) => {
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [speakingMissionId, setSpeakingMissionId] = useState<string | null>(null);
-
-  // Per-mission interactive state (reset cleanly when year changes)
-  const [answerInput, setAnswerInput] = useState<string>('');
-  const [answerFeedback, setAnswerFeedback] = useState<{ type: 'idle' | 'success' | 'error'; text: string }>({
-    type: 'idle',
-    text: ''
-  });
-  const [showHintLevel, setShowHintLevel] = useState<number>(0);
-  const [selectedReinforcement, setSelectedReinforcement] = useState<number | null>(null);
-  const [selectedRecognitionIdx, setSelectedRecognitionIdx] = useState<number | null>(null);
-  const [selectedScenarioId, setSelectedScenarioId] = useState<string | null>(null);
-  const [userReflection, setUserReflection] = useState<string>('');
-  const [valueSavedMessage, setValueSavedMessage] = useState<boolean>(false);
-
-  const hasVerifiedContent = Boolean(
-    yearData.hasVerifiedContent !== false && yearData.missions && yearData.missions.length > 0
+  // Filter to published stations for student view
+  const publishedStations: EventStationData[] = useMemo(
+    () => (yearData.eventStations || []).filter(s => s.status !== 'draft'),
+    [yearData]
   );
 
-  // Clean up speech synthesis & reset local state whenever year changes
-  useEffect(() => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    setSpeakingMissionId(null);
-    setAnswerInput('');
-    setAnswerFeedback({ type: 'idle', text: '' });
-    setShowHintLevel(0);
-    setSelectedReinforcement(null);
-    setSelectedRecognitionIdx(null);
-    setSelectedScenarioId(null);
-    setUserReflection('');
-    setValueSavedMessage(false);
+  const hasContent = Boolean(
+    (yearData.hasVerifiedContent || publishedStations.length > 0) &&
+      yearData.status !== 'draft'
+  );
 
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  // Completed station IDs within this year
+  const [completedStationIds, setCompletedStationIds] = useState<number[]>(() =>
+    completedYears.includes(yearData.year) ? publishedStations.map(s => s.id) : []
+  );
+
+  // Active modals: Storyteller Audio Modal or 6-Stage Learning Modal
+  const [activeStorytellerStationId, setActiveStorytellerStationId] = useState<number | null>(null);
+  const [activeLearningStationId, setActiveLearningStationId] = useState<number | null>(null);
+
+  // 3D vs Historical Summary Card Drawer
+  const [showHistoricalInfoSheet, setShowHistoricalInfoSheet] = useState<boolean>(false);
+
+  // 3D Navigation & Virtual Touch Controls state
+  const [virtualJoystick, setVirtualJoystick] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [isVirtualSprint, setIsVirtualSprint] = useState<boolean>(false);
+  const [isVirtualInteract, setIsVirtualInteract] = useState<boolean>(false);
+  const [nearBeacon, setNearBeacon] = useState<boolean>(false);
+  const [nearPortal, setNearPortal] = useState<boolean>(false);
+  const [nearbyPrompt, setNearbyPrompt] = useState<NearbyStationPrompt | null>(null);
+  const [teleportTarget, setTeleportTarget] = useState<{ stationId: number; tick: number } | null>(null);
+  const [lockedNotice, setLockedNotice] = useState<string | null>(null);
+
+  // Verified years list for empty-state quick jump
+  const verifiedYearsList = useMemo(
+    () =>
+      allYears
+        .filter(
+          y =>
+            y.status !== 'draft' &&
+            (y.hasVerifiedContent || (y.eventStations && y.eventStations.some(s => s.status !== 'draft')))
+        )
+        .map(y => y.year),
+    [allYears]
+  );
+
+  // Reset state when switching years & clean up any playing storyteller audio
+  useEffect(() => {
+    stopActiveStorytellerAudio();
+    setActiveStorytellerStationId(null);
+    setActiveLearningStationId(null);
+    setShowHistoricalInfoSheet(false);
+    setNearbyPrompt(null);
+    setLockedNotice(null);
+    setCompletedStationIds(
+      completedYears.includes(yearData.year)
+        ? (yearData.eventStations || []).filter(s => s.status !== 'draft').map(s => s.id)
+        : []
+    );
 
     return () => {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      stopActiveStorytellerAudio();
     };
-  }, [yearData.year]);
+  }, [yearData.year, completedYears, yearData.eventStations]);
 
-  const handleToggleSpeech = (mission: MissionData) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  const activeStorytellerStation = useMemo(
+    () => publishedStations.find(s => s.id === activeStorytellerStationId) || null,
+    [publishedStations, activeStorytellerStationId]
+  );
 
-    if (speakingMissionId === mission.id) {
-      window.speechSynthesis.cancel();
-      setSpeakingMissionId(null);
+  const activeLearningStation = useMemo(
+    () => publishedStations.find(s => s.id === activeLearningStationId) || null,
+    [publishedStations, activeLearningStationId]
+  );
+
+  const allStationsCompleted = useMemo(
+    () =>
+      publishedStations.length > 0 &&
+      publishedStations.every(s => completedStationIds.includes(s.id)),
+    [publishedStations, completedStationIds]
+  );
+
+  const isStationUnlocked = (stationId: number) => {
+    const idx = publishedStations.findIndex(s => s.id === stationId);
+    if (idx <= 0) return true;
+    return completedStationIds.includes(publishedStations[idx - 1].id);
+  };
+
+  // Triggered when student clicks or presses [E] near Ak Sakallı Yaşlı Tarih Anlatıcısı
+  const handleOpenStoryteller = (stationId: number) => {
+    stopActiveStorytellerAudio();
+    audioSystem.playButtonClick();
+    setActiveLearningStationId(null);
+    setActiveStorytellerStationId(stationId);
+  };
+
+  // Triggered when student clicks or presses [E] near Soru Rehber Karakteri
+  const handleOpenGuideLearning = (stationId: number) => {
+    if (!isStationUnlocked(stationId)) {
+      const idx = publishedStations.findIndex(s => s.id === stationId);
+      setLockedNotice(`Önce ${idx}. Olay Durağındaki etkinliği tamamlamalısın!`);
+      audioSystem.playErrorBuzz();
+      setTimeout(() => setLockedNotice(null), 3200);
       return;
     }
-
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(
-      `${yearData.year} Yılı. ${mission.title}. ${ yearData.historicalSummary } ${mission.narrativeText}`
-    );
-    utterance.lang = 'tr-TR';
-    utterance.rate = 0.95;
-    utterance.onend = () => setSpeakingMissionId(null);
-    utterance.onerror = () => setSpeakingMissionId(null);
-
-    setSpeakingMissionId(mission.id);
-    window.speechSynthesis.speak(utterance);
+    stopActiveStorytellerAudio();
+    audioSystem.playButtonClick();
+    setActiveStorytellerStationId(null);
+    setActiveLearningStationId(stationId);
   };
 
-  const handleCheckAnswer = (mission: MissionData, e: React.FormEvent) => {
-    e.preventDefault();
-    if (!answerInput.trim()) return;
-
-    const result = evaluateStudentAnswer(
-      answerInput,
-      mission.correctAnswer,
-      mission.alternativeAnswers
-    );
-
-    if (result.isCorrect) {
-      audioSystem.playSuccessChime();
-      setAnswerFeedback({ type: 'success', text: result.feedback });
-      onAnswerEvaluated(true, false);
-    } else {
-      audioSystem.playWrongChime();
-      const nextHint = Math.min(2, showHintLevel + 1);
-      setShowHintLevel(nextHint);
-      setAnswerFeedback({
-        type: 'error',
-        text: `${result.feedback} İpucu aşağıda açıldı.`
-      });
-      onAnswerEvaluated(false, false);
-    }
+  // Teleport 3D character right in front of the chosen station
+  const handleTeleportToStation = (stationId: number) => {
+    audioSystem.playButtonClick();
+    setTeleportTarget({ stationId, tick: Date.now() });
   };
 
-  const handleSelectScenarioOption = (
-    mission: MissionData,
-    opt: { id: string; text: string; isAppropriate: boolean; feedback: string }
+  // When a station finishes all 6 stages
+  const handleStationCompleted = (
+    stationId: number,
+    _unlockedValueIds: RootValueId[],
+    userReflection: string,
+    choiceId: string
   ) => {
-    setSelectedScenarioId(opt.id);
-    if (opt.isAppropriate) {
-      audioSystem.playSuccessChime();
-      onCompleteValueDiscovery(
-        userReflection.trim() || 'Değer etkinliği başarıyla tamamlandı.',
-        opt.id,
-        true
-      );
-      setValueSavedMessage(true);
-    } else {
-      audioSystem.playWrongChime();
+    const nextCompleted = completedStationIds.includes(stationId)
+      ? completedStationIds
+      : [...completedStationIds, stationId];
+
+    setCompletedStationIds(nextCompleted);
+    setActiveLearningStationId(null);
+
+    // If all stations in this year are now completed, mark year & value discovery completed
+    const everyDone = publishedStations.every(s => nextCompleted.includes(s.id));
+    if (everyDone) {
+      onCompleteValueDiscovery(userReflection, choiceId, true);
+    }
+
+    // Automatically guide/teleport toward the next unlocked station if one exists
+    const currentIdx = publishedStations.findIndex(s => s.id === stationId);
+    if (currentIdx !== -1 && currentIdx + 1 < publishedStations.length) {
+      const nextStation = publishedStations[currentIdx + 1];
+      setTeleportTarget({ stationId: nextStation.id, tick: Date.now() });
     }
   };
 
-  const prevYear = yearData.year > 571 ? yearData.year - 1 : null;
-  const nextYear = yearData.year < 632 ? yearData.year + 1 : null;
-  const isYearDone = completedYears.includes(yearData.year);
-  const sceneVisual = SCENE_VISUALS[yearData.sceneEnvironment] || SCENE_VISUALS.mecca;
-
-  const verifiedYearNumbers = allYears
-    .filter((y) => y.hasVerifiedContent !== false && y.missions && y.missions.length > 0)
-    .map((y) => y.year);
+  const isAnyModalOpen =
+    Boolean(activeStorytellerStation) ||
+    Boolean(activeLearningStation) ||
+    showHistoricalInfoSheet;
 
   return (
-    <div className="relative w-full h-screen overflow-hidden flex flex-col bg-[#160d06] text-stone-100 select-none">
-      
-      {/* 1. TOP NAVIGATION BAR (D. Navigasyon: Kapılar Ekranına Dön / Önceki Yıl / Sonraki Yıl) */}
-      <header className="relative z-20 w-full bg-stone-950/95 border-b border-amber-600/40 px-3 sm:px-6 py-2.5 shrink-0">
-        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2">
-          
-          {/* Left: Return to Doors Screen & Prev/Next Year */}
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              id="btn-return-to-doors"
-              onClick={onReturnToDoors}
-              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-xs sm:text-sm shadow-lg border border-amber-200 transition active:scale-95"
-            >
-              <ArrowLeft className="w-4 h-4 stroke-[2.5]" />
-              <span>Kapılar Ekranına Dön</span>
-            </button>
-
-            <div className="flex items-center gap-1 bg-stone-900 border border-amber-600/40 rounded-2xl p-1">
-              <button
-                type="button"
-                id="btn-prev-year"
-                disabled={!prevYear}
-                onClick={() => prevYear && onNavigateYear(prevYear)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition ${
-                  prevYear
-                    ? 'hover:bg-amber-500/20 text-amber-200 cursor-pointer'
-                    : 'opacity-35 text-stone-500 cursor-not-allowed'
-                }`}
-                title={prevYear ? `${prevYear} Yılına Git` : 'İlk yıldasınız (571)'}
-              >
-                <ArrowLeft className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Önceki Yıl</span>
-                {prevYear && <span className="font-black">({prevYear})</span>}
-              </button>
-
-              <div className="h-4 w-px bg-stone-700" />
-
-              <button
-                type="button"
-                id="btn-next-year"
-                disabled={!nextYear}
-                onClick={() => nextYear && onNavigateYear(nextYear)}
-                className={`flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-bold transition ${
-                  nextYear
-                    ? 'hover:bg-amber-500/20 text-amber-200 cursor-pointer'
-                    : 'opacity-35 text-stone-500 cursor-not-allowed'
-                }`}
-                title={nextYear ? `${nextYear} Yılına Git` : 'Son yıldasınız (632)'}
-              >
-                <span className="hidden sm:inline">Sonraki Yıl</span>
-                {nextYear && <span className="font-black">({nextYear})</span>}
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
-          </div>
-
-          {/* Right: Active Character Badge + Journals + Settings */}
-          <div className="flex items-center gap-2">
-            {/* Active Guide Character */}
-            <div className="hidden sm:flex items-center gap-2 bg-stone-900 border border-amber-500/40 rounded-2xl px-2.5 py-1">
-              <img
-                src={
-                  selectedCharacter === 'aybuke'
-                    ? '/assets/images/aybuke_3d_clean.webp'
-                    : '/assets/images/eren_3d_clean.webp'
-                }
-                alt={selectedCharacter === 'aybuke' ? 'Aybüke' : 'Eren'}
-                className="w-6 h-6 object-contain"
-              />
-              <span className="text-xs font-bold text-amber-200">
-                Rehber: {selectedCharacter === 'aybuke' ? 'Aybüke' : 'Eren'}
-              </span>
-            </div>
-
-            <button
-              type="button"
-              onClick={onOpenHistoryJournal}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-xs font-bold text-amber-200 transition"
-              title="Tarih Keşif Defteri"
-            >
-              <BookOpen className="w-3.5 h-3.5 text-amber-400" />
-              <span className="hidden md:inline">Tarih Defteri</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenValuesJournal}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-xs font-bold text-emerald-200 transition"
-              title="Değer Keşif Defteri"
-            >
-              <Heart className="w-3.5 h-3.5 text-rose-400" />
-              <span className="hidden md:inline">Değerler</span>
-              <span className="bg-emerald-600 text-white text-[10px] px-1.5 rounded-full font-black">
-                {unlockedValues.length}/10
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={onOpenSettings}
-              className="p-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-300 transition"
-              title="Ayarlar"
-            >
-              <Settings className="w-4 h-4" />
-            </button>
-
-            <button
-              type="button"
-              onClick={onToggleMute}
-              className="p-1.5 rounded-xl bg-stone-900 hover:bg-stone-800 border border-stone-700 text-amber-300 transition"
-              title={isMuted ? 'Sesi Aç' : 'Sesi Kapat'}
-            >
-              {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4 text-amber-400" />}
-            </button>
-
-            <button
-              type="button"
-              onClick={onExitToMenu}
-              className="p-1.5 rounded-xl bg-rose-800 hover:bg-rose-700 border border-rose-500 text-white transition"
-              title="Ana Sayfaya Çık"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
-          </div>
+    <div
+      id="year-content-3d-stage"
+      className="relative w-screen h-dvh overflow-hidden bg-stone-950 select-none flex flex-col justify-between"
+    >
+      {/* =================================================================== */}
+      {/* 1. 3D HISTORICAL ENVIRONMENT CANVAS (Or Honest Empty State if unverified) */}
+      {/* =================================================================== */}
+      {hasContent ? (
+        <div className="absolute inset-0 z-0">
+          <GameCanvas
+            characterType={selectedCharacter}
+            currentYear={yearData.year}
+            sceneEnvironment={yearData.sceneEnvironment}
+            activeMission={yearData.missions[0] || null}
+            eventStations={publishedStations}
+            completedStationIds={completedStationIds}
+            isPortalActive={allStationsCompleted}
+            isPaused={isAnyModalOpen}
+            teleportTarget={teleportTarget}
+            onInteractMission={() => {
+              const firstTarget =
+                publishedStations.find(s => !completedStationIds.includes(s.id)) ||
+                publishedStations[0];
+              if (firstTarget) {
+                handleOpenGuideLearning(firstTarget.id);
+              }
+            }}
+            onInteractStoryteller={handleOpenStoryteller}
+            onInteractGuide={handleOpenGuideLearning}
+            onEnterPortal={onReturnToDoors}
+            onProximityChange={(b, p) => {
+              setNearBeacon(b);
+              setNearPortal(p);
+            }}
+            onStationProximityChange={setNearbyPrompt}
+            virtualJoystick={virtualJoystick}
+            isVirtualSprint={isVirtualSprint}
+            isVirtualInteract={isVirtualInteract}
+          />
         </div>
-      </header>
-
-      {/* 2. SCROLLABLE MAIN CONTENT BODY */}
-      <main
-        ref={scrollContainerRef}
-        className="flex-1 overflow-y-auto overflow-x-hidden px-3 sm:px-6 py-5 space-y-6 max-w-6xl mx-auto w-full"
-      >
-        
-        {/* SECTION A: YILIN TANITIMI (YEAR INTRODUCTION HERO) */}
-        <section
-          aria-label="Yılın Tanıtımı"
-          className="relative rounded-3xl border-2 border-amber-500/60 overflow-hidden shadow-2xl p-5 sm:p-7"
-          style={{
-            background: 'linear-gradient(135deg, #2d180a 0%, #1c0f06 65%, #3a1f0d 100%)'
-          }}
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
-            <div className="space-y-2.5 flex-1">
-              <div className="flex flex-wrap items-center gap-2">
-                <span
-                  id="year-content-heading-badge"
-                  className="px-4 py-1 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-600 text-stone-950 font-black text-xl sm:text-2xl shadow font-title"
-                >
-                  {yearData.year} Yılı
-                </span>
-
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-stone-900/90 border border-amber-500/40 text-xs font-bold text-amber-300">
-                  <MapPin className="w-3.5 h-3.5 text-amber-400" />
-                  <span>{yearData.location}</span>
-                </span>
-
-                {isYearDone && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-emerald-950 border border-emerald-500/60 text-xs font-black text-emerald-300">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Bu Yılın Etkinliği Tamamlandı</span>
-                  </span>
-                )}
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl font-black text-amber-100 font-title leading-tight">
-                {yearData.title}
-              </h1>
-
-              <p className="text-xs sm:text-sm font-bold text-amber-400/90 uppercase tracking-wider">
-                {yearData.subTitle}
-              </p>
-
-              <p className="text-sm sm:text-base text-stone-200 leading-relaxed pt-1">
-                {yearData.historicalSummary}
-              </p>
+      ) : (
+        /* HONEST EMPTY STATE FOR UNVERIFIED YEARS (Never fabricates historical events) */
+        <div className="relative z-10 flex-1 flex items-center justify-center p-4 overflow-y-auto bg-gradient-to-b from-stone-950 via-[#1d130a] to-stone-950">
+          <div className="w-full max-w-2xl rounded-3xl bg-stone-900/95 border-2 border-amber-500/40 p-6 sm:p-8 text-center space-y-5 shadow-2xl">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-400/40 flex items-center justify-center mx-auto">
+              <AlertCircle className="w-8 h-8 text-amber-400" />
             </div>
 
-            {/* Active Character Companion Card */}
-            <div className="flex items-center gap-3 bg-stone-950/80 border border-amber-500/40 rounded-2xl p-3 shrink-0 self-stretch md:self-center">
-              <img
-                src={
-                  selectedCharacter === 'aybuke'
-                    ? '/assets/images/aybuke_3d_clean.webp'
-                    : '/assets/images/eren_3d_clean.webp'
-                }
-                alt={selectedCharacter === 'aybuke' ? 'Aybüke' : 'Eren'}
-                className="w-16 h-20 sm:w-20 sm:h-24 object-contain drop-shadow"
-              />
-              <div className="max-w-[200px] space-y-1">
-                <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 block">
-                  {selectedCharacter === 'aybuke' ? 'Aybüke Diyor ki:' : 'Eren Diyor ki:'}
-                </span>
-                <p className="text-xs text-stone-300 leading-snug">
-                  {hasVerifiedContent
-                    ? `"${yearData.year} yılındaki tarihsel olayları, kaynakları ve kök değerlerimizi birlikte inceleyelim!"`
-                    : `"${yearData.year} yılı kapısındayız. Doğrulanmış olay kayıtları olan yıllara da hemen geçiş yapabilirsin."`}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* CASE 1: UNVERIFIED YEAR — SHOW HONEST MESSAGE WITHOUT FABRICATING EVENTS */}
-        {!hasVerifiedContent ? (
-          <section
-            aria-label="Doğrulanmış İçerik Bilgilendirmesi"
-            className="rounded-3xl bg-stone-900/90 border-2 border-amber-600/40 p-6 sm:p-8 text-center space-y-5 shadow-xl"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-amber-500/15 border border-amber-500/40 flex items-center justify-center mx-auto text-amber-400">
-              <AlertCircle className="w-8 h-8" />
-            </div>
-
-            <div className="space-y-2 max-w-xl mx-auto">
-              <h2
-                id="unverified-year-message"
-                className="text-lg sm:text-xl font-black text-amber-200"
-              >
+            <div className="space-y-2">
+              <span className="inline-block px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black">
+                {yearData.year} Yılı • {yearData.subTitle}
+              </span>
+              <h2 className="text-xl sm:text-2xl font-black text-white">
                 Bu yıla ait doğrulanmış içerik henüz eklenmedi.
               </h2>
-              <p className="text-xs sm:text-sm text-stone-300 leading-relaxed">
-                Dijital Siyer Yolculuğu projesinde tarihsel doğruluk ilkesi gereği yalnızca muteber Siyer kaynaklarında ({' '}
-                <em>İbn Hişâm, Buhârî, Müslim, İbn Sa&apos;d, Taberî, TDV İslam Ansiklopedisi</em>) yılı kesin olarak
-                kaydedilmiş doğrulanmış olaylar yer almaktadır.
+              <p className="text-xs sm:text-sm text-stone-300 leading-relaxed max-w-lg mx-auto">
+                Tarihsel doğruluk ilkesi gereği bu yıl için uydurma olay üretilmemiştir. Öğretmen Yönetim Panelinden bu yıla yeni tarihsel olay, sesli anlatım, animasyon ve sorular ekleyebilir veya doğrulanmış yıllardan birini seçebilirsiniz.
               </p>
             </div>
 
-            {/* Quick Jump to Verified Historical Years */}
-            <div className="pt-2 space-y-2.5">
-              <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
-                Doğrulanmış Tarihsel Olay Kaydı Bulunan Yıllar:
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <button
+                type="button"
+                onClick={onReturnToDoors}
+                className="px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-lg transition"
+              >
+                <Compass className="w-4 h-4" />
+                <span>571–632 Kapılar Ekranına Dön</span>
+              </button>
+
+              {onOpenTeacherPanel && (
+                <button
+                  type="button"
+                  onClick={onOpenTeacherPanel}
+                  className="px-4 py-2.5 rounded-xl bg-purple-950/90 hover:bg-purple-900 text-purple-200 border border-purple-400/50 font-bold text-xs sm:text-sm flex items-center gap-2 transition"
+                >
+                  <GraduationCap className="w-4 h-4" />
+                  <span>Öğretmen Panelinden Bu Yıla Olay Ekle</span>
+                </button>
+              )}
+            </div>
+
+            {/* Quick Jump to Verified Years */}
+            <div className="pt-4 border-t border-stone-800 space-y-2">
+              <span className="text-[11px] font-bold text-stone-400 uppercase tracking-wider block">
+                Doğrulanmış 3B Tarihsel Mekân Yıllarına Hızlı Geçiş:
               </span>
-              <div className="flex flex-wrap items-center justify-center gap-1.5 max-w-3xl mx-auto">
-                {verifiedYearNumbers.map((vYear) => (
+              <div className="flex flex-wrap justify-center gap-1.5 max-h-32 overflow-y-auto p-1">
+                {verifiedYearsList.map(vy => (
                   <button
-                    key={vYear}
+                    key={vy}
                     type="button"
-                    onClick={() => onNavigateYear(vYear)}
-                    className="px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500 hover:text-stone-950 text-amber-200 border border-amber-500/50 text-xs font-black transition"
+                    onClick={() => onNavigateYear(vy)}
+                    className="px-2.5 py-1 rounded-lg bg-stone-800 hover:bg-amber-500 hover:text-stone-950 text-amber-200 text-xs font-black border border-amber-500/30 transition"
                   >
-                    {vYear} Yılı
+                    {vy}
                   </button>
                 ))}
               </div>
             </div>
-          </section>
-        ) : (
-          /* CASE 2: VERIFIED YEAR — RENDER HISTORICAL EVENT STOPS & VALUE DISCOVERY STOPS */
-          <>
-            {yearData.missions.map((mission, index) => {
-              const isMissionDone = completedMissionIds.includes(mission.id);
-              const valDef = mission.valueDiscovery
-                ? ROOT_VALUES[mission.valueDiscovery.valueId]
-                : null;
-              const isSpeaking = speakingMissionId === mission.id;
+          </div>
+        </div>
+      )}
 
-              return (
-                <div key={mission.id} className="space-y-6">
-                  
-                  {/* SECTION B: TARİHSEL OLAY DURAĞI */}
-                  <section
-                    aria-label="Tarihsel Olay Durağı"
-                    className="rounded-3xl bg-stone-900/95 border-2 border-amber-600/50 overflow-hidden shadow-2xl"
-                  >
-                    {/* Stop Header */}
-                    <div className="px-5 sm:px-6 py-4 bg-gradient-to-r from-stone-950 via-amber-950/40 to-stone-950 border-b border-amber-600/30 flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center gap-3">
-                        <span className="px-3 py-1 rounded-xl bg-amber-500 text-stone-950 font-black text-xs uppercase tracking-wider">
-                          Tarihsel Olay Durağı {yearData.missions.length > 1 ? `#${index + 1}` : ''}
-                        </span>
-                        <h2 className="text-lg sm:text-xl font-black text-amber-100">
-                          {mission.title}
-                        </h2>
-                      </div>
-
-                      <div className="flex items-center gap-2">
-                        {/* Voiceover Narration Button */}
-                        <button
-                          type="button"
-                          onClick={() => handleToggleSpeech(mission)}
-                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition ${
-                            isSpeaking
-                              ? 'bg-rose-600 text-white border-rose-300'
-                              : 'bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 border-amber-400/50'
-                          }`}
-                        >
-                          {isSpeaking ? (
-                            <>
-                              <Square className="w-3.5 h-3.5 fill-current" />
-                              <span>Sesli Anlatımı Durdur</span>
-                            </>
-                          ) : (
-                            <>
-                              <Play className="w-3.5 h-3.5 fill-current" />
-                              <span>Sesli Anlatımı Dinle</span>
-                            </>
-                          )}
-                        </button>
-
-                        {/* Cinematic Animation Modal Trigger */}
-                        <button
-                          type="button"
-                          onClick={onOpenCinematicModal}
-                          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-950/90 hover:bg-purple-900 text-purple-200 border border-purple-400/50 text-xs font-bold transition"
-                        >
-                          <Film className="w-3.5 h-3.5 text-purple-300" />
-                          <span>Canlandırma Sahnesi</span>
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Event Body: Visual Illustration + Narrative + Subtitles + Historical Source */}
-                    <div className="p-5 sm:p-6 space-y-5">
-                      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-                        
-                        {/* Event Visual Card */}
-                        <div className="lg:col-span-5 relative rounded-2xl overflow-hidden border border-amber-500/40 min-h-[210px] flex flex-col justify-end bg-stone-950">
-                          <img
-                            src={sceneVisual.img}
-                            alt={mission.title}
-                            loading="lazy"
-                            className="absolute inset-0 w-full h-full object-cover opacity-80"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/35 to-transparent" />
-                          <div className="relative z-10 p-4 space-y-1">
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-amber-500/90 text-stone-950 text-[10px] font-black uppercase">
-                              <MapPin className="w-3 h-3" />
-                              {mission.targetLabel}
-                            </span>
-                            <p className="text-xs font-semibold text-amber-100 drop-shadow">
-                              {sceneVisual.caption}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Historical Narrative & Chronological Steps */}
-                        <div className="lg:col-span-7 flex flex-col justify-between space-y-4 bg-stone-950/70 border border-stone-800 rounded-2xl p-4 sm:p-5">
-                          <div className="space-y-2.5">
-                            <span className="text-xs font-bold text-amber-400 uppercase tracking-wider block">
-                              Tarihsel Olay Anlatımı
-                            </span>
-                            <p className="text-sm sm:text-base text-stone-200 leading-relaxed">
-                              {mission.narrativeText}
-                            </p>
-                          </div>
-
-                          {mission.subtitles && mission.subtitles.length > 0 && (
-                            <div className="space-y-1.5 pt-2 border-t border-stone-800/80">
-                              <span className="text-[11px] font-bold text-amber-300/90 uppercase tracking-wider block">
-                                Önemli Noktalar:
-                              </span>
-                              <ul className="space-y-1">
-                                {mission.subtitles.map((sub, idx) => (
-                                  <li
-                                    key={idx}
-                                    className="flex items-start gap-2 text-xs text-stone-300"
-                                  >
-                                    <span className="text-amber-400 font-black">•</span>
-                                    <span>{sub.text}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Verified Historical Source Box */}
-                      <div className="rounded-2xl bg-amber-950/25 border border-amber-600/40 p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                        <div className="flex items-start gap-3">
-                          <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
-                          <div className="space-y-0.5">
-                            <div className="flex flex-wrap items-center gap-2">
-                              <span className="text-xs font-black text-amber-300 uppercase tracking-wider">
-                                Tarihsel Kaynak:
-                              </span>
-                              <span className="text-xs sm:text-sm font-bold text-stone-100">
-                                {yearData.historicalSource.sourceName}
-                              </span>
-                            </div>
-                            <p className="text-xs text-stone-300">
-                              Referans: <strong>{yearData.historicalSource.authorOrRef}</strong>
-                              {yearData.historicalSource.notes ? ` — ${yearData.historicalSource.notes}` : ''}
-                            </p>
-                          </div>
-                        </div>
-
-                        <span className="px-3 py-1 rounded-xl bg-amber-500/20 border border-amber-400/50 text-[11px] font-black text-amber-200 shrink-0">
-                          {yearData.historicalSource.certaintyLevel}
-                        </span>
-                      </div>
-
-                      {/* Historical Knowledge Question & Reinforcement */}
-                      <div className="rounded-2xl bg-stone-950/90 border border-stone-700/80 p-4 sm:p-5 space-y-4">
-                        <div className="flex flex-wrap items-center justify-between gap-2">
-                          <div className="flex items-center gap-2">
-                            <HelpCircle className="w-5 h-5 text-amber-400" />
-                            <h3 className="text-sm sm:text-base font-black text-amber-200">
-                              Tarihsel Bilgi Sorusu &amp; Etkinliği
-                            </h3>
-                          </div>
-                          <button
-                            type="button"
-                            onClick={onOpenQuestionModal}
-                            className="text-xs font-bold text-amber-300 hover:text-amber-200 underline"
-                          >
-                            Tam Ekran Soru Penceresinde Aç
-                          </button>
-                        </div>
-
-                        <p className="text-sm sm:text-base font-bold text-stone-100">
-                          {mission.question}
-                        </p>
-
-                        <form onSubmit={(e) => handleCheckAnswer(mission, e)} className="flex flex-col sm:flex-row gap-2">
-                          <input
-                            type="text"
-                            value={answerInput}
-                            onChange={(e) => setAnswerInput(e.target.value)}
-                            placeholder="Cevabınızı buraya yazın..."
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-stone-900 border border-stone-700 text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-amber-400"
-                          />
-                          <button
-                            type="submit"
-                            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-xs sm:text-sm transition shrink-0"
-                          >
-                            Cevabı Kontrol Et
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setShowHintLevel((prev) => Math.min(2, prev + 1))}
-                            className="px-3.5 py-2.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-amber-300 font-bold text-xs border border-stone-600 transition shrink-0 flex items-center gap-1"
-                          >
-                            <Lightbulb className="w-3.5 h-3.5" />
-                            <span>İpucu Al</span>
-                          </button>
-                        </form>
-
-                        {showHintLevel >= 1 && (
-                          <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/40 text-xs text-amber-200 space-y-1">
-                            <p>
-                              <strong>1. İpucu:</strong> {mission.hint1}
-                            </p>
-                            {showHintLevel >= 2 && (
-                              <p>
-                                <strong>2. İpucu:</strong> {mission.hint2}
-                              </p>
-                            )}
-                          </div>
-                        )}
-
-                        {answerFeedback.type !== 'idle' && (
-                          <div
-                            className={`p-3 rounded-xl text-xs sm:text-sm font-bold border ${
-                              answerFeedback.type === 'success'
-                                ? 'bg-emerald-950/60 border-emerald-500/60 text-emerald-200'
-                                : 'bg-rose-950/60 border-rose-500/60 text-rose-200'
-                            }`}
-                          >
-                            <p>{answerFeedback.text}</p>
-                            <p className="mt-1 text-xs font-normal text-stone-300">
-                              {mission.thirdLevelExplanation}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Multiple-Choice Reinforcement Activity */}
-                        {mission.reinforcement && (
-                          <div className="pt-3 border-t border-stone-800 space-y-2.5">
-                            <span className="text-xs font-bold text-amber-300 block">
-                              Pekiştirme Sorusu: {mission.reinforcement.question}
-                            </span>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                              {mission.reinforcement.options.map((opt, oIdx) => {
-                                const isChosen = selectedReinforcement === oIdx;
-                                const isRight = oIdx === mission.reinforcement.correctIndex;
-                                return (
-                                  <button
-                                    key={oIdx}
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedReinforcement(oIdx);
-                                      if (isRight) {
-                                        audioSystem.playSuccessChime();
-                                        onAnswerEvaluated(true, true);
-                                      } else {
-                                        audioSystem.playWrongChime();
-                                      }
-                                    }}
-                                    className={`text-left px-3.5 py-2.5 rounded-xl text-xs font-bold border transition ${
-                                      isChosen
-                                        ? isRight
-                                          ? 'bg-emerald-900/70 border-emerald-400 text-emerald-100'
-                                          : 'bg-rose-900/70 border-rose-400 text-rose-100'
-                                        : 'bg-stone-900 hover:bg-stone-800 border-stone-700 text-stone-200'
-                                    }`}
-                                  >
-                                    {opt}
-                                  </button>
-                                );
-                              })}
-                            </div>
-                            {selectedReinforcement !== null && (
-                              <p className="text-xs text-amber-200/90 bg-stone-900 p-2.5 rounded-xl border border-stone-700">
-                                <strong>Not:</strong> {mission.reinforcement.reinforcementNote}
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </section>
-
-                  {/* SECTION C: DEĞER KEŞİF DURAĞI (VALUE DISCOVERY STOP) */}
-                  {mission.valueDiscovery && valDef && (
-                    <section
-                      aria-label="Değer Keşif Durağı"
-                      className="rounded-3xl bg-gradient-to-br from-[#13261c] via-[#111c17] to-[#1a140b] border-2 border-emerald-500/50 overflow-hidden shadow-2xl"
-                    >
-                      <div className="px-5 sm:px-6 py-4 bg-emerald-950/60 border-b border-emerald-500/30 flex flex-wrap items-center justify-between gap-3">
-                        <div className="flex items-center gap-3">
-                          <span className="px-3 py-1 rounded-xl bg-emerald-500 text-stone-950 font-black text-xs uppercase tracking-wider flex items-center gap-1">
-                            <Award className="w-3.5 h-3.5" />
-                            <span>Değer Keşif Durağı</span>
-                          </span>
-                          <h2 className="text-lg sm:text-xl font-black text-emerald-200">
-                            Kök Değerimiz: {valDef.name}
-                          </h2>
-                        </div>
-
-                        <button
-                          type="button"
-                          onClick={onOpenValueModal}
-                          className="text-xs font-bold text-emerald-300 hover:text-emerald-200 underline"
-                        >
-                          Tam Ekran Değer Etkinliğinde Aç
-                        </button>
-                      </div>
-
-                      <div className="p-5 sm:p-6 space-y-5">
-                        {/* Root Value Description */}
-                        <div className="rounded-2xl bg-stone-950/70 border border-emerald-500/30 p-4 space-y-1">
-                          <span className="text-xs font-black text-emerald-400 uppercase tracking-wider">
-                            {valDef.name} Nedir?
-                          </span>
-                          <p className="text-sm text-stone-200 leading-relaxed">
-                            {valDef.description}
-                          </p>
-                        </div>
-
-                        {/* 1. Recognition Question */}
-                        <div className="space-y-2.5">
-                          <span className="text-xs font-bold text-amber-300 uppercase tracking-wider block">
-                            1. Düşündüren Değer Sorusu:
-                          </span>
-                          <p className="text-sm sm:text-base font-bold text-stone-100">
-                            {mission.valueDiscovery.recognitionQuestion}
-                          </p>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                            {mission.valueDiscovery.recognitionOptions.map((rOpt, rIdx) => {
-                              const chosen = selectedRecognitionIdx === rIdx;
-                              const isCorrect = rIdx === mission.valueDiscovery!.correctRecognitionIndex;
-                              return (
-                                <button
-                                  key={rIdx}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedRecognitionIdx(rIdx);
-                                    if (isCorrect) audioSystem.playSuccessChime();
-                                  }}
-                                  className={`text-left px-3.5 py-2 rounded-xl text-xs font-bold border transition ${
-                                    chosen
-                                      ? isCorrect
-                                        ? 'bg-emerald-900/80 border-emerald-400 text-emerald-100'
-                                        : 'bg-rose-900/80 border-rose-400 text-rose-100'
-                                      : 'bg-stone-900/90 hover:bg-stone-800 border-stone-700 text-stone-200'
-                                  }`}
-                                >
-                                  {rOpt}
-                                </button>
-                              );
-                            })}
-                          </div>
-                        </div>
-
-                        {/* 2. Reflection Prompt */}
-                        <div className="space-y-2">
-                          <span className="text-xs font-bold text-emerald-300 uppercase tracking-wider block">
-                            2. Tefekkür ve Yorumlama:
-                          </span>
-                          <p className="text-sm font-semibold text-stone-100">
-                            {mission.valueDiscovery.explanationPrompt}
-                          </p>
-                          <p className="text-xs text-stone-400 italic">
-                            Rehber Notu: {mission.valueDiscovery.explanationGuide}
-                          </p>
-                          <textarea
-                            rows={2}
-                            value={userReflection}
-                            onChange={(e) => setUserReflection(e.target.value)}
-                            placeholder="Düşünceni kısaca buraya yazabilirsin..."
-                            className="w-full px-3.5 py-2 rounded-xl bg-stone-950 border border-stone-700 text-xs sm:text-sm text-stone-100 placeholder-stone-500 focus:outline-none focus:border-emerald-400"
-                          />
-                        </div>
-
-                        {/* 3. Daily Life Scenario Activity */}
-                        <div className="space-y-2.5 pt-2 border-t border-emerald-800/40">
-                          <span className="text-xs font-bold text-amber-300 uppercase tracking-wider block">
-                            3. Günlük Yaşam Senaryosu: {mission.valueDiscovery.scenarioTitle}
-                          </span>
-                          <p className="text-sm sm:text-base font-bold text-stone-100">
-                            {mission.valueDiscovery.scenarioQuestion}
-                          </p>
-                          <div className="space-y-2">
-                            {mission.valueDiscovery.scenarioOptions.map((sOpt) => {
-                              const isSelected = selectedScenarioId === sOpt.id;
-                              return (
-                                <button
-                                  key={sOpt.id}
-                                  type="button"
-                                  onClick={() => handleSelectScenarioOption(mission, sOpt)}
-                                  className={`w-full text-left p-3.5 rounded-2xl border text-xs sm:text-sm font-semibold transition ${
-                                    isSelected
-                                      ? sOpt.isAppropriate
-                                        ? 'bg-emerald-950/90 border-emerald-400 text-emerald-100'
-                                        : 'bg-rose-950/90 border-rose-400 text-rose-100'
-                                      : 'bg-stone-950/80 hover:bg-stone-900 border-stone-700 text-stone-200'
-                                  }`}
-                                >
-                                  <div className="flex items-center justify-between gap-2">
-                                    <span>{sOpt.text}</span>
-                                    {isSelected && (
-                                      <span className="text-[11px] font-black px-2 py-0.5 rounded-full bg-black/40">
-                                        {sOpt.isAppropriate ? '✓ Doğru Yaklaşım' : '✕ Uygun Değil'}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {isSelected && (
-                                    <p className="mt-1.5 text-xs font-normal opacity-90">
-                                      {sOpt.feedback}
-                                    </p>
-                                  )}
-                                </button>
-                              );
-                            })}
-                          </div>
-
-                          {valueSavedMessage && (
-                            <div className="p-3 rounded-xl bg-emerald-500/20 border border-emerald-400 text-xs font-bold text-emerald-200 flex items-center gap-2">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                              <span>
-                                Tebrikler! &ldquo;{valDef.name}&rdquo; kök değeri Değer Keşif Defterine kaydedildi!
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </section>
-                  )}
-                </div>
-              );
-            })}
-          </>
-        )}
-
-        {/* SECTION D: BOTTOM NAVIGATION FOOTER */}
-        <footer className="pt-2 pb-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+      {/* =================================================================== */}
+      {/* 2. TOP HUD BAR (Navigation, Year Info, Historical Summary Sheet, Teacher Panel) */}
+      {/* =================================================================== */}
+      <header className="relative z-20 w-full px-3 sm:px-5 py-2.5 bg-gradient-to-b from-stone-950/90 via-stone-950/70 to-transparent flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+        <div className="pointer-events-auto flex items-center gap-2">
           <button
             type="button"
-            disabled={!prevYear}
-            onClick={() => prevYear && onNavigateYear(prevYear)}
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border font-bold text-xs sm:text-sm transition ${
-              prevYear
-                ? 'bg-stone-900 hover:bg-stone-800 border-amber-500/50 text-amber-200 cursor-pointer'
-                : 'bg-stone-950 border-stone-800 text-stone-600 cursor-not-allowed'
-            }`}
+            id="btn-back-to-doors"
+            onClick={onReturnToDoors}
+            className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-lg transition active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span>{prevYear ? `Önceki Yıla Git (${prevYear})` : '571 (Başlangıç Yılı)'}</span>
+            <span>Kapılar Ekranı (571–632)</span>
+          </button>
+
+          <div className="hidden md:flex items-center gap-1">
+            {yearData.previousYear && (
+              <button
+                type="button"
+                onClick={() => onNavigateYear(yearData.previousYear!)}
+                className="px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-amber-200 border border-amber-500/30 text-xs font-bold"
+                title={`Önceki Yıl: ${yearData.previousYear}`}
+              >
+                ‹ {yearData.previousYear}
+              </button>
+            )}
+            {yearData.nextYear && (
+              <button
+                type="button"
+                onClick={() => onNavigateYear(yearData.nextYear!)}
+                className="px-2.5 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-amber-200 border border-amber-500/30 text-xs font-bold"
+                title={`Sonraki Yıl: ${yearData.nextYear}`}
+              >
+                {yearData.nextYear} ›
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Center Year & Location Badge */}
+        <div className="pointer-events-auto flex items-center gap-2.5 bg-stone-950/85 backdrop-blur-md px-4 py-1.5 rounded-2xl border border-amber-500/50 shadow-xl">
+          <span className="px-2.5 py-0.5 rounded-lg bg-amber-500 text-stone-950 font-black text-xs sm:text-sm">
+            {yearData.year}
+          </span>
+          <div className="text-left">
+            <h1 className="text-xs sm:text-sm font-black text-amber-100 leading-tight">
+              {yearData.title}
+            </h1>
+            <p className="text-[10px] sm:text-xs text-amber-300/80 flex items-center gap-1">
+              <MapPin className="w-3 h-3 text-amber-400 shrink-0" />
+              <span>3B Tarihsel Mekân: {yearData.location}</span>
+            </p>
+          </div>
+        </div>
+
+        {/* Right Utility Actions */}
+        <div className="pointer-events-auto flex items-center gap-1.5">
+          {hasContent && (
+            <button
+              type="button"
+              onClick={() => setShowHistoricalInfoSheet(prev => !prev)}
+              className="px-3 py-1.5 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-amber-200 border border-amber-500/40 text-xs font-bold flex items-center gap-1.5 shadow"
+            >
+              <FileText className="w-3.5 h-3.5 text-amber-400" />
+              <span className="hidden sm:inline">Tarihsel Bilgi & Kaynak</span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onOpenHistoryJournal}
+            className="p-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-amber-300 border border-amber-500/30"
+            title="Siyer Günlüğüm"
+          >
+            <BookOpen className="w-4 h-4" />
           </button>
 
           <button
             type="button"
-            onClick={onReturnToDoors}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-7 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-xs sm:text-sm shadow-xl border border-amber-200 transition"
+            onClick={onOpenValuesJournal}
+            className="p-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-emerald-300 border border-emerald-500/30"
+            title={`Kazanılan Değerler (${unlockedValues.length})`}
           >
-            <Compass className="w-4 h-4 stroke-[2.5]" />
-            <span>571–632 Kapılar Ekranına Dön</span>
+            <Heart className="w-4 h-4" />
+          </button>
+
+          {onOpenTeacherPanel && (
+            <button
+              type="button"
+              onClick={onOpenTeacherPanel}
+              className="p-2 rounded-xl bg-purple-950/90 hover:bg-purple-900 text-purple-200 border border-purple-400/50"
+              title="Öğretmen Yönetim Paneli"
+            >
+              <GraduationCap className="w-4 h-4" />
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={onToggleMute}
+            className="p-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-amber-200 border border-stone-700"
+            title={isMuted ? 'Sesi Aç' : 'Sesi Kapat'}
+          >
+            {isMuted ? <VolumeX className="w-4 h-4 text-rose-400" /> : <Volume2 className="w-4 h-4" />}
           </button>
 
           <button
             type="button"
-            disabled={!nextYear}
-            onClick={() => nextYear && onNavigateYear(nextYear)}
-            className={`w-full sm:w-auto flex items-center justify-center gap-2 px-5 py-3 rounded-2xl border font-bold text-xs sm:text-sm transition ${
-              nextYear
-                ? 'bg-stone-900 hover:bg-stone-800 border-amber-500/50 text-amber-200 cursor-pointer'
-                : 'bg-stone-950 border-stone-800 text-stone-600 cursor-not-allowed'
-            }`}
+            onClick={onOpenSettings}
+            className="p-2 rounded-xl bg-stone-900/90 hover:bg-stone-800 text-stone-300 border border-stone-700"
+            title="Ayarlar"
           >
-            <span>{nextYear ? `Sonraki Yıla Git (${nextYear})` : '632 (Son Yıl)'}</span>
-            <ArrowRight className="w-4 h-4" />
+            <Settings className="w-4 h-4" />
           </button>
-        </footer>
 
-      </main>
+          <button
+            type="button"
+            onClick={onExitToMenu}
+            className="p-2 rounded-xl bg-rose-950/80 hover:bg-rose-900 text-rose-200 border border-rose-500/40"
+            title="Ana Sayfaya Dön"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
+        </div>
+      </header>
+
+      {/* =================================================================== */}
+      {/* 3. STATION COMPASS & DIRECT INTERACTION BAR (Prevents student from ever getting lost in 3D!) */}
+      {/* =================================================================== */}
+      {hasContent && publishedStations.length > 0 && (
+        <div className="relative z-20 w-full max-w-5xl mx-auto px-3 mt-1 pointer-events-none">
+          <div className="pointer-events-auto rounded-2xl bg-stone-950/85 backdrop-blur-md border border-amber-500/40 p-2.5 sm:p-3 shadow-2xl">
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-amber-200">
+                <Box className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>
+                  3B Tarihsel Mekân Durakları ({completedStationIds.length}/{publishedStations.length} Tamamlandı)
+                </span>
+                <span className="hidden lg:inline text-stone-400 font-normal">
+                  • Sahnede WASD / Yön tuşlarıyla yürü veya doğrudan durak butonlarına tıkla!
+                </span>
+              </div>
+
+              {allStationsCompleted && (
+                <span
+                  id="year-all-stations-completed-badge"
+                  className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-400 text-emerald-300 text-xs font-black"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  Bu Yılın Tüm Durakları Tamamlandı!
+                </span>
+              )}
+            </div>
+
+            {/* Station Cards Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {publishedStations.map((st, idx) => {
+                const isDone = completedStationIds.includes(st.id);
+                const unlocked = isStationUnlocked(st.id);
+
+                return (
+                  <div
+                    key={st.id}
+                    id={`station-hud-card-${st.id}`}
+                    className={`rounded-xl p-2.5 border flex flex-col justify-between gap-2 transition ${
+                      isDone
+                        ? 'bg-emerald-950/60 border-emerald-500/50'
+                        : unlocked
+                        ? 'bg-stone-900/95 border-amber-500/60 shadow-md'
+                        : 'bg-stone-900/50 border-stone-800 opacity-75'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-amber-300 block">
+                          {idx + 1}. Olay Durağı • {st.npc}
+                        </span>
+                        <h4 className="text-xs sm:text-sm font-black text-white truncate">
+                          {st.animationScene.title}
+                        </h4>
+                      </div>
+
+                      {isDone ? (
+                        <span className="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 text-[10px] font-black flex items-center gap-1 shrink-0">
+                          <CheckCircle2 className="w-3 h-3" />
+                          Tamam
+                        </span>
+                      ) : !unlocked ? (
+                        <span className="px-2 py-0.5 rounded-md bg-stone-800 text-stone-400 text-[10px] font-bold flex items-center gap-1 shrink-0">
+                          <Lock className="w-3 h-3" />
+                          Kilitli
+                        </span>
+                      ) : (
+                        <span className="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 text-[10px] font-black shrink-0">
+                          Aktif Durak
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Two Distinct Role Buttons: Storyteller vs Question Guide + 3D Walk */}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <button
+                        type="button"
+                        id={`btn-teleport-station-${st.id}`}
+                        onClick={() => handleTeleportToStation(st.id)}
+                        className="px-2.5 py-1.5 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-200 text-[11px] font-bold border border-stone-600 flex items-center gap-1 transition"
+                        title="3B Karakteri Bu Durağın Önüne Götür"
+                      >
+                        <Footprints className="w-3.5 h-3.5 text-amber-400" />
+                        <span>Durağa Git</span>
+                      </button>
+
+                      {/* 1. Ak Sakallı Yaşlı Tarih Anlatıcısı Button */}
+                      <button
+                        type="button"
+                        id={`btn-station-${st.id}-storyteller`}
+                        onClick={() => handleOpenStoryteller(st.id)}
+                        className="px-2.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/35 text-amber-200 border border-amber-400/50 text-[11px] font-black flex items-center gap-1 transition"
+                      >
+                        <Volume2 className="w-3.5 h-3.5 text-amber-300" />
+                        <span>Olayı Dinle (Tarih Anlatıcısı)</span>
+                      </button>
+
+                      {/* 2. Soru Rehber Karakteri Button */}
+                      <button
+                        type="button"
+                        id={`btn-station-${st.id}-guide`}
+                        onClick={() => handleOpenGuideLearning(st.id)}
+                        className={`ml-auto px-3 py-1.5 rounded-lg text-[11px] font-black flex items-center gap-1 transition ${
+                          unlocked
+                            ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-stone-950 shadow'
+                            : 'bg-stone-800 text-stone-400 border border-stone-700 cursor-not-allowed'
+                        }`}
+                      >
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        <span>{isDone ? 'Etkinliği Tekrarla' : 'Soru Rehberi (Etkinlik)'}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 4. FLOATING 3D PROXIMITY INTERACTION BANNER & TOUCH VIRTUAL CONTROLS */}
+      {/* =================================================================== */}
+      {hasContent && (
+        <div className="relative z-20 mt-auto w-full px-4 pb-14 sm:pb-5 flex flex-col items-center gap-2 pointer-events-none">
+          {lockedNotice && (
+            <div className="pointer-events-auto px-4 py-2 rounded-2xl bg-rose-950/95 border-2 border-rose-500 text-rose-100 text-xs sm:text-sm font-black shadow-2xl flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+              <span>{lockedNotice}</span>
+            </div>
+          )}
+
+          {nearbyPrompt && (
+            <div className="pointer-events-auto">
+              {nearbyPrompt.targetType === 'storyteller' ? (
+                <button
+                  type="button"
+                  onClick={() => handleOpenStoryteller(nearbyPrompt.stationId)}
+                  className="px-5 py-3 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-600 text-stone-950 font-black text-xs sm:text-sm border-2 border-amber-100 shadow-[0_0_35px_rgba(245,158,11,0.6)] flex items-center gap-2.5 animate-bounce"
+                >
+                  <Volume2 className="w-5 h-5" />
+                  <span>
+                    [E] veya Tıkla: {nearbyPrompt.stationId}. Durak Ak Sakallı Tarih Anlatıcısından Olayı Dinle
+                  </span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => handleOpenGuideLearning(nearbyPrompt.stationId)}
+                  className="px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-600 text-stone-950 font-black text-xs sm:text-sm border-2 border-emerald-100 shadow-[0_0_35px_rgba(16,185,129,0.6)] flex items-center gap-2.5 animate-bounce"
+                >
+                  <HelpCircle className="w-5 h-5" />
+                  <span>
+                    [E] veya Tıkla: {nearbyPrompt.stationId}. Durak Soru Rehber Karakteri ile Etkinliğe Başla
+                  </span>
+                </button>
+              )}
+            </div>
+          )}
+
+          {/* Virtual Joystick & Touch/Smartboard Controls */}
+          <VirtualControls
+            onJoystickMove={vec => setVirtualJoystick(vec)}
+            isSprinting={isVirtualSprint}
+            onSprintToggle={setIsVirtualSprint}
+            onInteract={() => {
+              setIsVirtualInteract(true);
+              setTimeout(() => setIsVirtualInteract(false), 150);
+            }}
+            showInteractPrompt={nearBeacon || nearPortal || Boolean(nearbyPrompt)}
+          />
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 5. HISTORICAL SUMMARY & AUTHENTIC SOURCES DRAWER */}
+      {/* =================================================================== */}
+      {showHistoricalInfoSheet && (
+        <div className="fixed inset-0 z-40 bg-stone-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl rounded-3xl bg-stone-900 border-2 border-amber-500/50 p-6 space-y-4 shadow-2xl">
+            <div className="flex items-center justify-between border-b border-stone-800 pb-3">
+              <div>
+                <span className="text-xs font-black text-amber-400">
+                  {yearData.year} Yılı • {yearData.location}
+                </span>
+                <h3 className="text-lg font-black text-white">{yearData.title}</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowHistoricalInfoSheet(false)}
+                className="px-3 py-1.5 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 text-xs font-bold"
+              >
+                Kapat
+              </button>
+            </div>
+
+            <p className="text-sm text-stone-200 leading-relaxed">{yearData.historicalSummary}</p>
+
+            <div className="rounded-2xl bg-stone-950 p-4 border border-amber-500/30 text-xs space-y-1">
+              <div className="font-black text-amber-300 flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-amber-400" />
+                <span>Tarihsel Kaynak: {yearData.historicalSource.sourceName}</span>
+              </div>
+              <div className="text-stone-400">
+                Referans: {yearData.historicalSource.authorOrRef} ({yearData.historicalSource.certaintyLevel})
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* =================================================================== */}
+      {/* 6. AK SAKALLI YAŞLI TARİH ANLATICISI MODAL (AUDIO NARRATION) */}
+      {/* =================================================================== */}
+      {activeStorytellerStation && (
+        <StorytellerAudioModal
+          yearData={yearData}
+          station={activeStorytellerStation}
+          onClose={() => setActiveStorytellerStationId(null)}
+          onProceedToGuideActivity={() => {
+            const targetId = activeStorytellerStation.id;
+            setActiveStorytellerStationId(null);
+            handleOpenGuideLearning(targetId);
+          }}
+          onOpenTeacherPanelForAudio={onOpenTeacherPanel}
+        />
+      )}
+
+      {/* =================================================================== */}
+      {/* 7. SORU REHBER KARAKTERİ 6-STAGE LEARNING FLOW MODAL */}
+      {/* =================================================================== */}
+      {activeLearningStation && (
+        <StationLearningModal
+          yearData={yearData}
+          station={activeLearningStation}
+          isLastStationInYear={
+            publishedStations[publishedStations.length - 1]?.id === activeLearningStation.id
+          }
+          onClose={() => setActiveLearningStationId(null)}
+          onOpenStorytellerAudio={() => {
+            const targetId = activeLearningStation.id;
+            setActiveLearningStationId(null);
+            setActiveStorytellerStationId(targetId);
+          }}
+          onStationCompleted={handleStationCompleted}
+          onAnswerAttempt={isCorrect => onAnswerEvaluated(isCorrect, false)}
+        />
+      )}
     </div>
   );
 };

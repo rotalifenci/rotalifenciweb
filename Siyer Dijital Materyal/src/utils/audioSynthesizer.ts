@@ -256,6 +256,10 @@ class SoundSystem {
     osc.stop(now + 0.36);
   }
 
+  public playErrorBuzz() {
+    this.playWrongChime();
+  }
+
   // SFX: Time Portal Warp Hum
   public playPortalWarp() {
     this.initContext();

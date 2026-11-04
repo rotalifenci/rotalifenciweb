@@ -2,7 +2,7 @@ import { StudentProgress, YearData } from '../types';
 import { getAllYearsData } from '../data/yearsData';
 
 const PROGRESS_KEY = 'dijital_siyer_progress_v1';
-const CURRICULUM_KEY = 'dijital_siyer_curriculum_v2';
+const CURRICULUM_KEY = 'dijital_siyer_curriculum_v4';
 const ALL_STUDENTS_KEY = 'dijital_siyer_all_students_v1';
 
 export function getInitialProgress(): StudentProgress {
@@ -15,6 +15,7 @@ export function getInitialProgress(): StudentProgress {
     explorationPath: [571],
     completedYears: [],
     completedMissionIds: [],
+    completedStationKeys: [],
     wrongAnswerCountByYear: {},
     totalCorrect: 0,
     totalWrong: 0,
@@ -40,6 +41,9 @@ export function loadProgress(): StudentProgress {
       }
       if (!Array.isArray(parsed.explorationPath)) {
         parsed.explorationPath = [parsed.currentYear || 571];
+      }
+      if (!Array.isArray(parsed.completedStationKeys)) {
+        parsed.completedStationKeys = [];
       }
       return parsed;
     }
@@ -81,15 +85,32 @@ export function loadAllStudents(): StudentProgress[] {
 }
 
 export function loadCurriculum(): YearData[] {
+  const defaults = getAllYearsData();
   try {
     const raw = localStorage.getItem(CURRICULUM_KEY);
     if (raw) {
-      return JSON.parse(raw);
+      const saved: YearData[] = JSON.parse(raw);
+      if (Array.isArray(saved) && saved.length > 0) {
+        const savedMap = new Map<number, YearData>();
+        saved.forEach(y => savedMap.set(y.year, y));
+        return defaults.map(def => {
+          const custom = savedMap.get(def.year);
+          if (!custom) return def;
+          return {
+            ...def,
+            ...custom,
+            eventStations:
+              custom.eventStations && custom.eventStations.length > 0
+                ? custom.eventStations
+                : def.eventStations
+          };
+        });
+      }
     }
   } catch (e) {
     console.error('Failed to load curriculum from localStorage', e);
   }
-  return getAllYearsData();
+  return defaults;
 }
 
 export function saveCurriculum(years: YearData[]) {

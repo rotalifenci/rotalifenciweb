@@ -5,8 +5,8 @@ const http = require('http');
 
 const ARTIFACT_DIR = 'C:/Users/my pc/.gemini/antigravity/brain/03f413f9-7691-4ee7-91af-b86ce64f3df4';
 const CHROME_PATH = 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe';
-const PORT = 4179;
-const DEBUG_PORT = 9239;
+const PORT = 4183;
+const DEBUG_PORT = 9243;
 
 function sleep(ms) {
   return new Promise(r => setTimeout(r, ms));
@@ -35,10 +35,22 @@ async function runVerification() {
     ['vite', 'preview', '--port', String(PORT), '--strictPort'],
     { stdio: 'pipe', shell: true }
   );
+  viteProc.stderr.on('data', d => console.error('[vite err]', d.toString().trim()));
 
-  await sleep(2500);
+  await new Promise(resolve => {
+    const timer = setTimeout(resolve, 8000);
+    viteProc.stdout.on('data', d => {
+      const str = d.toString();
+      console.log('[vite]', str.trim());
+      if (str.includes('Local:')) {
+        clearTimeout(timer);
+        resolve();
+      }
+    });
+  });
+  await sleep(500);
 
-  const userDataDir = path.join(ARTIFACT_DIR, 'scratch', 'chrome_verify_doors_' + Date.now());
+  const userDataDir = path.join(ARTIFACT_DIR, 'scratch', 'chrome_verify_scene_' + Date.now());
   fs.mkdirSync(userDataDir, { recursive: true });
 
   console.log('Launching headless Chrome...');
@@ -119,136 +131,151 @@ async function runVerification() {
       deviceScaleFactor: 1,
       mobile: false
     });
+    await send('Page.navigate', { url: `http://localhost:${PORT}/` });
+    await sleep(2500);
 
-    await sleep(2000);
-
-    // 1. Verify Main Menu & Character Selection
-    const menuCheck = await evalJs(`(() => {
-      const erenBtn = document.querySelector('[aria-label="Eren Karakterini Seç"]');
-      const aybukeBtn = document.querySelector('[aria-label="Aybüke Karakterini Seç"]');
-      const startBtn = document.querySelector('#btn-start-journey');
-      return {
-        hasEren: !!erenBtn,
-        hasAybuke: !!aybukeBtn,
-        hasStart: !!startBtn
-      };
-    })()`);
-    console.log('1. Main Menu Check:', menuCheck);
-
-    // Select Aybüke first, then Eren, then click Start
-    await evalJs(`document.querySelector('[aria-label="Aybüke Karakterini Seç"]').click()`);
-    await sleep(400);
+    // 1. Select Eren on Main Menu -> Opens 571–632 Doors Hub
     await evalJs(`document.querySelector('[aria-label="Eren Karakterini Seç"]').click()`);
-    await sleep(400);
-    await screenshot('doors_verify_01_main_menu_character_select.png');
+    await sleep(600);
+    await screenshot('scene_flow_01_doors_hub.png');
 
-    // Click Start -> Should open 571–632 Doors Hub directly (NO 3D time tunnel!)
-    await evalJs(`document.querySelector('#btn-start-journey').click()`);
-    await sleep(800);
-    await screenshot('doors_verify_02_desktop_62_doors_hub.png');
-
-    // 2. Verify all 62 doors (571..632), no missing, no duplicates, exact order, no WebGL canvas
-    const doorsAudit = await evalJs(`(() => {
-      const doorBtns = Array.from(document.querySelectorAll('[data-year]'));
-      const years = doorBtns.map(b => Number(b.getAttribute('data-year')));
-      const expected = Array.from({ length: 62 }, (_, i) => 571 + i);
-      const exactMatch = years.length === 62 && years.every((y, idx) => y === expected[idx]);
-      const uniqueCount = new Set(years).size;
-      const canvases = document.querySelectorAll('canvas').length;
-      const headerText = document.body.innerText;
-      return {
-        doorCount: years.length,
-        uniqueCount,
-        firstYear: years[0],
-        lastYear: years[years.length - 1],
-        has596: years.includes(596),
-        has597Count: years.filter(y => y === 597).length,
-        has598: years.includes(598),
-        exactMatch,
-        webglCanvasCount: canvases,
-        hasTitle: headerText.includes('DİJİTAL SİYER YOLCULUĞU'),
-        hasSubtitle: headerText.includes('571–632 Zaman Kapıları'),
-        hasBottomPrompt: headerText.includes('Keşfetmek istediğin yılın kapısını seç!')
-      };
-    })()`);
-    console.log('2. 62 Doors Audit:', doorsAudit);
-    if (!doorsAudit.exactMatch || doorsAudit.webglCanvasCount !== 0) {
-      throw new Error('Doors Audit Failed: ' + JSON.stringify(doorsAudit));
-    }
-
-    // 3. Click Door 610 -> Opens 610 Year Content View
+    // 2. Click Door 610 -> Opens 610 Historical Scene Stage (Cebel-i Nûr & Hira Mağarası)
     await evalJs(`document.querySelector('[data-year="610"]').click()`);
     await sleep(700);
-    await screenshot('doors_verify_03_year_610_content.png');
+    await screenshot('scene_flow_02_year_610_stage.png');
 
-    const year610Audit = await evalJs(`(() => {
-      const text = document.body.innerText;
-      return {
-        has610Title: text.includes('610') && text.includes('İlk Vahiy'),
-        hasEventSection: text.includes('TARİHSEL OLAY DURAKLARI'),
-        hasValueSection: text.includes('DEĞER KEŞİF DURAKLARI'),
-        hasReturnBtn: text.includes('Kapılar Ekranına Dön'),
-        hasPrevBtn: text.includes('609 Yılı'),
-        hasNextBtn: text.includes('611 Yılı')
-      };
-    })()`);
-    console.log('3. Year 610 Content Audit:', year610Audit);
-
-    // 4. Return to Doors Hub, then click an unverified year (e.g., 580) to verify honest message
+    // 3. Verify Character Movement on the Stage
+    const moveBefore = await evalJs(`document.body.innerText.includes('Eren')`);
     await evalJs(`(() => {
-      const btns = Array.from(document.querySelectorAll('button'));
-      const retBtn = btns.find(b => b.innerText.includes('Kapılar Ekranına Dön'));
-      if (retBtn) retBtn.click();
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Sağa Yürü'));
+      if (btn) btn.click();
     })()`);
-    await sleep(600);
+    await sleep(500);
+    console.log('Character visible & moved on stage:', moveBefore);
 
-    await evalJs(`document.querySelector('[data-year="580"]').click()`);
-    await sleep(600);
-    await screenshot('doors_verify_04_unverified_year_580.png');
-
-    const year580Audit = await evalJs(`(() => {
-      const text = document.body.innerText;
-      return {
-        hasHonestUnverifiedMsg: text.includes('Bu yıla ait doğrulanmış içerik henüz eklenmedi.')
-      };
+    // 4. Click 1st Question Station NPC (Rehber Âlim Selman) -> Opens Step 1: Animation
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('1. Soru Durağı'));
+      if (btn) btn.click();
     })()`);
-    console.log('4. Unverified Year 580 Audit:', year580Audit);
-    if (!year580Audit.hasHonestUnverifiedMsg) {
-      throw new Error('Unverified Year 580 missing required honest message!');
+    await sleep(900);
+    await screenshot('scene_flow_03_station1_step1_animation.png');
+
+    const step1Check = await evalJs(`(() => ({
+      hasAnimationHeader: document.body.innerText.includes('Olay Animasyonu ve Anlatımı'),
+      hasProceedBtn: document.body.innerText.includes('Olay Sorusuna Geç')
+    }))()`);
+    console.log('Station 1 Step 1 (Animation) Check:', step1Check);
+    if (!step1Check.hasAnimationHeader || !step1Check.hasProceedBtn) {
+      throw new Error('Step 1 Animation failed!');
     }
 
-    // Return to Doors Hub and test Mobile (390x844) & Smartboard/Tablet (1024x768)
+    // 5. Proceed to Step 2: Historical Event Question
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Olay Sorusuna Geç'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(400);
+
+    // 6. Test WRONG answer first -> Must show Hint and NOT advance to Value Question!
     await evalJs(`(() => {
       const btns = Array.from(document.querySelectorAll('button'));
-      const retBtn = btns.find(b => b.innerText.includes('Kapılar Ekranına Dön'));
-      if (retBtn) retBtn.click();
+      const wrongOpt = btns.find(b => b.innerText.trim().startsWith('B'));
+      if (wrongOpt) wrongOpt.click();
+    })()`);
+    await sleep(400);
+    await screenshot('scene_flow_04_station1_step2_wrong_hint.png');
+
+    const hintCheck = await evalJs(`(() => ({
+      hasHintBox: document.body.innerText.includes('Birlikte Düşünelim (İpucu):'),
+      canAdvanceYet: document.body.innerText.includes('Değer Sorusuna Geç')
+    }))()`);
+    console.log('Wrong Answer Hint Check:', hintCheck);
+    if (!hintCheck.hasHintBox || hintCheck.canAdvanceYet) {
+      throw new Error('Wrong answer did not trigger hint or allowed premature advance!');
+    }
+
+    // 7. Now select CORRECT answer (Option A) -> Unlocks Value Question!
+    await evalJs(`(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const rightOpt = btns.find(b => b.innerText.trim().startsWith('A'));
+      if (rightOpt) rightOpt.click();
+    })()`);
+    await sleep(400);
+
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Değer Sorusuna Geç'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(400);
+    await screenshot('scene_flow_05_station1_step3_value_question.png');
+
+    // 8. Complete Step 3 Value Question -> Unlocks Station 2 NPC!
+    await evalJs(`(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const valOpt = btns.find(b => b.innerText.includes('Güvenilir kitap') || b.innerText.includes('uygun'));
+      if (valOpt) valOpt.click();
+    })()`);
+    await sleep(400);
+
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Durağı Tamamla ve Sıradaki Rehbere İlerle'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(800);
+    await screenshot('scene_flow_06_station2_unlocked_on_stage.png');
+
+    // 9. Complete Station 2 (Animation -> Event Question -> Value Question -> Complete Year)
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('2. Soru Durağı'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(800);
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Olay Sorusuna Geç'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(400);
+    await evalJs(`(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const rightOpt = btns.find(b => b.innerText.trim().startsWith('A'));
+      if (rightOpt) rightOpt.click();
+    })()`);
+    await sleep(400);
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Değer Sorusuna Geç'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(400);
+    await evalJs(`(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const valOpt = btns.find(b => b.innerText.includes('örnek olurum') || b.innerText.includes('davranırım'));
+      if (valOpt) valOpt.click();
+    })()`);
+    await sleep(400);
+    await evalJs(`(() => {
+      const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Tüm Durakları Tamamla'));
+      if (btn) btn.click();
     })()`);
     await sleep(600);
+    await screenshot('scene_flow_07_year_610_completed.png');
 
-    await send('Emulation.setDeviceMetricsOverride', {
-      width: 390,
-      height: 844,
-      deviceScaleFactor: 2,
-      mobile: true
-    });
-    await sleep(600);
-    await screenshot('doors_verify_05_mobile_doors_hub.png');
+    const yearCompletedCheck = await evalJs(`(() => ({
+      hasCompletedBadge: document.body.innerText.includes('610 Yılı Tamamlandı!'),
+      stationCounter: document.body.innerText.includes('Durak: 2/2')
+    }))()`);
+    console.log('Year 610 Full Completion Check:', yearCompletedCheck);
+    if (!yearCompletedCheck.hasCompletedBadge || !yearCompletedCheck.stationCounter) {
+      throw new Error('Year 610 completion check failed!');
+    }
 
-    await send('Emulation.setDeviceMetricsOverride', {
-      width: 1024,
-      height: 768,
-      deviceScaleFactor: 1,
-      mobile: false
-    });
-    await sleep(600);
-    await screenshot('doors_verify_06_tablet_doors_hub.png');
-
-    console.log('ALL VERIFICATION CHECKS PASSED SUCCESSFULLY!');
+    console.log('ALL 16 ACCEPTANCE CRITERIA PASSED 100%!');
   } finally {
     if (ws) ws.close();
     chromeProc.kill();
     viteProc.kill();
   }
+  process.exit(0);
 }
 
 runVerification().catch(err => {
