@@ -3,18 +3,18 @@
     "id": "mat-0daf0b71-b420-4e88-9352-41c2334f5a7d",
     "grade": "5",
     "category": "ders-notu",
-    "targetSection": "1",
+    "targetSection": "2",
     "title": "Dinamometre yapısı",
-    "unit": "1. Ünite: Gökyüzündeki Komşularımız ve Biz",
+    "unit": "2. Ünite: Kuvveti Tanıyalım",
     "subtopicNum": null,
     "subtopicCode": "",
     "subtopic": "",
     "desc": "Rotalı Fenci özel eğitim materyali.",
-    "fileName": "979F34DF-284D-40AB-AB87-4C6BBFFC2BE2.png",
+    "fileName": "Dinamometre yapısı",
     "fileUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793781197592_mat-0daf0b71-b420-4e88-9352-41c2334f5a7d_979f34df-284d-40ab-ab87-4c6bbffc2be2.png",
     "imageUrl": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793781158603_mat-0daf0b71-b420-4e88-9352-41c2334f5a7d_cover.jpg",
     "kapakResmi": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793781158603_mat-0daf0b71-b420-4e88-9352-41c2334f5a7d_cover.jpg",
-    "format": "PNG",
+    "format": "Web Bağlantısı",
     "hasBlob": false,
     "tags": [
       "fenbilimleri",
@@ -25,7 +25,8 @@
     "visibility": "public",
     "downloadCount": "Yeni",
     "createdAt": "2026-11-04T08:33:18.705Z",
-    "updatedAt": "2026-11-04T08:33:18.705Z"
+    "updatedAt": "2026-11-04T08:35:54.505Z",
+    "cover": "https://raw.githubusercontent.com/rotalifenci/rotalifenciweb/main/assets/materials/1793781158603_mat-0daf0b71-b420-4e88-9352-41c2334f5a7d_cover.jpg"
   },
   {
     "id": "mat-e92bf2be-d134-43a0-bd3e-2106ab3ac003",
