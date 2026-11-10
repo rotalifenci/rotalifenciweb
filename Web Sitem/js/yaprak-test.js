@@ -1686,6 +1686,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderQuestions() {
+    const placeholder = document.getElementById('previewEmptyPlaceholder');
+    if (placeholder) placeholder.style.display = 'none';
     const { grade = "5", subject = "Fen Bilimleri", learning_area = "", selected_outcomes = [] } = currentMeta;
     const total_questions = currentQuestions.length;
 
@@ -2695,6 +2697,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let zkCurrentQuestions = [];
 
   function formatQuestionStemText(rawText) {
+    if (typeof cleanSpatialReferences === 'function') {
+      rawText = cleanSpatialReferences(rawText);
+    }
     rawText = cleanTurkishAndLatex(rawText);
     let text = String(rawText || '').trim();
     text = text.replace(/^Soru\s*\d+\s*[:.-]\s*/i, '');

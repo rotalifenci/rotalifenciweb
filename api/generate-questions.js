@@ -9,6 +9,34 @@ const CANDIDATE_MODELS = [
   "gemini-3.6-flash"
 ];
 
+function cleanSpatialReferences(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/yukarıda\s+verilen/gi, 'yanda verilen')
+    .replace(/yukarıdaki\s+görsel/gi, 'yandaki görsel')
+    .replace(/yukarıdaki\s+model/gi, 'yandaki model')
+    .replace(/yukarıdaki\s+şekil/gi, 'yandaki şekil')
+    .replace(/yukarıdaki\s+tablo/gi, 'yandaki tablo')
+    .replace(/yukarıdaki\s+grafik/gi, 'yandaki grafik')
+    .replace(/yukarıdaki\s+deney/gi, 'yandaki deney')
+    .replace(/yukarıdaki\s+düzenek/gi, 'yandaki düzenek')
+    .replace(/yukarıdaki\s+açıklama/gi, 'yandaki açıklama')
+    .replace(/Yukarıdakilerden/g, 'Yandakilerden')
+    .replace(/yukarıdakilerden/g, 'yandakilerden')
+    .replace(/Yukarıdakiler/g, 'Yandakiler')
+    .replace(/yukarıdakiler/g, 'yandakiler')
+    .replace(/Yukarıdaki/g, 'Yandaki')
+    .replace(/yukarıdaki/g, 'yandaki')
+    .replace(/Yukardaki/g, 'Yandaki')
+    .replace(/yukardaki/g, 'yandaki')
+    .replace(/Yukarıdan/g, 'Yandan')
+    .replace(/yukarıdan/g, 'yandan')
+    .replace(/Yukarıda/g, 'Yanda')
+    .replace(/yukarıda/g, 'yanda')
+    .replace(/Yukarda/g, 'Yanda')
+    .replace(/yukarda/g, 'yanda');
+}
+
 function cleanTurkishAndLatex(str) {
   if (typeof str !== 'string') return str || '';
   let text = str;
@@ -42,6 +70,7 @@ function cleanTurkishAndLatex(str) {
   text = text.replace(/yukarıdaki\s+görsel/gi, 'yandaki görsel');
   text = text.replace(/yukarıdaki\s+model/gi, 'yandaki model');
   text = text.replace(/yukarıdaki\s+şekil/gi, 'yandaki şekil');
+  text = cleanSpatialReferences(text);
   return text.trim();
 }
 

@@ -8970,3 +8970,95 @@ body.pdf-export-mode .footer-right-web {
   padding: 1px 6px;
   border-radius: 4px;
 }
+
+
+/* ==========================================================================
+   🚀 BOŞ DURUM VE BAŞLANGIÇ REHBERİ (PREVIEW EMPTY PLACEHOLDER)
+   ========================================================================== */
+.preview-empty-placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 32px;
+  background: #ffffff;
+  border-radius: 20px;
+  border: 2px dashed #cbd5e1;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03);
+  margin: 16px 0;
+  min-height: 520px;
+}
+
+.empty-hero-icon {
+  font-size: 54px;
+  line-height: 1;
+  margin-bottom: 16px;
+  animation: floatRocket 3s ease-in-out infinite;
+}
+
+@keyframes floatRocket {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.empty-hero-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: #0f172a;
+  margin-bottom: 12px;
+  letter-spacing: -0.5px;
+}
+
+.empty-hero-desc {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #475569;
+  max-width: 680px;
+  margin: 0 auto 32px auto;
+}
+
+.empty-features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  width: 100%;
+  max-width: 880px;
+}
+
+.empty-feat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+  padding: 18px 14px;
+  background: #f8fafc;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  transition: all 0.2s ease;
+}
+
+.empty-feat-card:hover {
+  transform: translateY(-2px);
+  border-color: #93c5fd;
+  background: #f0f9ff;
+  box-shadow: 0 6px 16px rgba(2, 132, 199, 0.08);
+}
+
+.empty-feat-card .feat-icon {
+  font-size: 26px;
+  margin-bottom: 4px;
+}
+
+.empty-feat-card strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.empty-feat-card span {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.4;
+}

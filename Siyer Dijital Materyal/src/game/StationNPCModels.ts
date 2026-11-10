@@ -59,7 +59,7 @@ function createOverheadLabelSprite(
     depthTest: false
   });
   const sprite = new THREE.Sprite(mat);
-  sprite.scale.set(2.9, 0.82, 1);
+  sprite.scale.set(2.25, 0.65, 1);
   sprite.renderOrder = 10;
   return sprite;
 }
@@ -319,9 +319,9 @@ export function buildStationsAndGuidePath3D(
     beaconRing.position.y = 0.16;
     rootGroup.add(beaconRing);
 
-    // 1. Ak Sakallı Yaşlı Tarih Anlatıcısı (Positioned on Left of Station Dais: x = -1.15)
+    // 1. Ak Sakallı Yaşlı Tarih Anlatıcısı (Positioned on Left of Station Dais: x = -1.4)
     const { group: storytellerGroup, rightArm: storytellerRightArm } = buildStorytellerMesh(st.id);
-    storytellerGroup.position.set(-1.15, 0.16, 0.15);
+    storytellerGroup.position.set(-1.4, 0.16, 0.15);
     const storytellerLabel = createOverheadLabelSprite(
       '🔊 OLAYI DİNLE (SESLİ ANLATIM)',
       st.storytellerName || 'Ak Sakallı Tarih Anlatıcısı',
@@ -332,9 +332,9 @@ export function buildStationsAndGuidePath3D(
     storytellerGroup.add(storytellerLabel);
     rootGroup.add(storytellerGroup);
 
-    // 2. Soru Rehber Karakteri (Positioned on Right of Station Dais: x = +1.15)
+    // 2. Soru Rehber Karakteri (Positioned on Right of Station Dais: x = +1.4)
     const { group: guideGroup, bookMesh: guideBookMesh } = buildQuestionGuideMesh(st.id, isCompleted);
-    guideGroup.position.set(1.15, 0.16, 0.15);
+    guideGroup.position.set(1.4, 0.16, 0.15);
     const guideTheme = isCompleted
       ? 'guide_completed'
       : isUnlocked
@@ -409,7 +409,7 @@ export function buildStationsAndGuidePath3D(
     stationInstances.forEach((inst, idx) => {
       // Gentle floating book animation on the Question Guide NPC
       inst.guideBookMesh.position.y = 1.15 + Math.sin(animClock * 2.6 + idx) * 0.06;
-      inst.beaconRing.rotation.z += delta * 0.5;
+      inst.beaconRing.rotation.y += delta * 0.5;
 
       // Storyteller gentle greeting wave when player approaches within 5.5m
       const distToStoryteller = playerPos.distanceTo(inst.storytellerWorldPos);

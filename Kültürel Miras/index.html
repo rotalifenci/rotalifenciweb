@@ -1,0 +1,1366 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sivas'ın Dijital Tarih Atlası – TÜBİTAK 2204-B</title>
+  
+  <!-- Fontlar & İkonlar -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <!-- Three.js ve Eklentileri -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <!-- Stil Dosyası -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="theme-sivas">
+
+  <!-- ==================================================================== -->
+  <!-- ÜST BİLGİ VE NAVİGASYON (HEADER) -->
+  <!-- ==================================================================== -->
+  <header class="atlas-header">
+    <div class="header-container">
+      <div class="brand-block">
+        <div class="brand-crest">
+          <i class="fa-solid fa-monument"></i>
+          <span class="crest-badge">2204-B</span>
+        </div>
+        <div class="brand-titles">
+          <h1 class="main-title">Sivas'ın Dijital Tarih Atlası</h1>
+          <p class="sub-title">Sivas'ın Tarihî Mirasını Keşfet • Okul Dışı Öğrenme Platformu</p>
+          <div class="tour-ambiance-badge" style="margin-top: 4px;">
+            <i class="fa-solid fa-compass"></i> Sivas Tarihî Gezisi • Canlı Kültürel Miras Keşfi
+          </div>
+        </div>
+      </div>
+
+      <!-- 7 Zorunlu Ana Menü Maddesi + Yönetim Paneli -->
+      <nav class="main-navigation">
+        <button class="nav-btn active" data-tab="tab-map">
+          <i class="fa-solid fa-map-location-dot"></i>
+          <span>Sivas Tarih Haritası</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-monuments">
+          <i class="fa-solid fa-landmark"></i>
+          <span>Tarihî Eserler</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-3d">
+          <i class="fa-solid fa-cube"></i>
+          <span>3B Keşif</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-comparison">
+          <i class="fa-solid fa-code-compare"></i>
+          <span>Karşılaştırmalı Tarih</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-timeline">
+          <i class="fa-solid fa-timeline"></i>
+          <span>Tarihsel Zaman Çizelgesi</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-fieldwork">
+          <i class="fa-solid fa-graduation-cap"></i>
+          <span>Okul Dışı Öğrenme</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-sources">
+          <i class="fa-solid fa-book-bookmark"></i>
+          <span>Kaynakça</span>
+        </button>
+        <button class="nav-btn btn-admin" id="btnOpenAdmin">
+          <i class="fa-solid fa-gear"></i>
+          <span>Yönetim Paneli</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ==================================================================== -->
+  <!-- ANA İÇERİK ALANI -->
+  <!-- ==================================================================== -->
+  <main class="atlas-main">
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 1. SEKMELİK ALAN: SİVAS TARİH HARİTASI -->
+    <!-- ------------------------------------------------------------------ -->
+        <!-- ------------------------------------------------------------------ -->
+    <!-- 1. SEKMELİK ALAN: SİVAS TARİH HARİTASI (ANA SAYFA MERKEZİ DENEYİM) -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-map" class="content-tab active">
+      <!-- Ana Başlık ve Rehber Seçim Alanı -->
+      <div class="map-hero-banner">
+        <div class="hero-text-block">
+          <div class="hero-badge-tag"><i class="fa-solid fa-graduation-cap"></i> TÜBİTAK 2204-B KÜLTÜREL MİRAS ATLASI</div>
+          <h1 class="hero-main-title">SİVAS'IN DİJİTAL TARİH ATLASI</h1>
+          <p class="hero-sub-title">Geçmişin İzinde, Tarihin Kanıtlarıyla Keşfe Çık!</p>
+        </div>
+
+        <!-- Eren & Aybüke Keşif Rehberi Seçim Alanı -->
+        <div class="hero-guide-picker" id="heroGuidePicker">
+          <div class="guide-picker-label"><i class="fa-solid fa-compass"></i> Keşif Rehberini Seç:</div>
+          <div class="guide-picker-buttons">
+            <button class="guide-btn-pick active" data-guide="eren" id="btnPickEren" title="Eren: Mimari ve Saha Kaşifi">
+              <span class="guide-avatar-emoji">👦</span>
+              <div class="guide-pick-meta">
+                <strong>EREN</strong>
+                <small>Mimari Kaşifi</small>
+              </div>
+            </button>
+            <button class="guide-btn-pick" data-guide="aybuke" id="btnPickAybuke" title="Aybüke: Kültürel Miras ve Epigrafi Uzmanı">
+              <span class="guide-avatar-emoji">👧</span>
+              <div class="guide-pick-meta">
+                <strong>AYBÜKE</strong>
+                <small>Epigrafi Uzmanı</small>
+              </div>
+            </button>
+          </div>
+          <div class="guide-voice-toggle-wrap">
+            <button id="btnToggleGuideVoice" class="btn-guide-voice active" title="Sesli Anlatımı Aç / Kapat">
+              <i class="fa-solid fa-volume-high"></i> <span>Sesli Rehber</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Harita Filtre ve Kontrol Şeridi (Haritayı Gölgelemeyen İnce Şerit) -->
+      <div class="map-filter-ribbon">
+        <!-- Dönem Filtreleri -->
+        <div class="ribbon-group ribbon-periods">
+          <span class="ribbon-label"><i class="fa-solid fa-timeline"></i> Dönem:</span>
+          <div class="period-pills" id="mapPeriodFilterBar">
+            <button class="map-period-btn active" data-period="all">Tümü (10)</button>
+            <button class="map-period-btn" data-period="selcuklu"><span class="period-dot selcuklu"></span> Selçuklu</button>
+            <button class="map-period-btn" data-period="mengucekli"><span class="period-dot beylikler"></span> Mengücekli</button>
+            <button class="map-period-btn" data-period="ilhanli"><span class="period-dot ilhanli"></span> İlhanlı</button>
+            <button class="map-period-btn" data-period="osmanli"><span class="period-dot osmanli"></span> Osmanlı</button>
+            <button class="map-period-btn" data-period="diger"><span class="period-dot cumhuriyet"></span> Cumhuriyet</button>
+          </div>
+        </div>
+
+        <!-- Yapı Türü -->
+        <div class="ribbon-group">
+          <span class="ribbon-label"><i class="fa-solid fa-landmark"></i> Tür:</span>
+          <select id="typeFilter" class="custom-select ribbon-select">
+            <option value="all">Tüm Yapı Türleri (Cami, Medrese...)</option>
+            <option value="medrese">Medreseler & Dârülhadis</option>
+            <option value="cami">Camiler & İbadethaneler</option>
+            <option value="darussifa">Darüşşifalar (Tıp & Hastane)</option>
+            <option value="kopru">Tarihî Köprüler</option>
+            <option value="muze">Müzeler & Kongre Binaları</option>
+            <option value="idari">İdari & Vilayet Yapıları</option>
+          </select>
+        </div>
+
+        <!-- İlçe Seçimi (17 İlçe) -->
+        <div class="ribbon-group">
+          <span class="ribbon-label"><i class="fa-solid fa-map-pin"></i> İlçe:</span>
+          <select id="districtFilter" class="custom-select ribbon-select">
+            <option value="all">Sivas Geneli (17 İlçe)</option>
+            <option value="merkez">Merkez (9 Kayıtlı Eser)</option>
+            <option value="divrigi">Divriği (1 Kayıtlı Eser)</option>
+            <option value="akincilar">Akıncılar</option>
+            <option value="altinyayla">Altınyayla</option>
+            <option value="dogansar">Doğanşar</option>
+            <option value="gemerek">Gemerek</option>
+            <option value="golova">Gölova</option>
+            <option value="gurun">Gürün</option>
+            <option value="hafik">Hafik</option>
+            <option value="imranli">İmranlı</option>
+            <option value="kangal">Kangal</option>
+            <option value="koyulhisar">Koyulhisar</option>
+            <option value="susehri">Suşehri</option>
+            <option value="sarkisla">Şarkışla</option>
+            <option value="ulas">Ulaş</option>
+            <option value="yildizeli">Yıldızeli</option>
+            <option value="zara">Zara</option>
+          </select>
+        </div>
+
+        <!-- Harita Görünüm Seçici ve Araçlar -->
+        <div class="ribbon-group ribbon-tools">
+          <div class="map-view-toggle">
+            <button id="btnViewParchment" class="btn-map-control active" title="Orijinal Tarihî Gravür / Parşömen Harita">
+              <i class="fa-solid fa-scroll"></i> <span>Tarihî Gravür</span>
+            </button>
+            <button id="btnViewVector" class="btn-map-control" title="Vektörel Kültürel Atlas (Her İlçe Ayrı Sınırlarda)">
+              <i class="fa-solid fa-map-location-dot"></i> <span>Vektörel Atlas</span>
+            </button>
+          </div>
+          <button id="btnResetDistrict" class="btn-map-control" title="Seçimi Sıfırla ve Tüm Sivas'ı Göster">
+            <i class="fa-solid fa-globe"></i> <span>Tüm Sivas'ı Göster</span>
+          </button>
+          <button id="btnFocusMerkezSquare" class="btn-map-control" title="Tarihî Kent Meydanı'na Odaklan">
+            <i class="fa-solid fa-crosshairs"></i> <span>Kent Meydanı</span>
+          </button>
+          <button id="btnToggleRouteDrawer" class="btn-map-control" title="Gezi Rotası Planlayıcıyı Aç/Kapat">
+            <i class="fa-solid fa-route"></i> <span>Gezi Rotası</span>
+          </button>
+          <div class="map-zoom-buttons">
+            <button id="btnZoomIn" title="Yakınlaştır"><i class="fa-solid fa-plus"></i></button>
+            <button id="btnZoomOut" title="Uzaklaştır"><i class="fa-solid fa-minus"></i></button>
+            <button id="btnResetMap" title="Ölçeği Sıfırla"><i class="fa-solid fa-compress"></i></button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Harita Ana Görünüm Alanı -->
+      <div class="map-stage-wrapper">
+        <div class="svg-map-wrapper" id="svgMapWrapper">
+          <svg id="sivasSvgMap" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid meet">
+            <defs>
+              <!-- Kartografik Zemin Gradyanı -->
+              <linearGradient id="parchmentBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#fdfbf5"/>
+                <stop offset="35%" stop-color="#f7f0e1"/>
+                <stop offset="70%" stop-color="#f4ecdc"/>
+                <stop offset="100%" stop-color="#ede1cc"/>
+              </linearGradient>
+
+              <!-- Gölgelendirme ve Altın Işıma Filtreleri -->
+              <filter id="mapShadow" x="-5%" y="-5%" width="110%" height="110%">
+                <feDropShadow dx="1" dy="3" stdDeviation="4" flood-color="#3a2512" flood-opacity="0.25"/>
+              </filter>
+              <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feComponentTransfer in="blur" result="glow">
+                  <feFuncA type="linear" slope="1.8"/>
+                </feComponentTransfer>
+                <feMerge>
+                  <feMergeNode in="glow"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+
+            <!-- 1. Kartografik Antik Parşömen Zemin -->
+            <rect width="1000" height="760" rx="14" fill="url(#parchmentBgGrad)" filter="url(#mapShadow)" />
+
+            <!-- 2. Geleneksel Çerçeve ve Bordür Deseni -->
+            <rect x="12" y="12" width="976" height="736" rx="10" fill="none" stroke="#d5b88c" stroke-width="2" stroke-dasharray="8 4" opacity="0.75" />
+            <rect x="18" y="18" width="964" height="724" rx="8" fill="none" stroke="#b59463" stroke-width="1.2" opacity="0.6" />
+
+            <!-- 3. Kartografik Pusula Gülü (Kuzey Oku) -->
+            <g id="compassRose" transform="translate(920, 85)" opacity="0.85" pointer-events="none">
+              <circle r="36" fill="rgba(255,255,255,0.6)" stroke="#b59463" stroke-width="1.2" />
+              <circle r="33" fill="none" stroke="#d5b88c" stroke-width="0.8" stroke-dasharray="2 3" />
+              <!-- 8 Uçlu Yıldız -->
+              <polygon points="0,-32 4,-8 0,0 -4,-8" fill="#b45309" stroke="#78350f" stroke-width="0.8"/>
+              <polygon points="0,32 4,8 0,0 -4,8" fill="#d97706" stroke="#78350f" stroke-width="0.8"/>
+              <polygon points="-32,0 -8,-4 0,0 -8,4" fill="#d97706" stroke="#78350f" stroke-width="0.8"/>
+              <polygon points="32,0 8,-4 0,0 8,4" fill="#b45309" stroke="#78350f" stroke-width="0.8"/>
+              <polygon points="22,-22 6,-6 0,0 2,-8" fill="#f59e0b" opacity="0.7"/>
+              <polygon points="-22,-22 -6,-6 0,0 -2,-8" fill="#f59e0b" opacity="0.7"/>
+              <polygon points="22,22 6,6 0,0 2,8" fill="#f59e0b" opacity="0.7"/>
+              <polygon points="-22,22 -6,6 0,0 -2,8" fill="#f59e0b" opacity="0.7"/>
+              <!-- Yön Harfleri -->
+              <text x="0" y="-36" text-anchor="middle" font-family="'Cinzel', serif" font-weight="900" font-size="12" fill="#78350f">K</text>
+              <text x="0" y="46" text-anchor="middle" font-family="'Cinzel', serif" font-weight="700" font-size="10" fill="#78350f">G</text>
+              <text x="44" y="4" text-anchor="middle" font-family="'Cinzel', serif" font-weight="700" font-size="10" fill="#78350f">D</text>
+              <text x="-44" y="4" text-anchor="middle" font-family="'Cinzel', serif" font-weight="700" font-size="10" fill="#78350f">B</text>
+            </g>
+
+            <!-- 4. Kartografik Ölçek Çubuğu (0 - 80 km) -->
+            <g id="scaleBar" transform="translate(45, 715)" opacity="0.85" pointer-events="none">
+              <rect x="0" y="0" width="130" height="24" rx="4" fill="rgba(255,255,255,0.7)" stroke="#b59463" stroke-width="0.8" />
+              <rect x="10" y="14" width="27" height="4" fill="#78350f" />
+              <rect x="37" y="14" width="27" height="4" fill="#f59e0b" />
+              <rect x="64" y="14" width="27" height="4" fill="#78350f" />
+              <rect x="91" y="14" width="27" height="4" fill="#f59e0b" />
+              <text x="10" y="10" font-size="8" font-family="'Inter', sans-serif" font-weight="700" fill="#78350f">0</text>
+              <text x="64" y="10" font-size="8" font-family="'Inter', sans-serif" font-weight="700" fill="#78350f">40</text>
+              <text x="118" y="10" font-size="8" font-family="'Inter', sans-serif" font-weight="700" fill="#78350f">80 km</text>
+            </g>
+
+            <!-- 5. Nehirler Grubu (Kızılırmak & Kelkit Vadileri) -->
+            <g id="riversGroup" class="rivers-layer"></g>
+
+            <!-- 6. 17 İlçe Gerçek Coğrafi SVG Sınırları Katmanı (100% Tıklanabilir) -->
+            <g id="districtsGroup" class="districts-layer"></g>
+
+            <!-- 7. Rota Çizgisi -->
+            <path id="routePathLine" class="route-line-svg" d="" />
+
+            <!-- 8. Eser Pinleri (Marker Layer) -->
+            <g id="markersGroup" class="markers-layer"></g>
+
+            <!-- 9. Tarihi Kent Meydanı Inset Alanı -->
+            <g id="kentMeydaniInset" class="inset-layer" style="display: none;"></g>
+          </svg>
+
+          <!-- Tıklanan Eser Önizleme Popup Balonu -->
+          <div id="mapPopup" class="map-info-popup" style="display: none;">
+            <div class="popup-thumb-wrap">
+              <img id="popupImg" src="" alt="Eser Önizleme" />
+              <span id="popupPeriod" class="popup-badge">Dönem</span>
+              <button class="popup-close-btn" id="btnClosePopup">&times;</button>
+            </div>
+            <div class="popup-content">
+              <h4 id="popupTitle">Eser Adı</h4>
+              <p id="popupDistrict" class="popup-sub"><i class="fa-solid fa-location-dot"></i> İlçe, Konum</p>
+              <p id="popupDesc" class="popup-desc">Açıklama...</p>
+              <div class="popup-actions">
+                <button class="btn-popup-explore" id="btnPopupExplore">
+                  <i class="fa-solid fa-compass"></i> Eseri Keşfet
+                </button>
+                <button class="btn-popup-3d" id="btnPopup3D">
+                  <i class="fa-solid fa-cube"></i> 3B Keşif
+                </button>
+                <button class="btn-popup-add-route" id="btnPopupAddRoute" title="Gezi Rotasına Ekle">
+                  <i class="fa-solid fa-plus"></i> Rotaya Ekle
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hover İlçe Tooltip'i -->
+          <div id="districtTooltip" class="district-hover-tooltip" style="display: none;"></div>
+
+          <!-- Yüzen Dijital Keşif Rehberi (Eren / Aybüke) -->
+          <div class="guide-floating-widget" id="guideFloatingWidget">
+            <div class="guide-widget-card">
+              <div class="guide-widget-header">
+                <div class="guide-avatar-wrap" id="guideWidgetAvatar">
+                  <!-- SVG Avatar JS ile doldurulur -->
+                </div>
+                <div class="guide-header-text">
+                  <div class="guide-name-row">
+                    <h4 id="guideWidgetName">Eren</h4>
+                    <span class="guide-title-pill" id="guideWidgetTitle">Mimari Kaşifi</span>
+                  </div>
+                  <p class="guide-sub-desc">TÜBİTAK 2204-B Dijital Rehberi</p>
+                </div>
+                <div class="guide-header-btns">
+                  <button id="btnGuideVoicePlay" class="guide-tool-btn" title="Seslendir"><i class="fa-solid fa-volume-high"></i></button>
+                  <button id="btnGuideMinimize" class="guide-tool-btn" title="Küçült"><i class="fa-solid fa-chevron-down"></i></button>
+                </div>
+              </div>
+              <div class="guide-speech-content" id="guideSpeechBubble">
+                <p id="guideSpeechText">Merhaba! Ben Eren. Sivas'ın 17 ilçesindeki kültürel mirası birlikte araştıracağız. Haritadan bir ilçe seçerek keşfe başlayabilirsin!</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sağ Taraf: Seçilen İlçe Bilgi Çekmecesi (Drawer) -->
+        <aside class="district-info-panel" id="districtInfoPanel" style="display: none;">
+          <div class="district-panel-header">
+            <div class="district-title-wrap">
+              <span class="district-badge-tag"><i class="fa-solid fa-map-pin"></i> Sivas İlçesi</span>
+              <h3 id="panelDistrictTitle">DİVRİĞİ</h3>
+              <span id="panelMonumentCount" class="district-count-pill">1 Kayıtlı Eser</span>
+            </div>
+            <button id="btnCloseDistrictPanel" class="btn-close-panel" title="Paneli Kapat">&times;</button>
+          </div>
+
+          <div class="district-panel-body">
+            <p class="district-summary-text" id="panelDistrictDesc"></p>
+
+            <div class="district-monuments-section">
+              <div class="section-title-flex">
+                <h4><i class="fa-solid fa-landmark"></i> Tarihî Kültürel Miraslar</h4>
+                <span id="panelActiveFilterTag" class="active-filter-badge"></span>
+              </div>
+              <div class="district-monuments-list" id="panelMonumentsList">
+                <!-- Dinamik eser kartları JS ile doldurulur -->
+              </div>
+            </div>
+          </div>
+
+          <div class="district-panel-footer">
+            <button class="btn-panel-action" id="btnAddMonumentForDistrict">
+              <i class="fa-solid fa-plus-circle"></i> Bu İlçeye Eser Ekle
+            </button>
+            <button class="btn-panel-action secondary" id="btnResetFromPanel">
+              <i class="fa-solid fa-arrows-rotate"></i> Tüm Sivas'ı Göster
+            </button>
+          </div>
+        </aside>
+
+        <!-- Açılır/Kapanır Tarihî Gezi Rotası Çekmecesi -->
+        <aside class="route-planner-drawer" id="routePlannerDrawer" style="display: none;">
+          <div class="route-drawer-header">
+            <h3><i class="fa-solid fa-route"></i> Tarihî Gezi Rotası Planlayıcı</h3>
+            <button class="btn-close-panel" id="btnCloseRouteDrawer">&times;</button>
+          </div>
+          <p class="card-hint">Haritadaki eserlere tıklayarak veya listeye basarak okul dışı öğrenme gezi rotanızı oluşturun.</p>
+          <ul class="route-list" id="routeList">
+            <li class="route-empty">Henüz rota noktası eklenmedi. Eser kartlarındaki 'Rotaya Ekle' butonunu kullanın.</li>
+          </ul>
+          <div class="route-footer" id="routeFooter" style="display: none;">
+            <div class="route-summary">
+              <span id="routeStopCount">0 Durak</span> • <span id="routeDistance">~1.2 km Yürüme</span>
+            </div>
+            <div class="route-action-buttons">
+              <button class="btn-action-primary" id="btnPrintRoute">
+                <i class="fa-solid fa-print"></i> Gezi Kılavuzunu İndir
+              </button>
+              <button class="btn-action-secondary" id="btnClearRoute">
+                <i class="fa-solid fa-trash-can"></i> Temizle
+              </button>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 2. SEKMELİK ALAN: TARİHÎ ESERLER VE ÇİFTE MİNARELİ ÖZEL İNCELEME -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-monuments" class="content-tab">
+      <div class="section-container">
+        <!-- Özel Eser Vitrini: Çifte Minareli Medrese (Kullanıcının 3B Render Görseli Dahil) -->
+        <div class="cifte-showcase-hero" id="cifteHero">
+          <div class="showcase-badge">
+            <i class="fa-solid fa-star"></i> TÜBİTAK 2204-B Başvuru Başyapıtı
+          </div>
+          <div class="showcase-grid">
+            <div class="showcase-visual">
+              <div class="visual-frame">
+                <!-- Kullanıcının Yüklediği 3B Görsel Base64 ile Gösterilir -->
+                <img id="cifteRenderImg" src="assets/images/cifte_minareli_3d.jpg" alt="Çifte Minareli Medrese 3B Görseli">
+                <span class="visual-tag"><i class="fa-solid fa-camera-retro"></i> 3B Rekonstrüksiyon ve Cephe Modeli</span>
+              </div>
+            </div>
+            <div class="showcase-info">
+              <span class="period-badge ilhanli">1271–1272 • İlhanlı / Selçuklu Dönemi</span>
+              <h2>Çifte Minareli Medrese (Dârülhadis)</h2>
+              <p class="lead-text">
+                1271 yılında İlhanlı Başveziri Şemseddin Cüveynî tarafından bir Dârülhadis olarak yaptırılan, firuze çinili çift minaresi ve taşa adeta dantel gibi işlenmiş mukarnaslı taçkapısıyla Anadolu'nun en anıtsal medrese cephesidir.
+              </p>
+              
+              <!-- Günümüze Ulaşan vs Ulaşmayan Bölümler Bilimsel Ayrımı -->
+              <div class="condition-box">
+                <div class="condition-item surviving">
+                  <i class="fa-solid fa-circle-check"></i>
+                  <div>
+                    <strong>Günümüze Ulaşan Özgün Bölümler:</strong>
+                    <span>Doğu taçkapısı, mermer ön cephe duvarı ve firuze sırlı tuğla çift minare.</span>
+                  </div>
+                </div>
+                <div class="condition-item lost">
+                  <i class="fa-solid fa-circle-exclamation"></i>
+                  <div>
+                    <strong>Yıkılmış / Arkeolojik Bölüm:</strong>
+                    <span>Arka kısımdaki iki katlı revaklı açık avlu 19. yy sonunda yıkılmıştır (1963 kazı planı).</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="showcase-btns">
+                <button class="btn-action-primary" onclick="SivasApp.openMonumentDetail('cifte-minareli-medrese')">
+                  <i class="fa-solid fa-book-open"></i> 14 Başlıklı Ayrıntılı İnceleme
+                </button>
+                <button class="btn-action-secondary" onclick="SivasApp.open3DForMonument('cifte-minareli-medrese')">
+                  <i class="fa-solid fa-cube"></i> 3B Model ve Avlu İnceleme
+                </button>
+                <button class="btn-tablet-trigger" onclick="SivasApp.openDigitalTabletModalById('cifte-minareli-medrese')">
+                  <i class="fa-solid fa-scroll"></i> Dijital Bilgi Kitabesi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 10 Eserin Tam Kart Listesi -->
+        <div class="monuments-header-bar">
+          <h3>Sivas Tarihî ve Kültürel Miras Yapıları (10 Seçkin Eser)</h3>
+          <p>Her eseri yazılı, işitsel, görsel ve 3B boyutlarıyla keşfedebilirsiniz.</p>
+        </div>
+
+        <div class="monuments-grid" id="monumentsGrid">
+          <!-- JS tarafından 10 eser kartı doldurulur -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 3. SEKMELİK ALAN: 3B KEŞİF & GLB/GLTF YÜKLEYİCİ -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-3d" class="content-tab">
+      <div class="viewer-3d-layout">
+        <!-- 3B Kontrol Çubuğu -->
+        <div class="viewer-top-bar">
+          <div class="active-monument-selector">
+            <label><i class="fa-solid fa-monument"></i> İncelenen Eser:</label>
+            <select id="select3DMonument" class="custom-select">
+              <!-- JS ile doldurulur -->
+            </select>
+          </div>
+
+          <!-- Mod Geçişi ve Yıkılmış Bölüm Açma/Kapama -->
+          <div class="viewer-actions">
+            <button class="btn-tool active" id="btnToggleCifteReal" title="360° Gerçek 3B Model ve Mimari Hotspot Modu Arasında Geçiş Yap">
+              <i class="fa-solid fa-cube"></i> 360° Gerçek 3B Model (GLB)
+            </button>
+            <button class="btn-tool" id="btnToggleLostSection" title="Yıkılmış / Arkeolojik Bölümü Göster/Gizle">
+              <i class="fa-solid fa-ghost"></i> Yıkılmış Avluyu Göster/Gizle
+            </button>
+            <button class="btn-tool" id="btnOpenTabletFrom3D" title="Eserin Önündeki Taş Dijital Kitabeyi Aç">
+              <i class="fa-solid fa-scroll"></i> Dijital Bilgi Kitabesi
+            </button>
+            <button class="btn-tool" id="btnOpenRealInscription3D" title="Gerçek Tarihî Kitabeyi Gör">
+              <i class="fa-solid fa-feather-pointed"></i> Gerçek Kitabe
+            </button>
+            <button class="btn-tool btn-upload-model" id="btnTriggerUpload3D" title="Kendi .GLB / .GLTF 3B Model Dosyanızı Yükleyin">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Kendi 3B Modelini Yükle (.glb/.gltf)
+            </button>
+            <input type="file" id="file3DUpload" accept=".glb,.gltf" style="display: none;">
+          </div>
+        </div>
+
+        <!-- 3B Tuval ve Görsel Alanı -->
+        <div class="viewer-main-canvas" id="canvas3DContainer">
+          <!-- Çifte Minareli Medrese Gerçek 3B Model İnceleme Katmanı (Kullanıcının 3B Render'ı) -->
+          <div id="cifteReal3DOverlay" class="cifte-real3d-overlay" style="display: none;">
+            <div class="real3d-viewer-box">
+              <img id="cifteReal3DImage" src="assets/images/cifte_minareli_3d.jpg" alt="Çifte Minareli Medrese Gerçek 3B Modeli">
+              
+              <!-- Gerçek 3B Görsel Üzerindeki İnteraktif Mimari Hotspotlar -->
+              <div class="img-hotspot" style="top: 20%; left: 44%;" onclick="SivasApp.showPinDetail('minare-sol')" title="Sol Çinili Minare">
+                <span class="pulse-ring"></span><i class="fa-solid fa-monument"></i>
+              </div>
+              <div class="img-hotspot" style="top: 20%; left: 60%;" onclick="SivasApp.showPinDetail('minare-sag')" title="Sağ Çinili Minare">
+                <span class="pulse-ring"></span><i class="fa-solid fa-monument"></i>
+              </div>
+              <div class="img-hotspot" style="top: 55%; left: 45.5%;" onclick="SivasApp.showPinDetail('kufi-sol')" title="Kufi Hatlı Firuze Çini Pano">
+                <span class="pulse-ring"></span><i class="fa-solid fa-cube"></i>
+              </div>
+              <div class="img-hotspot" style="top: 55%; left: 61.5%;" onclick="SivasApp.showPinDetail('kufi-sag')" title="Kufi Hatlı Firuze Çini Pano">
+                <span class="pulse-ring"></span><i class="fa-solid fa-cube"></i>
+              </div>
+              <div class="img-hotspot" style="top: 76%; left: 55%;" onclick="SivasApp.showPinDetail('tackapi')" title="Mukarnaslı Anıtsal Taçkapı ve Kitabe">
+                <span class="pulse-ring"></span><i class="fa-solid fa-door-open"></i>
+              </div>
+              <div class="img-hotspot" style="top: 73%; left: 42%;" onclick="SivasApp.showPinDetail('eyvan-sol')" title="Sol Kemerli Eyvan">
+                <span class="pulse-ring"></span><i class="fa-solid fa-archway"></i>
+              </div>
+              <div class="img-hotspot" style="top: 73%; left: 68%;" onclick="SivasApp.showPinDetail('eyvan-sag')" title="Sağ Kemerli Eyvan">
+                <span class="pulse-ring"></span><i class="fa-solid fa-archway"></i>
+              </div>
+              <div class="img-hotspot tablet-hotspot" style="top: 86%; left: 82%;" onclick="SivasApp.openCurrentTablet()" title="Dijital Bilgi Kitabesi">
+                <span class="pulse-ring gold"></span><i class="fa-solid fa-scroll"></i>
+              </div>
+
+              <div class="real3d-badge">
+                <i class="fa-solid fa-cube"></i> Çifte Minareli Medrese – Gerçek 3B Model İnceleme Alanı
+              </div>
+            </div>
+          </div>
+
+          <!-- Hotspot Bilgi Balonu Overlay -->
+          <div class="hotspot-overlay-card" id="hotspotOverlay" style="display: none;">
+            <button class="close-overlay" id="btnCloseHotspot">&times;</button>
+            <h4 id="hotspotTitle">Bölüm Adı</h4>
+            <p id="hotspotDesc">Mimari açıklama buraya gelir.</p>
+          </div>
+
+          <!-- Sahne İçi Dijital Kitabe İpucu Rozeti -->
+          <div class="canvas-tablet-hint" onclick="SivasApp.openCurrentTablet()">
+            <i class="fa-solid fa-scroll"></i> Girişteki <strong>Dijital Bilgi Kitabesi</strong>'ne tıklayın
+          </div>
+
+          <!-- 3D Kamera ve Yönlendirme İpuçları -->
+          <div class="canvas-controls-hint">
+            <span><i class="fa-solid fa-mouse"></i> Sol Tık: 360° Döndür</span>
+            <span><i class="fa-solid fa-arrows-up-down"></i> Tekerlek: Yakınlaştır</span>
+            <span><i class="fa-solid fa-hand"></i> Sağ Tık: Kaydır</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 4. SEKMELİK ALAN: KARŞILAŞTIRMALI TARİH İNCELEME MODÜLÜ (10 KRİTER) -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-comparison" class="content-tab">
+      <div class="section-container">
+        <div class="comparison-header">
+          <h2><i class="fa-solid fa-code-compare"></i> Karşılaştırmalı Tarih İnceleme Modülü</h2>
+          <p>
+            Sivas'taki farklı dönem ve işlevlere sahip tarihî yapıları bilimsel 10 ölçüt üzerinden yan yana karşılaştırın; tarihsel değişim, süreklilik ve mimari tercihlere dair çıkarımlarınızı kaydedin.
+          </p>
+
+          <!-- Hızlı Kıyaslama Seçeneği -->
+          <div class="comparison-preset-bar">
+            <strong>Tavsiye Edilen Kıyaslama:</strong>
+            <button class="btn-preset" id="btnPreset1271">
+              <i class="fa-solid fa-bolt"></i> 1271 Yılı Üçlüsü: Çifte Minareli vs Gök Medrese vs Buruciye
+            </button>
+            <button class="btn-preset" id="btnPresetDarussifa">
+              <i class="fa-solid fa-heart-pulse"></i> Tıp & Şifa Mirası: Şifaiye vs Divriği Darüşşifası
+            </button>
+          </div>
+        </div>
+
+        <!-- Eser Seçim Seçicileri -->
+        <div class="comparison-selector-row">
+          <div class="selector-col">
+            <label>1. Tarihî Eser:</label>
+            <select id="compareSelect1" class="custom-select"></select>
+          </div>
+          <div class="selector-col">
+            <label>2. Tarihî Eser:</label>
+            <select id="compareSelect2" class="custom-select"></select>
+          </div>
+          <div class="selector-col">
+            <label>3. Tarihî Eser (Opsiyonel):</label>
+            <select id="compareSelect3" class="custom-select"></select>
+          </div>
+        </div>
+
+        <!-- Karşılaştırma Tablosu (10 Ölçüt) -->
+        <div class="comparison-table-wrapper">
+          <table class="comparison-table" id="comparisonTable">
+            <thead>
+              <tr>
+                <th class="crit-col">Karşılaştırma Ölçütü</th>
+                <th id="thEser1">1. Eser</th>
+                <th id="thEser2">2. Eser</th>
+                <th id="thEser3">3. Eser</th>
+              </tr>
+            </thead>
+            <tbody id="comparisonTableBody">
+              <!-- JS ile 10 kriter satırı doldurulur -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Öğrenci Bilimsel Çıkarım ve Not Alanı -->
+        <div class="student-inference-card">
+          <div class="card-title-row">
+            <h4><i class="fa-solid fa-pen-nib"></i> Bilimsel Tarihsel Çıkarım Şablonu (TÜBİTAK 2204-B)</h4>
+            <span class="badge-hint"><i class="fa-solid fa-scale-balanced"></i> İddia • Kanıt • Gerekçe • Sonuç</span>
+          </div>
+          <p class="inference-help">
+            Yukarıdaki karşılaştırmadan hareketle; tarihsel düşünme basamaklarını kullanarak hipotezinizi ve kanıtlarınızı yapılandırılmış şablona kaydediniz:
+          </p>
+
+          <div class="structured-inquiry-grid">
+            <div class="inquiry-field">
+              <label><i class="fa-solid fa-lightbulb"></i> 1. İddiam (Tez / Varsayım):</label>
+              <input type="text" id="txtInferenceClaim" placeholder="Örn: 1271 yılında aynı meydanda yapılan medreseler, İlhanlı ve Selçuklu atölyelerinin farklı bezeme anlayışlarını yansıtır." />
+            </div>
+
+            <div class="inquiry-field">
+              <label><i class="fa-solid fa-scroll"></i> 2. Kanıtım (Tarihî Belge / Taş İşçiliği / Kitabe):</label>
+              <textarea id="txtInferenceEvidence" rows="2" placeholder="Örn: Gök Medrese taçkapısındaki Hayat Ağacı kabartması ile Çifte Minare'nin mukarnaslı derin geometrik yıldız geçmeleri..."></textarea>
+            </div>
+
+            <div class="inquiry-field">
+              <label><i class="fa-solid fa-brain"></i> 3. Gerekçem (Tarihsel Akıl Yürütme):</label>
+              <textarea id="txtInferenceReasoning" rows="2" placeholder="Örn: Banilerin farklı siyasi kimlikleri (Sahip Ata ve Cüveynî) ve farklı usta gruplarıyla çalışmaları bu üslup çeşitliliğine yol açmıştır..."></textarea>
+            </div>
+
+            <div class="inquiry-field">
+              <label><i class="fa-solid fa-flag-checkered"></i> 4. Sonucum (Tarihsel Çıkarım):</label>
+              <textarea id="txtStudentInference" rows="2" placeholder="Örn: Sivas, 13. yüzyılda yalnızca bir ticaret merkezi değil; farklı mimari ekollerin buluştuğu bir kültür ve sanat başkentidir."></textarea>
+            </div>
+          </div>
+
+          <div class="inference-actions">
+            <button class="btn-action-primary" id="btnSaveInference">
+              <i class="fa-solid fa-floppy-disk"></i> Çıkarımımı Kaydet
+            </button>
+            <button class="btn-action-secondary" id="btnExportInference">
+              <i class="fa-solid fa-print"></i> TÜBİTAK Raporu Yazdır / PDF
+            </button>
+            <span id="saveStatusInference" class="save-status"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 5. SEKMELİK ALAN: TARİHSEL ZAMAN ÇİZELGESİ -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-timeline" class="content-tab">
+      <div class="section-container">
+        <div class="timeline-intro">
+          <h2><i class="fa-solid fa-timeline"></i> Sivas Tarihsel Zaman Çizelgesi (1196 – 1919)</h2>
+          <p>
+            Sivas'ın 800 yılı aşan imar serüveninde Danişmendliler, Selçuklular, Mengücekliler, İlhanlılar, Osmanlılar ve Milli Mücadele dönemlerinin mimari tanıkları kronolojik olarak dizilmiştir.
+          </p>
+        </div>
+
+        <!-- Zaman Çizelgesi Gövdesi -->
+        <div class="timeline-wrapper">
+          <div class="timeline-track" id="timelineTrack">
+            <!-- JS tarafından kronolojik sırada basılır -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 6. SEKMELİK ALAN: OKUL DIŞI ÖĞRENME ("Dijital Gezi" & "Yerinde Keşif" + Ön/Son Test) -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-fieldwork" class="content-tab">
+      <div class="section-container">
+        <div class="fieldwork-header">
+          <h2><i class="fa-solid fa-graduation-cap"></i> Okul Dışı Öğrenme Modülü</h2>
+          <p>
+            Müze ve tarihî alanları yalnızca gezilen bir yer olmaktan çıkarıp aktif bir araştırma laboratuvarına dönüştürün.
+          </p>
+
+          <!-- Dijital Gezi vs Yerinde Keşif Mod Geçişi -->
+          <div class="fieldwork-mode-switch">
+            <button class="mode-btn active" id="btnModeDigital">
+              <i class="fa-solid fa-laptop"></i> 1. Dijital Gezi Modu (Sınıfta / Evde 3B İnceleme)
+            </button>
+            <button class="mode-btn" id="btnModePhysical">
+              <i class="fa-solid fa-person-walking"></i> 2. Yerinde Keşif Modu (Tarihî Mekânda Sahada)
+            </button>
+          </div>
+        </div>
+
+        <div class="fieldwork-content-grid">
+          <!-- Sol Sütun: Gözlem ve Saha Görevleri -->
+          <div class="fieldwork-tasks-card">
+            <h3 id="modeCardTitle"><i class="fa-solid fa-clipboard-check"></i> Tarihî Mekân Gözlem Görevleri</h3>
+            <p id="modeCardDesc">Sivas Kent Meydanı'ndaki eserleri yerinde veya dijital model üzerinde incelerken bu görevleri tamamlayınız:</p>
+            
+            <div class="checklist-container" id="tasksChecklist">
+              <!-- JS ile görevler listelenir -->
+            </div>
+
+            <div class="field-notes-box">
+              <label><i class="fa-solid fa-note-sticky"></i> Saha / Model Gözlem Notlarım:</label>
+              <textarea id="txtFieldNotes" placeholder="Gözlemlerinizi, yapının taş rengini, ortam seslerini ve kitabe durumunu buraya yazınız..."></textarea>
+              <button class="btn-action-secondary" id="btnSaveFieldNotes">
+                <i class="fa-solid fa-floppy-disk"></i> Notları Kaydet
+              </button>
+            </div>
+          </div>
+
+          <!-- Sağ Sütun: TÜBİTAK 2204-B Ön Test & Son Test Değerlendirme Bölümü -->
+          <div class="assessment-card">
+            <div class="card-header-flex">
+              <h3><i class="fa-solid fa-spell-check"></i> Ön Test / Son Test Değerlendirme</h3>
+              <div class="test-type-toggle">
+                <button class="test-pill active" id="btnTogglePreTest">Ön Test</button>
+                <button class="test-pill" id="btnTogglePostTest">Son Test</button>
+              </div>
+            </div>
+            <p class="test-info-text" id="testInfoText">
+              Gezi öncesinde mevcut tarihsel bilgi düzeyinizi ölçmek için 5 soruyu yanıtlayınız.
+            </p>
+
+            <form id="assessmentForm" class="assessment-questions-list">
+              <!-- JS ile 5 soru basılır -->
+            </form>
+
+            <div class="assessment-actions">
+              <button type="button" class="btn-action-primary" id="btnSubmitTest">
+                <i class="fa-solid fa-check-double"></i> Testi Tamamla ve Değerlendir
+              </button>
+            </div>
+
+            <!-- Test Sonuç Özeti -->
+            <div id="testResultBox" class="test-result-box" style="display: none;">
+              <div class="score-display">
+                <span class="score-num" id="scoreNum">0 / 5</span>
+                <span class="score-label" id="scoreLabel">Başarı Puanı</span>
+              </div>
+              <p id="scoreFeedback">Geri bildirim</p>
+              <div class="test-export-btns">
+                <button class="btn-action-secondary" id="btnExportTestResults">
+                  <i class="fa-solid fa-download"></i> TÜBİTAK Raporu İçin CSV/Veri İndir
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ------------------------------------------------------------------ -->
+    <!-- 7. SEKMELİK ALAN: KAYNAKÇA (AKADEMİK VE TESCİLLİ LİTERATÜR) -->
+    <!-- ------------------------------------------------------------------ -->
+    <section id="tab-sources" class="content-tab">
+      <div class="section-container">
+        <div class="sources-card">
+          <h2><i class="fa-solid fa-book-bookmark"></i> Bilimsel Kaynakça ve Arşiv Belgeleri</h2>
+          <p>
+            "Sivas'ın Dijital Tarih Atlası" platformundaki bütün tarihsel dönemler, kitabe transkripsiyonları, baniler ve mimari plan verileri aşağıdaki akademik kaynaklar ve resmî kültür varlıkları envanterleri üzerinden doğrulanmıştır:
+          </p>
+
+          <div class="sources-category">
+            <h4><i class="fa-solid fa-graduation-cap"></i> Temel Monografiler ve Akademik Eserler</h4>
+            <ul class="sources-list">
+              <li><strong>Karamağara, H. (1964).</strong> <em>Sivas Çifte Minareli Medrese Kazısı.</em> Türk Arkeoloji Dergisi, Sayı XIII-2, s. 220–235.</li>
+              <li><strong>Kuran, A. (1969).</strong> <em>Anadolu Medreseleri, Cilt I.</em> Ankara: Orta Doğu Teknik Üniversitesi Mimarlık Fakültesi Yayınları.</li>
+              <li><strong>Sözen, M. (1970).</strong> <em>Anadolu Medreseleri: Selçuklu ve Beylikler Devri (Cilt 1-2).</em> İstanbul: İTÜ Mimarlık Fakültesi.</li>
+              <li><strong>Kuban, D. (2001).</strong> <em>Cennetin Kapıları: Divriği Ulu Camii ve Şifahanesi.</em> İstanbul: Yapı Kredi Yayınları.</li>
+              <li><strong>Cantay, G. (1992).</strong> <em>Anadolu Selçuklu Dönemi Şifahaneleri.</em> Ankara: Atatürk Kültür Merkezi Yayınları.</li>
+              <li><strong>Gabriel, A. (1934).</strong> <em>Monuments Turcs d'Anatolie, Tome II: Sivas, Amasya.</em> Paris: De Boccard.</li>
+              <li><strong>Öney, G. (1992).</strong> <em>Anadolu Selçuklu Çini Sanatı.</em> Ankara: Türkiye İş Bankası Kültür Yayınları.</li>
+              <li><strong>Çulpan, C. (1975).</strong> <em>Türk Taş Köprüleri (Ortaçağdan Osmanlı Devri Sonuna Kadar).</em> Ankara: Türk Tarih Kurumu Basımevi.</li>
+            </ul>
+          </div>
+
+          <div class="sources-category">
+            <h4><i class="fa-solid fa-building-columns"></i> Resmî Kurum Envanterleri ve Arşiv Kayıtları</h4>
+            <ul class="sources-list">
+              <li><strong>T.C. Kültür ve Turizm Bakanlığı</strong>, Sivas Kültür Varlıklarını Koruma Bölge Kurulu Tescil Fişleri ve Rölöve Raporları.</li>
+              <li><strong>Vakıflar Genel Müdürlüğü</strong>, Sivas Vakıf Eserleri Kitabe Külliyatı ve Vakfiyeler Arşivi.</li>
+              <li><strong>UNESCO World Heritage Centre</strong>, <em>Divriği Great Mosque and Hospital</em> (Ref: 358, Inscribed 1985).</li>
+              <li><strong>Atatürk Araştırma Merkezi</strong>, <em>Sivas Kongresi Tutanakları ve Heyet-i Temsiliye Belgeleri</em>, Ankara.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: DİJİTAL BİLGİ KİTABESİ (8 ALANLI TAŞ LEVHA TASARIMI) -->
+  <!-- ==================================================================== -->
+  <div id="modalDigitalTablet" class="atlas-modal" style="display: none;">
+    <div class="modal-backdrop" onclick="SivasApp.closeModals()"></div>
+    <div class="modal-panel stone-tablet-panel">
+      <button class="modal-close" onclick="SivasApp.closeModals()">&times;</button>
+      <div class="tablet-header">
+        <div class="tablet-ornament"><i class="fa-solid fa-scroll"></i></div>
+        <h3>DİJİTAL BİLGİ KİTABESİ</h3>
+        <p class="tablet-sub">Tarihî yapının önündeki etkileşimli bilgilendirme levhası (Özgün tarihî kitabe ile karıştırılmamalıdır)</p>
+      </div>
+
+      <div class="tablet-content-grid" id="tabletContentGrid">
+        <!-- JS ile 8 zorunlu alan doldurulur -->
+      </div>
+
+      <div class="tablet-footer">
+        <button class="btn-action-primary" id="btnSwitchToRealInscription">
+          <i class="fa-solid fa-feather-pointed"></i> Eserin Gerçek Tarihî Kitabesini İncele
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: GERÇEK TARİHÎ KİTABE İNCELEMESİ (ORİJİNAL ARAPÇA / TRANSKRİPSİYON / ANLAM) -->
+  <!-- ==================================================================== -->
+  <div id="modalRealInscription" class="atlas-modal" style="display: none;">
+    <div class="modal-backdrop" onclick="SivasApp.closeModals()"></div>
+    <div class="modal-panel inscription-panel">
+      <button class="modal-close" onclick="SivasApp.closeModals()">&times;</button>
+      
+      <div class="inscription-header">
+        <div class="ins-badge"><i class="fa-solid fa-scroll"></i> Gerçek Tarihî Epigrafi ve Taş Yazıt İncelemesi</div>
+        <h3 id="insTitle">Çifte Minareli Medrese Kitabesi</h3>
+        <span id="insLocation" class="ins-location">Doğu taçkapısı mukarnas kavsara kuşağı üzerinde</span>
+      </div>
+
+      <div class="inscription-grid">
+        <!-- Sol: Kitabe Görseli ve Epigrafik Filtreler -->
+        <div class="ins-visual-col">
+          <div class="ins-img-wrapper" id="insImgWrapper">
+            <img id="insPhoto" src="assets/images/cifte_minareli_3d.jpg" alt="Gerçek Taş Kitabe Fotoğrafı" class="ins-filter-normal" />
+            <div class="epigraphic-badge">Epigrafik İnceleme Alanı</div>
+          </div>
+          
+          <!-- Epigrafik Filtreleme Araçları (Aşınmış Yazıları Okumak İçin) -->
+          <div class="epigraphic-tools-bar">
+            <span class="tool-label"><i class="fa-solid fa-sliders"></i> Taş Filtresi:</span>
+            <div class="epigraphic-btn-group">
+              <button class="btn-filter-epigraphy active" data-filter="normal" id="btnFilterNormal" title="Doğal Fotoğraf Görünümü">
+                <i class="fa-solid fa-eye"></i> Normal
+              </button>
+              <button class="btn-filter-epigraphy" data-filter="contrast" id="btnFilterContrast" title="Yüksek Kontrast: Silik Harfleri Belirginleştirir">
+                <i class="fa-solid fa-circle-half-stroke"></i> Yüksek Kontrast
+              </button>
+              <button class="btn-filter-epigraphy" data-filter="emboss" id="btnFilterEmboss" title="Kabartma / Gölge Vurgusu: Oyma Hatları Vurgular">
+                <i class="fa-solid fa-mountain"></i> Kabartma Vurgusu
+              </button>
+              <button class="btn-filter-epigraphy" data-filter="invert" id="btnFilterInvert" title="Negatif: Tebeşir Kopyası Etkisi">
+                <i class="fa-solid fa-moon"></i> Negatif / Ters Renk
+              </button>
+            </div>
+          </div>
+          
+          <div class="ins-verification-card" id="insVerification">
+            <i class="fa-solid fa-shield-halved"></i>
+            <div>
+              <strong>Bilimsel Tescil & Doğrulama:</strong>
+              <p>Kitabe yerinde mevcuttur; Vakıflar Genel Müdürlüğü ve Türk Tarih Kurumu tescilli kitabe korpusuyla birebir doğrulanmıştır.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sağ: Yazıt Analizi, Transkripsiyon ve Kanıt Değerlendirmesi -->
+        <div class="ins-text-col">
+          <div class="ins-block arabic-block">
+            <div class="ins-block-header">
+              <label><i class="fa-solid fa-pen-fancy"></i> Özgün Kitabe Metni (Arapça / Sülüs Hat):</label>
+              <span class="script-type-badge">Arapça Sülüs Hat (RTL)</span>
+            </div>
+            <div class="arabic-text" id="insArabic" dir="rtl">...</div>
+          </div>
+
+          <div class="ins-block trans-block">
+            <label><i class="fa-solid fa-font"></i> Bilimsel Latin Harfli Transkripsiyon:</label>
+            <div class="trans-text" id="insTranscription">...</div>
+          </div>
+
+          <div class="ins-block mean-block">
+            <label><i class="fa-solid fa-language"></i> Günümüz Türkçesindeki Tam Anlamı:</label>
+            <div class="mean-text" id="insTranslation">...</div>
+          </div>
+
+          <!-- Kitabenin Sunduğu Tarihsel Kanıtlar Özeti -->
+          <div class="ins-evidence-summary">
+            <h5><i class="fa-solid fa-magnifying-glass"></i> Kitabeden Elde Edilen Tarihsel Kanıtlar:</h5>
+            <ul class="evidence-list" id="insEvidenceList">
+              <li><strong>Bani (Yaptıran):</strong> İlhanlı Başveziri Şemseddin Cüveynî</li>
+              <li><strong>Dönem Hükümdarı:</strong> Selçuklu Sultanı III. Gıyaseddin Keyhüsrev</li>
+              <li><strong>İnşa Yılı:</strong> Hicri 670 (Miladi 1271–1272)</li>
+              <li><strong>Özgün İşlev:</strong> Dârülhadis (Hadis Yüksek İhtisas Medresesi)</li>
+            </ul>
+          </div>
+
+          <!-- Öğrenci Etkileşimli Araştırma Sorusu -->
+          <div class="ins-student-inquiry-box">
+            <label for="txtInscriptionInference">
+              <i class="fa-solid fa-question-circle"></i> 
+              <strong>Araştırma Sorusu:</strong> "Bu kitabe, eserin yapıldığı dönem hakkında bize hangi kanıtları sunmaktadır?"
+            </label>
+            <textarea id="txtInscriptionInference" rows="3" placeholder="Kitabeden edindiğiniz kanıtları (hükümdar, vezir, yapılış amacı) kendi cümlelerinizle değerlendiriniz..."></textarea>
+            <div class="inquiry-btn-row">
+              <button class="btn-action-primary" id="btnSaveInscriptionInference">
+                <i class="fa-solid fa-floppy-disk"></i> Kitabe Yorumumu Kaydet
+              </button>
+              <span id="saveStatusInscription" class="save-status-pill"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: ESER AYRINTILI İNCELEME SAYFASI (YAZILI / İŞİTSEL / GÖRSEL) -->
+  <!-- ==================================================================== -->
+  <div id="modalMonumentDetail" class="atlas-modal" style="display: none;">
+    <div class="modal-backdrop" onclick="SivasApp.closeModals()"></div>
+    <div class="modal-panel detail-panel">
+      <button class="modal-close" onclick="SivasApp.closeModals()">&times;</button>
+      
+      <div class="detail-header-flex">
+        <div class="detail-title-col">
+          <div class="detail-badge-row">
+            <span id="detailPeriod" class="period-badge">Dönem</span>
+            <span class="evidence-tag verified"><i class="fa-solid fa-check-double"></i> Kanıtlanmış Tarihî Bilgi</span>
+            <span id="detailDistrictTag" class="detail-district-tag"><i class="fa-solid fa-map-pin"></i> Merkez</span>
+          </div>
+          <h2 id="detailTitle">Eser Adı</h2>
+          <span id="detailMeta" class="detail-meta">Yapım Yılı • Bani • Mimarlık</span>
+        </div>
+        <div class="detail-header-actions">
+          <button class="btn-tool primary" id="btnDetailOpen3D"><i class="fa-solid fa-cube"></i> 3B Keşif & Model</button>
+          <button class="btn-tool" id="btnDetailOpenTablet"><i class="fa-solid fa-scroll"></i> Kitabe İncele</button>
+        </div>
+      </div>
+
+      <!-- 6 Kapsamlı Sekme (14 İnceleme Başlığı) -->
+      <div class="learning-tabs-nav">
+        <button class="l-tab-btn active" data-ltab="ltab-identity">
+          <i class="fa-solid fa-landmark"></i> 1. Kimlik ve Tarihsel Bağlam
+        </button>
+        <button class="l-tab-btn" data-ltab="ltab-architecture">
+          <i class="fa-solid fa-shapes"></i> 2. Mimari, Plan ve Süsleme
+        </button>
+        <button class="l-tab-btn" data-ltab="ltab-inscription">
+          <i class="fa-solid fa-scroll"></i> 3. Kitabeler ve Yazılı Kanıtlar
+        </button>
+        <button class="l-tab-btn" data-ltab="ltab-evolution">
+          <i class="fa-solid fa-clock-rotate-left"></i> 4. Değişim, Kazı ve Restorasyon
+        </button>
+        <button class="l-tab-btn" data-ltab="ltab-gallery">
+          <i class="fa-solid fa-images"></i> 5. Gerçek Fotoğraf Galerisi
+        </button>
+        <button class="l-tab-btn" data-ltab="ltab-sources">
+          <i class="fa-solid fa-book-bookmark"></i> 6. Çıkarım Soruları & Kaynakça
+        </button>
+      </div>
+
+      <div class="learning-tabs-content">
+        <!-- 1. Sekme: Tarihsel Kimlik ve Bağlam (Maddeler 1, 2, 3, 4) -->
+        <div id="ltab-identity" class="l-tab-pane active">
+          <div class="identity-grid">
+            <div class="identity-card main-text-card">
+              <div class="evidence-legend-bar">
+                <span class="ev-badge verified"><i class="fa-solid fa-circle-check"></i> Kanıtlanmış Bilgi</span>
+                <span class="ev-badge academic"><i class="fa-solid fa-graduation-cap"></i> Akademik Yorum</span>
+              </div>
+              <h4><i class="fa-solid fa-scroll"></i> Yapılış Hikâyesi ve Tarihsel Bağlam</h4>
+              <div class="written-body" id="detailWrittenText">Metin yükleniyor...</div>
+            </div>
+
+            <div class="identity-sidebar">
+              <div class="meta-spec-card">
+                <h5><i class="fa-solid fa-circle-info"></i> Temel Tarihsel Kimlik</h5>
+                <ul class="meta-spec-list">
+                  <li><strong>Yapı Türü:</strong> <span id="specType">-</span></li>
+                  <li><strong>İnşa Yılı:</strong> <span id="specYear">-</span></li>
+                  <li><strong>Dönem / Devlet:</strong> <span id="specPeriod">-</span></li>
+                  <li><strong>Banisi (Yaptıran):</strong> <span id="specBuilder">-</span></li>
+                  <li><strong>Mimarı:</strong> <span id="specArchitect">-</span></li>
+                  <li><strong>Özgün İşlevi:</strong> <span id="specFunction">-</span></li>
+                </ul>
+              </div>
+
+              <div class="audio-guide-mini-card">
+                <h5><i class="fa-solid fa-headphones"></i> Sesli Rehber Dinle</h5>
+                <div class="audio-controls-row">
+                  <button class="btn-audio-circle" id="btnAudioPlay"><i class="fa-solid fa-play"></i></button>
+                  <div class="audio-wave-bar">
+                    <span id="audioStatusText">Sesli anlatımı başlatmak için dokun</span>
+                  </div>
+                </div>
+                <p class="audio-transcript-mini" id="detailAudioTranscript"></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Sekme: Mimari, Plan ve Süsleme (Maddeler 5, 6) -->
+        <div id="ltab-architecture" class="l-tab-pane">
+          <div class="arch-content-grid">
+            <div class="arch-card">
+              <h4><i class="fa-solid fa-compass-drafting"></i> Mimari Plan ve Taşıyıcı Sistem</h4>
+              <p id="archPlanDesc">Plan özellikleri...</p>
+              <div class="material-pills-row" id="archMaterialsPills">
+                <span class="material-pill"><i class="fa-solid fa-gem"></i> Kesme Mermer</span>
+                <span class="material-pill"><i class="fa-solid fa-cubes"></i> Kalker Taş</span>
+                <span class="material-pill"><i class="fa-solid fa-border-all"></i> Firuze Çini Tuğla</span>
+              </div>
+            </div>
+
+            <div class="arch-card">
+              <h4><i class="fa-solid fa-wand-magic-sparkles"></i> Taş İşçiliği, Mukarnas ve Motifler</h4>
+              <p id="archStoneworkDesc">Taş oymacılığı ve süsleme özellikleri...</p>
+              <div class="hotspots-preview-list">
+                <h5><i class="fa-solid fa-eye"></i> Önemli Mimari Odak Noktaları:</h5>
+                <div class="hotspots-chips" id="detailHotspotsChips">
+                  <!-- JS ile doldurulur -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. Sekme: Kitabeler ve Yazılı Kanıtlar (Maddeler 7, 12) -->
+        <div id="ltab-inscription" class="l-tab-pane">
+          <div class="detail-inscription-preview-card">
+            <div class="ins-preview-header">
+              <div>
+                <h4><i class="fa-solid fa-scroll"></i> Eserin Özgün Taş Kitabesi</h4>
+                <p id="detailInsLocation" class="text-sm">Konum bilgisi...</p>
+              </div>
+              <button class="btn-action-primary" id="btnOpenFullInscriptionFromDetail">
+                <i class="fa-solid fa-up-right-and-down-left-from-center"></i> Epigrafik İnceleme Ekranını Aç
+              </button>
+            </div>
+            
+            <div class="ins-mini-grid">
+              <div class="ins-box">
+                <label>Özgün Arapça Metin:</label>
+                <div class="arabic-quote" id="detailInsArabic" dir="rtl">...</div>
+              </div>
+              <div class="ins-box">
+                <label>Günümüz Türkçesi:</label>
+                <div class="turkish-meaning" id="detailInsTranslation">...</div>
+              </div>
+            </div>
+            
+            <div class="ins-evidence-box">
+              <label><i class="fa-solid fa-key"></i> Kitabenin Kanıtladığı Gerçekler:</label>
+              <p id="detailInsEvidenceText">Kitabe; baninin vezir Cüveyni olduğunu ve sultan III. Gıyaseddin Keyhüsrev döneminde 1271'de yapıldığını birinci elden kanıtlar.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Sekme: Değişim, Kazı ve Restorasyon (Maddeler 8, 9, 11) -->
+        <div id="ltab-evolution" class="l-tab-pane">
+          <div class="evolution-grid">
+            <div class="evo-card">
+              <div class="ev-badge reconstruction"><i class="fa-solid fa-screwdriver-wrench"></i> Varsayımsal Rekonstrüksiyon</div>
+              <h4><i class="fa-solid fa-clock-rotate-left"></i> Yüzyıllar İçindeki Değişimler ve Yıkılan Bölümler</h4>
+              <p id="evoSurvivingNote">Günümüze cephe ve minareler ulaşmıştır; arka açık avlu 19. yüzyıl sonlarında yıkılmıştır.</p>
+              <div class="excavation-note-box">
+                <strong><i class="fa-solid fa-trowel-bricks"></i> Arkeolojik Kazı Verisi (1963):</strong>
+                <p>1963 kazılarında Haluk Karamağara başkanlığında yapılan çalışmalarda yapının iki katlı, dört eyvanlı medrese temelleri tespit edilmiştir.</p>
+              </div>
+            </div>
+
+            <div class="evo-card">
+              <h4><i class="fa-solid fa-shield-halved"></i> Restorasyon ve Günümüzdeki Durumu</h4>
+              <p id="evoCurrentStatus">Vakıflar Genel Müdürlüğü tarafından restore edilerek koruma altına alınmış anıt eserdir.</p>
+              <div class="evo-3d-cta">
+                <p>Eserin günümüze ulaşan cephesi ile yıkılmış avlu rekonstrüksiyonunu 3B ortamda karşılaştırın:</p>
+                <button class="btn-action-primary" id="btnEvoGo3D">
+                  <i class="fa-solid fa-cube"></i> 3B Sahnesine Git
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Sekme: Gerçek Fotoğraf Galerisi (Madde 10) -->
+        <div id="ltab-gallery" class="l-tab-pane">
+          <div class="gallery-container">
+            <div class="gallery-main-view">
+              <img id="detailGalleryMainImg" src="assets/images/cifte_minareli_3d.jpg" alt="Ana Görsel" />
+            </div>
+            <div class="gallery-grid" id="detailGalleryGrid">
+              <!-- JS ile yüklenir -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Sekme: Çıkarım Soruları & Kaynakça (Maddeler 13, 14) -->
+        <div id="ltab-sources" class="l-tab-pane">
+          <div class="sources-inquiry-grid">
+            <div class="inquiry-card">
+              <h4><i class="fa-solid fa-brain"></i> Tarihsel Çıkarım ve Araştırma Soruları</h4>
+              <ul class="inquiry-questions-list" id="detailInquiryList">
+                <li>1. Bu eserin taçkapısındaki süslemeler ile döneminin siyasi kudreti arasında nasıl bir ilişki kurulabilir?</li>
+                <li>2. Aynı meydanda yer alan Şifaiye ve Buruciye Medreseleriyle karşılaştırıldığında taş işçiliğindeki özgün yönler nelerdir?</li>
+              </ul>
+            </div>
+
+            <div class="academic-sources-card">
+              <h4><i class="fa-solid fa-book"></i> Bilimsel Kaynakça ve Tescil Kayıtları</h4>
+              <ul class="monument-sources-list" id="detailSourcesList">
+                <!-- JS ile kaynaklar basılır -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: YÖNETİM PANELİ VE İÇERİK YÜKLEME (10. BÖLÜM) -->
+  <!-- ==================================================================== -->
+  <div id="modalAdmin" class="atlas-modal" style="display: none;">
+    <div class="modal-backdrop" onclick="SivasApp.closeModals()"></div>
+    <div class="modal-panel admin-panel">
+      <button class="modal-close" onclick="SivasApp.closeModals()">&times;</button>
+      <div class="admin-header">
+        <div class="admin-header-title">
+          <h3><i class="fa-solid fa-gear"></i> İçerik ve 3B Model Yönetim Paneli</h3>
+          <p>TÜBİTAK 2204-B Öğretmen ve Proje Yöneticisi CMS Paneli</p>
+        </div>
+        <div class="admin-quick-backup-row">
+          <button type="button" class="btn-sm-action" id="btnExportJsonData" title="Tüm Eser Veritabanını JSON Olarak İndir">
+            <i class="fa-solid fa-download"></i> Verileri Yedekle (JSON)
+          </button>
+          <label class="btn-sm-action file-btn" title="JSON Yedeğinden Geri Yükle">
+            <i class="fa-solid fa-upload"></i> Yedekten Yükle
+            <input type="file" id="fileImportJson" accept=".json" style="display:none;" />
+          </label>
+        </div>
+      </div>
+
+      <!-- Yönetici Giriş / Kilit Ekranı (Yetkilendirme) -->
+      <div id="adminAuthLock" class="admin-auth-overlay">
+        <div class="auth-card">
+          <div class="auth-icon"><i class="fa-solid fa-lock"></i></div>
+          <h4>Yönetici Girişi</h4>
+          <p class="text-sm">İçerik eklemek veya düzenlemek için yönetici şifresini giriniz:</p>
+          <div class="auth-input-row">
+            <input type="password" id="txtAdminPassword" placeholder="Şifre: tubitak2204" />
+            <button type="button" class="btn-action-primary" id="btnUnlockAdmin">
+              <i class="fa-solid fa-key"></i> Giriş Yap
+            </button>
+          </div>
+          <span id="authErrorMsg" class="auth-error-text" style="display: none;">Hatalı şifre! (Varsayılan: tubitak2204)</span>
+        </div>
+      </div>
+
+      <form id="adminMonumentForm" class="admin-form-grid">
+        <!-- 1. İşlem Türü / Kayıtlı Eser Seçimi (Düzenleme / Silme için) -->
+        <div class="form-group full-span monument-select-group">
+          <label><i class="fa-solid fa-list-check"></i> İşlem Yapılacak Eser:</label>
+          <select id="admSelectMonument" class="custom-select">
+            <option value="new">+ Yeni Tarihî Eser Ekle</option>
+          </select>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Eser Adı:</label>
+            <input type="text" id="admName" required placeholder="Örn: Divriği Kalesi">
+          </div>
+          <div class="form-group">
+            <label>Bulunduğu İlçe (17 İlçe):</label>
+            <select id="admDistrict" class="custom-select">
+              <option value="Merkez">Merkez</option>
+              <option value="Divriği">Divriği</option>
+              <option value="Gürün">Gürün</option>
+              <option value="Kangal">Kangal</option>
+              <option value="Ulaş">Ulaş</option>
+              <option value="Altınyayla">Altınyayla</option>
+              <option value="Şarkışla">Şarkışla</option>
+              <option value="Gemerek">Gemerek</option>
+              <option value="Yıldızeli">Yıldızeli</option>
+              <option value="Hafik">Hafik</option>
+              <option value="Zara">Zara</option>
+              <option value="İmranlı">İmranlı</option>
+              <option value="Suşehri">Suşehri</option>
+              <option value="Akıncılar">Akıncılar</option>
+              <option value="Gölova">Gölova</option>
+              <option value="Koyulhisar">Koyulhisar</option>
+              <option value="Doğanşar">Doğanşar</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tarihî Dönem / Devlet:</label>
+            <select id="admPeriod" class="custom-select">
+              <option value="mengucekli">Mengücekliler Beyliği</option>
+              <option value="selcuklu">Anadolu Selçuklu Devleti</option>
+              <option value="ilhanli">İlhanlı Dönemi</option>
+              <option value="osmanli">Osmanlı İmparatorluğu</option>
+              <option value="diger">Diğer / Cumhuriyet / Danişmendli</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Yapım Yılı / Tarih:</label>
+            <input type="text" id="admBuildYear" placeholder="Örn: 1228 (H. 626)">
+          </div>
+          <div class="form-group">
+            <label>Yapı Türü:</label>
+            <input type="text" id="admType" placeholder="Örn: Cami, Medrese, Köprü, Kale">
+          </div>
+        </div>
+
+        <!-- 3. Harita Üzerinden Konum Belirleme Butonu -->
+        <div class="form-group full-span location-picker-box">
+          <label><i class="fa-solid fa-map-location-dot"></i> Harita Coğrafi Konumu:</label>
+          <div class="location-btn-row">
+            <button type="button" class="btn-pick-location" id="btnOpenMapPicker">
+              <i class="fa-solid fa-crosshairs"></i> Haritada Konum Seç (İnteraktif)
+            </button>
+            <span id="lblPickedCoords" class="picked-coords-pill">
+              <i class="fa-solid fa-info-circle"></i> Konum: İlçe Merkezine Otomatik Bağlı
+            </span>
+          </div>
+          <input type="hidden" id="admSvgX" value="">
+          <input type="hidden" id="admSvgY" value="">
+          <input type="hidden" id="admLat" value="">
+          <input type="hidden" id="admLon" value="">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Yaptıran Kişi (Bani):</label>
+            <input type="text" id="admBuilder" placeholder="Örn: Mengücek Beyi Ahmed Şah">
+          </div>
+          <div class="form-group">
+            <label>Eser Görseli (Görsel URL veya Dosya):</label>
+            <input type="text" id="admImgUrl" placeholder="https://... (boş bırakılabilir)">
+            <input type="file" id="admImgFile" accept="image/*" style="margin-top: 5px;">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Ayrıntılı Tarihçe, Mimari Açıklama ve Kaynakça:</label>
+          <textarea id="admHistory" rows="3" placeholder="Bilimsel kaynaklara dayalı açıklama, mimari özellikler ve kaynakça..."></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>3B Model Dosyası (.GLB / .GLTF):</label>
+            <input type="file" id="admFile3D" accept=".glb,.gltf">
+          </div>
+          <div class="form-group">
+            <label>Sesli Anlatım Metni (Sesli Rehber):</label>
+            <input type="text" id="admAudioText" placeholder="Öğrenciler için sesli rehber metni...">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" class="btn-action-primary" id="btnSaveMonument">
+            <i class="fa-solid fa-floppy-disk"></i> Eseri Platforma Kaydet
+          </button>
+          <button type="button" class="btn-action-danger" id="btnDeleteMonument" style="display: none;">
+            <i class="fa-solid fa-trash-can"></i> Bu Eseri Sil
+          </button>
+          <button type="button" class="btn-action-secondary" id="btnExportJSON">
+            <i class="fa-solid fa-download"></i> JSON Dışa Aktar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ==================================================================== -->
+  <!-- MODAL: HARİTADA KONUM SEÇ (3. BÖLÜM - SVG NORMALİZE KOORDİNAT BELİRLEYİCİ) -->
+  <!-- ==================================================================== -->
+  <div id="modalMapPicker" class="atlas-modal" style="display: none;">
+    <div class="modal-backdrop" onclick="SivasApp.closeMapPicker()"></div>
+    <div class="modal-panel map-picker-panel">
+      <button class="modal-close" onclick="SivasApp.closeMapPicker()">&times;</button>
+      <div class="picker-header">
+        <h3><i class="fa-solid fa-map-location-dot"></i> Haritada Eser Konumu Belirle</h3>
+        <p>Eserin bulunacağı noktaya tıklayarak konum işaretçisini yerleştiriniz.</p>
+        <div class="picker-target-badge" id="pickerTargetDistrictLabel">
+          <i class="fa-solid fa-compass"></i> Hedef İlçe: <strong>Merkez</strong>
+        </div>
+      </div>
+
+      <div class="picker-svg-container" id="pickerSvgContainer">
+        <svg id="pickerSvgMap" viewBox="0 0 1000 760" preserveAspectRatio="xMidYMid meet">
+          <rect width="1000" height="760" fill="#fbf5e8" stroke="#d5b88c" stroke-width="2" />
+          <g id="pickerDistrictsGroup"></g>
+          <g id="pickerPinMarker" style="display: none;">
+            <circle class="pin-halo" r="22" fill="#f59e0b" opacity="0.4"></circle>
+            <path d="M 0,-24 C -10,-24 -15,-16 -15,-9 C -15,4 0,20 0,20 C 0,20 15,4 15,-9 C 15,-16 10,-24 0,-24 Z" fill="#d97706" stroke="#ffffff" stroke-width="2"></path>
+            <circle cx="0" cy="-9" r="5" fill="#ffffff"></circle>
+            <circle cx="0" cy="-9" r="3" fill="#f59e0b"></circle>
+            <rect x="-45" y="22" width="90" height="20" rx="4" fill="rgba(15, 23, 42, 0.9)" stroke="#f59e0b" stroke-width="1"></rect>
+            <text x="0" y="36" text-anchor="middle" font-size="9" font-weight="700" fill="#ffffff">Seçilen Konum</text>
+          </g>
+        </svg>
+      </div>
+
+      <div id="pickerDistrictWarning" class="picker-warning-banner" style="display: none;">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        <span id="pickerWarningText"></span>
+      </div>
+
+      <div class="picker-footer">
+        <div class="picker-coords-info">
+          Seçilen Koordinat: <strong id="lblPickerCoords">X: —, Y: —</strong>
+        </div>
+        <div class="picker-actions">
+          <button type="button" class="btn-action-secondary" onclick="SivasApp.closeMapPicker()">İptal</button>
+          <button type="button" class="btn-action-primary" id="btnConfirmMapPicker">
+            <i class="fa-solid fa-check"></i> Konumu Onayla & Kaydet
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sivas Scriptleri -->
+  <script src="js/cifte-image.js"></script>
+  <script src="js/cifte-glb-data.js"></script>
+  <script src="js/sivas-antique-map.js"></script>
+  <script src="js/sivas-map-data.js"></script>
+  <script src="js/sivas-monuments-data.js"></script>
+  <script src="js/guides-data.js"></script>
+  <script src="js/evaluation-data.js"></script>
+  <script src="js/viewer3d.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

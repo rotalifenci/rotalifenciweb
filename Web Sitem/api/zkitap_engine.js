@@ -18,8 +18,36 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;');
 }
 
+function cleanSpatialReferences(str) {
+  if (!str || typeof str !== 'string') return '';
+  return str
+    .replace(/yukarıda\s+verilen/gi, 'yanda verilen')
+    .replace(/yukarıdaki\s+görsel/gi, 'yandaki görsel')
+    .replace(/yukarıdaki\s+model/gi, 'yandaki model')
+    .replace(/yukarıdaki\s+şekil/gi, 'yandaki şekil')
+    .replace(/yukarıdaki\s+tablo/gi, 'yandaki tablo')
+    .replace(/yukarıdaki\s+grafik/gi, 'yandaki grafik')
+    .replace(/yukarıdaki\s+deney/gi, 'yandaki deney')
+    .replace(/yukarıdaki\s+düzenek/gi, 'yandaki düzenek')
+    .replace(/yukarıdaki\s+açıklama/gi, 'yandaki açıklama')
+    .replace(/Yukarıdakilerden/g, 'Yandakilerden')
+    .replace(/yukarıdakilerden/g, 'yandakilerden')
+    .replace(/Yukarıdakiler/g, 'Yandakiler')
+    .replace(/yukarıdakiler/g, 'yandakiler')
+    .replace(/Yukarıdaki/g, 'Yandaki')
+    .replace(/yukarıdaki/g, 'yandaki')
+    .replace(/Yukardaki/g, 'Yandaki')
+    .replace(/yukardaki/g, 'yandaki')
+    .replace(/Yukarıdan/g, 'Yandan')
+    .replace(/yukarıdan/g, 'yandan')
+    .replace(/Yukarıda/g, 'Yanda')
+    .replace(/yukarıda/g, 'yanda')
+    .replace(/Yukarda/g, 'Yanda')
+    .replace(/yukarda/g, 'yanda');
+}
+
 function formatQuestionStem(rawText) {
-  let text = String(rawText || '').trim();
+  let text = cleanSpatialReferences(String(rawText || '').trim());
   text = text.replace(/^Soru\s*\d+\s*[:.-]\s*/i, '');
   const keywordsToUnderline = [
     'değildir', 'degildir', 'olamaz', 'ulaşılamaz', 'ulasilamaz', 'söylenemez',
@@ -415,8 +443,8 @@ function buildZKitapHtml({
 
     /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
     .rf-slide-visual-col {
-      flex: 0 0 58%;
-      max-width: 60%;
+      flex: 0 0 62%;
+      max-width: 63%;
       height: 100%;
       max-height: 68vh;
       display: flex;
@@ -449,8 +477,8 @@ function buildZKitapHtml({
 
     /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
     .rf-slide-content-col {
-      flex: 0 0 38%;
-      max-width: 40%;
+      flex: 0 0 35%;
+      max-width: 36%;
       min-width: 0;
       display: flex;
       flex-direction: column;

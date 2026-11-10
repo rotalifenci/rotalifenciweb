@@ -41,14 +41,43 @@
     return clean.replace(/\s+/g, ' ').trim();
   }
 
+  function cleanSpatialReferences(text) {
+    if (!text || typeof text !== 'string') return '';
+    return text
+      .replace(/yukarıda\s+verilen/gi, 'yanda verilen')
+      .replace(/yukarıdaki\s+görsel/gi, 'yandaki görsel')
+      .replace(/yukarıdaki\s+model/gi, 'yandaki model')
+      .replace(/yukarıdaki\s+şekil/gi, 'yandaki şekil')
+      .replace(/yukarıdaki\s+tablo/gi, 'yandaki tablo')
+      .replace(/yukarıdaki\s+grafik/gi, 'yandaki grafik')
+      .replace(/yukarıdaki\s+deney/gi, 'yandaki deney')
+      .replace(/yukarıdaki\s+düzenek/gi, 'yandaki düzenek')
+      .replace(/yukarıdaki\s+açıklama/gi, 'yandaki açıklama')
+      .replace(/Yukarıdakilerden/g, 'Yandakilerden')
+      .replace(/yukarıdakilerden/g, 'yandakilerden')
+      .replace(/Yukarıdakiler/g, 'Yandakiler')
+      .replace(/yukarıdakiler/g, 'yandakiler')
+      .replace(/Yukarıdaki/g, 'Yandaki')
+      .replace(/yukarıdaki/g, 'yandaki')
+      .replace(/Yukardaki/g, 'Yandaki')
+      .replace(/yukardaki/g, 'yandaki')
+      .replace(/Yukarıdan/g, 'Yandan')
+      .replace(/yukarıdan/g, 'yandan')
+      .replace(/Yukarıda/g, 'Yanda')
+      .replace(/yukarıda/g, 'yanda')
+      .replace(/Yukarda/g, 'Yanda')
+      .replace(/yukarda/g, 'yanda');
+  }
+
   function generateVisualBrief(questionText, options = {}, correctAnswer = '', extraMeta = {}) {
-    const qNorm = normalizeText(questionText);
+    const qCleanSpatial = cleanSpatialReferences(questionText);
+    const qNorm = normalizeText(qCleanSpatial);
     const cNorm = normalizeText(correctAnswer);
     const qClean = stripObserverPhrases(qNorm);
 
-    const hasQuestionMark = qNorm.includes('soru isareti') || qNorm.includes(' ? ') || qNorm.includes('(?)');
-    const hasNumbers = qNorm.includes('numaralandirilmis') || (qNorm.includes('1 ') && qNorm.includes('2 ') && qNorm.includes('3 '));
-    const hasLetters = (qNorm.includes('g d a') || (qNorm.includes('gunes g') && qNorm.includes('dunya d')));
+    const hasQuestionMark = qNorm.includes('soru isareti') || qNorm.includes('soru isaretiyle') || qNorm.includes(' ? ') || qNorm.includes('(?)') || qNorm.includes('?');
+    const hasNumbers = qNorm.includes('numaralandirilmis') || qNorm.includes('numaralandirilan') || qNorm.includes('1 numarali') || qNorm.includes('2 numarali') || qNorm.includes('3 numarali') || (qNorm.includes('1') && qNorm.includes('2') && qNorm.includes('3'));
+    const hasLetters = (qNorm.includes('g d a') || (qNorm.includes('gunes g') && qNorm.includes('dunya d')) || qNorm.includes('konumlari verilmistir'));
 
     let coreConcept = 'Genel Fen Bilimleri';
     let visualType = 'scientific_model';
@@ -358,6 +387,7 @@
   }
 
   const api = {
+    cleanSpatialReferences,
     normalizeText,
     hasWord,
     makeImg,
