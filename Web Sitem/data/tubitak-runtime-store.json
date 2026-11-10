@@ -1,0 +1,57 @@
+{
+  "records": {
+    "cifte-minareli-medrese__c1_location": {
+      "id": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "content": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-siva-101",
+      "studentName": "Ali Veli (Geri Yükleme v1)",
+      "version": 2,
+      "status": "draft",
+      "updatedAt": "2026-11-10T23:30:15.110Z"
+    }
+  },
+  "revisions": [
+    {
+      "id": "rev-1794353415024-290",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-siva-101",
+      "studentName": "Ali Veli",
+      "version": 1,
+      "createdAt": "2026-11-10T23:30:15.024Z"
+    },
+    {
+      "id": "rev-1794353415110-580",
+      "recordKey": "cifte-minareli-medrese__c1_location",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "criterionKey": "c1_location",
+      "prevContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "newContent": "Sivas Tarihî Kent Meydanı, Şifaiye Medresesi karşısı. Merkez / SİVAS (TÜBİTAK 2026 Saha İncelemesi).",
+      "studentId": "stu-siva-101",
+      "studentName": "Ali Veli (v1 Geri Yüklendi)",
+      "version": 2,
+      "createdAt": "2026-11-10T23:30:15.110Z"
+    }
+  ],
+  "sources": {},
+  "feedbacks": [
+    {
+      "id": "fb-1794353415109",
+      "projectId": "proje-tarih",
+      "itemId": "cifte-minareli-medrese",
+      "teacherName": "Fenci Öğretmen",
+      "message": "Tebrikler ekip! Konum ve tescil bilgileri akademik standartlara uygun doldurulmuş.",
+      "status": "approved",
+      "createdAt": "2026-11-10T23:30:15.109Z"
+    }
+  ],
+  "itemsMeta": {}
+}
