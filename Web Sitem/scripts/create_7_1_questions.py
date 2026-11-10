@@ -1,0 +1,1134 @@
+import json
+
+questions = [
+    {
+        "id": 1,
+        "q": "Evren, Uzay ve Dünya'nın büyüklük ve kapsama sıralaması nasıldır?",
+        "correct": "Evren > Uzay > Dünya",
+        "wrong": "Dünya > Uzay > Evren",
+        "explanation": "Evren her şeyi içine alan sonsuz boşluktur; Uzay ise Dünya dışındaki evren parçasıdır.",
+        "isHard": False
+    },
+    {
+        "id": 2,
+        "q": "Dünya gök cisimlerinden hangi gruba girer?",
+        "correct": "Gezegen",
+        "wrong": "Yıldız",
+        "explanation": "Dünya, Güneş etrafında dolanan karasal bir gezegendir.",
+        "isHard": False
+    },
+    {
+        "id": 3,
+        "q": "Dünya’nın tek doğal uydusu hangisidir?",
+        "correct": "Ay",
+        "wrong": "Güneş",
+        "explanation": "Dünya'nın doğal uydusu Ay'dır.",
+        "isHard": False
+    },
+    {
+        "id": 4,
+        "q": "Dünya’ya en yakın gök cismi hangisidir?",
+        "correct": "Ay",
+        "wrong": "Mars",
+        "explanation": "Dünya'ya yaklaşık 384.000 km mesafe ile en yakın gök cismi Ay'dır.",
+        "isHard": False
+    },
+    {
+        "id": 5,
+        "q": "Dünya’ya en yakın yıldız hangisidir?",
+        "correct": "Güneş",
+        "wrong": "Kutup Yıldızı",
+        "explanation": "Dünya'ya en yakın yıldız yaklaşık 150 milyon km uzaklıktaki Güneş'tir.",
+        "isHard": True
+    },
+    {
+        "id": 6,
+        "q": "Dünya hangi yıldızın etrafında dolanma hareketi yapar?",
+        "correct": "Güneş",
+        "wrong": "Sirius",
+        "explanation": "Dünya, Güneş Sistemi'nin merkezindeki Güneş etrafında 365 gün 6 saatte dolanır.",
+        "isHard": False
+    },
+    {
+        "id": 7,
+        "q": "Dünya’nın kutuplardan basık, ekvatordan şişkin geometrik şekline ne ad verilir?",
+        "correct": "Geoit",
+        "wrong": "Küp",
+        "explanation": "Dünya'nın kendine has küre benzeri basık şekline geoit denir.",
+        "isHard": False
+    },
+    {
+        "id": 8,
+        "q": "Dünya’nın gerçekleştirdiği iki temel hareket nedir?",
+        "correct": "Dönme ve Dolanma",
+        "wrong": "Yalnızca Dolanma",
+        "explanation": "Dünya kendi ekseni etrafında döner, Güneş etrafında dolanır.",
+        "isHard": False
+    },
+    {
+        "id": 9,
+        "q": "Ay hangi hareketleri gerçekleştirir?",
+        "correct": "Dönme ve Dolanma",
+        "wrong": "Yalnızca Sabit Durma",
+        "explanation": "Ay kendi ekseni etrafında döner, Dünya ve Güneş etrafında dolanır.",
+        "isHard": False
+    },
+    {
+        "id": 10,
+        "q": "Güneş kendi ekseni etrafında hangi hareketi yapar?",
+        "correct": "Kendi Ekseni Etrafında Dönme",
+        "wrong": "Dünya Etrafında Dolanma",
+        "explanation": "Güneş kendi ekseni etrafında batıdan doğuya (saat yönünün tersine) döner.",
+        "isHard": True
+    },
+    {
+        "id": 11,
+        "q": "Gezegen mi yoksa yıldız mı daha soğuk bir gök cismidir?",
+        "correct": "Gezegen",
+        "wrong": "Yıldız",
+        "explanation": "Yıldızlar nükleer füzyon ile devasa ısı ve ışık yayarken, gezegenler soğuk gök cisimleridir.",
+        "isHard": False
+    },
+    {
+        "id": 12,
+        "q": "Gezegen mi yoksa yıldız mı genellikle çok daha büyüktür?",
+        "correct": "Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Yıldızlar gezegenlere göre kütlece ve hacimce kat kat daha büyüktür.",
+        "isHard": False
+    },
+    {
+        "id": 13,
+        "q": "Şekli küresel olan gök cismi hangisidir?",
+        "correct": "Hem Gezegen Hem Yıldız",
+        "wrong": "Yalnızca Gezegen",
+        "explanation": "Kütle çekim kuvveti nedeniyle hem büyük gezegenler hem de yıldızlar küresel şekildedir.",
+        "isHard": False
+    },
+    {
+        "id": 14,
+        "q": "Bir yıldızın etrafında yörüngede dolanma hareketi yapan hangisidir?",
+        "correct": "Gezegen",
+        "wrong": "Yıldız",
+        "explanation": "Gezegenler yıldızların çekiminde kalarak onların etrafında dolanırlar.",
+        "isHard": False
+    },
+    {
+        "id": 15,
+        "q": "Kendi enerjisini üreten doğal ısı kaynağı hangisidir?",
+        "correct": "Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Yıldızlar çekirdeklerindeki nükleer tepkimelerle ısı kaynağıdır.",
+        "isHard": True
+    },
+    {
+        "id": 16,
+        "q": "Kendi enerjisiyle çevreye ışık saçan doğal ışık kaynağı hangisidir?",
+        "correct": "Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Yıldızlar ışık kaynağıdır; gezegenler ise yıldızlardan aldıkları ışığı yansıtır.",
+        "isHard": False
+    },
+    {
+        "id": 17,
+        "q": "Gökyüzüne bakıldığında ışığı kesintisiz ve net görünen hangisidir?",
+        "correct": "Gezegen",
+        "wrong": "Yıldız",
+        "explanation": "Gezegenler Dünya'ya yakın oldukları için ışıkları kesintisiz görünür.",
+        "isHard": False
+    },
+    {
+        "id": 18,
+        "q": "Atmosferden geçerken ışığı yanıp söner gibi (titreşen/kesintili) görünen hangisidir?",
+        "correct": "Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Yıldızlar çok uzakta noktasal ışık kaynağı olduklarından ışıkları titreşir gibi görünür.",
+        "isHard": False
+    },
+    {
+        "id": 19,
+        "q": "Evrende sayısı trilyonlarca olup çok daha fazla olan hangisidir?",
+        "correct": "Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Evrende yüz milyarlarca galaksinin her birinde yüz milyarlarca yıldız vardır.",
+        "isHard": False
+    },
+    {
+        "id": 20,
+        "q": "Canlılar gibi bulutsularda doğup, büyüyüp ve ömrünü tamamlayan hangisidir?",
+        "correct": "Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Yıldızların bir yaşam döngüsü vardır; doğar, yaşar ve enerjisi bitince ölürler.",
+        "isHard": True
+    },
+    {
+        "id": 21,
+        "q": "Kendi ekseni etrafında dönme hareketi olan gök cisimleri hangileridir?",
+        "correct": "Hem Gezegen Hem Yıldız",
+        "wrong": "Yalnızca Ay",
+        "explanation": "Hem gezegenler hem de yıldızlar kendi eksenleri etrafında dönerler.",
+        "isHard": False
+    },
+    {
+        "id": 22,
+        "q": "Bir merkez etrafında yörüngede dolanma hareketi olan hangisidir?",
+        "correct": "Gezegen",
+        "wrong": "Yalnızca Güneş",
+        "explanation": "Gezegenler yıldızların çevresinde dolanırlar.",
+        "isHard": False
+    },
+    {
+        "id": 23,
+        "q": "Dünya'dan bakıldığında zamanla birbirlerine göre konumları değişen hangisidir?",
+        "correct": "Gezegen",
+        "wrong": "Yıldız",
+        "explanation": "Gezegenler yakın ve hareketli oldukları için takımyıldızlara göre konumları değişir.",
+        "isHard": False
+    },
+    {
+        "id": 24,
+        "q": "Esas olarak Hidrojen ve Helyum gazlarının füzyonundan oluşan gök cismi hangisidir?",
+        "correct": "Yıldız",
+        "wrong": "Karasal Gezegen",
+        "explanation": "Yıldızlar devasa gaz kütleleridir; hidrojenin helyuma dönüşmesiyle parlar.",
+        "isHard": False
+    },
+    {
+        "id": 25,
+        "q": "Karasal (kayalık ve katı) yüzey yapısına sahip olabilen hangisidir?",
+        "correct": "Gezegen",
+        "wrong": "Yıldız",
+        "explanation": "Merkür, Venüs, Dünya ve Mars gibi iç gezegenler kayalık katı yüzeye sahiptir.",
+        "isHard": True
+    },
+    {
+        "id": 26,
+        "q": "Dünya dahil her şeyi içerisine alan sonsuz boşluğa ne ad verilir?",
+        "correct": "Evren",
+        "wrong": "Uzay",
+        "explanation": "Evren; tüm maddeyi, enerjiyi, Dünya'yı ve uzayı kapsayan sonsuz bütündür.",
+        "isHard": False
+    },
+    {
+        "id": 27,
+        "q": "Evrenin Dünya atmosferi dışında kalan tüm parçasına ne denir?",
+        "correct": "Uzay",
+        "wrong": "Atmosfer",
+        "explanation": "Dünya dışındaki sonsuz kozmik boşluğa Uzay adı verilir.",
+        "isHard": False
+    },
+    {
+        "id": 28,
+        "q": "Yıldızların doğum yeri olan gaz ve toz bulutlarına ne ad verilir?",
+        "correct": "Bulutsu (Nebula)",
+        "wrong": "Kara Delik",
+        "explanation": "Yıldızlar bulutsu adı verilen devasa gaz ve toz bulutlarının sıkışmasıyla doğar.",
+        "isHard": False
+    },
+    {
+        "id": 29,
+        "q": "Güneş gibi sarı renkli yıldızların yüzey sıcaklığı ne düzeydedir?",
+        "correct": "Orta Sıcaklıkta",
+        "wrong": "Çok Soğuk",
+        "explanation": "Sarı yıldızlar (Güneş yaklaşık 6.000 °C) orta sıcaklıkta yıldızlardır.",
+        "isHard": False
+    },
+    {
+        "id": 30,
+        "q": "Mavi ya da beyaz renkli yıldızların yüzey sıcaklığı nasıldır?",
+        "correct": "En Sıcak Yıldızlar",
+        "wrong": "En Soğuk Yıldızlar",
+        "explanation": "Mavi ve beyaz yıldızlar yüzey sıcaklığı en yüksek yıldızlardır.",
+        "isHard": True
+    },
+    {
+        "id": 31,
+        "q": "Kırmızı renkli yıldızların yüzey sıcaklığı nasıldır?",
+        "correct": "En Soğuk Yıldızlar",
+        "wrong": "En Sıcak Yıldızlar",
+        "explanation": "Kırmızı renkli yıldızlar diğer yıldızlara göre yüzey sıcaklığı en düşük olanlardır.",
+        "isHard": False
+    },
+    {
+        "id": 32,
+        "q": "Büyük kütleli yıldızların ömürlerinin sonunda geçirdiği devasa patlamaya ne denir?",
+        "correct": "Süpernova Patlaması",
+        "wrong": "Güneş Tutulması",
+        "explanation": "Büyük kütleli yıldızlar süpernova patlaması geçirerek ömrünü tamamlar.",
+        "isHard": False
+    },
+    {
+        "id": 33,
+        "q": "Küçük kütleli yıldızlar (Güneş gibi) ömrünü tamamlayınca en son neye dönüşür?",
+        "correct": "Beyaz Cüce",
+        "wrong": "Kara Delik",
+        "explanation": "Küçük kütleli yıldızlar kızıl deve, ardından gezegenimsi bulutsuya ve beyaz cüceye dönüşür.",
+        "isHard": False
+    },
+    {
+        "id": 34,
+        "q": "Büyük kütleli bir yıldız süpernova sonrası çok hızlı dönen bir nötron yıldızına dönüşürse ne ad alır?",
+        "correct": "Pulsar (Nötron Yıldızı)",
+        "wrong": "Kızıl Dev",
+        "explanation": "Kendi ekseni etrafında çok hızlı dönüp radyo dalgası yayan nötron yıldızlarına pulsar denir.",
+        "isHard": False
+    },
+    {
+        "id": 35,
+        "q": "Süper kütleli dev yıldızlar süpernova patlaması sonrası çekim gücü sonsuza yaklaşan neye dönüşür?",
+        "correct": "Kara Delik",
+        "wrong": "Beyaz Cüce",
+        "explanation": "Işığın dahi kaçamayacağı kadar büyük çekime sahip yapılar kara deliklerdir.",
+        "isHard": True
+    },
+    {
+        "id": 36,
+        "q": "Gök cisimlerini, evreni ve uzayı inceleyen temel bilim dalına ne ad verilir?",
+        "correct": "Astronomi (Gök Bilimi)",
+        "wrong": "Astroloji",
+        "explanation": "Astronomi bilimsel bir daldır; gök cisimlerinin fiziksel özelliklerini inceler.",
+        "isHard": False
+    },
+    {
+        "id": 37,
+        "q": "Astronomi alanında bilimsel araştırmalar ve gözlemler yapan bilim insanına ne ad verilir?",
+        "correct": "Astronom (Gök Bilimci)",
+        "wrong": "Astrolog",
+        "explanation": "Astronomi alanında bilim üreten uzmanlara astronom veya gök bilimci denir.",
+        "isHard": False
+    },
+    {
+        "id": 38,
+        "q": "Uzaya giden kişilere ABD'de Astronot, Rusya'da Kozmonot, Çin'de ne ad verilir?",
+        "correct": "Taykonot",
+        "wrong": "Spasionot",
+        "explanation": "Çin uzay ajansı uzaya giden personeline Taykonot unvanı verir.",
+        "isHard": False
+    },
+    {
+        "id": 39,
+        "q": "Uzaya ilk yapay uyduyu fırlatan ülke hangisidir?",
+        "correct": "Sovyetler Birliği (SSCB)",
+        "wrong": "ABD",
+        "explanation": "SSCB, 4 Ekim 1957'de Sputnik 1'i fırlatarak uzay çağını başlatmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 40,
+        "q": "1957 yılında uzaya fırlatılan insanlık tarihinin ilk yapay uydusu hangisidir?",
+        "correct": "Sputnik 1",
+        "wrong": "Apollo 11",
+        "explanation": "Sputnik 1, Dünya yörüngesine yerleşen ilk yapay uydudur.",
+        "isHard": True
+    },
+    {
+        "id": 41,
+        "q": "Sputnik 2 uydusuyla uzaya gönderilen ilk canlı köpeğin ismi nedir?",
+        "correct": "Layka (Laika)",
+        "wrong": "Belka",
+        "explanation": "Layka, 1957 yılında uzaya çıkan ilk memeli canlıdır.",
+        "isHard": False
+    },
+    {
+        "id": 42,
+        "q": "1961'de Vostok 1 aracıyla uzaya çıkan ve Dünya'yı ilk gören insan kimdir?",
+        "correct": "Yuri Gagarin",
+        "wrong": "Neil Armstrong",
+        "explanation": "Yuri Gagarin uzaya çıkan ilk insandır ve 'Dünya mavidir' demiştir.",
+        "isHard": False
+    },
+    {
+        "id": 43,
+        "q": "Amerika Birleşik Devletleri'nin resmi uzay araştırmaları kurumu hangisidir?",
+        "correct": "NASA",
+        "wrong": "ESA",
+        "explanation": "NASA (National Aeronautics and Space Administration) ABD uzay kurumudur.",
+        "isHard": False
+    },
+    {
+        "id": 44,
+        "q": "Türkiye'nin milli uzay politikasını ve projelerini yürüten resmi kurum hangisidir?",
+        "correct": "TUA (Türkiye Uzay Ajansı)",
+        "wrong": "AFAD",
+        "explanation": "TUA, 2018 yılında kurulan Türkiye Uzay Ajansı'dır.",
+        "isHard": False
+    },
+    {
+        "id": 45,
+        "q": "Dünya dışında bir gök cismine (Ay'a) ilk kez insan gönderen ülke hangisidir?",
+        "correct": "Amerika Birleşik Devletleri (ABD)",
+        "wrong": "Almanya",
+        "explanation": "ABD, 1969 yılında Apollo 11 göreviyle Ay'a ilk insanları ulaştırmıştır.",
+        "isHard": True
+    },
+    {
+        "id": 46,
+        "q": "20 Temmuz 1969'da Ay yüzeyine ilk ayak basan astronot kimdir?",
+        "correct": "Neil Armstrong",
+        "wrong": "Buzz Aldrin",
+        "explanation": "Neil Armstrong Ay'a ayak basan ilk insandır.",
+        "isHard": False
+    },
+    {
+        "id": 47,
+        "q": "Uzaya çıkan astronotların uzayda uzun süre konaklayıp bilimsel deneyler yaptığı araç hangisidir?",
+        "correct": "Uzay İstasyonu",
+        "wrong": "Uzay Roketi",
+        "explanation": "Uzay istasyonları, Dünya yörüngesinde konaklama ve deney amaçlı dev tesislerdir.",
+        "isHard": False
+    },
+    {
+        "id": 48,
+        "q": "Uzaya insan ve kargo taşımada tekrar tekrar kullanılabilen kanatlı uzay aracı hangisidir?",
+        "correct": "Uzay Mekiği",
+        "wrong": "Uzay Sondası",
+        "explanation": "Uzay mekikleri uçak gibi piste inebilen tekrar kullanılabilir araçlardır.",
+        "isHard": False
+    },
+    {
+        "id": 49,
+        "q": "Bir uzay aracını veya uyduyu yerçekimini yenerek atmosfer dışına fırlatan itici güç aracı nedir?",
+        "correct": "Uzay Roketi",
+        "wrong": "Teleskop",
+        "explanation": "Uzay roketleri yakıtlarını yakarak güçlü itki üretir ve yükleri uzaya taşır.",
+        "isHard": False
+    },
+    {
+        "id": 50,
+        "q": "Bir gök cismine araştırma ve analiz yapmak için gönderilen insansız robotik araç nedir?",
+        "correct": "Uzay Sondası / Gezgin",
+        "wrong": "Uzay İstasyonu",
+        "explanation": "Uzay sondaları ve gezginler (rover) insansız veri toplama araçlarıdır.",
+        "isHard": True
+    },
+    {
+        "id": 51,
+        "q": "Farklı ülkelerin ortak çalışmasıyla yörüngede görev yapan dev uzay laboratuvarı hangisidir?",
+        "correct": "Uluslararası Uzay İstasyonu (ISS)",
+        "wrong": "Hubble Teleskobu",
+        "explanation": "ISS, 16 ülkenin katkısıyla yörüngede kurulan uluslararası bilim üssüdür.",
+        "isHard": False
+    },
+    {
+        "id": 52,
+        "q": "Dünya’nın veya başka bir gezegenin yörüngesine yerleştirilen insan yapımı cihazlara ne denir?",
+        "correct": "Yapay Uydu",
+        "wrong": "Doğal Uydu",
+        "explanation": "İletişim, hava tahmini ve keşif için yörüngeye fırlatılan insan yapımı araçlar yapay uydudur.",
+        "isHard": False
+    },
+    {
+        "id": 53,
+        "q": "Ömrü bitmiş uydular ve roket parçalarının yörüngede oluşturduğu tehlikeye ne denir?",
+        "correct": "Uzay Kirliliği",
+        "wrong": "Işık Kirliliği",
+        "explanation": "Uzay enkazları ve atık metaller uzay kirliliğini oluşturur.",
+        "isHard": False
+    },
+    {
+        "id": 54,
+        "q": "NASA tarafından uzaya fırlatılan ilk operasyonel uzay mekiği hangisidir?",
+        "correct": "Columbia",
+        "wrong": "Challenger",
+        "explanation": "Columbia uzay mekiği 1981'de ilk görevini icra etmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 55,
+        "q": "16 ülkenin ortak iş birliği ile uzayda kurulan bilim laboratuvarının kısaltması nedir?",
+        "correct": "ISS (Uluslararası Uzay İstasyonu)",
+        "wrong": "CERN",
+        "explanation": "ISS: International Space Station, yani Uluslararası Uzay İstasyonu'dur.",
+        "isHard": True
+    },
+    {
+        "id": 56,
+        "q": "1608 yılında tarihteki ilk mercekli teleskobu geliştiren Hollandalı kimdir?",
+        "correct": "Hans Lippershey",
+        "wrong": "Isaac Newton",
+        "explanation": "Hans Lippershey gözlük camlarını birleştirerek ilk teleskobu yapmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 57,
+        "q": "1609 yılında teleskopla ilk kez uzay ve gökyüzü gözlemleri yapan ünlü bilim insanı kimdir?",
+        "correct": "Galileo Galilei",
+        "wrong": "Johannes Kepler",
+        "explanation": "Galileo teleskobu göğe çevirip Ay kraterlerini ve Jüpiter'in uydularını ilk gören kişidir.",
+        "isHard": False
+    },
+    {
+        "id": 58,
+        "q": "Mercekli, aynalı, radyo ve uzay teleskopları hangi amaçla geliştirilmiştir?",
+        "correct": "Uzay ve Gök Cisimlerini İncelemek",
+        "wrong": "Derin Denizleri İncelemek",
+        "explanation": "Teleskoplar elektromanyetik dalgaları toplayarak gök cisimlerini inceler.",
+        "isHard": False
+    },
+    {
+        "id": 59,
+        "q": "İçerisinde büyük teleskopların yer aldığı gök bilimcilerin gözlem yaptığı tesislere ne denir?",
+        "correct": "Gözlemevi (Rasathane)",
+        "wrong": "Laboratuvar",
+        "explanation": "Gözlemevi veya rasathane, astronomik gözlemlerin yapıldığı merkezdir.",
+        "isHard": False
+    },
+    {
+        "id": 60,
+        "q": "Türkiye’de uzay araştırmalarının yapıldığı Antalya Bakırlıtepe'deki en büyük gözlemevi hangisidir?",
+        "correct": "TUG (TÜBİTAK Ulusal Gözlemevi)",
+        "wrong": "Kandilli Rasathanesi",
+        "explanation": "TUG, 2500 m rakımda Antalya Bakırlıtepe'de kurulmuş en büyük gözlemevimizdir.",
+        "isHard": True
+    },
+    {
+        "id": 61,
+        "q": "Türkiye'nin öncülük ettiği Dünya’nın en büyük havacılık, uzay ve teknoloji festivali nedir?",
+        "correct": "TEKNOFEST",
+        "wrong": "EXPO",
+        "explanation": "TEKNOFEST, Türkiye'nin milli teknoloji hamlesi festivalidir.",
+        "isHard": False
+    },
+    {
+        "id": 62,
+        "q": "Işığın yanlış yerde, yanlış miktarda, yanlış zamanda ve gökyüzüne doğru yönlendirilmesi nedir?",
+        "correct": "Işık Kirliliği",
+        "wrong": "Radyasyon Kirliliği",
+        "explanation": "Işık kirliliği gökyüzünün gözlemlenmesini zorlaştırır ve enerji israfına yol açar.",
+        "isHard": False
+    },
+    {
+        "id": 63,
+        "q": "Merceklerdeki renk sapmalarını önlemek için ilk aynalı teleskobu tasarlayan kimdir?",
+        "correct": "Isaac Newton",
+        "wrong": "Galileo Galilei",
+        "explanation": "Isaac Newton çukur ayna kullanarak yansıtmalı (aynalı) teleskobu icat etmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 64,
+        "q": "Evrenin tek bir noktadan genişleyerek başladığını savunan modern bilimsel teori nedir?",
+        "correct": "Büyük Patlama (Big Bang)",
+        "wrong": "Durağan Evren Teorisi",
+        "explanation": "Big Bang teorisine göre evren yaklaşık 13.8 milyar yıl önce genişlemeye başlamıştır.",
+        "isHard": False
+    },
+    {
+        "id": 65,
+        "q": "Dünya’nın kendi ekseninde döndüğünü ifade eden ve yer çekimini Newton'dan yüzyıllar önce açıklayan Türk-İslam bilgini kimdir?",
+        "correct": "El-Bîrûnî",
+        "wrong": "Ali Kuşçu",
+        "explanation": "Bîrûnî, Dünya'nın döndüğünü ve yer çekiminin varlığını matematiksel olarak ifade etmiştir.",
+        "isHard": True
+    },
+    {
+        "id": 66,
+        "q": "Semerkant’ta dönemin en büyük rasathanesini kurup ilk modern astronomi okulunu açan hükümdar kimdir?",
+        "correct": "Uluğ Bey",
+        "wrong": "Fatih Sultan Mehmet",
+        "explanation": "Timur Devleti hükümdarı Uluğ Bey büyük bir astronom ve matematikçidir.",
+        "isHard": False
+    },
+    {
+        "id": 67,
+        "q": "Gözlemleriyle ilk kapsamlı yıldız cetvelini (Zîc-i Uluğ Bey) hazırlayan bilim insanı kimdir?",
+        "correct": "Uluğ Bey",
+        "wrong": "Harezmi",
+        "explanation": "Uluğ Bey'in Zici yüzyıllar boyunca doğuda ve batıda temel başvuru kaynağı olmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 68,
+        "q": "Semerkant’ta medrese ve rasathane kurdurarak Ali Kuşçu'yu yetiştiren Türk hükümdarı kimdir?",
+        "correct": "Uluğ Bey",
+        "wrong": "Alparslan",
+        "explanation": "Uluğ Bey bilime büyük önem vermiş ve Semerkant'ı bilim merkezi yapmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 69,
+        "q": "Ay’ın ilk haritasını çıkaran ve NASA tarafından Ay'daki bir kratere adı verilen Türk-İslam bilgini kimdir?",
+        "correct": "Ali Kuşçu",
+        "wrong": "Takiyüddin",
+        "explanation": "Ali Kuşçu Ay'ın haritasını çıkarmış, Fatih döneminde İstanbul'da dersler vermiştir.",
+        "isHard": False
+    },
+    {
+        "id": 70,
+        "q": "17. yüzyılda kanat takarak Galata Kulesi’nden Üsküdar’a uçmayı başaran ilk Türk bilgini kimdir?",
+        "correct": "Hezârfen Ahmed Çelebi",
+        "wrong": "Lagari Hasan Çelebi",
+        "explanation": "Hezârfen Ahmed Çelebi rüzgarı kullanarak boğazı uçarak geçmiştir.",
+        "isHard": True
+    },
+    {
+        "id": 71,
+        "q": "Büyük Selçuklu döneminde Sultan Melikşah adına 'Celâli Takvimi'ni hazırlayan bilgin kimdir?",
+        "correct": "Ömer Hayyam",
+        "wrong": "İbn-i Sina",
+        "explanation": "Ömer Hayyam güneş yılına dayalı son derece hassas Celâli Takvimi'ni hazırlamıştır.",
+        "isHard": False
+    },
+    {
+        "id": 72,
+        "q": "Cebir biliminin kurucusu olan ve matematikte '0' (sıfır) rakamını ilk kullanan İslam bilgini kimdir?",
+        "correct": "El-Harezmî",
+        "wrong": "Farabi",
+        "explanation": "Harezmî cebir ve astronomi alanında dünyaya öncülük etmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 73,
+        "q": "Osmanlı Devleti’nde 1577 yılında İstanbul’daki ilk rasathaneyi kuran astronom kimdir?",
+        "correct": "Takiyüddin",
+        "wrong": "Piri Reis",
+        "explanation": "Takiyüddin er-Râsıd Tophane sırtlarında ilk Osmanlı rasathanesini kurmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 74,
+        "q": "1513 yılında ceylan derisi üzerine çizdiği ilk detaylı dünya haritasıyla ünlü Osmanlı denizcisi kimdir?",
+        "correct": "Pîrî Reis",
+        "wrong": "Barbaros Hayrettin",
+        "explanation": "Pîrî Reis'in haritası Amerika kıtası kıyılarını olağanüstü doğrulukla gösterir.",
+        "isHard": False
+    },
+    {
+        "id": 75,
+        "q": "Dünya ve gezegenlerin Güneş etrafında dolandığı Güneş merkezli teoriyi modern astronomiye kazandıran kimdir?",
+        "correct": "Nicolaus Copernicus (Kopernik)",
+        "wrong": "Batlamyus",
+        "explanation": "Kopernik Dünya merkezli modeli yıkarak Güneş merkezli evren modelini savunmuştur.",
+        "isHard": True
+    },
+    {
+        "id": 76,
+        "q": "Teleskopla yaptığı öncü gözlemler sebebiyle 'Gözlemsel Astronominin Babası' sayılan kimdir?",
+        "correct": "Galileo Galilei",
+        "wrong": "Aristoteles",
+        "explanation": "Galileo teleskobu bilimsel gözlemlerde kullanarak modern astronominin temellerini atmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 77,
+        "q": "Güneş lekelerini teleskobuyla ilk kez tespit eden ve kaydeden bilim insanı kimdir?",
+        "correct": "Galileo Galilei",
+        "wrong": "Isaac Newton",
+        "explanation": "Galileo Güneş yüzeyindeki koyu lekeleri gözlemlemiştir.",
+        "isHard": False
+    },
+    {
+        "id": 78,
+        "q": "Güneş lekelerinin kaydığını gözlemleyerek Güneş'in kendi ekseninde döndüğünü ispatlayan kimdir?",
+        "correct": "Galileo Galilei",
+        "wrong": "Johannes Kepler",
+        "explanation": "Lekelerin hareketinden yola çıkarak Güneş'in kendi ekseni etrafında döndüğünü bulmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 79,
+        "q": "Teleskobuyla Satürn’ün halkasını ilk kez gözlemleyen bilim insanı kimdir?",
+        "correct": "Galileo Galilei",
+        "wrong": "Cassini",
+        "explanation": "Galileo Satürn'ün etrafındaki halkayı ilk kez gözlemlemiş ancak kulakçığa benzetmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 80,
+        "q": "Jüpiter’in en büyük 4 uydusunu (Io, Europa, Ganymede, Callisto) ilk kez keşfeden kimdir?",
+        "correct": "Galileo Galilei",
+        "wrong": "Tycho Brahe",
+        "explanation": "Bu 4 uydu günümüzde 'Galileo Uyduları' olarak adlandırılır.",
+        "isHard": True
+    },
+    {
+        "id": 81,
+        "q": "Gezegenlerin Güneş’e olan uzaklıklarını ve periyotlarını kanunlarla matematikselleştiren kimdir?",
+        "correct": "Johannes Kepler",
+        "wrong": "Kopernik",
+        "explanation": "Kepler 3 Gezegen Hareketi Kanunu'nu formüle etmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 82,
+        "q": "'Göksel Kürelerin Devinimleri Üzerine' adlı meşhur eserin yazarı olan astronom kimdir?",
+        "correct": "Nicolaus Copernicus",
+        "wrong": "Galileo Galilei",
+        "explanation": "Kopernik'in bu eseri bilimsel devrimin başlangıç noktalarından biridir.",
+        "isHard": False
+    },
+    {
+        "id": 83,
+        "q": "Gezegen yörüngelerinin daire değil, odaklarından birinde Güneş olan ELİPS şeklinde olduğunu kanıtlayan kimdir?",
+        "correct": "Johannes Kepler",
+        "wrong": "Newton",
+        "explanation": "Kepler'in 1. Kanunu yörüngelerin elips şeklinde olduğunu açıklar.",
+        "isHard": False
+    },
+    {
+        "id": 84,
+        "q": "İnsanlığın gelecekte uzayda koloniler kurması gerektiğini savunan modern teorik fizikçi kimdir?",
+        "correct": "Stephen Hawking",
+        "wrong": "Albert Einstein",
+        "explanation": "Stephen Hawking insanlığın hayatta kalabilmek için uzaya açılması gerektiğini savunmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 85,
+        "q": "Teleskop icadından önce çıplak gözle en hassas gökyüzü haritalarını çıkaran Danimarkalı astronom kimdir?",
+        "correct": "Tycho Brahe",
+        "wrong": "Edmond Halley",
+        "explanation": "Tycho Brahe'nin çıplak göz verileri daha sonra Kepler Kanunları'nın temelini oluşturmuştur.",
+        "isHard": True
+    },
+    {
+        "id": 86,
+        "q": "Galaksilerin ışığındaki kırmızıya kaymayı bularak Evrenin sürekli genişlediğini ispatlayan kimdir?",
+        "correct": "Edwin Hubble",
+        "wrong": "Carl Sagan",
+        "explanation": "Hubble, 1929 yılında evrenin genişlediğini keşfetmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 87,
+        "q": "Samanyolu dışında Andromeda gibi başka galaksilerin de var olduğunu kanıtlayan bilim insanı kimdir?",
+        "correct": "Edwin Hubble",
+        "wrong": "Kepler",
+        "explanation": "Hubble, Andromeda'nın Samanyolu dışında ayrı bir galaksi olduğunu kanıtlamıştır.",
+        "isHard": False
+    },
+    {
+        "id": 88,
+        "q": "1781 yılında kendi yaptığı teleskopla Güneş Sistemi'nin 7. gezegeni Uranüs’ü keşfeden kimdir?",
+        "correct": "William Herschel",
+        "wrong": "Galileo",
+        "explanation": "William Herschel teleskopla keşfedilen ilk gezegen olan Uranüs'ü bulmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 89,
+        "q": "Yörünge periyodunu hesaplayıp 76 yılda bir Dünya'ya yaklaşan kuyruklu yıldıza adı verilen kimdir?",
+        "correct": "Edmond Halley",
+        "wrong": "Isaac Newton",
+        "explanation": "Halley Kuyruklu Yıldızı adını Edmond Halley'den almıştır.",
+        "isHard": False
+    },
+    {
+        "id": 90,
+        "q": "Evrensel kütle çekim yasasını ve üç temel hareket kanununu formüle eden bilim insanı kimdir?",
+        "correct": "Isaac Newton",
+        "wrong": "Kopernik",
+        "explanation": "Newton kütle çekimini ve mekanik hareket kanunlarını açıklamıştır.",
+        "isHard": True
+    },
+    {
+        "id": 91,
+        "q": "Semerkant’ta yetişip Fatih Sultan Mehmet'in davetiyle İstanbul'a gelerek Ayasofya medresesinde dersler veren kimdir?",
+        "correct": "Ali Kuşçu",
+        "wrong": "Uluğ Bey",
+        "explanation": "Ali Kuşçu Osmanlı'da astronomi ve matematik eğitimine çağ atlatmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 92,
+        "q": "Işığın dahi kaçamayacağı kadar muazzam kütle çekim gücüne sahip kozmik yapılara ne denir?",
+        "correct": "Kara Delik",
+        "wrong": "Bulutsu",
+        "explanation": "Kara deliklerin olay ufkundan hiçbir madde ve ışık kurtulamaz.",
+        "isHard": False
+    },
+    {
+        "id": 93,
+        "q": "Dünya'dan bakıldığında sergiledikleri şekiller nedeniyle bir arada görünen yıldız topluluklarına ne denir?",
+        "correct": "Takımyıldız",
+        "wrong": "Galaksi",
+        "explanation": "Gökyüzünde mitolojik şekillere benzetilen yıldız gruplarına takımyıldız denir.",
+        "isHard": False
+    },
+    {
+        "id": 94,
+        "q": "Büyükayı, Küçükayı, Orion (Avcı), Ejderha ve Çoban hangi gök yapısına örnektir?",
+        "correct": "Takımyıldızları",
+        "wrong": "Gezegenler",
+        "explanation": "Bu isimler gökyüzünde tanımlanmış ünlü takımyıldızlarıdır.",
+        "isHard": False
+    },
+    {
+        "id": 95,
+        "q": "Küçükayı takımyıldızının en ucunda bulunan ve daima Kuzey yönünü gösteren rehber yıldız hangisidir?",
+        "correct": "Kutup Yıldızı (Polaris)",
+        "wrong": "Sirius",
+        "explanation": "Polaris Dünya'nın dönme ekseni doğrultusunda olduğu için daima kuzeyi gösterir.",
+        "isHard": True
+    },
+    {
+        "id": 96,
+        "q": "Milyarlarca yıldız, gezegen, gaz ve toz bulutunun kütle çekimiyle bir arada tutulduğu dev sistem nedir?",
+        "correct": "Gök Ada (Galaksi)",
+        "wrong": "Güneş Sistemi",
+        "explanation": "Galaksiler milyarlarca yıldız sistemini barındıran dev yapılardır.",
+        "isHard": False
+    },
+    {
+        "id": 97,
+        "q": "Yapısında donmuş halde buzlar, gazlar ve tozlar bulunduran ve 'Kirli Kartopu' da denilen gök cismi nedir?",
+        "correct": "Kuyruklu Yıldız",
+        "wrong": "Gezegen",
+        "explanation": "Kuyruklu yıldızlar donmuş buz ve tozlardan oluşur; Güneş'e yaklaşınca kuyrukları uzar.",
+        "isHard": False
+    },
+    {
+        "id": 98,
+        "q": "Güneş Sistemi'nde iç ve dış gezegenler arasında yörüngede dolanan kayaç gök cisimlerine ne ad verilir?",
+        "correct": "Asteroit (Asteroit Kuşağı)",
+        "wrong": "Kuyruklu Yıldız",
+        "explanation": "İç ve dış gezegenler sınırında milyonlarca asteroit içeren Asteroit Kuşağı bulunur.",
+        "isHard": False
+    },
+    {
+        "id": 99,
+        "q": "Asteroit Kuşağı Güneş Sistemi'nde hangi iki gezegen arasında yer alır?",
+        "correct": "Mars ile Jüpiter Arasında",
+        "wrong": "Dünya ile Mars Arasında",
+        "explanation": "Asteroit Kuşağı, 4. gezegen Mars ile 5. gezegen Jüpiter arasındadır.",
+        "isHard": False
+    },
+    {
+        "id": 100,
+        "q": "Halk arasında 'yıldız kayması' olarak adlandırılan doğa olayının asıl nedeni nedir?",
+        "correct": "Meteorların Atmosfere Girip Yanması",
+        "wrong": "Gerçek Bir Yıldızın Düşmesi",
+        "explanation": "Kaya parçaları atmosfere sürtünerek akkor haline gelir ve ışıklı bir iz bırakır.",
+        "isHard": True
+    },
+    {
+        "id": 101,
+        "q": "Uzayda serbest halde dolaşan ve gezegen yüzeylerine de düşebilen kaya parçalarına ne ad verilir?",
+        "correct": "Gök Taşı (Meteorit)",
+        "wrong": "Yıldız",
+        "explanation": "Yüzeye kadar ulaşabilen taş parçalarına gök taşı (meteorit) denir.",
+        "isHard": False
+    },
+    {
+        "id": 102,
+        "q": "Uzayda serbest dolaşan kaya parçalarının Dünya atmosferine girip ışık saçma durumuna ne denir?",
+        "correct": "Meteor",
+        "wrong": "Gök Ada",
+        "explanation": "Atmosfere girip ışık yayan gök cisimlerine meteor denir.",
+        "isHard": False
+    },
+    {
+        "id": 103,
+        "q": "Atmosferde tamamen yanmayıp yeryüzüne düşen gök taşlarına verilen bilimsel isim nedir?",
+        "correct": "Meteorit",
+        "wrong": "Meteor",
+        "explanation": "Yeryüzüne çarpan taş kütlesine meteorit denir.",
+        "isHard": False
+    },
+    {
+        "id": 104,
+        "q": "Yeryüzüne düşen dev gök taşlarının çarpma sonucu toprakta açtığı çukurlara ne ad verilir?",
+        "correct": "Meteor Çukuru (Krater)",
+        "wrong": "Kanyon",
+        "explanation": "Gök taşlarının yeryüzünde açtığı kraterlere meteor çukuru denir.",
+        "isHard": False
+    },
+    {
+        "id": 105,
+        "q": "Işığın boşlukta 1 yılda aldığı yaklaşık 9.46 trilyon kilometrelik mesafe birimi nedir?",
+        "correct": "Işık Yılı",
+        "wrong": "Işık Hızı",
+        "explanation": "Işık yılı bir zaman birimi değil, devasa bir uzay uzaklık birimidir.",
+        "isHard": True
+    },
+    {
+        "id": 106,
+        "q": "Güneş Sistemi içinde gezegenler arası mesafeleri ifade etmek için kullanılan birim nedir?",
+        "correct": "Astronomi Birimi (AB)",
+        "wrong": "Işık Yılı",
+        "explanation": "1 AB, Dünya ile Güneş arasındaki ortalama mesafe olan 150 milyon kilometredir.",
+        "isHard": False
+    },
+    {
+        "id": 107,
+        "q": "Yıldızlar ve galaksiler arası muazzam mesafeleri ifade etmek için hangi birim kullanılır?",
+        "correct": "Işık Yılı",
+        "wrong": "Kilometre",
+        "explanation": "Yıldızlar arası mesafeler kilometreyle ifade edilemeyecek kadar büyüktür.",
+        "isHard": False
+    },
+    {
+        "id": 108,
+        "q": "Dünya’mızın ve Güneş Sistemimizin içinde yer aldığı gök ada hangisidir?",
+        "correct": "Samanyolu Galaksisi",
+        "wrong": "Andromeda Galaksisi",
+        "explanation": "İçinde yaşadığımız gök ada Samanyolu (Milky Way) galaksisidir.",
+        "isHard": False
+    },
+    {
+        "id": 109,
+        "q": "Güneş Sistemimiz Samanyolu Galaksisi'nin hangi spiral kolu üzerinde bulunur?",
+        "correct": "Avcı (Orion) Kolu",
+        "wrong": "Perseus Kolu",
+        "explanation": "Güneş Sistemi Samanyolu'nun Avcı (Orion) kolunda yer alır.",
+        "isHard": False
+    },
+    {
+        "id": 110,
+        "q": "Samanyolu Galaksisi şekil bakımından hangi galaksi türüne girer?",
+        "correct": "Çubuklu Sarmal Galaksi",
+        "wrong": "Düzensiz Galaksi",
+        "explanation": "Samanyolu merkezinde çubuksu yapı olan sarmal bir galaksidir.",
+        "isHard": True
+    },
+    {
+        "id": 111,
+        "q": "Türkiye’nin uzaya gönderdiği ilk fakat fırlatıcı roket arızasıyla okyanusa düşen yapay uydu hangisidir?",
+        "correct": "Türksat 1A",
+        "wrong": "Türksat 1B",
+        "explanation": "Türksat 1A, 1994 yılında fırlatıldıktan kısa süre sonra roket arızasıyla düşmüştür.",
+        "isHard": False
+    },
+    {
+        "id": 112,
+        "q": "Türkiye’nin uzayda yörüngeye başarıyla yerleşen ilk haberleşme uydusu hangisidir?",
+        "correct": "Türksat 1B",
+        "wrong": "Türksat 1A",
+        "explanation": "Türksat 1B, 1994 Ağustos ayında yörüngesine başarıyla oturmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 113,
+        "q": "Türkiye’nin televizyon yayını ve veri transferinde kullandığı aktif haberleşme uyduları serisi nedir?",
+        "correct": "Türksat Serisi (3A, 4A, 4B, 5A, 5B, 6A)",
+        "wrong": "Göktürk Serisi",
+        "explanation": "Türksat uyduları haberleşme ve yayıncılık uydularımızdır.",
+        "isHard": False
+    },
+    {
+        "id": 114,
+        "q": "Türkiye’nin uzaya gönderdiği ve görev süresini başarıyla tamamlayıp emekli olan uyduları hangileridir?",
+        "correct": "Türksat 1B, 1C ve 2A",
+        "wrong": "Türksat 5A ve 5B",
+        "explanation": "Türksat 1B, 1C ve 2A görev sürelerini tamamlayarak emekliye ayrılmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 115,
+        "q": "Türkiye’nin 2023 yılında fırlattığı ilk yerli ve milli yüksek çözünürlüklü yer gözlem uydusu nedir?",
+        "correct": "İMECE",
+        "wrong": "BİLSAT",
+        "explanation": "İMECE uydumuz metre altı çözünürlüğe sahip milli gözlem uydumuzdur.",
+        "isHard": True
+    },
+    {
+        "id": 116,
+        "q": "Türkiye’nin 2024 yılında fırlatılan ilk yerli ve milli haberleşme uydusu hangisidir?",
+        "correct": "Türksat 6A",
+        "wrong": "Türksat 5B",
+        "explanation": "Türksat 6A, Türk mühendisleri tarafından yerli imkanlarla üretilen ilk haberleşme uydumuzdur.",
+        "isHard": False
+    },
+    {
+        "id": 117,
+        "q": "Türkiye’nin gözlem, haritacılık ve savunma keşif amaçlı kullandığı yapay uyduları hangileridir?",
+        "correct": "Göktürk-1, Göktürk-2 ve İMECE",
+        "wrong": "Türksat 4A ve 4B",
+        "explanation": "Göktürk ve İMECE serisi yüksek çözünürlüklü gözlem uydularımızdır.",
+        "isHard": False
+    },
+    {
+        "id": 118,
+        "q": "Türkiye’nin ilk mini yer gözlem uydusu olup görevini tamamlamış uydusu hangisidir?",
+        "correct": "BİLSAT",
+        "wrong": "Türksat 6A",
+        "explanation": "BİLSAT, 2003 yılında fırlatılan Türkiye'nin ilk yer gözlem uydusudur.",
+        "isHard": False
+    },
+    {
+        "id": 119,
+        "q": "Türkiye’de yerli yazılım ve donanımla üretilip görevini tamamlayan optik yer gözlem uydumuz hangisidir?",
+        "correct": "RASAT",
+        "wrong": "Türksat 2A",
+        "explanation": "RASAT, TÜBİTAK UZAY tarafından Türkiye'de tasarlanıp üretilen ilk yer gözlem uydusudur.",
+        "isHard": False
+    },
+    {
+        "id": 120,
+        "q": "Bulutsular (Nebulalar) ışık yapılarına göre; Parlak (Salma), Yansıma ve hangi türe ayrılır?",
+        "correct": "Karanlık Bulutsu",
+        "wrong": "Ateş Bulutsusu",
+        "explanation": "Işığı soğurup arkadaki yıldızları gizleyen bulutsulara karanlık bulutsu denir.",
+        "isHard": True
+    },
+    {
+        "id": 121,
+        "q": "Orion (Avcı) takımyıldızında yer alan ve karanlık bulutsu türünün en bilinen örneği hangisidir?",
+        "correct": "Atbaşı Bulutsusu",
+        "wrong": "Yengeç Bulutsusu",
+        "explanation": "Atbaşı bulutsusu at kafasını andıran silüetiyle meşhur bir karanlık bulutsudur.",
+        "isHard": False
+    },
+    {
+        "id": 122,
+        "q": "Dünya’mıza yaklaşık 700 ışık yılı mesafe ile en yakın gezegenimsi bulutsu hangisidir?",
+        "correct": "Helis (Helix) Bulutsusu",
+        "wrong": "Tarantula Bulutsusu",
+        "explanation": "Helis Bulutsusu, halk arasında 'Tanrı'nın Gözü' olarak da anılır.",
+        "isHard": False
+    },
+    {
+        "id": 123,
+        "q": "Büyük Macellan Bulutu galaksisinde yer alan ve keşfedilen en büyük süper bulutsu nedir?",
+        "correct": "Tarantula Bulutsusu",
+        "wrong": "Kelebek Bulutsusu",
+        "explanation": "Tarantula Bulutsusu bilinen en büyük ve en aktif yıldız oluşum bölgesidir.",
+        "isHard": False
+    },
+    {
+        "id": 124,
+        "q": "Uluslararası Astronomi Birliği (IAU) tarafından gökyüzünde resmi olarak tanımlanmış toplam kaç takımyıldız vardır?",
+        "correct": "88 Takımyıldızı",
+        "wrong": "12 Takımyıldızı",
+        "explanation": "Gökyüzü haritası resmi olarak 88 takımyıldız bölgesine ayrılmıştır.",
+        "isHard": False
+    },
+    {
+        "id": 125,
+        "q": "Büyükayı, Küçükayı, Avcı (Orion), Cassiopeia ve Boğa hangi gök yapısı sınıfına girer?",
+        "correct": "Takımyıldızları",
+        "wrong": "Gezegen Halkaları",
+        "explanation": "Bu yapılar insanların gökyüzünde bir arada gördüğü takımyıldızlarıdır.",
+        "isHard": True
+    },
+    {
+        "id": 126,
+        "q": "Gökyüzünde cezve veya kepçeye benzeyen 7 parlak yıldız hangi takımyıldızın belirgin parçasıdır?",
+        "correct": "Büyükayı Takımyıldızı",
+        "wrong": "Avcı Takımyıldızı",
+        "explanation": "Cezve veya kepçe şeklindeki bu yıldız grubu Büyükayı takımyıldızının ana gövdesidir.",
+        "isHard": False
+    },
+    {
+        "id": 127,
+        "q": "Dünya’nın en büyük 2. meteor çukuru Türkiye'de hangi ilimizin Doğubayazıt ilçesinde bulunur?",
+        "correct": "Ağrı (Doğubayazıt)",
+        "wrong": "Sivas",
+        "explanation": "Ağrı Doğubayazıt'taki meteor çukuru genişliği ve derinliğiyle dünyada 2. sıradadır.",
+        "isHard": False
+    },
+    {
+        "id": 128,
+        "q": "Samanyolu galaksimize en yakın olan ve çıplak gözle de görülebilen dev sarmal komşu galaksi nedir?",
+        "correct": "Andromeda Galaksisi",
+        "wrong": "Girdap Galaksisi",
+        "explanation": "Andromeda Galaksisi yaklaşık 2.5 milyon ışık yılı uzaklıktaki dev komşumuzdur.",
+        "isHard": False
+    },
+    {
+        "id": 129,
+        "q": "Gece vakti teleskopla gökyüzüne baktığımızda yıldızların aslında hangi durumunu görürüz?",
+        "correct": "Işığın Çıktığı Geçmişteki Durumunu",
+        "wrong": "Gelecekteki Durumunu",
+        "explanation": "Işığın uzaydaki sonlu hızı sebebiyle yıldızların milyonlarca yıl önceki hallerini görürüz.",
+        "isHard": False
+    },
+    {
+        "id": 130,
+        "q": "Gözlemevlerinin (rasathane) kurulmasında hangisi en önemli çevre şartıdır?",
+        "correct": "Işık Kirliliğinden Uzak, Yüksek ve Açık Dağ Zirveleri",
+        "wrong": "Şehir Merkezleri ve Aydınlık Parklar",
+        "explanation": "Temiz atmosfer, nemsizlik ve sıfır ışık kirliliği gözlemevleri için şarttır.",
+        "isHard": True
+    },
+    {
+        "id": 131,
+        "q": "Teflon, cırt cırt bant, bebek maması, duman dedektörü ve navigasyon (GPS) hangi çalışmalar sayesinde üretilmiştir?",
+        "correct": "Uzay Araştırmaları Teknolojileri",
+        "wrong": "Tarım Sanayisi",
+        "explanation": "Astronotların ihtiyaçları için geliştirilen teknolojiler günlük hayatımıza girmiştir.",
+        "isHard": False
+    },
+    {
+        "id": 132,
+        "q": "Yıldızların konumlarına bakarak geleceği tahmin etmeye çalışan, hiçbir bilimsel temeli olmayan uğraş nedir?",
+        "correct": "Astroloji (Burçlar)",
+        "wrong": "Astronomi",
+        "explanation": "Astroloji bir bilim dalı değildir; gök bilimi olan gerçek bilim Astronomi'dir.",
+        "isHard": False
+    },
+    {
+        "id": 133,
+        "q": "Donmuş gaz ve buz çekirdeği nedeniyle bilimde 'Kirli Kartopu' olarak anılan gök cismi nedir?",
+        "correct": "Kuyruklu Yıldız",
+        "wrong": "Kara Delik",
+        "explanation": "Kuyruklu yıldızlar donmuş buz, toz ve gazdan oluşan kirli kartoplarıdır.",
+        "isHard": False
+    },
+    {
+        "id": 134,
+        "q": "Eski çağlarda insanlar takımyıldızlarını gökyüzünde neye benzeterek adlandırmışlardır?",
+        "correct": "Hayvanlar, Nesneler ve Mitolojik Kahramanlar",
+        "wrong": "Gezegenlerin Renkleri",
+        "explanation": "Büyükayı, Avcı, Aslan, Kraliçe gibi isimler benzetmelerden doğmuştur.",
+        "isHard": False
+    },
+    {
+        "id": 135,
+        "q": "Küçük veya büyük kütleli olsun, evrendeki BÜTÜN yıldızların ortak başlangıç doğum noktası nedir?",
+        "correct": "Bulutsu (Nebula)",
+        "wrong": "Gezegen Çekirdeği",
+        "explanation": "Tüm yıldızlar bulutsulardaki gaz ve tozun kütle çekimiyle sıkışması sonucu doğar.",
+        "isHard": True
+    },
+    {
+        "id": 136,
+        "q": "Görselde Dünya yörüngesinde dolanan, iletişim ve bilimsel gözlem yapan insan yapımı araç hangisidir?",
+        "correct": "Yapay Uydu",
+        "wrong": "Uzay Sondası",
+        "explanation": "Dünya çevresinde yörüngede dolanıp haberleşme sağlayan araç yapay uydudur.",
+        "image": "assets/science/7_1_questions/q_136.png",
+        "isHard": False
+    },
+    {
+        "id": 137,
+        "q": "Görselde uzaya insan ve kargo taşıyıp Dünya'ya uçak gibi pist inişi yapabilen araç hangisidir?",
+        "correct": "Uzay Mekiği",
+        "wrong": "Uzay Roketi",
+        "explanation": "Kanatlı yapısıyla tekrar tekrar kullanılabilen araç uzay mekiğidir.",
+        "image": "assets/science/7_1_questions/q_137.png",
+        "isHard": False
+    },
+    {
+        "id": 138,
+        "q": "Görselde uzay araçlarını yerçekimini yenerek atmosfer dışına fırlatan yüksek güçlü araç hangisidir?",
+        "correct": "Uzay Roketi",
+        "wrong": "Uzay Mekiği",
+        "explanation": "İtiş motorları ve yakıt kademeleriyle uzaya fırlatmayı sağlayan araç uzay roketidir.",
+        "image": "assets/science/7_1_questions/q_138.jpeg",
+        "isHard": False
+    },
+    {
+        "id": 139,
+        "q": "Görselde bir gezegen veya gök cisminin yüzeyinde araştırma yapan tekerlekli robotik araç hangisidir?",
+        "correct": "Uzay Sondası / Gezgin (Rover)",
+        "wrong": "Yapay Uydu",
+        "explanation": "Mars gibi yüzeylerde toprak ve kaya analizleri yapan araç uzay gezginidir (rover).",
+        "image": "assets/science/7_1_questions/q_139.jpeg",
+        "isHard": False
+    },
+    {
+        "id": 140,
+        "q": "Görselde astronotların uzayda aylarca konaklayıp deneyler yaptığı dev yörünge laboratuvarı hangisidir?",
+        "correct": "Uluslararası Uzay İstasyonu (ISS)",
+        "wrong": "Uzay Teleskobu",
+        "explanation": "Görseldeki dev güneş panelli modüler yapı Uluslararası Uzay İstasyonu'dur.",
+        "image": "assets/science/7_1_questions/q_140.png",
+        "isHard": True
+    }
+]
+
+with open('data/sorular_7_1_uzay.json', 'w', encoding='utf-8') as f:
+    json.dump(questions, f, ensure_ascii=False, indent=2)
+
+print(f"Başarıyla {len(questions)} soru oluşturuldu ve data/sorular_7_1_uzay.json dosyasına yazıldı!")

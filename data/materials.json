@@ -4381,5 +4381,34 @@
     "testNumber": 1,
     "isAllOutcomes": false,
     "subtopic": "Genel"
+  },
+  {
+    "id": "mat-7-oyun-uzay-ekspresi",
+    "grade": "7",
+    "category": "egitsel-oyunlar",
+    "targetSection": "1",
+    "title": "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi",
+    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
+    "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu 3D uzay treni macerası! Kuantum raylar üzerinde koş, uzay teknolojilerini ve derin uzayı keşfet, 140 soruluk Maarif bilgi kapılarından doğru geç!",
+    "fileName": "uzay-ekspresi-7.html",
+    "fileUrl": "oyunlar/uzay-ekspresi-7.html",
+    "imageUrl": "assets/rotali-uzay-ekspresi.jpg",
+    "kapakResmi": "assets/rotali-uzay-ekspresi.jpg",
+    "cover": "assets/rotali-uzay-ekspresi.jpg",
+    "format": "3D UZAY TRENİ",
+    "hasBlob": false,
+    "tags": [
+      "7. Sınıf",
+      "1. Ünite",
+      "Güneş Sistemi ve Ötesi",
+      "Uzay Araştırmaları",
+      "Gök Cisimleri",
+      "Uzay Ekspresi",
+      "3D Oyun"
+    ],
+    "visibility": "public",
+    "downloadCount": "🌟 1. Ünite Başyapıtı",
+    "createdAt": "2026-11-11T00:00:00.000Z",
+    "updatedAt": "2026-11-11T00:00:00.000Z"
   }
 ]
