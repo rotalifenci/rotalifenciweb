@@ -206,6 +206,7 @@ function ensureMultiDeviceSyncReset() {
 ensureMultiDeviceSyncReset();
 
 const PROTECTED_MATERIAL_IDS = new Set([
+    "mat-5-2-sim-dinamometre-laboratuvari", "builtin-oyun-5-dinamometre", "dinamometre-laboratuvari",
     "mat-7-2-sunum-kuvvet-ve-enerji-3d",
     "mat-1789641166040",
     "mat-6d88cbde-dd7c-4fb2-aebc-b9e7c83b57ab",
@@ -2583,6 +2584,10 @@ function getMaterialActionUI(item, fallbackCat = "") {
     const isIsLab = title.includes("iş laboratuvarı") || title.includes("is laboratuvari") || file.includes("is-laboratuvari") || url.includes("is-laboratuvari") || (item && item.id === "mat-7-2-sim-is-laboratuvari");
     if (isIsLab) {
         return { text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-cube", bg: "bg-gradient-to-r from-emerald-500 via-teal-600 to-cyan-700 hover:from-emerald-600 hover:to-teal-700 shadow-emerald-500/30" };
+    }
+    const isDinamometreLab = title.includes("dinamometre") || file.includes("dinamometre") || url.includes("dinamometre") || (item && (item.id === "mat-5-2-sim-dinamometre-laboratuvari" || item.id === "builtin-oyun-5-dinamometre"));
+    if (isDinamometreLab) {
+        return { text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-weight-hanging", bg: "bg-gradient-to-r from-cyan-500 via-blue-600 to-amber-500 hover:from-cyan-600 hover:to-blue-700 shadow-cyan-500/30" };
     }
     const isKuvvetLab = title.includes("kuvvet laboratuvarı") || title.includes("kuvvet laboratuvari") || file.includes("kuvvet-laboratuvari") || url.includes("kuvvet-laboratuvari") || (item && item.id === "mat-6-2-sim-kuvvet-laboratuvari");
     if (isKuvvetLab) {
@@ -5116,7 +5121,7 @@ function renderGradeDersNotuAccordion(grade, subData) {
             "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
         ],
         "7": [
-            "1. Ünite: Uzay Çağı",
+            "1. Ünite: Güneş Sistemi ve Ötesi",
             "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
             "3. Ünite: Vücudumuzdaki Sistemler",
             "4. Ünite: Işığın Kırılması ve Mercekler",
@@ -5594,7 +5599,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
         ],
         "7": [
-            "1. Ünite: Uzay Çağı",
+            "1. Ünite: Güneş Sistemi ve Ötesi",
             "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
             "3. Ünite: Vücudumuzdaki Sistemler",
             "4. Ünite: Işığın Kırılması ve Mercekler",
@@ -5919,6 +5924,72 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                 </div>
             </div>
 
+                        <!-- 🌟 1. ÜNİTE ÖNE ÇIKAN BAŞYAPIT OYUNU (UZAY EKSPRESİ) -->
+            ${normSubTab === 'egitsel-oyunlar' && (gNum === "6" || gNum === "7") ? `
+            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-6 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+                <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-16 -top-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-5 lg:gap-8">
+                    <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
+                        <div class="relative shrink-0">
+                            <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
+                                <img src="assets/rotali-uzay-ekspresi.jpg" alt="Rotalı Fenci - Uzay Ekspresi" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='rotali-fenci-logo.png'">
+                            </div>
+                            <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
+                                🚂 3D TREN
+                            </span>
+                        </div>
+
+                        <div class="max-w-xl">
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-2">
+                                <span class="px-3 py-1 rounded-full bg-amber-400/20 border border-amber-300/40 text-amber-300 text-[11px] font-black tracking-wider uppercase flex items-center gap-1.5">
+                                    <i class="fa-solid fa-trophy text-amber-400"></i> 1. ÜNİTE BAŞYAPIT OYUNU
+                                </span>
+                                <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30">
+                                    ✓ Maarif Modeli & Akıllı Tahta Uyumlu
+                                </span>
+                            </div>
+                            <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-orange-400 mb-2">
+                                ${gNum === "7" ? "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi" : "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi"}
+                            </h4>
+                            <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3">
+                                ${gNum === "7" 
+                                    ? "Uzay boşluğunda kuantum raylarında koş! Uzay araştırmalarını, gök adaları, bulutsuları, yıldızları ve kara delikleri keşfet, 140 soruluk Türkiye Yüzyılı Maarif Modeli bilgi kapılarından doğru geçerek rekor kır!"
+                                    : "Uzay boşluğunda ilerleyen yüksek teknolojili Bilim Treni'nin kuantum raylarında koş! NASA dokulu gezegenleri keşfet, meteor ve uydu enkazlarından kaç, Türkiye Yüzyılı Maarif Modeli bilgi kapılarından doğru geçerek rekor kır!"}
+                            </p>
+                            <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 text-[11px] font-bold text-slate-300">
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ${gNum === "7" ? "🌌 Güneş Sistemi & Ötesi" : "🪐 8 Gezegen (İç & Dış)"}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ${gNum === "7" ? "🛰️ Uzay Teknolojileri & ISS" : "🚆 3 Şeritli Bilim Treni"}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ${gNum === "7" ? "🚪 140 Maarif Bilgi Kapısı" : "🚪 Maarif Modeli Kapıları"}
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ❤️ 3 Can & Asistan Robot
+                                </span>
+                                <span class="px-2.5 py-1 rounded-xl bg-white/10 border border-white/10 flex items-center gap-1">
+                                    ✨ Işık Yılı & Yıldız Skoru
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
+                        <button type="button" onclick="openInteractiveGameModal('${gNum === "7" ? "builtin-oyun-7-uzay-ekspresi" : "oyun-uzay-ekspresi"}', '${gNum === "7" ? "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi" : "Rotalı Fenci - Uzay Ekspresi"}')" class="px-8 py-3.5 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
+                            <i class="fa-solid fa-play text-base"></i> OYUNU AÇ (TAM EKRAN)
+                        </button>
+                        <a href="${gNum === "7" ? "oyunlar/uzay-ekspresi-7.html" : "oyunlar/uzay-ekspresi.html"}" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
+                            <i class="fa-solid fa-up-right-from-square"></i> Tam Ekran Yeni Sekmede Aç
+                        </a>
+                    </div>
+                </div>
+            </div>
+            ` : ''}
+
             <!-- Özel materyaller doğrudan kendi ünite akordeonlarına yerleştirildi -->
 
             <!-- 2. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye + LABORATUVAR) -->
@@ -6083,6 +6154,11 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                                 (item.title && (item.title.toLowerCase().includes("uzay ekspresi") || item.title.toLowerCase().includes("uzay-ekspresi"))) ||
                                                 (item.id && (String(item.id).includes("uzay-ekspresi") || String(item.id).includes("uzay_ekspresi")));
 
+                                            // ⚖️ 0. DİNAMOMETRE SANAL LABORATUVARI
+                                            const isDinamometreLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("dinamometre")) ||
+                                                (item.title && item.title.toLowerCase().includes("dinamometre")) ||
+                                                (item.id && String(item.id).includes("dinamometre"));
+
                                             // ⚡ 2. KUVVET LABORATUVARI & İŞ LABORATUVARI
                                             const isKuvvetLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("kuvvet-laboratuvari")) ||
                                                 (item.title && (item.title.toLowerCase().includes("kuvvet laboratuvarı") || item.title.toLowerCase().includes("kuvvet laboratuvari"))) ||
@@ -6130,8 +6206,14 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             );
 
                                             let actionCall = cfg.btnAction(item);
-                                            if (isUzayEkspresiItem) {
+                                            if (isDinamometreLaboratuvariItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/dinamometre-laboratuvari.html', 'Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!')`;
+                                            } else if (isUzayEkspresiItem) {
+                                                if (gNum === "7" || (item.fileUrl && item.fileUrl.includes("uzay-ekspresi-7")) || (item.title && item.title.includes("Ötesi"))) {
+                                                actionCall = `openInteractiveGameModal('builtin-oyun-7-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi')`;
+                                            } else {
                                                 actionCall = `openInteractiveGameModal('oyun-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi')`;
+                                            }
                                             } else if (isKuvvetLaboratuvariItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/kuvvet-laboratuvari.html', 'Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!')`;
                                             } else if (isYildizLaboratuvariItem) {
@@ -6159,7 +6241,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             }
 
                                             let itemActionUI = getMaterialActionUI(item, normSubTab);
-                                            if (isUzayEkspresiItem) {
+                                            if (isDinamometreLaboratuvariItem) {
+                                                actionCall = `openInteractiveGameModal('oyunlar/dinamometre-laboratuvari.html', 'Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!')`;
+                                            } else if (isUzayEkspresiItem) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 shadow-amber-500/30", text: "Trene Bin (3D)", icon: "fa-solid fa-train-subway" };
                                             } else if (isKuvvetLaboratuvariItem) {
                                                 itemActionUI = { bg: "bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:from-cyan-600 hover:to-blue-700 shadow-cyan-500/30", text: "Laboratuvara Gir (3D)", icon: "fa-solid fa-atom" };
@@ -6725,6 +6809,16 @@ function renderGradeEducationalGames(grade, subData) {
     // 2. Müfredat & Dahili İnteraktif Oyunlar
     const builtinCurriculumGames = {
         "5": [
+            {
+                id: "builtin-oyun-5-dinamometre",
+                title: "Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!",
+                badge: "2. Ünite Başyapıtı",
+                type: "Sanal Laboratuvar & Simülasyon",
+                desc: "Kuvveti ölç, yayları test et, STEM atölyesinde kendi dinamometreni tasarla! 4 dinamometre, 3 yay türü, plastik deformasyon, canlı Hooke yasası grafiği, Dünya & Ay yer çekimi ve 10 görevli macera modu.",
+                icon: "fa-solid fa-weight-hanging",
+                iconColor: "from-cyan-400 via-blue-600 to-amber-400",
+                fileUrl: "dinamometre-laboratuvari"
+            },
             {
                 id: "builtin-oyun-5-gunes-dunya-ay",
                 title: "Güneş, Dünya ve Ay – 3D Hareket Laboratuvarı",
@@ -11124,7 +11218,7 @@ const GRADE_UNITS_MAP = {
         "7. Ünite: Sürdürülebilir Yaşam ve Etkileşim"
     ],
     "7": [
-        "1. Ünite: Uzay Çağı",
+        "1. Ünite: Güneş Sistemi ve Ötesi",
         "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim",
         "3. Ünite: Vücudumuzdaki Sistemler",
         "4. Ünite: Işığın Kırılması ve Mercekler",
@@ -14110,7 +14204,7 @@ function getPresentationSlidesForMaterial(item) {
     const unitTitlesMap = {
         "5": ["Gökyüzündeki Komşularımız ve Biz", "Kuvveti Tanıyalım", "Canlıların Yapısına Yolculuk", "Işığın Dünyası", "Maddenin Doğası", "Yaşamımızdaki Elektrik", "Sürdürülebilir Yaşam ve Geri Dönüşüm"],
         "6": ["Güneş Sistemi ve Tutulmalar", "Kuvvetin Etkisinde Hareket", "Canlılarda Sistemler", "Işığın Yansıması ve Renkler", "Maddenin Ayırt Edici Özellikleri", "Elektriğin İletimi ve Direnç", "Sürdürülebilir Yaşam ve Etkileşim"],
-        "7": ["Uzay Çağı", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Enerji"],
+        "7": ["Güneş Sistemi ve Ötesi", "Kuvvet ve Enerjiyi Keşfedelim", "Vücudumuzdaki Sistemler", "Işığın Kırılması ve Mercekler", "Maddenin Doğasına Yolculuk", "Elektriklenme", "Sürdürülebilir Yaşam ve Enerji"],
         "8": ["Mevsimler ve İklim", "DNA ve Genetik Kod", "Basınç (Katı, Sıvı, Gaz)", "Madde ve Endüstri", "Basit Makineler", "Canlılar ve Enerji İlişkileri", "Elektrik Yükleri ve Elektrik Enerjisi"]
     };
     const defaultUnitName = (unitTitlesMap[grade] && unitTitlesMap[grade][parseInt(unitNum)-1]) || "Fen Bilimleri";
@@ -16785,6 +16879,40 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
     const str = String(gameKeyOrUrl || "").toLowerCase();
     const titleStr = String(gameTitle || "").toLowerCase();
 
+    // ⚖️ 5. Sınıf Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!
+    if (str.includes("dinamometre") || titleStr.includes("dinamometre") || resolvedKey === "mat-5-2-sim-dinamometre-laboratuvari" || resolvedKey === "builtin-oyun-5-dinamometre" || resolvedKey === "dinamometre-laboratuvari") {
+        modal.innerHTML = `
+            <div class="bg-slate-950 w-screen h-screen max-w-none max-h-none border-0 shadow-2xl overflow-hidden flex flex-col" style="height: 100dvh; height: 100svh;" onclick="event.stopPropagation()">
+                <div class="px-3 py-1.5 bg-slate-900 border-b border-cyan-500/40 flex items-center justify-between text-white shrink-0 min-h-[42px]" style="padding-top: max(6px, env(safe-area-inset-top)); padding-left: max(8px, env(safe-area-inset-left)); padding-right: max(8px, env(safe-area-inset-right));">
+                    <div class="flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-lg bg-gradient-to-tr from-cyan-400 via-blue-600 to-amber-500 text-white flex items-center justify-center text-xs font-black shadow-sm">
+                            <i class="fa-solid fa-weight-hanging"></i>
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-xs sm:text-sm font-black text-cyan-300">⚖️ Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!</h3>
+                            <span class="text-[10px] text-slate-400 font-medium hidden md:inline">• 5. Sınıf Fen Bilimleri • 2. Ünite • Maarif Modeli</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <a href="oyunlar/dinamometre-laboratuvari.html" target="_blank" rel="noopener noreferrer" class="px-2.5 py-1 bg-slate-800 hover:bg-cyan-500 hover:text-slate-950 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 shadow-sm" title="Tam Ekran Yeni Sekmede Aç">
+                            <i class="fa-solid fa-up-right-from-square text-[10px]"></i> <span class="hidden sm:inline">Yeni Sekme</span>
+                        </a>
+                        <button type="button" onclick="closeInteractiveGameModal()" class="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-black text-xs transition-all cursor-pointer shadow-sm flex items-center gap-1 active:scale-95" title="Kapat ve Çık">
+                            <i class="fa-solid fa-xmark"></i>
+                            <span>Kapat</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="flex-1 w-full h-full bg-slate-950 relative overflow-hidden">
+                    <iframe src="oyunlar/dinamometre-laboratuvari.html" class="w-full h-full border-0 block" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; fullscreen" allowfullscreen></iframe>
+                </div>
+            </div>
+        `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
+        return;
+    }
+
     // ⚡ 6. Sınıf Kuvvet Laboratuvarı – Kuvvetleri Dengele, Hareketi Keşfet!
     if (str.includes("kuvvet-laboratuvari") || str.includes("kuvvet laboratuvarı") || str.includes("kuvvet laboratuvari") || titleStr.includes("kuvvet laboratuvarı") || titleStr.includes("kuvvet laboratuvari") || resolvedKey === "mat-6-2-sim-kuvvet-laboratuvari" || resolvedKey === "kuvvet-laboratuvari") {
         modal.innerHTML = `
@@ -17587,6 +17715,10 @@ function openInteractiveSimulationModal(targetUrl, title = "Fen Laboratuvarı Si
     }
     if (targetUrl && (targetUrl.includes("is-laboratuvari") || title.includes("İş Laboratuvarı") || title.includes("İş Var mı"))) {
         openInteractiveGameModal("oyunlar/is-laboratuvari.html", "İş Laboratuvarı – İş Var mı, Yok mu? (40 Etkileşimli 3D Deney)");
+        return;
+    }
+    if (targetUrl && (targetUrl.includes("dinamometre-laboratuvari") || title.includes("Dinamometre"))) {
+        openInteractiveGameModal("oyunlar/dinamometre-laboratuvari.html", "Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!");
         return;
     }
     if (targetUrl && (targetUrl.includes("kuvvet-laboratuvari") || title.includes("Kuvvet Laboratuvarı"))) {

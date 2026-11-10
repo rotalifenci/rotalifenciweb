@@ -1,0 +1,2538 @@
+<!DOCTYPE html>
+<html lang="tr" class="h-full bg-slate-950 select-none">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet! | Rotalı Fenci</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        lab: {
+                            bg: '#030712',
+                            card: '#0b1329',
+                            panel: '#0f172a',
+                            border: '#1e293b',
+                            cyan: '#06b6d4',
+                            sky: '#0ea5e9',
+                            blue: '#3b82f6',
+                            green: '#10b981',
+                            amber: '#f59e0b',
+                            orange: '#f97316',
+                            rose: '#f43f5e',
+                            purple: '#8b5cf6'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', 'sans-serif'],
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace']
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome 6 CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        /* Özel Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(56, 189, 248, 0.3);
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(56, 189, 248, 0.6);
+        }
+        .neon-glow-cyan {
+            box-shadow: 0 0 25px rgba(6, 182, 212, 0.35);
+        }
+        .neon-glow-amber {
+            box-shadow: 0 0 25px rgba(245, 158, 11, 0.35);
+        }
+        .neon-glow-rose {
+            box-shadow: 0 0 25px rgba(244, 63, 94, 0.45);
+        }
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+        .glass-panel-light {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* Metalik ve Cam Efektleri */
+        .glass-tube {
+            fill: url(#glassGradient);
+            stroke: rgba(255, 255, 255, 0.5);
+            stroke-width: 1.5;
+        }
+        .metallic-pointer {
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+        }
+        /* Pulse animasyonu */
+        @keyframes pulse-fast {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+        .animate-pulse-fast {
+            animation: pulse-fast 1s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 flex flex-col overflow-hidden relative">
+
+    <!-- ARKA PLAN LABORATUVAR DESENİ & IŞIKLARI -->
+    <div class="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div id="lab-backdrop-gradient" class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/30 via-slate-950 to-slate-950 transition-colors duration-700"></div>
+        <div class="absolute -top-32 -left-32 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-32 -right-32 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        <!-- İnce teknik laboratuvar ızgarası -->
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:32px_32px]"></div>
+    </div>
+
+    <!-- ==================== ÜST BİLGİ & MENÜ ÇUBUĞU ==================== -->
+    <header class="relative z-30 bg-slate-900/90 border-b border-cyan-500/30 px-3 py-2 sm:px-5 sm:py-2.5 flex items-center justify-between shrink-0 shadow-lg backdrop-blur-md">
+        <!-- Sol: Logo & Başlık -->
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-blue-600 to-indigo-600 p-0.5 shadow-md flex items-center justify-center shrink-0">
+                <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-cyan-400">
+                    <i class="fa-solid fa-weight-hanging text-lg sm:text-xl"></i>
+                </div>
+            </div>
+            <div>
+                <div class="flex items-center gap-2">
+                    <h1 class="text-sm sm:text-lg font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-amber-300 leading-tight">
+                        DİNAMOMETRE SANAL LABORATUVARI
+                    </h1>
+                    <span class="hidden md:inline-block px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-[10px] font-black text-cyan-300 uppercase tracking-wider">
+                        5. Sınıf • 2. Ünite
+                    </span>
+                </div>
+                <p class="text-[10px] sm:text-xs text-slate-400 font-medium leading-none mt-0.5 flex items-center gap-1.5">
+                    <span>Kuvveti Ölç, Deney Yap, Keşfet!</span>
+                    <span class="text-slate-600">•</span>
+                    <span class="text-amber-400 font-semibold">Türkiye Yüzyılı Maarif Modeli</span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Orta: Mod & Laboratuvar Sekmeleri -->
+        <nav class="hidden lg:flex items-center gap-1 bg-slate-950/70 p-1 rounded-2xl border border-slate-800 shadow-inner">
+            <button type="button" onclick="switchLabTab('main')" id="nav-btn-main" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-cyan-500 text-slate-950 shadow-md">
+                <i class="fa-solid fa-compass-drafting"></i> <span>Ana Deney</span>
+            </button>
+            <button type="button" onclick="switchLabTab('compare')" id="nav-btn-compare" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-code-compare"></i> <span>Yayları Karşılaştır</span>
+            </button>
+            <button type="button" onclick="switchLabTab('workshop')" id="nav-btn-workshop" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-hammer"></i> <span>Dinamometre Tasarla</span>
+            </button>
+            <button type="button" onclick="switchLabTab('experiments')" id="nav-btn-experiments" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-flask"></i> <span>8 Deney</span>
+            </button>
+            <button type="button" onclick="switchLabTab('quiz')" id="nav-btn-quiz" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-eye"></i> <span>Gösterge Okuma</span>
+            </button>
+            <button type="button" onclick="switchLabTab('gravity')" id="nav-btn-gravity" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-globe"></i> <span>Dünya & Ay</span>
+            </button>
+            <button type="button" onclick="switchLabTab('missions')" id="nav-btn-missions" class="nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5">
+                <i class="fa-solid fa-award"></i> <span>Görevler</span>
+            </button>
+        </nav>
+
+        <!-- Sağ: Mod / Ses / Yardım / Rotalı Fenci Rozeti -->
+        <div class="flex items-center gap-1.5 sm:gap-2">
+            <!-- Öğretmen Modu Butonu -->
+            <button type="button" onclick="toggleTeacherMode()" id="teacher-mode-btn" class="px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all border border-slate-700 flex items-center gap-1.5 shadow-sm active:scale-95" title="Öğretmen / Akıllı Tahta Modu">
+                <i class="fa-solid fa-chalkboard-user text-amber-400"></i>
+                <span id="teacher-mode-text" class="hidden sm:inline">Öğrenci Modu</span>
+            </button>
+
+            <!-- Ses Aç/Kapat -->
+            <button type="button" onclick="toggleSound()" id="sound-btn" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-cyan-400 hover:text-cyan-300 text-sm transition-all border border-slate-700 flex items-center justify-center shadow-sm active:scale-95" title="Ses Aç/Kapat">
+                <i class="fa-solid fa-volume-high" id="sound-icon"></i>
+            </button>
+
+            <!-- Bilgi Kartları / Yardım -->
+            <button type="button" onclick="openHelpModal()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-amber-400 hover:text-amber-300 text-sm transition-all border border-slate-700 flex items-center justify-center shadow-sm active:scale-95" title="Bilgi Kartları & Yardım">
+                <i class="fa-solid fa-circle-question"></i>
+            </button>
+
+            <!-- Tam Ekran -->
+            <button type="button" onclick="toggleFullScreen()" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-sm transition-all border border-slate-700 flex items-center justify-center shadow-sm active:scale-95" title="Tam Ekran">
+                <i class="fa-solid fa-expand" id="fullscreen-icon"></i>
+            </button>
+
+            <!-- Rotalı Fenci Logo Rozeti -->
+            <a href="https://rotalifenci.vercel.app" target="_blank" rel="noopener noreferrer" class="hidden xl:flex items-center gap-2 pl-2 border-l border-slate-800 hover:opacity-90 transition-opacity">
+                <img src="../rotali-fenci-logo.png" onerror="this.src='../assets/rotali-uzay-ekspresi.jpg'" alt="Rotalı Fenci" class="w-8 h-8 rounded-lg object-contain bg-slate-900 border border-slate-800 p-0.5">
+                <div class="text-left leading-tight">
+                    <span class="text-[11px] font-black text-amber-300 block font-orbitron tracking-wider">ROTALI FENCİ</span>
+                    <span class="text-[9px] text-slate-400 block font-mono">Sanal Laboratuvar</span>
+                </div>
+            </a>
+        </div>
+    </header>
+
+    <!-- MOBİL / TABLET İÇİN ALT SEKME ÇUBUĞU (lg altında görünür) -->
+    <div class="lg:hidden relative z-20 bg-slate-900/95 border-b border-slate-800 px-2 py-1.5 flex items-center justify-around overflow-x-auto gap-1 text-[11px]">
+        <button type="button" onclick="switchLabTab('main')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold bg-cyan-500 text-slate-950 shrink-0" data-tab="main">Ana Deney</button>
+        <button type="button" onclick="switchLabTab('compare')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0" data-tab="compare">Yayları Karşılaştır</button>
+        <button type="button" onclick="switchLabTab('workshop')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0" data-tab="workshop">Tasarla</button>
+        <button type="button" onclick="switchLabTab('experiments')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0" data-tab="experiments">8 Deney</button>
+        <button type="button" onclick="switchLabTab('quiz')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0" data-tab="quiz">Gösterge Okuma</button>
+        <button type="button" onclick="switchLabTab('gravity')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0" data-tab="gravity">Dünya & Ay</button>
+        <button type="button" onclick="switchLabTab('missions')" class="mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0" data-tab="missions">Görevler</button>
+    </div>
+
+    <!-- ==================== ANA ÇALIŞMA ALANI ==================== -->
+    <main class="relative z-10 flex-1 overflow-hidden p-2 sm:p-3 lg:p-4 flex flex-col min-h-0">
+
+        <!-- 1. BÖLÜM: ANA DENEY LABORATUVARI (3 Panelli) -->
+        <div id="tab-content-main" class="tab-pane flex-1 grid grid-cols-1 lg:grid-cols-12 gap-3 min-h-0 overflow-hidden">
+            
+            <!-- SOL PANEL (Araçlar, Dinamometreler, Cisimler, Yaylar) (3 Kolon) -->
+            <section class="lg:col-span-3 glass-panel rounded-3xl p-3 sm:p-4 flex flex-col gap-3 min-h-0 overflow-y-auto shadow-xl">
+                
+                <!-- 1. Dinamometre Seçimi -->
+                <div class="glass-panel-light rounded-2xl p-3 border border-cyan-500/20">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-xs font-black text-cyan-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-gauge-high"></i> 1. Dinamometre Kapasitesi
+                        </h2>
+                        <span id="dyn-current-badge" class="px-2 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 text-[10px] font-black border border-cyan-400/30">10 N</span>
+                    </div>
+                    <div class="grid grid-cols-4 gap-1.5">
+                        <button type="button" onclick="selectDynamometer(5)" id="dyn-btn-5" class="dyn-select-btn py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center font-bold text-xs transition-all border border-slate-700 active:scale-95 cursor-pointer">
+                            <span class="block text-sm font-black text-white">5 N</span>
+                            <span class="block text-[9px] text-slate-400 mt-0.5">0.25 N/b</span>
+                        </button>
+                        <button type="button" onclick="selectDynamometer(10)" id="dyn-btn-10" class="dyn-select-btn py-2 px-1 rounded-xl bg-cyan-600 text-slate-950 text-center font-bold text-xs transition-all border border-cyan-400 shadow-md active:scale-95 cursor-pointer">
+                            <span class="block text-sm font-black text-slate-950">10 N</span>
+                            <span class="block text-[9px] text-slate-900 mt-0.5">0.5 N/b</span>
+                        </button>
+                        <button type="button" onclick="selectDynamometer(20)" id="dyn-btn-20" class="dyn-select-btn py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center font-bold text-xs transition-all border border-slate-700 active:scale-95 cursor-pointer">
+                            <span class="block text-sm font-black text-white">20 N</span>
+                            <span class="block text-[9px] text-slate-400 mt-0.5">1 N/b</span>
+                        </button>
+                        <button type="button" onclick="selectDynamometer(50)" id="dyn-btn-50" class="dyn-select-btn py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center font-bold text-xs transition-all border border-slate-700 active:scale-95 cursor-pointer">
+                            <span class="block text-sm font-black text-white">50 N</span>
+                            <span class="block text-[9px] text-slate-400 mt-0.5">2 N/b</span>
+                        </button>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 leading-tight">
+                        <i class="fa-solid fa-circle-info text-cyan-400 mr-1"></i> <span id="dyn-detail-info">Hassas ölçüm: 10 Newton maksimum, 20 eşit bölme, her bölme 0,5 N.</span>
+                    </p>
+                </div>
+
+                <!-- 2. Yay Kalınlığı Seçimi -->
+                <div class="glass-panel-light rounded-2xl p-3 border border-purple-500/20">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-xs font-black text-purple-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-bars-staggered"></i> 2. Yay Kalınlığı
+                        </h2>
+                        <span id="spring-thickness-badge" class="px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-300 text-[10px] font-black border border-purple-400/30">Orta Yay</span>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" onclick="selectSpringType('thin')" id="spring-btn-thin" class="spring-btn py-2 px-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center text-xs font-bold transition-all border border-slate-700 active:scale-95 cursor-pointer">
+                            <div class="h-1.5 w-8 mx-auto bg-cyan-400 rounded-full mb-1"></div>
+                            <span class="block text-[11px] font-black text-white">İnce Yay</span>
+                            <span class="block text-[9px] text-cyan-300 font-medium">Çok Uzar</span>
+                        </button>
+                        <button type="button" onclick="selectSpringType('medium')" id="spring-btn-medium" class="spring-btn py-2 px-1.5 rounded-xl bg-purple-600 text-white text-center text-xs font-bold transition-all border border-purple-400 shadow-md active:scale-95 cursor-pointer">
+                            <div class="h-2.5 w-8 mx-auto bg-purple-200 rounded-full mb-1"></div>
+                            <span class="block text-[11px] font-black text-white">Orta Yay</span>
+                            <span class="block text-[9px] text-purple-200 font-medium">Dengeli</span>
+                        </button>
+                        <button type="button" onclick="selectSpringType('thick')" id="spring-btn-thick" class="spring-btn py-2 px-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center text-xs font-bold transition-all border border-slate-700 active:scale-95 cursor-pointer">
+                            <div class="h-4 w-8 mx-auto bg-amber-400 rounded-full mb-1"></div>
+                            <span class="block text-[11px] font-black text-white">Kalın Yay</span>
+                            <span class="block text-[9px] text-amber-300 font-medium">Az Uzar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 3. Kancaya Asılabilir Cisimler Havuzu -->
+                <div class="glass-panel-light rounded-2xl p-3 border border-amber-500/20 flex-1 flex flex-col min-h-0">
+                    <div class="flex items-center justify-between mb-2">
+                        <h2 class="text-xs font-black text-amber-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-shapes"></i> 3. Cisimler Havuzu
+                        </h2>
+                        <span class="text-[9px] text-slate-400 font-mono">Tıkla veya Sürükle</span>
+                    </div>
+
+                    <!-- Cisimler Grid -->
+                    <div class="grid grid-cols-3 gap-2 overflow-y-auto p-1 flex-1 min-h-[140px]" id="weights-palette">
+                        <!-- 100g -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 100)" onclick="addWeight(100)" class="weight-card group bg-slate-900/90 hover:bg-cyan-950/60 border border-cyan-500/40 hover:border-cyan-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <div class="w-8 h-8 rounded-lg bg-gradient-to-b from-cyan-400 to-blue-600 flex items-center justify-center text-slate-950 font-black text-[10px] shadow">
+                                100g
+                            </div>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">1 N</span>
+                                <span class="text-[8px] text-slate-400">100 gram</span>
+                            </div>
+                        </div>
+
+                        <!-- 200g -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 200)" onclick="addWeight(200)" class="weight-card group bg-slate-900/90 hover:bg-emerald-950/60 border border-emerald-500/40 hover:border-emerald-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <div class="w-9 h-8 rounded-lg bg-gradient-to-b from-emerald-400 to-teal-600 flex items-center justify-center text-slate-950 font-black text-[10px] shadow">
+                                200g
+                            </div>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">2 N</span>
+                                <span class="text-[8px] text-slate-400">200 gram</span>
+                            </div>
+                        </div>
+
+                        <!-- 500g -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 500)" onclick="addWeight(500)" class="weight-card group bg-slate-900/90 hover:bg-amber-950/60 border border-amber-500/40 hover:border-amber-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <div class="w-10 h-9 rounded-lg bg-gradient-to-b from-amber-400 to-orange-600 flex items-center justify-center text-slate-950 font-black text-[11px] shadow">
+                                500g
+                            </div>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">5 N</span>
+                                <span class="text-[8px] text-slate-400">500 gram</span>
+                            </div>
+                        </div>
+
+                        <!-- 1 kg -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 1000)" onclick="addWeight(1000)" class="weight-card group bg-slate-900/90 hover:bg-orange-950/60 border border-orange-500/40 hover:border-orange-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <div class="w-11 h-10 rounded-lg bg-gradient-to-b from-orange-500 to-red-600 flex items-center justify-center text-white font-black text-[11px] shadow">
+                                1 kg
+                            </div>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">10 N</span>
+                                <span class="text-[8px] text-slate-400">1000 g</span>
+                            </div>
+                        </div>
+
+                        <!-- 2 kg -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 2000)" onclick="addWeight(2000)" class="weight-card group bg-slate-900/90 hover:bg-rose-950/60 border border-rose-500/40 hover:border-rose-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <div class="w-12 h-10 rounded-lg bg-gradient-to-b from-rose-500 to-pink-600 flex items-center justify-center text-white font-black text-xs shadow">
+                                2 kg
+                            </div>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">20 N</span>
+                                <span class="text-[8px] text-slate-400">2000 g</span>
+                            </div>
+                        </div>
+
+                        <!-- 5 kg -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 5000)" onclick="addWeight(5000)" class="weight-card group bg-slate-900/90 hover:bg-purple-950/60 border border-purple-500/40 hover:border-purple-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <div class="w-12 h-11 rounded-lg bg-gradient-to-b from-purple-600 to-indigo-800 flex items-center justify-center text-white font-black text-xs shadow">
+                                5 kg
+                            </div>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">50 N</span>
+                                <span class="text-[8px] text-slate-400">5000 g</span>
+                            </div>
+                        </div>
+
+                        <!-- Günlük Yaşam: Elma (100g) -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 100)" onclick="addWeight(100)" class="weight-card group bg-slate-900/90 hover:bg-red-950/60 border border-red-500/40 hover:border-red-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <span class="text-2xl">🍎</span>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">Elma (~1 N)</span>
+                                <span class="text-[8px] text-slate-400">100 gram</span>
+                            </div>
+                        </div>
+
+                        <!-- Günlük Yaşam: Fen Kitabı (300g) -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 300)" onclick="addWeight(300)" class="weight-card group bg-slate-900/90 hover:bg-blue-950/60 border border-blue-500/40 hover:border-blue-400 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <span class="text-2xl">📚</span>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">Kitap (3 N)</span>
+                                <span class="text-[8px] text-slate-400">300 gram</span>
+                            </div>
+                        </div>
+
+                        <!-- Günlük Yaşam: Taş Blok (800g) -->
+                        <div draggable="true" ondragstart="handleDragStart(event, 800)" onclick="addWeight(800)" class="weight-card group bg-slate-900/90 hover:bg-slate-800 border border-slate-600 rounded-xl p-2 flex flex-col items-center justify-center gap-1 cursor-grab active:cursor-grabbing transition-all hover:scale-105 active:scale-95 shadow-sm">
+                            <span class="text-2xl">🪨</span>
+                            <div class="text-center">
+                                <span class="text-[10px] font-black text-white block">Kaya (8 N)</span>
+                                <span class="text-[8px] text-slate-400">800 gram</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hızlı İşlem Butonları -->
+                    <div class="grid grid-cols-2 gap-2 mt-2 pt-2 border-t border-slate-800">
+                        <button type="button" onclick="removeLastWeight()" class="py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-minus text-amber-400"></i> Cismi Çıkar
+                        </button>
+                        <button type="button" onclick="removeAllWeights()" class="py-2 px-2.5 rounded-xl bg-rose-950/60 hover:bg-rose-900/70 border border-rose-500/40 text-rose-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-trash-can"></i> Tümünü Kaldır
+                        </button>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- ORTA PANEL (BÜYÜK DİNAMOMETRE SAHNESİ) (6 Kolon) -->
+            <section class="lg:col-span-6 glass-panel rounded-3xl p-3 sm:p-4 flex flex-col min-h-0 relative shadow-2xl overflow-hidden" id="dynamometer-stage" ondragover="handleDragOver(event)" ondrop="handleDrop(event)">
+                
+                <!-- Üst Kontrol & Durum Şeridi -->
+                <div class="flex items-center justify-between gap-2 mb-2 z-20">
+                    <div class="flex items-center gap-2">
+                        <!-- Mod Seçici: Cisim Asarak / Elle Çekerek -->
+                        <div class="bg-slate-950/80 p-1 rounded-xl border border-slate-800 flex items-center gap-1">
+                            <button type="button" onclick="setInteractionMode('weights')" id="mode-btn-weights" class="px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition-all flex items-center gap-1">
+                                <i class="fa-solid fa-weight-hanging"></i> Cisim Asarak
+                            </button>
+                            <button type="button" onclick="setInteractionMode('manual')" id="mode-btn-manual" class="px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1">
+                                <i class="fa-solid fa-hand"></i> Elle Çekerek
+                            </button>
+                        </div>
+
+                        <!-- Cetveli Göster/Gizle -->
+                        <button type="button" onclick="toggleRuler()" id="ruler-toggle-btn" class="px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-1 shadow-sm active:scale-95" title="Santimetre Cetvelini Göster/Gizle">
+                            <i class="fa-solid fa-ruler-vertical text-amber-400"></i> Cetvel
+                        </button>
+                    </div>
+
+                    <!-- Esneklik ve Deformasyon Durumu -->
+                    <div id="elasticity-status-badge" class="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i> Esnek Bölge
+                    </div>
+                </div>
+
+                <!-- Manuel Çekme Kaydırıcı Çubuğu (Elle Çekme Modunda Aktif) -->
+                <div id="manual-slider-container" class="hidden mb-2 z-20 bg-slate-900/90 border border-cyan-500/30 rounded-2xl p-2.5 flex items-center gap-3">
+                    <span class="text-xs font-black text-cyan-300 flex items-center gap-1 shrink-0">
+                        <i class="fa-solid fa-hand-fist"></i> Çekme Kuvveti:
+                    </span>
+                    <input type="range" id="manual-force-slider" min="0" max="10" step="0.1" value="0" oninput="handleManualSlider(this.value)" onchange="handleManualSliderEnd()" class="flex-1 accent-cyan-400 cursor-pointer h-2 bg-slate-800 rounded-lg">
+                    <span id="manual-force-display" class="font-mono font-black text-amber-300 text-sm w-14 text-right">0.0 N</span>
+                </div>
+
+                <!-- DİNAMOMETRE VE CETVEL SVG SAHNESİ -->
+                <div class="relative flex-1 w-full flex items-center justify-center min-h-[360px] overflow-hidden" id="svg-canvas-container">
+                    
+                    <!-- Dinamik SVG Dinamometre -->
+                    <svg id="dynamometer-svg" viewBox="0 0 500 700" preserveAspectRatio="xMidYMid meet" class="w-full h-full max-h-[92%] transition-transform duration-200">
+                        <defs>
+                            <!-- Cam Gövde Gradyanı -->
+                            <linearGradient id="glassGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+                                <stop offset="25%" stop-color="#ffffff" stop-opacity="0.35"/>
+                                <stop offset="50%" stop-color="#0284c7" stop-opacity="0.08"/>
+                                <stop offset="75%" stop-color="#ffffff" stop-opacity="0.2"/>
+                                <stop offset="100%" stop-color="#0f172a" stop-opacity="0.4"/>
+                            </linearGradient>
+
+                            <!-- Metalik Yay Gradyanı -->
+                            <linearGradient id="springMetalGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#94a3b8"/>
+                                <stop offset="30%" stop-color="#f8fafc"/>
+                                <stop offset="50%" stop-color="#64748b"/>
+                                <stop offset="80%" stop-color="#cbd5e1"/>
+                                <stop offset="100%" stop-color="#334155"/>
+                            </linearGradient>
+
+                            <!-- Gösterge İşaretçi Gradyanı (Kırmızı/Turuncu) -->
+                            <linearGradient id="pointerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#ef4444"/>
+                                <stop offset="50%" stop-color="#f97316"/>
+                                <stop offset="100%" stop-color="#b91c1c"/>
+                            </linearGradient>
+
+                            <!-- Kanca Metal Gradyanı -->
+                            <linearGradient id="hookMetalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#cbd5e1"/>
+                                <stop offset="40%" stop-color="#ffffff"/>
+                                <stop offset="70%" stop-color="#94a3b8"/>
+                                <stop offset="100%" stop-color="#475569"/>
+                            </linearGradient>
+
+                            <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="3" result="blur"/>
+                                <feMerge>
+                                    <feMergeNode in="blur"/>
+                                    <feMergeNode in="SourceGraphic"/>
+                                </feMerge>
+                            </filter>
+                        </defs>
+
+                        <!-- 1. Laboratuvar Tavan Asma Çubuğu & Standı -->
+                        <g id="lab-stand-mount">
+                            <rect x="180" y="8" width="140" height="12" rx="4" fill="#334155" stroke="#64748b" stroke-width="2"/>
+                            <circle cx="250" cy="14" r="5" fill="#f59e0b"/>
+                            <!-- Sabitleme Vidası -->
+                            <rect x="246" y="2" width="8" height="6" fill="#94a3b8"/>
+                        </g>
+
+                        <!-- 2. Dinamometre Üst Asma Halkası -->
+                        <circle cx="250" cy="40" r="18" fill="none" stroke="url(#hookMetalGrad)" stroke-width="6"/>
+                        <rect x="245" y="56" width="10" height="18" fill="url(#hookMetalGrad)"/>
+
+                        <!-- 3. Dinamometre Üst Başlığı (Kapak) -->
+                        <path d="M 200,74 L 300,74 L 295,95 L 205,95 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                        <circle cx="250" cy="85" r="4" fill="#38bdf8"/>
+
+                        <!-- 4. Şeffaf Dış Silindir Gövde -->
+                        <rect x="205" y="95" width="90" height="380" rx="12" class="glass-tube"/>
+                        <!-- Cam Yansıma Çizgisi -->
+                        <line x1="216" y1="102" x2="216" y2="468" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" opacity="0.4"/>
+                        <line x1="222" y1="102" x2="222" y2="468" stroke="#ffffff" stroke-width="1" stroke-linecap="round" opacity="0.2"/>
+
+                        <!-- 5. ÖLÇÜM SKALASI VE ÇİZGİLERİ (NEWTON SCALE) -->
+                        <g id="scale-group">
+                            <!-- Çizgiler ve Sayılar JavaScript ile Dinamik Oluşturulur -->
+                        </g>
+
+                        <!-- 6. İÇERİDEKİ SARMAL YAY (Dinamik Coiled Spring) -->
+                        <path id="spring-coils-path" d="" fill="none" stroke="url(#springMetalGrad)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+
+                        <!-- 7. HAREKETLİ İŞARETÇİ / GÖSTERGE & ÇUBUK SİSTEMİ -->
+                        <g id="moving-assembly" transform="translate(0, 0)">
+                            <!-- Kırmızı Yatay İbre (Gösterge İşaretçisi) -->
+                            <polygon points="204,115 220,111 220,119" fill="url(#pointerGrad)" stroke="#ffffff" stroke-width="0.8" class="metallic-pointer"/>
+                            <line x1="205" y1="115" x2="295" y2="115" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="3,2" opacity="0.9"/>
+                            <polygon points="296,115 280,111 280,119" fill="url(#pointerGrad)" stroke="#ffffff" stroke-width="0.8" class="metallic-pointer"/>
+
+                            <!-- Alt Çıkış Çubuğu -->
+                            <rect x="247" y="115" width="6" height="380" fill="url(#hookMetalGrad)" stroke="#475569" stroke-width="1"/>
+
+                            <!-- Alt Metal Kanca -->
+                            <g id="bottom-hook-element" class="cursor-grab active:cursor-grabbing">
+                                <!-- Kanca Taban Boğumu -->
+                                <circle cx="250" cy="495" r="7" fill="url(#hookMetalGrad)" stroke="#334155" stroke-width="1.5"/>
+                                <!-- Kanca Gövdesi -->
+                                <path d="M 250,502 L 250,522 C 250,545 280,545 280,525 C 280,515 272,510 268,512" fill="none" stroke="url(#hookMetalGrad)" stroke-width="6" stroke-linecap="round"/>
+                                <!-- Etkileşim Yakalama Dairesi (Görünmez Geniş Dokunmatik Alan) -->
+                                <circle cx="260" cy="525" r="32" fill="transparent"/>
+                            </g>
+
+                            <!-- Kancaya Asılı Cisimler Grubu (Dinamik) -->
+                            <g id="attached-weights-group" transform="translate(250, 532)">
+                                <!-- Eklenen cisimler zincirleme şekilde buraya çizilir -->
+                            </g>
+                        </g>
+
+                        <!-- 8. Dinamometre Alt Kapağı (Sabit Dış Çerçeve) -->
+                        <path d="M 205,475 L 295,475 L 290,490 L 210,490 Z" fill="#1e293b" stroke="#38bdf8" stroke-width="2"/>
+                        <!-- Mil Çıkış Deliği -->
+                        <rect x="244" y="475" width="12" height="15" fill="#0f172a"/>
+
+                        <!-- 9. YAN UZAMA CETVELİ (İsteğe bağlı Açılır/Kapanır) -->
+                        <g id="ruler-group" transform="translate(110, 80)">
+                            <!-- Cetvel Çubuğu -->
+                            <rect x="0" y="15" width="48" height="400" rx="6" fill="#0f172a" stroke="#f59e0b" stroke-width="2"/>
+                            <text x="24" y="32" fill="#f59e0b" font-size="9" font-weight="bold" font-family="'JetBrains Mono', monospace" text-anchor="middle">cm CETVELİ</text>
+                            
+                            <!-- Dinamik Uzama Vurgusu (Renkli Alan) -->
+                            <rect id="ruler-extension-highlight" x="3" y="35" width="42" height="0" fill="#f59e0b" fill-opacity="0.3" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,2"/>
+
+                            <!-- Cetvel Çizgileri & Sayıları (Dinamik) -->
+                            <g id="ruler-ticks"></g>
+                        </g>
+
+                        <!-- 10. ÖĞRETMEN MODU: Newton Değeri Gizleme Kartı (İsteğe Bağlı) -->
+                        <g id="teacher-blind-mask" class="hidden">
+                            <rect x="205" y="95" width="90" height="380" rx="10" fill="#0b1329" fill-opacity="0.95" stroke="#f59e0b" stroke-width="2"/>
+                            <text x="250" y="275" fill="#f59e0b" font-size="32" font-weight="900" font-family="'Orbitron', sans-serif" text-anchor="middle">?</text>
+                            <text x="250" y="305" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">Değeri Tahmin Et</text>
+                        </g>
+                    </svg>
+
+                </div>
+
+                <!-- Alt Hızlı Eylemler Çubuğu -->
+                <div class="z-20 mt-2 pt-2 border-t border-slate-800 flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="recordCurrentMeasurement()" class="py-2 px-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 shadow-md active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-floppy-disk"></i> Ölçümü Kaydet
+                        </button>
+                        <button type="button" onclick="openCompareLab()" class="py-2 px-2.5 rounded-xl bg-slate-900 border border-purple-500/40 hover:border-purple-400 text-purple-300 font-bold text-xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer" title="İki Dinamometreyi Karşılaştır">
+                            <i class="fa-solid fa-scale-balanced"></i> Yayları Karşılaştır
+                        </button>
+                    </div>
+
+                    <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="resetSpringOverload()" id="repair-spring-btn" class="hidden py-2 px-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-black text-xs transition-all flex items-center gap-1.5 shadow-md animate-bounce cursor-pointer">
+                            <i class="fa-solid fa-wrench"></i> Yeni Yay Tak (Onar)
+                        </button>
+                        <button type="button" onclick="resetWholeSimulation()" class="py-2 px-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all flex items-center gap-1 active:scale-95 cursor-pointer" title="Simülasyonu Sıfırla">
+                            <i class="fa-solid fa-rotate-left"></i> Sıfırla
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SAĞ PANEL (Ölçüm Sonuçları, Uzama Analizi, Kayıt Tablosu & Grafik) (3 Kolon) -->
+            <section class="lg:col-span-3 glass-panel rounded-3xl p-3 sm:p-4 flex flex-col gap-3 min-h-0 overflow-y-auto shadow-xl">
+                
+                <!-- 1. BÜYÜK SAYISAL GÖSTERGE EKRANI (DİJİTAL HUD) -->
+                <div class="glass-panel-light rounded-2xl p-3 sm:p-4 border border-cyan-500/30 text-center relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-cyan-500/10 rounded-full blur-xl pointer-events-none"></div>
+                    <span class="text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1">
+                        UYGULANAN KUVVET
+                    </span>
+                    <div class="flex items-baseline justify-center gap-1.5 my-1">
+                        <span id="display-force-value" class="text-4xl sm:text-5xl font-black font-orbitron tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-amber-300">
+                            0.00
+                        </span>
+                        <span class="text-xl sm:text-2xl font-black font-orbitron text-amber-400">N</span>
+                    </div>
+                    <div class="flex items-center justify-center gap-2 mt-2 pt-2 border-t border-slate-800/80 text-[11px]">
+                        <span class="text-slate-400">Toplam Kütle:</span>
+                        <span id="display-mass-value" class="font-bold text-white font-mono">0 g</span>
+                        <span class="text-slate-600">|</span>
+                        <span class="text-slate-400">Ağırlık:</span>
+                        <span id="display-weight-value" class="font-bold text-amber-300 font-mono">0.0 N</span>
+                    </div>
+                </div>
+
+                <!-- 2. YAY UZAMASI ANALİZ KARTI -->
+                <div class="glass-panel-light rounded-2xl p-3 border border-slate-800">
+                    <h3 class="text-xs font-black text-amber-300 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span><i class="fa-solid fa-ruler-combined"></i> Yay Uzaması Bilgisi</span>
+                        <span id="ratio-badge" class="text-[9px] font-mono text-cyan-400">ΔL = F / k</span>
+                    </h3>
+                    <div class="space-y-1.5 text-xs">
+                        <div class="flex items-center justify-between py-1 border-b border-slate-800">
+                            <span class="text-slate-400">İlk Boy ($L_0$):</span>
+                            <span id="metric-l0" class="font-bold font-mono text-slate-200">6.0 cm</span>
+                        </div>
+                        <div class="flex items-center justify-between py-1 border-b border-slate-800">
+                            <span class="text-slate-400">Son Boy ($L$):</span>
+                            <span id="metric-l" class="font-bold font-mono text-slate-200">6.0 cm</span>
+                        </div>
+                        <div class="flex items-center justify-between py-1 bg-amber-500/10 px-2 rounded-lg text-amber-300 font-bold">
+                            <span>Uzama Miktarı ($\Delta L$):</span>
+                            <span id="metric-delta-l" class="font-black font-mono text-sm">0.0 cm</span>
+                        </div>
+                        <div class="flex items-center justify-between py-1 text-[11px] text-slate-400">
+                            <span>Bölme Değeri:</span>
+                            <span id="metric-div-val" class="font-bold text-cyan-300 font-mono">0.5 N/bölme</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CANLI KUVVET – UZAMA GRAFİĞİ -->
+                <div class="glass-panel-light rounded-2xl p-3 border border-slate-800 flex flex-col">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <h3 class="text-xs font-black text-cyan-300 uppercase tracking-wider flex items-center gap-1">
+                            <i class="fa-solid fa-chart-line"></i> Kuvvet - Uzama Grafiği
+                        </h3>
+                        <span class="text-[9px] text-slate-400 font-mono">F (N) - ΔL (cm)</span>
+                    </div>
+                    <!-- SVG Grafik Kanvası -->
+                    <div class="w-full h-36 bg-slate-950/80 rounded-xl border border-slate-800/80 p-2 relative overflow-hidden">
+                        <svg id="live-chart-svg" viewBox="0 0 240 120" class="w-full h-full">
+                            <!-- Eksenler -->
+                            <line x1="30" y1="100" x2="230" y2="100" stroke="#475569" stroke-width="1.5"/>
+                            <line x1="30" y1="10" x2="30" y2="100" stroke="#475569" stroke-width="1.5"/>
+                            
+                            <!-- Izgara Çizgileri -->
+                            <line x1="30" y1="70" x2="230" y2="70" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+                            <line x1="30" y1="40" x2="230" y2="40" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+                            <line x1="95" y1="10" x2="95" y2="100" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+                            <line x1="160" y1="10" x2="160" y2="100" stroke="#1e293b" stroke-width="1" stroke-dasharray="2,2"/>
+
+                            <!-- Eksen Etiketleri -->
+                            <text x="228" y="112" fill="#94a3b8" font-size="8" text-anchor="end">F(N)</text>
+                            <text x="24" y="15" fill="#94a3b8" font-size="8" text-anchor="middle">ΔL</text>
+                            <text x="22" y="103" fill="#64748b" font-size="8" text-anchor="end">0</text>
+
+                            <!-- Dinamik Doğru Çizgisi -->
+                            <path id="chart-trend-line" d="M 30,100" fill="none" stroke="#06b6d4" stroke-width="2.5" stroke-linecap="round"/>
+                            <!-- Kayıtlı Noktalar Grubu -->
+                            <g id="chart-points-group"></g>
+                            <!-- Canlı Aktif Nokta -->
+                            <circle id="chart-live-dot" cx="30" cy="100" r="4.5" fill="#f59e0b" stroke="#ffffff" stroke-width="1.5"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- 4. KAYITLI ÖLÇÜM TABLOSU -->
+                <div class="glass-panel-light rounded-2xl p-3 border border-slate-800 flex-1 flex flex-col min-h-[140px]">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-xs font-black text-emerald-300 uppercase tracking-wider flex items-center gap-1">
+                            <i class="fa-solid fa-table-list"></i> Ölçüm Tablosu (<span id="record-count">0</span>)
+                        </h3>
+                        <div class="flex items-center gap-1">
+                            <button type="button" onclick="exportRecordsCSV()" class="px-2 py-0.5 rounded-md bg-slate-800 hover:bg-slate-700 text-[10px] text-slate-300 hover:text-white" title="CSV Olarak İndir">
+                                <i class="fa-solid fa-file-csv"></i> CSV
+                            </button>
+                            <button type="button" onclick="clearAllRecords()" class="px-2 py-0.5 rounded-md bg-rose-950/60 hover:bg-rose-900 text-[10px] text-rose-300" title="Tabloyu Temizle">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex-1 overflow-y-auto max-h-36 border border-slate-800/80 rounded-xl">
+                        <table class="w-full text-left text-[11px]">
+                            <thead class="bg-slate-900/90 text-slate-400 sticky top-0 font-bold border-b border-slate-800">
+                                <tr>
+                                    <th class="py-1 px-2">#</th>
+                                    <th class="py-1 px-2">Dinamometre</th>
+                                    <th class="py-1 px-2 text-center">F (N)</th>
+                                    <th class="py-1 px-2 text-center">ΔL (cm)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="measurement-records-tbody" class="divide-y divide-slate-800 font-mono">
+                                <tr id="empty-table-row">
+                                    <td colspan="4" class="text-center py-4 text-slate-500 italic font-sans text-xs">
+                                        Henüz kayıtlı ölçüm yok. Ölçümü kaydetmek için yeşil butona basın.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </div>
+
+        <!-- 2. BÖLÜM: YAYLARI KARŞILAŞTIRMA MODÜLÜ -->
+        <div id="tab-content-compare" class="tab-pane hidden flex-1 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-300">
+                        ⚖️ İKİ DİNAMOMETRE VE YAYI KARŞILAŞTIRMA LABORATUVARI
+                    </h2>
+                    <p class="text-xs text-slate-400">Aynı kuvveti farklı yaylara uygulayarak uzama miktarlarını ve hassasiyetlerini karşılaştırın.</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="applyComparisonForce(5)" class="px-3 py-1.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-slate-950 font-black text-xs transition-all active:scale-95">5 N Uygula</button>
+                    <button type="button" onclick="applyComparisonForce(10)" class="px-3 py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs transition-all active:scale-95">10 N Uygula</button>
+                    <button type="button" onclick="applyComparisonForce(20)" class="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-slate-950 font-black text-xs transition-all active:scale-95">20 N Uygula</button>
+                    <button type="button" onclick="resetComparison()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">Sıfırla</button>
+                </div>
+            </div>
+
+            <!-- Karşılaştırma Sahnesi: Yan yana iki dinamometre -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 flex-1 min-h-[360px]">
+                <!-- Dinamometre A -->
+                <div class="glass-panel-light rounded-2xl p-4 flex flex-col items-center border border-cyan-500/30 relative">
+                    <span class="px-3 py-1 rounded-full bg-cyan-500/20 text-cyan-300 text-xs font-black mb-2">DİNAMOMETRE A</span>
+                    <div class="flex items-center gap-2 mb-3">
+                        <select id="comp-a-spring" onchange="updateComparisonScene()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                            <option value="thin">İnce Yay (Hassas)</option>
+                            <option value="medium" selected>Orta Yay</option>
+                            <option value="thick">Kalın Yay (Dayanıklı)</option>
+                        </select>
+                        <select id="comp-a-max" onchange="updateComparisonScene()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                            <option value="5">5 N Kapasite</option>
+                            <option value="10" selected>10 N Kapasite</option>
+                            <option value="20">20 N Kapasite</option>
+                        </select>
+                    </div>
+                    <!-- Basit dinamik karşılaştırma SVG A -->
+                    <div class="flex-1 w-full flex items-center justify-center">
+                        <svg id="comp-svg-a" viewBox="0 0 200 400" class="h-64 sm:h-80"></svg>
+                    </div>
+                    <div class="w-full mt-3 p-2 bg-slate-900/80 rounded-xl text-center">
+                        <span class="text-xs text-slate-400 block">Uzama Miktarı:</span>
+                        <span id="comp-a-result" class="text-lg font-black font-mono text-cyan-300">0.0 cm</span>
+                    </div>
+                </div>
+
+                <!-- Dinamometre B -->
+                <div class="glass-panel-light rounded-2xl p-4 flex flex-col items-center border border-purple-500/30 relative">
+                    <span class="px-3 py-1 rounded-full bg-purple-500/20 text-purple-300 text-xs font-black mb-2">DİNAMOMETRE B</span>
+                    <div class="flex items-center gap-2 mb-3">
+                        <select id="comp-b-spring" onchange="updateComparisonScene()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                            <option value="thin">İnce Yay (Hassas)</option>
+                            <option value="medium">Orta Yay</option>
+                            <option value="thick" selected>Kalın Yay (Dayanıklı)</option>
+                        </select>
+                        <select id="comp-b-max" onchange="updateComparisonScene()" class="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1 text-xs font-bold text-white">
+                            <option value="10">10 N Kapasite</option>
+                            <option value="20">20 N Kapasite</option>
+                            <option value="50" selected>50 N Kapasite</option>
+                        </select>
+                    </div>
+                    <!-- Basit dinamik karşılaştırma SVG B -->
+                    <div class="flex-1 w-full flex items-center justify-center">
+                        <svg id="comp-svg-b" viewBox="0 0 200 400" class="h-64 sm:h-80"></svg>
+                    </div>
+                    <div class="w-full mt-3 p-2 bg-slate-900/80 rounded-xl text-center">
+                        <span class="text-xs text-slate-400 block">Uzama Miktarı:</span>
+                        <span id="comp-b-result" class="text-lg font-black font-mono text-purple-300">0.0 cm</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bilimsel Karşılaştırma ve Yorum Kutusu -->
+            <div id="comp-conclusion-box" class="mt-4 p-3 bg-slate-900/90 border border-amber-500/30 rounded-2xl text-xs flex items-center gap-3">
+                <i class="fa-solid fa-lightbulb text-amber-400 text-2xl shrink-0"></i>
+                <div class="text-slate-300 leading-relaxed" id="comp-conclusion-text">
+                    Yukarıdaki butonlardan bir kuvvet uygulayarak iki dinamometrenin uzama miktarlarını canlı karşılaştırın. İnce yay aynı kuvvette daha çok uzarken, kalın yay daha az uzar ve daha büyük kuvvetleri güvenle taşıyabilir.
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. BÖLÜM: DİNAMOMETRE TASARLAMA ATÖLYESİ (STEM MÜHENDİSLİK) -->
+        <div id="tab-content-workshop" class="tab-pane hidden flex-1 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-300 to-yellow-300">
+                        🛠️ STEM DİNAMOMETRE TASARLAMA ATÖLYESİ
+                    </h2>
+                    <p class="text-xs text-slate-400">Kendi dinamometreni adım adım tasarla, kalibre et ve standart ağırlıklarla test et!</p>
+                </div>
+                <div id="workshop-step-badge" class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black border border-amber-400/30">
+                    Aşama 1 / 4
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 flex-1">
+                <!-- Sol: Tasarım Adımları -->
+                <div class="lg:col-span-5 glass-panel-light rounded-2xl p-4 space-y-4">
+                    <!-- Aşama 1: Gövde -->
+                    <div id="ws-step-1" class="ws-step-box p-3 bg-slate-900/80 rounded-xl border-2 border-amber-400">
+                        <span class="text-xs font-black text-amber-300 block mb-1">1. ADIM: Gövde Malzemesi Seçimi</span>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <button type="button" onclick="selectWsCasing('plastic')" class="ws-btn-casing p-2 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-200 text-xs font-bold active:scale-95" data-val="plastic">Şeffaf Plastik</button>
+                            <button type="button" onclick="selectWsCasing('carton')" class="ws-btn-casing p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95" data-val="carton">Karton Tüp</button>
+                            <button type="button" onclick="selectWsCasing('metal')" class="ws-btn-casing p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95" data-val="metal">Metal Boru</button>
+                        </div>
+                    </div>
+
+                    <!-- Aşama 2: Yay Türü -->
+                    <div id="ws-step-2" class="ws-step-box p-3 bg-slate-900/80 rounded-xl border border-slate-700">
+                        <span class="text-xs font-black text-purple-300 block mb-1">2. ADIM: İç Yay Türü ve Kalınlığı</span>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <button type="button" onclick="selectWsSpring('thin')" class="ws-btn-spring p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95" data-val="thin">İnce (Hassas)</button>
+                            <button type="button" onclick="selectWsSpring('medium')" class="ws-btn-spring p-2 rounded-lg bg-purple-950 border border-purple-400 text-purple-200 text-xs font-bold active:scale-95" data-val="medium">Orta Yay</button>
+                            <button type="button" onclick="selectWsSpring('thick')" class="ws-btn-spring p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95" data-val="thick">Kalın (Güçlü)</button>
+                        </div>
+                    </div>
+
+                    <!-- Aşama 3: Ölçeklendirme & Kapasite -->
+                    <div id="ws-step-3" class="ws-step-box p-3 bg-slate-900/80 rounded-xl border border-slate-700">
+                        <span class="text-xs font-black text-cyan-300 block mb-1">3. ADIM: Hedef Ölçüm Kapasitesi</span>
+                        <div class="grid grid-cols-3 gap-2 mt-2">
+                            <button type="button" onclick="selectWsCapacity(5)" class="ws-btn-cap p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95" data-val="5">5 Newton</button>
+                            <button type="button" onclick="selectWsCapacity(10)" class="ws-btn-cap p-2 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-200 text-xs font-bold active:scale-95" data-val="10">10 Newton</button>
+                            <button type="button" onclick="selectWsCapacity(20)" class="ws-btn-cap p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95" data-val="20">20 Newton</button>
+                        </div>
+                    </div>
+
+                    <!-- Aşama 4: Kalibrasyon ve Test -->
+                    <div id="ws-step-4" class="ws-step-box p-3 bg-slate-900/80 rounded-xl border border-slate-700">
+                        <span class="text-xs font-black text-emerald-300 block mb-1">4. ADIM: Kalibrasyon & Çizgi Oluşturma</span>
+                        <p class="text-[11px] text-slate-400 mb-2">Standart 1N ağırlık asarak ölçek çizgilerini eşit aralıklarla yerleştirin.</p>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="calibrateWsNextTick()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs transition-all active:scale-95">
+                                <i class="fa-solid fa-pen-ruler"></i> Çizgi Ekle (+1 N)
+                            </button>
+                            <button type="button" onclick="testDesignedDynamometer()" class="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all active:scale-95">
+                                <i class="fa-solid fa-vial-circle-check"></i> Dinamometreni Test Et!
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ: Tasarlanan Modelin Canlı Önizlemesi -->
+                <div class="lg:col-span-7 glass-panel-light rounded-2xl p-4 flex flex-col items-center justify-center relative overflow-hidden">
+                    <span class="text-xs font-black uppercase text-slate-400 tracking-wider mb-2">CANLI TASARIM ÖNİZLEMESİ</span>
+                    <div class="w-full flex-1 flex items-center justify-center min-h-[300px]">
+                        <svg id="ws-preview-svg" viewBox="0 0 300 450" class="h-72 sm:h-88"></svg>
+                    </div>
+                    <div id="ws-feedback-card" class="mt-3 w-full p-3 rounded-xl bg-slate-900 border border-slate-700 text-center text-xs text-slate-300">
+                        Tasarımını tamamlamak için sol paneldeki adımları sırayla uygulayın.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. BÖLÜM: 8 SANAL DENEY MODÜLÜ -->
+        <div id="tab-content-experiments" class="tab-pane hidden flex-1 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-300">
+                        🧪 5. SINIF 8 SANAL DİNAMOMETRE DENEYİ
+                    </h2>
+                    <p class="text-xs text-slate-400">Maarif modeline uygun adım adım deneyleri tamamla ve sonuçları değerlendir.</p>
+                </div>
+                <span class="text-xs font-mono font-bold text-amber-400">8 Deney Rehberi</span>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- Deney 1 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-cyan-500/30 hover:border-cyan-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-cyan-500/20 text-cyan-300 font-mono font-black text-[10px]">DENEY 1</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">Kuvvet Arttıkça Yay Nasıl Değişir?</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">Dinamometreye sırayla 1N, 2N, 3N asarak uzama miktarının kuvvetle doğru orantılı olduğunu gözlemle.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(1)" class="mt-3 w-full py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 2 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-purple-500/30 hover:border-purple-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-300 font-mono font-black text-[10px]">DENEY 2</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">İnce ve Kalın Yayların Karşılaştırılması</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">Aynı 5 N kuvvet uygulandığında ince yayın kalın yaydan daha fazla uzadığını kanıtla.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(2)" class="mt-3 w-full py-1.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 3 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-amber-500/30 hover:border-amber-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-amber-500/20 text-amber-300 font-mono font-black text-[10px]">DENEY 3</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">Dinamometrelerin Ölçüm Aralıkları</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">5N, 10N, 20N ve 50N dinamometrelerin ölçeklerini ve taşıyabilecekleri sınırları incele.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(3)" class="mt-3 w-full py-1.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 4 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 hover:border-emerald-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 font-mono font-black text-[10px]">DENEY 4</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">En Hassas Dinamometreyi Seçme</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">0.5 N gibi küçük bir kuvveti ölçmek için hangi dinamometrenin en uygun olduğunu belirle.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(4)" class="mt-3 w-full py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 5 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-rose-500/30 hover:border-rose-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 font-mono font-black text-[10px]">DENEY 5</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">Yayın Esneklik Sınırı ve Kalıcı Deformasyon</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">5N kapasiteli yaya aşırı yük uygulayarak yayın esneklik özelliğini kaybetmesini gözlemle.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(5)" class="mt-3 w-full py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 6 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-blue-500/30 hover:border-blue-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-300 font-mono font-black text-[10px]">DENEY 6</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">Bölme Değerini Hesaplama</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">Maksimum kuvveti bölme sayısına bölerek bir bölmenin değerini pratik olarak bul.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(6)" class="mt-3 w-full py-1.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 7 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-orange-500/30 hover:border-orange-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-orange-500/20 text-orange-300 font-mono font-black text-[10px]">DENEY 7</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">Bilinmeyen Gizli Kuvveti Ölçme</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">Ağırlığı üzerinde yazmayan gizemli nesneyi dinamometreye as ve kuvvetini doğru oku.</p>
+                    </div>
+                    <button type="button" onclick="startGuidedExperiment(7)" class="mt-3 w-full py-1.5 rounded-xl bg-orange-500 hover:bg-orange-400 text-slate-950 font-black text-xs transition-all active:scale-95">Deneyi Başlat</button>
+                </div>
+
+                <!-- Deney 8 -->
+                <div class="p-3.5 rounded-2xl bg-slate-900/90 border border-indigo-500/30 hover:border-indigo-400 transition-all flex flex-col justify-between">
+                    <div>
+                        <span class="px-2 py-0.5 rounded-md bg-indigo-500/20 text-indigo-300 font-mono font-black text-[10px]">DENEY 8</span>
+                        <h3 class="text-sm font-black text-white mt-1 mb-1">Kendi Dinamometreni Tasarlama</h3>
+                        <p class="text-[11px] text-slate-400 leading-snug">STEM atölyesine geçerek sıfırdan malzeme seçip çalışan dinamometreni imal et.</p>
+                    </div>
+                    <button type="button" onclick="switchLabTab('workshop')" class="mt-3 w-full py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs transition-all active:scale-95">Atölyeye Git</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. BÖLÜM: GÖSTERGE OKUMA ETKİNLİĞİ -->
+        <div id="tab-content-quiz" class="tab-pane hidden flex-1 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-yellow-400">
+                        🎯 DİNAMOMETRE GÖSTERGE OKUMA PRATİĞİ
+                    </h2>
+                    <p class="text-xs text-slate-400">Farklı bölme çizgilerinde duran dinamometre ibresinin gösterdiği Newton değerini doğru hesapla!</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-300">Puan: <span id="quiz-score" class="text-amber-400 font-mono font-black text-sm">0</span></span>
+                    <button type="button" onclick="generateNewQuizQuestion()" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all">
+                        <i class="fa-solid fa-arrows-rotate mr-1"></i> Yeni Soru
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 flex-1 items-center justify-center">
+                <!-- Sol: Soru Dinamometresi Görseli -->
+                <div class="md:col-span-6 flex items-center justify-center min-h-[320px]">
+                    <svg id="quiz-svg" viewBox="0 0 300 450" class="h-80 sm:h-96"></svg>
+                </div>
+
+                <!-- Sağ: Cevap Paneli & İpucu -->
+                <div class="md:col-span-6 glass-panel-light rounded-2xl p-6 space-y-4 max-w-md">
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-cyan-500/30">
+                        <span class="text-[10px] text-cyan-300 font-mono uppercase tracking-wider block">DİNAMOMETRE BİLGİSİ</span>
+                        <h4 id="quiz-dyn-title" class="text-base font-black text-white mt-0.5">10 Newton Kapasiteli Dinamometre</h4>
+                        <p id="quiz-dyn-hint" class="text-xs text-slate-400 mt-1">Her 1 büyük bölme kaç Newton değerindedir? Dikkatlice sayın.</p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-black text-slate-300 block mb-1.5">Bu Dinamometre Kaç Newton (N) Gösteriyor?</label>
+                        <div class="flex items-center gap-2">
+                            <input type="number" id="quiz-answer-input" step="0.25" placeholder="Örn: 4.5" class="flex-1 bg-slate-900 border-2 border-slate-700 focus:border-amber-400 rounded-xl px-4 py-3 text-lg font-black font-mono text-amber-300 outline-none transition-all">
+                            <span class="text-lg font-black text-slate-400">N</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 pt-2">
+                        <button type="button" onclick="checkQuizAnswer()" class="flex-1 py-3 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-xl text-sm transition-all shadow-md active:scale-95 cursor-pointer">
+                            <i class="fa-solid fa-circle-check"></i> Kontrol Et
+                        </button>
+                    </div>
+
+                    <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium leading-relaxed"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. BÖLÜM: DÜNYA VE AY'DA AĞIRLIK ÖLÇME LABORATUVARI -->
+        <div id="tab-content-gravity" class="tab-pane hidden flex-1 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-indigo-300">
+                        🌍 DÜNYA VE AY'DA AĞIRLIK ÖLÇME LABORATUVARI
+                    </h2>
+                    <p class="text-xs text-slate-400">"Kütle değişmez, madde miktarıdır. Ağırlık yer çekimine göre değişir!" gerçeğini keşfet.</p>
+                </div>
+                <!-- Ortam Seçici -->
+                <div class="bg-slate-900 p-1 rounded-xl border border-slate-700 flex items-center gap-1">
+                    <button type="button" onclick="selectGravityEnvironment('earth')" id="env-btn-earth" class="px-3 py-1.5 rounded-lg text-xs font-black bg-blue-600 text-white transition-all flex items-center gap-1.5 shadow">
+                        🌍 DÜNYA (g ≈ 10 N/kg)
+                    </button>
+                    <button type="button" onclick="selectGravityEnvironment('moon')" id="env-btn-moon" class="px-3 py-1.5 rounded-lg text-xs font-black text-slate-300 hover:text-white transition-all flex items-center gap-1.5">
+                        🌙 AY (g ≈ 1.6 N/kg)
+                    </button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 flex-1 items-center">
+                <!-- Sol: Ortam Görseli ve Açıklama -->
+                <div class="md:col-span-5 glass-panel-light rounded-2xl p-4 space-y-3">
+                    <div class="w-full h-40 rounded-xl overflow-hidden relative flex items-center justify-center border border-slate-700" id="gravity-env-card">
+                        <div id="gravity-env-bg" class="absolute inset-0 bg-gradient-to-b from-sky-950 to-blue-900 flex items-center justify-center">
+                            <span class="text-6xl" id="gravity-env-icon">🌍</span>
+                        </div>
+                        <div class="absolute bottom-2 left-2 right-2 p-2 bg-slate-950/80 backdrop-blur-md rounded-lg text-center">
+                            <span id="gravity-env-label" class="text-xs font-black text-cyan-300 block">DÜNYA ORTAMI</span>
+                            <span id="gravity-env-desc" class="text-[10px] text-slate-300 block">Yer çekimi ivmesi Ay'ın yaklaşık 6 katıdır.</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Seçilen Cisim Kütlesi:</span>
+                            <span id="grav-mass-text" class="font-bold text-white font-mono">1.0 kg (1000 g)</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Bulunulan Ortamdaki Ağırlık:</span>
+                            <span id="grav-weight-text" class="font-black text-amber-400 font-mono text-sm">10.0 N</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Dinamometre Yay Uzaması:</span>
+                            <span id="grav-stretch-text" class="font-bold text-cyan-300 font-mono">4.0 cm</span>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-emerald-500/10 border border-emerald-400/30 rounded-xl text-emerald-300 text-xs font-semibold leading-relaxed">
+                        💡 <strong class="text-white">BİLİMSEL SONUÇ:</strong> Cismin Dünya ve Ay'daki kütlesi tamamen aynıdır (1 kg). Ancak Ay'ın yer çekimi çok daha zayıf olduğu için dinamometre Ay'da sadece 1.6 N ölçer ve yay çok daha az uzar!
+                    </div>
+                </div>
+
+                <!-- Sağ: Simüle Edilen Dinamometre -->
+                <div class="md:col-span-7 flex items-center justify-center min-h-[320px]">
+                    <svg id="gravity-svg" viewBox="0 0 300 450" class="h-80 sm:h-96"></svg>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. BÖLÜM: GÖREVLER VE ÖDÜLLER MERKEZİ -->
+        <div id="tab-content-missions" class="tab-pane hidden flex-1 glass-panel rounded-3xl p-4 sm:p-6 flex flex-col min-h-0 overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <div>
+                    <h2 class="text-base sm:text-xl font-black font-orbitron text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">
+                        🏆 10 LABORATUVAR GÖREVİ & ROZETLER
+                    </h2>
+                    <p class="text-xs text-slate-400">Görevleri simülasyonda bizzat uygulayarak tamamla, uzmanlık rozetlerini kazan!</p>
+                </div>
+                <div class="px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-black font-mono">
+                    Tamamlanan: <span id="missions-completed-count">0</span> / 10
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="missions-grid">
+                <!-- Görev Kartları JavaScript ile render edilir -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ==================== ALT BİLGİ (FOOTER) ==================== -->
+    <footer class="relative z-20 bg-slate-950/90 border-t border-slate-800/80 px-4 py-2 flex items-center justify-between text-xs text-slate-400 shrink-0">
+        <div class="flex items-center gap-2">
+            <span class="font-black text-amber-300 font-orbitron">ROTALI FENCİ</span>
+            <span class="text-slate-600">•</span>
+            <a href="https://rotalifenci.vercel.app" target="_blank" rel="noopener noreferrer" class="hover:text-cyan-300 transition-colors">rotalifenci.vercel.app</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <a href="https://www.instagram.com/rotalifenci" target="_blank" rel="noopener noreferrer" class="hover:text-pink-400 transition-colors flex items-center gap-1.5">
+                <i class="fa-brands fa-instagram text-sm"></i> <span>@rotalifenci</span>
+            </a>
+            <a href="https://www.youtube.com/@rotalifenci" target="_blank" rel="noopener noreferrer" class="hover:text-red-400 transition-colors flex items-center gap-1.5">
+                <i class="fa-brands fa-youtube text-sm"></i> <span>@rotalifenci</span>
+            </a>
+        </div>
+    </footer>
+
+    <!-- ==================== BİLGİ VE YARDIM KARTLARI MODALI ==================== -->
+    <div id="help-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="max-w-2xl w-full glass-panel rounded-3xl p-5 sm:p-6 text-left shadow-2xl relative border border-cyan-500/40 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+                <h3 class="text-base sm:text-lg font-black font-orbitron text-cyan-300 flex items-center gap-2">
+                    <i class="fa-solid fa-book-open-reader text-amber-400"></i> FEN BİLİMLERİ BİLGİ KARTLARI
+                </h3>
+                <button type="button" onclick="closeHelpModal()" class="w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-all">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                    <h4 class="font-black text-cyan-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-scale-balanced text-amber-400"></i> Dinamometre Nedir?
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed">Kuvvetin büyüklüğünü ölçmek için kullanılan araçtır. İçerisinde bulunan esnek yayın uzama miktarından yararlanılarak çalışır.</p>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                    <h4 class="font-black text-cyan-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-atom text-cyan-400"></i> Kuvvetin Birimi Nedir?
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed">Kuvvetin birimi <strong class="text-amber-300 font-bold">Newton</strong>'dur ve kısaca <strong class="text-amber-300 font-bold">N</strong> harfi ile gösterilir. Adını ünlü fizikçi Isaac Newton'dan almıştır.</p>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                    <h4 class="font-black text-cyan-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-arrows-up-down text-purple-400"></i> Yay Neden Uzar?
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed">Uygulanan kuvvet yayın şeklini geçici olarak değiştirir. Esneklik sınırları içinde uygulanan kuvvet arttıkça yayın uzama miktarı da aynı oranda artar.</p>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800">
+                    <h4 class="font-black text-cyan-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-shield-halved text-emerald-400"></i> Esneklik Nedir?
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed">Kuvvet uygulandığında şekil değiştiren, kuvvet ortadan kalktığında ise eski şekline geri dönebilen maddelere esnek madde denir.</p>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-900 border border-slate-800 sm:col-span-2">
+                    <h4 class="font-black text-cyan-300 uppercase tracking-wider mb-1 flex items-center gap-1.5">
+                        <i class="fa-solid fa-crosshairs text-rose-400"></i> Hassasiyet & Bölme Değeri Nedir?
+                    </h4>
+                    <p class="text-slate-300 leading-relaxed">Dinamometrenin ölçeğinde ne kadar küçük kuvvet farklarını gösterebildiğidir. İnce yaylı dinamometreler küçük kuvvetlere daha duyarlıdır ve daha hassas ölçüm yapar.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== KAPASİTE AŞIMI / ESNEKLİK UYARISI MODALI ==================== -->
+    <div id="overload-modal" class="fixed inset-0 z-50 bg-slate-950/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 hidden">
+        <div class="max-w-md w-full glass-panel border-2 border-rose-500 rounded-3xl p-6 text-center shadow-[0_0_50px_rgba(244,63,94,0.4)] animate-in zoom-in-95 duration-200">
+            <div class="w-16 h-16 rounded-full bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center text-3xl mb-3 border border-rose-500/40 animate-pulse">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="text-lg font-black font-orbitron text-rose-400 mb-1">DİKKAT! KAPASİTE AŞILDI</h3>
+            <p id="overload-modal-text" class="text-xs text-slate-300 leading-relaxed mb-4">
+                Bu dinamometre en fazla 10 N ölçebilir. Uygulanan kuvvet yayın esneklik sınırını aştı!
+            </p>
+            <div class="p-3 bg-rose-950/50 rounded-xl border border-rose-500/30 text-rose-200 text-xs mb-4 text-left leading-snug">
+                ⚠️ <strong class="text-white">Bilimsel Kural:</strong> Bir yaya taşıyabileceğinden fazla kuvvet uygulanırsa yay esneklik özelliğini kaybeder (kalıcı deformasyona uğrar) ve yük kaldırılsa bile eski haline dönemez.
+            </div>
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="resetSpringOverload()" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs transition-all active:scale-95 shadow">
+                    <i class="fa-solid fa-wrench mr-1"></i> Yeni Yay Tak (Onar)
+                </button>
+                <button type="button" onclick="closeOverloadModal()" class="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== JAVASCRIPT LABORATUVAR ÇEKİRDEĞİ ==================== -->
+    <script>
+        /**
+         * ROTALI FENCİ – DİNAMOMETRE SANAL LABORATUVARI
+         * Fizik Motoru, SVG Çizim Sistemi ve Etkileşim Yönetimi
+         */
+
+        // --- 1. SES SENTEZLEYİCİSİ (WEB AUDIO API) ---
+        const SoundFX = {
+            ctx: null,
+            enabled: true,
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    if (AudioCtx) this.ctx = new AudioCtx();
+                }
+            },
+            playTone(freq, type = 'sine', duration = 0.15, gainVal = 0.1) {
+                if (!this.enabled) return;
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+
+                    gain.gain.setValueAtTime(gainVal, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            },
+            attach() {
+                // Cismi takma sesi (hafif metalik tık)
+                this.playTone(520, 'sine', 0.08, 0.12);
+                setTimeout(() => this.playTone(780, 'sine', 0.1, 0.08), 40);
+            },
+            detach() {
+                // Cismi çıkarma sesi
+                this.playTone(440, 'sine', 0.08, 0.1);
+            },
+            springMove(stretchRatio) {
+                // Yay uzama esnasında yumuşak frekans kayması
+                const freq = 200 + Math.min(stretchRatio * 300, 600);
+                this.playTone(freq, 'triangle', 0.05, 0.04);
+            },
+            overload() {
+                // Kapasite aşımı alarmı
+                this.playTone(280, 'sawtooth', 0.25, 0.15);
+                setTimeout(() => this.playTone(220, 'sawtooth', 0.35, 0.15), 120);
+            },
+            success() {
+                // Başarı zili
+                this.playTone(523.25, 'sine', 0.15, 0.12); // C5
+                setTimeout(() => this.playTone(659.25, 'sine', 0.15, 0.12), 100); // E5
+                setTimeout(() => this.playTone(783.99, 'sine', 0.25, 0.12), 200); // G5
+            }
+        };
+
+        // --- 2. SİSTEM DURUMU & FİZİKSEL SABİTLER ---
+        const State = {
+            // Dinamometre Ayarları
+            maxCapacity: 10,        // 5, 10, 20, 50 N
+            springType: 'medium',   // thin, medium, thick
+            isDamaged: false,       // Kalıcı deformasyon (aşırı yükte bozulma)
+            damageOffset: 0,        // Hasar sonrası kalıcı uzama (cm)
+
+            // Etkileşim ve Yükler
+            interactionMode: 'weights', // 'weights' veya 'manual'
+            attachedWeights: [],        // Kancadaki cisimler [100, 200, 500...] (gram)
+            manualForce: 0,             // Elle çekilen kuvvet (N)
+            isDraggingHook: false,
+
+            // Ortam & Yer Çekimi
+            environment: 'earth',   // 'earth' (g=10) veya 'moon' (g=1.6)
+            gValue: 10,             // N/kg
+
+            // Görsel Ayarlar
+            showRuler: false,
+            teacherMode: false,
+            hideNewtonValue: false,
+
+            // Kayıtlar & Ölçüm Verileri
+            records: [],
+
+            // STEM Atölyesi
+            workshop: {
+                casing: 'plastic',
+                spring: 'medium',
+                capacity: 10,
+                calibratedTicks: 0,
+                tested: false
+            },
+
+            // Aktif Tab
+            activeTab: 'main'
+        };
+
+        // Yay Fiziksel Sabitleri (k sabiti: N/cm)
+        // Hooke Yasası: F = k * deltaL  ==> deltaL = F / k
+        const SPRING_CONSTANTS = {
+            thin: 0.65,    // 1 N kuvvette ~1.54 cm uzar (Çok hassas)
+            medium: 1.25,  // 1 N kuvvette 0.8 cm uzar (Dengeli standart)
+            thick: 2.50    // 1 N kuvvette 0.4 cm uzar (Büyük kuvvetler için sert)
+        };
+
+        // Kapasiteye göre bölme sayıları ve bölme değerleri
+        const CAPACITY_SPECS = {
+            5:  { divisions: 20, divValue: 0.25, labelStep: 1 },
+            10: { divisions: 20, divValue: 0.50, labelStep: 2 },
+            20: { divisions: 20, divValue: 1.00, labelStep: 5 },
+            50: { divisions: 25, divValue: 2.00, labelStep: 10 }
+        };
+
+        // --- 3. MERKEZİ FİZİK MOTORU VE HESAPLAMA SİSTEMİ ---
+        function calculateAppliedForce() {
+            if (State.interactionMode === 'manual') {
+                return State.manualForce;
+            }
+            // Cisimler modunda toplam kütleyi hesapla (gram -> kg)
+            const totalGrams = State.attachedWeights.reduce((a, b) => a + b, 0);
+            const totalKg = totalGrams / 1000;
+            // F = m * g
+            const force = totalKg * State.gValue;
+            return force;
+        }
+
+        function calculateSpringExtension(force) {
+            const k = SPRING_CONSTANTS[State.springType];
+            let deltaL = force / k;
+
+            // Hasarlı yay ise kalıcı deformasyon payını ekle
+            if (State.isDamaged) {
+                deltaL += State.damageOffset;
+            }
+
+            return deltaL;
+        }
+
+        // --- 4. GÖRSEL DİNAMOMETRE ÇİZİMİ (SVG GENERATOR) ---
+        function updateDynamometerVisuals() {
+            const force = calculateAppliedForce();
+            const maxCap = State.maxCapacity;
+            const isOverloaded = force > maxCap;
+
+            // 1. Durum Rozeti ve Hasar Kontrolü
+            const statusBadge = document.getElementById('elasticity-status-badge');
+            const repairBtn = document.getElementById('repair-spring-btn');
+
+            if (isOverloaded) {
+                statusBadge.className = "px-3 py-1 rounded-xl bg-rose-500/20 border border-rose-400 text-rose-300 text-xs font-black animate-pulse flex items-center gap-1.5";
+                statusBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-rose-400"></i> ESNEKLİK SINIRI AŞILDI!';
+                
+                // Kalıcı deformasyonu işaretle
+                if (!State.isDamaged) {
+                    State.isDamaged = true;
+                    State.damageOffset = 2.4; // 2.4 cm kalıcı esneme hasarı
+                    SoundFX.overload();
+                    showOverloadAlert(force, maxCap);
+                }
+                repairBtn.classList.remove('hidden');
+            } else if (State.isDamaged) {
+                statusBadge.className = "px-3 py-1 rounded-xl bg-amber-500/20 border border-amber-400 text-amber-300 text-xs font-bold flex items-center gap-1.5";
+                statusBadge.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-amber-400"></i> Hasarlı Yay (Kalıcı Bozulma)';
+                repairBtn.classList.remove('hidden');
+            } else {
+                statusBadge.className = "px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 text-xs font-bold flex items-center gap-1.5";
+                statusBadge.innerHTML = '<i class="fa-solid fa-shield-halved text-emerald-400"></i> Esnek Bölge (Güvenli)';
+                repairBtn.classList.add('hidden');
+            }
+
+            // 2. Uzama Miktarını Hesapla
+            const deltaL_cm = calculateSpringExtension(force);
+            
+            // Görsel SVG ölçek piksel eşlemesi:
+            // 0 N konumu: y = 115 px (Skala başlangıcı)
+            // Maksimum N konumu: y = 455 px (Skala sonu - 340 px boy)
+            const scalePixelHeight = 340;
+            // 1 Newton için düşen piksel
+            const pxPerNewton = scalePixelHeight / maxCap;
+            
+            // İbrenin ineceği piksel offseti (Aşırı yükte gövdenin dışına taşmasını engelle)
+            let visualDeltaPx = force * pxPerNewton;
+            if (isOverloaded) {
+                // Gövde alt ucuna kadar uzar ama mekanizmayı parçalamadan durur
+                visualDeltaPx = scalePixelHeight + 20;
+            }
+            if (State.isDamaged && force === 0) {
+                visualDeltaPx = State.damageOffset * 15; // Boşta bile sıfıra dönemez
+            }
+
+            // 3. İbre & Kanca Montajını Aşağı Kaydır
+            const movingAssembly = document.getElementById('moving-assembly');
+            if (movingAssembly) {
+                movingAssembly.style.transition = State.isDraggingHook ? 'none' : 'transform 0.25s cubic-bezier(0.2, 0.8, 0.3, 1)';
+                movingAssembly.setAttribute('transform', `translate(0, ${visualDeltaPx})`);
+            }
+
+            // 4. Sarmal Yayı Dinamik Olarak Çiz (Coiled Spring Path)
+            drawCoiledSpring(visualDeltaPx);
+
+            // 5. Sayısal Ekranları Güncelle
+            updateDigitalHUD(force, deltaL_cm, isOverloaded);
+
+            // 6. Yan Cetvel Uzamasını Güncelle
+            updateRulerVisuals(deltaL_cm);
+
+            // 7. Kancadaki Cisimleri Çiz
+            renderAttachedWeightsInHook();
+
+            // 8. Canlı Grafiği Güncelle
+            updateLiveChart(force, deltaL_cm);
+        }
+
+        // Sarmal Yay SVG Çizim Fonksiyonu (Turların arası gerilir)
+        function drawCoiledSpring(deltaPx) {
+            const pathEl = document.getElementById('spring-coils-path');
+            if (!pathEl) return;
+
+            const startX = 250;
+            const startY = 95;
+            const endY = 115 + deltaPx;
+            const totalLength = Math.max(20, endY - startY);
+
+            const numCoils = 14; // Sabit tur sayısı
+            const coilHeight = totalLength / numCoils;
+            const coilWidth = State.springType === 'thick' ? 24 : (State.springType === 'thin' ? 16 : 20);
+
+            // Yay kalınlığı stili
+            const strokeWidth = State.springType === 'thick' ? 6 : (State.springType === 'thin' ? 3.5 : 4.5);
+            pathEl.setAttribute('stroke-width', strokeWidth);
+
+            let d = `M ${startX} ${startY} `;
+            // İlk bağlantı düz çizgisi
+            d += `L ${startX} ${startY + 6} `;
+
+            for (let i = 0; i < numCoils; i++) {
+                const y1 = startY + 6 + (i * coilHeight) + (coilHeight * 0.25);
+                const y2 = startY + 6 + (i * coilHeight) + (coilHeight * 0.75);
+                const y3 = startY + 6 + ((i + 1) * coilHeight);
+
+                // Alternatif sol ve sağ kıvrımlar
+                const x1 = (i % 2 === 0) ? (startX - coilWidth) : (startX + coilWidth);
+                const x2 = (i % 2 === 0) ? (startX + coilWidth) : (startX - coilWidth);
+
+                d += `Q ${x1} ${y1}, ${startX} ${(y1 + y2) / 2} `;
+                d += `Q ${x2} ${y2}, ${startX} ${y3} `;
+            }
+
+            // Son düz çizgi
+            d += `L ${startX} ${endY}`;
+            pathEl.setAttribute('d', d);
+        }
+
+        // Dinamik Newton Ölçeği Çizici (Her Dinamometreye Göre Özel)
+        function renderScaleMarkings() {
+            const group = document.getElementById('scale-group');
+            if (!group) return;
+
+            group.innerHTML = '';
+            const cap = State.maxCapacity;
+            const specs = CAPACITY_SPECS[cap];
+
+            const startY = 115;
+            const totalH = 340;
+            const stepPx = totalH / specs.divisions;
+
+            for (let i = 0; i <= specs.divisions; i++) {
+                const y = startY + (i * stepPx);
+                const currentValue = i * specs.divValue;
+
+                // Büyük çizgi ve sayı her labelStep aralığında
+                const isMajor = (Math.abs(currentValue % specs.labelStep) < 0.001) || (i === 0) || (i === specs.divisions);
+                const isMedium = !isMajor && (i % 2 === 0);
+
+                const lineLen = isMajor ? 18 : (isMedium ? 12 : 7);
+
+                // Sol Skala Çizgisi
+                const lineL = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                lineL.setAttribute('x1', '205');
+                lineL.setAttribute('y1', y);
+                lineL.setAttribute('x2', 205 + lineLen);
+                lineL.setAttribute('y2', y);
+                lineL.setAttribute('stroke', isMajor ? '#38bdf8' : '#64748b');
+                lineL.setAttribute('stroke-width', isMajor ? '2' : '1.2');
+                group.appendChild(lineL);
+
+                // Sağ Skala Çizgisi
+                const lineR = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                lineR.setAttribute('x1', '295');
+                lineR.setAttribute('y1', y);
+                lineR.setAttribute('x2', 295 - lineLen);
+                lineR.setAttribute('y2', y);
+                lineR.setAttribute('stroke', isMajor ? '#38bdf8' : '#64748b');
+                lineR.setAttribute('stroke-width', isMajor ? '2' : '1.2');
+                group.appendChild(lineR);
+
+                // Sayı Etiketi (Sağ taraf)
+                if (isMajor) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', '288');
+                    text.setAttribute('y', y + 3.5);
+                    text.setAttribute('fill', '#f8fafc');
+                    text.setAttribute('font-size', '10');
+                    text.setAttribute('font-weight', 'bold');
+                    text.setAttribute('font-family', "'Orbitron', monospace");
+                    text.setAttribute('text-anchor', 'end');
+                    text.textContent = currentValue % 1 === 0 ? currentValue : currentValue.toFixed(1);
+                    group.appendChild(text);
+                }
+            }
+
+            // Ölçek Üst Birim Başlığı ("N")
+            const unitText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            unitText.setAttribute('x', '250');
+            unitText.setAttribute('y', '110');
+            unitText.setAttribute('fill', '#38bdf8');
+            unitText.setAttribute('font-size', '11');
+            unitText.setAttribute('font-weight', '900');
+            unitText.setAttribute('font-family', "'Orbitron', sans-serif");
+            unitText.setAttribute('text-anchor', 'middle');
+            unitText.textContent = `NEWTON (${cap}N)`;
+            group.appendChild(unitText);
+        }
+
+        // Kancaya Asılı Cisimleri Birbirine Bağlı Zincirleme Çiz
+        function renderAttachedWeightsInHook() {
+            const group = document.getElementById('attached-weights-group');
+            if (!group) return;
+
+            group.innerHTML = '';
+            if (State.interactionMode !== 'weights' || State.attachedWeights.length === 0) return;
+
+            let currentY = 0;
+
+            State.attachedWeights.forEach((grams, index) => {
+                const weightGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                weightGroup.setAttribute('transform', `translate(0, ${currentY})`);
+
+                // Üst bağlantı halkası
+                const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                ring.setAttribute('cx', '0');
+                ring.setAttribute('cy', '6');
+                ring.setAttribute('r', '5');
+                ring.setAttribute('fill', 'none');
+                ring.setAttribute('stroke', '#cbd5e1');
+                ring.setAttribute('stroke-width', '2.5');
+                weightGroup.appendChild(ring);
+
+                // Ağırlık Bloğu
+                const w = Math.min(36 + (grams / 100) * 3, 70);
+                const h = Math.min(22 + (grams / 100) * 1.5, 42);
+
+                const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+                rect.setAttribute('x', -w / 2);
+                rect.setAttribute('y', '11');
+                rect.setAttribute('width', w);
+                rect.setAttribute('height', h);
+                rect.setAttribute('rx', '6');
+
+                // Renk kodu
+                let fillColor = '#0284c7';
+                let strokeColor = '#38bdf8';
+                if (grams === 200) { fillColor = '#059669'; strokeColor = '#34d399'; }
+                if (grams === 500) { fillColor = '#d97706'; strokeColor = '#fbbf24'; }
+                if (grams >= 1000) { fillColor = '#e11d48'; strokeColor = '#fb7185'; }
+                if (grams >= 2000) { fillColor = '#7c3aed'; strokeColor = '#a78bfa'; }
+
+                rect.setAttribute('fill', fillColor);
+                rect.setAttribute('stroke', strokeColor);
+                rect.setAttribute('stroke-width', '2');
+                weightGroup.appendChild(rect);
+
+                // Değer Yazısı
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', '0');
+                text.setAttribute('y', 11 + h / 2 + 4);
+                text.setAttribute('fill', '#ffffff');
+                text.setAttribute('font-size', '10');
+                text.setAttribute('font-weight', 'bold');
+                text.setAttribute('font-family', "'Plus Jakarta Sans', sans-serif");
+                text.setAttribute('text-anchor', 'middle');
+                text.textContent = grams >= 1000 ? `${grams / 1000} kg` : `${grams} g`;
+                weightGroup.appendChild(text);
+
+                group.appendChild(weightGroup);
+
+                // Sonraki cisim için dikey boşluk
+                currentY += (h + 10);
+            });
+        }
+
+        // Sayısal Ekranları Güncelle
+        function updateDigitalHUD(force, deltaL, isOverloaded) {
+            const forceEl = document.getElementById('display-force-value');
+            const massEl = document.getElementById('display-mass-value');
+            const weightEl = document.getElementById('display-weight-value');
+            
+            const metricL0 = document.getElementById('metric-l0');
+            const metricL = document.getElementById('metric-l');
+            const metricDeltaL = document.getElementById('metric-delta-l');
+            const metricDivVal = document.getElementById('metric-div-val');
+
+            const specs = CAPACITY_SPECS[State.maxCapacity];
+
+            if (forceEl) {
+                if (State.hideNewtonValue && State.teacherMode) {
+                    forceEl.textContent = "???";
+                } else if (isOverloaded) {
+                    forceEl.textContent = "AŞIRI YÜK";
+                    forceEl.className = "text-3xl sm:text-4xl font-black font-orbitron text-rose-400 animate-pulse";
+                } else {
+                    forceEl.textContent = force.toFixed(2);
+                    forceEl.className = "text-4xl sm:text-5xl font-black font-orbitron tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-200 to-amber-300";
+                }
+            }
+
+            const totalGrams = State.attachedWeights.reduce((a, b) => a + b, 0);
+            if (massEl) massEl.textContent = totalGrams >= 1000 ? `${(totalGrams/1000).toFixed(2)} kg` : `${totalGrams} g`;
+            if (weightEl) weightEl.textContent = `${force.toFixed(1)} N`;
+
+            const l0 = 6.0; // İlk serbest boy 6.0 cm
+            const currentL = l0 + deltaL;
+
+            if (metricL0) metricL0.textContent = `${l0.toFixed(1)} cm`;
+            if (metricL) metricL.textContent = `${currentL.toFixed(1)} cm`;
+            if (metricDeltaL) metricDeltaL.textContent = `${deltaL.toFixed(1)} cm`;
+            if (metricDivVal) metricDivVal.textContent = `${specs.divValue} N/bölme`;
+        }
+
+        // Yan Santimetre Cetveli Çizimi
+        function renderRulerMarkings() {
+            const ticksGroup = document.getElementById('ruler-ticks');
+            if (!ticksGroup) return;
+
+            ticksGroup.innerHTML = '';
+            const startY = 35;
+            const totalCm = 20; // 20 cm ölçekli cetvel
+            const pxPerCm = 360 / totalCm;
+
+            for (let cm = 0; cm <= totalCm; cm++) {
+                const y = startY + (cm * pxPerCm);
+                const isMajor = (cm % 5 === 0);
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', '0');
+                line.setAttribute('y1', y);
+                line.setAttribute('x2', isMajor ? '20' : '10');
+                line.setAttribute('y2', y);
+                line.setAttribute('stroke', isMajor ? '#f59e0b' : '#64748b');
+                line.setAttribute('stroke-width', isMajor ? '1.8' : '1');
+                ticksGroup.appendChild(line);
+
+                if (isMajor) {
+                    const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                    text.setAttribute('x', '24');
+                    text.setAttribute('y', y + 3);
+                    text.setAttribute('fill', '#f59e0b');
+                    text.setAttribute('font-size', '9');
+                    text.setAttribute('font-family', "'JetBrains Mono', monospace");
+                    text.textContent = `${cm}`;
+                    ticksGroup.appendChild(text);
+                }
+            }
+        }
+
+        function updateRulerVisuals(deltaL_cm) {
+            const highlight = document.getElementById('ruler-extension-highlight');
+            if (!highlight) return;
+
+            // Cetvel 0 noktası y=35
+            const pxPerCm = 360 / 20;
+            const h = Math.min(deltaL_cm * pxPerCm, 360);
+            highlight.setAttribute('height', h);
+        }
+
+        // Canlı Kuvvet - Uzama Grafiği Çizimi
+        function updateLiveChart(force, deltaL) {
+            const trendLine = document.getElementById('chart-trend-line');
+            const liveDot = document.getElementById('chart-live-dot');
+            if (!trendLine || !liveDot) return;
+
+            // Grafik koordinatları: Orijin (30, 100), Genişlik 200, Yükseklik 90
+            const maxF = State.maxCapacity;
+            const maxDelta = 20; // cm
+
+            const clampF = Math.min(force, maxF);
+            const clampDelta = Math.min(deltaL, maxDelta);
+
+            const x = 30 + (clampF / maxF) * 190;
+            const y = 100 - (clampDelta / maxDelta) * 85;
+
+            // Trend Doğrusu (Hooke Yasası Lineer Çizgisi)
+            trendLine.setAttribute('d', `M 30,100 L ${x},${y}`);
+
+            // Canlı Nokta
+            liveDot.setAttribute('cx', x);
+            liveDot.setAttribute('cy', y);
+        }
+
+        // --- 5. ETKİLEŞİM İŞLEYİCİLERİ (BUTONLAR, SÜRÜKLE-BIRAK, MODLAR) ---
+        function selectDynamometer(capacity) {
+            State.maxCapacity = capacity;
+            
+            // UI Butonlarını güncelle
+            document.querySelectorAll('.dyn-select-btn').forEach(b => {
+                b.className = "dyn-select-btn py-2 px-1 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center font-bold text-xs transition-all border border-slate-700 active:scale-95 cursor-pointer";
+            });
+            const activeBtn = document.getElementById(`dyn-btn-${capacity}`);
+            if (activeBtn) {
+                activeBtn.className = "dyn-select-btn py-2 px-1 rounded-xl bg-cyan-600 text-slate-950 text-center font-bold text-xs transition-all border border-cyan-400 shadow-md active:scale-95 cursor-pointer";
+            }
+
+            const badge = document.getElementById('dyn-current-badge');
+            if (badge) badge.textContent = `${capacity} N`;
+
+            const detail = document.getElementById('dyn-detail-info');
+            const specs = CAPACITY_SPECS[capacity];
+            if (detail) {
+                detail.textContent = `Hassas ölçüm: ${capacity} Newton maksimum kapasite, ${specs.divisions} eşit bölme, her bölme ${specs.divValue} N.`;
+            }
+
+            // Slider max güncelle
+            const slider = document.getElementById('manual-force-slider');
+            if (slider) slider.max = capacity;
+
+            renderScaleMarkings();
+            updateDynamometerVisuals();
+            SoundFX.playTone(400, 'sine', 0.1);
+
+            checkMissionTriggers();
+        }
+
+        function selectSpringType(type) {
+            State.springType = type;
+
+            document.querySelectorAll('.spring-btn').forEach(b => {
+                b.className = "spring-btn py-2 px-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 text-center text-xs font-bold transition-all border border-slate-700 active:scale-95 cursor-pointer";
+            });
+            const activeBtn = document.getElementById(`spring-btn-${type}`);
+            if (activeBtn) {
+                activeBtn.className = "spring-btn py-2 px-1.5 rounded-xl bg-purple-600 text-white text-center text-xs font-bold transition-all border border-purple-400 shadow-md active:scale-95 cursor-pointer";
+            }
+
+            const badge = document.getElementById('spring-thickness-badge');
+            const labels = { thin: 'İnce Yay', medium: 'Orta Yay', thick: 'Kalın Yay' };
+            if (badge) badge.textContent = labels[type];
+
+            updateDynamometerVisuals();
+            SoundFX.playTone(320, 'triangle', 0.1);
+
+            checkMissionTriggers();
+        }
+
+        function addWeight(grams) {
+            State.interactionMode = 'weights';
+            updateInteractionModeUI();
+
+            State.attachedWeights.push(grams);
+            SoundFX.attach();
+            updateDynamometerVisuals();
+
+            checkMissionTriggers();
+        }
+
+        function removeLastWeight() {
+            if (State.attachedWeights.length > 0) {
+                State.attachedWeights.pop();
+                SoundFX.detach();
+                updateDynamometerVisuals();
+            }
+        }
+
+        function removeAllWeights() {
+            if (State.attachedWeights.length > 0) {
+                State.attachedWeights = [];
+                SoundFX.detach();
+                updateDynamometerVisuals();
+            }
+        }
+
+        function setInteractionMode(mode) {
+            State.interactionMode = mode;
+            updateInteractionModeUI();
+            updateDynamometerVisuals();
+        }
+
+        function updateInteractionModeUI() {
+            const btnW = document.getElementById('mode-btn-weights');
+            const btnM = document.getElementById('mode-btn-manual');
+            const sliderCont = document.getElementById('manual-slider-container');
+
+            if (State.interactionMode === 'weights') {
+                btnW.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-cyan-500 text-slate-950 transition-all flex items-center gap-1";
+                btnM.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1";
+                sliderCont.classList.add('hidden');
+            } else {
+                btnM.className = "px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500 text-slate-950 transition-all flex items-center gap-1";
+                btnW.className = "px-2.5 py-1 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all flex items-center gap-1";
+                sliderCont.classList.remove('hidden');
+            }
+        }
+
+        function handleManualSlider(val) {
+            State.interactionMode = 'manual';
+            State.manualForce = parseFloat(val);
+            const disp = document.getElementById('manual-force-display');
+            if (disp) disp.textContent = `${State.manualForce.toFixed(1)} N`;
+            updateDynamometerVisuals();
+            SoundFX.springMove(State.manualForce / State.maxCapacity);
+
+            checkMissionTriggers();
+        }
+
+        function handleManualSliderEnd() {
+            // İsteğe bağlı bırakıldığında sıfıra dönsün
+            // State.manualForce = 0;
+            // updateDynamometerVisuals();
+        }
+
+        // Sürükle ve Bırak (Drag & Drop)
+        function handleDragStart(e, grams) {
+            e.dataTransfer.setData('text/plain', grams);
+        }
+        function handleDragOver(e) {
+            e.preventDefault();
+        }
+        function handleDrop(e) {
+            e.preventDefault();
+            const grams = parseInt(e.dataTransfer.getData('text/plain'));
+            if (!isNaN(grams)) {
+                addWeight(grams);
+            }
+        }
+
+        // Cetveli Aç / Kapa
+        function toggleRuler() {
+            State.showRuler = !State.showRuler;
+            const rulerGroup = document.getElementById('ruler-group');
+            const btn = document.getElementById('ruler-toggle-btn');
+            if (rulerGroup) {
+                rulerGroup.style.display = State.showRuler ? 'block' : 'none';
+            }
+            if (btn) {
+                btn.className = State.showRuler 
+                    ? "px-2.5 py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black text-xs transition-all flex items-center gap-1 shadow-md active:scale-95"
+                    : "px-2.5 py-1.5 rounded-xl bg-slate-900 border border-slate-700 hover:border-cyan-400 text-xs font-bold text-slate-300 hover:text-white transition-all flex items-center gap-1 shadow-sm active:scale-95";
+            }
+        }
+
+        // Öğretmen / Akıllı Tahta Modu
+        function toggleTeacherMode() {
+            State.teacherMode = !State.teacherMode;
+            const textEl = document.getElementById('teacher-mode-text');
+            const btn = document.getElementById('teacher-mode-btn');
+            const mask = document.getElementById('teacher-blind-mask');
+
+            if (State.teacherMode) {
+                btn.className = "px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-amber-500 text-slate-950 font-black text-xs transition-all shadow-md active:scale-95";
+                textEl.textContent = "Öğretmen Modu";
+                State.hideNewtonValue = true;
+                if (mask) mask.classList.remove('hidden');
+            } else {
+                btn.className = "px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all border border-slate-700 active:scale-95";
+                textEl.textContent = "Öğrenci Modu";
+                State.hideNewtonValue = false;
+                if (mask) mask.classList.add('hidden');
+            }
+            updateDynamometerVisuals();
+        }
+
+        // Yay Onarımı (Yeni Yay Tak)
+        function resetSpringOverload() {
+            State.isDamaged = false;
+            State.damageOffset = 0;
+            State.attachedWeights = [];
+            State.manualForce = 0;
+            closeOverloadModal();
+            updateDynamometerVisuals();
+            SoundFX.success();
+            confetti({ particleCount: 40, spread: 50, origin: { y: 0.7 } });
+        }
+
+        function resetWholeSimulation() {
+            State.attachedWeights = [];
+            State.manualForce = 0;
+            State.isDamaged = false;
+            State.damageOffset = 0;
+            updateDynamometerVisuals();
+            SoundFX.playTone(350, 'sine', 0.1);
+        }
+
+        function showOverloadAlert(force, maxCap) {
+            const modal = document.getElementById('overload-modal');
+            const text = document.getElementById('overload-modal-text');
+            if (text) {
+                text.textContent = `Bu dinamometre en fazla ${maxCap} N ölçebilir. Uygulanan kuvvet (${force.toFixed(1)} N) yayın esneklik sınırını aştı ve yay hasar gördü!`;
+            }
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeOverloadModal() {
+            const modal = document.getElementById('overload-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        // --- 6. ÖLÇÜM TABLOSU & VERİ KAYDI SİSTEMİ ---
+        function recordCurrentMeasurement() {
+            const force = calculateAppliedForce();
+            const deltaL = calculateSpringExtension(force);
+            const isOverloaded = force > State.maxCapacity;
+
+            const record = {
+                id: State.records.length + 1,
+                capacity: `${State.maxCapacity} N`,
+                springType: State.springType === 'thin' ? 'İnce' : (State.springType === 'thick' ? 'Kalın' : 'Orta'),
+                force: force.toFixed(2),
+                deltaL: deltaL.toFixed(1),
+                status: isOverloaded ? 'Geçersiz (Kapasite Aşımı)' : 'Geçerli Ölçüm'
+            };
+
+            State.records.push(record);
+            saveRecordsToLocalStorage();
+            renderRecordsTable();
+            addChartRecordPoint(force, deltaL);
+
+            SoundFX.success();
+            checkMissionTriggers();
+        }
+
+        function renderRecordsTable() {
+            const tbody = document.getElementById('measurement-records-tbody');
+            const countEl = document.getElementById('record-count');
+            if (!tbody) return;
+
+            if (countEl) countEl.textContent = State.records.length;
+
+            if (State.records.length === 0) {
+                tbody.innerHTML = `
+                    <tr id="empty-table-row">
+                        <td colspan="4" class="text-center py-4 text-slate-500 italic font-sans text-xs">
+                            Henüz kayıtlı ölçüm yok. Ölçümü kaydetmek için yeşil butona basın.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = State.records.slice().reverse().map(r => `
+                <tr class="hover:bg-slate-800/50 transition-colors">
+                    <td class="py-1 px-2 font-bold text-slate-400">#${r.id}</td>
+                    <td class="py-1 px-2 text-slate-300 font-sans">${r.capacity} (${r.springType})</td>
+                    <td class="py-1 px-2 text-center text-amber-300 font-bold">${r.force} N</td>
+                    <td class="py-1 px-2 text-center text-cyan-300 font-bold">${r.deltaL} cm</td>
+                </tr>
+            `).join('');
+        }
+
+        function addChartRecordPoint(force, deltaL) {
+            const group = document.getElementById('chart-points-group');
+            if (!group) return;
+
+            const maxF = State.maxCapacity;
+            const maxDelta = 20;
+
+            const x = 30 + (Math.min(force, maxF) / maxF) * 190;
+            const y = 100 - (Math.min(deltaL, maxDelta) / maxDelta) * 85;
+
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('cx', x);
+            circle.setAttribute('cy', y);
+            circle.setAttribute('r', '3.5');
+            circle.setAttribute('fill', '#34d399');
+            circle.setAttribute('stroke', '#ffffff');
+            circle.setAttribute('stroke-width', '1');
+            group.appendChild(circle);
+        }
+
+        function exportRecordsCSV() {
+            if (State.records.length === 0) {
+                alert('İndirilecek kayıtlı ölçüm bulunmuyor.');
+                return;
+            }
+            let csv = "Deney No,Dinamometre,Yay Turu,Uygulanan Kuvvet (N),Uzama (cm),Durum\n";
+            State.records.forEach(r => {
+                csv += `${r.id},"${r.capacity}","${r.springType}",${r.force},${r.deltaL},"${r.status}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rotali-fenci-dinamometre-olcumleri.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function clearAllRecords() {
+            if (confirm('Tüm ölçüm kayıtları silinsin mi?')) {
+                State.records = [];
+                saveRecordsToLocalStorage();
+                renderRecordsTable();
+                const group = document.getElementById('chart-points-group');
+                if (group) group.innerHTML = '';
+            }
+        }
+
+        function saveRecordsToLocalStorage() {
+            try {
+                localStorage.setItem('rotali_dyn_records', JSON.stringify(State.records));
+            } catch(e) {}
+        }
+        function loadRecordsFromLocalStorage() {
+            try {
+                const data = localStorage.getItem('rotali_dyn_records');
+                if (data) {
+                    State.records = JSON.parse(data);
+                    renderRecordsTable();
+                }
+            } catch(e) {}
+        }
+
+        // --- 7. SEKME VE MODÜL YÖNETİMİ ---
+        function switchLabTab(tabId) {
+            State.activeTab = tabId;
+
+            // Panelleri gizle / göster
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.add('hidden'));
+            const activePane = document.getElementById(`tab-content-${tabId}`);
+            if (activePane) activePane.classList.remove('hidden');
+
+            // Masaüstü Nav Butonları
+            document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+                btn.className = "nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-all flex items-center gap-1.5";
+            });
+            const activeNav = document.getElementById(`nav-btn-${tabId}`);
+            if (activeNav) {
+                activeNav.className = "nav-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 bg-cyan-500 text-slate-950 shadow-md";
+            }
+
+            // Mobil Nav Butonları
+            document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+                const t = btn.getAttribute('data-tab');
+                if (t === tabId) {
+                    btn.className = "mobile-nav-btn px-2.5 py-1 rounded-lg font-bold bg-cyan-500 text-slate-950 shrink-0";
+                } else {
+                    btn.className = "mobile-nav-btn px-2.5 py-1 rounded-lg font-bold text-slate-300 shrink-0";
+                }
+            });
+
+            // Özel Sekme Başlatıcıları
+            if (tabId === 'compare') updateComparisonScene();
+            if (tabId === 'workshop') updateWorkshopPreview();
+            if (tabId === 'quiz') generateNewQuizQuestion();
+            if (tabId === 'gravity') updateGravityScene();
+
+            SoundFX.playTone(450, 'sine', 0.08);
+        }
+
+        // --- 8. KARŞILAŞTIRMA MODÜLÜ MANTIĞI ---
+        let compAppliedForce = 0;
+
+        function applyComparisonForce(force) {
+            compAppliedForce = force;
+            updateComparisonScene();
+            SoundFX.playTone(380, 'sine', 0.1);
+        }
+
+        function resetComparison() {
+            compAppliedForce = 0;
+            updateComparisonScene();
+        }
+
+        function updateComparisonScene() {
+            const springA = document.getElementById('comp-a-spring').value;
+            const maxA = parseFloat(document.getElementById('comp-a-max').value);
+            const springB = document.getElementById('comp-b-spring').value;
+            const maxB = parseFloat(document.getElementById('comp-b-max').value);
+
+            const kA = SPRING_CONSTANTS[springA];
+            const kB = SPRING_CONSTANTS[springB];
+
+            const deltaA = compAppliedForce / kA;
+            const deltaB = compAppliedForce / kB;
+
+            const resA = document.getElementById('comp-a-result');
+            const resB = document.getElementById('comp-b-result');
+
+            if (resA) {
+                resA.textContent = compAppliedForce > maxA ? "KAPASİTE AŞILDI!" : `${deltaA.toFixed(1)} cm (${compAppliedForce} N)`;
+                resA.className = compAppliedForce > maxA ? "text-sm font-black font-mono text-rose-400" : "text-lg font-black font-mono text-cyan-300";
+            }
+            if (resB) {
+                resB.textContent = compAppliedForce > maxB ? "KAPASİTE AŞILDI!" : `${deltaB.toFixed(1)} cm (${compAppliedForce} N)`;
+                resB.className = compAppliedForce > maxB ? "text-sm font-black font-mono text-rose-400" : "text-lg font-black font-mono text-purple-300";
+            }
+
+            // Çizim
+            drawComparisonMiniSVG('comp-svg-a', springA, maxA, compAppliedForce, deltaA);
+            drawComparisonMiniSVG('comp-svg-b', springB, maxB, compAppliedForce, deltaB);
+
+            // Çıkarım
+            const conclusion = document.getElementById('comp-conclusion-text');
+            if (compAppliedForce > 0 && conclusion) {
+                if (deltaA > deltaB) {
+                    conclusion.innerHTML = `<strong>Gözlem:</strong> Dinamometre A'daki (${springA} yay), Dinamometre B'deki (${springB} yay) göre <strong>daha fazla uzadı (${deltaA.toFixed(1)} cm > ${deltaB.toFixed(1)} cm)</strong>. Çünkü daha ince yaylar aynı kuvvette daha çok uzayarak daha hassas ölçüm sağlar!`;
+                } else if (deltaB > deltaA) {
+                    conclusion.innerHTML = `<strong>Gözlem:</strong> Dinamometre B'deki (${springB} yay), Dinamometre A'daki (${springA} yay) göre <strong>daha fazla uzadı (${deltaB.toFixed(1)} cm > ${deltaA.toFixed(1)} cm)</strong>.`;
+                } else {
+                    conclusion.innerHTML = `İki dinamometrede de aynı yay türü kullanıldığı için uzama miktarları eşit oldu.`;
+                }
+            }
+        }
+
+        function drawComparisonMiniSVG(svgId, springType, maxCap, force, deltaCm) {
+            const svg = document.getElementById(svgId);
+            if (!svg) return;
+
+            const isOver = force > maxCap;
+            const stretchPx = Math.min((force / maxCap) * 160, 180);
+
+            svg.innerHTML = `
+                <rect x="70" y="20" width="60" height="220" rx="8" fill="#1e293b" fill-opacity="0.6" stroke="#38bdf8" stroke-width="2"/>
+                <!-- Yay -->
+                <line x1="100" y1="30" x2="100" y2="${50 + stretchPx}" stroke="#cbd5e1" stroke-width="${springType === 'thick' ? 5 : 3}" stroke-dasharray="4,3"/>
+                <!-- İbre -->
+                <polygon points="70,${50 + stretchPx} 85,${45 + stretchPx} 85,${55 + stretchPx}" fill="${isOver ? '#ef4444' : '#f59e0b'}"/>
+                <!-- Kanca -->
+                <path d="M 100,${50 + stretchPx} L 100,${70 + stretchPx} C 100,${85 + stretchPx} 115,${85 + stretchPx} 115,${75 + stretchPx}" fill="none" stroke="#94a3b8" stroke-width="4"/>
+                <text x="100" y="270" fill="#f8fafc" font-size="12" font-weight="bold" font-family="'Orbitron', sans-serif" text-anchor="middle">${force.toFixed(1)} N / ${maxCap} N</text>
+            `;
+        }
+
+        function openCompareLab() {
+            switchLabTab('compare');
+        }
+
+        // --- 9. STEM DİNAMOMETRE TASARLAMA ATÖLYESİ MANTIĞI ---
+        function selectWsCasing(casing) {
+            State.workshop.casing = casing;
+            document.querySelectorAll('.ws-btn-casing').forEach(b => {
+                b.className = b.getAttribute('data-val') === casing
+                    ? "ws-btn-casing p-2 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-200 text-xs font-bold active:scale-95"
+                    : "ws-btn-casing p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95";
+            });
+            updateWorkshopPreview();
+        }
+
+        function selectWsSpring(spring) {
+            State.workshop.spring = spring;
+            document.querySelectorAll('.ws-btn-spring').forEach(b => {
+                b.className = b.getAttribute('data-val') === spring
+                    ? "ws-btn-spring p-2 rounded-lg bg-purple-950 border border-purple-400 text-purple-200 text-xs font-bold active:scale-95"
+                    : "ws-btn-spring p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95";
+            });
+            updateWorkshopPreview();
+        }
+
+        function selectWsCapacity(cap) {
+            State.workshop.capacity = cap;
+            State.workshop.calibratedTicks = 0; // Kapasite değişince kalibrasyonu sıfırla
+            document.querySelectorAll('.ws-btn-cap').forEach(b => {
+                b.className = parseInt(b.getAttribute('data-val')) === cap
+                    ? "ws-btn-cap p-2 rounded-lg bg-cyan-950 border border-cyan-400 text-cyan-200 text-xs font-bold active:scale-95"
+                    : "ws-btn-cap p-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-300 text-xs font-bold active:scale-95";
+            });
+            updateWorkshopPreview();
+        }
+
+        function calibrateWsNextTick() {
+            if (State.workshop.calibratedTicks < State.workshop.capacity) {
+                State.workshop.calibratedTicks++;
+                SoundFX.playTone(500 + State.workshop.calibratedTicks * 40, 'sine', 0.08);
+                updateWorkshopPreview();
+            } else {
+                alert(`Tebrikler! ${State.workshop.capacity} N için tüm kalibrasyon çizgileri çizildi.`);
+            }
+        }
+
+        function testDesignedDynamometer() {
+            const ws = State.workshop;
+            const feedback = document.getElementById('ws-feedback-card');
+
+            if (ws.calibratedTicks < ws.capacity) {
+                SoundFX.playTone(250, 'sawtooth', 0.2);
+                feedback.className = "mt-3 w-full p-3 rounded-xl bg-amber-950/80 border border-amber-500 text-amber-200 text-center text-xs";
+                feedback.innerHTML = `⚠️ Kalibrasyon eksik! Lütfen 'Çizgi Ekle' butonuna basarak tüm ${ws.capacity} N çizgilerini tamamlayın.`;
+                return;
+            }
+
+            // Başarılı Test
+            SoundFX.success();
+            confetti({ particleCount: 60, spread: 70, origin: { y: 0.6 } });
+            feedback.className = "mt-3 w-full p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-center text-xs";
+            feedback.innerHTML = `🎉 <strong>TEBRİKLER!</strong> Kendi ${ws.casing} gövdeli, ${ws.spring} yaylı, ${ws.capacity} N kapasiteli dinamometreni başarıyla tasarladın ve kalibre ettin!`;
+        }
+
+        function updateWorkshopPreview() {
+            const svg = document.getElementById('ws-preview-svg');
+            if (!svg) return;
+
+            const ws = State.workshop;
+            let casingColor = '#38bdf8';
+            let casingFill = '#0c4a6e';
+            if (ws.casing === 'carton') { casingColor = '#f59e0b'; casingFill = '#78350f'; }
+            if (ws.casing === 'metal') { casingColor = '#94a3b8'; casingFill = '#334155'; }
+
+            let ticksSvg = '';
+            const stepY = 180 / ws.capacity;
+            for (let i = 0; i <= ws.calibratedTicks; i++) {
+                const y = 80 + (i * stepY);
+                ticksSvg += `
+                    <line x1="100" y1="${y}" x2="115" y2="${y}" stroke="#ffffff" stroke-width="2"/>
+                    <text x="95" y="${y+3}" fill="#ffffff" font-size="8" text-anchor="end">${i}N</text>
+                `;
+            }
+
+            svg.innerHTML = `
+                <circle cx="150" cy="30" r="14" fill="none" stroke="#cbd5e1" stroke-width="5"/>
+                <!-- Gövde -->
+                <rect x="100" y="50" width="100" height="260" rx="10" fill="${casingFill}" fill-opacity="0.7" stroke="${casingColor}" stroke-width="3"/>
+                <!-- İç Yay -->
+                <line x1="150" y1="60" x2="150" y2="180" stroke="#cbd5e1" stroke-width="${ws.spring === 'thick' ? 6 : 3}" stroke-dasharray="6,4"/>
+                <!-- Kalibre Edilen Çizgiler -->
+                ${ticksSvg}
+                <!-- Kanca -->
+                <path d="M 150,180 L 150,330 C 150,350 170,350 170,335" fill="none" stroke="#cbd5e1" stroke-width="5"/>
+                <text x="150" y="380" fill="#f8fafc" font-size="12" font-weight="bold" font-family="'Orbitron', sans-serif" text-anchor="middle">ÖZEL MODEL (${ws.capacity}N)</text>
+            `;
+        }
+
+        // --- 10. GÖSTERGE OKUMA PRATİĞİ (QUIZ) ---
+        let quizTargetValue = 4.5;
+        let quizTargetCapacity = 10;
+        let quizScore = 0;
+
+        function generateNewQuizQuestion() {
+            const capacities = [5, 10, 20, 50];
+            quizTargetCapacity = capacities[Math.floor(Math.random() * capacities.length)];
+            const specs = CAPACITY_SPECS[quizTargetCapacity];
+
+            // Rastgele bir bölme çizgisi seç
+            const randomDivIndex = Math.floor(Math.random() * (specs.divisions - 1)) + 1;
+            quizTargetValue = randomDivIndex * specs.divValue;
+
+            document.getElementById('quiz-dyn-title').textContent = `${quizTargetCapacity} Newton Kapasiteli Dinamometre`;
+            document.getElementById('quiz-dyn-hint').textContent = `Önemli İpucu: Bu dinamometrede her bir bölme ${specs.divValue} Newton değerindedir. İbrenin hizasını dikkatlice sayın.`;
+            
+            const input = document.getElementById('quiz-answer-input');
+            if (input) {
+                input.value = '';
+                input.step = specs.divValue;
+            }
+
+            const feedback = document.getElementById('quiz-feedback-box');
+            if (feedback) feedback.className = 'hidden';
+
+            drawQuizSVG(quizTargetCapacity, quizTargetValue);
+        }
+
+        function checkQuizAnswer() {
+            const input = document.getElementById('quiz-answer-input');
+            const feedback = document.getElementById('quiz-feedback-box');
+            const userVal = parseFloat(input.value);
+
+            if (isNaN(userVal)) {
+                alert('Lütfen bir sayı girin.');
+                return;
+            }
+
+            const isCorrect = Math.abs(userVal - quizTargetValue) < 0.05;
+            feedback.classList.remove('hidden');
+
+            if (isCorrect) {
+                quizScore += 10;
+                document.getElementById('quiz-score').textContent = quizScore;
+                SoundFX.success();
+                confetti({ particleCount: 50, spread: 60, origin: { y: 0.7 } });
+
+                feedback.className = "p-3 rounded-xl bg-emerald-950/80 border border-emerald-500 text-emerald-200 text-xs font-semibold leading-relaxed";
+                feedback.innerHTML = `🎉 <strong>DOĞRU CEVAP!</strong> Dinamometre tam olarak <strong>${quizTargetValue} N</strong> gösteriyor. Harika bir gözlem yaptın!`;
+                
+                checkMissionTriggers();
+            } else {
+                SoundFX.playTone(240, 'sawtooth', 0.25);
+                feedback.className = "p-3 rounded-xl bg-rose-950/80 border border-rose-500 text-rose-200 text-xs font-medium leading-relaxed";
+                feedback.innerHTML = `❌ <strong>Tekrar Dene!</strong> İbreyi dikkatlice incele. Her bölme ${CAPACITY_SPECS[quizTargetCapacity].divValue} N değerindedir. İbrenin kaçıncı çizgide durduğunu tekrar say.`;
+            }
+        }
+
+        function drawQuizSVG(capacity, targetValue) {
+            const svg = document.getElementById('quiz-svg');
+            if (!svg) return;
+
+            const specs = CAPACITY_SPECS[capacity];
+            const startY = 80;
+            const totalH = 260;
+            const stepPx = totalH / specs.divisions;
+
+            let scaleSvg = '';
+            for (let i = 0; i <= specs.divisions; i++) {
+                const y = startY + (i * stepPx);
+                const val = i * specs.divValue;
+                const isMajor = (Math.abs(val % specs.labelStep) < 0.001) || (i === 0) || (i === specs.divisions);
+
+                scaleSvg += `<line x1="120" y1="${y}" x2="${isMajor ? 140 : 130}" y2="${y}" stroke="${isMajor ? '#38bdf8' : '#64748b'}" stroke-width="${isMajor ? 2 : 1.2}"/>`;
+                if (isMajor) {
+                    scaleSvg += `<text x="145" y="${y+3.5}" fill="#ffffff" font-size="10" font-weight="bold">${val}</text>`;
+                }
+            }
+
+            // İbrenin duracağı piksel
+            const pointerY = startY + (targetValue / capacity) * totalH;
+
+            svg.innerHTML = `
+                <circle cx="150" cy="30" r="14" fill="none" stroke="#cbd5e1" stroke-width="5"/>
+                <!-- Gövde -->
+                <rect x="110" y="60" width="80" height="300" rx="10" fill="#0f172a" fill-opacity="0.85" stroke="#38bdf8" stroke-width="2.5"/>
+                <!-- Skala -->
+                ${scaleSvg}
+                <!-- Kırmızı Gösterge İbresi -->
+                <polygon points="105,${pointerY} 125,${pointerY - 6} 125,${pointerY + 6}" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+                <line x1="105" y1="${pointerY}" x2="195" y2="${pointerY}" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="3,2"/>
+                <polygon points="195,${pointerY} 175,${pointerY - 6} 175,${pointerY + 6}" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+                <!-- Kanca -->
+                <path d="M 150,${pointerY} L 150,380 C 150,395 165,395 165,385" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+            `;
+        }
+
+        // --- 11. DÜNYA VE AY'DA AĞIRLIK MANTIĞI ---
+        function selectGravityEnvironment(env) {
+            State.environment = env;
+            State.gValue = (env === 'moon') ? 1.6 : 10;
+
+            const btnE = document.getElementById('env-btn-earth');
+            const btnM = document.getElementById('env-btn-moon');
+            const cardBg = document.getElementById('gravity-env-bg');
+            const icon = document.getElementById('gravity-env-icon');
+            const label = document.getElementById('gravity-env-label');
+            const desc = document.getElementById('gravity-env-desc');
+
+            if (env === 'moon') {
+                btnM.className = "px-3 py-1.5 rounded-lg text-xs font-black bg-purple-600 text-white transition-all flex items-center gap-1.5 shadow";
+                btnE.className = "px-3 py-1.5 rounded-lg text-xs font-black text-slate-300 hover:text-white transition-all flex items-center gap-1.5";
+                cardBg.className = "absolute inset-0 bg-gradient-to-b from-slate-900 via-purple-950 to-slate-950 flex items-center justify-center";
+                icon.textContent = "🌙";
+                label.textContent = "AY YÜZEYİ ORTAMI";
+                desc.textContent = "Düşük yer çekimi (g ≈ 1,6 N/kg). Cisimlerin ağırlığı 6 kat daha azdır.";
+            } else {
+                btnE.className = "px-3 py-1.5 rounded-lg text-xs font-black bg-blue-600 text-white transition-all flex items-center gap-1.5 shadow";
+                btnM.className = "px-3 py-1.5 rounded-lg text-xs font-black text-slate-300 hover:text-white transition-all flex items-center gap-1.5";
+                cardBg.className = "absolute inset-0 bg-gradient-to-b from-sky-950 to-blue-900 flex items-center justify-center";
+                icon.textContent = "🌍";
+                label.textContent = "DÜNYA ORTAMI";
+                desc.textContent = "Standart yer çekimi (g ≈ 10 N/kg).";
+            }
+
+            updateGravityScene();
+            updateDynamometerVisuals();
+            SoundFX.playTone(env === 'moon' ? 600 : 350, 'sine', 0.12);
+
+            checkMissionTriggers();
+        }
+
+        function updateGravityScene() {
+            const massKg = 1.0; // 1 kg sabit kütle
+            const weightN = massKg * State.gValue;
+            const k = SPRING_CONSTANTS.medium;
+            const stretchCm = weightN / k;
+
+            document.getElementById('grav-weight-text').textContent = `${weightN.toFixed(1)} N`;
+            document.getElementById('grav-stretch-text').textContent = `${stretchCm.toFixed(1)} cm`;
+
+            const svg = document.getElementById('gravity-svg');
+            if (!svg) return;
+
+            const stretchPx = (weightN / 10) * 160;
+
+            svg.innerHTML = `
+                <circle cx="150" cy="30" r="14" fill="none" stroke="#cbd5e1" stroke-width="5"/>
+                <!-- Gövde -->
+                <rect x="110" y="55" width="80" height="280" rx="10" fill="#0f172a" fill-opacity="0.85" stroke="${State.environment === 'moon' ? '#a855f7' : '#38bdf8'}" stroke-width="2.5"/>
+                <!-- Yay -->
+                <line x1="150" y1="65" x2="150" y2="${75 + stretchPx}" stroke="#cbd5e1" stroke-width="4.5" stroke-dasharray="5,3"/>
+                <!-- İbre -->
+                <polygon points="105,${75 + stretchPx} 120,${70 + stretchPx} 120,${80 + stretchPx}" fill="#ef4444"/>
+                <!-- Kanca -->
+                <path d="M 150,${75 + stretchPx} L 150,${95 + stretchPx} C 150,${110 + stretchPx} 165,${110 + stretchPx} 165,${100 + stretchPx}" fill="none" stroke="#cbd5e1" stroke-width="4"/>
+                <!-- Asılı 1 kg Ağırlık -->
+                <g transform="translate(150, ${105 + stretchPx})">
+                    <rect x="-24" y="0" width="48" height="36" rx="6" fill="#e11d48" stroke="#ffffff" stroke-width="2"/>
+                    <text x="0" y="22" fill="#ffffff" font-size="11" font-weight="bold" text-anchor="middle">1 kg</text>
+                </g>
+                <text x="150" y="375" fill="#f8fafc" font-size="14" font-weight="black" font-family="'Orbitron', sans-serif" text-anchor="middle">Ölçüm: ${weightN.toFixed(1)} N</text>
+            `;
+        }
+
+        // --- 12. 10 ETKİLEŞİMLİ LABORATUVAR GÖREVİ ---
+        const MISSIONS = [
+            { id: 1, title: "3 N Kuvveti Ölç", desc: "Kancaya cisim asarak veya manuel çekerek 3 N ölç.", check: (s, f) => Math.abs(f - 3) < 0.2 },
+            { id: 2, title: "Esneklik Sınırını Test Et", desc: "5 N dinamometreye 5 N'dan fazla kuvvet uygula ve uyarıyı gör.", check: (s, f) => s.maxCapacity === 5 && f > 5 },
+            { id: 3, title: "Hassas Dinamometreyi Seç", desc: "En küçük bölme değerine sahip (0.25 N/bölme) 5 N dinamometreyi seç.", check: (s, f) => s.maxCapacity === 5 },
+            { id: 4, title: "İnce Yayı Tak", desc: "Küçük kuvvetlerde daha çok uzayan 'İnce Yay' modelini seç.", check: (s, f) => s.springType === 'thin' },
+            { id: 5, title: "Kalın Yayı Tak", desc: "Ağır yükler için daha az uzayan 'Kalın Yay' modelini seç.", check: (s, f) => s.springType === 'thick' },
+            { id: 6, title: "İki Cismi Birleştir", desc: "Kancaya aynı anda en az 2 farklı ağırlık asarak toplamı ölç.", check: (s, f) => s.attachedWeights.length >= 2 },
+            { id: 7, title: "Ay Yüzeyine Git", desc: "Dünya & Ay modülünde Ay ortamına geçerek ağırlık değişimini gözlemle.", check: (s, f) => s.environment === 'moon' },
+            { id: 8, title: "Ölçüm Kaydet", desc: "Yaptığın bir deneyi yeşil 'Ölçümü Kaydet' butonuna basarak tabloya ekle.", check: (s, f) => s.records.length >= 1 },
+            { id: 9, title: "Göstergeyi Doğru Oku", desc: "Gösterge okuma etkinliğinde en az 1 doğru cevap ver.", check: (s, f) => quizScore >= 10 },
+            { id: 10, title: "Hasarlı Yayı Onar", desc: "Kapasite aşımı sonrası 'Yeni Yay Tak' butonuna basarak yayı sıfırla.", check: (s, f) => !s.isDamaged && s.damageOffset === 0 }
+        ];
+
+        let completedMissions = new Set();
+
+        function renderMissionsGrid() {
+            const grid = document.getElementById('missions-grid');
+            if (!grid) return;
+
+            grid.innerHTML = MISSIONS.map(m => {
+                const isDone = completedMissions.has(m.id);
+                return `
+                    <div class="p-3.5 rounded-2xl ${isDone ? 'bg-emerald-950/40 border border-emerald-500/50' : 'bg-slate-900 border border-slate-800'} flex items-center justify-between gap-3 transition-all">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl ${isDone ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400'} flex items-center justify-center text-lg font-black shrink-0">
+                                <i class="fa-solid ${isDone ? 'fa-check' : 'fa-award'}"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-xs font-black ${isDone ? 'text-emerald-300 line-through' : 'text-white'}">Görev ${m.id}: ${m.title}</h4>
+                                <p class="text-[11px] text-slate-400 mt-0.5 leading-snug">${m.desc}</p>
+                            </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-black ${isDone ? 'bg-emerald-500/20 text-emerald-300' : 'bg-slate-800 text-slate-400'} shrink-0">
+                            ${isDone ? 'TAMAMLANDI' : 'BEKLİYOR'}
+                        </span>
+                    </div>
+                `;
+            }).join('');
+
+            const countEl = document.getElementById('missions-completed-count');
+            if (countEl) countEl.textContent = completedMissions.size;
+        }
+
+        function checkMissionTriggers() {
+            const force = calculateAppliedForce();
+            let newDone = false;
+
+            MISSIONS.forEach(m => {
+                if (!completedMissions.has(m.id)) {
+                    if (m.check(State, force)) {
+                        completedMissions.add(m.id);
+                        newDone = true;
+                    }
+                }
+            });
+
+            if (newDone) {
+                renderMissionsGrid();
+                SoundFX.success();
+            }
+        }
+
+        // --- 13. REHBERLİ 8 SANAL DENEY BAŞLATICISI ---
+        function startGuidedExperiment(expId) {
+            switchLabTab('main');
+            
+            if (expId === 1) {
+                // Deney 1: 10N Dinamometre, 100g ile başla
+                selectDynamometer(10);
+                removeAllWeights();
+                addWeight(100);
+                alert("Deney 1 Başladı: Dinamometreye 100 g (1 N) asıldı. Şimdi sırayla 200 g ve 500 g asarak uzama miktarını gözlemleyin!");
+            } else if (expId === 2) {
+                // Deney 2: Karşılaştırma modülünü aç
+                switchLabTab('compare');
+                applyComparisonForce(5);
+            } else if (expId === 3) {
+                // Deney 3: Sırayla dinamometreleri seçtir
+                selectDynamometer(5);
+                alert("Deney 3: 5 N dinamometre seçildi. Üst butonlardan sırasıyla 10 N, 20 N ve 50 N dinamometreleri seçerek ölçek farklarını keşfedin!");
+            } else if (expId === 4) {
+                // Deney 4: 0.5 N hassas ölçüm
+                selectDynamometer(5);
+                selectSpringType('thin');
+                alert("Deney 4: En hassas ölçüm için 5 N dinamometre ve İnce Yay seçildi. Küçük kuvvetlerde yayın nasıl net tepki verdiğini inceleyin.");
+            } else if (expId === 5) {
+                // Deney 5: Esneklik sınırı aşımı
+                selectDynamometer(5);
+                removeAllWeights();
+                addWeight(1000); // 10 N asarak aşırı yük yarat
+            } else if (expId === 6) {
+                // Deney 6: Bölme değeri
+                selectDynamometer(10);
+                alert("Deney 6: 10 N dinamometrede 20 bölme vardır. Bölme Değeri = 10 N / 20 = 0.5 N'dur. Gösterge okuma sekmesine geçerek pratik yapabilirsiniz.");
+            } else if (expId === 7) {
+                // Deney 7: Gizli kuvvet
+                switchLabTab('quiz');
+            }
+        }
+
+        // --- 14. SES VE TAM EKRAN YÖNETİMİ ---
+        function toggleSound() {
+            SoundFX.enabled = !SoundFX.enabled;
+            const icon = document.getElementById('sound-icon');
+            if (icon) {
+                icon.className = SoundFX.enabled ? "fa-solid fa-volume-high text-cyan-400" : "fa-solid fa-volume-xmark text-slate-500";
+            }
+        }
+
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        function openHelpModal() {
+            const m = document.getElementById('help-modal');
+            if (m) m.classList.remove('hidden');
+        }
+        function closeHelpModal() {
+            const m = document.getElementById('help-modal');
+            if (m) m.classList.add('hidden');
+        }
+
+        // --- 15. SAYFA YÜKLENME VE BAŞLATMA ---
+        window.addEventListener('DOMContentLoaded', () => {
+            renderScaleMarkings();
+            renderRulerMarkings();
+            updateDynamometerVisuals();
+            renderMissionsGrid();
+            loadRecordsFromLocalStorage();
+
+            // İlk dokunmada AudioContext'i canlandır
+            document.addEventListener('click', () => {
+                SoundFX.init();
+            }, { once: true });
+        });
+    </script>
+</body>
+</html>

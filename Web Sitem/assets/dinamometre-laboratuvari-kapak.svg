@@ -1,0 +1,170 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 500" width="100%" height="100%">
+  <defs>
+    <!-- Arka Plan Gradyanı -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#020617"/>
+      <stop offset="40%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+
+    <!-- Neon Parlama Efektleri -->
+    <linearGradient id="cyanGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#06b6d4"/>
+      <stop offset="50%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#f97316"/>
+    </linearGradient>
+
+    <linearGradient id="metalSpring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="50%" stop-color="#64748b"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Arka Plan -->
+  <rect width="800" height="500" rx="24" fill="url(#bgGrad)"/>
+  
+  <!-- Teknik Laboratuvar Izgarası -->
+  <g stroke="#1e293b" stroke-width="1" opacity="0.4">
+    <line x1="0" y1="100" x2="800" y2="100"/>
+    <line x1="0" y1="200" x2="800" y2="200"/>
+    <line x1="0" y1="300" x2="800" y2="300"/>
+    <line x1="0" y1="400" x2="800" y2="400"/>
+    <line x1="200" y1="0" x2="200" y2="500"/>
+    <line x1="400" y1="0" x2="400" y2="500"/>
+    <line x1="600" y1="0" x2="600" y2="500"/>
+  </g>
+
+  <!-- Arka Plan Işık Küreleri -->
+  <circle cx="200" cy="250" r="140" fill="#06b6d4" opacity="0.08" filter="url(#glow)"/>
+  <circle cx="600" cy="200" r="160" fill="#f59e0b" opacity="0.08" filter="url(#glow)"/>
+
+  <!-- ==================== SOL TARAF: DİNAMOMETRE İLLÜSTRASYONU ==================== -->
+  <g transform="translate(130, 40)">
+    <!-- Asma Standı -->
+    <rect x="50" y="20" width="80" height="10" rx="3" fill="#475569"/>
+    <circle cx="90" cy="25" r="4" fill="#f59e0b"/>
+    <!-- Asma Halkası -->
+    <circle cx="90" cy="45" r="14" fill="none" stroke="#94a3b8" stroke-width="4"/>
+    
+    <!-- Dinamometre Şeffaf Gövdesi -->
+    <rect x="55" y="65" width="70" height="300" rx="12" fill="#0f172a" fill-opacity="0.75" stroke="#38bdf8" stroke-width="3" filter="url(#glow)"/>
+    <rect x="58" y="70" width="64" height="290" rx="10" fill="#38bdf8" fill-opacity="0.12"/>
+    
+    <!-- Cam Yansıma -->
+    <line x1="64" y1="75" x2="64" y2="355" stroke="#ffffff" stroke-width="2" opacity="0.4" stroke-linecap="round"/>
+
+    <!-- Newton Ölçek Çizgileri -->
+    <g stroke="#94a3b8" stroke-width="1.5">
+      <line x1="55" y1="90" x2="72" y2="90" stroke="#38bdf8" stroke-width="2"/>
+      <line x1="55" y1="120" x2="68" y2="120"/>
+      <line x1="55" y1="150" x2="72" y2="150" stroke="#38bdf8" stroke-width="2"/>
+      <line x1="55" y1="180" x2="68" y2="180"/>
+      <line x1="55" y1="210" x2="72" y2="210" stroke="#38bdf8" stroke-width="2"/>
+      <line x1="55" y1="240" x2="68" y2="240"/>
+      <line x1="55" y1="270" x2="72" y2="270" stroke="#38bdf8" stroke-width="2"/>
+      <line x1="55" y1="300" x2="68" y2="300"/>
+      <line x1="55" y1="330" x2="72" y2="330" stroke="#38bdf8" stroke-width="2"/>
+    </g>
+
+    <text x="115" y="93" fill="#f8fafc" font-size="10" font-weight="bold" font-family="'Courier New', monospace" text-anchor="end">0 N</text>
+    <text x="115" y="153" fill="#f8fafc" font-size="10" font-weight="bold" font-family="'Courier New', monospace" text-anchor="end">2 N</text>
+    <text x="115" y="213" fill="#f8fafc" font-size="10" font-weight="bold" font-family="'Courier New', monospace" text-anchor="end">4 N</text>
+    <text x="115" y="273" fill="#f8fafc" font-size="10" font-weight="bold" font-family="'Courier New', monospace" text-anchor="end">6 N</text>
+    <text x="115" y="333" fill="#f8fafc" font-size="10" font-weight="bold" font-family="'Courier New', monospace" text-anchor="end">10 N</text>
+
+    <!-- İç Metalik Yay -->
+    <path d="M 90,65 L 90,75 
+             Q 75,85 90,95 Q 105,105 90,115
+             Q 75,125 90,135 Q 105,145 90,155
+             Q 75,165 90,175 Q 105,185 90,195
+             Q 75,205 90,215 L 90,225" 
+          fill="none" stroke="url(#metalSpring)" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- Kırmızı Gösterge İbresi (4 Newton Hizası) -->
+    <polygon points="53,210 68,205 68,215" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+    <line x1="55" y1="210" x2="125" y2="210" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="3,2"/>
+    <polygon points="127,210 112,205 112,215" fill="#ef4444" stroke="#ffffff" stroke-width="1"/>
+
+    <!-- Kanca ve Askı Çubuğu -->
+    <rect x="88" y="210" width="4" height="165" fill="#cbd5e1"/>
+    <path d="M 90,375 L 90,395 C 90,412 110,412 110,398 C 110,388 104,385 100,387" fill="none" stroke="#cbd5e1" stroke-width="5" stroke-linecap="round"/>
+
+    <!-- Asılı 400g / 4N Ağırlık -->
+    <g transform="translate(90, 404)">
+      <circle cx="0" cy="5" r="4" fill="none" stroke="#94a3b8" stroke-width="2"/>
+      <rect x="-24" y="9" width="48" height="34" rx="6" fill="#0284c7" stroke="#38bdf8" stroke-width="2" filter="url(#glow)"/>
+      <text x="0" y="30" fill="#ffffff" font-size="12" font-weight="900" font-family="'Arial', sans-serif" text-anchor="middle">400 g</text>
+    </g>
+  </g>
+
+  <!-- ==================== SAĞ TARAF: TİPOGRAFİ & BİLGİ ROZETLERİ ==================== -->
+  <g transform="translate(340, 70)">
+    <!-- Üst Başlık Rozeti -->
+    <rect x="0" y="0" width="230" height="30" rx="15" fill="#06b6d4" fill-opacity="0.15" stroke="#06b6d4" stroke-width="1.5"/>
+    <text x="15" y="20" fill="#38bdf8" font-size="12" font-weight="900" font-family="'Arial', sans-serif" letter-spacing="1.5">5. SINIF • 2. ÜNİTE BAŞYAPITI</text>
+
+    <!-- Ana Başlık -->
+    <text x="0" y="70" fill="#f8fafc" font-size="34" font-weight="900" font-family="'Orbitron', sans-serif" letter-spacing="1">DİNAMOMETRE</text>
+    <text x="0" y="112" fill="url(#cyanGrad)" font-size="32" font-weight="900" font-family="'Orbitron', sans-serif" letter-spacing="1">SANAL LABORATUVARI</text>
+
+    <!-- Alt Başlık / Slogan -->
+    <text x="0" y="145" fill="#cbd5e1" font-size="15" font-weight="600" font-family="'Arial', sans-serif">
+      Kuvveti Ölç, Deney Yap, Keşfet!
+    </text>
+
+    <!-- Özellik Rozetleri -->
+    <g transform="translate(0, 175)">
+      <!-- Rozet 1 -->
+      <g transform="translate(0, 0)">
+        <rect width="180" height="32" rx="10" fill="#1e293b" stroke="#38bdf8" stroke-width="1.2"/>
+        <text x="14" y="21" fill="#38bdf8" font-size="12" font-weight="bold">⚖️ 4 Dinamometre (5-50N)</text>
+      </g>
+      <!-- Rozet 2 -->
+      <g transform="translate(190, 0)">
+        <rect width="180" height="32" rx="10" fill="#1e293b" stroke="#a855f7" stroke-width="1.2"/>
+        <text x="14" y="21" fill="#c084fc" font-size="12" font-weight="bold">🧪 8 Adım Adım Deney</text>
+      </g>
+      <!-- Rozet 3 -->
+      <g transform="translate(0, 42)">
+        <rect width="180" height="32" rx="10" fill="#1e293b" stroke="#f59e0b" stroke-width="1.2"/>
+        <text x="14" y="21" fill="#fbbf24" font-size="12" font-weight="bold">🛠️ STEM Tasarım Atölyesi</text>
+      </g>
+      <!-- Rozet 4 -->
+      <g transform="translate(190, 42)">
+        <rect width="180" height="32" rx="10" fill="#1e293b" stroke="#10b981" stroke-width="1.2"/>
+        <text x="14" y="21" fill="#34d399" font-size="12" font-weight="bold">🌍 Dünya &amp; Ay Yer Çekimi</text>
+      </g>
+      <!-- Rozet 5 -->
+      <g transform="translate(0, 84)">
+        <rect width="370" height="32" rx="10" fill="#1e293b" stroke="#ef4444" stroke-width="1.2"/>
+        <text x="14" y="21" fill="#f87171" font-size="12" font-weight="bold">📈 Hooke Yasası • Canlı Kuvvet-Uzama Grafiği</text>
+      </g>
+    </g>
+
+    <!-- Alt Buton Efekti -->
+    <g transform="translate(0, 315)">
+      <rect width="240" height="46" rx="14" fill="url(#cyanGrad)" filter="url(#glow)"/>
+      <text x="120" y="28" fill="#020617" font-size="14" font-weight="900" font-family="'Orbitron', sans-serif" text-anchor="middle" letter-spacing="1">LABORATUVARA GİR ▶</text>
+    </g>
+  </g>
+
+  <!-- Alt Marka Çubuğu -->
+  <g transform="translate(40, 460)">
+    <text x="0" y="15" fill="#f59e0b" font-size="13" font-weight="900" font-family="'Orbitron', sans-serif">ROTALI FENCİ</text>
+    <text x="135" y="15" fill="#64748b" font-size="12">• Türkiye Yüzyılı Maarif Modeli • Akıllı Tahta Uyumlu</text>
+  </g>
+</svg>
