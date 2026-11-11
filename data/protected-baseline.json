@@ -65,9 +65,11 @@
   ],
   "requiredMirroredFiles": [
     "data/materials.json",
+    "data/tubitak-seed-data.json",
     "api/sync.js",
     "api/publish-test.js",
     "js/app.js",
+    "js/tubitak-data.js",
     "js/tubitak-research.js",
     "js/yaprak-test.js",
     "css/yaprak-test.css",

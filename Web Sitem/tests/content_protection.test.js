@@ -192,4 +192,12 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
     assert.ok(tubitakJs.includes(label), `TÜBİTAK giriş kartı eksik: ${label}`);
   }
   assert.equal(/Sivas Kültür Atlası|Türk-İslam Bilginleri|571–632 Zaman Çizgisi/.test(tubitakJs), false, "TÜBİTAK giriş kartlarında proje adı/alt başlık olmamalı");
+  assert.ok(tubitakJs.includes("<span>Eserler</span>"), "TÜBİTAK Proje 1 yan panelinde Eserler başlığı olmalı");
+
+  const seedJson = JSON.parse(fs.readFileSync(path.join(webDir, "data", "tubitak-seed-data.json"), "utf8"));
+  const p1Items = seedJson.projects["proje-tarih"].items;
+  assert.equal(p1Items.length, 40, "TÜBİTAK Proje 1 listesinde tam 40 eser bulunmalı");
+  assert.equal(p1Items[0].title, "Divriği Ulu Camii ve Darüşşifası");
+  assert.equal(p1Items[1].title, "Çifte Minareli Medrese");
+  assert.equal(p1Items[39].title, "Halil Rıfat Paşa Köprüsü");
 });

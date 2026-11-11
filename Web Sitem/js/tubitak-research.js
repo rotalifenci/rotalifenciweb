@@ -396,6 +396,9 @@
         }
 
         const activeItem = items.find(it => it.id === activeItemId) || items[0] || {};
+        if (activeItem.id && activeItem.id !== activeItemId) {
+            activeItemId = activeItem.id;
+        }
 
         return `
         <div class="max-w-[1600px] mx-auto px-3 sm:px-6 py-6 animate-in fade-in duration-300">
@@ -478,12 +481,22 @@
                     <!-- İlerleme Özeti -->
                     <div class="p-3 bg-slate-50 rounded-2xl border border-slate-200 flex items-center justify-between text-xs">
                         <span class="font-bold text-slate-600">Listelenen Kayıt:</span>
-                        <span class="font-black text-slate-900">${items.length} Konu</span>
+                        <span class="font-black text-slate-900">${items.length} ${activeProjectId === 'proje-tarih' ? 'Eser' : 'Konu'}</span>
                     </div>
+
+                    ${activeProjectId === 'proje-tarih' ? `
+                    <div class="flex items-center justify-between px-1 pt-1">
+                        <h3 class="text-xs font-black uppercase tracking-wider text-slate-800 flex items-center gap-1.5">
+                            <i class="fa-solid fa-monument text-amber-600"></i>
+                            <span>Eserler</span>
+                        </h3>
+                        <span class="text-[11px] font-bold text-amber-700">${items.length} Eser</span>
+                    </div>
+                    ` : ''}
 
                     <!-- Kayıt Listesi (Kaydırılabilir) -->
                     <div class="space-y-2 max-h-[620px] overflow-y-auto pr-1 custom-scrollbar">
-                        ${items.map(it => {
+                        ${items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
                             const totalCriteria = projData.criteriaList ? projData.criteriaList.length : 8;
@@ -492,14 +505,15 @@
                             return `
                             <div onclick="window.RotaliTubitak.selectItem('${it.id}')" class="p-3.5 rounded-2xl transition-all cursor-pointer border flex flex-col gap-1.5 ${isSelected ? 'bg-amber-50/80 border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'bg-slate-50/60 hover:bg-slate-100 border-slate-200'}">
                                 <div class="flex items-center justify-between gap-2">
-                                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-500">
-                                        ${it.district || it.field || (it.year ? `${it.year}. Yıl` : 'Kayıt')}
+                                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                                        ${activeProjectId === 'proje-tarih' ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-black">#${idx + 1}</span>` : ''}
+                                        <span>${it.district || it.field || (it.year ? `${it.year}. Yıl` : 'Kayıt')}</span>
                                     </span>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${getStatusBadgeClass(status)}">
                                         ${getStatusLabel(status)}
                                     </span>
                                 </div>
-                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug line-clamp-1">${escapeHtml(it.title)}</h4>
+                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${activeProjectId === 'proje-tarih' ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
                                 <div class="flex items-center justify-between text-[11px] font-semibold text-slate-500 pt-1 border-t border-slate-200/60">
                                     <span>İlerleme:</span>
                                     <span class="font-black ${filledCount === totalCriteria ? 'text-emerald-600' : 'text-amber-600'}">
@@ -533,6 +547,11 @@
                         <option value="all" ${activeFilter === 'all' ? 'selected' : ''}>Tüm İlçeler</option>
                         <option value="Merkez" ${activeFilter === 'Merkez' ? 'selected' : ''}>Merkez</option>
                         <option value="Divriği" ${activeFilter === 'Divriği' ? 'selected' : ''}>Divriği</option>
+                        <option value="Kangal" ${activeFilter === 'Kangal' ? 'selected' : ''}>Kangal</option>
+                        <option value="Ulaş" ${activeFilter === 'Ulaş' ? 'selected' : ''}>Ulaş</option>
+                        <option value="Gürün" ${activeFilter === 'Gürün' ? 'selected' : ''}>Gürün</option>
+                        <option value="Yıldızeli" ${activeFilter === 'Yıldızeli' ? 'selected' : ''}>Yıldızeli</option>
+                        <option value="Altınyayla" ${activeFilter === 'Altınyayla' ? 'selected' : ''}>Altınyayla</option>
                     </select>
                 </div>
                 <div>
@@ -542,6 +561,7 @@
                         <option value="selcuklu" ${activePeriodFilter === 'selcuklu' ? 'selected' : ''}>Selçuklu</option>
                         <option value="ilhanli" ${activePeriodFilter === 'ilhanli' ? 'selected' : ''}>İlhanlı</option>
                         <option value="beylikler" ${activePeriodFilter === 'beylikler' ? 'selected' : ''}>Beylikler</option>
+                        <option value="osmanli" ${activePeriodFilter === 'osmanli' ? 'selected' : ''}>Osmanlı</option>
                         <option value="cumhuriyet" ${activePeriodFilter === 'cumhuriyet' ? 'selected' : ''}>Cumhuriyet</option>
                     </select>
                 </div>
@@ -747,7 +767,7 @@
     // 8. Yardımcılar ve Filtreleme Mantıkları
     function getFilteredItems() {
         const projData = seedData?.projects?.[activeProjectId] || {};
-        let list = projData.items || [];
+        let list = [...(projData.items || [])];
 
         // Arama filtresi
         if (searchQuery.trim()) {
@@ -780,11 +800,13 @@
             list = list.filter(it => it.year === activeYear);
         }
 
-        // Sıralama
-        if (activeSort === "alpha") {
-            list.sort((a, b) => a.title.localeCompare(b.title, "tr"));
-        } else if (activeSort === "chrono") {
-            list.sort((a, b) => (a.year || 0) - (b.year || 0));
+        // Sıralama (Proje 1 tanımlı sıra korunur; Bilim İnsanları projesinde sıralama uygulanır)
+        if (activeProjectId === "proje-bilim") {
+            if (activeSort === "alpha") {
+                list.sort((a, b) => a.title.localeCompare(b.title, "tr"));
+            } else if (activeSort === "chrono") {
+                list.sort((a, b) => (a.year || 0) - (b.year || 0));
+            }
         }
 
         return list;
