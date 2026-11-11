@@ -19,7 +19,7 @@
 (function() {
     // 1. Durum Değişkenleri
     let currentSession = null;
-    let seedData = null;
+    let seedData = (typeof window !== "undefined" && window.TUBITAK_SEED_DATA) ? window.TUBITAK_SEED_DATA : null;
     let activeProjectId = "proje-tarih";
     let activeItemId = null;
     let activeFilter = "all";
@@ -50,6 +50,12 @@
         if (currentSession) {
             await syncProjectData(currentSession.projectId);
             startLivePolling();
+        }
+        if (typeof document !== "undefined") {
+            const mountedContainer = document.getElementById("tubitak-research-container");
+            if (mountedContainer) {
+                renderMainContainer(mountedContainer);
+            }
         }
     }
 
@@ -342,7 +348,7 @@
                             <span class="text-[10px] text-amber-400 lowercase font-medium">takım veya öğretmen parolası</span>
                         </label>
                         <div class="relative">
-                            <input type="password" id="login-password" placeholder="Örn: sivas2026, bilim2026, siyer2026 veya öğretmen parolası" required class="w-full px-4 py-3 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
+                            <input type="password" id="login-password" placeholder="Takım proje şifrenizi veya öğretmen parolanızı giriniz" required class="w-full px-4 py-3 bg-slate-800/90 border border-slate-700 focus:border-amber-400 rounded-2xl text-sm font-semibold text-white placeholder-slate-500 focus:outline-none transition-all shadow-inner">
                             <i class="fa-solid fa-lock absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
                         </div>
                     </div>

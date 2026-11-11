@@ -1,4 +1,4 @@
-const { getScientificVisual } = require('./scientific_visual_engine.js');
+const { getScientificVisual } = require('./_scientific_visual_engine.js');
 // Vercel Serverless Function: POST /api/generate-questions
 const CANDIDATE_MODELS = [
   "gemini-2.5-flash",

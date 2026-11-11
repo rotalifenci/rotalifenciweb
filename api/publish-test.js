@@ -3,7 +3,7 @@ const path = require('path');
 
 let generateTestCoverSvg;
 try {
-  generateTestCoverSvg = require('./cover-generator.js').generateTestCoverSvg;
+  generateTestCoverSvg = require('./_cover-generator.js').generateTestCoverSvg;
 } catch (e1) {
   try {
     generateTestCoverSvg = require('../scripts/cover-generator.js').generateTestCoverSvg;
@@ -12,7 +12,7 @@ try {
 
 let buildInteractiveTestHtml, generateSlug;
 try {
-  const tg = require('./test-generator.js');
+  const tg = require('./_test-generator.js');
   buildInteractiveTestHtml = tg.buildInteractiveTestHtml;
   generateSlug = tg.generateSlug;
 } catch (e1) {

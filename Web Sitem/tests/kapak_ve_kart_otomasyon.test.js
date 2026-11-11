@@ -2,7 +2,7 @@ const { describe, it } = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const { generateTestCoverSvg } = require('../api/cover-generator.js');
+const { generateTestCoverSvg } = require('../api/_cover-generator.js');
 
 describe('🎨 Soru Dokümanları Kapak ve Başlık Otomasyonu Test Paketi', () => {
 

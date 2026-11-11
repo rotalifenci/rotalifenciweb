@@ -1,4 +1,4 @@
-const { buildZKitapHtml } = require('./zkitap_engine.js');
+const { buildZKitapHtml } = require('./_zkitap_engine.js');
 
 /**
  * Rotalı Fenci - Yaprak Test & İnteraktif Sınav Oluşturucu Motoru

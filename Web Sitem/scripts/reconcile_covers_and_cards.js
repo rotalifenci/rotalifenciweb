@@ -9,7 +9,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { generateTestCoverSvg } = require('../api/cover-generator.js');
+const { generateTestCoverSvg } = require('../api/_cover-generator.js');
 
 const rootDir = path.resolve(__dirname, '..');
 const webMaterialsPath = path.join(rootDir, 'data', 'materials.json');

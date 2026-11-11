@@ -3199,7 +3199,7 @@ function handleRouteChange(options = {}) {
         } else if (hash === "stem-lab") {
             renderStemLabPage(appEl);
         } else if (hash === "projects" || hash === "tubitak" || hash.startsWith("projects/") || hash.startsWith("tubitak/")) {
-            renderProjectsPage(appEl);
+            renderProjectsPage(appEl, hash);
         } else if (hash === "dosyalar" || hash === "files" || hash === "file-manager") {
             window.location.hash = "home";
             renderHomePage(appEl);
@@ -3263,7 +3263,7 @@ function handleRouteChange(options = {}) {
 function updateActiveNav(hash) {
     document.querySelectorAll(".nav-link").forEach(link => {
         const href = link.getAttribute("href") ? link.getAttribute("href").replace("#", "") : "";
-        if (hash === href || (hash === "home" && href === "home") || (href.startsWith("grade/") && hash.startsWith(href))) {
+        if (hash === href || (hash === "home" && href === "home") || (href.startsWith("grade/") && hash.startsWith(href)) || (href === "tubitak" && hash.startsWith("tubitak")) || (href === "projects" && hash.startsWith("projects"))) {
             link.classList.add("text-brand-red", "bg-red-50/80");
             link.classList.remove("text-slate-700");
         } else {
@@ -3765,8 +3765,8 @@ function renderHomePage(container) {
                     </div>
                 </div>
 
-                <!-- ⚡ 2. HIZLI ERİŞİM HUB'LARI (YAZILI, STEM, PROJE, ÖĞRETMEN) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-14">
+                <!-- ⚡ 2. HIZLI ERİŞİM HUB'LARI (YAZILI, STEM, TÜBİTAK, PROJE, LGS) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-14">
                     <a href="#exams" class="p-5 bg-gradient-to-br from-rose-50 to-red-50 border border-rose-200/80 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
                         <div class="w-12 h-12 rounded-xl bg-red-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-red-600/20">
                             <i class="fa-solid fa-pen-to-square"></i>
@@ -3787,7 +3787,17 @@ function renderHomePage(container) {
                         </div>
                     </a>
 
-                    <a href="#projects" class="p-5 bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200/90 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
+                    <a href="#tubitak" class="p-5 bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100/70 border border-amber-300/90 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all sm:col-span-2 lg:col-span-1">
+                        <div class="w-12 h-12 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-amber-500/25">
+                            <i class="fa-solid fa-microscope"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-black text-slate-900">🔬 TÜBİTAK Merkezi</h4>
+                            <p class="text-xs text-slate-600 font-medium">Bilimsel Araştırma Portalı</p>
+                        </div>
+                    </a>
+
+                    <a href="#projects/codeweek" class="p-5 bg-gradient-to-br from-indigo-50 via-slate-50 to-blue-50 border border-indigo-200/90 rounded-2xl flex items-center gap-4 hover:shadow-md hover:scale-[1.02] transition-all">
                         <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center text-xl flex-shrink-0 shadow-md shadow-indigo-600/20">
                             <i class="fa-solid fa-laptop-code"></i>
                         </div>
@@ -8568,8 +8578,11 @@ window.projectFilterData = function() {
     };
 };
 
-function renderProjectsPage(container) {
+function renderProjectsPage(container, activeHash = "projects") {
     const isAdmin = localStorage.getItem("rotali_is_admin") === "true";
+    const initialTab = activeHash === "projects/codeweek"
+        ? "codeweek"
+        : (activeHash === "projects/guides" ? "guides" : "tubitak-research");
 
     container.innerHTML = `
         <div class="max-w-[1540px] mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 animate-in fade-in duration-300">
@@ -9105,11 +9118,15 @@ function renderProjectsPage(container) {
         </div>
     `;
 
-    // 🔬 TÜBİTAK Araştırma Merkezini Başlat
+    // 🔬 TÜBİTAK Araştırma Merkezini Başlat ve Doğrudan İlgili Sekmeyi Aç
     setTimeout(() => {
-        const tContainer = document.getElementById("tubitak-research-container");
-        if (tContainer && window.RotaliTubitak && typeof window.RotaliTubitak.renderMainContainer === "function") {
-            window.RotaliTubitak.renderMainContainer(tContainer);
+        if (typeof window.switchProjectCenterTab === "function") {
+            window.switchProjectCenterTab(initialTab);
+        } else {
+            const tContainer = document.getElementById("tubitak-research-container");
+            if (tContainer && window.RotaliTubitak && typeof window.RotaliTubitak.renderMainContainer === "function") {
+                window.RotaliTubitak.renderMainContainer(tContainer);
+            }
         }
     }, 50);
 

@@ -12,7 +12,7 @@ const {
   generateVisualBrief,
   checkVisualCompatibility,
   getHarmonizedVisual
-} = require('./visual_match_engine.js');
+} = require('./_visual_match_engine.js');
 
 function getScientificVisual(questionText, options = {}, currentVisual = '', correctAnswer = '') {
   return getHarmonizedVisual(questionText, options, correctAnswer, currentVisual);
