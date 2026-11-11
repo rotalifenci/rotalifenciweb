@@ -255,7 +255,12 @@
 
         const previousVal = stack.pop();
         const textarea = document.getElementById(`input-${criterionKey}`);
-        if (textarea) textarea.value = previousVal;
+        if (textarea) {
+            textarea.value = previousVal;
+            autoGrowTextarea(textarea);
+        }
+        const countEl = document.getElementById(`char-count-${criterionKey}`);
+        if (countEl) countEl.textContent = formatFieldStats(previousVal);
 
         queueAutoSave(criterionKey, previousVal);
         showNotice("Değişiklik geri alındı ↶", "success");
@@ -276,7 +281,12 @@
 
         const nextVal = stack.pop();
         const textarea = document.getElementById(`input-${criterionKey}`);
-        if (textarea) textarea.value = nextVal;
+        if (textarea) {
+            textarea.value = nextVal;
+            autoGrowTextarea(textarea);
+        }
+        const countEl = document.getElementById(`char-count-${criterionKey}`);
+        if (countEl) countEl.textContent = formatFieldStats(nextVal);
 
         queueAutoSave(criterionKey, nextVal);
         showNotice("Değişiklik yinelendi ↷", "success");
@@ -712,24 +722,25 @@
                         </div>
                     </div>
 
-                    <!-- Metin Yazım Alanı (Otomatik Kayıt Bağlantılı) -->
+                    <!-- Metin Yazım Alanı (Otomatik Kayıt Bağlantılı, Sınırsız & İsteğe Bağlı Büyütülebilir) -->
                     <textarea 
                         id="input-${crit.key}" 
                         rows="3" 
-                        placeholder="${escapeHtml(crit.placeholder || 'Araştırma bulgularınızı buraya yazınız...')}"
-                        oninput="window.RotaliTubitak.onFieldChange('${crit.key}', this.value)"
+                        style="resize: vertical; min-height: 96px;"
+                        placeholder="${escapeHtml(crit.placeholder || 'Araştırma bulgularınızı buraya yazınız (kelime sınırı yoktur)...')}"
+                        oninput="window.RotaliTubitak.onFieldChange('${crit.key}', this.value, this)"
                         onblur="window.RotaliTubitak.onFieldBlur('${crit.key}', this.value)"
-                        class="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none transition-all leading-relaxed custom-scrollbar"
+                        class="tubitak-criterion-textarea resize-y w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-800 placeholder-slate-400 focus:outline-none transition-colors leading-relaxed custom-scrollbar"
                     >${escapeHtml(contentVal)}</textarea>
 
-                    <!-- Alt Bilgi: Sürüm, Son Düzenleyen & Karakter Sayısı -->
+                    <!-- Alt Bilgi: Sürüm, Son Düzenleyen & Sınırsız Karakter/Kelime Sayısı -->
                     <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-1">
                         <span class="flex items-center gap-1">
                             <i class="fa-solid fa-code-commit text-amber-500"></i>
                             <span>Sürüm v${version}</span>
                             <span>• ${escapeHtml(lastEditor)}</span>
                         </span>
-                        <span id="char-count-${crit.key}">${contentVal.length} karakter</span>
+                        <span id="char-count-${crit.key}">${formatFieldStats(contentVal)}</span>
                     </div>
                 </div>
                 `;
@@ -1138,8 +1149,26 @@
     }
 
     // 11. Olay Dinleyicileri ve Dışa Aktarılan Arayüz (window.RotaliTubitak)
+    function formatFieldStats(val) {
+        const text = String(val || "");
+        const trimmed = text.trim();
+        const wordCount = trimmed ? trimmed.split(/\s+/).length : 0;
+        return `${wordCount} kelime • ${text.length} karakter • Kelime sınırı yok`;
+    }
+
+    function autoGrowTextarea(el) {
+        if (!el) return;
+        if (el.scrollHeight > el.clientHeight) {
+            el.style.height = el.scrollHeight + "px";
+        }
+    }
+
     function bindLoginEvents() {}
-    function bindWorkspaceEvents() {}
+    function bindWorkspaceEvents() {
+        document.querySelectorAll(".tubitak-criterion-textarea").forEach(el => {
+            autoGrowTextarea(el);
+        });
+    }
 
     function escapeHtml(str) {
         if (!str) return "";
@@ -1260,9 +1289,10 @@
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
-        onFieldChange(criterionKey, val) {
+        onFieldChange(criterionKey, val, el) {
+            if (el) autoGrowTextarea(el);
             const countEl = document.getElementById(`char-count-${criterionKey}`);
-            if (countEl) countEl.textContent = `${val.length} karakter`;
+            if (countEl) countEl.textContent = formatFieldStats(val);
             queueAutoSave(criterionKey, val);
         },
 

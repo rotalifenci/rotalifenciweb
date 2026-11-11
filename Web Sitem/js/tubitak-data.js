@@ -10,51 +10,111 @@ window.TUBITAK_SEED_DATA = {
       "color": "from-amber-600 via-orange-600 to-amber-700",
       "criteriaList": [
         {
-          "key": "c1_location",
-          "title": "1. Eserin Adı ve Bulunduğu Yer",
-          "placeholder": "Eserin tam bilimsel adı, il/ilçe, mahalle ve coğrafi konumu...",
+          "key": "c1_yapi_adi",
+          "title": "1. Tarihi Yapının Adı",
+          "placeholder": "Tarihî yapının tam ve resmî adını yazınız...",
           "required": true
         },
         {
-          "key": "c2_date_period",
-          "title": "2. İnşa Tarihi ve Tarihsel Dönemi",
-          "placeholder": "Hicri ve miladi inşa yılı, ait olduğu devlet/dönem...",
+          "key": "c2_yapim_yili",
+          "title": "2. Yapım Yılı",
+          "placeholder": "Hicri ve miladi yapım yılını/yüzyılını yazınız...",
           "required": true
         },
         {
-          "key": "c3_builder_purpose",
-          "title": "3. Banisi ve Yapılış Amacı",
-          "placeholder": "Eseri kim, hangi vakıf geliri ve amaçla yaptırdı? Mimarı kimdir?...",
+          "key": "c3_medeniyet",
+          "title": "3. Medeniyet",
+          "placeholder": "Yapının ait olduğu devlet, beylik veya medeniyeti yazınız...",
           "required": true
         },
         {
-          "key": "c4_architecture",
-          "title": "4. Mimari ve Sanatsal Özellikleri",
-          "placeholder": "Plan tipi, kullanılan taş/malzeme, taçkapı, süslemeler, kubbe/tonoz detayları...",
+          "key": "c4_konumu",
+          "title": "4. Konumu",
+          "placeholder": "İl, ilçe, mahalle/köy ve coğrafi konum bilgilerini yazınız...",
           "required": true
         },
         {
-          "key": "c5_inscription",
-          "title": "5. Kitabe Bilgileri",
-          "placeholder": "Taçkapı, minare veya çeşme kitabesinin transkripsiyonu ve anlamı...",
+          "key": "c5_yaptiran",
+          "title": "5. Yaptıran",
+          "placeholder": "Eseri yaptıran bani, vakıf veya kurumu yazınız...",
           "required": false
         },
         {
-          "key": "c6_historical_changes",
-          "title": "6. Tarihsel Süreçte Geçirdiği Değişimler",
-          "placeholder": "Geçirdiği yangın, deprem, yıkım ve bilimsel restorasyonlar...",
+          "key": "c6_mimar",
+          "title": "6. Mimar",
+          "placeholder": "Biliniyorsa yapının mimarı / başustası hakkında bilgileri yazınız...",
           "required": false
         },
         {
-          "key": "c7_comparative_history",
-          "title": "7. Karşılaştırmalı Tarih Araştırması",
-          "placeholder": "Dönemin diğer eserleriyle benzerlik ve ayrışan yönleri...",
+          "key": "c7_mimari_tarz",
+          "title": "7. Mimari Tarz",
+          "placeholder": "Mimari üslup, dönem özellikleri ve sanatsal tarzını açıklayınız...",
           "required": false
         },
         {
-          "key": "c8_sources",
-          "title": "8. Kaynakça ve Belgeler",
-          "placeholder": "İncelenen akademik kitaplar, makaleler, arşiv belgeleri ve arşiv fotoğrafları...",
+          "key": "c8_yapilis_amaci",
+          "title": "8. Yapılış Amacı",
+          "placeholder": "İbadet, eğitim, sağlık, savunma, ticaret veya konut gibi yapılış amacını açıklayınız...",
+          "required": false
+        },
+        {
+          "key": "c9_toplumsal_kulturel_onemi",
+          "title": "9. Toplumsal ve Kültürel Önemi",
+          "placeholder": "Kentin tarihî hafızası, toplum yaşamı ve kültür mirası içindeki yerini ayrıntılı açıklayınız...",
+          "required": false
+        },
+        {
+          "key": "c10_yapim_malzemesi",
+          "title": "10. Yapım Malzemesi",
+          "placeholder": "Kesme taş, moloz taş, tuğla, ahşap, mermer, çini vb. kullanılan malzemeleri yazınız...",
+          "required": false
+        },
+        {
+          "key": "c11_plan",
+          "title": "11. Plan",
+          "placeholder": "Yapının plan şeması, kat/eyvan/avlu düzeni ve mekânsal kurgusunu açıklayınız...",
+          "required": false
+        },
+        {
+          "key": "c12_kulturel_miras_statusu",
+          "title": "12. Kültürel Miras Statüsü",
+          "placeholder": "UNESCO, ulusal veya yerel kültürel miras kapsamındaki statüsünü yazınız...",
+          "required": false
+        },
+        {
+          "key": "c13_tarihsel_degisiklikler",
+          "title": "13. Tarihsel Süreçte Geçirdiği Değişiklikler",
+          "placeholder": "Yangın, deprem, ekleme, yıkım, işlev değişimi gibi tarihsel süreçteki değişimleri açıklayınız...",
+          "required": false
+        },
+        {
+          "key": "c14_restorasyon",
+          "title": "14. Restorasyon",
+          "placeholder": "Yapıya uygulanan onarım ve bilimsel restorasyon çalışmalarını tarihleriyle yazınız...",
+          "required": false
+        },
+        {
+          "key": "c15_kulturel_miras_tescil",
+          "title": "15. Kültürel Miras Statüsü ve Tescil Durumu",
+          "placeholder": "Koruma kurulu tescil kararı, koruma grubu ve güncel tescil bilgilerini yazınız...",
+          "required": false
+        },
+        {
+          "key": "c16_benzer_ortak_ozellikler",
+          "title": "16. Benzer Tarihî Yapılarla Ortak Özellikleri",
+          "placeholder": "Aynı dönem veya türdeki diğer tarihî yapılarla ortak yönlerini karşılaştırarak yazınız...",
+          "required": false
+        },
+        {
+          "key": "c17_benzer_farkli_ozellikler",
+          "title": "17. Benzer Tarihî Yapılardan Farklı Özellikleri",
+          "placeholder": "Yapıyı benzerlerinden ayıran özgün mimari, sanatsal veya tarihsel yönlerini yazınız...",
+          "required": false
+        },
+        {
+          "key": "c18_kaynak",
+          "title": "18. KAYNAK",
+          "placeholder": "Yararlanılan kitap, makale, arşiv belgesi, resmî kurum kaydı ve bağlantıları yazınız...",
           "required": true
         }
       ],

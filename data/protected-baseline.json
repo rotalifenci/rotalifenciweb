@@ -68,6 +68,7 @@
     "data/tubitak-seed-data.json",
     "api/sync.js",
     "api/publish-test.js",
+    "api/tubitak-records.js",
     "js/app.js",
     "js/tubitak-data.js",
     "js/tubitak-research.js",

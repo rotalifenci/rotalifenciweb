@@ -200,4 +200,13 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.equal(p1Items[0].title, "Divriği Ulu Camii ve Darüşşifası");
   assert.equal(p1Items[1].title, "Çifte Minareli Medrese");
   assert.equal(p1Items[39].title, "Halil Rıfat Paşa Köprüsü");
+
+  const p1Criteria = seedJson.projects["proje-tarih"].criteriaList;
+  assert.equal(p1Criteria.length, 18, "TÜBİTAK Proje 1 kriter listesinde tam 18 kriter bulunmalı");
+  assert.equal(p1Criteria[0].title, "1. Tarihi Yapının Adı");
+  assert.equal(p1Criteria[17].title, "18. KAYNAK");
+  assert.ok(tubitakJs.includes("resize-y") && tubitakJs.includes("autoGrowTextarea") && tubitakJs.includes("Kelime sınırı yok"));
+
+  const tubitakRecJs = fs.readFileSync(path.join(webDir, "api", "tubitak-records.js"), "utf8");
+  assert.equal(tubitakRecJs.includes(".substring(0, 5000)"), false, "Kayıt revizyonlarında karakter kesmesi olmamalı");
 });
