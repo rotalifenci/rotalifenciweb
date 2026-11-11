@@ -1,15 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { buildZKitapHtml, escapeHtml, formatQuestionStem } = require('./zkitap_engine.js');
-
-// Logo data loader
-let LOGO_SRC = '/assets/rotali-fenci-logo.jpg';
-try {
-  const logoPath = path.join(__dirname, '..', 'assets', 'rotali-fenci-logo.jpg');
-  if (fs.existsSync(logoPath)) {
-    LOGO_SRC = 'data:image/jpeg;base64,' + fs.readFileSync(logoPath).toString('base64');
-  }
-} catch (e) {}
+const { buildZKitapHtml } = require('./zkitap_engine.js');
+const { getScientificVisual } = require('./scientific_visual_engine.js');
 
 function unescapeHtml(str) {
   return String(str || '')
@@ -21,133 +13,125 @@ function unescapeHtml(str) {
     .replace(/&#39;/g, "'");
 }
 
+function fixYukariToYanda(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/Yukarıdaki/g, 'Yandaki')
+    .replace(/yukarıdaki/g, 'yandaki')
+    .replace(/Yukarıdakilerden/g, 'Yandakilerden')
+    .replace(/yukarıdakilerden/g, 'yandakilerden')
+    .replace(/Yukarıdakiler/g, 'Yandakiler')
+    .replace(/yukarıdakiler/g, 'yandakiler')
+    .replace(/Yukarıdan/g, 'Yandan')
+    .replace(/yukarıdan/g, 'yandan')
+    .replace(/Yukarıda\b/g, 'Yanda')
+    .replace(/yukarıda\b/g, 'yanda');
+}
+
 function parseQuestionsFromHtml(html) {
-  const questions = [];
+  // 1. Direct JSON from rawQuestions script tag if available
+  const rawQMatch = html.match(/const rawQuestions = (\[[\s\S]*?\]);/);
+  if (rawQMatch) {
+    try {
+      const parsed = JSON.parse(rawQMatch[1]);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed.map((p, idx) => {
+          let options = p.options || null;
+          let visualSvg = p.visual_svg || '';
 
-  // 1. Check legacy question-block format
-  if (html.includes('<div class="question-block"')) {
-    const parts = html.split('<div class="question-block"');
-    for (let i = 1; i < parts.length; i++) {
-      const part = parts[i];
-      const attrEnd = part.indexOf('>');
-      const attrStr = part.substring(0, attrEnd);
-      const innerHtml = part.substring(attrEnd + 1);
-
-      const qidMatch = attrStr.match(/data-qid="([^"]*)"/);
-      const typeMatch = attrStr.match(/data-type="([^"]*)"/);
-      const correctMatch = attrStr.match(/data-correct="([^"]*)"/);
-      const explMatch = attrStr.match(/data-explanation="([^"]*)"/);
-
-      const qid = qidMatch ? qidMatch[1] : (questions.length + 1);
-      const type = typeMatch ? typeMatch[1] : 'multiple_choice';
-      const correct = correctMatch ? unescapeHtml(correctMatch[1]) : '';
-      const explanation = explMatch ? unescapeHtml(explMatch[1]) : '';
-
-      let visualSvg = '';
-      const visualMatch = innerHtml.match(/<div class="question-visual-box">([\s\S]*?)<\/div>/);
-      if (visualMatch) visualSvg = visualMatch[1].trim();
-
-      let questionText = '';
-      const textMatch = innerHtml.match(/<div class="q-text">([\s\S]*?)<\/div>/);
-      if (textMatch) questionText = unescapeHtml(textMatch[1].trim());
-
-      let options = null;
-      if (type === 'multiple_choice') {
-        options = {};
-        const optRegex = /<label class="opt-label"[^>]*data-opt="([ABCD])"[^>]*>[\s\S]*?<span class="opt-text">([\s\S]*?)<\/span>/g;
-        let optMatch;
-        while ((optMatch = optRegex.exec(innerHtml)) !== null) {
-          options[optMatch[1]] = unescapeHtml(optMatch[2].trim());
-        }
-        if (Object.keys(options).length === 0) {
-          const altOptRegex = /<span class="opt-circle">([ABCD])<\/span>\s*<span class="opt-text">([\s\S]*?)<\/span>/g;
-          while ((optMatch = altOptRegex.exec(innerHtml)) !== null) {
-            options[optMatch[1]] = unescapeHtml(optMatch[2].trim());
+          // If options missing in JSON, extract from slide
+          if (!options && (p.type === 'multiple_choice' || !p.type)) {
+            const slideRegex = new RegExp(`<section[^>]*id="rf-slide-${idx}"[\\s\\S]*?<\\/section>|<section[^>]*id="zk-slide-${idx}"[\\s\\S]*?<\\/section>`);
+            const sMatch = html.match(slideRegex);
+            if (sMatch) {
+              const sHtml = sMatch[0];
+              const optRegex = /data-opt="([ABCD])"[\s\S]*?<div class="rf-opt-text">([\s\S]*?)<\/div>|data-opt="([ABCD])"[\s\S]*?<span class="zk-opt-text">([\s\S]*?)<\/span>/g;
+              let om;
+              const extractedOpts = {};
+              while ((om = optRegex.exec(sHtml)) !== null) {
+                const letter = om[1] || om[3];
+                const text = om[2] || om[4];
+                if (letter && text) extractedOpts[letter] = unescapeHtml(text.trim());
+              }
+              if (Object.keys(extractedOpts).length >= 2) {
+                options = extractedOpts;
+              }
+            }
           }
-        }
-      }
 
-      questions.push({
-        id: parseInt(qid, 10) || (questions.length + 1),
-        type,
-        question: questionText,
-        options,
-        correct_answer: correct,
-        explanation,
-        visual_svg: visualSvg
-      });
-    }
+          // Extract visualSvg if missing
+          if (!visualSvg) {
+            const slideRegex = new RegExp(`<section[^>]*id="rf-slide-${idx}"[\\s\\S]*?<\\/section>|<section[^>]*id="zk-slide-${idx}"[\\s\\S]*?<\\/section>`);
+            const sMatch = html.match(slideRegex);
+            if (sMatch) {
+              const vMatch = sMatch[0].match(/<div class="rf-visual-box">([\s\S]*?)<\/div>|<div class="zk-visual-container">([\s\S]*?)<\/div>/);
+              if (vMatch) visualSvg = (vMatch[1] || vMatch[2]).trim();
+            }
+          }
+
+          return {
+            id: p.id || (idx + 1),
+            type: options ? 'multiple_choice' : (p.type || 'open_ended'),
+            question: fixYukariToYanda(p.question || `Soru ${idx + 1}`),
+            options: options,
+            correct_answer: p.correct || p.correct_answer || '',
+            explanation: fixYukariToYanda(p.explanation || ''),
+            visual_svg: visualSvg
+          };
+        });
+      }
+    } catch(e) {}
   }
 
-  // 2. Check previous yp-space-slide-section format
-  if (questions.length === 0 && html.includes('yp-space-slide-section')) {
-    const slideParts = html.split(/<section[^>]+class=["'][^"']*yp-space-slide-section/);
-    for (let i = 1; i < slideParts.length; i++) {
-      const sPart = slideParts[i];
-      const qNum = i;
+  const questions = [];
 
+  // 2. Check rf-question-slide format
+  if (html.includes('rf-question-slide')) {
+    const rfParts = html.split(/<section[^>]+class=["'][^"']*rf-question-slide/);
+    for (let i = 1; i < rfParts.length; i++) {
+      const part = rfParts[i];
       let qText = '';
-      const cardMatch = sPart.match(/<div class="yp-neon-card[^"]*">([\s\S]*?)<\/div>/);
-      if (cardMatch) {
-        qText = unescapeHtml(cardMatch[1].replace(/<strong>Soru\s*\d+:<\/strong>/i, '').trim());
-        for (let k = 0; k < 4; k++) qText = qText.replace(/<\/?div[^>]*>/gi, '').trim();
-      }
+      const textMatch = part.match(/<div class="rf-stem-text">([\s\S]*?)<\/div>/);
+      if (textMatch) qText = fixYukariToYanda(unescapeHtml(textMatch[1].trim()));
 
       let visualSvg = '';
-      const vMatch = sPart.match(/<div class="yp-space-visual-frame">([\s\S]*?)<\/div>/);
+      const vMatch = part.match(/<div class="rf-visual-box">([\s\S]*?)<\/div>/);
       if (vMatch) visualSvg = vMatch[1].trim();
-
-      let correctAns = '';
-      let expl = '';
-      const goldenMatch = sPart.match(/<div class="yp-golden-rule-content">[\s\S]*?<span>(?:Do[ğg]ru Cevap|Cevap):\s*(.*?)\s*(?:—|–|-)\s*([\s\S]*?)<\/span>/i) ||
-                          sPart.match(/<div class="yp-golden-rule-content">[\s\S]*?<span>([\s\S]*?)<\/span>/i);
-      if (goldenMatch) {
-        if (goldenMatch[2] !== undefined) {
-          correctAns = unescapeHtml(goldenMatch[1].trim());
-          expl = unescapeHtml(goldenMatch[2].trim());
-        } else {
-          correctAns = unescapeHtml(goldenMatch[1].trim());
-        }
-      }
 
       let options = null;
       let type = 'short_answer';
-      if (sPart.includes('slide-options-grid')) {
+      if (part.includes('rf-options-list')) {
         type = 'multiple_choice';
         options = {};
-        const optRegex = /<div class="slide-opt-card[^"]*"[^>]*data-opt="([ABCD])"[^>]*>[\s\S]*?<span class="slide-opt-text">([\s\S]*?)<\/span>/g;
-        let optM;
-        while ((optM = optRegex.exec(sPart)) !== null) {
-          options[optM[1]] = unescapeHtml(optM[2].trim());
+        const optRegex = /<div class="rf-option-card[^"]*"[^>]*data-opt="([ABCD])"[^>]*>[\s\S]*?<div class="rf-opt-text">([\s\S]*?)<\/div>/g;
+        let om;
+        while ((om = optRegex.exec(part)) !== null) {
+          options[om[1]] = unescapeHtml(om[2].trim());
         }
-      } else if (sPart.includes('slide-open-ended-box')) {
+      } else if (part.includes('rf-open-textarea')) {
         type = 'open_ended';
       }
 
       questions.push({
-        id: qNum,
+        id: i,
         type,
         question: qText,
         options,
-        correct_answer: correctAns,
-        explanation: expl,
+        correct_answer: '',
+        explanation: '',
         visual_svg: visualSvg
       });
     }
   }
 
-  // 3. Check zk-slide-section format (Z-Kitap)
+  // 3. Check zk-slide-section format
   if (questions.length === 0 && html.includes('zk-slide-section')) {
     const zkParts = html.split(/<section[^>]+class=["'][^"']*zk-slide-section/);
     for (let i = 1; i < zkParts.length; i++) {
       const zPart = zkParts[i];
-      const qNum = i;
-
       let qText = '';
       const stemMatch = zPart.match(/<div class="zk-question-stem[^"]*">([\s\S]*?)<\/div>/);
-      if (stemMatch) {
-        qText = unescapeHtml(stemMatch[1].replace(/<strong>\s*\d+\.\s*<\/strong>/i, '').trim());
-      }
+      if (stemMatch) qText = fixYukariToYanda(unescapeHtml(stemMatch[1].replace(/<strong>\s*\d+\.\s*<\/strong>/i, '').trim()));
 
       let visualSvg = '';
       const vMatch = zPart.match(/<div class="zk-visual-container">([\s\S]*?)<\/div>/);
@@ -158,7 +142,7 @@ function parseQuestionsFromHtml(html) {
       const cMatch = zPart.match(/<span class="zk-correct-val">([\s\S]*?)<\/span>/i);
       if (cMatch) correctAns = unescapeHtml(cMatch[1].trim());
       const eMatch = zPart.match(/<p class="zk-expl-text">([\s\S]*?)<\/p>/i);
-      if (eMatch) expl = unescapeHtml(eMatch[1].trim());
+      if (eMatch) expl = fixYukariToYanda(unescapeHtml(eMatch[1].trim()));
 
       let options = null;
       let type = 'short_answer';
@@ -175,7 +159,7 @@ function parseQuestionsFromHtml(html) {
       }
 
       questions.push({
-        id: qNum,
+        id: i,
         type,
         question: qText,
         options,
@@ -189,7 +173,6 @@ function parseQuestionsFromHtml(html) {
   return questions;
 }
 
-// Unit name mappings for clean Maarif display
 function detectGradeAndUnit(fileName, html) {
   let grade = "5";
   let unit = "1. Ünite: Gökyüzündeki Komşularımız ve Biz";
@@ -200,28 +183,22 @@ function detectGradeAndUnit(fileName, html) {
   } else if (fileName.startsWith('7-sinif') || html.includes('7. SINIF') || html.includes('7. Sınıf')) {
     grade = "7";
     unit = "1. Ünite: Uzay Çağı";
-  }
-
-  // Check specific unit mentions
-  if (fileName.includes('2-unite') || html.includes('2. ÜNİTE')) {
-    if (grade === "5") unit = "2. Ünite: Kuvveti Tanıyalım";
-    if (grade === "6") unit = "2. Ünite: Kuvvetin Etkisinde Hareket";
-    if (grade === "7") unit = "2. Ünite: Kuvvet ve Enerjiyi Keşfedelim";
+  } else if (fileName.startsWith('8-sinif') || html.includes('8. SINIF') || html.includes('8. Sınıf') || fileName.includes('lgs')) {
+    grade = "8";
+    unit = "1. Ünite: Mevsimler ve İklim";
   }
 
   return { grade, unit };
 }
 
 function detectTitle(fileName, html) {
-  const titleMatch = html.match(/<title>([\s\S]*?)<\/title>/i);
-  if (titleMatch) {
-    let t = titleMatch[1].replace(/- Rotalı Fenci.*$/i, '').trim();
-    if (t) return t;
+  const m = html.match(/<title>([\s\S]*?)<\/title>/i);
+  if (m) {
+    return unescapeHtml(m[1].replace(/\s*[-|•]\s*Rotalı Fenci.*$/i, '').trim());
   }
   return path.basename(fileName, '.html').replace(/-/g, ' ');
 }
 
-// Rebuild ALL test files in testler/
 function rebuildAllTests() {
   const targetDirs = ['testler', '../testler'];
   let count = 0;
@@ -236,6 +213,10 @@ function rebuildAllTests() {
       try {
         const rawHtml = fs.readFileSync(fullPath, 'utf8');
         const questions = parseQuestionsFromHtml(rawHtml);
+        questions.forEach(q => {
+          q.question = fixYukariToYanda(q.question);
+          q.visual_svg = getScientificVisual(q.question, q.options, q.visual_svg);
+        });
 
         if (questions.length === 0) {
           console.warn(`⚠️ No questions parsed in ${f}, skipping.`);
@@ -250,12 +231,11 @@ function rebuildAllTests() {
           grade,
           unit,
           subject: 'Fen Bilimleri',
-          questions,
-          logoSrc: LOGO_SRC
+          questions
         });
 
         fs.writeFileSync(fullPath, newHtml, 'utf8');
-        console.log(`✅ [${grade}. Sınıf • ${questions.length} Soru] Rebuilt in Z-Kitap Mode: ${f}`);
+        console.log(`✅ [${grade}. Sınıf • ${questions.length} Soru • ${questions.length * 2} Dk] Rebuilt in Reference Mode: ${f}`);
         count++;
       } catch (err) {
         console.error(`❌ Error rebuilding ${f}:`, err.message);
@@ -263,13 +243,7 @@ function rebuildAllTests() {
     });
   });
 
-  console.log(`\n🎉 Rebuild complete! Upgraded ${count} test files to Z-Kitap Soru Gösterim Modu.`);
+  console.log(`\n🎉 Rebuild complete! Upgraded ${count} test files to Enhanced Layout & Yandaki Nomenclature.`);
 }
 
 rebuildAllTests();
-
-module.exports = {
-  buildZKitapHtml,
-  parseQuestionsFromHtml,
-  rebuildAllTests
-};

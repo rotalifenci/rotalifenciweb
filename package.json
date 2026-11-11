@@ -1,10 +1,11 @@
 {
-  "name": "rotalifenci",
-  "version": "2.0.0",
+  "name": "rotali-fenci-web-sitem",
+  "version": "1.1.0",
   "private": true,
-  "description": "Rotalı Fenci - Ortaokul Fen Bilimleri ve LGS Eğitim Platformu",
   "scripts": {
-    "yayinla": "node Web Sitem/scripts/yayinla.js",
-    "test": "node --test tests/soru_hazirlama_module.test.js"
+    "yayinla": "node \"Web Sitem/scripts/yayinla.js\"",
+    "guard": "node scripts/pre_deploy_guard.js",
+    "test:protection": "node --test \"Web Sitem/tests/content_protection.test.js\"",
+    "test": "node --test \"Web Sitem/tests/content_protection.test.js\" \"Web Sitem/tests/soru_hazirlama_module.test.js\" \"Web Sitem/tests/kapak_ve_kart_otomasyon.test.js\" \"Web Sitem/tests/soru_gorsel_uyum.test.js\" \"Web Sitem/tests/coklu_uretim_ve_yayinlama.test.js\" && node \"Web Sitem/tests/test_tubitak_system.js\" && node scripts/pre_deploy_guard.js"
   }
 }

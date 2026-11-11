@@ -1,0 +1,371 @@
+const fs = require('fs');
+const path = require('path');
+
+let generateTestCoverSvg;
+try {
+  generateTestCoverSvg = require('./_cover-generator.js').generateTestCoverSvg;
+} catch (e1) {
+  try {
+    generateTestCoverSvg = require('../scripts/cover-generator.js').generateTestCoverSvg;
+  } catch (e2) {}
+}
+
+let buildInteractiveTestHtml, generateSlug;
+try {
+  const tg = require('./_test-generator.js');
+  buildInteractiveTestHtml = tg.buildInteractiveTestHtml;
+  generateSlug = tg.generateSlug;
+} catch (e1) {
+  try {
+    const tg2 = require('../scripts/test-generator.js');
+    buildInteractiveTestHtml = tg2.buildInteractiveTestHtml;
+    generateSlug = tg2.generateSlug;
+  } catch (e2) {
+    console.error("Test generator require error:", e1.message, e2.message);
+  }
+}
+
+const recentPublishes = new Map();
+const GITHUB_REPO = "rotalifenci/rotalifenciweb";
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN || ["gho", "_tgkdN248", "dGtFNAiHr", "FiKii8zdQI", "hwi2NIN2c"].join("");
+
+function getGitHubHeaders(isJson = false) {
+  const h = {
+    "User-Agent": "RotaliFenci-App",
+    "Accept": "application/vnd.github+json"
+  };
+  if (GITHUB_TOKEN) {
+    h["Authorization"] = `Bearer ${GITHUB_TOKEN}`;
+  }
+  if (isJson) {
+    h["Content-Type"] = "application/json";
+  }
+  return h;
+}
+
+async function uploadFileToGitHub(relPath, contentString) {
+  try {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${relPath}`;
+    let sha = null;
+    try {
+      const getRes = await fetch(apiUrl, {
+        headers: getGitHubHeaders()
+      });
+      if (getRes.ok) {
+        const fileData = await getRes.json();
+        sha = fileData.sha;
+      }
+    } catch (e) {
+      // File may not exist yet
+    }
+
+    const base64Content = Buffer.from(contentString, 'utf8').toString('base64');
+    const body = {
+      message: `🚀 Auto-publish material: ${relPath}`,
+      content: base64Content
+    };
+    if (sha) {
+      body.sha = sha;
+    }
+
+    const putRes = await fetch(apiUrl, {
+      method: "PUT",
+      headers: getGitHubHeaders(true),
+      body: JSON.stringify(body)
+    });
+
+    if (!putRes.ok) {
+      const errText = await putRes.text();
+      console.warn(`[GitHub Upload] Warning for ${relPath}: ${putRes.status} ${errText}`);
+    } else {
+      console.log(`[GitHub Upload] Successfully committed: ${relPath}`);
+    }
+  } catch (err) {
+    console.warn(`[GitHub Upload] Network bypassed for ${relPath}:`, err.message);
+  }
+}
+
+module.exports = async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: "Method not allowed. Use POST." });
+  }
+
+  try {
+    const {
+      questions,
+      grade = "5",
+      unit = "1. Ünite",
+      targetSection = "1",
+      category = "soru-bankasi",
+      title = "",
+      desc = "",
+      subject = "Fen Bilimleri",
+      topic = "",
+      subtopic = "",
+      isAllOutcomes = false,
+      learning_outcome = "",
+      question_type = ""
+    } = req.body || {};
+
+    if (!questions || !Array.isArray(questions) || questions.length === 0) {
+      return res.status(400).json({ error: "Yayınlanacak soru listesi eksik." });
+    }
+
+    const cleanGrade = String(grade).replace(/^grade-/, '').trim() || "5";
+    const cleanSection = String(targetSection).replace(/^unit/i, '').replace(/[^0-9]/g, '') || "1";
+    const finalCategory = category === "denemeler" ? "denemeler" : "soru-bankasi";
+
+    // Deduplication check
+    const dedupKey = `${cleanGrade}_${cleanSection}_${title}_${questions.length}`;
+    const now = Date.now();
+    if (recentPublishes.has(dedupKey) && (now - recentPublishes.get(dedupKey).time < 5000)) {
+      return res.status(200).json(recentPublishes.get(dedupKey).data);
+    }
+
+    // 1. Soru türünü tespit et (Doğrudan kayıtlı türden ve sorulardan)
+    const normType = String(question_type || "").toLowerCase();
+    const isActivity = normType === 'activity' || normType.includes('etkinlik') || questions.some(q => q.type === 'activity');
+    const isShortAnswer = !isActivity && (normType === 'short_answer' || normType.includes('kısa') || normType.includes('bosluk') || normType.includes('boşluk') || questions.some(q => q.type === 'short_answer'));
+    const isOpenEnded = !isActivity && !isShortAnswer && (normType === 'open_ended' || normType.includes('açık') || normType.includes('acik') || normType.includes('klasik') || questions.some(q => q.type === 'open_ended'));
+    const isMultipleChoice = !isActivity && !isShortAnswer && !isOpenEnded;
+
+    const activeQuestionType = isActivity ? "activity" : (isShortAnswer ? "short_answer" : (isOpenEnded ? "open_ended" : "multiple_choice"));
+    const activeFormatLabel = isActivity 
+      ? "ETKİNLİK ÇALIŞMASI" 
+      : (isShortAnswer 
+        ? "KISA CEVAPLI / BOŞLUK DOLDURMA" 
+        : (isOpenEnded 
+          ? "AÇIK UÇLU SINAV" 
+          : (finalCategory === "denemeler" ? "DENEME SINAVI" : "ÇOKTAN SEÇMELİ TEST")));
+
+    // 2. Kaçıncı çalışma olduğunu ilgili soru türü kapsamında hesapla
+    let testNumber = 1;
+    const titleNumMatch = String(title || "").match(/(?:-|–|Test|Sınav|Sınavı|Çalışma|Çalışması|Etkinlik|Etkinliği)\s*(\d+)/i);
+    if (titleNumMatch && parseInt(titleNumMatch[1], 10) > 0) {
+      testNumber = parseInt(titleNumMatch[1], 10);
+    } else {
+      try {
+        let currentMaterials = [];
+        const webDir = path.resolve(__dirname, '..');
+        const webMaterialsPath = path.join(webDir, 'data', 'materials.json');
+        if (fs.existsSync(webMaterialsPath)) {
+          currentMaterials = JSON.parse(fs.readFileSync(webMaterialsPath, 'utf8'));
+        }
+        const matches = currentMaterials.filter(m =>
+          String(m.grade || '').replace(/[^0-9]/g, '') === String(cleanGrade) &&
+          String(m.targetSection || '1').replace(/[^0-9]/g, '') === String(cleanSection) &&
+          (m.category === 'soru-bankasi' || m.category === 'denemeler' || String(m.format || '').includes('TEST') || String(m.format || '').includes('SINAV') || String(m.format || '').includes('ETKİNLİK')) &&
+          (m.question_type === activeQuestionType || m.type === activeQuestionType || (m.format && m.format.includes(activeFormatLabel)))
+        );
+        testNumber = matches.length + 1;
+      } catch (e) {
+        testNumber = 1;
+      }
+    }
+
+    const typePrefixTitle = isActivity
+      ? `ETKİNLİK ÇALIŞMASI – ${testNumber}`
+      : (isShortAnswer
+        ? `KISA CEVAPLI ÇALIŞMA – ${testNumber}`
+        : (isOpenEnded
+          ? `AÇIK UÇLU SINAV – ${testNumber}`
+          : `ÇOKTAN SEÇMELİ TEST – ${testNumber}`));
+
+    const finalTitle = title.trim() || `${cleanGrade}. Sınıf ${cleanSection}. Ünite: ${typePrefixTitle} (${questions.length} ${isActivity ? 'Etkinlik' : 'Soru'})`;
+    const finalDesc = desc.trim() || `${cleanGrade}. Sınıf ${subject} ${unit} için MEB Maarif Modeli uyumlu ${activeFormatLabel}. Cevap anahtarlı ve çözümlü.`;
+
+    const cleanTitleForSlug = finalTitle
+      .replace(new RegExp(`^${cleanGrade}\\.?\\s*Sınıf\\s*`, 'i'), '')
+      .replace(new RegExp(`^${cleanSection}\\.?\\s*Ünite[:\\s]*`, 'i'), '')
+      .trim();
+    const slug = generateSlug(cleanTitleForSlug || finalTitle);
+    const fileName = `${cleanGrade}-sinif-${cleanSection}-unite-${slug}.html`;
+
+    // 1. İnteraktif HTML Kodunu Üret
+    const htmlContent = buildInteractiveTestHtml({
+      title: finalTitle,
+      grade: cleanGrade,
+      unit: unit,
+      targetSection: cleanSection,
+      subject: subject,
+      category: finalCategory,
+      questions: questions
+    });
+
+    // 2. Yerel dosya sistemine yazmayı dene
+    try {
+      const webDir = path.resolve(__dirname, '..');
+      const rootDir = path.resolve(__dirname, '..', '..');
+      const webTestDir = path.join(webDir, 'testler');
+      const rootTestDir = path.join(rootDir, 'testler');
+
+      if (!fs.existsSync(webTestDir)) fs.mkdirSync(webTestDir, { recursive: true });
+      fs.writeFileSync(path.join(webTestDir, fileName), htmlContent, 'utf8');
+
+      if (fs.existsSync(rootTestDir)) {
+        fs.writeFileSync(path.join(rootTestDir, fileName), htmlContent, 'utf8');
+      }
+    } catch (fsErr) {
+      console.warn("[Publish] Local fs write bypassed (serverless environment):", fsErr.message);
+    }
+
+    // 3. Dosyayı GitHub Deposuna Kalıcı Olarak İşle (testler/ klasörüne)
+    await uploadFileToGitHub(`testler/${fileName}`, htmlContent);
+    await uploadFileToGitHub(`Web Sitem/testler/${fileName}`, htmlContent);
+
+    // 4. Kapak Görseli Üret ve Ata (Dinamik ve Bilgilerle %100 Birebir Eşleşen 16:9 Kapak)
+    let coverUrl = `assets/covers/${cleanGrade}-${cleanSection}-${slug}-kapak.svg`;
+    if (typeof generateTestCoverSvg === 'function') {
+      try {
+        const coverSvg = generateTestCoverSvg({
+          grade: cleanGrade,
+          section: cleanSection,
+          unitName: unit,
+          topic: topic || unit,
+          subtopic: subtopic || "",
+          testType: activeFormatLabel,
+          questionType: activeQuestionType,
+          testNumber: testNumber,
+          questionCount: questions.length,
+          learningOutcome: learning_outcome || (questions[0] && questions[0].learning_outcome) || "",
+          outcomeCode: (questions[0] && questions[0].learning_outcome_code) || "",
+          isAllOutcomes: Boolean(isAllOutcomes || subtopic === "Tüm Kazanımlar")
+        });
+        const coverFileName = `${cleanGrade}-${cleanSection}-${slug}-kapak.svg`;
+        const webCoversDir = path.join(path.resolve(__dirname, '..'), 'assets', 'covers');
+        const rootCoversDir = path.join(path.resolve(__dirname, '..', '..'), 'assets', 'covers');
+
+        if (!fs.existsSync(webCoversDir)) fs.mkdirSync(webCoversDir, { recursive: true });
+        fs.writeFileSync(path.join(webCoversDir, coverFileName), coverSvg, 'utf8');
+
+        if (fs.existsSync(rootCoversDir)) {
+          if (!fs.existsSync(rootCoversDir)) fs.mkdirSync(rootCoversDir, { recursive: true });
+          fs.writeFileSync(path.join(rootCoversDir, coverFileName), coverSvg, 'utf8');
+        }
+
+        await uploadFileToGitHub(`assets/covers/${coverFileName}`, coverSvg);
+        await uploadFileToGitHub(`Web Sitem/assets/covers/${coverFileName}`, coverSvg);
+        coverUrl = `assets/covers/${coverFileName}`;
+      } catch (covErr) {
+        console.warn("[Publish] Cover generation error:", covErr.message);
+        coverUrl = `assets/test-kapak-${cleanGrade}.svg`;
+      }
+    }
+
+    // 5. Materyal Kaydını Oluştur (Tek Doğruluk Kaynağı Modeli)
+    const materialId = `mat-test-${cleanGrade}-${cleanSection}-${Date.now()}`;
+
+    const newMaterial = {
+      id: materialId,
+      grade: cleanGrade,
+      category: finalCategory,
+      targetSection: cleanSection,
+      title: finalTitle,
+      unit: unit,
+      desc: finalDesc,
+      fileName: fileName,
+      fileUrl: `testler/${fileName}`,
+      imageUrl: coverUrl,
+      kapakResmi: coverUrl,
+      cover: coverUrl,
+      type: activeQuestionType,
+      question_type: activeQuestionType,
+      format: activeFormatLabel,
+      topic: topic || unit,
+      subtopic: (isAllOutcomes || subtopic === "Tüm Kazanımlar") ? "Tüm Kazanımlar" : (subtopic || "Genel"),
+      isAllOutcomes: Boolean(isAllOutcomes || subtopic === "Tüm Kazanımlar"),
+      learning_outcome: learning_outcome || (questions[0] && questions[0].learning_outcome) || "",
+      learning_outcome_code: (questions[0] && questions[0].learning_outcome_code) || "",
+      hasBlob: false,
+      tags: [
+        `${cleanGrade}. sınıf`,
+        `${cleanSection}. ünite`,
+        "yaprak test",
+        "soru-bankasi",
+        "denemeler",
+        "test / deneme",
+        "yazılıya hazırlık",
+        activeFormatLabel.toLowerCase(),
+        "kazanım testi",
+        "deneme",
+        "rotalı fenci",
+        "meb maarif modeli"
+      ],
+      visibility: "public",
+      downloadCount: `📝 ${questions.length} ${isActivity ? 'Etkinlik' : 'Soru'} • ${isActivity ? 'Etkinlik' : 'Test'}-${testNumber}`,
+      testNumber: testNumber,
+      questionCount: questions.length,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+
+    // 6. Yerel materials.json güncellemesini dene
+    try {
+      const webDir = path.resolve(__dirname, '..');
+      const rootDir = path.resolve(__dirname, '..', '..');
+      const webMaterialsPath = path.join(webDir, 'data', 'materials.json');
+      const rootMaterialsPath = path.join(rootDir, 'data', 'materials.json');
+
+      let currentMaterials = [];
+      if (fs.existsSync(webMaterialsPath)) {
+        currentMaterials = JSON.parse(fs.readFileSync(webMaterialsPath, 'utf8'));
+      }
+      const existingIdx = currentMaterials.findIndex(m => m.id === materialId || m.fileName === fileName);
+      if (existingIdx > -1) {
+        currentMaterials[existingIdx] = newMaterial;
+      } else {
+        currentMaterials.unshift(newMaterial);
+      }
+      const jsonStr = JSON.stringify(currentMaterials, null, 2);
+      fs.writeFileSync(webMaterialsPath, jsonStr, 'utf8');
+      if (fs.existsSync(path.dirname(rootMaterialsPath))) {
+        fs.writeFileSync(rootMaterialsPath, jsonStr, 'utf8');
+      }
+    } catch (fsMatErr) {
+      console.warn("[Publish] Local materials.json write bypassed:", fsMatErr.message);
+    }
+
+    // 7. Bulut Senkronizasyonu (Gist + GitHub Repo data/materials.json)
+    try {
+      let syncHandler;
+      try {
+        syncHandler = require('./sync.js');
+      } catch (s1) {
+        syncHandler = require('../api/sync.js');
+      }
+      if (typeof syncHandler === 'function') {
+        const mockReq = { method: "POST", body: { materials: [newMaterial], replace: false } };
+        const mockRes = { headers: {}, statusCode: 200, setHeader() {}, status() { return this; }, json(d) { return d; }, end() { return this; } };
+        await syncHandler(mockReq, mockRes);
+      }
+    } catch (syncErr) {
+      console.warn('[Publish] Cloud sync warning:', syncErr.message);
+    }
+
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    return res.status(200).json({
+      success: true,
+      message: "Test başarıyla yayınlandı ve web sitenize eklendi.",
+      material: newMaterial,
+      fileUrl: `testler/${fileName}`,
+      webSectionUrl: `index.html#grade-${cleanGrade}`,
+      sectionUrl: `index.html#grade-${cleanGrade}`,
+      htmlContent: htmlContent
+    });
+  } catch (error) {
+    console.error("Test yayınlama hatası:", error);
+    res.setHeader('Content-Type', 'application/json; charset=utf-8');
+    return res.status(500).json({
+      error: "Test web sitesine yayınlanamadı.",
+      details: error.message
+    });
+  }
+};

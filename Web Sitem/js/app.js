@@ -298,9 +298,15 @@ function getDeletedMaterialIds() {
     }
 }
 
-function addDeletedMaterialId(id) {
+function addDeletedMaterialId(id, options = {}) {
     if (!id || typeof id !== "string" || !id.trim()) return;
-    if (typeof PROTECTED_MATERIAL_IDS !== "undefined") { PROTECTED_MATERIAL_IDS.delete(id); }
+    const isProtected = typeof PROTECTED_MATERIAL_IDS !== "undefined" && PROTECTED_MATERIAL_IDS.has(id);
+    if (options && options.fromCloud === true && isProtected) {
+        return;
+    }
+    if (typeof PROTECTED_MATERIAL_IDS !== "undefined" && !(options && options.fromCloud === true)) {
+        PROTECTED_MATERIAL_IDS.delete(id);
+    }
     const list = getDeletedMaterialIds();
     if (!list.includes(id)) {
         list.push(id);
@@ -410,10 +416,10 @@ async function loadCentralizedMaterials() {
         fetchFreshData(syncApiUrl)
     ]);
 
-    // Buluttan gelen silinmiş ID'leri anında işle
+    // Buluttan gelen silinmiş ID'leri anında işle (korumalı ID'lere dokunmadan)
     if (cloudResp && Array.isArray(cloudResp.deletedIds)) {
         cloudResp.deletedIds.forEach(dId => {
-            if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId);
+            if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId, { fromCloud: true });
         });
     }
 
@@ -690,7 +696,7 @@ const CloudSyncManager = {
 
                     if (Array.isArray(sbDeleted) && sbDeleted.length > 0) {
                         sbDeleted.forEach(dId => {
-                            if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId);
+                            if (typeof dId === "string" && dId.trim()) addDeletedMaterialId(dId, { fromCloud: true });
                         });
                     }
 
@@ -773,7 +779,7 @@ const CloudSyncManager = {
             // Buluttan gelen silinmiş ID'leri yerel listeye ekle (Tüm ID türleri: mat-, not-, std-, foy-, book-, lab-)
             cloudDeletedIds.forEach(id => {
                 if (typeof id === "string" && id.trim().length > 0) {
-                    addDeletedMaterialId(id);
+                    addDeletedMaterialId(id, { fromCloud: true });
                 }
             });
             const activeDeletedSet = new Set(getDeletedMaterialIds());
@@ -1106,8 +1112,8 @@ const CloudSyncManager = {
             }
             return true;
         } catch(delErr) {
-            console.warn("Buluttan hafif silme isteği uyarısı, uploadToCloud ile deneniyor:", delErr);
-            return await this.uploadToCloud(updatedList, true);
+            console.warn("Buluttan hafif silme isteği uyarısı, uploadToCloud güvenli birleştirme ile deneniyor:", delErr);
+            return await this.uploadToCloud(updatedList, false);
         }
     }
 };
@@ -11858,7 +11864,7 @@ async function moveCustomMaterial(id, direction) {
     }, 300);
 
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-        await CloudSyncManager.uploadToCloud(customList, true);
+        await CloudSyncManager.uploadToCloud(customList, false);
     }
     handleRouteChange({ preserveScroll: true });
 }
@@ -11903,7 +11909,7 @@ function deleteCustomMaterial(id) {
         if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.deleteMaterial) {
             await CloudSyncManager.deleteMaterial(id, customList);
         } else if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-            await CloudSyncManager.uploadToCloud(customList, true);
+            await CloudSyncManager.uploadToCloud(customList, false);
         }
 
         handleRouteChange({ preserveScroll: true });
@@ -19713,7 +19719,7 @@ async function handleAdvMaterialSubmit(e) {
         }
 
         if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-            await CloudSyncManager.uploadToCloud(customList, true);
+            await CloudSyncManager.uploadToCloud(customList, false);
         }
 
         const gradesLabel = selectedGrades.map(g => g === "all" ? "Genel" : `${g}. Sınıf`).join(", ");
@@ -20134,7 +20140,7 @@ async function executeQuickMove(e, materialId) {
 
     // 4. Buluta kalıcı senkronize et
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-        await CloudSyncManager.uploadToCloud(customList, true);
+        await CloudSyncManager.uploadToCloud(customList, false);
     }
 
     if (typeof handleRouteChange === "function") {
@@ -20225,7 +20231,7 @@ async function handleCardDrop(e, targetId) {
     }, 300);
 
     if (typeof CloudSyncManager !== "undefined" && CloudSyncManager.uploadToCloud) {
-        await CloudSyncManager.uploadToCloud(customList, true);
+        await CloudSyncManager.uploadToCloud(customList, false);
     }
     if (typeof handleRouteChange === "function") {
         handleRouteChange({ preserveScroll: true });

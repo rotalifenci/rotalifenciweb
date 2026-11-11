@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Açık Uçlu Test Kontrol | Rotalı Fenci</title>
+  <link rel="icon" type="image/jpeg" href="/assets/rotali-fenci-logo.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden; /* Ekranda kaydırma KESİNLİKLE olmasın */
+      background: #f1f8fe;
+      color: #0f172a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      user-select: text;
+    }
+
+    /* 🌊 Arka Plan Dekoru (Referans Görseldeki Zarif Dalgalar) */
+    .rf-app-wrapper {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(180deg, #f8fafc 0%, #e0f2fe 100%);
+      overflow: hidden;
+      padding: 12px;
+    }
+
+    .rf-wave-bg {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.7;
+      background-image: 
+        radial-gradient(circle at 100% 100%, rgba(186, 230, 253, 0.45) 0%, transparent 40%),
+        radial-gradient(circle at 0% 100%, rgba(224, 242, 254, 0.6) 0%, transparent 45%);
+    }
+
+    /* ⚪ ANA KART (BEYAZ, YUVARLATILMIŞ, DERİN GÖLGELİ) */
+    .rf-main-card {
+      position: relative;
+      z-index: 10;
+      background: #ffffff;
+      border-radius: 20px;
+      border: 1.5px solid #e2e8f0;
+      box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+      width: 98vw;
+      max-width: 1440px;
+      height: calc(100vh - 20px);
+      max-height: 94vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 14px 24px 10px 24px;
+    }
+
+    :fullscreen .rf-stage,
+    :-webkit-full-screen .rf-stage {
+      padding: 6px;
+    }
+    :fullscreen .rf-main-card,
+    :-webkit-full-screen .rf-main-card {
+      width: 99vw;
+      max-width: 99vw;
+      height: calc(100vh - 12px);
+      max-height: calc(100vh - 12px);
+      border-radius: 12px;
+      padding: 12px 20px 8px 20px;
+    }
+
+    /* 📌 1. KART ÜST BAŞLIĞI */
+    .rf-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .rf-pill-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 16px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #1e293b;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.2px;
+    }
+
+    .rf-header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ⏱️ CANLI SÜRE GÖSTERGESİ (Soru Sayısı × 2 Dakika) */
+    .rf-timer-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 8px;
+      background: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      color: #0369a1;
+      font-size: 15px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .rf-icon-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      color: #0284c7;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .rf-icon-btn:hover {
+      background: #f0f9ff;
+      border-color: #0284c7;
+    }
+
+    /* ✔️ Testi bitir butonu (Mavi checkmark & beyaz zemin) */
+    .rf-finish-pill-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 16px;
+      border-radius: 20px;
+      background: #ffffff;
+      border: 1.5px solid #0284c7;
+      color: #0284c7;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.18s ease;
+    }
+    .rf-finish-pill-btn:hover {
+      background: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(2, 132, 199, 0.25);
+    }
+    .rf-finish-pill-btn i {
+      font-size: 13px;
+    }
+
+    /* 📌 2. SORU ALANI (ORTA GÖVDE - SIFIR KAYDIRMA / EKRANA TAM SIĞAN 2 KOLONLU DÜZEN) */
+    .rf-card-body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 0;
+      overflow: hidden;
+      padding: 4px;
+    }
+
+    .rf-questions-stream {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .rf-question-slide {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      overflow: hidden;
+    }
+
+    /* Görselsiz Sorular: Ferah, Ortalanmış Tek Kolon */
+    .rf-question-slide.rf-no-visual {
+      flex-direction: column;
+      justify-content: center;
+      max-width: 860px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+
+    /* 🖼️ Görselli Sorular SOL KOLON: Şekil / Grafik / Model */
+    .rf-slide-visual-col {
+      flex: 0 0 58%;
+      max-width: 60%;
+      height: 100%;
+      max-height: 68vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f8fafc;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 8px;
+      overflow: hidden;
+    }
+
+    .rf-slide-visual-col .rf-visual-box {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rf-slide-visual-col .rf-visual-box svg,
+    .rf-slide-visual-col .rf-visual-box img {
+      width: 100%;
+      height: 100%;
+      max-width: 100%;
+      max-height: 64vh;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    /* 📝 Görselli Sorular SAĞ KOLON: Soru Metni & Cevap Seçenekleri */
+    .rf-slide-content-col {
+      flex: 0 0 38%;
+      max-width: 40%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 12px;
+      overflow: hidden;
+    }
+
+    .rf-slide-content-col.rf-full-width {
+      width: 100%;
+      max-width: 920px;
+      margin: 0 auto;
+      gap: 16px;
+    }
+
+    .rf-stem-text {
+      color: #0f172a;
+      font-size: clamp(15px, 1.3vw, 19px);
+      font-weight: 850;
+      line-height: 1.45;
+      letter-spacing: -0.2px;
+      word-break: break-word;
+    }
+    .rf-stem-text u {
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-thickness: 2.5px;
+    }
+
+    /* 📌 ÇOKTAN SEÇMELİ SEÇENEKLER (A, B, C, D) */
+    .rf-options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .rf-option-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 14px;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      user-select: none;
+    }
+    .rf-option-card:hover {
+      border-color: #93c5fd;
+      background: #f8fafc;
+    }
+    .rf-option-card.is-selected {
+      border-color: #0284c7;
+      background: #f0f9ff;
+    }
+
+    .rf-opt-badge {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: #f8fafc;
+      border: 1.5px solid #93c5fd;
+      color: #0284c7;
+      font-weight: 900;
+      font-size: 13.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.15s ease;
+    }
+    .rf-option-card.is-selected .rf-opt-badge {
+      background: #0284c7;
+      border-color: #0284c7;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+    }
+
+    .rf-opt-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e293b;
+      line-height: 1.35;
+    }
+
+    /* 📌 KISA CEVAP & AÇIK UÇLU GİRİŞ ALANLARI */
+    .rf-input-container {
+      width: 100%;
+    }
+    .rf-short-input {
+      width: 100%;
+      font-size: 16.5px;
+      font-weight: 700;
+      color: #0f172a;
+      padding: 10px 16px;
+      border-radius: 8px;
+      border: 1.5px solid #cbd5e1;
+      background: #ffffff;
+      outline: none;
+      transition: all 0.15s ease;
+    }
+    .rf-short-input:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    .rf-open-textarea {
+      width: 100%;
+      font-size: 14px;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1.5px solid #cbd5e1;
+      background: #f8fafc;
+      outline: none;
+      resize: none;
+      min-height: 54px;
+      height: 64px;
+      max-height: 76px;
+      line-height: 1.4;
+      font-family: inherit;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 0.15s ease;
+    }
+    .rf-open-textarea:focus {
+      border-color: #0284c7;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    /* 📌 3. ALT ÇUBUK: BONCUKLU İLERLEME RAYI & « » OKLARI */
+    .rf-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 12px;
+      border-top: 1px solid #f1f5f9;
+      flex-shrink: 0;
+    }
+
+    .rf-footer-spacer {
+      width: 90px;
+      flex-shrink: 0;
+    }
+
+    /* Ray / Boncuk Taşıyıcı (Kesilmeyen, dinamik kaydırılabilir ve ortalanabilir alan) */
+    .rf-bead-track-container {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      max-width: 860px;
+      min-width: 0;
+      margin: 0 auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding: 6px 14px;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+      user-select: none;
+    }
+    .rf-bead-track-container:active {
+      cursor: grabbing;
+    }
+    .rf-bead-track-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    .rf-beads-row {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 auto;
+      min-width: max-content;
+      padding: 4px 12px;
+    }
+
+    /* Ray Çubuğu: Doğrudan boncuk satırının arkasında boydan boya uzanır, birlikte kayar */
+    .rf-beads-row::before {
+      content: '';
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      height: 4px;
+      background: #cbd5e1;
+      border-radius: 2px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .rf-bead {
+      position: relative;
+      z-index: 2;
+      flex-shrink: 0;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      color: #334155;
+      font-size: 13.5px;
+      font-weight: 800;
+      border: 2px solid #ffffff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .rf-bead:hover {
+      transform: scale(1.12);
+      background: #cbd5e1;
+    }
+    .rf-bead.is-active {
+      background: #0284c7;
+      color: #ffffff;
+      transform: scale(1.18);
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.4);
+    }
+    .rf-bead.is-answered {
+      background: #10b981;
+      color: #ffffff;
+    }
+    .rf-bead.is-answered.is-active {
+      background: #0284c7;
+      box-shadow: 0 0 0 2px #10b981, 0 3px 8px rgba(2, 132, 199, 0.4);
+    }/* « » Ok Butonları */
+    .rf-nav-arrows {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 90px;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    .rf-arrow-btn {
+      width: 42px;
+      height: 34px;
+      border-radius: 8px;
+      background: #e0f2fe;
+      border: none;
+      color: #0284c7;
+      font-size: 18px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .rf-arrow-btn:hover:not(:disabled) {
+      background: #bae6fd;
+      transform: scale(1.05);
+    }
+    .rf-arrow-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    /* ========================================================
+       📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR)
+       ======================================================== */
+    .rf-results-wrapper {
+      display: none;
+      flex-direction: column;
+      height: 100%;
+      width: 100%;
+      overflow-y: auto;
+      scrollbar-width: thin;
+      padding-right: 4px;
+    }
+
+    .rf-score-cards-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 16px 0 20px 0;
+    }
+
+    .rf-score-card {
+      border-radius: 14px;
+      padding: 12px 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .rf-card-dogru {
+      background: #dcfce7;
+      border: 1.5px solid #86efac;
+    }
+    .rf-card-yanlis {
+      background: #fee2e2;
+      border: 1.5px solid #fca5a5;
+    }
+    .rf-card-bos {
+      background: #ffedd5;
+      border: 1.5px solid #fdba74;
+    }
+
+    .rf-score-icon {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+    .rf-card-dogru .rf-score-icon { background: #22c55e; }
+    .rf-card-yanlis .rf-score-icon { background: #ef4444; }
+    .rf-card-bos .rf-score-icon { background: #f97316; }
+
+    .rf-score-num {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 2px;
+    }
+    .rf-card-dogru .rf-score-num { color: #15803d; }
+    .rf-card-yanlis .rf-score-num { color: #b91c1c; }
+    .rf-card-bos .rf-score-num { color: #c2410c; }
+
+    .rf-score-label {
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .rf-card-dogru .rf-score-label { color: #166534; }
+    .rf-card-yanlis .rf-score-label { color: #991b1b; }
+    .rf-card-bos .rf-score-label { color: #9a3412; }
+
+    /* Değerlendirme Tablosu (Doğru Cevap | Cevabınız | Soru | Çözüm Videosu) */
+    .rf-table-container {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      margin-bottom: 16px;
+    }
+    .rf-table-header {
+      display: grid;
+      grid-template-columns: 46px 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      padding: 0 8px;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    .rf-table-rows {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 250px;
+      overflow-y: auto;
+      padding-right: 4px;
+      scrollbar-width: thin;
+    }
+
+    .rf-table-row {
+      display: grid;
+      grid-template-columns: 46px 1fr 1fr 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+      text-align: center;
+    }
+
+    .rf-row-qnum {
+      width: 34px;
+      height: 34px;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .rf-row-box {
+      background: #ffffff;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: #0f172a;
+      min-height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      word-break: break-word;
+    }
+    .rf-user-correct {
+      color: #16a34a !important;
+      border-color: #86efac !important;
+      background: #f0fdf4 !important;
+    }
+    .rf-user-wrong {
+      color: #dc2626 !important;
+      border-color: #fca5a5 !important;
+      background: #fef2f2 !important;
+    }
+    .rf-user-blank {
+      color: #dc2626 !important;
+      border-color: #fed7aa !important;
+      background: #fff7ed !important;
+    }
+
+    .rf-row-btn {
+      background: #ffffff;
+      border: 1.5px solid #93c5fd;
+      color: #0284c7;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.15s ease;
+      min-height: 34px;
+    }
+    .rf-row-btn:hover {
+      background: #e0f2fe;
+      border-color: #0284c7;
+    }
+
+    /* Tekrar Çöz Butonu */
+    .rf-restart-btn {
+      display: block;
+      margin: 12px auto 6px auto;
+      padding: 10px 36px;
+      border-radius: 20px;
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 15.5px;
+      font-weight: 800;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+      transition: all 0.15s ease;
+    }
+    .rf-restart-btn:hover {
+      background: #0369a1;
+      transform: translateY(-1px);
+    }
+
+    /* Çözüm İnceleme Modalı */
+    .rf-solution-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+    .rf-solution-modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 580px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    }
+    .rf-sol-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .rf-sol-header h3 {
+      font-size: 18px;
+      font-weight: 900;
+      color: #0f172a;
+    }
+    .rf-sol-close {
+      background: #f1f5f9;
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<div class="rf-app-wrapper">
+  <div class="rf-wave-bg"></div>
+
+  <!-- BEYAZ ANA KART -->
+  <div class="rf-main-card" id="rfMainCard">
+    
+    <!-- 1. ÜST KONTROL ALANI (SORU GÖRÜNÜMÜ) -->
+    <div class="rf-card-header" id="rfHeaderQuestion">
+      <!-- Sol Soru N Rozeti -->
+      <div class="rf-pill-badge" id="rfQBadge">Soru 1</div>
+
+      <!-- Sağ Kontroller: Süre, Ses, Tam Ekran, Testi bitir -->
+      <div class="rf-header-right">
+        <div class="rf-timer-pill" id="rfTimerDigits" title="Kalan Süre (Soru Sayısı x 2 Dakika)">
+          ⏱️ <span id="rfTimerVal">2:00</span>
+        </div>
+        <button type="button" class="rf-icon-btn" onclick="toggleSpeech()" title="Soruyu Sesli Oku">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button type="button" class="rf-icon-btn" onclick="toggleFullscreen()" title="Tam Ekran">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+        <button type="button" class="rf-finish-pill-btn" onclick="finishTest()" title="Testi Bitir ve Sonuçları Gör">
+          <i class="fa-solid fa-check"></i> Testi bitir
+        </button>
+      </div>
+    </div>
+
+    <!-- 1.B ÜST KONTROL ALANI (SONUÇ GÖRÜNÜMÜ) -->
+    <div class="rf-card-header" id="rfHeaderResults" style="display: none;">
+      <div class="rf-pill-badge">Test Sonuçları</div>
+      <div class="rf-header-right">
+        <button type="button" class="rf-icon-btn" onclick="toggleSpeechSummary()" title="Sonuçları Sesli Oku">
+          <i class="fa-solid fa-volume-high"></i>
+        </button>
+        <button type="button" class="rf-icon-btn" onclick="toggleFullscreen()" title="Tam Ekran">
+          <i class="fa-solid fa-expand"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. ORTA GÖVDE: SORULAR SLAYTI -->
+    <div class="rf-card-body" id="rfCardBody">
+      <div class="rf-questions-stream" id="rfQuestionsStream">
+        
+        <section class="rf-question-slide rf-has-visual is-active" id="rf-slide-0" data-slide="0" style="display: flex;">
+          <!-- 🖼️ Sol Kolon: Şekil / Görsel / Model -->
+          <div class="rf-slide-visual-col">
+            <div class="rf-visual-box"><img src="/images/sun.jpg" alt="Güneş Küresi" class="rf-science-img" style="max-width:100%; max-height:48vh; object-fit:contain; border-radius:12px; box-shadow:0 4px 14px rgba(0,0,0,0.08);"></div>
+          </div>
+          <!-- 📝 Sağ Kolon: Soru Metni ve Seçenekler / Cevap Alanı -->
+          <div class="rf-slide-content-col">
+            <div class="rf-stem-text">Güneş geometrik olarak neye benzer?</div>
+            
+        <div class="rf-input-container">
+          <textarea class="rf-open-textarea" id="rf-input-1" rows="2" autocomplete="off" spellcheck="false" placeholder="Bilimsel açıklamanızı buraya yazınız..." oninput="syncAnswer(1, this.value)"></textarea>
+        </div>
+      
+          </div>
+        </section>
+      
+      </div>
+
+      <!-- 📊 TEST SONUÇLARI GÖRÜNÜMÜ (1. GÖRSEL İLE %100 BİREBİR) -->
+      <div class="rf-results-wrapper" id="rfResultsWrapper">
+        <!-- 3'lü Skor Kartları: Doğru / Yanlış / Boş -->
+        <div class="rf-score-cards-row">
+          <div class="rf-score-card rf-card-dogru">
+            <div class="rf-score-icon"><i class="fa-solid fa-check"></i></div>
+            <div class="rf-score-num" id="resCorrectCount">0</div>
+            <div class="rf-score-label">Doğru</div>
+          </div>
+          <div class="rf-score-card rf-card-yanlis">
+            <div class="rf-score-icon"><i class="fa-solid fa-xmark"></i></div>
+            <div class="rf-score-num" id="resWrongCount">0</div>
+            <div class="rf-score-label">Yanlış</div>
+          </div>
+          <div class="rf-score-card rf-card-bos">
+            <div class="rf-score-icon"><i class="fa-solid fa-minus"></i></div>
+            <div class="rf-score-num" id="resBlankCount">0</div>
+            <div class="rf-score-label">Boş</div>
+          </div>
+        </div>
+
+        <!-- Değerlendirme Tablosu -->
+        <div class="rf-table-header">
+          <div></div>
+          <div>Doğru Cevap</div>
+          <div>Cevabınız</div>
+          <div>Soru</div>
+          <div>Çözüm Videosu</div>
+        </div>
+        <div class="rf-table-rows" id="rfTableRows">
+          <!-- Dinamik Satırlar -->
+        </div>
+
+        <!-- Tekrar Çöz Butonu -->
+        <button type="button" class="rf-restart-btn" onclick="restartTest()">Tekrar Çöz</button>
+      </div>
+    </div>
+
+    <!-- 3. ALT ÇUBUK: BONCUKLU İLERLEME RAYI & « » OKLARI -->
+    <div class="rf-card-footer" id="rfCardFooter">
+      <div class="rf-footer-spacer"></div>
+
+      <!-- Ortadaki Boncuklu İlerleme Rayı -->
+      <div class="rf-bead-track-container" id="rfBeadTrackContainer">
+        <div class="rf-beads-row" id="rfBeadsRow">
+          <button type="button" class="rf-bead is-active" id="rf-bead-0" onclick="goToSlide(0)" title="Soru 1">1</button>
+        </div>
+      </div>
+
+      <!-- Sağdaki « » Ok Butonları -->
+      <div class="rf-nav-arrows">
+        <button type="button" class="rf-arrow-btn" id="rfBtnPrev" onclick="prevSlide()" title="Önceki Soru (Sol Ok)">«</button>
+        <button type="button" class="rf-arrow-btn" id="rfBtnNext" onclick="nextSlide()" title="Sonraki Soru (Sağ Ok)">»</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Çözüm & Detay Modalı -->
+<div class="rf-solution-modal-overlay" id="solModalOverlay" onclick="closeSolutionModal()">
+  <div class="rf-solution-modal-card" onclick="event.stopPropagation()">
+    <div class="rf-sol-header">
+      <h3 id="solModalTitle">💡 Soru Çözümü</h3>
+      <button type="button" class="rf-sol-close" onclick="closeSolutionModal()">✕</button>
+    </div>
+    <div id="solModalBody" style="font-size: 15px; color: #1e293b; line-height: 1.6;"></div>
+  </div>
+</div>
+
+<script>
+  // Sınav Verisi & Durum
+  const TOTAL_QUESTIONS = 1;
+  let activeSlide = 0;
+  let userAnswers = {}; // { 1: 'B', 2: '' }
+  let isFinished = false;
+
+  const rawQuestions = [{"id":1,"question":"Güneş geometrik olarak neye benzer?","correct":"KÜRE","explanation":"","type":"open_ended"}];
+
+  // ⏱️ Geri Sayım Süresi: Soru Sayısı × 2 Dakika
+  let timeLeftSeconds = 120;
+  let timerInterval = null;
+
+  function initTimer() {
+    if (timerInterval) clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      if (isFinished) return;
+      timeLeftSeconds--;
+      if (timeLeftSeconds <= 0) {
+        timeLeftSeconds = 0;
+        clearInterval(timerInterval);
+        finishTest();
+      }
+      renderTimer();
+    }, 1000);
+  }
+
+  function renderTimer() {
+    const el = document.getElementById('rfTimerVal');
+    if (!el) return;
+    const m = Math.floor(timeLeftSeconds / 60);
+    const s = timeLeftSeconds % 60;
+    el.textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  function showSlide(index) {
+    if (index < 0) index = 0;
+    if (index >= TOTAL_QUESTIONS) index = TOTAL_QUESTIONS - 1;
+    activeSlide = index;
+
+    // Slaytları gizle/göster
+    for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+      const s = document.getElementById('rf-slide-' + i);
+      if (s) {
+        s.style.display = (i === index) ? 'flex' : 'none';
+        if (i === index) s.classList.add('is-active');
+        else s.classList.remove('is-active');
+      }
+      // Boncukları güncelle
+      const bead = document.getElementById('rf-bead-' + i);
+      if (bead) {
+        if (i === index) bead.classList.add('is-active');
+        else bead.classList.remove('is-active');
+      }
+    }
+
+    // Sol üst Soru N rozeti
+    const badge = document.getElementById('rfQBadge');
+    if (badge) badge.textContent = 'Soru ' + (index + 1);
+
+    // Ok buton durumları
+    const btnPrev = document.getElementById('rfBtnPrev');
+    const btnNext = document.getElementById('rfBtnNext');
+    if (btnPrev) btnPrev.disabled = (index === 0);
+    if (btnNext) btnNext.disabled = (index === TOTAL_QUESTIONS - 1);
+
+    // Boncuğu görünür alana kaydır ve ortala
+    centerActiveBead(index);
+  }
+
+  function centerActiveBead(index) {
+    const track = document.getElementById('rfBeadTrackContainer');
+    const bead = document.getElementById('rf-bead-' + index);
+    if (track && bead) {
+      const containerWidth = track.clientWidth;
+      const beadLeft = bead.offsetLeft;
+      const beadWidth = bead.offsetWidth;
+      const target = beadLeft - (containerWidth / 2) + (beadWidth / 2);
+      track.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+    }
+  }
+
+  function initTrackInteractions() {
+    const track = document.getElementById('rfBeadTrackContainer');
+    if (!track) return;
+
+    // Fare tekerleği ile yatay kaydırma
+    track.addEventListener('wheel', (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        track.scrollLeft += e.deltaY;
+      }
+    }, { passive: false });
+
+    // Fare / Dokunmatik Sürükleyerek Kaydırma
+    let isDown = false;
+    let startX = 0;
+    let scrollStart = 0;
+
+    track.addEventListener('mousedown', (e) => {
+      isDown = true;
+      startX = e.pageX - track.offsetLeft;
+      scrollStart = track.scrollLeft;
+    });
+
+    window.addEventListener('mouseup', () => { isDown = false; });
+
+    track.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      const x = e.pageX - track.offsetLeft;
+      const dist = x - startX;
+      if (Math.abs(dist) > 5) {
+        e.preventDefault();
+        track.scrollLeft = scrollStart - (dist * 1.4);
+      }
+    });
+  }
+
+  function prevSlide() { showSlide(activeSlide - 1); }
+  function nextSlide() { showSlide(activeSlide + 1); }
+  function goToSlide(idx) { showSlide(idx); }
+  window.goToSlide = goToSlide;
+  window.prevSlide = prevSlide;
+  window.nextSlide = nextSlide;
+  window.selectOption = selectOption;
+  window.syncAnswer = syncAnswer;
+  window.finishTest = finishTest;
+  window.restartTest = restartTest;
+  window.reviewQuestion = reviewQuestion;
+  window.openSolution = openSolution;
+  window.closeSolutionModal = closeSolutionModal;
+  window.toggleSpeech = toggleSpeech;
+  window.toggleSpeechSummary = toggleSpeechSummary;
+  window.toggleFullscreen = toggleFullscreen;
+
+
+  function selectOption(qNum, letter) {
+    if (isFinished) return;
+    userAnswers[qNum] = letter;
+
+    // Kart seçim görünümü
+    const cards = document.querySelectorAll('.rf-option-card[data-qid="' + qNum + '"]');
+    cards.forEach(c => {
+      if (c.getAttribute('data-opt') === letter) c.classList.add('is-selected');
+      else c.classList.remove('is-selected');
+    });
+
+    // Boncuğu işaretle
+    const bead = document.getElementById('rf-bead-' + (qNum - 1));
+    if (bead) bead.classList.add('is-answered');
+  }
+
+  function syncAnswer(qNum, val) {
+    if (isFinished) return;
+    const cleanVal = String(val || '').trim();
+    userAnswers[qNum] = cleanVal;
+    const bead = document.getElementById('rf-bead-' + (qNum - 1));
+    if (bead) {
+      if (cleanVal.length > 0) bead.classList.add('is-answered');
+      else bead.classList.remove('is-answered');
+    }
+  }
+
+  // 🏁 TESTİ BİTİR & SONUÇ EKRANI (1. GÖRSEL)
+  function finishTest() {
+    isFinished = true;
+    if (timerInterval) clearInterval(timerInterval);
+
+    // Header ve footer'ı sonuç moduna geçir
+    document.getElementById('rfHeaderQuestion').style.display = 'none';
+    document.getElementById('rfHeaderResults').style.display = 'flex';
+    document.getElementById('rfQuestionsStream').style.display = 'none';
+    document.getElementById('rfCardFooter').style.display = 'none';
+    document.getElementById('rfResultsWrapper').style.display = 'flex';
+
+    // Hesaplama: Doğru, Yanlış, Boş
+    let correctCount = 0;
+    let wrongCount = 0;
+    let blankCount = 0;
+
+    const rowsContainer = document.getElementById('rfTableRows');
+    rowsContainer.innerHTML = '';
+
+    rawQuestions.forEach((q, idx) => {
+      const qNum = idx + 1;
+      const given = String(userAnswers[qNum] || '').trim();
+      const actual = String(q.correct || '').trim();
+
+      const isBlank = (given.length === 0);
+      let isCorrect = false;
+
+      if (!isBlank) {
+        if (q.type === 'multiple_choice') {
+          isCorrect = (given.toUpperCase() === actual.toUpperCase());
+        } else {
+          isCorrect = (given.toLowerCase() === actual.toLowerCase()) || 
+                      actual.toLowerCase().includes(given.toLowerCase());
+        }
+      }
+
+      if (isBlank) blankCount++;
+      else if (isCorrect) correctCount++;
+      else wrongCount++;
+
+      // Tablo Satırı
+      const row = document.createElement('div');
+      row.className = 'rf-table-row';
+
+      let userClass = 'rf-user-blank';
+      let userText = 'Boş';
+      if (!isBlank) {
+        if (isCorrect) {
+          userClass = 'rf-user-correct';
+          userText = given;
+        } else {
+          userClass = 'rf-user-wrong';
+          userText = given;
+        }
+      }
+
+      row.innerHTML = `
+        <div class="rf-row-qnum">${qNum}</div>
+        <div class="rf-row-box">${actual || '-'}</div>
+        <div class="rf-row-box ${userClass}">${userText}</div>
+        <div>
+          <button type="button" class="rf-row-btn" onclick="reviewQuestion(${idx})">
+            Soruyu gör
+          </button>
+        </div>
+        <div>
+          <button type="button" class="rf-row-btn" onclick="openSolution(${idx})">
+            İzle 🎥
+          </button>
+        </div>
+      `;
+      rowsContainer.appendChild(row);
+    });
+
+    // 3'lü skor kartları güncelle
+    document.getElementById('resCorrectCount').textContent = correctCount;
+    document.getElementById('resWrongCount').textContent = wrongCount;
+    document.getElementById('resBlankCount').textContent = blankCount;
+  }
+
+  // Soruyu Gör (Soruya geri dön)
+  function reviewQuestion(idx) {
+    document.getElementById('rfHeaderResults').style.display = 'none';
+    document.getElementById('rfHeaderQuestion').style.display = 'flex';
+    document.getElementById('rfResultsWrapper').style.display = 'none';
+    document.getElementById('rfQuestionsStream').style.display = 'block';
+    document.getElementById('rfCardFooter').style.display = 'flex';
+    showSlide(idx);
+  }
+
+  // Çözümü Gör / İzle
+  function openSolution(idx) {
+    const q = rawQuestions[idx];
+    if (!q) return;
+    document.getElementById('solModalTitle').textContent = (idx + 1) + '. Soru Çözümü & Analizi';
+    document.getElementById('solModalBody').innerHTML = `
+      <div style="margin-bottom: 12px; padding: 10px 14px; background: #f0fdf4; border: 1.5px solid #86efac; border-radius: 8px;">
+        <strong style="color: #15803d;">Doğru Cevap:</strong> <span style="font-weight: 800; color: #166534;">${q.correct || 'Belirtilmedi'}</span>
+      </div>
+      <div>
+        <strong style="display:block; margin-bottom: 6px; color: #334155;">Bilimsel Çözüm &amp; Açıklama:</strong>
+        <p style="color: #475569; line-height: 1.6;">${q.explanation || 'Bu soru MEB Maarif Modeli kazanımlarına uygun olarak kavramsal analiz ve çıkarım yapma becerisini ölçmektedir.'}</p>
+      </div>
+    `;
+    document.getElementById('solModalOverlay').style.display = 'flex';
+  }
+
+  function closeSolutionModal() {
+    document.getElementById('solModalOverlay').style.display = 'none';
+  }
+
+  function restartTest() {
+    userAnswers = {};
+    isFinished = false;
+    timeLeftSeconds = 120;
+
+    // Tüm kart seçimlerini ve girişleri temizle
+    document.querySelectorAll('.rf-option-card').forEach(c => c.classList.remove('is-selected'));
+    document.querySelectorAll('.rf-bead').forEach(b => {
+      b.classList.remove('is-answered');
+      b.classList.remove('is-active');
+    });
+    document.querySelectorAll('input.rf-short-input, textarea.rf-open-textarea').forEach(i => i.value = '');
+
+    document.getElementById('rfHeaderResults').style.display = 'none';
+    document.getElementById('rfHeaderQuestion').style.display = 'flex';
+    document.getElementById('rfResultsWrapper').style.display = 'none';
+    document.getElementById('rfQuestionsStream').style.display = 'block';
+    document.getElementById('rfCardFooter').style.display = 'flex';
+
+    showSlide(0);
+    initTimer();
+  }
+
+  function toggleSpeech() {
+    if (!('speechSynthesis' in window)) return;
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      return;
+    }
+    const q = rawQuestions[activeSlide];
+    if (!q) return;
+    const textToRead = 'Soru ' + (activeSlide + 1) + '. ' + q.question.replace(/<[^>]+>/g, '');
+    const u = new SpeechSynthesisUtterance(textToRead);
+    u.lang = 'tr-TR';
+    u.rate = 0.95;
+    window.speechSynthesis.speak(u);
+  }
+
+  function toggleSpeechSummary() {
+    if (!('speechSynthesis' in window)) return;
+    if (window.speechSynthesis.speaking) {
+      window.speechSynthesis.cancel();
+      return;
+    }
+    const c = document.getElementById('resCorrectCount').textContent;
+    const w = document.getElementById('resWrongCount').textContent;
+    const b = document.getElementById('resBlankCount').textContent;
+    const text = 'Test sonuçlarınız: ' + c + ' doğru, ' + w + ' yanlış, ' + b + ' boş.';
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'tr-TR';
+    window.speechSynthesis.speak(u);
+  }
+
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+      if (document.exitFullscreen) document.exitFullscreen();
+    }
+  }
+
+  // Başlat
+  document.addEventListener('DOMContentLoaded', () => {
+    showSlide(0);
+    initTimer();
+    initTrackInteractions();
+  });
+</script>
+
+</body>
+</html>

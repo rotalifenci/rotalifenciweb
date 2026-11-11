@@ -2055,6 +2055,7 @@ document.addEventListener('DOMContentLoaded', () => {
     answerKeyBox.style.display = 'block';
 
     updateAnswerVisibility();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   // Soru Düzenleme Fonksiyonları
@@ -2398,6 +2399,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleAnswersBtn.addEventListener('click', () => {
       showAnswers = !showAnswers;
       updateAnswerVisibility();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
 

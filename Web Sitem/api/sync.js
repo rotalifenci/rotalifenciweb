@@ -65,7 +65,9 @@ const PROTECTED_IDS = new Set([
     "mat-5-islenecek-konular",
     "mat-1789315860991",
     "mat-5-1-sim-dunyanin-5-katmani", "mat-5-1-oyun-gunesi-kesfediyorum-3d", "mat-5-1-oyun-ayin-evreleri-3d", "mat-5-1-oyun-kozmik-kasif-3d", "mat-5-1-oyun-kozmik-kosu-3d",
+    "mat-5-2-sim-dinamometre-laboratuvari",
     "mat-6-2-sim-kuvvet-laboratuvari", "mat-7-1-sim-yildiz-laboratuvari", "mat-7-2-sim-is-laboratuvari", "mat-7-1-oyun-uzaydan-kacis-3d",
+    "mat-7-oyun-uzay-ekspresi",
     "oyun-6-uzay-ekspresi", "mat-6-oyun-uzay-ekspresi", 
     "oyun-uzay-ekspresi", "mat-6-1-oyun-gunes-sistemi-yolculuk-3d", 
     "builtin-oyun-6-gunes-sistemi-yolculuk", 
@@ -97,31 +99,137 @@ function getGitHubHeaders(isJson = false) {
     return h;
 }
 
-// Helper: Commit updated data/materials.json directly to GitHub repo so static file is always in sync
-async function syncRepoMaterialsJson(materialsArray) {
-    try {
-        const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/data/materials.json`;
-        const getRes = await fetch(apiUrl, { headers: getGitHubHeaders(false) });
-        let sha = undefined;
-        if (getRes.ok) {
-            const meta = await getRes.json();
-            sha = meta.sha;
+/** Read static data/materials.json across root & Web Sitem mirrors so server saves never lose repo-committed items. */
+function readRepoMaterialsJson(cwd = process.cwd()) {
+    const candidates = [
+        path.resolve(__dirname, "..", "data", "materials.json"),
+        path.join(cwd, "data", "materials.json"),
+        path.join(cwd, "Web Sitem", "data", "materials.json")
+    ];
+    const merged = new Map();
+    for (const p of candidates) {
+        try {
+            if (!fs.existsSync(p)) continue;
+            const parsed = JSON.parse(fs.readFileSync(p, "utf8"));
+            const arr = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.materials) ? parsed.materials : []);
+            for (const item of arr) {
+                if (item && item.id && !merged.has(item.id)) {
+                    merged.set(item.id, item);
+                }
+            }
+        } catch (fsErr) {}
+    }
+    return Array.from(merged.values());
+}
+
+/** Combine static repo entry with Gist metadata without downgrading local URLs/covers to placeholders. */
+function combineMaterialRecord(staticItem, cloudItem) {
+    if (!staticItem) return cloudItem;
+    if (!cloudItem) return staticItem;
+    const combined = { ...staticItem, ...cloudItem };
+    if (staticItem.fileUrl && staticItem.fileUrl !== "#" && (!combined.fileUrl || combined.fileUrl === "#" || combined.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || staticItem.fileUrl.includes("sunumlar/"))) {
+        combined.fileUrl = staticItem.fileUrl;
+    }
+    if (staticItem.imageUrl && (!combined.imageUrl || combined.imageUrl === "#" || combined.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || combined.imageUrl.startsWith("data:image/svg+xml"))) {
+        combined.imageUrl = staticItem.imageUrl;
+        combined.kapakResmi = staticItem.kapakResmi || staticItem.imageUrl;
+        combined.cover = staticItem.cover || staticItem.imageUrl;
+    }
+    if (staticItem.format === "İNTERAKTİF SUNUM" || staticItem.format === "GÖRSEL") {
+        combined.format = staticItem.format;
+    }
+    return combined;
+}
+
+/** Merge incoming client materials non-destructively with repo & Gist items unless bulk delete is explicitly confirmed. */
+function mergeMaterialsSafely({ repoMats = [], existingMaterials = [], incomingMaterials = [], allDeletedSet = new Set(), isReplace = false, confirmBulkDelete = false }) {
+    const serverMap = new Map();
+    for (const item of repoMats) {
+        if (item && item.id && !allDeletedSet.has(item.id)) {
+            serverMap.set(item.id, item);
         }
-        const jsonContent = JSON.stringify(materialsArray, null, 2);
-        const base64Content = Buffer.from(jsonContent, "utf8").toString("base64");
-        const putBody = {
-            message: "chore(sync): update data/materials.json from Web UI Admin Panel",
-            content: base64Content,
-            branch: "main"
+    }
+    for (const item of existingMaterials) {
+        if (item && item.id && !allDeletedSet.has(item.id)) {
+            serverMap.set(item.id, combineMaterialRecord(serverMap.get(item.id), item));
+        }
+    }
+
+    const cleanIncoming = (Array.isArray(incomingMaterials) ? incomingMaterials : [])
+        .filter(item => item && item.id && !allDeletedSet.has(item.id));
+
+    if (confirmBulkDelete === true && isReplace) {
+        return { materials: cleanIncoming, conflict: false, serverCount: serverMap.size };
+    }
+
+    const finalMap = new Map();
+    if (isReplace) {
+        // Stale-client-safe replace: preserve incoming sort order first, then retain all non-deleted server/repo items missing from client cache.
+        for (const item of cleanIncoming) {
+            finalMap.set(item.id, combineMaterialRecord(serverMap.get(item.id), item));
+        }
+        for (const [id, srvItem] of serverMap.entries()) {
+            if (!finalMap.has(id)) {
+                finalMap.set(id, srvItem);
+            }
+        }
+    } else {
+        for (const [id, srvItem] of serverMap.entries()) {
+            finalMap.set(id, srvItem);
+        }
+        for (const item of cleanIncoming) {
+            finalMap.set(item.id, combineMaterialRecord(finalMap.get(item.id), item));
+        }
+    }
+
+    const finalMaterials = Array.from(finalMap.values());
+    if (!confirmBulkDelete && finalMaterials.length < serverMap.size) {
+        return {
+            conflict: true,
+            materials: Array.from(serverMap.values()),
+            serverCount: serverMap.size,
+            resultingCount: finalMaterials.length
         };
-        if (sha) putBody.sha = sha;
-        await fetch(apiUrl, {
-            method: "PUT",
-            headers: getGitHubHeaders(true),
-            body: JSON.stringify(putBody)
-        });
-    } catch (repoErr) {
-        console.warn("Repo data/materials.json sync warning:", repoErr.message);
+    }
+
+    return { materials: finalMaterials, conflict: false, serverCount: serverMap.size };
+}
+
+async function putGitHubRepoFile(repoPath, jsonContent, commitMessage) {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_REPO}/contents/${repoPath}`;
+    const getRes = await fetch(apiUrl, { headers: getGitHubHeaders(false) });
+    let sha = undefined;
+    if (getRes.ok) {
+        const meta = await getRes.json();
+        sha = meta.sha;
+    }
+    const base64Content = Buffer.from(jsonContent, "utf8").toString("base64");
+    const putBody = {
+        message: commitMessage,
+        content: base64Content,
+        branch: "main"
+    };
+    if (sha) putBody.sha = sha;
+    await fetch(apiUrl, {
+        method: "PUT",
+        headers: getGitHubHeaders(true),
+        body: JSON.stringify(putBody)
+    });
+}
+
+// Helper: Commit updated data/materials.json and Web Sitem/data/materials.json so both mirrors stay in sync
+async function syncRepoMaterialsJson(materialsArray) {
+    const jsonContent = JSON.stringify(materialsArray, null, 2);
+    for (const repoPath of ["data/materials.json", "Web Sitem/data/materials.json"]) {
+        try {
+            await putGitHubRepoFile(
+                repoPath,
+                jsonContent,
+                `chore(sync): update ${repoPath} from Web UI Admin Panel`
+            );
+        } catch (repoErr) {
+            console.warn(`Repo ${repoPath} sync warning:`, repoErr.message);
+        }
     }
 }
 
@@ -189,13 +297,7 @@ module.exports = async function handler(req, res) {
             const deletedIds = (Array.isArray(parsed.deletedIds) ? parsed.deletedIds : []);
             PERMANENTLY_REMOVED_IDS.forEach(pid => { if (!deletedIds.includes(pid)) deletedIds.push(pid); });
             const gistMats = (parsed.materials || []).filter(m => (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id)));
-            let repoMats = [];
-            try {
-                const localJsonPath = path.join(process.cwd(), "data", "materials.json");
-                if (fs.existsSync(localJsonPath)) {
-                    repoMats = JSON.parse(fs.readFileSync(localJsonPath, "utf8"));
-                }
-            } catch (fsErr) {}
+            const repoMats = readRepoMaterialsJson();
             const mergedMap = new Map();
             if (Array.isArray(repoMats)) {
                 repoMats.forEach(m => {
@@ -206,22 +308,7 @@ module.exports = async function handler(req, res) {
             }
             gistMats.forEach(m => {
                 if (m && m.id && (!deletedIds.includes(m.id) && !PERMANENTLY_REMOVED_IDS.has(m.id))) {
-                    const st = mergedMap.get(m.id);
-                    if (st) {
-                        const combined = { ...st, ...m };
-                        if (st.fileUrl && st.fileUrl !== "#" && (!combined.fileUrl || combined.fileUrl === "#" || combined.fileUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || st.fileUrl.includes("sunumlar/"))) {
-                            combined.fileUrl = st.fileUrl;
-                        }
-                        if (st.imageUrl && (!combined.imageUrl || combined.imageUrl === "#" || combined.imageUrl.includes("dlzlpstheykhrfeijiri.supabase.co") || combined.imageUrl.startsWith("data:image/svg+xml"))) {
-                            combined.imageUrl = st.imageUrl;
-                            combined.kapakResmi = st.kapakResmi || st.imageUrl;
-                            combined.cover = st.cover || st.imageUrl;
-                        }
-                        if (st.format === "İNTERAKTİF SUNUM" || st.format === "GÖRSEL") combined.format = st.format;
-                        mergedMap.set(m.id, combined);
-                    } else {
-                        mergedMap.set(m.id, m);
-                    }
+                    mergedMap.set(m.id, combineMaterialRecord(mergedMap.get(m.id), m));
                 }
             });
             const cleanMats = Array.from(mergedMap.values());
@@ -293,6 +380,13 @@ module.exports = async function handler(req, res) {
                 if (Array.isArray(body.deleteIds)) toDelete.push(...body.deleteIds);
                 if (Array.isArray(body.deletedIds)) toDelete.push(...body.deletedIds);
 
+                if (toDelete.length > 5 && body.confirmBulkDelete !== true) {
+                    return res.status(409).json({
+                        error: "Toplu silme güvenlik kilidi devreye girdi (confirmBulkDelete: true gerekli)",
+                        requestedDeleteCount: toDelete.length
+                    });
+                }
+
                 let currentMats = [];
                 let currentDels = [];
                 try {
@@ -318,15 +412,31 @@ module.exports = async function handler(req, res) {
                     }
                 } catch(readErr) {}
 
+                const repoMats = readRepoMaterialsJson();
+                const baselineMap = new Map();
+                repoMats.forEach(m => { if (m && m.id) baselineMap.set(m.id, m); });
+                currentMats.forEach(m => { if (m && m.id) baselineMap.set(m.id, combineMaterialRecord(baselineMap.get(m.id), m)); });
+                const preDeleteSnapshot = Array.from(baselineMap.values());
+
                 toDelete.forEach(id => PROTECTED_IDS.delete(id));
                 const allDelSet = new Set([...currentDels, ...toDelete].filter(id => typeof id === "string" && id.trim().length > 0));
                 PERMANENTLY_REMOVED_IDS.forEach(pid => allDelSet.add(pid));
                 const updatedDels = Array.from(allDelSet);
-                const updatedMats = currentMats.filter(m => m && m.id && !allDelSet.has(m.id));
+                const updatedMats = preDeleteSnapshot.filter(m => m && m.id && !allDelSet.has(m.id));
 
                 const patchPayload = {
                     description: "Rotalı Fenci - Cloud Sync Database",
                     files: {
+                        "materials_backup.json": {
+                            content: JSON.stringify({
+                                backedUpAt: new Date().toISOString(),
+                                reason: "pre-delete",
+                                deletedRequested: toDelete,
+                                count: preDeleteSnapshot.length,
+                                deletedIds: currentDels,
+                                materials: preDeleteSnapshot
+                            })
+                        },
                         "materials.json": {
                             content: JSON.stringify({
                                 updatedAt: new Date().toISOString(),
@@ -343,7 +453,7 @@ module.exports = async function handler(req, res) {
                     body: JSON.stringify(patchPayload)
                 });
 
-                // Also update data/materials.json in the GitHub repo permanently
+                // Also update data/materials.json & Web Sitem/data/materials.json permanently
                 await syncRepoMaterialsJson(updatedMats);
 
                 return res.status(200).json({
@@ -359,6 +469,8 @@ module.exports = async function handler(req, res) {
             const incomingMaterials = Array.isArray(body) ? body : (body ? body.materials : null);
             const incomingDeletedIds = (body && Array.isArray(body.deletedIds)) ? body.deletedIds : [];
             const isReplace = Array.isArray(body) ? true : (body && body.replace === true);
+            const confirmBulkDelete = Boolean(body && body.confirmBulkDelete === true);
+            const confirmProtectedDelete = Boolean(body && body.confirmProtectedDelete === true);
 
             if (!Array.isArray(incomingMaterials)) {
                 return res.status(400).json({ error: "Invalid materials array" });
@@ -389,32 +501,50 @@ module.exports = async function handler(req, res) {
                 }
             } catch(apiReadErr) {}
 
-            incomingDeletedIds.forEach(id => PROTECTED_IDS.delete(id));
-            const allDeletedSet = new Set([...existingDeletedIds, ...incomingDeletedIds].filter(id => typeof id === "string" && id.trim().length > 0));
+            // Never strip PROTECTED_IDS on passive bulk sync; only honor protected IDs if confirmProtectedDelete === true.
+            const safeIncomingDeleted = incomingDeletedIds.filter(id =>
+                typeof id === "string" && id.trim().length > 0 && (confirmProtectedDelete || !PROTECTED_IDS.has(id))
+            );
+            const safeExistingDeleted = existingDeletedIds.filter(id =>
+                typeof id === "string" && id.trim().length > 0 && (confirmProtectedDelete || !PROTECTED_IDS.has(id))
+            );
+            const allDeletedSet = new Set([...safeExistingDeleted, ...safeIncomingDeleted]);
             PERMANENTLY_REMOVED_IDS.forEach(pid => allDeletedSet.add(pid));
             const allDeletedIds = Array.from(allDeletedSet);
 
-            let finalMaterials = [];
-            if (isReplace) {
-                finalMaterials = incomingMaterials.filter(item => item && item.id && !allDeletedSet.has(item.id));
-            } else {
-                const mergedMap = new Map();
-                existingMaterials.forEach(item => {
-                    if (item && item.id && !allDeletedSet.has(item.id)) {
-                        mergedMap.set(item.id, item);
-                    }
+            const repoMats = readRepoMaterialsJson();
+            const mergedResult = mergeMaterialsSafely({
+                repoMats,
+                existingMaterials,
+                incomingMaterials,
+                allDeletedSet,
+                isReplace,
+                confirmBulkDelete
+            });
+
+            if (mergedResult.conflict) {
+                return res.status(409).json({
+                    error: "Toplu içerik kaybı tespit edildi ve güvenlik nedeniyle engellendi",
+                    serverCount: mergedResult.serverCount,
+                    resultingCount: mergedResult.resultingCount
                 });
-                incomingMaterials.forEach(item => {
-                    if (item && item.id && !allDeletedSet.has(item.id)) {
-                        mergedMap.set(item.id, item);
-                    }
-                });
-                finalMaterials = Array.from(mergedMap.values());
             }
+
+            const finalMaterials = mergedResult.materials;
+            const preSyncSnapshot = existingMaterials.length >= repoMats.length ? existingMaterials : repoMats;
 
             const patchPayload = {
                 description: "Rotalı Fenci - Cloud Sync Database",
                 files: {
+                    "materials_backup.json": {
+                        content: JSON.stringify({
+                            backedUpAt: new Date().toISOString(),
+                            reason: "pre-sync",
+                            count: preSyncSnapshot.length,
+                            deletedIds: existingDeletedIds,
+                            materials: preSyncSnapshot
+                        })
+                    },
                     "materials.json": {
                         content: JSON.stringify({
                             updatedAt: new Date().toISOString(),
@@ -436,7 +566,7 @@ module.exports = async function handler(req, res) {
                 return res.status(500).json({ error: "Gist update failed", details: errText });
             }
 
-            // Also update data/materials.json in the GitHub repo permanently
+            // Also update data/materials.json & Web Sitem/data/materials.json permanently
             await syncRepoMaterialsJson(finalMaterials);
 
             return res.status(200).json({
@@ -452,3 +582,8 @@ module.exports = async function handler(req, res) {
 
     return res.status(405).json({ error: "Method not allowed" });
 };
+
+module.exports.PROTECTED_IDS = PROTECTED_IDS;
+module.exports.PERMANENTLY_REMOVED_IDS = PERMANENTLY_REMOVED_IDS;
+module.exports.readRepoMaterialsJson = readRepoMaterialsJson;
+module.exports.mergeMaterialsSafely = mergeMaterialsSafely;

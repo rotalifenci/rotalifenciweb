@@ -1,0 +1,7 @@
+Pre-recovery snapshot created on 2026-11-11.
+Root data/materials.json items: 154
+Web Sitem/data/materials.json items: 149
+Live Gist materials.json items: 154, deletedIds: 185
+Group A confirmed unintended losses restored: mat-5-2-sim-dinamometre-laboratuvari, mat-7-oyun-uzay-ekspresi
+Group B confirmed user deletions: NOT restored
+Group C ambiguous deletions: NOT auto-restored (reported separately)

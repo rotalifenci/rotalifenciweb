@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="tr" class="scroll-smooth">
+<head>
+  <script id="rotali_test_html_cleaner">
+    try {
+      if (typeof localStorage !== 'undefined') {
+        for (let i = localStorage.length - 1; i >= 0; i--) {
+          const k = localStorage.key(i);
+          if (k && (k.startsWith('rotali_test_html_') || k.includes('test_html'))) {
+            localStorage.removeItem(k);
+          }
+        }
+      }
+    } catch(e) {}
+  </script>
+    <!-- Cache Invalidation Meta Tags -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#090d16">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>Rotalı Fenci | Dijital Fen Bilimleri Eğitim Portalı & LGS Merkezi</title>
+    <meta name="description" content="Rotalı Fenci: 5, 6, 7 ve 8. Sınıf öğrencileri ve fen öğretmenleri için yeni nesil konu anlatımları, ders sunumları, deney simülatörü, soru bankası ve LGS hazırlık merkezi.">
+    <meta name="application-name" content="Rotalı Fenci">
+    <meta name="apple-mobile-web-app-title" content="Rotalı Fenci">
+    <meta property="og:site_name" content="Rotalı Fenci">
+    <meta property="og:title" content="Rotalı Fenci - Dijital Fen Bilimleri Eğitim Portalı">
+    <meta property="og:description" content="Rotamız Fen! 5, 6, 7, 8. Sınıf ve LGS için interaktif ünite merkezleri, deney simülatörleri ve soru havuzu.">
+    <meta property="og:type" content="website">
+    
+    <!-- Favicon (Logodan) -->
+    <link rel="icon" type="image/jpeg" href="assets/logo.jpg">
+    <link rel="apple-touch-icon" href="assets/logo.jpg">
+
+    <!-- Tailwind CSS with Brand Color Palette -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#dc2626',      // Logodaki "ROTALI FENCİ" Kırmızısı
+                            redDark: '#b91c1c',
+                            redLight: '#ef4444',
+                            navy: '#1e3a8a',     // Logodaki "ROTAMIZ FEN!" Laciverti
+                            navyDark: '#0f172a',
+                            navyLight: '#2563eb',
+                            gold: '#d97706',     // Logodaki Ahşap Dümen Altını
+                            goldLight: '#f59e0b',
+                            space: '#090d16',    // Logodaki Kozmik Uzay Arka Planı
+                            spaceCard: '#131927'
+                        }
+                    },
+                    letterSpacing: {
+                        widest: '.15em',
+                        superWide: '.25em'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans (Ultra Bold & Artistic) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome & Custom Style -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=20261028_2055">
+    <!-- Alpine.js & Collapse Plugin (Sabit sürüm: tüm cihazlarda aynı Alpine çalışsın) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@alpinejs/collapse@3.17.4/dist/cdn.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.17.4/dist/cdn.min.js"></script>
+
+    <script>
+        window.ROTALI_BUILD = "20261028_2055";
+        // Eski önbellekten kalan sürüm uyarı bandı varsa otomatik temizle
+        document.addEventListener("DOMContentLoaded", function () {
+            var oldBanner = document.getElementById("rf-update-banner");
+            if (oldBanner && oldBanner.parentNode) {
+                oldBanner.parentNode.removeChild(oldBanner);
+            }
+        });
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Okuma İlerleme Çubuğu -->
+    <div id="reading-progress"></div>
+
+    <!-- Yüzen Akıllı Tahta Çıkış Çubuğu -->
+    <div id="smartboard-exit-bar" class="hidden items-center gap-3 bg-slate-900/90 border border-slate-700 px-4 py-2 rounded-2xl shadow-2xl backdrop-blur-md">
+        <span class="text-xs font-black text-amber-400 tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-chalkboard-user"></i> AKILLI TAHTA MODU
+        </span>
+        <button onclick="toggleSmartboardMode()" class="px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-xl transition-all">
+            <i class="fa-solid fa-xmark"></i> Çıkış (ESC)
+        </button>
+    </div>
+
+    <!-- Üst Şerit (Rotalı Fenci Farkıyla & Portal Bilgilendirme) -->
+    <div class="bg-slate-950 text-slate-300 text-xs py-2 px-3 sm:px-6 lg:px-8 border-b border-slate-800 w-full portal-hide-smartboard">
+        <div class="max-w-[1536px] mx-auto flex items-center justify-between gap-3 sm:gap-4">
+            <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+                <span class="inline-flex items-center gap-2 text-amber-400 font-black bg-amber-400/15 px-2.5 py-0.5 rounded-full border border-amber-400/30 text-[11px] sm:text-xs tracking-wider">
+                    <img src="assets/logo.jpg" alt="Logo" class="w-4 h-4 rounded-full object-cover border border-amber-400/50"> <span>DİJİTAL EĞİTİM PORTALI 🚀</span>
+                </span>
+            </div>
+            
+            <!-- Tam Ortada: Rotalı Fenci Farkıyla -->
+            <div class="text-center font-bold italic tracking-wider text-xs sm:text-sm text-amber-300 flex items-center justify-center gap-2">
+                <span class="text-amber-400">✨</span> <span>Rotalı Fenci Farkıyla</span> <span class="text-amber-400">✨</span>
+            </div>
+
+            <div class="flex items-center gap-3 shrink-0">
+                <div class="text-[11px] sm:text-xs font-black tracking-[0.15em] sm:tracking-[0.2em] text-brand-red whitespace-nowrap uppercase hidden sm:block">
+                    ROTAMIZ <span class="text-sky-400">FEN!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Header / Navbar (Mobil & Masaüstü Uyumlu, Tek Sıra, Büyük Logo & Geniş Başlıklar) -->
+    <header class="sticky top-0 z-50 shadow-sm w-full bg-white/95 backdrop-blur-md border-b border-slate-200/90 portal-hide-smartboard">
+        <div class="max-w-[1536px] mx-auto px-3 sm:px-5 lg:px-6">
+            <div class="flex items-center justify-between h-16 sm:h-20 lg:h-22 gap-2 sm:gap-3 lg:gap-4">
+                
+                <!-- 1. Sol: Büyük Logo & Alt Alta 'ROTALI FENCİ' -->
+                <a href="#home" class="flex items-center gap-2.5 sm:gap-3.5 group shrink-0 select-none">
+                    <img src="assets/logo.jpg" alt="Rotalı Fenci Logo" class="w-11 h-11 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-2xl object-cover shadow-md border-2 border-red-500/40 group-hover:scale-105 transition-transform shrink-0">
+                    <div class="flex flex-col justify-center leading-none">
+                        <span class="text-lg sm:text-2xl lg:text-3xl font-black text-brand-red tracking-tight leading-tight">ROTALI</span>
+                        <span class="text-lg sm:text-2xl lg:text-3xl font-black text-brand-red tracking-tight leading-tight">FENCİ</span>
+                    </div>
+                </a>
+
+                <!-- 2. Orta: Masaüstü Tek Sıra Büyük Kutu Başlıklar (Arama Kutusuna Kadar Doldurur, Ev Logoya Yakın) -->
+                <nav class="hidden lg:flex items-center gap-1.5 xl:gap-2 text-sm xl:text-base font-black tracking-tight text-slate-800 overflow-x-auto no-scrollbar py-1 flex-1 justify-start ml-2 xl:ml-3 min-w-0">
+                    <!-- 🏠 Ev Butonu (Rotalı Fenci Markasına Yakın) -->
+                    <a href="#home" class="nav-link px-3 py-2 xl:py-2.5 rounded-2xl bg-white hover:bg-red-50 text-slate-800 hover:text-red-600 border-2 border-slate-200/90 hover:border-red-300 transition-all flex items-center justify-center text-lg xl:text-xl shrink-0 shadow-xs" title="Ana Sayfaya Dön">
+                        <i class="fa-solid fa-house"></i>
+                    </a>
+
+                    <!-- 🟢 5. Sınıf -->
+                    <a href="#grade/grade-5/ders-notu" class="nav-link flex-1 justify-center px-2.5 xl:px-3 py-2 xl:py-2.5 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-950 border-2 border-emerald-200/90 hover:border-emerald-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs">
+                        <span class="w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-emerald-300/40 shrink-0"></span> <span>5. Sınıf</span>
+                    </a>
+
+                    <!-- 🔵 6. Sınıf -->
+                    <a href="#grade/grade-6/ders-notu" class="nav-link flex-1 justify-center px-2.5 xl:px-3 py-2 xl:py-2.5 rounded-2xl bg-white hover:bg-blue-50 text-blue-950 border-2 border-blue-200/90 hover:border-blue-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs">
+                        <span class="w-3 h-3 rounded-full bg-blue-500 ring-2 ring-blue-300/40 shrink-0"></span> <span>6. Sınıf</span>
+                    </a>
+
+                    <!-- 🟡 7. Sınıf -->
+                    <a href="#grade/grade-7/ders-notu" class="nav-link flex-1 justify-center px-2.5 xl:px-3 py-2 xl:py-2.5 rounded-2xl bg-white hover:bg-amber-50 text-amber-950 border-2 border-amber-200/90 hover:border-amber-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs">
+                        <span class="w-3 h-3 rounded-full bg-amber-500 ring-2 ring-amber-300/40 shrink-0"></span> <span>7. Sınıf</span>
+                    </a>
+
+                    <!-- 🔴 8. Sınıf (LGS) -->
+                    <a href="#grade/grade-8/ders-notu" class="nav-link flex-1 justify-center px-2.5 xl:px-3 py-2 xl:py-2.5 rounded-2xl bg-white hover:bg-red-50 text-red-950 border-2 border-red-200/90 hover:border-red-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs">
+                        <span class="w-3 h-3 rounded-full bg-red-600 ring-2 ring-red-300/40 shrink-0"></span> <span>8. Sınıf (LGS)</span>
+                    </a>
+
+                    <!-- 🏆 Projeler -->
+                    <a href="#projects" class="nav-link flex-1 justify-center px-2.5 xl:px-3 py-2 xl:py-2.5 rounded-2xl bg-white hover:bg-orange-50 text-orange-950 border-2 border-orange-200/90 hover:border-orange-400 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs">
+                        <i class="fa-solid fa-trophy text-amber-500 text-base xl:text-lg"></i> <span>Projeler</span>
+                    </a>
+
+                    <!-- 🔬 TÜBİTAK Araştırma -->
+                    <a href="#tubitak" class="nav-link flex-1 justify-center px-2.5 xl:px-3 py-2 xl:py-2.5 rounded-2xl bg-amber-50/70 hover:bg-amber-100 text-amber-950 border-2 border-amber-300/90 hover:border-amber-500 transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform shadow-xs">
+                        <i class="fa-solid fa-microscope text-amber-600 text-base xl:text-lg"></i> <span>TÜBİTAK</span>
+                    </a>
+
+
+                    <!-- ✨ Yeni Eklenenler (En Sonda) -->
+                    <a href="#recent" class="nav-link flex-1 justify-center px-3 xl:px-3.5 py-2 xl:py-2.5 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-red-600 text-white hover:opacity-95 border-2 border-amber-300 shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 hover:scale-[1.02] transform">
+                        <i class="fa-solid fa-sparkles text-amber-200 animate-pulse text-base xl:text-lg"></i> <span>Yeni Eklenenler</span>
+                    </a>
+                </nav>
+
+                <!-- 3. Sağ: Arama Logosu & Mobil Menü & Yönetici Çıkış (Giriş butonu gizli) -->
+                <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                    <!-- 🔍 Arama Logosu -->
+                    <a href="#search" class="p-2.5 sm:p-3 text-slate-600 hover:text-red-600 hover:bg-slate-100 rounded-2xl transition-colors shrink-0 border border-slate-200/80 shadow-2xs" title="Portalda Ara">
+                        <i class="fa-solid fa-magnifying-glass text-lg sm:text-xl"></i>
+                    </a>
+
+                    <!-- 🖥️ Akıllı Tahta Butonu (Masaüstü) -->
+                    <button onclick="toggleSmartboardMode()" class="hidden sm:flex px-3.5 py-2.5 bg-slate-900 hover:bg-red-600 text-white font-black text-xs sm:text-sm rounded-2xl shadow-sm transition-all items-center gap-1.5 shrink-0" title="Akıllı Tahta Modu">
+                        <i class="fa-solid fa-display text-amber-400 text-sm"></i> <span class="hidden xl:inline">Tahta</span>
+                    </button>
+
+                    <!-- 👑 Yönetici Sadece Giriş Yapıldığında Çıkan Çıkış Butonu (Giriş Yapılmamışsa Gizli) -->
+                    <div id="admin-nav-container"></div>
+
+                    <!-- 📱 Mobil Hamburger Menü Butonu (Telefonda Kolay Kullanım) -->
+                    <button id="mobile-menu-toggle" class="lg:hidden p-2.5 sm:p-3 rounded-2xl bg-slate-100 text-slate-800 hover:bg-slate-200 transition-all border border-slate-200/80 shadow-2xs flex items-center justify-center text-xl shrink-0" aria-label="Menüyü Aç/Kapat">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 📱 Mobil Hızlı Sınıf Şeridi (Telefonda Tek Dokunuşla Doğrudan Sınıflara Geçiş) -->
+            <div class="lg:hidden flex items-center gap-2 overflow-x-auto no-scrollbar py-2 border-t border-slate-100">
+                <a href="#home" class="p-2 rounded-xl bg-white text-slate-800 border border-slate-200 text-sm font-black shrink-0"><i class="fa-solid fa-house"></i></a>
+                <a href="#tubitak" class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-950 border border-amber-300 text-xs font-black shrink-0">🔬 TÜBİTAK</a>
+                <a href="#grade/grade-5/ders-notu" class="px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-black shrink-0">🟢 5. Sınıf</a>
+                <a href="#grade/grade-6/ders-notu" class="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-900 border border-blue-200 text-xs font-black shrink-0">🔵 6. Sınıf</a>
+                <a href="#grade/grade-7/ders-notu" class="px-3 py-1.5 rounded-xl bg-amber-50 text-amber-900 border border-amber-200 text-xs font-black shrink-0">🟡 7. Sınıf</a>
+                <a href="#grade/grade-8/ders-notu" class="px-3 py-1.5 rounded-xl bg-red-50 text-red-900 border border-red-200 text-xs font-black shrink-0">🔴 8. Sınıf</a>
+                <a href="#projects" class="px-3 py-1.5 rounded-xl bg-orange-50 text-orange-900 border border-orange-200 text-xs font-black shrink-0">🏆 Projeler</a>
+                <a href="#recent" class="px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500 to-red-600 text-white text-xs font-black shrink-0">✨ Yeni Eklenenler</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobil Açılır Menü (Büyük & Belirgin) -->
+        <div id="mobile-menu" class="hidden lg:hidden border-t border-slate-200 bg-white/95 backdrop-blur-md px-4 pt-3 pb-6 space-y-2.5 shadow-xl">
+            <div class="p-4 bg-slate-50 rounded-2xl mb-3 border border-slate-200 text-center flex items-center justify-center gap-3">
+                <img src="assets/logo.jpg" alt="Rotalı Fenci Logo" class="w-12 h-12 rounded-2xl object-cover shadow-sm border border-red-200 flex-shrink-0">
+                <div class="text-left">
+                    <div class="font-black text-lg text-brand-red leading-tight">ROTALI FENCİ</div>
+                    <div class="text-[10px] font-black text-brand-navy tracking-widest uppercase mt-0.5">DİJİTAL EĞİTİM PORTALI</div>
+                </div>
+            </div>
+
+            
+            <a href="#grade/grade-5/ders-notu" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-slate-800 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-2.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-emerald-500 shadow-sm"></span> 5. SINIF FEN BİLİMLERİ
+            </a>
+            <a href="#grade/grade-6/ders-notu" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-slate-800 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-2.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-blue-500 shadow-sm"></span> 6. SINIF FEN BİLİMLERİ
+            </a>
+            <a href="#grade/grade-7/ders-notu" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-slate-800 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-2.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-amber-500 shadow-sm"></span> 7. SINIF FEN BİLİMLERİ
+            </a>
+            <a href="#grade/grade-8/ders-notu" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-slate-800 hover:bg-red-50 hover:text-brand-red flex items-center gap-2.5">
+                <span class="w-3.5 h-3.5 rounded-full bg-red-600 shadow-sm"></span> 8. SINIF (LGS) FEN BİLİMLERİ
+            </a>
+            <a href="#tubitak" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-amber-950 bg-amber-50/80 hover:bg-amber-100 hover:text-amber-700 flex items-center gap-2.5">
+                <i class="fa-solid fa-microscope text-amber-600 text-lg"></i> TÜBİTAK ARAŞTIRMA MERKEZİ
+            </a>
+            <a href="#projects" class="block px-4 py-3 rounded-2xl text-base font-black tracking-wider uppercase text-slate-800 hover:bg-amber-50 hover:text-amber-600 flex items-center gap-2.5">
+                <i class="fa-solid fa-trophy text-amber-500 text-lg"></i> PROJELER & KOD HAFTASI
+            </a>
+            
+            <div class="pt-3 border-t border-slate-200">
+                <div id="admin-mobile-nav-container"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Ana Uygulama Alanı (Dinamik Portal Router) -->
+    <main id="app" class="flex-1">
+        <!-- JS Router içerikleri buraya basacaktır -->
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand-space text-slate-300 border-t border-slate-800/80 pt-16 pb-12 mt-16 relative overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(#dc2626_1px,transparent_1px)] [background-size:32px_32px] opacity-10 pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
+                
+                <!-- Logo & Açıklama -->
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center gap-3.5">
+                        <img src="assets/logo.jpg" alt="Rotalı Fenci" class="w-12 h-12 object-contain rounded-full border-2 border-brand-red bg-white shadow-lg">
+                        <div>
+                            <span class="text-2xl font-black text-brand-red tracking-tight leading-none">ROTALI FENCİ</span>
+                            <div class="text-[11px] font-black text-sky-400 tracking-[0.2em]">ROTAMIZ FEN!</div>
+                        </div>
+                    </div>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed max-w-sm">
+                        Ortaokul 5, 6, 7 ve 8. sınıf öğrencileri için yeni nesil LGS fen soru çözümleri, ünite öğrenme rotaları, interaktif deney simülatörleri ve yapay zekâ destekli eğitim platformu.
+                    </p>
+                    <div class="flex items-center gap-3 pt-2">
+                        <span class="text-xs font-semibold text-slate-400">Bizi Takip Edin:</span>
+                        <a href="https://www.instagram.com/rotalifenci/" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 via-pink-500 to-purple-600 hover:scale-110 text-white flex items-center justify-center transition-all shadow-md" title="Instagram @rotalifenci">
+                            <i class="fa-brands fa-instagram text-sm"></i>
+                        </a>
+                        <a href="https://youtube.com" target="_blank" rel="noopener" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-brand-red hover:text-white flex items-center justify-center text-slate-300 transition-colors">
+                            <i class="fa-brands fa-youtube text-sm"></i>
+                        </a>
+                        <a href="https://telegram.org" target="_blank" rel="noopener" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-sky-600 hover:text-white flex items-center justify-center text-slate-300 transition-colors">
+                            <i class="fa-brands fa-telegram text-sm"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hızlı Bağlantılar -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-compass text-brand-red"></i> Rotalar & Notlar
+                    </h4>
+                    <ul class="space-y-2.5 text-xs text-slate-400 font-medium">
+                        <li><a href="#paths" class="hover:text-white transition-colors">8. Sınıf LGS Fen</a></li>
+                        <li><a href="#paths" class="hover:text-white transition-colors">7. Sınıf Fen Bilimleri</a></li>
+                        <li><a href="#paths" class="hover:text-white transition-colors">6. Sınıf Fen Bilimleri</a></li>
+                        <li><a href="#paths" class="hover:text-white transition-colors">5. Sınıf Fen Bilimleri</a></li>
+                        <li><a href="#blog" class="hover:text-white transition-colors">Tüm Ders Notları</a></li>
+                    </ul>
+                </div>
+
+                <!-- İnteraktif Araçlar -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-atom text-brand-gold"></i> İnteraktif Fen
+                    </h4>
+                    <ul class="space-y-2.5 text-xs text-slate-400 font-medium">
+                        <li><a href="#quizzes" class="hover:text-white transition-colors">Mini Soru Testleri</a></li>
+                        <li><a href="#flashcards" class="hover:text-white transition-colors">3D Fen Kartları</a></li>
+                        <li><a href="#lab" class="hover:text-white transition-colors">Sıvı Basıncı Deneyi</a></li>
+                        <li><a href="#categories" class="hover:text-white transition-colors">Müfredat Kategorileri</a></li>
+                        <li><a href="#bookmarks" class="hover:text-white transition-colors">Kaydedilen Konular</a></li>
+                    </ul>
+                </div>
+
+                <!-- Kurumsal & İletişim -->
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-white mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-graduation-cap text-sky-400"></i> Platform
+                    </h4>
+                    <ul class="space-y-2.5 text-xs text-slate-400 font-medium">
+                        <li><a href="#tubitak" class="hover:text-amber-300 transition-colors">TÜBİTAK Bilimsel Araştırma Merkezi</a></li>
+                        <li><a href="#about" class="hover:text-white transition-colors">Rotalı Fenci Kimdir?</a></li>
+                        <li><a href="#contact" class="hover:text-white transition-colors">İletişim & Soru Sor</a></li>
+                        
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Alt Bilgi Çubuğu -->
+            <div class="pt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+                <div>
+                    &copy; 2026 <strong class="text-brand-red">ROTALI FENCİ</strong> | Tüm Hakları Saklıdır. <span class="text-sky-400 font-bold">ROTAMIZ FEN!</span>
+                </div>
+                <div class="flex flex-wrap items-center justify-center sm:justify-end gap-3">
+                    <div id="admin-status-indicator" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-800 text-xs text-slate-300"></div>
+                    <button type="button" id="smartboard-sync-badge" onclick="verifySmartboardSync(true)" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 hover:bg-emerald-900/90 border border-emerald-500/40 text-emerald-300 text-[11px] font-bold transition-all cursor-pointer shadow-sm" title="Akıllı Tahta Veri Denetleyicisi — Tıklayarak Şimdi Zorla Senkronize Et">
+                        <span>🟢 Akıllı Tahta Senkronize • 34 İçerik Aktif</span>
+                    </button>
+                    <button onclick="triggerUploadModal()" class="text-xs text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-1" title="Yönetici Girişi"><i class="fa-solid fa-lock text-[10px]"></i> Yönetici Paneli</button>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Global Toast Bildirimi -->
+    <div id="toast" class="bg-white rounded-2xl border border-slate-200 shadow-2xl p-4 flex items-center gap-3 min-w-[280px]">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-500 text-xl"></i>
+        <div id="toast-message" class="text-xs sm:text-sm font-semibold text-slate-800">İşlem başarılı!</div>
+    </div>
+
+    <!-- Scriptler -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/cloud-config.js?v=20261028_2055"></script>
+    <script src="js/data.js?v=20261028_2055"></script>
+    <script src="js/curriculum-data.js?v=20261028_2055"></script>
+    <script src="js/app.js?v=20261111_1945"></script>
+    <script src="js/tubitak-data.js?v=20261111_1945"></script>
+    <script src="js/tubitak-research.js?v=20261111_1945"></script>
+    <!-- 🐞 Sabit Hata & Eksik Bildir Butonu (Tüm Sayfalarda Sağ Altta) -->
+    <button type="button" onclick="openIssueReportModal()" class="fixed bottom-18 sm:bottom-5 right-3.5 sm:right-5 z-40 px-4 py-2.5 bg-slate-900/90 hover:bg-red-600 text-white font-black text-xs uppercase tracking-wider rounded-2xl shadow-2xl backdrop-blur-md border border-slate-700/80 hover:border-red-500 transition-all flex items-center gap-2 group hover:scale-105 transform cursor-pointer" title="Sayfadaki eksikleri veya açılmayanları bildirin">
+        <i class="fa-solid fa-bug text-red-500 group-hover:text-white transition-colors text-sm"></i>
+        <span>Hata & Eksik Bildir</span>
+    </button>
+
+    <!-- 📱 iOS & Android Native Mobil Alt Navigasyon Barı (Hızlı Erişim) -->
+    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200/90 shadow-2xl px-2 py-1 flex items-center justify-around portal-hide-smartboard" style="padding-bottom: max(0.4rem, env(safe-area-inset-bottom));">
+        <a href="#home" class="mobile-bottom-tab flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-600 hover:text-red-600 transition-colors min-w-[50px]">
+            <i class="fa-solid fa-house text-base"></i>
+            <span class="text-[10px] font-extrabold mt-0.5">Ana Sayfa</span>
+        </a>
+        <a href="#grade/grade-5/ders-notu" class="mobile-bottom-tab flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-600 hover:text-emerald-600 transition-colors min-w-[50px]">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mb-0.5"></span>
+            <span class="text-[10px] font-extrabold">5. Sınıf</span>
+        </a>
+        <a href="#grade/grade-6/ders-notu" class="mobile-bottom-tab flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-600 hover:text-blue-600 transition-colors min-w-[50px]">
+            <span class="w-2.5 h-2.5 rounded-full bg-blue-500 mb-0.5"></span>
+            <span class="text-[10px] font-extrabold">6. Sınıf</span>
+        </a>
+        <a href="#grade/grade-7/ders-notu" class="mobile-bottom-tab flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-600 hover:text-amber-600 transition-colors min-w-[50px]">
+            <span class="w-2.5 h-2.5 rounded-full bg-amber-500 mb-0.5"></span>
+            <span class="text-[10px] font-extrabold">7. Sınıf</span>
+        </a>
+        <a href="#grade/grade-8/ders-notu" class="mobile-bottom-tab flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-600 hover:text-red-600 transition-colors min-w-[50px]">
+            <span class="w-2.5 h-2.5 rounded-full bg-red-600 mb-0.5"></span>
+            <span class="text-[10px] font-extrabold">8. Sınıf</span>
+        </a>
+        <a href="#search" class="mobile-bottom-tab flex flex-col items-center justify-center py-1 px-2 rounded-xl text-slate-600 hover:text-red-600 transition-colors min-w-[50px]">
+            <i class="fa-solid fa-magnifying-glass text-base"></i>
+            <span class="text-[10px] font-extrabold mt-0.5">Ara</span>
+        </a>
+    </nav>
+
+</body>
+</html>
