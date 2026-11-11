@@ -209,4 +209,5 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
 
   const tubitakRecJs = fs.readFileSync(path.join(webDir, "api", "tubitak-records.js"), "utf8");
   assert.equal(tubitakRecJs.includes(".substring(0, 5000)"), false, "Kayıt revizyonlarında karakter kesmesi olmamalı");
+  assert.ok(tubitakJs.includes("VERİ ANALİZİ") && tubitakJs.includes("buildSvgDonutChart") && tubitakJs.includes("renderDataAnalysisSection"), "TÜBİTAK Veri Analizi bölümü, grafik ve tablolar mevcut olmalı");
 });

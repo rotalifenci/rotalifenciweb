@@ -27,6 +27,8 @@
     let activeSort = "alpha";
     let activeYear = 571;
     let searchQuery = "";
+    let workspaceView = "research"; // "research" | "analysis"
+    let analysisCategoryFilter = "all";
 
     // Kayıtlar, revizyonlar ve yerel durum
     let runtimeRecords = {};        // { "item__crit": { content, version, updatedAt, studentName, status } }
@@ -453,7 +455,17 @@
                 ` : ''}
 
                 <!-- Araç Butonları & Çıkış -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="flex items-center gap-1 bg-slate-950 p-1 rounded-2xl border border-slate-800">
+                        <button type="button" onclick="window.RotaliTubitak.setWorkspaceView('research')" class="px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${workspaceView === 'research' ? 'bg-amber-500 text-slate-950 shadow-sm' : 'text-slate-300 hover:text-white'}">
+                            <i class="fa-solid fa-pen-to-square text-xs"></i>
+                            <span>Araştırma</span>
+                        </button>
+                        <button type="button" onclick="window.RotaliTubitak.setWorkspaceView('analysis')" class="px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 ${workspaceView === 'analysis' ? 'bg-cyan-400 text-slate-950 shadow-sm' : 'text-cyan-300 hover:text-white'}">
+                            <i class="fa-solid fa-chart-pie text-xs"></i>
+                            <span>VERİ ANALİZİ</span>
+                        </button>
+                    </div>
                     ${isTeacher ? `
                     <button onclick="window.RotaliTubitak.openTeacherDashboardModal()" class="px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs transition-all shadow-md flex items-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-chart-line text-xs"></i>
@@ -471,6 +483,7 @@
                 </div>
             </div>
 
+            ${workspaceView === 'analysis' ? renderDataAnalysisSection(projData) : `
             <!-- ============================================================== -->
             <!-- 📱 DÖNÜŞÜMLÜ 2 BÖLMELİ ÇALIŞMA ALANI (SOL LİSTE / SAĞ FORM) -->
             <!-- ============================================================== -->
@@ -509,7 +522,7 @@
                         ${items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
-                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : 8;
+                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : 18;
                             const status = getItemStatus(it.id);
 
                             return `
@@ -542,6 +555,7 @@
                 </div>
 
             </div>
+            `}
         </div>
         `;
     }
@@ -1148,6 +1162,453 @@
         modal.classList.remove("hidden");
     }
 
+    // 10B. VERİ ANALİZİ BÖLÜMÜ (KATEGORİ SAYI & İÇERİK GRAFİKLERİ + TABLO)
+    const ANALYSIS_COLORS = [
+        "#d97706", "#0891b2", "#059669", "#4f46e5", "#e11d48",
+        "#7c3aed", "#0284c7", "#ea580c", "#65a30d", "#475569"
+    ];
+
+    function countWords(text) {
+        const trimmed = String(text || "").trim();
+        return trimmed ? trimmed.split(/\s+/).length : 0;
+    }
+
+    function getItemFieldValue(item, critKey) {
+        const saved = runtimeRecords[`${item.id}__${critKey}`];
+        return saved ? (saved.content || "") : (item.criteria?.[critKey] || "");
+    }
+
+    function classifyItemCategory(item, projId) {
+        if (projId === "proje-bilim") return item.field || "Bilim Tarihi";
+        if (projId === "proje-siyer") return item.year ? `${item.year} Yılı` : "Siyer Kronolojisi";
+
+        const t = String(item.title || "").toLocaleLowerCase("tr");
+        if (t.includes("medrese")) return "Medreseler";
+        if (t.includes("kalesi")) return "Kaleler";
+        if (t.includes("camii") || /\bcami\b/.test(t)) return "Camiler ve Mescitler";
+        if (t.includes("türbe") || t.includes("kümbet") || t.includes("güdük minare")) return "Türbeler ve Kümbetler";
+        if (t.includes("köprü")) return "Köprüler";
+        if (t.includes("hamam")) return "Hamamlar";
+        if (t.includes("kervansaray") || t.includes("hanı") || t === "taşhan") return "Han ve Kervansaraylar";
+        if (t.includes("konağı") || t.includes("konak")) return "Konaklar";
+        if (t.includes("müze") || t.includes("sanat evi")) return "Müze ve Kültür Yapıları";
+        if (t.includes("kilise")) return "Kilise ve İnanç Yapıları";
+        return "Diğer Tarihî Yapılar";
+    }
+
+    function tallyDimension(rows, keyFn) {
+        const map = new Map();
+        for (const r of rows) {
+            const label = keyFn(r) || "Belirtilmemiş";
+            const prev = map.get(label) || { label, count: 0, filledSlots: 0, words: 0 };
+            prev.count += 1;
+            prev.filledSlots += r.filledCount;
+            prev.words += r.wordCount;
+            map.set(label, prev);
+        }
+        return [...map.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "tr"));
+    }
+
+    function computeProjectAnalytics(projData) {
+        const items = projData.items || [];
+        const criteriaList = projData.criteriaList || [];
+        const totalCriteria = criteriaList.length || 1;
+        const critStats = criteriaList.map(c => ({
+            key: c.key,
+            title: c.title,
+            filledItems: 0,
+            words: 0,
+            chars: 0
+        }));
+
+        const itemRows = items.map((item, idx) => {
+            let filledCount = 0;
+            let wordCount = 0;
+            let charCount = 0;
+
+            criteriaList.forEach((crit, cIdx) => {
+                const val = getItemFieldValue(item, crit.key);
+                const trimmed = val.trim();
+                if (trimmed.length > 0) {
+                    filledCount += 1;
+                    critStats[cIdx].filledItems += 1;
+                }
+                const w = countWords(val);
+                wordCount += w;
+                charCount += val.length;
+                critStats[cIdx].words += w;
+                critStats[cIdx].chars += val.length;
+            });
+
+            const status = getItemStatus(item.id);
+            const category = classifyItemCategory(item, activeProjectId);
+            return {
+                order: idx + 1,
+                id: item.id,
+                title: item.title,
+                category,
+                district: item.district || item.geography || (item.year ? String(item.year) : "Genel"),
+                period: item.period || item.field || "Tarihî Miras",
+                filledCount,
+                totalCriteria,
+                fillPct: Math.round((filledCount / totalCriteria) * 100),
+                wordCount,
+                charCount,
+                status
+            };
+        });
+
+        const totalFilledSlots = itemRows.reduce((s, r) => s + r.filledCount, 0);
+        const totalPossibleSlots = items.length * totalCriteria;
+        const totalWords = itemRows.reduce((s, r) => s + r.wordCount, 0);
+        const totalChars = itemRows.reduce((s, r) => s + r.charCount, 0);
+
+        const statusCounts = { approved: 0, in_review: 0, correction_requested: 0, draft: 0 };
+        itemRows.forEach(r => { statusCounts[r.status] = (statusCounts[r.status] || 0) + 1; });
+
+        return {
+            itemRows,
+            critStats,
+            categories: tallyDimension(itemRows, r => r.category),
+            districts: tallyDimension(itemRows, r => r.district),
+            periods: tallyDimension(itemRows, r => r.period),
+            totalItems: items.length,
+            totalCriteria,
+            totalFilledSlots,
+            totalPossibleSlots,
+            overallPct: totalPossibleSlots ? Math.round((totalFilledSlots / totalPossibleSlots) * 100) : 0,
+            totalWords,
+            totalChars,
+            statusCounts
+        };
+    }
+
+    function buildSvgDonutChart(segments, totalValue, centerLabel) {
+        const radius = 62;
+        const circumference = 2 * Math.PI * radius;
+        let offset = 0;
+
+        const circles = segments.map((seg, i) => {
+            const color = ANALYSIS_COLORS[i % ANALYSIS_COLORS.length];
+            const frac = totalValue > 0 ? seg.count / totalValue : 0;
+            const segLen = frac * circumference;
+            const el = `
+            <circle
+                cx="90" cy="90" r="${radius}"
+                fill="transparent"
+                stroke="${color}"
+                stroke-width="24"
+                stroke-dasharray="${segLen.toFixed(2)} ${(circumference - segLen).toFixed(2)}"
+                stroke-dashoffset="${(-offset).toFixed(2)}"
+                class="transition-all duration-300 hover:opacity-85 cursor-pointer"
+                onclick="window.RotaliTubitak.setAnalysisCategoryFilter('${escapeHtml(seg.label).replace(/'/g, "\\'")}')">
+                <title>${escapeHtml(seg.label)}: ${seg.count} (${Math.round(frac * 100)}%)</title>
+            </circle>`;
+            offset += segLen;
+            return el;
+        }).join("");
+
+        return `
+        <svg viewBox="0 0 180 180" class="w-44 h-44 sm:w-48 sm:h-48 shrink-0 mx-auto" role="img" aria-label="Kategori Dağılım Grafiği">
+            <g transform="rotate(-90 90 90)">
+                <circle cx="90" cy="90" r="${radius}" fill="transparent" stroke="#f1f5f9" stroke-width="24"></circle>
+                ${circles}
+            </g>
+            <text x="90" y="86" text-anchor="middle" class="fill-slate-900 font-black text-2xl">${totalValue}</text>
+            <text x="90" y="106" text-anchor="middle" class="fill-slate-500 font-bold text-[10px] uppercase tracking-wider">${escapeHtml(centerLabel)}</text>
+        </svg>`;
+    }
+
+    function buildHorizontalBars(entries, totalItems, gradientClass) {
+        const maxVal = entries.length ? Math.max(...entries.map(e => e.count), 1) : 1;
+        return entries.map((e, i) => {
+            const widthPct = Math.round((e.count / maxVal) * 100);
+            const sharePct = totalItems ? Math.round((e.count / totalItems) * 100) : 0;
+            const color = ANALYSIS_COLORS[i % ANALYSIS_COLORS.length];
+            return `
+            <div class="space-y-1">
+                <div class="flex items-center justify-between text-xs gap-2">
+                    <span class="font-bold text-slate-800 truncate">${escapeHtml(e.label)}</span>
+                    <span class="font-black text-slate-900 shrink-0">${e.count} <span class="text-slate-400 font-semibold">(%${sharePct})</span></span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
+                    <div class="h-full rounded-full ${gradientClass || ''}" style="width: ${widthPct}%; ${gradientClass ? '' : `background-color: ${color};`}"></div>
+                </div>
+            </div>`;
+        }).join("");
+    }
+
+    function renderDataAnalysisSection(projData) {
+        const stats = computeProjectAnalytics(projData);
+        const filteredRows = analysisCategoryFilter === "all"
+            ? stats.itemRows
+            : stats.itemRows.filter(r => r.category === analysisCategoryFilter);
+
+        return `
+        <div class="space-y-6 animate-in fade-in duration-300">
+            <!-- Üst Başlık ve Dışa Aktarım Çubuğu -->
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-cyan-50 text-cyan-800 border border-cyan-200 uppercase tracking-wider">
+                        📊 CANLI İSTATİSTİK & İÇERİK ANALİZİ
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-black text-slate-900 mt-1">VERİ ANALİZİ – Kategori, Sayı ve İçerik Dağılımı</h3>
+                    <p class="text-xs text-slate-500 font-medium mt-0.5">
+                        ${escapeHtml(projData.title || 'Proje')} kapsamındaki tüm kayıtlar, kategoriler, kriter doluluk oranları ve kelime yoğunlukları anlık hesaplanır.
+                    </p>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="window.RotaliTubitak.exportAnalysisCSV()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-file-csv"></i>
+                        <span>Excel / CSV İndir</span>
+                    </button>
+                    <button type="button" onclick="window.RotaliTubitak.setWorkspaceView('research')" class="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs transition-all shadow-sm flex items-center gap-1.5 cursor-pointer">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Araştırmaya Dön</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 4 Özet KPI Kartı -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-black text-slate-500 uppercase">Toplam Eser / Konu</div>
+                    <div class="text-2xl sm:text-3xl font-black text-slate-900 mt-1">${stats.totalItems}</div>
+                    <div class="text-[11px] font-semibold text-amber-700 mt-1">${stats.categories.length} farklı kategori</div>
+                </div>
+                <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-black text-slate-500 uppercase">Kriter Doluluğu</div>
+                    <div class="text-2xl sm:text-3xl font-black text-cyan-700 mt-1">%${stats.overallPct}</div>
+                    <div class="text-[11px] font-semibold text-slate-500 mt-1">${stats.totalFilledSlots} / ${stats.totalPossibleSlots} alan dolu</div>
+                </div>
+                <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-black text-slate-500 uppercase">Toplam İçerik Hacmi</div>
+                    <div class="text-2xl sm:text-3xl font-black text-emerald-700 mt-1">${stats.totalWords.toLocaleString("tr-TR")}</div>
+                    <div class="text-[11px] font-semibold text-slate-500 mt-1">kelime • ${stats.totalChars.toLocaleString("tr-TR")} karakter</div>
+                </div>
+                <div class="bg-white rounded-3xl p-4 sm:p-5 border border-slate-200 shadow-sm">
+                    <div class="text-[11px] font-black text-slate-500 uppercase">İnceleme & Onay</div>
+                    <div class="text-2xl sm:text-3xl font-black text-indigo-700 mt-1">${stats.statusCounts.approved} / ${stats.totalItems}</div>
+                    <div class="text-[11px] font-semibold text-slate-500 mt-1">${stats.statusCounts.in_review} incelemede • ${stats.statusCounts.draft} taslak</div>
+                </div>
+            </div>
+
+            <!-- Grafik 1 & Kategori Sayı Tablosu -->
+            <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+                <!-- Donut Grafik + Etkileşimli Kategori Listesi -->
+                <div class="xl:col-span-6 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-5">
+                    <div class="flex items-center justify-between gap-2">
+                        <div>
+                            <h4 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                                <i class="fa-solid fa-chart-pie text-amber-600"></i>
+                                <span>Kategori Sayılarına Göre Dağılım Grafiği</span>
+                            </h4>
+                            <p class="text-[11px] text-slate-500 font-medium">Tabloyu filtrelemek için grafikteki dilimlere veya satırlara tıklayın.</p>
+                        </div>
+                        ${analysisCategoryFilter !== "all" ? `
+                        <button type="button" onclick="window.RotaliTubitak.setAnalysisCategoryFilter('all')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-black cursor-pointer">
+                            Tümünü Göster
+                        </button>` : ''}
+                    </div>
+
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        ${buildSvgDonutChart(stats.categories, stats.totalItems, activeProjectId === 'proje-tarih' ? 'Toplam Eser' : 'Toplam Kayıt')}
+                        <div class="w-full flex-1 space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+                            ${stats.categories.map((cat, idx) => {
+                                const color = ANALYSIS_COLORS[idx % ANALYSIS_COLORS.length];
+                                const pct = stats.totalItems ? Math.round((cat.count / stats.totalItems) * 100) : 0;
+                                const isActive = analysisCategoryFilter === cat.label;
+                                return `
+                                <button type="button" onclick="window.RotaliTubitak.setAnalysisCategoryFilter('${escapeHtml(cat.label).replace(/'/g, "\\'")}')" class="w-full text-left px-3 py-2 rounded-xl border transition-all flex items-center justify-between gap-2 cursor-pointer ${isActive ? 'bg-amber-50 border-amber-400 ring-2 ring-amber-400/20' : 'bg-slate-50/70 hover:bg-slate-100 border-slate-200'}">
+                                    <span class="flex items-center gap-2 min-w-0">
+                                        <span class="w-3 h-3 rounded-full shrink-0" style="background-color: ${color};"></span>
+                                        <span class="text-xs font-bold text-slate-800 truncate">${escapeHtml(cat.label)}</span>
+                                    </span>
+                                    <span class="text-xs font-black text-slate-900 shrink-0">${cat.count} <span class="text-[11px] text-slate-500 font-semibold">(%${pct})</span></span>
+                                </button>`;
+                            }).join("")}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Kategori Özeti Tablosu + İlçe & Dönem Grafikleri -->
+                <div class="xl:col-span-6 bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-5">
+                    <h4 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-table-columns text-cyan-600"></i>
+                        <span>Kategori Sayı ve İçerik Özeti Tablosu</span>
+                    </h4>
+                    <div class="overflow-x-auto max-h-72 overflow-y-auto custom-scrollbar">
+                        <table class="w-full text-left border-collapse text-xs">
+                            <thead class="sticky top-0 bg-slate-100 text-slate-600 uppercase text-[10px] font-black">
+                                <tr>
+                                    <th class="py-2.5 px-3 rounded-l-xl">Kategori</th>
+                                    <th class="py-2.5 px-3 text-right">Sayı</th>
+                                    <th class="py-2.5 px-3 text-right">Oran</th>
+                                    <th class="py-2.5 px-3 text-right">Dolu Kriter</th>
+                                    <th class="py-2.5 px-3 text-right rounded-r-xl">Kelime</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                ${stats.categories.map((cat, idx) => {
+                                    const pct = stats.totalItems ? Math.round((cat.count / stats.totalItems) * 100) : 0;
+                                    const color = ANALYSIS_COLORS[idx % ANALYSIS_COLORS.length];
+                                    return `
+                                    <tr onclick="window.RotaliTubitak.setAnalysisCategoryFilter('${escapeHtml(cat.label).replace(/'/g, "\\'")}')" class="hover:bg-amber-50/60 cursor-pointer transition-colors">
+                                        <td class="py-2.5 px-3 font-bold text-slate-900 flex items-center gap-2">
+                                            <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background-color: ${color};"></span>
+                                            <span>${escapeHtml(cat.label)}</span>
+                                        </td>
+                                        <td class="py-2.5 px-3 text-right font-black text-slate-900">${cat.count}</td>
+                                        <td class="py-2.5 px-3 text-right font-semibold text-slate-600">%${pct}</td>
+                                        <td class="py-2.5 px-3 text-right font-bold text-cyan-700">${cat.filledSlots} / ${cat.count * stats.totalCriteria}</td>
+                                        <td class="py-2.5 px-3 text-right font-semibold text-emerald-700">${cat.words.toLocaleString("tr-TR")}</td>
+                                    </tr>`;
+                                }).join("")}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafik 2: İlçe & Tarihsel Dönem Çubuk Grafikleri -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+                    <h4 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-rose-600"></i>
+                        <span>${activeProjectId === 'proje-tarih' ? 'İlçelere Göre Dağılım Grafiği' : 'Coğrafya / Konum Dağılımı'}</span>
+                    </h4>
+                    <div class="space-y-3">
+                        ${buildHorizontalBars(stats.districts, stats.totalItems, "bg-gradient-to-r from-amber-500 to-orange-500")}
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+                    <h4 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-landmark-dome text-indigo-600"></i>
+                        <span>${activeProjectId === 'proje-tarih' ? 'Tarihsel Dönem / Medeniyet Dağılımı' : 'Alt Alan Dağılımı'}</span>
+                    </h4>
+                    <div class="space-y-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+                        ${buildHorizontalBars(stats.periods, stats.totalItems, "bg-gradient-to-r from-cyan-500 to-indigo-600")}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grafik & Tablo 3: Kriter (Başlık) Bazlı İçerik Yoğunluğu Analizi -->
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <h4 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-bars-progress text-emerald-600"></i>
+                            <span>Kriterlere Göre İçerik Doluluk ve Kelime Analizi (${stats.totalCriteria} Kriter)</span>
+                        </h4>
+                        <p class="text-[11px] text-slate-500 font-medium">Her kriter başlığında kaç eserin araştırıldığı ve toplam girilen kelime/karakter hacmi.</p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="bg-slate-100 text-slate-600 uppercase text-[10px] font-black">
+                            <tr>
+                                <th class="py-2.5 px-3 rounded-l-xl">Kriter Başlığı</th>
+                                <th class="py-2.5 px-3 w-48">Doluluk Grafiği</th>
+                                <th class="py-2.5 px-3 text-right">Dolu Eser</th>
+                                <th class="py-2.5 px-3 text-right">Kelime</th>
+                                <th class="py-2.5 px-3 text-right rounded-r-xl">Karakter</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${stats.critStats.map(cs => {
+                                const pct = stats.totalItems ? Math.round((cs.filledItems / stats.totalItems) * 100) : 0;
+                                return `
+                                <tr class="hover:bg-slate-50">
+                                    <td class="py-2.5 px-3 font-bold text-slate-900">${escapeHtml(cs.title)}</td>
+                                    <td class="py-2.5 px-3">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                                <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full" style="width: ${pct}%;"></div>
+                                            </div>
+                                            <span class="text-[10px] font-black text-slate-600 w-8 text-right">%${pct}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-2.5 px-3 text-right font-black text-slate-800">${cs.filledItems} / ${stats.totalItems}</td>
+                                    <td class="py-2.5 px-3 text-right font-bold text-indigo-700">${cs.words.toLocaleString("tr-TR")}</td>
+                                    <td class="py-2.5 px-3 text-right font-semibold text-slate-500">${cs.chars.toLocaleString("tr-TR")}</td>
+                                </tr>`;
+                            }).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Tablo 4: Kategori ve İçeriklere Göre Detaylı Eser Karşılaştırma Tablosu -->
+            <div class="bg-white rounded-3xl p-5 sm:p-6 border border-slate-200 shadow-sm space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                        <h4 class="text-sm sm:text-base font-black text-slate-900 flex items-center gap-2">
+                            <i class="fa-solid fa-table-list text-amber-600"></i>
+                            <span>İçeriklere Göre Eser Analiz Tablosu</span>
+                        </h4>
+                        <p class="text-[11px] text-slate-500 font-medium">Listelenen: <strong>${filteredRows.length}</strong> kayıt${analysisCategoryFilter !== 'all' ? ` (Kategori: ${escapeHtml(analysisCategoryFilter)})` : ''}.</p>
+                    </div>
+                    <select onchange="window.RotaliTubitak.setAnalysisCategoryFilter(this.value)" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800">
+                        <option value="all" ${analysisCategoryFilter === 'all' ? 'selected' : ''}>Tüm Kategoriler (${stats.totalItems})</option>
+                        ${stats.categories.map(c => `
+                        <option value="${escapeHtml(c.label)}" ${analysisCategoryFilter === c.label ? 'selected' : ''}>${escapeHtml(c.label)} (${c.count})</option>
+                        `).join("")}
+                    </select>
+                </div>
+
+                <div class="overflow-x-auto max-h-[520px] overflow-y-auto custom-scrollbar">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead class="sticky top-0 bg-slate-100 text-slate-600 uppercase text-[10px] font-black z-10">
+                            <tr>
+                                <th class="py-2.5 px-3 rounded-l-xl">#</th>
+                                <th class="py-2.5 px-3">Eser / Konu Adı</th>
+                                <th class="py-2.5 px-3">Kategori</th>
+                                <th class="py-2.5 px-3">İlçe / Konum</th>
+                                <th class="py-2.5 px-3">Dönem</th>
+                                <th class="py-2.5 px-3">İçerik İlerlemesi</th>
+                                <th class="py-2.5 px-3 text-right">Kelime</th>
+                                <th class="py-2.5 px-3">Durum</th>
+                                <th class="py-2.5 px-3 text-right rounded-r-xl">İşlem</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            ${filteredRows.map(r => `
+                            <tr class="hover:bg-amber-50/50 transition-colors">
+                                <td class="py-2.5 px-3 font-black text-amber-700">#${r.order}</td>
+                                <td class="py-2.5 px-3 font-black text-slate-900">${escapeHtml(r.title)}</td>
+                                <td class="py-2.5 px-3">
+                                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-700 border border-slate-200 whitespace-nowrap">${escapeHtml(r.category)}</span>
+                                </td>
+                                <td class="py-2.5 px-3 font-semibold text-slate-700">${escapeHtml(r.district)}</td>
+                                <td class="py-2.5 px-3 font-medium text-slate-600">${escapeHtml(r.period)}</td>
+                                <td class="py-2.5 px-3">
+                                    <div class="flex items-center gap-2 min-w-[110px]">
+                                        <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                                            <div class="h-full bg-amber-500 rounded-full" style="width: ${r.fillPct}%;"></div>
+                                        </div>
+                                        <span class="text-[11px] font-black text-slate-700 shrink-0">${r.filledCount}/${r.totalCriteria}</span>
+                                    </div>
+                                </td>
+                                <td class="py-2.5 px-3 text-right font-bold text-indigo-700">${r.wordCount}</td>
+                                <td class="py-2.5 px-3">
+                                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black whitespace-nowrap ${getStatusBadgeClass(r.status)}">${getStatusLabel(r.status)}</span>
+                                </td>
+                                <td class="py-2.5 px-3 text-right">
+                                    <button type="button" onclick="window.RotaliTubitak.openItemInEditor('${r.id}')" class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-black text-[11px] transition-colors cursor-pointer whitespace-nowrap">
+                                        Aç / Düzenle
+                                    </button>
+                                </td>
+                            </tr>`).join("")}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
     // 11. Olay Dinleyicileri ve Dışa Aktarılan Arayüz (window.RotaliTubitak)
     function formatFieldStats(val) {
         const text = String(val || "");
@@ -1240,6 +1701,8 @@
         handleLogout() {
             flushPendingSaves();
             currentSession = null;
+            workspaceView = "research";
+            analysisCategoryFilter = "all";
             localStorage.removeItem("rotali_tubitak_session");
             renderMainContainer(document.getElementById("tubitak-research-container"));
             showNotice("Güvenli çıkış yapıldı.", "info");
@@ -1251,7 +1714,28 @@
             activeItemId = null;
             activeFilter = "all";
             activePeriodFilter = "all";
+            analysisCategoryFilter = "all";
             syncProjectData(projId);
+            renderMainContainer(document.getElementById("tubitak-research-container"));
+        },
+
+        setWorkspaceView(view) {
+            flushPendingSaves();
+            workspaceView = view === "analysis" ? "analysis" : "research";
+            renderMainContainer(document.getElementById("tubitak-research-container"));
+        },
+
+        setAnalysisCategoryFilter(cat) {
+            analysisCategoryFilter = (analysisCategoryFilter === cat && cat !== "all") ? "all" : (cat || "all");
+            renderMainContainer(document.getElementById("tubitak-research-container"));
+        },
+
+        openItemInEditor(itemId) {
+            activeItemId = itemId;
+            workspaceView = "research";
+            activeFilter = "all";
+            activePeriodFilter = "all";
+            searchQuery = "";
             renderMainContainer(document.getElementById("tubitak-research-container"));
         },
 
@@ -1428,6 +1912,48 @@
 
         exportCurrentReport() {
             window.print();
+        },
+
+        exportAnalysisCSV() {
+            const projData = seedData?.projects?.[activeProjectId] || {};
+            const stats = computeProjectAnalytics(projData);
+            const criteriaList = projData.criteriaList || [];
+            const escCsv = v => `"${String(v ?? "").replace(/"/g, '""')}"`;
+
+            const headers = [
+                "Sıra", "Eser / Konu Adı", "Kategori", "İlçe / Konum", "Dönem",
+                "Dolu Kriter", "Toplam Kriter", "Kelime Sayısı", "Durum",
+                ...criteriaList.map(c => c.title)
+            ];
+
+            const rows = (projData.items || []).map((item, i) => {
+                const rowStat = stats.itemRows[i];
+                const critVals = criteriaList.map(c => getItemFieldValue(item, c.key));
+                return [
+                    rowStat.order,
+                    item.title,
+                    rowStat.category,
+                    rowStat.district,
+                    rowStat.period,
+                    rowStat.filledCount,
+                    rowStat.totalCriteria,
+                    rowStat.wordCount,
+                    getStatusLabel(rowStat.status),
+                    ...critVals
+                ].map(escCsv).join(";");
+            });
+
+            const csvContent = "\uFEFF" + headers.map(escCsv).join(";") + "\n" + rows.join("\n");
+            const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = `tubitak-${activeProjectId}-veri-analizi.csv`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+            showNotice("Veri analizi tablosu CSV/Excel olarak indirildi.", "success");
         },
 
         triggerSheetsSync() {
