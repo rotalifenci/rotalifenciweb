@@ -4,9 +4,9 @@
     "grade": "7",
     "category": "egitsel-oyunlar",
     "targetSection": "1",
-    "title": "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi",
-    "unit": "1. Ünite: Güneş Sistemi ve Ötesi",
-    "desc": "Türkiye Yüzyılı Maarif Modeli uyumlu 3D uzay treni macerası! Kuantum raylar üzerinde koş, uzay teknolojilerini ve derin uzayı keşfet, 140 soruluk Maarif bilgi kapılarından doğru geç!",
+    "title": "ROTALI FENCİ – UZAY ÇAĞI",
+    "unit": "1. Ünite: Uzay Çağı",
+    "desc": "7. Sınıf 1. Ünite Uzay Çağı konusuna özel 140 Maarif Modeli sorulu 3D uzay koşusu oyunu! Uzay teknolojileri, yapay uydular, bulutsular ve derin uzay keşif kapılarından doğru geç!",
     "fileName": "uzay-ekspresi-7.html",
     "fileUrl": "oyunlar/uzay-ekspresi-7.html",
     "imageUrl": "assets/rotali-uzay-ekspresi.jpg",
@@ -17,10 +17,9 @@
     "tags": [
       "7. Sınıf",
       "1. Ünite",
-      "Güneş Sistemi ve Ötesi",
+      "Uzay Çağı",
       "Uzay Araştırmaları",
       "Gök Cisimleri",
-      "Uzay Ekspresi",
       "3D Oyun"
     ],
     "visibility": "public",
@@ -52,7 +51,8 @@
       "5-sinif",
       "kuvveti-taniyalim",
       "stem"
-    ]
+    ],
+    "imageUrl": "assets/dinamometre-laboratuvari-kapak.svg"
   },
   {
     "id": "mat-840c5044-4b84-4157-b37e-7bc1b99df179",

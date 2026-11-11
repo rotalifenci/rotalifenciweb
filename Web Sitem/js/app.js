@@ -2534,8 +2534,15 @@ function getMaterialTargetSection(item) {
         return "kitap";
     }
 
-    // 3. Laboratuvar
-    if (cat === "laboratuvar" || title.includes("laboratuvar") || title.includes("lab ") || unit.includes("laboratuvar") || title.includes("deney") || title.includes("güvenlik sembol") || title.includes("güvenlik kural") || title.includes("malzeme")) {
+    // 2.5. Unit 2 Kuvvet/Dinamometre/İş simülasyonları asla "lab" bölümüne saptırılmasın
+    const isPhysicsUnit2Sim = title.includes("dinamometre") || title.includes("kuvvet laboratuvar") || title.includes("iş laboratuvar") || title.includes("is laboratuvar") || (item.fileUrl && (item.fileUrl.includes("dinamometre-laboratuvari") || item.fileUrl.includes("kuvvet-laboratuvari") || item.fileUrl.includes("is-laboratuvari")));
+    if (isPhysicsUnit2Sim) {
+        return "2";
+    }
+
+    // 3. Laboratuvar (yalnızca gerçek laboratuvar modülü materyalleri — eğitsel oyunlar/simülasyonlar ünitelerine gider)
+    const isGameOrSim = cat === "egitsel-oyunlar" || cat === "simulasyon";
+    if (!isGameOrSim && (cat === "laboratuvar" || title.includes("laboratuvar") || title.includes("lab ") || unit.includes("laboratuvar") || title.includes("deney") || title.includes("güvenlik sembol") || title.includes("güvenlik kural") || title.includes("malzeme"))) {
         return "lab";
     }
 
@@ -5064,11 +5071,12 @@ function switchGradeSubTab(gradeId, tabName, event) {
             sessionStorage.setItem('rotali_active_ders_notu_unit', "kitap");
         } catch(e) {}
     } else {
+        const defaultUnitChoice = (tabName === "egitsel-oyunlar") ? "all" : "1";
         try {
-            localStorage.setItem(`rotali_active_hub_unit_${gClean}_${tabName}`, "1");
-            sessionStorage.setItem(`rotali_active_hub_unit_${gClean}_${tabName}`, "1");
-            localStorage.setItem(`rotali_active_hub_unit_${gClean}`, "1");
-            sessionStorage.setItem(`rotali_active_hub_unit_${gClean}`, "1");
+            localStorage.setItem(`rotali_active_hub_unit_${gClean}_${tabName}`, defaultUnitChoice);
+            sessionStorage.setItem(`rotali_active_hub_unit_${gClean}_${tabName}`, defaultUnitChoice);
+            localStorage.setItem(`rotali_active_hub_unit_${gClean}`, defaultUnitChoice);
+            sessionStorage.setItem(`rotali_active_hub_unit_${gClean}`, defaultUnitChoice);
         } catch(e) {}
     }
 
@@ -5717,6 +5725,19 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     fileUrl: "oyunlar/dunyanin-5-katmani.html",
                     kapakResmi: "assets/dunyanin-5-katmani-kapak.svg"
                 }
+            ],
+            "2": [
+                {
+                    id: "mat-5-2-sim-dinamometre-laboratuvari",
+                    title: "Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!",
+                    icon: "fa-solid fa-weight-hanging",
+                    desc: "Farklı ağırlıkları as, yayın uzamasını Newton (N) cinsinden anlık izle! 4 farklı dinamometre kapasitesi (5N, 10N, 20N, 50N), kapasite aşımı uyarısı, yay karşılaştırma ve STEM atölyesi!",
+                    type: "Sanal Laboratuvar & Simülasyon",
+                    format: "3B SİMÜLASYON",
+                    badge: "⚖️ 2. Ünite Simülasyonu",
+                    fileUrl: "oyunlar/dinamometre-laboratuvari.html",
+                    kapakResmi: "assets/dinamometre-laboratuvari-kapak.svg"
+                }
             ]
         },
         "6": {
@@ -5762,9 +5783,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
             "1": [
                 {
                     id: "builtin-oyun-7-uzay-ekspresi",
-                    title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi",
+                    title: "ROTALI FENCİ – UZAY ÇAĞI",
                     icon: "fa-solid fa-train-subway",
-                    desc: "3D uzay treninde derin uzayı keşfet, meteorlardan kaç, 140 soruluk Maarif Modeli bilgi kapılarından geç!",
+                    desc: "7. Sınıf 1. Ünite Uzay Çağı konusuna özel 140 Maarif Modeli sorulu 3D uzay koşusu! Uzay teknolojileri, yapay uydular ve derin uzay kapılarından geç!",
                     type: "3D Uzay Treni",
                     format: "3D OYUN",
                     badge: "🌟 1. Ünite Başyapıtı",
@@ -5909,21 +5930,70 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                        localStorage.getItem(`rotali_active_hub_unit_${grade.number}`) ||
                        sessionStorage.getItem(`rotali_active_hub_unit_${grade.number}`);
     } catch(e) {}
-    const activeHubUnit = savedHubUnit || "1";
+    const defaultUnitChoice = (normSubTab === "egitsel-oyunlar") ? "all" : "1";
+    const activeHubUnit = savedHubUnit || defaultUnitChoice;
     const isLabActive = (activeHubUnit === "lab");
+    const isAllActive = (activeHubUnit === "all");
+
+    // Her ünite için içerik listesini önceden hesapla (sayı rozeti ve "Tümü" görünümü için)
+    const computedUnitsData = unitList.map((uTitle, idx) => {
+        const unitNum = idx + 1;
+        const unitCustoms = customList.filter(m => {
+            const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
+            if (gClean !== "all" && gClean !== String(grade.number)) return false;
+            if (!matchesSubTabCategory(m, normSubTab)) return false;
+            const targetSec = getMaterialTargetSection(m);
+            if (m.id === "mat-6-2-sim-kuvvet-laboratuvari" || (m.title && m.title.toLowerCase().includes("kuvvet laboratuvarı"))) {
+                return String(unitNum) === "2";
+            }
+            if (m.id === "mat-5-2-sim-dinamometre-laboratuvari" || (m.title && m.title.toLowerCase().includes("dinamometre"))) {
+                return String(unitNum) === "2";
+            }
+            if (m.id === "mat-7-2-sim-is-laboratuvari" || (m.title && (m.title.toLowerCase().includes("iş laboratuvarı") || m.title.toLowerCase().includes("is laboratuvari")))) {
+                return String(unitNum) === "2";
+            }
+            return targetSec === String(unitNum);
+        });
+        let unitBuiltinGames = [];
+        if (normSubTab === "egitsel-oyunlar") {
+            const allBuiltinsForGrade = (builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum][String(unitNum)]) || [];
+            unitBuiltinGames = allBuiltinsForGrade.filter(g => {
+                if (deletedIds.has(g.id)) return false;
+                const alreadyExists = unitCustoms.some(c =>
+                    (c.id && c.id === g.id) ||
+                    (c.fileUrl && g.fileUrl && c.fileUrl.trim().toLowerCase() === g.fileUrl.trim().toLowerCase()) ||
+                    (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim())
+                );
+                return !alreadyExists;
+            });
+        }
+        return {
+            uTitle,
+            unitNum,
+            unitCustoms,
+            unitBuiltinGames,
+            totalItems: [...unitCustoms, ...unitBuiltinGames]
+        };
+    });
 
     return `
         <div id="${containerId}" class="mb-10 animate-in fade-in duration-300">
-            <!-- 1. HIZLI ÜNİTE SIRALAMASI: 1. Üniteden 7. Üniteye + Laboratuvar + Tüm Üniteler (BÜYÜTÜLMÜŞ & NUMARA KUTUSU KALDIRILMIŞ) -->
+            <!-- 1. HIZLI ÜNİTE SIRALAMASI -->
             <div class="bg-white/90 backdrop-blur-md border border-slate-200/90 rounded-3xl p-2 sm:p-3 mb-6 shadow-sm">
                 <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-flow-col lg:auto-cols-fr gap-1 sm:gap-1.5 w-full">
-                    ${unitList.map((uTitle, idx) => {
-                        const num = idx + 1;
+                    ${normSubTab === "egitsel-oyunlar" ? `
+                    <button type="button" onclick="filterUnitHubSection('${containerId}', 'all', '${grade.number}', '${normSubTab}')" data-unit="all" data-active="${isAllActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isAllActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-indigo-50 text-indigo-900 hover:bg-indigo-100 border border-indigo-200 shadow-sm'} active:scale-95 cursor-pointer">
+                        <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isAllActive ? 'text-white' : 'text-indigo-900'}">Tüm Üniteler</span>
+                        <span class="text-[9px] sm:text-[10px] font-semibold ${isAllActive ? 'text-slate-300' : 'text-indigo-700/80'} truncate w-full">${computedUnitsData.reduce((acc, u) => acc + u.totalItems.length, 0)} Oyun & Sim</span>
+                    </button>
+                    ` : ''}
+                    ${computedUnitsData.map(({ uTitle, unitNum: num, totalItems }) => {
                         const uName = uTitle.includes(":") ? uTitle.split(":")[1].trim() : uTitle;
                         const isActive = (String(num) === String(activeHubUnit));
+                        const hasItems = totalItems.length > 0;
                         return `
-                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}', '${grade.number}', '${normSubTab}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
-                            <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isActive ? 'text-white' : 'text-slate-800'}">${num}. Ünite</span>
+                        <button type="button" onclick="filterUnitHubSection('${containerId}', '${num}', '${grade.number}', '${normSubTab}')" data-unit="${num}" data-active="${isActive ? 'true' : 'false'}" class="unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 ${isActive ? 'shadow-md bg-slate-900 text-white ring-2 ring-slate-900/20' : hasItems && normSubTab === 'egitsel-oyunlar' ? 'bg-amber-50/70 text-slate-900 hover:bg-amber-100/80 border border-amber-200 shadow-sm' : 'bg-white text-slate-800 hover:bg-slate-100 hover:border-slate-300 border border-slate-200 shadow-sm'} active:scale-95 cursor-pointer">
+                            <span class="text-[11px] sm:text-xs font-black uppercase tracking-wider truncate w-full ${isActive ? 'text-white' : 'text-slate-800'}">${num}. Ünite${hasItems && normSubTab === 'egitsel-oyunlar' ? ` (${totalItems.length})` : ''}</span>
                             <span class="text-[9px] sm:text-[10px] font-medium ${isActive ? 'text-slate-300' : 'text-slate-500'} truncate w-full" title="${uName}">${uName}</span>
                         </button>
                         `;
@@ -5940,9 +6010,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                 </div>
             </div>
 
-                        <!-- 🌟 1. ÜNİTE ÖNE ÇIKAN BAŞYAPIT OYUNU (UZAY EKSPRESİ) -->
+                        <!-- 🌟 1. ÜNİTE ÖNE ÇIKAN BAŞYAPIT OYUNU -->
             ${normSubTab === 'egitsel-oyunlar' && (gNum === "6" || gNum === "7") ? `
-            <div class="relative bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-6 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
+            <div id="featured-unit1-banner-${containerId}" class="${(activeHubUnit === '1' || activeHubUnit === 'all') ? '' : 'hidden'} relative bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/40 border-2 border-amber-400/90 rounded-3xl p-5 sm:p-7 lg:p-8 mb-6 shadow-2xl overflow-hidden text-white group hover:border-amber-400 transition-all">
                 <div class="absolute -right-16 -bottom-16 w-80 h-80 bg-amber-500/15 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -left-16 -top-16 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
                 
@@ -5950,7 +6020,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     <div class="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4 sm:gap-5">
                         <div class="relative shrink-0">
                             <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl p-1 bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 shadow-[0_0_35px_rgba(245,158,11,0.5)] flex items-center justify-center transform group-hover:scale-105 transition-transform overflow-hidden">
-                                <img src="assets/rotali-uzay-ekspresi.jpg" alt="Rotalı Fenci - Uzay Ekspresi" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='rotali-fenci-logo.png'">
+                                <img src="assets/rotali-uzay-ekspresi.jpg" alt="${gNum === '7' ? 'ROTALI FENCİ – UZAY ÇAĞI' : 'Rotalı Fenci - Uzay Ekspresi'}" class="w-full h-full object-cover rounded-[22px] bg-slate-900" onerror="this.src='rotali-fenci-logo.png'">
                             </div>
                             <span class="absolute -bottom-2 -right-2 px-2 py-0.5 bg-amber-400 text-slate-950 text-[10px] font-black uppercase rounded-lg shadow font-mono">
                                 🚂 3D TREN
@@ -5967,7 +6037,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                 </span>
                             </div>
                             <h4 class="text-2xl sm:text-3xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-orange-400 mb-2">
-                                ${gNum === "7" ? "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi" : "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi"}
+                                ${gNum === "7" ? "ROTALI FENCİ – UZAY ÇAĞI" : "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi"}
                             </h4>
                             <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-3">
                                 ${gNum === "7" 
@@ -5995,7 +6065,7 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                     </div>
 
                     <div class="flex flex-col sm:flex-row lg:flex-col gap-2.5 shrink-0 w-full sm:w-auto">
-                        <button type="button" onclick="openInteractiveGameModal('${gNum === "7" ? "builtin-oyun-7-uzay-ekspresi" : "oyun-uzay-ekspresi"}', '${gNum === "7" ? "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi" : "Rotalı Fenci - Uzay Ekspresi"}')" class="px-8 py-3.5 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
+                        <button type="button" onclick="openInteractiveGameModal('${gNum === "7" ? "builtin-oyun-7-uzay-ekspresi" : "oyun-uzay-ekspresi"}', '${gNum === "7" ? "ROTALI FENCİ – UZAY ÇAĞI" : "Rotalı Fenci - Uzay Ekspresi"}')" class="px-8 py-3.5 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
                             <i class="fa-solid fa-play text-base"></i> OYUNU AÇ (TAM EKRAN)
                         </button>
                         <a href="${gNum === "7" ? "oyunlar/uzay-ekspresi-7.html" : "oyunlar/uzay-ekspresi.html"}" target="_blank" rel="noopener noreferrer" class="px-6 py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
@@ -6010,41 +6080,13 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
 
             <!-- 2. DİKEY ÜNİTE AKORDEONLARI (1'den 7'ye + LABORATUVAR) -->
             <div class="space-y-4">
-                ${unitList.map((uTitle, idx) => {
-                    const unitNum = idx + 1;
+                ${computedUnitsData.map(({ uTitle, unitNum, unitCustoms, unitBuiltinGames, totalItems }) => {
                     const accordionId = `${containerId}-unit-${unitNum}`;
-                    const isOpenInitial = (String(unitNum) === String(activeHubUnit));
-
-                    // Bu üniteyle KESİNLİKLE VE SADECE eşleşen özel materyaller
-                    const unitCustoms = customList.filter(m => {
-                        const gClean = String(m.grade || "").replace(/^grade-/, "").trim().toLowerCase();
-                        if (gClean !== "all" && gClean !== String(grade.number)) return false;
-                        if (!matchesSubTabCategory(m, normSubTab)) return false;
-                        const targetSec = getMaterialTargetSection(m);
-                        if (m.id === "mat-6-2-sim-kuvvet-laboratuvari" || (m.title && m.title.toLowerCase().includes("kuvvet laboratuvarı"))) {
-                            return String(unitNum) === "2";
-                        }
-                        return targetSec === String(unitNum);
-                    });
-
-                    let unitBuiltinGames = [];
-                    if (normSubTab === "egitsel-oyunlar") {
-                        const allBuiltinsForGrade = (builtinUnitGamesMap[gNum] && builtinUnitGamesMap[gNum][String(unitNum)]) || [];
-                        unitBuiltinGames = allBuiltinsForGrade.filter(g => {
-                            if (deletedIds.has(g.id)) return false;
-                            // unitCustoms içinde aynı ID, tam dosya yolu veya tam başlık varsa tekilleştir
-                            const alreadyExists = unitCustoms.some(c => 
-                                (c.id && c.id === g.id) ||
-                                (c.fileUrl && g.fileUrl && c.fileUrl.trim().toLowerCase() === g.fileUrl.trim().toLowerCase()) ||
-                                (c.title && g.title && c.title.toLowerCase().trim() === g.title.toLowerCase().trim())
-                            );
-                            return !alreadyExists;
-                        });
-                    }
-                    const totalItems = [...unitCustoms, ...unitBuiltinGames];
+                    const hasAnyItems = totalItems.length > 0;
+                    const isOpenInitial = (activeHubUnit === "all") ? hasAnyItems : (String(unitNum) === String(activeHubUnit));
 
                     return `
-                        <div data-unit="${unitNum}" class="unit-accordion-card ${isOpenInitial ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
+                        <div data-unit="${unitNum}" data-has-items="${hasAnyItems ? 'true' : 'false'}" class="unit-accordion-card ${isOpenInitial ? '' : 'hidden'} border border-slate-200 rounded-3xl bg-white shadow-sm overflow-hidden transition-all duration-200 hover:border-slate-300 hover:shadow-md">
                             <!-- Akordeon Başlığı -->
                             <button type="button" onclick="toggleAccordionSection('${accordionId}')" class="w-full p-4 sm:p-5 flex items-center justify-between gap-3 text-left transition-colors hover:bg-slate-50 cursor-pointer">
                                 <div class="flex items-center gap-3 sm:gap-4">
@@ -6166,9 +6208,9 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             const isCustom = !String(item.id).startsWith("std-") && !String(item.id).startsWith("oyun-");
                                             const isBuiltinGame = String(item.id).startsWith("oyun-");
                                             // 🚂 1. UZAY EKSPRESİ (Güneş Sistemi kelimesi içerse bile öncelikli eşleşir)
-                                            const isUzayEkspresiItem = (item.fileUrl && (item.fileUrl.includes("uzay-ekspresi") || item.fileUrl.includes("uzay_ekspresi"))) ||
-                                                (item.title && (item.title.toLowerCase().includes("uzay ekspresi") || item.title.toLowerCase().includes("uzay-ekspresi"))) ||
-                                                (item.id && (String(item.id).includes("uzay-ekspresi") || String(item.id).includes("uzay_ekspresi")));
+                                            const isUzayEkspresiItem = (item.fileUrl && (item.fileUrl.includes("uzay-ekspresi") || item.fileUrl.includes("uzay_ekspresi") || item.fileUrl.includes("uzay-cagi"))) ||
+                                                (item.title && (item.title.toLowerCase().includes("uzay ekspresi") || item.title.toLowerCase().includes("uzay-ekspresi") || item.title.toLowerCase().includes("uzay çağı") || item.title.toLowerCase().includes("uzay cagi"))) ||
+                                                (item.id && (String(item.id).includes("uzay-ekspresi") || String(item.id).includes("uzay_ekspresi") || String(item.id).includes("uzay-cagi")));
 
                                             // ⚖️ 0. DİNAMOMETRE SANAL LABORATUVARI
                                             const isDinamometreLaboratuvariItem = (item.fileUrl && item.fileUrl.includes("dinamometre")) ||
@@ -6225,8 +6267,8 @@ function renderGradeUnitBasedHub(grade, subData, subTab) {
                                             if (isDinamometreLaboratuvariItem) {
                                                 actionCall = `openInteractiveGameModal('oyunlar/dinamometre-laboratuvari.html', 'Dinamometre Sanal Laboratuvarı – Kuvveti Ölç, Deney Yap, Keşfet!')`;
                                             } else if (isUzayEkspresiItem) {
-                                                if (gNum === "7" || (item.fileUrl && item.fileUrl.includes("uzay-ekspresi-7")) || (item.title && item.title.includes("Ötesi"))) {
-                                                actionCall = `openInteractiveGameModal('builtin-oyun-7-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi')`;
+                                                if (gNum === "7" || (item.fileUrl && item.fileUrl.includes("uzay-ekspresi-7")) || (item.id && String(item.id).includes("7-")) || (item.title && (item.title.toLowerCase().includes("uzay çağı") || item.title.includes("Ötesi")))) {
+                                                actionCall = `openInteractiveGameModal('builtin-oyun-7-uzay-ekspresi', 'ROTALI FENCİ – UZAY ÇAĞI')`;
                                             } else {
                                                 actionCall = `openInteractiveGameModal('oyun-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi Keşfi')`;
                                             }
@@ -6636,7 +6678,10 @@ window.filterUnitHubSection = function(containerId, unitIndex, gradeNum, subTabK
             if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-medium text-slate-300 truncate w-full";
         } else {
             b.removeAttribute("data-active");
-            if (bUnit === "lab") {
+            if (bUnit === "all") {
+                b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-indigo-50 text-indigo-900 hover:bg-indigo-100 border border-indigo-200 shadow-sm active:scale-95 cursor-pointer";
+                if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-indigo-700/80 truncate w-full";
+            } else if (bUnit === "lab") {
                 b.className = "unit-filter-btn w-full min-w-0 px-1.5 sm:px-2 py-2 sm:py-2.5 lg:py-3 rounded-xl sm:rounded-2xl text-center transition-all flex flex-col justify-center items-center gap-0.5 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 border border-emerald-200 shadow-sm active:scale-95 cursor-pointer";
                 if (descSpan) descSpan.className = "text-[9px] sm:text-[10px] font-semibold text-emerald-700/80 truncate w-full";
             } else {
@@ -6646,11 +6691,23 @@ window.filterUnitHubSection = function(containerId, unitIndex, gradeNum, subTabK
         }
     });
 
-    // 2. Sadece seçilen üniteyi veya laboratuvarı göster, diğerlerini gizle
+    // Öne çıkan 1. ünite afişini yalnızca "1" veya "all" seçiliyken göster
+    const featuredBanner = document.getElementById(`featured-unit1-banner-${containerId}`);
+    if (featuredBanner) {
+        if (String(unitIndex) === "1" || String(unitIndex) === "all") {
+            featuredBanner.classList.remove("hidden");
+        } else {
+            featuredBanner.classList.add("hidden");
+        }
+    }
+
+    // 2. Seçilen üniteyi (veya "all" seçiliyse içerik barındıran tüm üniteleri) göster
     const unitCards = container.querySelectorAll(".unit-accordion-card");
     unitCards.forEach(card => {
         const cardUnit = card.getAttribute("data-unit");
-        if (cardUnit === String(unitIndex)) {
+        const hasItems = card.getAttribute("data-has-items") === "true";
+        const shouldShow = (String(unitIndex) === "all") ? hasItems : (cardUnit === String(unitIndex));
+        if (shouldShow) {
             card.classList.remove("hidden");
             const body = card.querySelector(".unit-card-body");
             const icon = card.querySelector(".unit-card-icon");
@@ -6941,10 +6998,10 @@ function renderGradeEducationalGames(grade, subData) {
         "7": [
             {
                 id: "builtin-oyun-7-uzay-ekspresi",
-                title: "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi",
+                title: "ROTALI FENCİ – UZAY ÇAĞI",
                 badge: "3D Uzay Treni",
                 type: "3D Koşu Oyunu",
-                desc: "3D uzay treninde derin uzayı keşfet, uzay teknolojilerini incele, 140 soruluk Maarif Modeli bilgi kapılarından geçerek rekor kır!",
+                desc: "7. Sınıf 1. Ünite Uzay Çağı konusuna özel 140 Maarif Modeli sorulu 3D uzay koşusu! Uzay teknolojileri, bulutsular ve derin uzay kapılarından geç!",
                 icon: "fa-solid fa-train-subway",
                 iconColor: "from-amber-400 via-orange-500 to-yellow-300",
                 fileUrl: "builtin-oyun-7-uzay-ekspresi"
@@ -7028,7 +7085,7 @@ function renderGradeEducationalGames(grade, subData) {
                                 </span>
                             </div>
                             <h4 class="text-2xl sm:text-3xl lg:text-4xl font-black font-orbitron tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-yellow-200 to-orange-400 mb-2">
-                                Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi
+                                ROTALI FENCİ – UZAY ÇAĞI
                             </h4>
                             <p class="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium mb-4">
                                 Uzay boşluğunda kuantum raylarında koş! Uzay araştırmalarını, gök adaları, bulutsuları, yıldızları ve kara delikleri keşfet, 140 soruluk Türkiye Yüzyılı Maarif Modeli bilgi kapılarından doğru geçerek rekor kır!
@@ -7056,7 +7113,7 @@ function renderGradeEducationalGames(grade, subData) {
 
                     <!-- Sağ: Hızlı Başlatma Butonları -->
                     <div class="flex flex-col sm:flex-row lg:flex-col gap-3 shrink-0 w-full sm:w-auto">
-                        <button type="button" onclick="openInteractiveGameModal('builtin-oyun-7-uzay-ekspresi', 'Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi')" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
+                        <button type="button" onclick="openInteractiveGameModal('builtin-oyun-7-uzay-ekspresi', 'ROTALI FENCİ – UZAY ÇAĞI')" class="px-8 py-4 bg-gradient-to-r from-amber-400 via-orange-500 to-amber-500 hover:from-amber-300 hover:to-orange-400 text-slate-950 font-black rounded-2xl text-sm uppercase tracking-wider shadow-[0_0_25px_rgba(245,158,11,0.5)] transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer border-2 border-amber-300">
                             <i class="fa-solid fa-play text-base"></i> OYUNU AÇ (TAM EKRAN)
                         </button>
                         <a href="oyunlar/uzay-ekspresi-7.html" target="_blank" rel="noopener noreferrer" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-bold rounded-2xl text-xs uppercase tracking-wider transition-all border border-white/20 flex items-center justify-center gap-2 text-center">
@@ -15353,9 +15410,9 @@ async function openOrDownloadMaterial(id, fallbackUrl = "#", fileName = "materya
         id === "builtin-oyun-7-uzay-ekspresi" ||
         id === "oyun-7-uzay-ekspresi" ||
         targetUrl.includes("uzay-ekspresi-7") ||
-        (checkTitle.includes("uzay ekspresi") && (checkTitle.includes("ötesi") || checkTitle.includes("7. sınıf") || checkTitle.includes("7-sinif")))
+        checkTitle.includes("uzay çağı") || checkTitle.includes("uzay cagi") || (checkTitle.includes("uzay ekspresi") && (checkTitle.includes("ötesi") || checkTitle.includes("7. sınıf") || checkTitle.includes("7-sinif")))
     ) {
-        openInteractiveGameModal("builtin-oyun-7-uzay-ekspresi", "Rotalı Fenci - Uzay Ekspresi: Güneş Sistemi ve Ötesi");
+        openInteractiveGameModal("builtin-oyun-7-uzay-ekspresi", "ROTALI FENCİ – UZAY ÇAĞI");
         return;
     }
 
@@ -17114,18 +17171,18 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
 
 
 
-    // 🚂 7. SINIF Rotalı Fenci - Uzay Ekspresi (3D Güneş Sistemi ve Ötesi)
-    if (str.includes("uzay-ekspresi-7") || str.includes("oyun-7-uzay-ekspresi") || resolvedKey === "builtin-oyun-7-uzay-ekspresi" || resolvedKey === "mat-7-oyun-uzay-ekspresi" || (titleStr.includes("uzay ekspresi") && (titleStr.includes("ötesi") || titleStr.includes("7.")))) {
+    // 🛰️ 7. SINIF ROTALI FENCİ – UZAY ÇAĞI (140 Özgün Soru • 1. Ünite)
+    if (str.includes("uzay-ekspresi-7") || str.includes("uzay-cagi") || str.includes("uzay çağı") || titleStr.includes("uzay çağı") || titleStr.includes("uzay cagi") || str.includes("oyun-7-uzay-ekspresi") || resolvedKey === "builtin-oyun-7-uzay-ekspresi" || resolvedKey === "mat-7-oyun-uzay-ekspresi" || (titleStr.includes("uzay ekspresi") && (titleStr.includes("ötesi") || titleStr.includes("7.")))) {
         modal.innerHTML = `
             <div class="bg-slate-950 rounded-2xl w-full max-w-[99vw] h-[98vh] h-[98dvh] border border-amber-400/80 shadow-2xl overflow-hidden flex flex-col animate-in zoom-in-95 duration-200" onclick="event.stopPropagation()">
                 <div class="p-2 sm:px-4 sm:py-2 bg-slate-900 border-b border-slate-800 flex items-center justify-between text-white shrink-0">
                     <div class="flex items-center gap-2 sm:gap-3">
                         <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-400 via-orange-500 to-yellow-300 text-slate-950 flex items-center justify-center text-sm sm:text-lg font-black shadow-md">
-                            <i class="fa-solid fa-train-subway"></i>
+                            <i class="fa-solid fa-satellite"></i>
                         </span>
                         <div>
-                            <h3 class="text-xs sm:text-base font-black text-amber-400">🚂 Rotalı Fenci - Uzay Ekspresi</h3>
-                            <p class="text-[10px] sm:text-xs text-slate-400 hidden sm:block">7. Sınıf Fen Bilimleri • 1. Ünite: Güneş Sistemi ve Ötesi (140 Soru)</p>
+                            <h3 class="text-xs sm:text-base font-black text-amber-400">🛰️ ROTALI FENCİ – UZAY ÇAĞI</h3>
+                            <p class="text-[10px] sm:text-xs text-slate-400 hidden sm:block">7. Sınıf Fen Bilimleri • 1. Ünite: Uzay Çağı (140 Özgün Maarif Sorusu)</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-2">
@@ -17138,10 +17195,12 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                     </div>
                 </div>
                 <div class="relative w-full flex-1 bg-slate-950 min-h-0">
-                    <iframe src="oyunlar/uzay-ekspresi-7.html" class="w-full h-full border-0 absolute inset-0" allow="fullscreen; autoplay; gamepad" loading="lazy"></iframe>
+                    <iframe src="oyunlar/uzay-ekspresi-7.html" class="w-full h-full border-0 absolute inset-0" allow="fullscreen; autoplay; gamepad" allowfullscreen loading="lazy"></iframe>
                 </div>
             </div>
         `;
+        modal.style.display = "flex";
+        modal.classList.remove("hidden");
         return;
     }
 
@@ -17173,6 +17232,7 @@ function openInteractiveGameModal(gameKeyOrUrl, gameTitle = "Eğitsel Fen Oyunu"
                 </div>
             </div>
         `;
+        modal.style.display = "flex";
         modal.classList.remove("hidden");
         return;
     }

@@ -1831,6 +1831,81 @@
             }
         }
 
+        // Akıllı Tahta & Dokunmatik Ekran İçin Parmakla Sürükle-Bırak Desteği (Pointer & Touch)
+        (function initTouchDragForWeights() {
+            if (window.rotaliDinoTouchDragInitialized) return;
+            window.rotaliDinoTouchDragInitialized = true;
+            let dragGhost = null;
+            let dragGrams = null;
+            let startX = 0;
+            let startY = 0;
+            let isDraggingTouch = false;
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const palette = document.getElementById('weights-palette');
+                const stage = document.getElementById('dynamometer-stage');
+                if (!palette || !stage) return;
+
+                palette.querySelectorAll('.weight-card').forEach(card => {
+                    card.style.touchAction = 'manipulation';
+                    const onAttr = card.getAttribute('onclick') || '';
+                    const m = onAttr.match(/addWeight\((\d+)\)/);
+                    if (!m) return;
+                    const grams = parseInt(m[1], 10);
+
+                    card.addEventListener('touchstart', (ev) => {
+                        if (!ev.touches || ev.touches.length !== 1) return;
+                        dragGrams = grams;
+                        startX = ev.touches[0].clientX;
+                        startY = ev.touches[0].clientY;
+                        isDraggingTouch = false;
+                    }, { passive: true });
+
+                    card.addEventListener('touchmove', (ev) => {
+                        if (dragGrams === null || !ev.touches || ev.touches.length !== 1) return;
+                        const t = ev.touches[0];
+                        const dist = Math.hypot(t.clientX - startX, t.clientY - startY);
+                        if (dist > 14) {
+                            isDraggingTouch = true;
+                            if (ev.cancelable) ev.preventDefault();
+                            if (!dragGhost) {
+                                dragGhost = document.createElement('div');
+                                dragGhost.className = 'fixed z-[9999] pointer-events-none px-3 py-2 rounded-xl bg-cyan-500/95 text-slate-950 font-black text-xs shadow-2xl border-2 border-white -translate-x-1/2 -translate-y-1/2';
+                                dragGhost.textContent = (dragGrams >= 1000 ? (dragGrams / 1000) + ' kg' : dragGrams + ' g') + ' (' + (dragGrams / 100) + ' N)';
+                                document.body.appendChild(dragGhost);
+                            }
+                            dragGhost.style.left = t.clientX + 'px';
+                            dragGhost.style.top = t.clientY + 'px';
+                            const r = stage.getBoundingClientRect();
+                            if (t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom) {
+                                stage.classList.add('ring-2', 'ring-cyan-400');
+                            } else {
+                                stage.classList.remove('ring-2', 'ring-cyan-400');
+                            }
+                        }
+                    }, { passive: false });
+
+                    card.addEventListener('touchend', (ev) => {
+                        stage.classList.remove('ring-2', 'ring-cyan-400');
+                        if (dragGhost) {
+                            dragGhost.remove();
+                            dragGhost = null;
+                        }
+                        if (isDraggingTouch && dragGrams !== null && ev.changedTouches && ev.changedTouches[0]) {
+                            const t = ev.changedTouches[0];
+                            const r = stage.getBoundingClientRect();
+                            if (t.clientX >= r.left && t.clientX <= r.right && t.clientY >= r.top && t.clientY <= r.bottom) {
+                                addWeight(dragGrams);
+                                if (ev.cancelable) ev.preventDefault();
+                            }
+                        }
+                        dragGrams = null;
+                        isDraggingTouch = false;
+                    });
+                });
+            });
+        })();
+
         // Cetveli Aç / Kapa
         function toggleRuler() {
             State.showRuler = !State.showRuler;

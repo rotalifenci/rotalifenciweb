@@ -152,3 +152,38 @@ test("Pre-Deploy Guard kontrolü hatasız geçmeli ve Vercel fonksiyon limiti <=
   assert.equal(result.ok, true, `Guard hataları: ${result.errors.join("; ")}`);
   assert.ok(result.activeApiFunctionsCount <= 12);
 });
+
+test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksiksiz, dokunmatik uyumlu ve bağımsız olmalı", () => {
+  const byId = new Map(rootMaterials.map((m) => [m.id, m]));
+  const g7Mat = byId.get("mat-7-oyun-uzay-ekspresi");
+  assert.ok(g7Mat, "mat-7-oyun-uzay-ekspresi kayıtlı olmalı");
+  assert.equal(g7Mat.title, "ROTALI FENCİ – UZAY ÇAĞI");
+  assert.equal(g7Mat.unit, "1. Ünite: Uzay Çağı");
+  assert.equal(g7Mat.grade, "7");
+
+  const dinoMat = byId.get("mat-5-2-sim-dinamometre-laboratuvari");
+  assert.ok(dinoMat && dinoMat.imageUrl, "5.2 dinamometre kaydı ve kapak görseli mevcut olmalı");
+  assert.equal(dinoMat.targetSection, "2");
+
+  const u7Html = fs.readFileSync(path.join(webDir, "oyunlar", "uzay-ekspresi-7.html"), "utf8");
+  assert.ok(u7Html.includes("ROTALI FENCİ – UZAY ÇAĞI"), "7. sınıf oyunu yeni adıyla açılmalı");
+  assert.equal(/uzay ekspresi|6\.\s*sınıf|rotali_express_best_score/i.test(u7Html), false, "7. sınıf oyununda 6. sınıf/Uzay Ekspresi kalıntısı olmamalı");
+  assert.ok(u7Html.includes("rotali_uzay_cagi_7_best_score"), "7. sınıf oyunu bağımsız localStorage anahtarı kullanmalı");
+  const q7Json = JSON.parse(fs.readFileSync(path.join(webDir, "data", "sorular_7_1_uzay.json"), "utf8"));
+  assert.equal(q7Json.length, 140);
+  assert.ok(u7Html.includes("Evren > Uzay > Dünya"), "7. sınıf oyunu 140 özgün 7. sınıf sorusunu içermeli");
+
+  const dinoHtml = fs.readFileSync(path.join(webDir, "oyunlar", "dinamometre-laboratuvari.html"), "utf8");
+  assert.ok(dinoHtml.includes("touchstart") && dinoHtml.includes("requestFullscreen"), "Dinamometre dokunmatik ve tam ekran desteklemeli");
+
+  const kuvvetHtml = fs.readFileSync(path.join(webDir, "oyunlar", "kuvvet-laboratuvari.html"), "utf8");
+  assert.ok(kuvvetHtml.includes("touch") && kuvvetHtml.includes("requestFullscreen"), "Kuvvet simülasyonu dokunmatik ve tam ekran desteklemeli");
+
+  const isHtml = fs.readFileSync(path.join(webDir, "oyunlar", "is-laboratuvari.html"), "utf8");
+  assert.ok(isHtml.includes("slider-force") && isHtml.includes("slider-distance") && isHtml.includes("touchstart") && isHtml.includes("requestFullscreen"), "İş simülasyonu F, Δx, W=F·Δx, dokunmatik ve tam ekran desteklemeli");
+
+  const appJs = fs.readFileSync(path.join(webDir, "js", "app.js"), "utf8");
+  assert.ok(appJs.includes('id: "mat-5-2-sim-dinamometre-laboratuvari"'), "builtinUnitGamesMap 5.2 Dinamometre içermeli");
+  assert.ok(appJs.includes("isPhysicsUnit2Sim"), "2. Ünite simülasyonları lab sekmesine sapmamalı");
+  assert.ok(appJs.includes('normSubTab === "egitsel-oyunlar" ? "all" : "1"') || appJs.includes('tabName === "egitsel-oyunlar") ? "all" : "1"'), "Eğitsel Oyunlar varsayılan görünümü 2. üniteyi de göstermeli");
+});

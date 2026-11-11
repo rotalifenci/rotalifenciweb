@@ -313,6 +313,23 @@
                     <span id="label-force-slider" class="font-mono text-cyan-300 font-black text-xs sm:text-sm min-w-[42px] text-right">45 N</span>
                 </div>
 
+                <!-- Alınan Yol / Yer Değiştirme (Δx) Kaydırıcısı -->
+                <div class="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-0 bg-slate-950/75 px-2.5 sm:px-3 py-1.5 rounded-2xl border border-emerald-500/35 shadow-inner">
+                    <span class="text-[10px] sm:text-xs font-black text-emerald-400 uppercase tracking-wider shrink-0 flex items-center gap-1">
+                        <i class="fa-solid fa-arrows-left-right"></i> <span class="hidden sm:inline">Yol (Δx):</span>
+                    </span>
+                    <button type="button" id="btn-dist-minus" onclick="stepDistance(-0.5)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-rose-300 border border-slate-700 text-sm font-mono font-black flex items-center justify-center cursor-pointer select-none active:scale-90 shadow-sm" title="0.5 m Azalt">−</button>
+                    <input type="range" id="slider-distance" min="0" max="10" value="1.8" step="0.5" class="w-full flex-1" oninput="onDistanceSliderChange(this.value)">
+                    <button type="button" id="btn-dist-plus" onclick="stepDistance(0.5)" class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-slate-700 text-sm font-mono font-black flex items-center justify-center cursor-pointer select-none active:scale-90 shadow-sm" title="0.5 m Artır">+</button>
+                    <span id="label-distance-slider" class="font-mono text-emerald-300 font-black text-xs sm:text-sm min-w-[44px] text-right">1.8 m</span>
+                </div>
+
+                <!-- Canlı Formül & Karşılaştırma Özeti -->
+                <div id="hud-formula-chip" class="hidden xl:flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-indigo-950/80 border border-indigo-400/40 text-[11px] font-mono font-black text-indigo-200 shrink-0">
+                    <i class="fa-solid fa-scale-balanced text-amber-400"></i>
+                    <span id="hud-formula-text">W = 45 × 1.8 = 81.0 J</span>
+                </div>
+
                 <div class="flex items-center gap-1 shrink-0">
                     <button type="button" onclick="togglePlayAnimation()" id="btn-play-sim" class="py-1.5 px-3 bg-gradient-to-r from-emerald-500 via-teal-400 to-emerald-500 hover:from-emerald-400 hover:to-teal-300 text-slate-950 font-black text-xs uppercase rounded-xl shadow-md transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer">
                         <i class="fa-solid fa-play" id="icon-play-sim"></i> <span id="text-play-sim">Uygula & İt</span>
@@ -1623,6 +1640,7 @@
         let isSimPlaying = false;
         let simProgress = 0; // 0..1 animation progress
         let customForce = 45;
+        let customDistance = 1.8;
 
         // Öğrenci ilerleme durumu (localStorage senkronize)
         let studentResults = {}; // { expId: { completed: true/false, userPred: true/false, isCorrect: true/false } }
@@ -2508,7 +2526,7 @@
             if (exp.hasDisplacement) {
                 distArrowGroup.visible = true;
                 distArrowLabel.visible = true;
-                const dScale = Math.max(0.8, (exp.defaultDistance / 3) * 2.2);
+                const dScale = Math.max(0.5, Math.min(3.5, (customDistance / 3) * 2.0));
 
                 if (exp.displacementDirection === 'horizontal_forward' || exp.displacementDirection === 'horizontal_right') {
                     distArrowGroup.position.set(pos.x, pos.y + 0.1, pos.z + 0.8);
@@ -2577,21 +2595,21 @@
                         mesh.rotation.y = simProgress * 1.35;
                     } else if (currentInteractiveGroup.userData.isRamp) {
                         // Rampa boyunca eğimli kayma
-                        const dist = simProgress * exp.defaultDistance;
+                        const dist = simProgress * customDistance;
                         mesh.position.set(-1.2 + Math.cos(0.35) * dist, 0.65 + Math.sin(0.35) * dist, 0);
                     } else if (currentInteractiveGroup.userData.isRolling) {
                         // Top yuvarlanması
-                        mesh.position.x = simProgress * exp.defaultDistance;
+                        mesh.position.x = simProgress * customDistance;
                         mesh.rotation.z = -simProgress * 6;
                     } else if (exp.displacementDirection === 'vertical_up') {
                         // Düşey yükselme
-                        mesh.position.y = (typeIsHolding(exp.modelType) ? 0.8 : 0) + simProgress * exp.defaultDistance;
+                        mesh.position.y = (typeIsHolding(exp.modelType) ? 0.8 : 0) + simProgress * customDistance;
                     } else if (exp.displacementDirection === 'horizontal_backward') {
                         // Geriye doğru çekilme
-                        mesh.position.x = -simProgress * exp.defaultDistance;
+                        mesh.position.x = -simProgress * customDistance;
                     } else {
                         // Standart yatay ilerleme
-                        mesh.position.x = simProgress * exp.defaultDistance;
+                        mesh.position.x = simProgress * customDistance;
                     }
                 } else {
                     // Sabit veya kilitli nesne (Kuvvet oku titrer ama nesne hareket etmez)
@@ -2637,6 +2655,7 @@
             isSimPlaying = false;
             simProgress = 0;
             customForce = exp.defaultForce;
+            customDistance = exp.hasDisplacement ? Number(exp.defaultDistance || 0) : 0;
 
             // UI Güncelle
             document.getElementById('scene-experiment-badge').innerHTML = `<i class="fa-solid fa-cube mr-1"></i> Deney ${exp.id}: ${exp.title}`;
@@ -2663,6 +2682,21 @@
             const slider = document.getElementById('slider-force');
             if (slider) slider.value = customForce;
             document.getElementById('label-force-slider').textContent = `${customForce} N`;
+            const distSlider = document.getElementById('slider-distance');
+            const distLabel = document.getElementById('label-distance-slider');
+            const distMinus = document.getElementById('btn-dist-minus');
+            const distPlus = document.getElementById('btn-dist-plus');
+            if (distSlider) {
+                distSlider.value = customDistance;
+                distSlider.disabled = !exp.hasDisplacement;
+                distSlider.style.opacity = exp.hasDisplacement ? '1' : '0.45';
+            }
+            if (distMinus) distMinus.disabled = !exp.hasDisplacement;
+            if (distPlus) distPlus.disabled = !exp.hasDisplacement;
+            if (distLabel) distLabel.textContent = exp.hasDisplacement ? `${customDistance.toFixed(1)} m` : '0.0 m (Sabit)';
+            if (typeof updateBillboardLabelText === 'function' && typeof distArrowLabel !== 'undefined' && distArrowLabel) {
+                updateBillboardLabelText(distArrowLabel, `Δx = ${customDistance.toFixed(1)} m`, '#059669');
+            }
 
             // Tahmin butonlarını sıfırla
             resetPredictionButtonsUI();
@@ -2685,10 +2719,22 @@
 
         function updateHUDValues(exp, isRevealed) {
             document.getElementById('hud-force-val').textContent = `${customForce} N`;
-            const dist = exp.hasDisplacement ? exp.defaultDistance : 0.0;
+            const dist = exp.hasDisplacement ? customDistance : 0.0;
             document.getElementById('hud-distance-val').textContent = `${dist.toFixed(1)} m`;
 
-            const work = (exp.hasWork && exp.hasDisplacement && !exp.isPerpendicular) ? (customForce * dist) : 0.0;
+            const work = (exp.hasWork && exp.hasDisplacement && !exp.isPerpendicular && dist > 0 && customForce > 0) ? (customForce * dist) : 0.0;
+            const formulaEl = document.getElementById('hud-formula-text');
+            if (formulaEl) {
+                if (exp.isPerpendicular) {
+                    formulaEl.textContent = `W = 0.0 J (F ⊥ Δx → İş Yok)`;
+                } else if (!exp.hasDisplacement || dist === 0) {
+                    formulaEl.textContent = `W = ${customForce} × 0.0 = 0.0 J (Yol = 0)`;
+                } else if (customForce === 0) {
+                    formulaEl.textContent = `W = 0 × ${dist.toFixed(1)} = 0.0 J (F = 0)`;
+                } else {
+                    formulaEl.textContent = `W = ${customForce} × ${dist.toFixed(1)} = ${work.toFixed(1)} J`;
+                }
+            }
             document.getElementById('hud-work-val').textContent = `${work.toFixed(1)} J`;
 
             const badge = document.getElementById('hud-decision-badge');
@@ -2726,6 +2772,37 @@
             if (slider) slider.value = next;
             onForceSliderChange(next);
         }
+
+        function onDistanceSliderChange(val) {
+            const exp = EXPERIMENTS[currentExpIndex];
+            customDistance = (exp && !exp.hasDisplacement) ? 0 : Math.max(0, Math.min(10, parseFloat(val) || 0));
+            const lbl = document.getElementById('label-distance-slider');
+            if (lbl) lbl.textContent = `${customDistance.toFixed(1)} m`;
+            updateHUDValues(exp, studentResults[exp.id] ? studentResults[exp.id].completed : false);
+            if (typeof distArrowLabel !== 'undefined' && distArrowLabel) {
+                updateBillboardLabelText(distArrowLabel, `Δx = ${customDistance.toFixed(1)} m`, '#059669');
+            }
+            updateVectorVisuals(simProgress);
+        }
+
+        function stepDistance(delta) {
+            const exp = EXPERIMENTS[currentExpIndex];
+            if (exp && !exp.hasDisplacement) return;
+            const next = Math.max(0, Math.min(10, Math.round((customDistance + delta) * 10) / 10));
+            const slider = document.getElementById('slider-distance');
+            if (slider) slider.value = next;
+            onDistanceSliderChange(next);
+        }
+
+        // Dokunmatik ve Akıllı Tahta Etkileşimi
+        window.addEventListener('DOMContentLoaded', () => {
+            const wc = document.getElementById('webgl-container');
+            if (wc) {
+                wc.addEventListener('touchstart', () => {}, { passive: true });
+                wc.addEventListener('touchmove', () => {}, { passive: true });
+                wc.addEventListener('pointerdown', () => {}, { passive: true });
+            }
+        });
 
         function togglePlayAnimation() {
             isSimPlaying = !isSimPlaying;
@@ -2835,7 +2912,7 @@
                     <div class="mb-2">${exp.scientificExplanation}</div>
                     <div class="p-2 rounded-lg bg-emerald-900/40 border border-emerald-500/30 font-mono text-[11px] text-emerald-100 flex items-center justify-between">
                         <span>Yapılan İş:</span>
-                        <span class="font-black text-emerald-300">${(exp.hasWork ? customForce * exp.defaultDistance : 0).toFixed(1)} Joule</span>
+                        <span class="font-black text-emerald-300">${(exp.hasWork && exp.hasDisplacement && !exp.isPerpendicular ? customForce * customDistance : 0).toFixed(1)} Joule</span>
                     </div>
                 `;
 
