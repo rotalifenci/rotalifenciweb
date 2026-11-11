@@ -68,6 +68,7 @@
     "api/sync.js",
     "api/publish-test.js",
     "js/app.js",
+    "js/tubitak-research.js",
     "js/yaprak-test.js",
     "css/yaprak-test.css",
     "scripts/zkitap_engine.js",

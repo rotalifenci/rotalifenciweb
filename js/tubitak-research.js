@@ -321,22 +321,19 @@
                     </p>
                 </div>
 
-                <!-- 3 Proje Bilgilendirme Rozetleri -->
+                <!-- 3 Proje Bilgilendirme Kartları -->
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 mb-7 relative z-10 text-center">
-                    <div class="p-3 rounded-2xl bg-white/5 border border-amber-400/20">
+                    <div class="p-3 rounded-2xl bg-white/5 border border-amber-400/20 flex flex-col items-center justify-center">
                         <i class="fa-solid fa-monument text-amber-400 text-sm mb-1 block"></i>
-                        <div class="text-[11px] font-black text-amber-200">1. Tarihî Eserler</div>
-                        <div class="text-[9px] text-slate-400">Sivas Kültür Atlası</div>
+                        <div class="text-[11px] font-black text-amber-200">1. PROJE EKİBİ</div>
                     </div>
-                    <div class="p-3 rounded-2xl bg-white/5 border border-cyan-400/20">
+                    <div class="p-3 rounded-2xl bg-white/5 border border-cyan-400/20 flex flex-col items-center justify-center">
                         <i class="fa-solid fa-atom text-cyan-400 text-sm mb-1 block"></i>
-                        <div class="text-[11px] font-black text-cyan-200">2. Bilim İnsanları</div>
-                        <div class="text-[9px] text-slate-400">Türk-İslam Bilginleri</div>
+                        <div class="text-[11px] font-black text-cyan-200">2. PROJE EKİBİ</div>
                     </div>
-                    <div class="p-3 rounded-2xl bg-white/5 border border-emerald-400/20">
+                    <div class="p-3 rounded-2xl bg-white/5 border border-emerald-400/20 flex flex-col items-center justify-center">
                         <i class="fa-solid fa-timeline text-emerald-400 text-sm mb-1 block"></i>
-                        <div class="text-[11px] font-black text-emerald-200">3. Siyer Kronolojisi</div>
-                        <div class="text-[9px] text-slate-400">571–632 Zaman Çizgisi</div>
+                        <div class="text-[11px] font-black text-emerald-200">3. PROJE EKİBİ</div>
                     </div>
                 </div>
 

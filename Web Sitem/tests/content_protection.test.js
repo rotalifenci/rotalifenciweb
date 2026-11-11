@@ -186,4 +186,10 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   assert.ok(appJs.includes('id: "mat-5-2-sim-dinamometre-laboratuvari"'), "builtinUnitGamesMap 5.2 Dinamometre içermeli");
   assert.ok(appJs.includes("isPhysicsUnit2Sim"), "2. Ünite simülasyonları lab sekmesine sapmamalı");
   assert.ok(appJs.includes('normSubTab === "egitsel-oyunlar" ? "all" : "1"') || appJs.includes('tabName === "egitsel-oyunlar") ? "all" : "1"'), "Eğitsel Oyunlar varsayılan görünümü 2. üniteyi de göstermeli");
+
+  const tubitakJs = fs.readFileSync(path.join(webDir, "js", "tubitak-research.js"), "utf8");
+  for (const label of ["1. PROJE EKİBİ", "2. PROJE EKİBİ", "3. PROJE EKİBİ"]) {
+    assert.ok(tubitakJs.includes(label), `TÜBİTAK giriş kartı eksik: ${label}`);
+  }
+  assert.equal(/Sivas Kültür Atlası|Türk-İslam Bilginleri|571–632 Zaman Çizgisi/.test(tubitakJs), false, "TÜBİTAK giriş kartlarında proje adı/alt başlık olmamalı");
 });
