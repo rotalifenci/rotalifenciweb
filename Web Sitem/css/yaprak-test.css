@@ -9086,3 +9086,24 @@ body.pdf-export-mode .footer-right-web {
   color: #64748b;
   line-height: 1.4;
 }
+
+/* 🛡️ Soru-Görsel Kutusu: Boş kutu çerçevesini gizle ve img responsive standardı */
+.question-visual-box:empty {
+  display: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  min-height: 0 !important;
+  height: 0 !important;
+}
+.question-visual-box img {
+  max-height: 120px !important;
+  max-width: 100% !important;
+  width: auto !important;
+  height: auto !important;
+  display: block !important;
+  margin: 0 auto !important;
+  object-fit: contain !important;
+  border-radius: 6px !important;
+}

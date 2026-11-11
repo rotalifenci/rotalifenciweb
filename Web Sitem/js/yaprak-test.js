@@ -497,7 +497,19 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
     function prepareSvgForDisplay(svgStr, question = '', options = {}, correctAnswer = '') {
-    if (!svgStr || typeof svgStr !== 'string' || !svgStr.includes('<svg')) return '';
+    if (!svgStr || typeof svgStr !== 'string') return '';
+    const trimmed = svgStr.trim();
+    if (!trimmed) return '';
+
+    // 🖼️ Eğer görsel doğrudan <img src="..."> veya <picture> ise responsive stil ekleyip döndür:
+    if (trimmed.startsWith('<img') || trimmed.startsWith('<picture') || (trimmed.includes('<img') && !trimmed.includes('<svg'))) {
+      if (!trimmed.includes('style=')) {
+        return trimmed.replace('<img', '<img style="max-height:120px; max-width:100%; object-fit:contain; display:block; margin:0 auto; border-radius:6px;"');
+      }
+      return trimmed;
+    }
+
+    if (!trimmed.includes('<svg')) return '';
     let out = svgStr;
 
     // 1. Cevap sızıntılarını ve ipuçlarını temizle
@@ -1685,6 +1697,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return out;
   }
 
+  
+  // 🛡️ Soru-Görsel Metin Uyum Koruyucusu: Görselde (?) yoksa soru kökündeki hayali (?) referanslarını temizler
+  function cleanQuestionVisualReferences(text, visualSvg) {
+    if (!text || typeof text !== 'string') return text || '';
+    const v = String(visualSvg || '');
+    const hasVisualQuestionMark = v.includes('?') || v.includes('soru_isareti') || v.includes('soru-isareti');
+
+    let out = text;
+    // Eğer görselde soru işareti yoksa soru kökündeki "(?)" referanslarını temizle ve akıcı hale getir
+    if (!hasVisualQuestionMark) {
+      out = out
+        .replace(/soru\s+işareti\s*\(\?\)\s+ile\s+gösterilen/gi, 'gösterilen')
+        .replace(/soru\s+işareti\s*\(\?\)\s+ile\s+gösterilmiştir/gi, 'gösterilmiştir')
+        .replace(/soru\s+işareti\s*\(\?\)\s+ile\s+belirtilen/gi, 'belirtilen')
+        .replace(/soru\s+işareti\s*\(\?\)\s+ile\s+belirtilmiştir/gi, 'belirtilmiştir')
+        .replace(/soru\s+işareti\s*\(\?\)/gi, 'görseldeki araç / model')
+        .replace(/soru\s+işaretiyle\s+gösterilen/gi, 'gösterilen')
+        .replace(/soru\s+işareti\s+ile\s+gösterilen/gi, 'gösterilen')
+        .replace(/soru\s+işaretli\s+yerdeki/gi, 'görseldeki');
+    }
+    return out.trim();
+  }
+
   function renderQuestions() {
     const placeholder = document.getElementById('previewEmptyPlaceholder');
     if (placeholder) placeholder.style.display = 'none';
@@ -1950,7 +1985,7 @@ document.addEventListener('DOMContentLoaded', () => {
             ${visualBoxHtml}
             ${gridHtml}
             <div class="question-text-and-options">
-              <div class="question-body">${escapeHtml(cleanTurkishAndLatex(q.question))}</div>
+              <div class="question-body">${escapeHtml(cleanQuestionVisualReferences(cleanTurkishAndLatex(q.question), q.visual_svg))}</div>
               ${contentBodyHtml}
             </div>
             <div class="solution-box" style="display: ${showSolutions ? 'block' : 'none'};">

@@ -399,6 +399,9 @@ ${typeSpecificInstructions}
 ${sourceInstructionBlock}
 
 GÖRSEL KURALLARI (HAYATİ ÖNEMDE KESİN KURALLAR):
+0. GÖRSEL VE SORU METNİ %100 BİREBİR UYUMLU OLMALIDIR:
+   - Eğer görselde soru işareti (?), numara (1, 2, 3) veya harf (X, Y) yoksa; soru metninde KESİNLİKLE "soru işareti (?) ile gösterilen" veya "numaralandırılmış" gibi hayali ifadelere YER VERME!
+   - Örneğin bir yapay uydu veya uzay aracı fotoğrafı kullanılıyorsa soru kökünde doğrudan: "Yandaki görselde Dünya yörüngesinde dolanan insan yapımı bir araç verilmiştir / gösterilmiştir..." şeklinde sor.
 1. KESİNLİKLE VE ASLA CEVABI GÖRSELE YAZMA (SIFIR İPUCU KURALI):
    - Soru neyi soruyorsa (kavram adı, geometrik şekil, cisim adı, evre, büyüklük sıralaması, özellik vb.) görselde o cevabı veya ipucunu KESİNLİKLE YAZMA!
    - Örneğin:
