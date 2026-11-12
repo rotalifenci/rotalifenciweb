@@ -1723,18 +1723,30 @@ window.TUBITAK_SEED_DATA = {
         {
           "key": "c1_olay",
           "title": "1. OLAY",
-          "placeholder": "Seçilen yılda meydana gelen siyer olayını, tarihsel gelişimini ve önemli ayrıntılarını yazınız (belirsizse kaynaklardaki farklılıkları açıklayınız)...",
+          "placeholder": "Seçilen yılda meydana gelen birinci siyer olayını, tarihsel gelişimini ve önemli ayrıntılarını yazınız (belirsizse kaynaklardaki farklılıkları açıklayınız)...",
           "required": true
         },
         {
+          "key": "c1_olay_2",
+          "title": "2. OLAY",
+          "placeholder": "Aynı yılda meydana gelen ikinci siyer olayını, tarihsel gelişimini ve ayrıntılarını yazınız (isteğe bağlı)...",
+          "required": false
+        },
+        {
+          "key": "c1_olay_3",
+          "title": "3. OLAY",
+          "placeholder": "Aynı yılda meydana gelen üçüncü siyer olayını, tarihsel gelişimini ve ayrıntılarını yazınız (isteğe bağlı)...",
+          "required": false
+        },
+        {
           "key": "c2_kok_deger",
-          "title": "2. KÖK DEĞER",
+          "title": "4. KÖK DEĞER",
           "placeholder": "Olayla bağlantılı kök değer(ler)i ve olayla ilişkisini yazınız (belirlenemiyorsa durumu açıklayınız)...",
           "required": false
         },
         {
           "key": "c3_kaynakca",
-          "title": "3. KAYNAKÇA",
+          "title": "5. KAYNAKÇA",
           "placeholder": "Yazar, eser/makale adı, yayın yılı, sayfa numarası, yayınevi ve internet bağlantısını yazınız...",
           "required": true
         }

@@ -273,8 +273,8 @@ test("5.2, 6.2, 7.1 (ROTALI FENCİ – UZAY ÇAĞI) ve 7.2 simülasyonları eksi
   const p3 = seedJson.projects["proje-siyer"];
   assert.ok(p3, "proje-siyer bulunmalı");
   assert.equal(p3.items.length, 62, "Proje 3 listesinde 571–632 arası tam 62 yıl bulunmalı");
-  assert.equal(p3.criteriaList.length, 3, "Proje 3 formunda tam 3 kriter bulunmalı (1. OLAY, 2. KÖK DEĞER, 3. KAYNAKÇA)");
-  assert.deepEqual(p3.criteriaList.map(c => c.title), ["1. OLAY", "2. KÖK DEĞER", "3. KAYNAKÇA"]);
+  assert.equal(p3.criteriaList.length, 5, "Proje 3 formunda 3 olay alanı + kök değer + kaynakça olmak üzere tam 5 kriter bulunmalı");
+  assert.deepEqual(p3.criteriaList.map(c => c.title), ["1. OLAY", "2. OLAY", "3. OLAY", "4. KÖK DEĞER", "5. KAYNAKÇA"]);
   assert.equal(p3.studentTeam.length, 5, "Proje 3 ekibi 5 öğrenciden oluşmalı");
   assert.deepEqual(p3.studentTeam.map(s => s.name), [
     "Hümeyra BULUT",

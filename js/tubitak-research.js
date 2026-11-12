@@ -556,12 +556,11 @@
                         ` : items.map((it, idx) => {
                             const isSelected = it.id === activeItemId;
                             const filledCount = countItemFilledCriteria(it.id);
-                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 14 : (activeProjectId === 'proje-siyer' ? 3 : 18));
+                            const totalCriteria = projData.criteriaList ? projData.criteriaList.length : (activeProjectId === 'proje-bilim' ? 14 : (activeProjectId === 'proje-siyer' ? 5 : 18));
                             const pct = totalCriteria > 0 ? Math.round((filledCount / totalCriteria) * 100) : 0;
                             const status = getItemStatus(it.id);
                             const permanentOrder = getItemPermanentOrder(it);
                             const ownerStu = (activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? getStudentById(getItemAssignedStudentId(it)) : null;
-                            const siyerEventCount = activeProjectId === 'proje-siyer' ? getSiyerYearEventIds(it.id).length : 1;
 
                             return `
                             <div onclick="window.RotaliTubitak.selectItem('${it.id}')" class="p-3.5 rounded-2xl transition-all cursor-pointer border flex flex-col gap-1.5 ${isSelected ? 'bg-amber-50/80 border-amber-400 shadow-sm ring-2 ring-amber-400/20' : 'bg-slate-50/60 hover:bg-slate-100 border-slate-200'}">
@@ -569,13 +568,12 @@
                                     <span class="text-[10px] font-black uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                                         ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? `<span class="px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-800 font-black">#${permanentOrder}</span>` : ''}
                                         <span>${it.district || it.field || (it.year ? `${it.year}. Yıl` : 'Kayıt')}</span>
-                                        ${activeProjectId === 'proje-siyer' ? `<span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 font-bold">${siyerEventCount} Olay</span>` : ''}
                                     </span>
                                     <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${getStatusBadgeClass(status)}">
                                         ${getStatusLabel(status)}
                                     </span>
                                 </div>
-                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim' || activeProjectId === 'proje-siyer') ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
+                                <h4 class="text-xs sm:text-sm font-black text-slate-900 leading-snug ${(activeProjectId === 'proje-tarih' || activeProjectId === 'proje-bilim') ? '' : 'line-clamp-1'}">${escapeHtml(it.title)}</h4>
                                 ${ownerStu ? `
                                 <div class="text-[10px] font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 rounded-lg px-2 py-0.5 self-start">
                                     <i class="fa-solid fa-user-graduate mr-1"></i>${escapeHtml(ownerStu.name)}
@@ -751,10 +749,6 @@
                         <button type="button" ${item.year >= 632 ? 'disabled' : ''} onclick="window.RotaliTubitak.navigateSiyerYear(${item.year + 1})" class="px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-200 text-xs font-bold transition-colors cursor-pointer" title="Sonraki Yıl">
                             Sonraki Yıl →
                         </button>
-                        <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.addSiyerEvent('${item.id}', this)" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-black transition-all flex items-center gap-1 cursor-pointer shadow-sm">
-                            <i class="fa-solid fa-plus"></i>
-                            <span>Yeni Olay Ekle</span>
-                        </button>
                     </div>
                     ` : ''}
                     ${!isTeacher ? `
@@ -789,106 +783,6 @@
         </div>
 
         <!-- 📜 ARAŞTIRMA KRİTERLERİ LİSTESİ -->
-        ${activeProjectId === 'proje-siyer' ? `
-        <div class="space-y-6">
-            ${getSiyerYearEventIds(item.id).map((evId, evIdx) => {
-                const evFilled = criteriaList.filter(c => (runtimeRecords[`${evId}__${c.key}`]?.content || '').trim().length > 0).length;
-                const olayVal = (runtimeRecords[`${evId}__c1_olay`]?.content || '').trim();
-                const kaynakVal = (runtimeRecords[`${evId}__c3_kaynakca`]?.content || '').trim();
-                const evSources = getItemSources(evId);
-                const missingSource = olayVal.length > 0 && kaynakVal.length === 0 && evSources.length === 0;
-                const allYearItems = seedData?.projects?.['proje-siyer']?.items || [];
-
-                return `
-                <div class="p-4 sm:p-5 rounded-3xl bg-white border-2 ${evIdx === 0 ? 'border-emerald-200' : 'border-indigo-200'} shadow-sm space-y-4">
-                    <div class="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-100">
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <span class="px-2.5 py-1 rounded-xl ${evIdx === 0 ? 'bg-emerald-600 text-white' : 'bg-indigo-600 text-white'} text-xs font-black">
-                                ${item.year} Yılı • Olay ${evIdx + 1}
-                            </span>
-                            <span class="px-2 py-0.5 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-bold">
-                                ${evFilled}/${criteriaList.length} Kriter
-                            </span>
-                            ${missingSource ? `
-                            <span class="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 text-[10px] font-black">
-                                ⚠️ Kaynakça Eksik
-                            </span>
-                            ` : ''}
-                        </div>
-                        <div class="flex items-center gap-1.5 flex-wrap">
-                            ${canEditItem ? `
-                            <div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-2 py-1">
-                                <span class="text-[10px] font-bold text-slate-500">Yıl Taşı:</span>
-                                <select id="move-year-${evId}" class="text-[11px] font-bold text-slate-800 bg-transparent focus:outline-none">
-                                    ${allYearItems.filter(yIt => yIt.id !== item.id && (isTeacher || getItemAssignedStudentId(yIt, 'proje-siyer') === resolveCurrentUserStudentId('proje-siyer'))).map(yIt => `
-                                    <option value="${yIt.id}">${yIt.year}</option>
-                                    `).join('')}
-                                </select>
-                                <button type="button" onclick="window.RotaliTubitak.moveSiyerEvent('${evId}', '${item.id}', document.getElementById('move-year-${evId}')?.value)" class="px-2 py-0.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black cursor-pointer">
-                                    Taşı
-                                </button>
-                            </div>
-                            ` : ''}
-                            <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.openAddSourceModal('${evId}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 text-[11px] font-bold cursor-pointer">
-                                <i class="fa-solid fa-book-medical mr-1"></i>Kaynak Ekle
-                            </button>
-                            <button type="button" onclick="window.RotaliTubitak.openHistoryModal('${evId}')" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold cursor-pointer">
-                                <i class="fa-solid fa-clock-rotate-left mr-1"></i>Geçmiş
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="space-y-4">
-                        ${criteriaList.map(crit => {
-                            const recordKey = `${evId}__${crit.key}`;
-                            const saved = runtimeRecords[recordKey];
-                            const contentVal = saved ? saved.content : (evIdx === 0 ? (item.criteria?.[crit.key] || "") : "");
-                            const version = saved ? saved.version : 1;
-                            const lastEditor = saved ? saved.studentName : "Sistem";
-
-                            return `
-                            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200/90 shadow-2xs space-y-2 transition-all focus-within:border-amber-400 focus-within:bg-white focus-within:ring-2 focus-within:ring-amber-400/20">
-                                <div class="flex items-center justify-between gap-2">
-                                    <label for="input-${evId}__${crit.key}" class="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
-                                        <span>${escapeHtml(crit.title)}</span>
-                                        ${crit.required ? '<span class="text-red-500 font-bold" title="Zorunlu Kriter">*</span>' : '<span class="text-[10px] font-semibold text-slate-400">(İsteğe bağlı)</span>'}
-                                    </label>
-                                    <div class="flex items-center gap-1">
-                                        <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleUndo('${crit.key}', '${evId}')" class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı Geri Al ↶">
-                                            ↶
-                                        </button>
-                                        <button type="button" ${!canEditItem ? 'disabled' : ''} onclick="window.RotaliTubitak.handleRedo('${crit.key}', '${evId}')" class="w-7 h-7 rounded-lg bg-white hover:bg-slate-200 disabled:opacity-40 disabled:cursor-not-allowed text-slate-700 border border-slate-300 flex items-center justify-center text-xs transition-colors cursor-pointer" title="Bu Alanı İleri Al ↷">
-                                            ↷
-                                        </button>
-                                    </div>
-                                </div>
-                                <textarea
-                                    id="input-${evId}__${crit.key}"
-                                    rows="3"
-                                    ${!canEditItem ? 'readonly disabled' : ''}
-                                    style="resize: vertical; min-height: 96px;"
-                                    placeholder="${escapeHtml(crit.placeholder || 'Araştırma bulgularınızı buraya yazınız...')}"
-                                    oninput="window.RotaliTubitak.onFieldChange('${crit.key}', this.value, this, '${evId}')"
-                                    onblur="window.RotaliTubitak.onFieldBlur('${crit.key}', this.value, '${evId}')"
-                                    class="tubitak-criterion-textarea resize-y w-full px-3.5 py-2.5 ${canEditItem ? 'bg-white text-slate-800' : 'bg-slate-100 text-slate-500 cursor-not-allowed'} border border-slate-200 rounded-xl text-xs sm:text-sm font-medium placeholder-slate-400 focus:outline-none transition-colors leading-relaxed custom-scrollbar"
-                                >${escapeHtml(contentVal)}</textarea>
-                                <div class="flex items-center justify-between text-[10px] text-slate-400 font-semibold pt-1">
-                                    <span class="flex items-center gap-1">
-                                        <i class="fa-solid fa-code-commit text-amber-500"></i>
-                                        <span>Sürüm v${version}</span>
-                                        <span>• ${escapeHtml(lastEditor)}</span>
-                                    </span>
-                                    <span id="char-count-${evId}__${crit.key}">${formatFieldStats(contentVal)}</span>
-                                </div>
-                            </div>
-                            `;
-                        }).join("")}
-                    </div>
-                </div>
-                `;
-            }).join("")}
-        </div>
-        ` : `
         <div class="space-y-5">
             ${criteriaList.map((crit, idx) => {
                 const recordKey = `${item.id}__${crit.key}`;
@@ -902,7 +796,7 @@
                     <div class="flex items-center justify-between gap-2">
                         <label for="input-${crit.key}" class="text-xs sm:text-sm font-black text-slate-800 flex items-center gap-1.5">
                             <span>${escapeHtml(crit.title)}</span>
-                            ${crit.required ? '<span class="text-red-500 font-bold" title="Zorunlu Kriter">*</span>' : ''}
+                            ${crit.required ? '<span class="text-red-500 font-bold" title="Zorunlu Kriter">*</span>' : '<span class="text-[10px] font-semibold text-slate-400">(İsteğe bağlı)</span>'}
                         </label>
                         
                         <!-- ↶ Geri Al / İleri Al Butonları -->
@@ -951,7 +845,6 @@
                 `;
             }).join("")}
         </div>
-        `}
 
         <!-- 📚 İLİŞKİLİ KAYNAKLAR BÖLÜMÜ -->
         <div class="pt-5 border-t border-slate-200">
@@ -1097,7 +990,7 @@
     function computeStudentStats(stuId, projectId = activeProjectId) {
         const projData = seedData?.projects?.[projectId] || {};
         const items = projData.items || [];
-        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 14 : (projectId === "proje-siyer" ? 3 : 18));
+        const totalCriteria = (projData.criteriaList || []).length || (projectId === "proje-bilim" ? 14 : (projectId === "proje-siyer" ? 5 : 18));
         const assignedItems = items.filter(it => getItemAssignedStudentId(it, projectId) === stuId);
         let startedCount = 0;
         let completedCount = 0;
@@ -1110,12 +1003,18 @@
             const isNoEvent = projectId === "proje-siyer" && runtimeSiyerYearFlags?.[it.id]?.status === "no_event_found";
             const filled = countItemFilledCriteria(it.id, projectId);
             filledCriteria += filled;
+            const isCompleted = isNoEvent || (
+                projectId === "proje-siyer"
+                    ? ((runtimeRecords[`${it.id}__c1_olay`]?.content || '').trim().length > 0 &&
+                       ((runtimeRecords[`${it.id}__c3_kaynakca`]?.content || '').trim().length > 0 || getItemSources(it.id).length > 0))
+                    : (filled === totalCriteria)
+            );
             if (filled > 0 || isNoEvent) startedCount++;
-            if (filled === totalCriteria || isNoEvent) completedCount++;
+            if (isCompleted) completedCount++;
             if (isNoEvent) noEventFlagCount++;
             if (getItemStatus(it.id) === "approved") approvedCount++;
             Object.values(runtimeRecords).forEach(rec => {
-                const matchRec = rec && (rec.itemId === it.id || (projectId === "proje-siyer" && String(rec.itemId || "").startsWith(`${it.id}__ev_`)));
+                const matchRec = rec && (rec.itemId === it.id || (projectId === "proje-siyer" && String(rec.itemId || "").startsWith(`${it.id}__`)));
                 if (matchRec && rec.updatedAt) {
                     if (!lastUpdatedAt || rec.updatedAt > lastUpdatedAt) {
                         lastUpdatedAt = rec.updatedAt;
@@ -1127,7 +1026,9 @@
         const effectiveItemCount = Math.max(0, assignedItems.length - noEventFlagCount);
         const totalPossible = effectiveItemCount * totalCriteria;
         const missingCriteria = Math.max(0, totalPossible - filledCriteria);
-        const pct = totalPossible > 0 ? Math.round((filledCriteria / totalPossible) * 100) : (noEventFlagCount > 0 ? 100 : 0);
+        const pct = projectId === "proje-siyer"
+            ? (assignedItems.length > 0 ? Math.round((completedCount / assignedItems.length) * 100) : 0)
+            : (totalPossible > 0 ? Math.round((filledCriteria / totalPossible) * 100) : (noEventFlagCount > 0 ? 100 : 0));
         return {
             assignedTotal: assignedItems.length,
             startedCount,
@@ -1694,7 +1595,7 @@
         const proj3 = seedData?.projects?.["proje-siyer"] || {};
         const items = proj3.items || [];
         const students = getProjectStudents("proje-siyer");
-        const totalCriteria = (proj3.criteriaList || []).length || 3;
+        const totalCriteria = (proj3.criteriaList || []).length || 5;
         const distValid = isProjectDistributionValid("proje-siyer");
 
         return `
@@ -1771,7 +1672,7 @@
                                     <div class="flex items-center gap-2 min-w-0">
                                         <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-black">#${getItemPermanentOrder(it, "proje-siyer")}</span>
                                         <span class="font-bold text-slate-800 truncate">${escapeHtml(it.title)}</span>
-                                        <span class="text-[10px] text-slate-500">(${evCount} Olay • ${filled}/${totalCriteria})</span>
+                                        <span class="text-[10px] text-slate-500">(${filled}/${totalCriteria} Kriter)</span>
                                         <span class="px-1.5 py-0.5 rounded-full text-[9px] font-black ${getStatusBadgeClass(st)}">${getStatusLabel(st)}</span>
                                     </div>
                                     <div class="flex items-center gap-1.5 flex-wrap">

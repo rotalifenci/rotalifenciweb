@@ -405,7 +405,12 @@ async function runTests() {
     const { generateAllSiyerYearsZipBuffer } = require('../api/_tubitak-docx.js');
     const p3All = seedParsed.projects["proje-siyer"];
     assert.strictEqual(p3All.items.length, 62);
-    assert.strictEqual(p3All.criteriaList.length, 3);
+    assert.strictEqual(p3All.criteriaList.length, 5);
+    assert.strictEqual(p3All.criteriaList[0].title, "1. OLAY");
+    assert.strictEqual(p3All.criteriaList[1].title, "2. OLAY");
+    assert.strictEqual(p3All.criteriaList[2].title, "3. OLAY");
+    assert.strictEqual(p3All.criteriaList[3].title, "4. KÖK DEĞER");
+    assert.strictEqual(p3All.criteriaList[4].title, "5. KAYNAKÇA");
     assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-humeyra").length, 13);
     assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-ecrin").length, 13);
     assert.strictEqual(p3All.items.filter(it => it.assignedStudentId === "stu3-zeynep").length, 12);
@@ -427,6 +432,27 @@ async function runTests() {
     }, {}, { authorization: `Bearer ${p3Token}` });
     await tubitakRecordsHandler(p3WriteOwn.req, p3WriteOwn.res);
     assert.strictEqual(p3WriteOwn.getStatus(), 200);
+
+    // 2. ve 3. Olay alanlarına da veri girişi yapılabilmeli
+    const p3WriteOlay2 = mockReqRes('POST', {
+        projectId: "proje-siyer",
+        itemId: "siyer-571",
+        criterionKey: "c1_olay_2",
+        content: "571 yılında ikinci önemli olay açıklaması.",
+        clientVersion: 0
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3WriteOlay2.req, p3WriteOlay2.res);
+    assert.strictEqual(p3WriteOlay2.getStatus(), 200);
+
+    const p3WriteOlay3 = mockReqRes('POST', {
+        projectId: "proje-siyer",
+        itemId: "siyer-571",
+        criterionKey: "c1_olay_3",
+        content: "571 yılında üçüncü önemli olay açıklaması.",
+        clientVersion: 0
+    }, {}, { authorization: `Bearer ${p3Token}` });
+    await tubitakRecordsHandler(p3WriteOlay3.req, p3WriteOlay3.res);
+    assert.strictEqual(p3WriteOlay3.getStatus(), 200);
 
     const p3WriteOther = mockReqRes('POST', {
         projectId: "proje-siyer",
@@ -479,7 +505,8 @@ async function runTests() {
     const p3DocxZip = await JSZip.loadAsync(p3DocxReq.getData());
     const p3Xml = await p3DocxZip.file("word/document.xml").async("string");
     assert.ok(p3Xml.includes("Fil Vakası"), "Proje 3 öğrenci metni 571.docx belgesinde yer almalı");
-    assert.strictEqual(/1\. OLAY|2\. KÖK DEĞER|3\. KAYNAKÇA|Hümeyra BULUT/.test(p3Xml), false);
+    assert.ok(p3Xml.includes("ikinci önemli olay"), "Proje 3 ikinci olay metni de 571.docx içinde yer almalı");
+    assert.strictEqual(/1\. OLAY|2\. OLAY|3\. OLAY|4\. KÖK DEĞER|5\. KAYNAKÇA|Hümeyra BULUT/.test(p3Xml), false);
 
     // Öğretmen "Araştırıldı – Olay tespit edilemedi" yıl işareti
     const p3FlagReq = mockReqRes('PUT', {
